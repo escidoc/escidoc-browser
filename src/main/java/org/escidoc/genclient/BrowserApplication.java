@@ -7,7 +7,7 @@ import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import com.vaadin.ui.Window;
 
 @SuppressWarnings("serial")
-public class EsdcApplication extends Application {
+public class BrowserApplication extends Application {
 
     public int appHeight = 0;
 
