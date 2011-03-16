@@ -6,7 +6,4 @@
 2b. start Tomcat, if you have not.
 3. in a web browser, write http://[tomcat-host]:[tomcat-port-number]/[REPLACE_ME]
     for example: http://localhost:8081/[REPLACE_ME]
-4. in Welcome Page of [REPLACE_ME], write the location of your escidoc installation.
-    for example: http://localhost:8080
-5. Go to Load Example, if your escidoc installation does not contain any object.
 

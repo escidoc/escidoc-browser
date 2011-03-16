@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.escidoc</groupId>
-	<artifactId>explorer</artifactId>
+	<artifactId>browser</artifactId>
 	<version>0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 
@@ -36,6 +36,7 @@
 		</dependency>
 	</dependencies>
 	<properties>
+	    <project.name>eSciDoc Browser</project.name>
 		<compiler.level>1.6</compiler.level>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jetty.port>8081</jetty.port>
@@ -100,7 +101,7 @@
 				<version>6.1.26</version>
 				<configuration>
 					<stopPort>9966</stopPort>
-					<stopKey>genclient</stopKey>
+					<stopKey>browser</stopKey>
 					<scanIntervalSeconds>${jetty.scan.sec}</scanIntervalSeconds>
 					<systemProperties>
 						<systemProperty>
@@ -188,8 +189,8 @@
 		<finalName>${project.artifactId}</finalName>
 	</build>
 
-	<name>eSciDoc Generic Client</name>
-	<description>eSciDoc Generic Client handles following eSciDoc resouces: 
+	<name>${project.name}</name>
+	<description>${project.name} handles following eSciDoc resouces: 
 		contexts, containers and items.</description>
 	<inceptionYear>2011</inceptionYear>
 	<licenses>
@@ -229,7 +230,7 @@
 		</developer>
 		<developer>
 			<id>arb</id>
-			<name>Armand </name>
+			<name>Armand B.</name>
 			<email>armand@fiz-karlsruhe.de</email>
 			<organization>FIZ Karlsruhe</organization>
 			<organizationUrl>http://www.fiz-karlsruhe.de</organizationUrl>
@@ -260,9 +261,9 @@
 		</mailingList>
 	</mailingLists>
 	<scm>
-		<connection>scm:svn:http://escidev5:8888/prototyp/trunk/eSciDocAdminTool
+		<connection>scm:svn:http://escidev5:8888/prototyp/escidoc-browser
 		</connection>
-		<developerConnection>scm:svn:http://escidev5:8888/prototyp/???
+		<developerConnection>scm:svn:http://escidev5:8888/prototyp/escidoc-browser
 		</developerConnection>
 	</scm>
 	<repositories>

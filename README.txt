@@ -1,5 +1,4 @@
 eSciDoc Generic Client Documentation
 
-Problem:
+$ mvn eclipse:eclipse
 
-Notes:
