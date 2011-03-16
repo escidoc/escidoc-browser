@@ -6,18 +6,24 @@ public class ContextModel implements ResourceModel {
 
     private final Resource context;
 
+    private String id;
+
+    private String name;
+
     public ContextModel(final Resource context) {
         this.context = context;
     }
 
     @Override
     public String getId() {
-        return context.getObjid();
+        id = context.getObjid();
+        return id;
     }
 
     @Override
     public String getName() {
-        return context.getXLinkTitle();
+        name = context.getXLinkTitle();
+        return name;
     }
 
     @Override

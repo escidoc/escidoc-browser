@@ -49,7 +49,7 @@ public class MainSite extends VerticalLayout {
         // HERE COMES THE MAIN NAVIGATION (LEFT SIDE)
         final NavigationTreeView treemenu =
             new UiBuilder().buildNavigationTree(new ContextRepository(
-                new EscidocServiceLocationImpl("http://localhost:8080")));
+                new EscidocServiceLocationImpl("http://escidev6:8080")));
         mainnavtree = treemenu;
 
         final Panel mainnav = new Panel();

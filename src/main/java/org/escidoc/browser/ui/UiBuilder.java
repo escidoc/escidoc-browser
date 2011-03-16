@@ -19,7 +19,7 @@ public class UiBuilder {
 
         final ResourceContainerImpl resourceContainer =
             new ResourceContainerImpl(contexts);
-
+        resourceContainer.init();
         navigationTreeView.setDataSource(resourceContainer);
 
         return navigationTreeView;

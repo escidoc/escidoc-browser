@@ -1,5 +1,6 @@
 package org.escidoc.browser.ui;
 
+import org.escidoc.browser.model.PropertyId;
 import org.escidoc.browser.model.ResourceContainer;
 import org.escidoc.browser.model.ResourceModel;
 
@@ -38,7 +39,7 @@ public class NavigationTreeViewImpl extends CustomComponent
     public void setDataSource(final ResourceContainer container) {
         tree.setContainerDataSource(container.getContainer());
         tree.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
-        tree.setItemCaptionPropertyId("name");
+        tree.setItemCaptionPropertyId(PropertyId.OBJECT_ID);
     }
 
 }
