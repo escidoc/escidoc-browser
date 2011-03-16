@@ -27,22 +27,6 @@ public class LoginForm extends VerticalLayout {
     public LoginForm() {
         final CssLayout cssLayout = new CssLayout();
         cssLayout.setWidth("500px");
-        // // username
-        // username = new TextField();
-        // username.setWidth("100px");
-        // username.setHeight("20px");
-        // username.setImmediate(false);
-        // //cssLayout.addComponent(username, "top:2.0px;left:2.0px;");
-        // cssLayout.addComponent(username);
-        //
-        // // password
-        // password = new TextField();
-        // password.setWidth("100px");
-        // password.setHeight("20px");
-        // password.setImmediate(false);
-        // //cssLayout.addComponent(password, "top:2.0px;left:204.0px;");
-        // cssLayout.addComponent(password);
-
         // Login
         Login = new Button();
         // Login.setWidth("60px");

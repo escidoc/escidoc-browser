@@ -32,7 +32,6 @@ public class MainSite extends VerticalLayout {
         this.appHeight = appHeight;
         this.setMargin(true);
         this.setSizeFull();
-        ;
         this.setWidth("86%");
 
         // common part: create layout

@@ -9,7 +9,7 @@
 		</layout>
 	</appender>
 	<appender name="R" class="org.apache.log4j.RollingFileAppender">
-		<param name="file" value="./log/admintool.log" />
+		<param name="file" value="./log/escidoc-generic-client.log" />
 		<param name="MaxFileSize" value="100KB" />
 		<param name="MaxBackupIndex" value="1" />
 		<layout class="org.apache.log4j.PatternLayout">

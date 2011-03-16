@@ -6,8 +6,10 @@ import com.vaadin.Application;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import com.vaadin.ui.Window;
 
+@SuppressWarnings("serial")
 public class EsdcApplication extends Application {
-    public static int appHeight = 0;
+
+    public int appHeight = 0;
 
     @Override
     public void init() {
@@ -21,7 +23,6 @@ public class EsdcApplication extends Application {
             (WebApplicationContext) myApplication.getContext();
         final int height = ctx.getBrowser().getScreenHeight();
         this.appHeight = (height / 100 * 86 - 5);
-        // mainWindow.setSizeFull();
         mainWindow.showNotification("a Height is :" + height + "appheight "
             + appHeight);
         mainWindow.setScrollable(true);
