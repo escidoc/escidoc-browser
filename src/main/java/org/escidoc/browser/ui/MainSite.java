@@ -42,7 +42,7 @@ public class MainSite extends VerticalLayout {
         final HeaderContainer header = new HeaderContainer();
 
         // HERE COMES THE MAIN NAVIGATION (LEFT SIDE)
-        final TreeMenu treemenu = new TreeMenu();
+        final NavigationTree treemenu = new NavigationTree();
         mainnavtree = treemenu.sampleTree();
 
         final Panel mainnav = new Panel();
