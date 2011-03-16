@@ -8,6 +8,8 @@ import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import com.vaadin.ui.Window;
 
+import de.escidoc.core.client.exceptions.EscidocClientException;
+
 @SuppressWarnings("serial")
 public class BrowserApplication extends Application {
     private final Window mainWindow = new Window(Constant.MAIN_WINDOW_TITLE);
@@ -31,8 +33,13 @@ public class BrowserApplication extends Application {
     }
 
     private void setMainWindowContent() {
-        mainWindow
-            .setContent(createMainSite(mainWindow, getApplicationHeight()));
+        try {
+            mainWindow.setContent(createMainSite(mainWindow,
+                getApplicationHeight()));
+        }
+        catch (final EscidocClientException e) {
+            mainWindow.showNotification("Error");
+        }
     }
 
     private void setMainWindowHeight() {
@@ -48,7 +55,8 @@ public class BrowserApplication extends Application {
         return appHeight;
     }
 
-    private MainSite createMainSite(final Window mainWindow, final int appHeight) {
+    private MainSite createMainSite(final Window mainWindow, final int appHeight)
+        throws EscidocClientException {
         final MainSite mnSite = new MainSite(mainWindow, appHeight);
         mnSite.setHeight("100%");
         mnSite.setWidth("100%");

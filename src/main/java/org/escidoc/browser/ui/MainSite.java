@@ -1,5 +1,7 @@
 package org.escidoc.browser.ui;
 
+import org.escidoc.browser.model.EscidocServiceLocationImpl;
+import org.escidoc.browser.repository.ContextRepository;
 import org.escidoc.browser.ui.maincontent.Context;
 import org.escidoc.browser.ui.mainpage.Footer;
 import org.escidoc.browser.ui.mainpage.HeaderContainer;
@@ -7,15 +9,16 @@ import org.escidoc.browser.ui.mainpage.HeaderContainer;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+
+import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class MainSite extends VerticalLayout {
 
     private final CssLayout mainLayout;
 
-    private final Tree mainnavtree;
+    private final NavigationTreeView mainnavtree;
 
     private final int appHeight;
 
@@ -26,8 +29,10 @@ public class MainSite extends VerticalLayout {
      * 
      * @param mainWindow
      * @param appHeight
+     * @throws EscidocClientException
      */
-    public MainSite(final Window mainWindow, final int appHeight) {
+    public MainSite(final Window mainWindow, final int appHeight)
+        throws EscidocClientException {
         // General Height for the application
         this.appHeight = appHeight;
         this.setMargin(true);
@@ -42,8 +47,10 @@ public class MainSite extends VerticalLayout {
         final HeaderContainer header = new HeaderContainer();
 
         // HERE COMES THE MAIN NAVIGATION (LEFT SIDE)
-        final NavigationTree treemenu = new NavigationTree();
-        mainnavtree = treemenu.sampleTree();
+        final NavigationTreeView treemenu =
+            new UiBuilder().buildNavigationTree(new ContextRepository(
+                new EscidocServiceLocationImpl("http://localhost:8080")));
+        mainnavtree = treemenu;
 
         final Panel mainnav = new Panel();
         mainnav.setScrollable(true);
@@ -76,5 +83,4 @@ public class MainSite extends VerticalLayout {
         addComponent(mainLayout);
 
     }
-
 }
