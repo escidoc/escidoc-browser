@@ -1,4 +1,4 @@
-package org.escidoc.genclient.ui;
+package org.escidoc.browser.ui;
 
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
@@ -75,9 +75,6 @@ public class TreeMenu implements ItemClickListener {
         else {
             // Probably implement retrieval of sub-level items
             // Why bother for a single click?
-
         }
-
     }
-
 }

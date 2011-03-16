@@ -1,8 +1,8 @@
-package org.escidoc.genclient.ui;
+package org.escidoc.browser.ui;
 
-import org.escidoc.genclient.ui.maincontent.Context;
-import org.escidoc.genclient.ui.mainpage.Footer;
-import org.escidoc.genclient.ui.mainpage.HeaderContainer;
+import org.escidoc.browser.ui.maincontent.Context;
+import org.escidoc.browser.ui.mainpage.Footer;
+import org.escidoc.browser.ui.mainpage.HeaderContainer;
 
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Panel;
@@ -31,7 +31,7 @@ public class MainSite extends VerticalLayout {
         // General Height for the application
         this.appHeight = appHeight;
         this.setMargin(true);
-        this.setSizeFull();
+        setSizeFull();
         this.setWidth("86%");
 
         // common part: create layout

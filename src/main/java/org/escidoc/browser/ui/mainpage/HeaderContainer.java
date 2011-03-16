@@ -1,4 +1,4 @@
-package org.escidoc.genclient.ui.mainpage;
+package org.escidoc.browser.ui.mainpage;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;

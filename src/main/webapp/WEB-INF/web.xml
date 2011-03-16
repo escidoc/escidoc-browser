@@ -12,7 +12,7 @@
         <init-param>
             <description>Vaadin application class to start</description>
             <param-name>application</param-name>
-            <param-value>org.escidoc.genclient.BrowserApplication</param-value>
+            <param-value>org.escidoc.browser.BrowserApplication</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>

@@ -1,4 +1,4 @@
-package org.escidoc.genclient.ui.maincontent;
+package org.escidoc.browser.ui.maincontent;
 
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.CssLayout;
