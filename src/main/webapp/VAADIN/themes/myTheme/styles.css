@@ -1,0 +1,93 @@
+@import "default.css";
+@import "../reindeer/styles.css";
+.floatright {
+	float: right;
+	overflow: auto;	
+}
+.floatleft {
+	float: left;
+	overflow: auto;	
+}
+.maincontainer{
+	min-height: 100%;
+	}
+.fullwidth{
+	width: 100%;
+	clear: both;
+}
+.paddingtop20{
+ padding-top:20.0px;
+}
+
+.clear{
+	clear: both;
+}
+.red{
+	background:red;
+}
+
+.header {
+
+	height: 70px; 
+	background: #fff; 
+	white-space: normal;
+	border: 1px solid #dcdcdc;
+}
+.footer {	
+	height: 20px;
+	background: #fff; 
+	white-space: normal;
+	border: 1px solid #dcdcdc;
+	color:#999;
+}
+.footer a:link {color:#999;}    
+.footer a:visited {color:#FF0000;} 
+.footer a:hover {color:#FF0000;}   
+.footer a:active {color:#FF0000;}  
+.whitebackground {	
+	background: #fff; 
+	white-space: normal;
+	border: 1px solid #dcdcdc;
+}
+.logo {display:block;padding:20px;margin:0;}
+ul{
+    margin: 0 auto;
+    padding: 0;
+}
+ul.horizontal_list li{
+    text-align: left;
+    float: left;
+    list-style: none;
+    padding: 3px 3px 3px 3px;
+    margin: 5px;
+}
+.columnheight50{
+	height: 55px;
+}
+/* breadcrumb */
+.bc ul, li {
+	list-style-type:none;
+	padding:0;
+	margin:0;
+	}		
+#crumbs {
+	height:2.3em;
+	border:1px solid #dedede;
+	}
+#crumbs li {
+	float:left;
+	line-height:2.3em;
+	color:#777;
+	padding-left:.75em;
+	}		
+#crumbs li a {
+	background:url(/ESDC/VAADIN/themes/myTheme/images/crumbs.gif) no-repeat right center;
+	display:block;
+	padding:0 15px 0 0;
+	}							
+#crumbs li a:link,
+#crumbs li a:visited {
+	color:#777;
+	text-decoration:none;
+	}	
+
