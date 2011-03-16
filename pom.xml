@@ -34,9 +34,16 @@
 			<artifactId>commons-discovery</artifactId>
 			<version>0.2</version>
 		</dependency>
+
+		<!-- Utils -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>r07</version>
+		</dependency>
 	</dependencies>
 	<properties>
-	    <project.name>eSciDoc Browser</project.name>
+		<project.name>eSciDoc Browser</project.name>
 		<compiler.level>1.6</compiler.level>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jetty.port>8081</jetty.port>
