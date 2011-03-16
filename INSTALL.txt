@@ -1,0 +1,12 @@
+1. put [REPLACE_ME].war in a java web container, such as, Tomcat.
+2a. configure tomcat and JAVA_OPTS to use your local proxy settings.
+    for example:
+        JAVA_OPTS=-Dhttp.proxyHost=proxy.fiz-karlsruhe.de -Dhttp.proxyPort=8888 -Dhttp.nonProxyHosts=escidev6|escidev4|localhost|127.0.0.1|141.66.11.*|*.fiz-karlsruhe.de|www.escidoc.org|www.escidoc.de|escidev6.fiz-karlsruhe.de -Xmx1500m -XX:MaxPermSize=750m
+    please refer to your web container documentation how to configure the proxy settings.
+2b. start Tomcat, if you have not.
+3. in a web browser, write http://[tomcat-host]:[tomcat-port-number]/[REPLACE_ME]
+    for example: http://localhost:8081/[REPLACE_ME]
+4. in Welcome Page of [REPLACE_ME], write the location of your escidoc installation.
+    for example: http://localhost:8080
+5. Go to Load Example, if your escidoc installation does not contain any object.
+
