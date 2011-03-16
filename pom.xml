@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.escidoc</groupId>
-	<artifactId>genclient</artifactId>
+	<artifactId>explorer</artifactId>
 	<version>0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 
@@ -13,7 +13,7 @@
 		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin</artifactId>
-			<version>6.5.2</version>
+			<version>6.5.3</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
