@@ -6,6 +6,6 @@ public interface ResourceModel {
 
     String getName();
 
-    String getType();
+    ResourceType getType();
 
 }
