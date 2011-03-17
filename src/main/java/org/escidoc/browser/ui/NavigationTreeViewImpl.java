@@ -39,6 +39,6 @@ public class NavigationTreeViewImpl extends CustomComponent
     public void setDataSource(final ResourceContainer container) {
         tree.setContainerDataSource(container.getContainer());
         tree.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
-        tree.setItemCaptionPropertyId(PropertyId.OBJECT_ID);
+        tree.setItemCaptionPropertyId(PropertyId.NAME);
     }
 }
