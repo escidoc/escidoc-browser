@@ -27,12 +27,10 @@ public class ResourceContainerImpl implements ResourceContainer {
 
     private void addProperties() {
         container.addContainerProperty(PropertyId.OBJECT_ID, String.class, "");
-        container.addContainerProperty(PropertyId.NAME, String.class, "");
+        container.addContainerProperty(PropertyId.NAME, String.class, "foo");
     }
 
     private void addTopLevel() {
-        assert (topLevelResources != null) : "top level resources is null";
-
         for (final ResourceModel topLevel : topLevelResources) {
             add(topLevel);
         }

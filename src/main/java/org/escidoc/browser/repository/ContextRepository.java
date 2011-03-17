@@ -11,6 +11,7 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
 
 import de.escidoc.core.client.ContextHandlerClient;
+import de.escidoc.core.client.TransportProtocol;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.interfaces.ContextHandlerClientInterface;
 import de.escidoc.core.resources.Resource;
@@ -22,6 +23,7 @@ public class ContextRepository implements Repository {
 
     public ContextRepository(final EscidocServiceLocation escidocServiceLocation) {
         client = new ContextHandlerClient(escidocServiceLocation.getUri());
+        client.setTransport(TransportProtocol.REST);
     }
 
     @Override
