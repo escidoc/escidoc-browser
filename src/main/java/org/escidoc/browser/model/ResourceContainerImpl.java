@@ -23,6 +23,7 @@ public class ResourceContainerImpl implements ResourceContainer {
 
     public void init() {
         addProperties();
+        sortByNameAscending();
         addTopLevel();
     }
 
@@ -33,13 +34,19 @@ public class ResourceContainerImpl implements ResourceContainer {
             .addContainerProperty(PropertyId.NAME, String.class, "NO NAME");
     }
 
+    // FIXME: does not work as expected.
+    private void sortByNameAscending() {
+        container.sort(new Object[] { PropertyId.OBJECT_ID, PropertyId.NAME },
+            new boolean[] { true, false });
+    }
+
     private void addTopLevel() {
         for (final ResourceModel topLevel : topLevelResources) {
-            add(topLevel);
+            addAndBind(topLevel);
         }
     }
 
-    private void add(final ResourceModel resource) {
+    private void addAndBind(final ResourceModel resource) {
         Preconditions.checkNotNull(resource, "resource is null: %s", resource);
         final Item item = container.addItem(resource);
         Preconditions.checkNotNull(item, "item is null: %s", item);
@@ -51,6 +58,7 @@ public class ResourceContainerImpl implements ResourceContainer {
         Preconditions.checkNotNull(resource, "resource is null: %s", resource);
         item.getItemProperty(PropertyId.OBJECT_ID).setValue(resource.getId());
         item.getItemProperty(PropertyId.NAME).setValue(resource.getName());
+
     }
 
     @Override
@@ -66,13 +74,21 @@ public class ResourceContainerImpl implements ResourceContainer {
     @Override
     public void addChildren(
         final ResourceModel parent, final List<ResourceModel> children) {
-        for (final ResourceModel child : children) {
-            add(child);
 
-            final boolean isSuccesful = container.setParent(child, parent);
-            Preconditions.checkArgument(isSuccesful, "Setting parent of "
-                + child + " to " + parent + " is not succesful.");
+        for (final ResourceModel child : children) {
+            addAndBind(child);
+            assignParent(parent, child);
+            container.setChildrenAllowed(child,
+                !child.getType().equals(ResourceType.ITEM));
         }
+
+    }
+
+    private void assignParent(
+        final ResourceModel parent, final ResourceModel child) {
+        final boolean isSuccesful = container.setParent(child, parent);
+        Preconditions.checkArgument(isSuccesful, "Setting parent of " + child
+            + " to " + parent + " is not succesful.");
     }
 
 }
