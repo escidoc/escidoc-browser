@@ -13,4 +13,20 @@ public class ContextModel extends AbstractResourceModel {
         return ResourceType.CONTEXT;
     }
 
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("ContextModel [");
+        if (getType() != null) {
+            builder.append("getType()=").append(getType()).append(", ");
+        }
+        if (getId() != null) {
+            builder.append("getId()=").append(getId()).append(", ");
+        }
+        if (getName() != null) {
+            builder.append("getName()=").append(getName());
+        }
+        builder.append("]");
+        return builder.toString();
+    }
 }
