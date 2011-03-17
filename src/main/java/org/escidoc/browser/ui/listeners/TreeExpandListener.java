@@ -36,14 +36,12 @@ public final class TreeExpandListener implements Tree.ExpandListener {
             (ResourceModel) event.getItemId();
         LOG.debug("Node to expand: " + hasChildrenResource.toString());
 
-        // TODO
-        final ResourceType type = hasChildrenResource.getType();
-        if (type.equals(ResourceType.CONTEXT)) {
+        if (hasChildrenResource.getType().equals(ResourceType.CONTEXT)) {
             try {
                 final List<ResourceModel> children =
                     repository.findMembersById(hasChildrenResource.getId());
                 for (final ResourceModel resourceModel : children) {
-                    LOG.debug("child: " + resourceModel.getId());
+                    LOG.debug("child: " + resourceModel.getName());
                 }
                 container.addChildren(hasChildrenResource, children);
             }

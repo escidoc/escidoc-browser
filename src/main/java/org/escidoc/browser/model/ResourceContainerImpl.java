@@ -67,8 +67,11 @@ public class ResourceContainerImpl implements ResourceContainer {
     public void addChildren(
         final ResourceModel parent, final List<ResourceModel> children) {
         for (final ResourceModel child : children) {
-            container.addItem(child);
-            container.setParent(child, parent);
+            add(child);
+
+            final boolean isSuccesful = container.setParent(child, parent);
+            Preconditions.checkArgument(isSuccesful, "Setting parent of "
+                + child + " to " + parent + " is not succesful.");
         }
     }
 
