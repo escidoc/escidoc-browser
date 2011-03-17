@@ -15,6 +15,7 @@ import de.escidoc.core.client.TransportProtocol;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.interfaces.ContextHandlerClientInterface;
 import de.escidoc.core.resources.Resource;
+import de.escidoc.core.resources.om.GenericVersionableResource;
 import de.escidoc.core.resources.om.context.Context;
 
 public class ContextRepository implements Repository {
@@ -38,6 +39,24 @@ public class ContextRepository implements Repository {
         final List<ResourceModel> models =
             new ArrayList<ResourceModel>(contextsAsList.size());
         for (final Resource context : contextsAsList) {
+            models.add(new ContextModel(context));
+        }
+        return models;
+    }
+
+    @Override
+    public List<ResourceModel> findMembersById(final String id)
+        throws EscidocClientException {
+        final Collection<GenericVersionableResource> retrieveMembersAsList =
+            client.retrieveMembersAsList(id, new SearchRetrieveRequestType());
+        return genericResourcetoModel(retrieveMembersAsList);
+    }
+
+    private List<ResourceModel> genericResourcetoModel(
+        final Collection<GenericVersionableResource> retrieveMembersAsList) {
+        final List<ResourceModel> models =
+            new ArrayList<ResourceModel>(retrieveMembersAsList.size());
+        for (final Resource context : retrieveMembersAsList) {
             models.add(new ContextModel(context));
         }
         return models;

@@ -10,4 +10,7 @@ public interface Repository {
 
     List<ResourceModel> findAll() throws EscidocClientException;
 
+    List<ResourceModel> findMembersById(String id)
+        throws EscidocClientException;
+
 }

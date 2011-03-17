@@ -41,6 +41,20 @@
 			<artifactId>guava</artifactId>
 			<version>r07</version>
 		</dependency>
+
+		<!-- Logger -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.6.1</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.6.1</version>
+			<scope>runtime</scope>
+		</dependency>
 	</dependencies>
 	<properties>
 		<project.name>eSciDoc Browser</project.name>

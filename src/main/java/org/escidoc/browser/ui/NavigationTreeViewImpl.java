@@ -26,8 +26,8 @@ public class NavigationTreeViewImpl extends CustomComponent
     }
 
     @Override
-    public void addExpandListener(final ExpandListener clickListener) {
-        tree.addListener(clickListener);
+    public void addExpandListener(final ExpandListener expandListener) {
+        tree.addListener(expandListener);
     }
 
     @Override
@@ -39,7 +39,6 @@ public class NavigationTreeViewImpl extends CustomComponent
     public void setDataSource(final ResourceContainer container) {
         tree.setContainerDataSource(container.getContainer());
         tree.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
-        tree.setItemCaptionPropertyId(PropertyId.NAME);
+        tree.setItemCaptionPropertyId(PropertyId.OBJECT_ID);
     }
-
 }

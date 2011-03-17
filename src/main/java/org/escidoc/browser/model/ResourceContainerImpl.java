@@ -1,6 +1,7 @@
 package org.escidoc.browser.model;
 
 import java.util.Collection;
+import java.util.List;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.data.Container;
@@ -26,8 +27,10 @@ public class ResourceContainerImpl implements ResourceContainer {
     }
 
     private void addProperties() {
-        container.addContainerProperty(PropertyId.OBJECT_ID, String.class, "");
-        container.addContainerProperty(PropertyId.NAME, String.class, "foo");
+        container.addContainerProperty(PropertyId.OBJECT_ID, String.class,
+            "NO ID");
+        container
+            .addContainerProperty(PropertyId.NAME, String.class, "NO NAME");
     }
 
     private void addTopLevel() {
@@ -58,6 +61,15 @@ public class ResourceContainerImpl implements ResourceContainer {
     @Override
     public Container getContainer() {
         return container;
+    }
+
+    @Override
+    public void addChildren(
+        final ResourceModel parent, final List<ResourceModel> children) {
+        for (final ResourceModel child : children) {
+            container.addItem(child);
+            container.setParent(child, parent);
+        }
     }
 
 }
