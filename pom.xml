@@ -249,7 +249,7 @@
 	</issueManagement>
 	<ciManagement>
 		<system>Hudson</system>
-		<url>http://escidev2:8484/job/escidoc-browser<url>
+		<url>http://escidev2:8484/job/escidoc-browser</url>
 	</ciManagement>
 	<mailingLists>
 		<mailingList>
