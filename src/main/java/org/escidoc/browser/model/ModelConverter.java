@@ -1,13 +1,9 @@
-package org.escidoc.browser.repository;
+package org.escidoc.browser.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.escidoc.browser.model.ContainerModel;
-import org.escidoc.browser.model.ContextModel;
-import org.escidoc.browser.model.ItemModel;
-import org.escidoc.browser.model.ResourceModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +15,10 @@ import de.escidoc.core.resources.om.context.Context;
 public final class ModelConverter {
     private static final Logger LOG = LoggerFactory
         .getLogger(ModelConverter.class);
+
+    private ModelConverter() {
+        // Utility class;
+    }
 
     public final static List<ResourceModel> toModel(
         final Collection<Context> contextsAsList) {

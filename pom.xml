@@ -23,7 +23,7 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- escidoc -->
+		<!-- eSciDoc -->
 		<dependency>
 			<groupId>org.escidoc.core</groupId>
 			<artifactId>client-1.2</artifactId>
@@ -56,6 +56,7 @@
 			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
+	
 	<properties>
 		<project.name>eSciDoc Browser</project.name>
 		<compiler.level>1.6</compiler.level>
@@ -65,6 +66,7 @@
 		<vaadin-widgets-dir>src/main/webapp/VAADIN/widgetsets
 		</vaadin-widgets-dir>
 	</properties>
+	
 	<build>
 		<plugins>
 			<plugin>
@@ -176,26 +178,6 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.6</version>
-				<configuration>
-					<encoding>UTF-8</encoding>
-					<links>
-						<link>http://java.sun.com/javase/6/docs/api/</link>
-					</links>
-				</configuration>
-				<executions>
-					<execution>
-						<id>attach-javadocs</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<artifactId>maven-clean-plugin</artifactId>
 				<version>2.4.1</version>
 				<configuration>
@@ -234,7 +216,7 @@
 			<organization>FIZ Karlsruhe</organization>
 			<organizationUrl>http://www.fiz-karlsruhe.de</organizationUrl>
 			<roles>
-				<role>frontend team leader</role>
+				<role>front end team leader</role>
 			</roles>
 			<timezone>+2</timezone>
 		</developer>
@@ -251,8 +233,8 @@
 		</developer>
 		<developer>
 			<id>arb</id>
-			<name>Armand B.</name>
-			<email>armand@fiz-karlsruhe.de</email>
+			<name>Armand Brahaj</name>
+			<email>armand.brahaj@fiz-karlsruhe.de</email>
 			<organization>FIZ Karlsruhe</organization>
 			<organizationUrl>http://www.fiz-karlsruhe.de</organizationUrl>
 			<roles>
@@ -267,7 +249,7 @@
 	</issueManagement>
 	<ciManagement>
 		<system>Hudson</system>
-		<url>http://escidev2:8484/job/???</url>
+		<url>http://escidev2:8484/job/escidoc-browser<url>
 	</ciManagement>
 	<mailingLists>
 		<mailingList>
@@ -281,12 +263,14 @@
 			</archive>
 		</mailingList>
 	</mailingLists>
+	
 	<scm>
 		<connection>scm:svn:http://escidev5:8888/prototyp/escidoc-browser
 		</connection>
 		<developerConnection>scm:svn:http://escidev5:8888/prototyp/escidoc-browser
 		</developerConnection>
 	</scm>
+	
 	<repositories>
 		<repository>
 			<id>org.escidoc.core</id>

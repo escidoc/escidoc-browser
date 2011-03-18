@@ -22,9 +22,12 @@ public class UiBuilder {
         final ResourceContainerImpl resourceContainer =
             new ResourceContainerImpl(contexts);
         resourceContainer.init();
+
         navigationTreeView.setDataSource(resourceContainer);
         navigationTreeView.addExpandListener(new TreeExpandListener(repository,
             resourceContainer));
+        navigationTreeView.addClickListener(new TreeClickListener(repository));
+
         return navigationTreeView;
     }
 

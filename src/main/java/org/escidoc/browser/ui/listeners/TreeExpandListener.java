@@ -2,9 +2,9 @@ package org.escidoc.browser.ui.listeners;
 
 import java.util.List;
 
+import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.ResourceContainer;
 import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.repository.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +36,7 @@ public final class TreeExpandListener implements Tree.ExpandListener {
             (ResourceModel) event.getItemId();
         LOG.debug("Node to expand: " + hasChildrenResource.toString());
 
-        if (hasChildrenResource.getType().equals(ResourceType.CONTEXT)) {
+        if (ContextModel.isContext(hasChildrenResource)) {
             try {
                 final List<ResourceModel> children =
                     repository.findMembersById(hasChildrenResource.getId());

@@ -29,4 +29,8 @@ public class ContextModel extends AbstractResourceModel {
         builder.append("]");
         return builder.toString();
     }
+
+    public static boolean isContext(final ResourceModel resource) {
+        return resource.getType().equals(ResourceType.CONTEXT);
+    }
 }
