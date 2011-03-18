@@ -14,16 +14,11 @@ public class HeaderContainer extends VerticalLayout {
         final CustomLayout custom = new CustomLayout("header");
         addComponent(custom);
 
-        final TextField username = new TextField("Username");
-        username.setWidth("100px");
-        username.setHeight("20px");
-        username.setImmediate(false);
+        final TextField searchfld = new TextField("Search");
+        searchfld.setWidth("100px");
+        searchfld.setHeight("20px");
+        searchfld.setImmediate(false);
 
-        // password
-        final PasswordField password = new PasswordField("Password");
-        password.setWidth("100px");
-        password.setHeight("20px");
-        password.setImmediate(false);
 
         // Login
         final Button login = new Button();
@@ -33,8 +28,7 @@ public class HeaderContainer extends VerticalLayout {
         login.setImmediate(true);
 
         custom.addComponent(login, "login");
-        custom.addComponent(password, "password");
-        custom.addComponent(username, "username");
+        custom.addComponent(searchfld, "password");
 
     }
 }
