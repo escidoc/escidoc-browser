@@ -7,7 +7,7 @@ import com.vaadin.ui.Label;
 
 public class BreadCMenu {
 
-    public BreadCMenu(final CssLayout cssLayout) {
+    public BreadCMenu(final CssLayout cssLayout,String bcType) {
         cssLayout.addComponent(new Label(Constant.BREAD_CRUMP_CONTENT,
             Label.CONTENT_RAW));
     }

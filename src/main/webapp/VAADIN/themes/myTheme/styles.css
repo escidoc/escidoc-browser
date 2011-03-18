@@ -81,7 +81,7 @@ ul.horizontal_list li{
 	padding-left:.75em;
 	}		
 #crumbs li a {
-	background:url(/ESDC/VAADIN/themes/myTheme/images/crumbs.gif) no-repeat right center;
+	background:url(/browser/VAADIN/themes/myTheme/images/crumbs.gif) no-repeat right center;
 	display:block;
 	padding:0 15px 0 0;
 	}							

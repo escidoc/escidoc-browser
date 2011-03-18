@@ -25,7 +25,7 @@ public class Context extends VerticalLayout {
         final int accordionHeight = appHeight - 420;
 
         // BREADCRUMB
-        final BreadCMenu bm = new BreadCMenu(cssLayout);
+        final BreadCMenu bm = new BreadCMenu(cssLayout,"context");
         // cssLayout.addComponent(bm);
 
         // HEADER
