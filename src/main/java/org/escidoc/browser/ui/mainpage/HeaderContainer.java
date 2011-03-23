@@ -1,6 +1,8 @@
 package org.escidoc.browser.ui.mainpage;
 
 import org.escidoc.browser.ui.MainSite;
+import org.escidoc.browser.ui.maincontent.SearchResults;
+import org.escidoc.browser.ui.maincontent.SearchSimple;
 
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Button;
@@ -20,22 +22,24 @@ import com.vaadin.data.Property.ValueChangeEvent;
  *
  */
 public class HeaderContainer extends VerticalLayout implements Property.ValueChangeListener {   
-    private final TextField searchfld= new TextField();
+	private final TextField searchfld= new TextField();
 	private final Button login;
 	private MainSite mainSite;
+	private int appHeight;
 
-    public HeaderContainer(MainSite mainSite) {
-    	this.mainSite=mainSite;
-        // found at myTheme/layouts/header.html
-        final CustomLayout custom = new CustomLayout("header");
-        addComponent(custom);
+	public HeaderContainer(MainSite mainSite, int appHeight) {
+		this.mainSite=mainSite;
+		this.appHeight = appHeight;
+		// found at myTheme/layouts/header.html
+		final CustomLayout custom = new CustomLayout("header");
+		addComponent(custom);
 
-        searchfld.setInputPrompt("Search");
-        searchfld.addListener(this);
+		searchfld.setInputPrompt("Search");
+		searchfld.addListener(this);
 
-        searchfld.setWidth("100px");
-        searchfld.setHeight("20px");
-        searchfld.setImmediate(true);
+		searchfld.setWidth("100px");
+		searchfld.setHeight("20px");
+		searchfld.setImmediate(true);
 
 		// Login
 		this.login = new Button("Login", this, "onClick");
@@ -45,18 +49,18 @@ public class HeaderContainer extends VerticalLayout implements Property.ValueCha
 		//login.setCaption("Login");
 		this.login.setImmediate(true);
 
-        custom.addComponent(login, "login");
-        custom.addComponent(searchfld, "searchfld");
+		custom.addComponent(login, "login");
+		custom.addComponent(searchfld, "searchfld");
 
-    }
-    
-    /**
-     * Handle the Login Event!
-     * At the moment a new window is opened to escidev6 for login
-     * TODO consider including the window of login from the remote server in a 
-     * iframe within the MainContent Window
-     * @param event
-     */
+	}
+
+	/**
+	 * Handle the Login Event!
+	 * At the moment a new window is opened to escidev6 for login
+	 * TODO consider including the window of login from the remote server in a 
+	 * iframe within the MainContent Window
+	 * @param event
+	 */
 	public void onClick(Button.ClickEvent event) {
 		this.getWindow().open(new ExternalResource("http://escidev6.fiz-karlsruhe.de:8080/aa/login?target=http://localhost:8084/browser/s#HandleLogin"));
 		this.login.setCaption("Loggedin!");
@@ -70,12 +74,11 @@ public class HeaderContainer extends VerticalLayout implements Property.ValueCha
 	 */
 	@Override
 	public void valueChange(ValueChangeEvent event) {
-		
-		//TODO: which button/search component did the user click?
-//TODO: mainSite.openTab(SearchComponent simpleORAdvanceOrSearchResultComponent, )		
-		this.mainSite.openTab("here you go plako");
+
+		SearchResults smpSearch = new SearchResults(mainSite, appHeight);
+		this.mainSite.openTab(smpSearch, "Search Results");
 		this.getWindow().showNotification("WHAT UP"+(String) searchfld.getValue());
-		
+
 	}
 
 }

@@ -35,7 +35,6 @@ public class SearchResults extends VerticalLayout {
 		setWidth("100.0%");
 		setHeight(appHeight+"px");
 		setMargin(true);
-        this.setHeight("100%");
         final CssLayout cssLayout = new CssLayout();
         cssLayout.setWidth("100%");
         cssLayout.setHeight("100%");
@@ -69,6 +68,7 @@ public class SearchResults extends VerticalLayout {
      * @param event
      */
 	public void onClick(Button.ClickEvent event) {
-		this.mainSite.openTab("Advanced Search");
+		SearchAdvanced srch = new SearchAdvanced(mainSite, appHeight);
+		this.mainSite.openTab(srch , "Advanced Search");
 	}
 }

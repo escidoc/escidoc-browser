@@ -3,11 +3,13 @@ package org.escidoc.browser.ui;
 import org.escidoc.browser.model.EscidocServiceLocationImpl;
 import org.escidoc.browser.repository.ContextRepository;
 import org.escidoc.browser.ui.maincontent.Context;
+import org.escidoc.browser.ui.maincontent.SearchAdvanced;
 import org.escidoc.browser.ui.maincontent.SearchResults;
 import org.escidoc.browser.ui.maincontent.SearchSimple;
 import org.escidoc.browser.ui.mainpage.Footer;
 import org.escidoc.browser.ui.mainpage.HeaderContainer;
 
+import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
@@ -48,7 +50,7 @@ public class MainSite extends VerticalLayout {
         mainLayout.setStyleName("maincontainer");
         mainLayout.setSizeFull();
 
-        final HeaderContainer header = new HeaderContainer(this);
+        final HeaderContainer header = new HeaderContainer(this,appHeight);
     
         final Footer futer = new Footer();
 
@@ -113,14 +115,14 @@ public class MainSite extends VerticalLayout {
         return mainnav;
     }
     
-    public void openTab(String tabname){
+    public void openTab(Component cmp, String tabname){
     	//New Tab
-        final SearchResults srcrs = new SearchResults(this,appHeight);
-        maincontent.addComponent(srcrs);
-        maincontent.addTab(srcrs);
-        maincontent.getTab(srcrs).setCaption(tabname);
-        maincontent.setSelectedTab(srcrs);
-        maincontent.getTab(srcrs).setClosable(true);
+
+        maincontent.addComponent(cmp);
+        maincontent.addTab(cmp);
+        maincontent.getTab(cmp).setCaption(tabname);
+        maincontent.setSelectedTab(cmp);
+        maincontent.getTab(cmp).setClosable(true);
     }
     /**
      * Getter mainContent
