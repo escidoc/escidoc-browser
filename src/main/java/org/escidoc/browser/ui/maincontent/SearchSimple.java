@@ -53,8 +53,8 @@ public class SearchSimple extends CustomComponent {
 		button_1.setWidth("-1px");
 		button_1.setHeight("-1px");
 		button_1.setCaption("Button");
-		button_1.setImmediate(false);
-		mainLayout.addComponent(button_1, "top:302.0px;left:581.0px;");
+		button_1.setImmediate(true);
+		mainLayout.addComponent(button_1, "top:48.0%;left:581.0px;");
 		
 		return mainLayout;
 	}

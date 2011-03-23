@@ -21,8 +21,10 @@ public class MainSite extends VerticalLayout {
     private final CssLayout mainLayout;
 
     private NavigationTreeView mainnavtree;
+    private final TabSheet maincontent = new TabSheet();
 
-    private final int appHeight;
+
+	private final int appHeight;
 
     /**
      * The mainWindow should be revised whether we need it or not the appHeight
@@ -46,7 +48,7 @@ public class MainSite extends VerticalLayout {
         mainLayout.setStyleName("maincontainer");
         mainLayout.setSizeFull();
 
-        final HeaderContainer header = new HeaderContainer();
+        final HeaderContainer header = new HeaderContainer(this);
     
         final Footer futer = new Footer();
 
@@ -67,7 +69,7 @@ public class MainSite extends VerticalLayout {
      */
     private TabSheet buildTabContainer(){
     	// Right section TABS
-        final TabSheet maincontent = new TabSheet();
+
         maincontent.setStyleName("floatright paddingtop20");
         maincontent.setWidth("70%");
         maincontent.setHeight("86%");
@@ -79,23 +81,11 @@ public class MainSite extends VerticalLayout {
         maincontent.getTab(context).setCaption("Sommer 2010");
         maincontent.getTab(context).setClosable(true);
         
-        //New Tab
-        final SearchResults srcrs = new SearchResults(appHeight);
-        maincontent.addComponent(srcrs);
-        maincontent.addTab(srcrs);
-        maincontent.getTab(srcrs).setCaption("Search results");
-        maincontent.getTab(srcrs).setClosable(true);
-        
-        //New Tab
-        final SearchSimple simplsearch = new SearchSimple();
-        maincontent.addComponent(simplsearch);
-        maincontent.addTab(simplsearch);
-        maincontent.getTab(simplsearch).setCaption("Search Simple");
-        maincontent.getTab(simplsearch).setClosable(true);
         
 		return maincontent;
     	
     }
+    
     /**
      * MainNavigation Panel
      * This is the left-most (human side) panel on the page
@@ -105,6 +95,10 @@ public class MainSite extends VerticalLayout {
      */
     private Panel buildNavigationPanel()throws EscidocClientException {
     	// HERE COMES THE MAIN NAVIGATION (LEFT SIDE)
+    	
+    	//Search icon
+    	
+    	//Navication
         NavigationTreeView treemenu =
             new UiBuilder().buildNavigationTree(new ContextRepository(
                 new EscidocServiceLocationImpl("http://escidev4:8080")));
@@ -118,4 +112,21 @@ public class MainSite extends VerticalLayout {
         mainnav.addComponent(mainnavtree);
         return mainnav;
     }
+    
+    public void openTab(String tabname){
+    	//New Tab
+        final SearchResults srcrs = new SearchResults(this,appHeight);
+        maincontent.addComponent(srcrs);
+        maincontent.addTab(srcrs);
+        maincontent.getTab(srcrs).setCaption(tabname);
+        maincontent.setSelectedTab(srcrs);
+        maincontent.getTab(srcrs).setClosable(true);
+    }
+    /**
+     * Getter mainContent
+     * @return TabSheet
+     */
+    public TabSheet getMaincontent() {
+		return maincontent;
+	}
 }

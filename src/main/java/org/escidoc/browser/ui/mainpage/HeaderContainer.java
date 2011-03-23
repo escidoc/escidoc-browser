@@ -1,5 +1,7 @@
 package org.escidoc.browser.ui.mainpage;
 
+import org.escidoc.browser.ui.MainSite;
+
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
@@ -19,10 +21,11 @@ import com.vaadin.data.Property.ValueChangeEvent;
  */
 public class HeaderContainer extends VerticalLayout implements Property.ValueChangeListener {   
     private final TextField searchfld= new TextField();
-	private final Button login;;
+	private final Button login;
+	private MainSite mainSite;
 
-    public HeaderContainer() {
-
+    public HeaderContainer(MainSite mainSite) {
+    	this.mainSite=mainSite;
         // found at myTheme/layouts/header.html
         final CustomLayout custom = new CustomLayout("header");
         addComponent(custom);
@@ -67,6 +70,10 @@ public class HeaderContainer extends VerticalLayout implements Property.ValueCha
 	 */
 	@Override
 	public void valueChange(ValueChangeEvent event) {
+		
+		//TODO: which button/search component did the user click?
+//TODO: mainSite.openTab(SearchComponent simpleORAdvanceOrSearchResultComponent, )		
+		this.mainSite.openTab("here you go plako");
 		this.getWindow().showNotification("WHAT UP"+(String) searchfld.getValue());
 		
 	}
