@@ -11,7 +11,7 @@ public interface Repository {
 
     List<ResourceModel> findAll() throws EscidocClientException;
 
-    List<ResourceModel> findMembersById(String id)
+    List<ResourceModel> findTopLevelMembersById(String id)
         throws EscidocClientException;
 
     ResourceProxy findById(String id) throws EscidocClientException;

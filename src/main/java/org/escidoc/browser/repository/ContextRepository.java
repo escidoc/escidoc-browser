@@ -4,11 +4,12 @@ import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 import java.util.List;
 
+import org.escidoc.browser.Util;
+import org.escidoc.browser.model.ContextProxyImpl;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.model.ContextProxyImpl;
 
 import de.escidoc.core.client.ContextHandlerClient;
 import de.escidoc.core.client.TransportProtocol;
@@ -31,18 +32,15 @@ public class ContextRepository implements Repository {
     }
 
     @Override
-    public List<ResourceModel> findMembersById(final String id)
+    public List<ResourceModel> findTopLevelMembersById(final String id)
         throws EscidocClientException {
         return ModelConverter.genericResourcetoModel(client
-            .retrieveMembersAsList(id, new SearchRetrieveRequestType()));
+            .retrieveMembersAsList(id, Util.createTopLevelQuery(id)));
     }
 
     @Override
     public ResourceProxy findById(final String id)
         throws EscidocClientException {
-        final ResourceProxy resource =
-            new ContextProxyImpl(client.retrieve(id));
-        return resource;
+        return new ContextProxyImpl(client.retrieve(id));
     }
-
 }

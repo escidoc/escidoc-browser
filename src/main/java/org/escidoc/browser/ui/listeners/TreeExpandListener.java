@@ -39,7 +39,7 @@ public final class TreeExpandListener implements Tree.ExpandListener {
         if (ContextModel.isContext(hasChildrenResource)) {
             try {
                 final List<ResourceModel> children =
-                    repository.findMembersById(hasChildrenResource.getId());
+                    repository.findTopLevelMembersById(hasChildrenResource.getId());
                 for (final ResourceModel resourceModel : children) {
                     LOG.debug("child: " + resourceModel.getName());
                 }
