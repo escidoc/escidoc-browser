@@ -8,7 +8,7 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.model.ResourceProxyImpl;
+import org.escidoc.browser.model.ContextProxyImpl;
 
 import de.escidoc.core.client.ContextHandlerClient;
 import de.escidoc.core.client.TransportProtocol;
@@ -41,7 +41,7 @@ public class ContextRepository implements Repository {
     public ResourceProxy findById(final String id)
         throws EscidocClientException {
         final ResourceProxy resource =
-            new ResourceProxyImpl(client.retrieve(id));
+            new ContextProxyImpl(client.retrieve(id));
         return resource;
     }
 

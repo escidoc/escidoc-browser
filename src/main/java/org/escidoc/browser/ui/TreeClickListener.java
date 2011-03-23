@@ -41,7 +41,6 @@ public class TreeClickListener implements ItemClickListener {
         }
         else {
             throw new UnsupportedOperationException("Not yet implemented");
-
         }
     }
 

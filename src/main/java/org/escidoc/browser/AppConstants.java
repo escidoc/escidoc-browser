@@ -10,4 +10,8 @@ public class AppConstants {
 
     public static final String LOGOUT_TARGET = "/aa/logout?target=";
 
+    public static final String ESCIDOC_URL = "escidocurl";
+
+    public static final String ESCIDOC_USER_HANDLE = "eSciDocUserHandle";
+
 }

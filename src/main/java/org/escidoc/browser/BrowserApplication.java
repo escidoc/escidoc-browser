@@ -4,6 +4,7 @@ import org.escidoc.browser.ui.Constant;
 import org.escidoc.browser.ui.MainSite;
 
 import com.vaadin.Application;
+import com.vaadin.terminal.ParameterHandler;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import com.vaadin.ui.Window;
@@ -14,11 +15,20 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 public class BrowserApplication extends Application {
     private final Window mainWindow = new Window(Constant.MAIN_WINDOW_TITLE);
 
+    private ParameterHandler paramaterHandler;
+
     @Override
     public void init() {
         setApplicationTheme();
         buildMainWindow();
         setMainWindow(mainWindow);
+
+        addParameterHandler();
+    }
+
+    private void addParameterHandler() {
+        paramaterHandler = new ParameterHandlerImpl();
+        mainWindow.addParameterHandler(paramaterHandler);
     }
 
     private void setApplicationTheme() {
