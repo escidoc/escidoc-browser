@@ -5,9 +5,6 @@ import org.escidoc.browser.model.EscidocServiceLocationImpl;
 import org.escidoc.browser.repository.ContainerRepository;
 import org.escidoc.browser.repository.ContextRepository;
 import org.escidoc.browser.ui.maincontent.Context;
-import org.escidoc.browser.ui.maincontent.SearchAdvanced;
-import org.escidoc.browser.ui.maincontent.SearchResults;
-import org.escidoc.browser.ui.maincontent.SearchSimple;
 import org.escidoc.browser.ui.mainpage.Footer;
 import org.escidoc.browser.ui.mainpage.HeaderContainer;
 
@@ -27,7 +24,6 @@ public class MainSite extends VerticalLayout {
     private final CssLayout mainLayout;
 
     private NavigationTreeView mainnavtree;
-    private final TabSheet maincontent = new TabSheet();
 
     private final TabSheet maincontent = new TabSheet();
 
@@ -55,7 +51,7 @@ public class MainSite extends VerticalLayout {
         mainLayout.setStyleName("maincontainer");
         mainLayout.setSizeFull();
 
-        final HeaderContainer header = new HeaderContainer(this,appHeight);
+        final HeaderContainer header = new HeaderContainer(this, appHeight);
 
         final Footer futer = new Footer();
 
@@ -94,8 +90,7 @@ public class MainSite extends VerticalLayout {
     }
 
     /**
-     * MainNavigation Panel 
-     * This is the left-most (human side) panel on the page
+     * MainNavigation Panel This is the left-most (human side) panel on the page
      * It contains a Main Navigation Tree
      * 
      * @return Panel
@@ -122,7 +117,7 @@ public class MainSite extends VerticalLayout {
         return mainnav;
     }
 
-    public void openTab(Component cmp, String tabname){
+    public void openTab(final Component cmp, final String tabname) {
         // New Tab
 
         maincontent.addComponent(cmp);
