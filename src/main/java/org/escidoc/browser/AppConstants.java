@@ -2,6 +2,11 @@ package org.escidoc.browser;
 
 public class AppConstants {
 
+    public static final String HARDCODED_ESCIDOC_URI =
+    // "http://escidev6:8080"
+    // "http://zbmed.fiz-karlsruhe.de/"
+        "http://escidev4:8080";
+
     private AppConstants() {
         // Contants Class
     }

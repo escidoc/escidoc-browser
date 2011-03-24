@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.ResourceType;
 import de.escidoc.core.resources.om.GenericVersionableResource;
+import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.om.context.Context;
 
 public final class ModelConverter {
@@ -20,12 +21,22 @@ public final class ModelConverter {
         // Utility class;
     }
 
-    public final static List<ResourceModel> toModel(
-        final Collection<Context> contextsAsList) {
+    public final static List<ResourceModel> contextListToModel(
+        final Collection<Context> contextList) {
         final List<ResourceModel> models =
-            new ArrayList<ResourceModel>(contextsAsList.size());
-        for (final Resource context : contextsAsList) {
+            new ArrayList<ResourceModel>(contextList.size());
+        for (final Resource context : contextList) {
             models.add(new ContextModel(context));
+        }
+        return models;
+    }
+
+    public final static List<ResourceModel> containerListToModel(
+        final Collection<Container> containerList) {
+        final List<ResourceModel> models =
+            new ArrayList<ResourceModel>(containerList.size());
+        for (final Resource context : containerList) {
+            models.add(new ContainerModel(context));
         }
         return models;
     }

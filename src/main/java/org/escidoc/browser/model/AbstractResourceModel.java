@@ -1,5 +1,7 @@
 package org.escidoc.browser.model;
 
+import com.google.common.base.Preconditions;
+
 import de.escidoc.core.resources.Resource;
 
 public abstract class AbstractResourceModel implements ResourceModel {
@@ -9,6 +11,7 @@ public abstract class AbstractResourceModel implements ResourceModel {
     private final String name;
 
     public AbstractResourceModel(final Resource resource) {
+        Preconditions.checkNotNull(resource, "resource is null: %s", resource);
         id = resource.getObjid();
         name = resource.getXLinkTitle();
     }

@@ -48,7 +48,7 @@ public class BrowserApplication extends Application {
                 getApplicationHeight()));
         }
         catch (final EscidocClientException e) {
-            mainWindow.showNotification("Error");
+            mainWindow.showNotification(e.getCause().toString());
         }
     }
 

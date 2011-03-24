@@ -1,6 +1,8 @@
 package org.escidoc.browser.ui;
 
+import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.EscidocServiceLocationImpl;
+import org.escidoc.browser.repository.ContainerRepository;
 import org.escidoc.browser.repository.ContextRepository;
 import org.escidoc.browser.ui.maincontent.Context;
 import org.escidoc.browser.ui.maincontent.SearchAdvanced;
@@ -19,14 +21,17 @@ import com.vaadin.ui.Window;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class MainSite extends VerticalLayout {
+    final EscidocServiceLocationImpl serviceLocation =
+        new EscidocServiceLocationImpl(AppConstants.HARDCODED_ESCIDOC_URI);
 
     private final CssLayout mainLayout;
 
     private NavigationTreeView mainnavtree;
     private final TabSheet maincontent = new TabSheet();
 
+    private final TabSheet maincontent = new TabSheet();
 
-	private final int appHeight;
+    private final int appHeight;
 
     /**
      * The mainWindow should be revised whether we need it or not the appHeight
@@ -37,8 +42,8 @@ public class MainSite extends VerticalLayout {
      * @param appHeight
      * @throws EscidocClientException
      */
-    public MainSite(final Window mainWindow, final int appHeight) throws EscidocClientException
-        {
+    public MainSite(final Window mainWindow, final int appHeight)
+        throws EscidocClientException {
         // General Height for the application
         this.appHeight = appHeight;
         this.setMargin(true);
@@ -51,26 +56,27 @@ public class MainSite extends VerticalLayout {
         mainLayout.setSizeFull();
 
         final HeaderContainer header = new HeaderContainer(this,appHeight);
-    
+
         final Footer futer = new Footer();
 
         mainLayout.addComponent(header);
-        //Creating the mainNav Panel
+        // Creating the mainNav Panel
         mainLayout.addComponent(buildNavigationPanel());
-        //Go Main Tab Content
+        // Go Main Tab Content
         mainLayout.addComponent(buildTabContainer());
 
         mainLayout.addComponent(futer);
-        
+
         addComponent(mainLayout);
     }
+
     /**
-     * This is the main container
-     * It is a Tab Sheet with TABS within it
+     * This is the main container It is a Tab Sheet with TABS within it
+     * 
      * @return TabSheet
      */
-    private TabSheet buildTabContainer(){
-    	// Right section TABS
+    private TabSheet buildTabContainer() {
+        // Right section TABS
 
         maincontent.setStyleName("floatright paddingtop20");
         maincontent.setWidth("70%");
@@ -82,28 +88,29 @@ public class MainSite extends VerticalLayout {
         maincontent.addTab(context);
         maincontent.getTab(context).setCaption("Sommer 2010");
         maincontent.getTab(context).setClosable(true);
-        
-        
-		return maincontent;
-    	
+
+        return maincontent;
+
     }
-    
+
     /**
-     * MainNavigation Panel
+     * MainNavigation Panel 
      * This is the left-most (human side) panel on the page
      * It contains a Main Navigation Tree
+     * 
      * @return Panel
      * @throws EscidocClientException
      */
-    private Panel buildNavigationPanel()throws EscidocClientException {
-    	// HERE COMES THE MAIN NAVIGATION (LEFT SIDE)
-    	
-    	//Search icon
-    	
-    	//Navication
-        NavigationTreeView treemenu =
+    private Panel buildNavigationPanel() throws EscidocClientException {
+        // HERE COMES THE MAIN NAVIGATION (LEFT SIDE)
+
+        // Search icon
+
+        // Navication
+
+        final NavigationTreeView treemenu =
             new UiBuilder().buildNavigationTree(new ContextRepository(
-                new EscidocServiceLocationImpl("http://escidev4:8080")));
+                serviceLocation), new ContainerRepository(serviceLocation));
         mainnavtree = treemenu;
 
         final Panel mainnav = new Panel();
@@ -114,9 +121,9 @@ public class MainSite extends VerticalLayout {
         mainnav.addComponent(mainnavtree);
         return mainnav;
     }
-    
+
     public void openTab(Component cmp, String tabname){
-    	//New Tab
+        // New Tab
 
         maincontent.addComponent(cmp);
         maincontent.addTab(cmp);
@@ -124,11 +131,13 @@ public class MainSite extends VerticalLayout {
         maincontent.setSelectedTab(cmp);
         maincontent.getTab(cmp).setClosable(true);
     }
+
     /**
      * Getter mainContent
+     * 
      * @return TabSheet
      */
     public TabSheet getMaincontent() {
-		return maincontent;
-	}
+        return maincontent;
+    }
 }

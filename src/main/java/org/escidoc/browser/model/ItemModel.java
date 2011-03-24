@@ -19,4 +19,8 @@ public class ItemModel extends AbstractResourceModel {
             + ", getName()=" + getName() + "]";
     }
 
+    public static boolean isItem(final ResourceModel resource) {
+        return resource.getType().equals(ResourceType.ITEM);
+    }
+
 }

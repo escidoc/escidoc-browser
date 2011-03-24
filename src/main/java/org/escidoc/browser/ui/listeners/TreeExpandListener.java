@@ -1,8 +1,8 @@
 package org.escidoc.browser.ui.listeners;
 
-import java.util.List;
-
+import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
+import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ResourceContainer;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.repository.Repository;
@@ -22,39 +22,59 @@ public final class TreeExpandListener implements Tree.ExpandListener {
 
     private final Repository repository;
 
+    private final ResourceContainer container;
+
+    private final Repository containerRepository;
+
     public TreeExpandListener(final Repository repository,
-        final ResourceContainer container) {
+        final Repository containerRepository, final ResourceContainer container) {
         this.repository = repository;
+        this.containerRepository = containerRepository;
         this.container = container;
     }
 
-    private final ResourceContainer container;
-
     @Override
     public void nodeExpand(final ExpandEvent event) {
-        final ResourceModel hasChildrenResource =
-            (ResourceModel) event.getItemId();
-        LOG.debug("Node to expand: " + hasChildrenResource.toString());
+        final ResourceModel resource = (ResourceModel) event.getItemId();
+        LOG.debug("Node to expand: " + resource.toString());
 
-        if (ContextModel.isContext(hasChildrenResource)) {
-            try {
-                final List<ResourceModel> children =
-                    repository.findTopLevelMembersById(hasChildrenResource.getId());
-                for (final ResourceModel resourceModel : children) {
-                    LOG.debug("child: " + resourceModel.getName());
-                }
-                container.addChildren(hasChildrenResource, children);
-            }
-            catch (final EscidocClientException e) {
-                showErrorMessageToUser(hasChildrenResource, e);
-            }
+        // TODO refactor me, method too large
+        if (ContextModel.isContext(resource)) {
+            addContextChildren(resource);
+        }
+        else if (ContainerModel.isContainer(resource)) {
+            addContainerChildren(resource);
+        }
+        else if (ItemModel.isItem(resource)) {
+            LOG.debug("do nothing, an item does not have any members.");
         }
         else {
             throw new UnsupportedOperationException("Not yet implemented");
+        }
 
+    }
+
+    private void addContainerChildren(final ResourceModel resource) {
+        try {
+            container.addChildren(resource,
+                containerRepository.findTopLevelMembersById(resource.getId()));
+        }
+        catch (final EscidocClientException e) {
+            showErrorMessageToUser(resource, e);
         }
     }
 
+    private void addContextChildren(final ResourceModel resource) {
+        try {
+            container.addChildren(resource,
+                repository.findTopLevelMembersById(resource.getId()));
+        }
+        catch (final EscidocClientException e) {
+            showErrorMessageToUser(resource, e);
+        }
+    }
+
+    // TODO: show notification to user, not just log.
     private void showErrorMessageToUser(
         final ResourceModel hasChildrenResource, final EscidocClientException e) {
         LOG.error("Can not find member of: " + hasChildrenResource.getId(), e);

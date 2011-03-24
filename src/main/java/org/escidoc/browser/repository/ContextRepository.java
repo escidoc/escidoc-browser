@@ -27,7 +27,7 @@ public class ContextRepository implements Repository {
 
     @Override
     public List<ResourceModel> findAll() throws EscidocClientException {
-        return ModelConverter.toModel(client
+        return ModelConverter.contextListToModel(client
             .retrieveContextsAsList(new SearchRetrieveRequestType()));
     }
 

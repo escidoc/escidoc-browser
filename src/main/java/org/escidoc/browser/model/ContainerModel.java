@@ -18,4 +18,8 @@ public class ContainerModel extends AbstractResourceModel {
         return "ContainerModel [getType()=" + getType() + ", getId()="
             + getId() + ", getName()=" + getName() + "]";
     }
+
+    public static boolean isContainer(final ResourceModel resource) {
+        return resource.getType().equals(ResourceType.CONTAINER);
+    }
 }
