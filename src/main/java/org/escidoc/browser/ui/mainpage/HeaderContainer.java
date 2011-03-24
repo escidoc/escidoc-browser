@@ -1,15 +1,9 @@
 package org.escidoc.browser.ui.mainpage;
 
 import org.escidoc.browser.ui.MainSite;
-import org.escidoc.browser.ui.maincontent.SearchResults;
-import org.escidoc.browser.ui.maincontent.SearchSimple;
-
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 
@@ -20,8 +14,7 @@ import com.vaadin.ui.themes.BaseTheme;
  * @author ARB
  *
  */
-public class HeaderContainer extends VerticalLayout implements Property.ValueChangeListener {   
-	private final TextField searchfld= new TextField();
+public class HeaderContainer extends VerticalLayout {   
 	private final Button login;
 	private MainSite mainSite;
 	private int appHeight;
@@ -33,12 +26,6 @@ public class HeaderContainer extends VerticalLayout implements Property.ValueCha
 		final CustomLayout custom = new CustomLayout("header");
 		addComponent(custom);
 
-		searchfld.setInputPrompt("Search");
-		searchfld.addListener(this);
-
-		searchfld.setWidth("100px");
-		searchfld.setHeight("20px");
-		searchfld.setImmediate(true);
 
 		// Login
 		this.login = new Button("Login", this, "onClick");
@@ -49,7 +36,6 @@ public class HeaderContainer extends VerticalLayout implements Property.ValueCha
 		this.login.setImmediate(true);
 
 		custom.addComponent(login, "login");
-		custom.addComponent(searchfld, "searchfld");
 
 	}
 
@@ -66,18 +52,5 @@ public class HeaderContainer extends VerticalLayout implements Property.ValueCha
 
 	}
 
-	/**
-	 * Handle the event from the Search Form
-	 * Normally call the main MainContent Window, the element TabSheet
-	 * and bind to it
-	 */
-	@Override
-	public void valueChange(ValueChangeEvent event) {
-
-		SearchResults smpSearch = new SearchResults(mainSite, appHeight);
-		this.mainSite.openTab(smpSearch, "Search Results");
-		this.getWindow().showNotification("WHAT UP"+(String) searchfld.getValue());
-
-	}
 
 }

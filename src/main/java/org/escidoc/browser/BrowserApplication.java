@@ -1,5 +1,7 @@
 package org.escidoc.browser;
 
+import javax.servlet.http.HttpSession;
+
 import org.escidoc.browser.ui.Constant;
 import org.escidoc.browser.ui.MainSite;
 
@@ -60,9 +62,9 @@ public class BrowserApplication extends Application {
     private int getApplicationHeight() {
         final WebApplicationContext ctx = (WebApplicationContext) getContext();
         final int height = ctx.getBrowser().getScreenHeight();
-
         final int appHeight = (height / 100 * 86 - 5);
         return appHeight;
+        
     }
 
     private MainSite createMainSite(final Window mainWindow, final int appHeight)

@@ -5,15 +5,20 @@ import org.escidoc.browser.model.EscidocServiceLocationImpl;
 import org.escidoc.browser.repository.ContainerRepository;
 import org.escidoc.browser.repository.ContextRepository;
 import org.escidoc.browser.ui.maincontent.Context;
+import org.escidoc.browser.ui.maincontent.SearchResults;
+import org.escidoc.browser.ui.maincontent.SearchSimple;
 import org.escidoc.browser.ui.mainpage.Footer;
 import org.escidoc.browser.ui.mainpage.HeaderContainer;
 
+import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.BaseTheme;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -98,22 +103,29 @@ public class MainSite extends VerticalLayout {
      */
     private Panel buildNavigationPanel() throws EscidocClientException {
         // HERE COMES THE MAIN NAVIGATION (LEFT SIDE)
-
-        // Search icon
-
-        // Navication
-
-        final NavigationTreeView treemenu =
-            new UiBuilder().buildNavigationTree(new ContextRepository(
-                serviceLocation), new ContainerRepository(serviceLocation));
-        mainnavtree = treemenu;
-
         final Panel mainnav = new Panel();
         mainnav.setScrollable(true);
         mainnav.setStyleName("floatleft paddingtop20");
         mainnav.setWidth("30%");
         mainnav.setHeight("86%");
+        
+        
+        // Search icon    	
+    	 Button srchButton = new Button("Search",this,"OnClickSrchButton");
+    	 srchButton.setStyleName(BaseTheme.BUTTON_LINK);
+    	 srchButton.setIcon(new ThemeResource("../myTheme/images/search.png"));
+    	 srchButton.setDescription("Search the Infrastructure");
+         mainnav.addComponent(srchButton);
+         
+
+        // Navication tree
+
+        final NavigationTreeView treemenu =
+            new UiBuilder().buildNavigationTree(new ContextRepository(
+                serviceLocation), new ContainerRepository(serviceLocation));
+        mainnavtree = treemenu;
         mainnav.addComponent(mainnavtree);
+
         return mainnav;
     }
 
@@ -134,5 +146,14 @@ public class MainSite extends VerticalLayout {
      */
     public TabSheet getMaincontent() {
         return maincontent;
+    }
+    
+    /**
+     * Handle the event from the srchButton Link at the buildNavigationPanel
+     * @param event
+     */
+    public void OnClickSrchButton(Button.ClickEvent event){
+    	SearchSimple smpSearch = new SearchSimple(this, appHeight);
+		this.openTab(smpSearch, "Search Results");
     }
 }
