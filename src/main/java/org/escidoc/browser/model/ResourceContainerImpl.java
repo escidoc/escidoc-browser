@@ -53,10 +53,15 @@ public class ResourceContainerImpl implements ResourceContainer {
      * @param resource
      */
     private void addAndBind(final ResourceModel resource) {
-        Preconditions.checkNotNull(resource, "resource is null: %s", resource);
-        final Item item = container.addItem(resource);
+        final Item item = add(resource);
         Preconditions.checkNotNull(item, "item is null: %s", item);
         bind(item, resource);
+    }
+
+    private Item add(final ResourceModel resource) {
+        Preconditions.checkNotNull(resource, "resource is null: %s", resource);
+        final Item item = container.addItem(resource);
+        return item;
     }
 
     private void bind(final Item item, final ResourceModel resource) {
