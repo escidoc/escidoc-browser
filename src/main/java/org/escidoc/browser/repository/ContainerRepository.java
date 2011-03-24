@@ -3,7 +3,6 @@ package org.escidoc.browser.repository;
 import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.escidoc.browser.model.ContainerModel;
@@ -44,38 +43,40 @@ public class ContainerRepository implements Repository {
     @Override
     public List<ResourceModel> findTopLevelMembersById(final String id)
         throws EscidocClientException {
-        usingSearch(id);
-        return Collections.EMPTY_LIST;
+
+        return usingSearch(id);
     }
 
-    private void usingSearch(final String id) throws EscidocException,
-        InternalClientException, TransportException {
+    private List<ResourceModel> usingSearch(final String id)
+        throws EscidocException, InternalClientException, TransportException {
+
+        final List<ResourceModel> results = new ArrayList<ResourceModel>();
 
         for (final Record<?> record : client.retrieveMembers(
             client.retrieve(id), new SearchRetrieveRequestType()).getRecords()) {
+            final ResourceRecord<?> resourceRecord = (ResourceRecord<?>) record;
+            final Class class1 = resourceRecord.getRecordDataType();
             // TODO: get resource type
-
             // if container, do foo
-            final List<ResourceModel> containers = getContainers(record);
-            // if item, do bar
-            final List<ResourceModel> items = getItems(record);
+            if (class1.equals(Container.class)) {
+                results.add(getContainer(record));
+            }
+            else {
+                // if item, do bar
+                results.add(getItem(record));
+            }
         }
 
-        throw new UnsupportedOperationException("Not yet implemented");
+        return results;
     }
 
-    private List<ResourceModel> getItems(final Record<?> record) {
-        final List<ResourceModel> containers = new ArrayList<ResourceModel>();
-        containers.add(new ItemModel(getSRWResourceRecordData(record,
-            Item.class)));
-        return containers;
+    private ResourceModel getItem(final Record<?> record) {
+        return new ItemModel(getSRWResourceRecordData(record, Item.class));
     }
 
-    private List<ResourceModel> getContainers(final Record<?> record) {
-        final List<ResourceModel> containers = new ArrayList<ResourceModel>();
-        containers.add(new ContainerModel(getSRWResourceRecordData(record,
-            Container.class)));
-        return containers;
+    private ResourceModel getContainer(final Record<?> record) {
+        return new ContainerModel(getSRWResourceRecordData(record,
+            Container.class));
     }
 
     @SuppressWarnings("unchecked")

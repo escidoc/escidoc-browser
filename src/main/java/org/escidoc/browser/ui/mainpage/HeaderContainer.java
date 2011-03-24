@@ -4,15 +4,14 @@ import org.escidoc.browser.ui.MainSite;
 import org.escidoc.browser.ui.maincontent.SearchResults;
 import org.escidoc.browser.ui.maincontent.SearchSimple;
 
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
 
 
 /**
