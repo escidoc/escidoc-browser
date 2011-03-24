@@ -2,12 +2,12 @@
 .classpath
 .settings/*
 target/*
+reports/*
 build/*
 bin
 bin/*
-reports/*
-bin/*
 script/*
+*.orig
 *.log*
 *.snapshot
 *.iml
