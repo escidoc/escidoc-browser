@@ -18,6 +18,7 @@ public class BrowserApplication extends Application {
     private final Window mainWindow = new Window(Constant.MAIN_WINDOW_TITLE);
 
     private ParameterHandler paramaterHandler;
+    private SessionHandlerImpl sessionhndl;
 
     @Override
     public void init() {
@@ -29,7 +30,7 @@ public class BrowserApplication extends Application {
     }
 
     private void addParameterHandler() {
-        paramaterHandler = new ParameterHandlerImpl();
+        paramaterHandler = new ParameterHandlerImpl(this);
         mainWindow.addParameterHandler(paramaterHandler);
     }
 
@@ -59,6 +60,21 @@ public class BrowserApplication extends Application {
             Sizeable.UNITS_PIXELS);
     }
 
+    
+    public SessionHandlerImpl getSessionHandler() {
+    	final WebApplicationContext ctx = (WebApplicationContext) getContext();
+    	HttpSession session=ctx.getHttpSession();
+        SessionHandlerImpl sessionhndl = new SessionHandlerImpl(session);
+        System.out.println("Outputting the cookie" +sessionhndl.geteSDBHandlervalue());
+        return sessionhndl;
+    }
+    
+    public boolean isLoggedin(){
+    	if (sessionhndl.isLoggedin())
+    		return true;
+    	else
+    		return false;
+    }
     private int getApplicationHeight() {
         final WebApplicationContext ctx = (WebApplicationContext) getContext();
         final int height = ctx.getBrowser().getScreenHeight();

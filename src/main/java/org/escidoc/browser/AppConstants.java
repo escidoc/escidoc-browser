@@ -18,5 +18,6 @@ public class AppConstants {
     public static final String ESCIDOC_URL = "escidocurl";
 
     public static final String ESCIDOC_USER_HANDLE = "eSciDocUserHandle";
+    public static final String EMPTY_STRING = "";
 
 }
