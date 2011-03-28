@@ -34,7 +34,7 @@ public class Container extends VerticalLayout {
 		int accordionHeight = innerelementsHeight - 40;
         
       //BREADCRUMB   
-        BreadCMenu bm = new BreadCMenu(cssLayout, "container");
+        BreadCrumbMenu bm = new BreadCrumbMenu(cssLayout, "container");
         //cssLayout.addComponent(bm);
         
         //HEADER

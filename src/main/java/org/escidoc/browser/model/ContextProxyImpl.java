@@ -4,27 +4,25 @@ import java.util.List;
 
 import de.escidoc.core.resources.om.context.Context;
 
-public class ContextProxyImpl implements ResourceProxy, ResourceModel {
+public class ContextProxyImpl implements ResourceProxy {
 
     private final Context contextFromCore;
 
     public ContextProxyImpl(final Context resource) {
-        this.contextFromCore = resource;
+        contextFromCore = resource;
     }
 
-    @Override
     public String getId() {
         return contextFromCore.getObjid();
     }
 
-    @Override
     public String getName() {
         return contextFromCore.getXLinkTitle();
     }
 
-    @Override
     public ResourceType getType() {
-        return ResourceType.valueOf(contextFromCore.getResourceType().toString());
+        return ResourceType.valueOf(contextFromCore
+            .getResourceType().toString());
     }
 
     @Override

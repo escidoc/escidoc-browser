@@ -12,7 +12,8 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 public class UiBuilder {
 
     public NavigationTreeView buildNavigationTree(
-        final Repository repository, final Repository containerRepository, MainSite mainSite)
+        final Repository repository, final Repository containerRepository,
+        final Repository itemRepository, final MainSite mainSite)
         throws EscidocClientException {
 
         final NavigationTreeView navigationTreeView =
@@ -24,10 +25,11 @@ public class UiBuilder {
             new ResourceContainerImpl(contexts);
         resourceContainer.init();
 
-		navigationTreeView.setDataSource(resourceContainer, mainSite);
+        navigationTreeView.setDataSource(resourceContainer, mainSite);
         navigationTreeView.addExpandListener(new TreeExpandListener(repository,
             containerRepository, resourceContainer));
-        navigationTreeView.addClickListener(new TreeClickListener(repository, mainSite));
+        navigationTreeView.addClickListener(new TreeClickListener(repository,
+            containerRepository, itemRepository, mainSite));
 
         return navigationTreeView;
     }

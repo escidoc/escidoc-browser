@@ -32,6 +32,10 @@ public final class Util {
         return parameters.containsKey(AppConstants.ESCIDOC_USER_HANDLE);
     }
 
+    public final static SearchRetrieveRequestType createEmptyFilter() {
+        return new SearchRetrieveRequestType();
+    }
+
     public final static SearchRetrieveRequestType createTopLevelQuery(
         final String id) {
         Preconditions.checkNotNull(id, "id is null: %s", id);
@@ -92,7 +96,8 @@ public final class Util {
         Preconditions.checkNotNull(resource, "resource is null: %s", resource);
 
         if (record instanceof ResourceRecord<?>) {
-            if (((ResourceRecord<?>) ((ResourceRecord<?>) record)).getRecordDataType() == resource) {
+            if (((ResourceRecord<?>) ((ResourceRecord<?>) record))
+                .getRecordDataType() == resource) {
                 return (T) record.getRecordData();
             }
         }

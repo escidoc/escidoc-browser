@@ -1,7 +1,5 @@
 package org.escidoc.browser.repository;
 
-import gov.loc.www.zing.srw.SearchRetrieveRequestType;
-
 import java.util.List;
 
 import org.escidoc.browser.Util;
@@ -28,7 +26,7 @@ public class ContextRepository implements Repository {
     @Override
     public List<ResourceModel> findAll() throws EscidocClientException {
         return ModelConverter.contextListToModel(client
-            .retrieveContextsAsList(new SearchRetrieveRequestType()));
+            .retrieveContextsAsList(Util.createEmptyFilter()));
     }
 
     @Override

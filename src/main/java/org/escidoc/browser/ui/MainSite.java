@@ -5,8 +5,7 @@ import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.EscidocServiceLocationImpl;
 import org.escidoc.browser.repository.ContainerRepository;
 import org.escidoc.browser.repository.ContextRepository;
-import org.escidoc.browser.ui.maincontent.Context;
-import org.escidoc.browser.ui.maincontent.SearchResults;
+import org.escidoc.browser.repository.ItemRepository;
 import org.escidoc.browser.ui.maincontent.SearchSimple;
 import org.escidoc.browser.ui.mainpage.Footer;
 import org.escidoc.browser.ui.mainpage.HeaderContainer;
@@ -35,7 +34,7 @@ public class MainSite extends VerticalLayout {
 
     private final int appHeight;
 
-	private BrowserApplication app;
+    private final BrowserApplication app;
 
     /**
      * The mainWindow should be revised whether we need it or not the appHeight
@@ -46,11 +45,11 @@ public class MainSite extends VerticalLayout {
      * @param appHeight
      * @throws EscidocClientException
      */
-    public MainSite(final Window mainWindow, final int appHeight, final BrowserApplication app)
-        throws EscidocClientException {
+    public MainSite(final Window mainWindow, final int appHeight,
+        final BrowserApplication app) throws EscidocClientException {
         // General Height for the application
         this.appHeight = appHeight;
-        this.app= app;
+        this.app = app;
         this.setMargin(true);
         setSizeFull();
         this.setWidth("86%");
@@ -60,7 +59,8 @@ public class MainSite extends VerticalLayout {
         mainLayout.setStyleName("maincontainer");
         mainLayout.setSizeFull();
 
-        final HeaderContainer header = new HeaderContainer(this, appHeight,app);        
+        final HeaderContainer header =
+            new HeaderContainer(this, appHeight, app);
 
         final Footer futer = new Footer();
 
@@ -88,11 +88,11 @@ public class MainSite extends VerticalLayout {
         maincontent.setHeight("86%");
 
         // adding tab elements
-        final Context context = new Context(this,appHeight);
-        maincontent.addComponent(context);
-        maincontent.addTab(context);
-        maincontent.getTab(context).setCaption("Sommer 2010");
-        maincontent.getTab(context).setClosable(true);
+        // final ContextView contextView = new ContextView(this);
+        // maincontent.addComponent(contextView);
+        // maincontent.addTab(contextView);
+        // maincontent.getTab(contextView).setCaption("Sommer 2010");
+        // maincontent.getTab(contextView).setClosable(true);
 
         return maincontent;
 
@@ -112,21 +112,21 @@ public class MainSite extends VerticalLayout {
         mainnav.setStyleName("floatleft paddingtop20");
         mainnav.setWidth("30%");
         mainnav.setHeight("86%");
-        
-        
-        // Search icon    	
-    	 Button srchButton = new Button("Search",this,"OnClickSrchButton");
-    	 srchButton.setStyleName(BaseTheme.BUTTON_LINK);
-    	 srchButton.setIcon(new ThemeResource("../myTheme/images/search.png"));
-    	 srchButton.setDescription("Search the Infrastructure");
-         mainnav.addComponent(srchButton);
-         
+
+        // Search icon
+        final Button srchButton =
+            new Button("Search", this, "OnClickSrchButton");
+        srchButton.setStyleName(BaseTheme.BUTTON_LINK);
+        srchButton.setIcon(new ThemeResource("../myTheme/images/search.png"));
+        srchButton.setDescription("Search the Infrastructure");
+        mainnav.addComponent(srchButton);
 
         // Navication tree
 
         final NavigationTreeView treemenu =
             new UiBuilder().buildNavigationTree(new ContextRepository(
-                serviceLocation), new ContainerRepository(serviceLocation), this);
+                serviceLocation), new ContainerRepository(serviceLocation),
+                new ItemRepository(serviceLocation), this);
         mainnavtree = treemenu;
         mainnav.addComponent(mainnavtree);
 
@@ -151,13 +151,18 @@ public class MainSite extends VerticalLayout {
     public TabSheet getMaincontent() {
         return maincontent;
     }
-    
+
     /**
      * Handle the event from the srchButton Link at the buildNavigationPanel
+     * 
      * @param event
      */
-    public void OnClickSrchButton(Button.ClickEvent event){
-    	SearchSimple smpSearch = new SearchSimple(this, appHeight);
-		this.openTab(smpSearch, "Search Results");
+    public void OnClickSrchButton(final Button.ClickEvent event) {
+        final SearchSimple smpSearch = new SearchSimple(this, appHeight);
+        openTab(smpSearch, "Search Results");
+    }
+
+    public int getApplicationHeight() {
+        return appHeight;
     }
 }

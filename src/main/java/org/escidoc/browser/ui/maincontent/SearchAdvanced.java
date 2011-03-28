@@ -35,7 +35,7 @@ public class SearchAdvanced extends VerticalLayout {
 		cssLayout.setHeight("100%");
 
 		//Here comes the breadcrumb menu
-		final BreadCMenu bm = new BreadCMenu(cssLayout,"search");
+		final BreadCrumbMenu bm = new BreadCrumbMenu(cssLayout,"search");
 
 		//CssLayout to hold search elements
 		CssLayout srchContainer = new CssLayout ();

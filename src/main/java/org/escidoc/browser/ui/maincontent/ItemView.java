@@ -19,12 +19,12 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Tree;
 
 
-public class Item extends VerticalLayout {
+public class ItemView extends VerticalLayout {
 
 	private int appHeight;
 	private MainSite mainSite;
 
-	public Item(MainSite mainSite, int appHeight) {
+	public ItemView(MainSite mainSite, int appHeight) {
 		
 		this.appHeight = appHeight;
 		this.mainSite= mainSite;
@@ -40,7 +40,7 @@ public class Item extends VerticalLayout {
 		int accordionHeight = innerelementsHeight - 40;
         
       //BREADCRUMB   
-        BreadCMenu bm = new BreadCMenu(cssLayout,"item");
+        BreadCrumbMenu bm = new BreadCrumbMenu(cssLayout,"item");
         //cssLayout.addComponent(bm);
         
         //HEADER

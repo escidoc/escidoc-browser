@@ -5,9 +5,9 @@ import org.escidoc.browser.ui.Constant;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 
-public class BreadCMenu {
+public class BreadCrumbMenu {
 
-    public BreadCMenu(final CssLayout cssLayout,String bcType) {
+    public BreadCrumbMenu(final CssLayout cssLayout,String bcType) {
         cssLayout.addComponent(new Label(Constant.BREAD_CRUMP_CONTENT,
             Label.CONTENT_RAW));
     }
