@@ -20,8 +20,17 @@ public class SessionHandlerImpl  {
 	 * TODO Ask Michael for description of is inside the esceidochandler
 	 */
 	public void doLogin(String handler){
-		session.setAttribute("eSDB-handler", handler);
-		System.out.println("Setting the cookie, doch" + handler);
+		if(session.isNew()) {
+			session.setAttribute("eSDB-handler", handler);
+			System.out.println("Setting the cookie, doch" + handler);
+		}else{
+			session.setAttribute("eSDB-handler", handler);
+			System.out.println("Session already set - No need to set session");
+			System.out.println (this.geteSDBHandlervalue());
+		}
+
+		
+		
 	}
 	public String geteSDBHandlervalue(){
 		try  {

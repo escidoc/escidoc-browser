@@ -23,10 +23,11 @@ public class BrowserApplication extends Application {
     @Override
     public void init() {
         setApplicationTheme();
+        addParameterHandler();
+
         buildMainWindow();
         setMainWindow(mainWindow);
 
-        addParameterHandler();
     }
 
     private void addParameterHandler() {
@@ -70,7 +71,7 @@ public class BrowserApplication extends Application {
     }
     
     public boolean isLoggedin(){
-    	if (sessionhndl.isLoggedin())
+    	if (this.sessionhndl.isLoggedin())
     		return true;
     	else
     		return false;
@@ -85,7 +86,7 @@ public class BrowserApplication extends Application {
 
     private MainSite createMainSite(final Window mainWindow, final int appHeight)
         throws EscidocClientException {
-        final MainSite mnSite = new MainSite(mainWindow, appHeight);
+        final MainSite mnSite = new MainSite(mainWindow, appHeight, this);
         mnSite.setHeight("100%");
         mnSite.setWidth("100%");
         return mnSite;

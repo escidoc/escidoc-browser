@@ -1,6 +1,7 @@
 package org.escidoc.browser.ui;
 
 import org.escidoc.browser.AppConstants;
+import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.EscidocServiceLocationImpl;
 import org.escidoc.browser.repository.ContainerRepository;
 import org.escidoc.browser.repository.ContextRepository;
@@ -34,6 +35,8 @@ public class MainSite extends VerticalLayout {
 
     private final int appHeight;
 
+	private BrowserApplication app;
+
     /**
      * The mainWindow should be revised whether we need it or not the appHeight
      * is the Height of the Application and I need it for calculations in the
@@ -43,10 +46,11 @@ public class MainSite extends VerticalLayout {
      * @param appHeight
      * @throws EscidocClientException
      */
-    public MainSite(final Window mainWindow, final int appHeight)
+    public MainSite(final Window mainWindow, final int appHeight, final BrowserApplication app)
         throws EscidocClientException {
         // General Height for the application
         this.appHeight = appHeight;
+        this.app= app;
         this.setMargin(true);
         setSizeFull();
         this.setWidth("86%");
@@ -56,7 +60,7 @@ public class MainSite extends VerticalLayout {
         mainLayout.setStyleName("maincontainer");
         mainLayout.setSizeFull();
 
-        final HeaderContainer header = new HeaderContainer(this, appHeight);
+        final HeaderContainer header = new HeaderContainer(this, appHeight,app);        
 
         final Footer futer = new Footer();
 
