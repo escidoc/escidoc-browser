@@ -15,6 +15,6 @@ public interface NavigationTreeView extends Component {
 
     ResourceModel getSelected();
 
-    void setDataSource(ResourceContainer container);
+    void setDataSource(ResourceContainer container, MainSite mainSite);
 
 }

@@ -88,7 +88,7 @@ public class MainSite extends VerticalLayout {
         maincontent.setHeight("86%");
 
         // adding tab elements
-        final Context context = new Context(appHeight);
+        final Context context = new Context(this,appHeight);
         maincontent.addComponent(context);
         maincontent.addTab(context);
         maincontent.getTab(context).setCaption("Sommer 2010");
@@ -126,7 +126,7 @@ public class MainSite extends VerticalLayout {
 
         final NavigationTreeView treemenu =
             new UiBuilder().buildNavigationTree(new ContextRepository(
-                serviceLocation), new ContainerRepository(serviceLocation));
+                serviceLocation), new ContainerRepository(serviceLocation), this);
         mainnavtree = treemenu;
         mainnav.addComponent(mainnavtree);
 

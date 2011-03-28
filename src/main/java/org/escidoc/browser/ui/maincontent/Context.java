@@ -1,5 +1,7 @@
 package org.escidoc.browser.ui.maincontent;
 
+import org.escidoc.browser.ui.MainSite;
+
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
@@ -10,10 +12,12 @@ import com.vaadin.ui.VerticalLayout;
 public class Context extends VerticalLayout {
 
     private final int appHeight;
+	private MainSite mainSite;
 
-    public Context(final int appHeight) {
+    public Context(MainSite mainSite, final int appHeight) {
 
         this.appHeight = appHeight;
+        this.mainSite= mainSite;
         setMargin(true);
         this.setHeight("100%");
         final CssLayout cssLayout = new CssLayout();
