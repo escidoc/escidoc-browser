@@ -81,6 +81,6 @@ public class ContainerRepository implements Repository {
     @Override
     public ResourceProxy findById(final String id)
         throws EscidocClientException {
-    	return new ContainerProxyImpl(client.retrieve(id));
+        return new ContainerProxyImpl(client.retrieve(id));
     }
 }

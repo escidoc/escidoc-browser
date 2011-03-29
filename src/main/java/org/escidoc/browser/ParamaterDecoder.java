@@ -34,7 +34,7 @@ public class ParamaterDecoder {
         catch (final IllegalArgumentException e) {
             Preconditions.checkNotNull(app.getMainWindow(),
                 "MainWindow is null: %s", app.getMainWindow());
-       }
+        }
         return AppConstants.EMPTY_STRING;
     }
 }

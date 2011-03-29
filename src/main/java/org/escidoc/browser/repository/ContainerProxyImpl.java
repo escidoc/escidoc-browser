@@ -10,26 +10,29 @@ import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.om.context.Context;
 
 public class ContainerProxyImpl implements ResourceProxy {
-	private final Container containerFromCore;
+    private final Container containerFromCore;
+
     public ContainerProxyImpl(final Container resource) {
         containerFromCore = resource;
     }
-	@Override
-	public String getId() {
-		return containerFromCore.getObjid();
-	}
 
-	@Override
-	public String getName() {
-		return containerFromCore.getXLinkTitle();
-	}
+    @Override
+    public String getId() {
+        return containerFromCore.getObjid();
+    }
 
-	@Override
-	public ResourceType getType() {
+    @Override
+    public String getName() {
+        return containerFromCore.getXLinkTitle();
+    }
+
+    @Override
+    public ResourceType getType() {
         return ResourceType.valueOf(containerFromCore
             .getResourceType().toString());
     }
-	@Override
+
+    @Override
     public String getDescription() {
         return containerFromCore.getProperties().getDescription();
     }
@@ -51,7 +54,7 @@ public class ContainerProxyImpl implements ResourceProxy {
 
     @Override
     public String getModifier() {
-		return containerFromCore.getProperties().getCreatedBy().getObjid();
+        return containerFromCore.getProperties().getCreatedBy().getObjid();
     }
 
     @Override

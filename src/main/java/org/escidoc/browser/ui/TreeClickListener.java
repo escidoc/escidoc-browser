@@ -67,13 +67,14 @@ public class TreeClickListener implements ItemClickListener {
         if (ContextModel.isContext(clickedResource)) {
             LOG.debug("this is a context");
             try {
-				openInNewTab(
-				    new ContextView(mainSite, tryToFindResource(contextRepository,
-				        clickedResource)), clickedResource);
-			} catch (EscidocClientException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+                openInNewTab(
+                    new ContextView(mainSite, tryToFindResource(
+                        contextRepository, clickedResource)), clickedResource);
+            }
+            catch (EscidocClientException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
 
         else if (ContainerModel.isContainer(clickedResource)) {
@@ -83,8 +84,9 @@ public class TreeClickListener implements ItemClickListener {
                 final ResourceProxy containerProxy =
                     containerRepository.findById(clickedResource.getId());
 
-                openInNewTab(new ContainerView(mainSite, tryToFindResource(containerRepository,
-				        clickedResource)), clickedResource);
+                openInNewTab(
+                    new ContainerView(mainSite, tryToFindResource(
+                        containerRepository, clickedResource)), clickedResource);
             }
             catch (final EscidocClientException e) {
                 showErrorMessageToUser(clickedResource, e);

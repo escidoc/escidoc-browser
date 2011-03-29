@@ -19,22 +19,24 @@ import com.vaadin.ui.Tree;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class DirectMember {
-	final EscidocServiceLocationImpl serviceLocation =
+    final EscidocServiceLocationImpl serviceLocation =
         new EscidocServiceLocationImpl(AppConstants.HARDCODED_ESCIDOC_URI);
-	private String parentID;
-	private MainSite mainSite;
 
-	public DirectMember(MainSite mainSite,String parentID) {
-		this.parentID=parentID;
-		this.mainSite = mainSite;
-	}
+    private String parentID;
+
+    private MainSite mainSite;
+
+    public DirectMember(MainSite mainSite, String parentID) {
+        this.parentID = parentID;
+        this.mainSite = mainSite;
+    }
 
     public NavigationTreeView contextasTree() throws EscidocClientException {
         final NavigationTreeView tree =
             new UiBuilder().buildContextDirectMemberTree(new ContextRepository(
                 serviceLocation), new ContainerRepository(serviceLocation),
                 new ItemRepository(serviceLocation), mainSite, parentID);
-        
+
         tree.setSizeFull();
         return tree;
 
@@ -42,10 +44,11 @@ public class DirectMember {
 
     public NavigationTreeView containerasTree() throws EscidocClientException {
         final NavigationTreeView tree =
-            new UiBuilder().buildContainerDirectMemberTree(new ContextRepository(
-                serviceLocation), new ContainerRepository(serviceLocation),
-                new ItemRepository(serviceLocation), mainSite, parentID);
-        
+            new UiBuilder().buildContainerDirectMemberTree(
+                new ContextRepository(serviceLocation),
+                new ContainerRepository(serviceLocation), new ItemRepository(
+                    serviceLocation), mainSite, parentID);
+
         tree.setSizeFull();
         return tree;
 
