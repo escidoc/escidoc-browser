@@ -13,7 +13,7 @@
 		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin</artifactId>
-			<version>6.5.3</version>
+			<version>6.5.4</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
