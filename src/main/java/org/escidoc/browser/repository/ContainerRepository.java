@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.escidoc.browser.Util;
+import org.escidoc.browser.model.ContextProxyImpl;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
 import org.escidoc.browser.model.ResourceModel;
@@ -80,6 +81,6 @@ public class ContainerRepository implements Repository {
     @Override
     public ResourceProxy findById(final String id)
         throws EscidocClientException {
-        throw new UnsupportedOperationException("Not yet implemented");
+    	return new ContainerProxyImpl(client.retrieve(id));
     }
 }

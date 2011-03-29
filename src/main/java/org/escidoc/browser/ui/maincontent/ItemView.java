@@ -50,25 +50,25 @@ public class ItemView extends VerticalLayout {
         
         //TODO move these labels somewhere
         //+++++++++++++++++++++++++++++++++++//
-        //Container Desc 1
+        //ContainerView Desc 1
         Label descContext1 = new Label("+ Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. ");
         descContext1.setStyleName("fullwidth");      
         cssLayout.addComponent(descContext1);        
         
-        //Container Horizontal Ruler
+        //ContainerView Horizontal Ruler
         Label descRuler = new Label("____________________________________________________________________________________________________");
         descRuler.setStyleName("hr");      
         cssLayout.addComponent(descRuler);
         //TODO Fix this ruler! I cannot believe I did that line as a ruler
         
-        //Container DescMetadata1
+        //ContainerView DescMetadata1
         Label descMetadata1 = new Label("Name: 01 <br /> "+"Description: ???<br />"+"ID: escidoc:30132 is released",
                 Label.CONTENT_RAW);
         descMetadata1.setStyleName("floatleft columnheight50");
         descMetadata1.setWidth("30%");
         cssLayout.addComponent(descMetadata1); 
         
-        //Container DescMetadata2
+        //ContainerView DescMetadata2
 
         Label descMetadata2 = new Label("Created by: <a href='/ESCD/Frankie'>Frank Schwichtenberg</a> 26.01.2011, 09:33 <br>"+
         		"last modification by <a href='/ESCD/Frankie'>Frank Schwichtenberg</a> 26.01.2011, 09:33 <br>"+

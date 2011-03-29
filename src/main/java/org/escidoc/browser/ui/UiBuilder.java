@@ -11,27 +11,73 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class UiBuilder {
 
-    public NavigationTreeView buildNavigationTree(
-        final Repository repository, final Repository containerRepository,
-        final Repository itemRepository, final MainSite mainSite)
-        throws EscidocClientException {
+	public NavigationTreeView buildNavigationTree(
+			final Repository repository, final Repository containerRepository,
+			final Repository itemRepository, final MainSite mainSite)
+	throws EscidocClientException {
 
-        final NavigationTreeView navigationTreeView =
-            new NavigationTreeViewImpl(mainSite);
+		final NavigationTreeView navigationTreeView =
+			new NavigationTreeViewImpl(mainSite);
 
-        final List<ResourceModel> contexts = repository.findAll();
+		final List<ResourceModel> contexts = repository.findAll();
 
-        final ResourceContainerImpl resourceContainer =
-            new ResourceContainerImpl(contexts);
-        resourceContainer.init();
+		final ResourceContainerImpl resourceContainer =
+			new ResourceContainerImpl(contexts);
+		resourceContainer.init();
 
-        navigationTreeView.setDataSource(resourceContainer, mainSite);
-        navigationTreeView.addExpandListener(new TreeExpandListener(repository,
-            containerRepository, resourceContainer));
-        navigationTreeView.addClickListener(new TreeClickListener(repository,
-            containerRepository, itemRepository, mainSite));
+		navigationTreeView.setDataSource(resourceContainer, mainSite);
+		navigationTreeView.addExpandListener(new TreeExpandListener(repository,
+				containerRepository, resourceContainer));
+		navigationTreeView.addClickListener(new TreeClickListener(repository,
+				containerRepository, itemRepository, mainSite));
 
-        return navigationTreeView;
-    }
+		return navigationTreeView;
+	}
+
+	public NavigationTreeView buildContextDirectMemberTree(
+			final Repository contextRepository, final Repository containerRepository,
+			final Repository itemRepository, final MainSite mainSite, String parentID)
+	throws EscidocClientException {
+
+		final NavigationTreeView navigationTreeView =
+			new NavigationTreeViewImpl(mainSite);
+
+		final List<ResourceModel> contexts = contextRepository.findTopLevelMembersById(parentID);
+
+		final ResourceContainerImpl resourceContainer =
+			new ResourceContainerImpl(contexts);
+		resourceContainer.init();
+
+		navigationTreeView.setDataSource(resourceContainer, mainSite);
+		navigationTreeView.addExpandListener(new TreeExpandListener(contextRepository,
+				containerRepository, resourceContainer));
+		navigationTreeView.addClickListener(new TreeClickListener(contextRepository,
+				containerRepository, itemRepository, mainSite));
+
+		return navigationTreeView;
+	}
+	
+	public NavigationTreeView buildContainerDirectMemberTree(
+			final Repository contextRepository, final Repository containerRepository,
+			final Repository itemRepository, final MainSite mainSite, String parentID)
+	throws EscidocClientException {
+
+		final NavigationTreeView navigationTreeView =
+			new NavigationTreeViewImpl(mainSite);
+
+		final List<ResourceModel> container = containerRepository.findTopLevelMembersById(parentID);
+
+		final ResourceContainerImpl resourceContainer =
+			new ResourceContainerImpl(container);
+		resourceContainer.init();
+
+		navigationTreeView.setDataSource(resourceContainer, mainSite);
+		navigationTreeView.addExpandListener(new TreeExpandListener(contextRepository,
+				containerRepository, resourceContainer));
+		navigationTreeView.addClickListener(new TreeClickListener(contextRepository,
+				containerRepository, itemRepository, mainSite));
+
+		return navigationTreeView;
+	}
 
 }

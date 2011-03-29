@@ -6,7 +6,7 @@ import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repository;
-import org.escidoc.browser.ui.maincontent.Container;
+import org.escidoc.browser.ui.maincontent.ContainerView;
 import org.escidoc.browser.ui.maincontent.ContextView;
 import org.escidoc.browser.ui.maincontent.ItemView;
 import org.slf4j.Logger;
@@ -66,9 +66,14 @@ public class TreeClickListener implements ItemClickListener {
 
         if (ContextModel.isContext(clickedResource)) {
             LOG.debug("this is a context");
-            openInNewTab(
-                new ContextView(mainSite, tryToFindResource(contextRepository,
-                    clickedResource)), clickedResource);
+            try {
+				openInNewTab(
+				    new ContextView(mainSite, tryToFindResource(contextRepository,
+				        clickedResource)), clickedResource);
+			} catch (EscidocClientException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         }
 
         else if (ContainerModel.isContainer(clickedResource)) {
@@ -78,8 +83,8 @@ public class TreeClickListener implements ItemClickListener {
                 final ResourceProxy containerProxy =
                     containerRepository.findById(clickedResource.getId());
 
-                openInNewTab(new Container(mainSite, appHeight),
-                    clickedResource);
+                openInNewTab(new ContainerView(mainSite, tryToFindResource(containerRepository,
+				        clickedResource)), clickedResource);
             }
             catch (final EscidocClientException e) {
                 showErrorMessageToUser(clickedResource, e);

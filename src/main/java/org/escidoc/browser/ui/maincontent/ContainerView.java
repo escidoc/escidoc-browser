@@ -1,7 +1,9 @@
 package org.escidoc.browser.ui.maincontent;
 
+import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.ui.MainSite;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
@@ -12,16 +14,22 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Tree;
 
+import de.escidoc.core.client.exceptions.EscidocClientException;
 
-public class Container extends VerticalLayout {
+
+public class ContainerView extends VerticalLayout {
 
 	private int appHeight;
 	private MainSite mainSite;
 
-	public Container(MainSite mainSite, int appHeight) {
+	public ContainerView(final MainSite mainSite, final ResourceProxy resourceProxy) throws EscidocClientException {
 		
-		this.appHeight = appHeight;
+		Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
+		Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s",
+				resourceProxy);
+		
 		this.mainSite= mainSite;
+		this.appHeight = mainSite.getApplicationHeight();
         setMargin(true);
         this.setHeight("100%");
         CssLayout cssLayout = new CssLayout();
@@ -44,25 +52,25 @@ public class Container extends VerticalLayout {
         
         //TODO move these labels somewhere
         //+++++++++++++++++++++++++++++++++++//
-        //Container Desc 1
+        //ContainerView Desc 1
         Label descContext1 = new Label(accordionHeight+"+ Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. ");
         descContext1.setStyleName("fullwidth");      
         cssLayout.addComponent(descContext1);        
         
-        //Container Horizontal Ruler
+        //ContainerView Horizontal Ruler
         Label descRuler = new Label("____________________________________________________________________________________________________");
         descRuler.setStyleName("hr");      
         cssLayout.addComponent(descRuler);
         //TODO Fix this ruler! I cannot believe I did that line as a ruler
         
-        //Container DescMetadata1
+        //ContainerView DescMetadata1
         Label descMetadata1 = new Label("Name: Sommer 2010 <br /> "+"Description: Meine Bilder von Sommer 2010<br />"+"ID: escidoc:30294 is pending",
                 Label.CONTENT_RAW);
         descMetadata1.setStyleName("floatleft columnheight50");
         descMetadata1.setWidth("30%");
         cssLayout.addComponent(descMetadata1); 
         
-        //Container DescMetadata2
+        //ContainerView DescMetadata2
 
         Label descMetadata2 = new Label("Created by: <a href='/ESCD/Frankie'>Frank Schwichtenberg</a> 26.01.2011, 09:33 <br>"+
         		"last modification by <a href='/ESCD/Frankie'>Frank Schwichtenberg</a> 26.01.2011, 09:33 <br>"+
@@ -72,10 +80,9 @@ public class Container extends VerticalLayout {
         descMetadata2.setWidth("70%");
         cssLayout.addComponent(descMetadata2);
                 
-        //Direct Members
-        DirectMember directMembers = new DirectMember();
-        Tree treedirectmembers = new Tree();
-        treedirectmembers= directMembers.asTree();
+        //Direct Members!//TODO KUJDES 
+        DirectMember directMembers = new DirectMember(mainSite,resourceProxy.getId());
+
         
         //Adding some buttons
         AbsoluteLayout absL = new AbsoluteLayout();
@@ -91,7 +98,7 @@ public class Container extends VerticalLayout {
         leftpnl.setScrollable(false);
         leftpnl.setWidth("30%");
         leftpnl.setHeight("86%");
-        leftpnl.addComponent(treedirectmembers); 
+        leftpnl.addComponent(directMembers.containerasTree()); 
         absL.addComponent(horizontal,"left: 0px; top: 380px;");
         leftpnl.addComponent(absL);
         
