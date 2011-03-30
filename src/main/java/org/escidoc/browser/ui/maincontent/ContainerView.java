@@ -1,11 +1,17 @@
 package org.escidoc.browser.ui.maincontent;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.ui.MainSite;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -42,6 +48,8 @@ public class ContainerView extends VerticalLayout {
 
     private static final String LAST_MODIFIED_BY = "Last modification by";
 
+    private static final String DIRECT_MEMBERS = "Direct Members";
+
     private int accordionHeight;
 
     private int innerelementsHeight;
@@ -70,7 +78,7 @@ public class ContainerView extends VerticalLayout {
         // Direct Members!
         DirectMember directMembers =
             new DirectMember(mainSite, resourceProxy.getId());
-        leftCell(directMembers.containerasTree());
+        leftCell(DIRECT_MEMBERS,directMembers.containerasTree());
 
         // right most panel
         MetadataRecs metaData = new MetadataRecs(accordionHeight);
@@ -97,13 +105,20 @@ public class ContainerView extends VerticalLayout {
         cssLayout.addComponent(rightpnl);
     }
 
-    private void leftCell(Component comptoBind) {
+    private void leftCell(String string, Component comptoBind) {
         final Panel leftpnl = new Panel();
-        leftpnl.setStyleName("floatleft paddingtop10");
+        
+        leftpnl.setStyleName("directmembers floatleft paddingtop10 ");
         leftpnl.setScrollable(false);
+        
         leftpnl.setWidth("30%");
-        leftpnl.setHeight("86%");
+        leftpnl.setHeight("85%");
+        
+        Label nameofPanel = new Label("<strong>"+DIRECT_MEMBERS+"</string>",Label.CONTENT_RAW);
+        leftpnl.addComponent(nameofPanel);
+        
         leftpnl.addComponent(comptoBind);
+
 
         // Adding some buttons
         AbsoluteLayout absL = new AbsoluteLayout();
@@ -130,11 +145,10 @@ public class ContainerView extends VerticalLayout {
                 + resourceProxy.getId() + " is " + resourceProxy.getStatus(),
                 Label.CONTENT_RAW);
         descMetadata1.setStyleName("floatleft columnheight50");
-        descMetadata1.setWidth("30%");
+        descMetadata1.setWidth("35%");
         cssLayout.addComponent(descMetadata1);
 
-        // RIGHT SIDE
-        // TODO HAS NO PREVIOUS VERSION
+        // RIGHT SIDE     
         final Label descMetadata2 =
             new Label(CREATED_BY + "<a href='/ESCD/Frankie'> "
                 + resourceProxy.getCreator() + "</a>"
@@ -144,7 +158,7 @@ public class ContainerView extends VerticalLayout {
                 + resourceProxy.getModifiedOn() + " <br>"
                 + resourceProxy.getStatus(), Label.CONTENT_RAW);
         descMetadata2.setStyleName("floatright columnheight50");
-        descMetadata2.setWidth("70%");
+        descMetadata2.setWidth("65%");
         cssLayout.addComponent(descMetadata2);
     }
 

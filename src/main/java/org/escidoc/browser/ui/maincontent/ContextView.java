@@ -34,6 +34,8 @@ public class ContextView extends VerticalLayout {
 
     private static final String LAST_MODIFIED_BY = "last modification by";
 
+    private static final String DIRECT_MEMBERS = "Direct Members";
+    
     private final CssLayout cssLayout = new CssLayout();
 
     private final MainSite mainSite;
@@ -68,7 +70,7 @@ public class ContextView extends VerticalLayout {
         // Binding Direct Members in
         final DirectMember directMembers =
             new DirectMember(mainSite, resourceProxy.getId());
-        leftCell(directMembers.contextasTree());
+        leftCell(DIRECT_MEMBERS,directMembers.contextasTree());
 
         // Right Inner Cell
         // Binding Additional Info into it
@@ -98,17 +100,23 @@ public class ContextView extends VerticalLayout {
     /**
      * This is the inner Left Cell within a Context By default the Direct
      * Members are bound here
+     * @param directMembers 
      * 
      * @param comptoBind
      */
-    private void leftCell(Component comptoBind) {
-        final Panel rightpnl = new Panel();
-        rightpnl.setStyleName("floatleft paddingtop10");
-        rightpnl.setScrollable(false);
-        rightpnl.setWidth("30%");
-        rightpnl.setHeight("86%");
-        rightpnl.addComponent(comptoBind);
-        cssLayout.addComponent(rightpnl);
+    private void leftCell(String directMembers, Component comptoBind) {
+        final Panel leftpnl = new Panel();
+        
+        leftpnl.setStyleName("floatleft paddingtop10");
+        leftpnl.setScrollable(false);
+        leftpnl.setWidth("30%");
+        leftpnl.setHeight("86%");
+        
+        Label nameofPanel = new Label("<strong>"+DIRECT_MEMBERS+"</string>",Label.CONTENT_RAW);
+        leftpnl.addComponent(nameofPanel);
+        
+        leftpnl.addComponent(comptoBind);
+        cssLayout.addComponent(leftpnl);
     }
 
     /**
@@ -122,19 +130,19 @@ public class ContextView extends VerticalLayout {
                 + resourceProxy.getId() + " is " + resourceProxy.getStatus(),
                 Label.CONTENT_RAW);
         descMetadata1.setStyleName("floatleft columnheight50");
-        descMetadata1.setWidth("30%");
+        descMetadata1.setWidth("35%");
         cssLayout.addComponent(descMetadata1);
 
         // RIGHT SIDE
         final Label descMetadata2 =
             new Label(CREATED_BY + " <a href='/ESCD/Frankie'>"
-                + resourceProxy.getCreator() + "</a>"
+                + resourceProxy.getCreator() + "</a> "
                 + resourceProxy.getCreatedOn() + "<br>" + LAST_MODIFIED_BY
                 + " <a href='#user/" + resourceProxy.getModifier() + "'>"
                 + resourceProxy.getModifier() + "</a>"
                 + resourceProxy.getModifiedOn() + " <br>", Label.CONTENT_RAW);
         descMetadata2.setStyleName("floatright columnheight50");
-        descMetadata2.setWidth("70%");
+        descMetadata2.setWidth("65%");
         cssLayout.addComponent(descMetadata2);
     }
 

@@ -62,7 +62,7 @@ ul.horizontal_list li{
     margin: 5px;
 }
 .columnheight50{
-	height: 55px;
+	height: 65px;
 }
 /* breadcrumb */
 .bc ul, li {
@@ -96,4 +96,8 @@ ul.horizontal_list li{
   	margin-right: auto;
   	width:500px;
 }
+.directmembers .v-tree-node {
+	background: transparent url(/browser/VAADIN/themes/myTheme/images/document.png) no-repeat 3px;
+}
+
 
