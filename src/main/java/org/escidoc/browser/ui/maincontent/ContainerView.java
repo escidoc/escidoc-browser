@@ -8,6 +8,7 @@ import com.google.common.base.Preconditions;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -31,6 +32,16 @@ public class ContainerView extends VerticalLayout {
 
     private final CssLayout cssLayout = new CssLayout();
 
+    private static final String DESCRIPTION = "Description: ";
+
+    private static final String CREATED_BY = "Created by";
+
+    private static final String NAME = "Name: ";
+
+    private static final String FULLWIDHT_STYLE_NAME = "fullwidth";
+
+    private static final String LAST_MODIFIED_BY = "Last modification by";
+
     private int accordionHeight;
 
     private int innerelementsHeight;
@@ -50,58 +61,49 @@ public class ContainerView extends VerticalLayout {
     void init() throws EscidocClientException {
 
         configureLayout();
+        createBreadCrumb();
+        bindNameToHeader();
+        bindDescription();
+        addHorizontalRuler();
+        bindProperties();
 
-        // BREADCRUMB
-        BreadCrumbMenu bm = new BreadCrumbMenu(cssLayout, "container");
-        // cssLayout.addComponent(bm);
-
-        // HEADER
-        Label headerContext = new Label("SOMMER 2010");
-        headerContext.setStyleName("h1 fullwidth");
-        cssLayout.addComponent(headerContext);
-
-        // TODO move these labels somewhere
-        // +++++++++++++++++++++++++++++++++++//
-        // ContainerView Desc 1
-        Label descContext1 =
-            new Label(
-                accordionHeight
-                    + "+ Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. ");
-        descContext1.setStyleName("fullwidth");
-        cssLayout.addComponent(descContext1);
-
-        // ContainerView Horizontal Ruler
-        Label descRuler =
-            new Label(
-                "____________________________________________________________________________________________________");
-        descRuler.setStyleName("hr");
-        cssLayout.addComponent(descRuler);
-        // TODO Fix this ruler! I cannot believe I did that line as a ruler
-
-        // ContainerView DescMetadata1
-        Label descMetadata1 =
-            new Label("Name: Sommer 2010 <br /> "
-                + "Description: Meine Bilder von Sommer 2010<br />"
-                + "ID: escidoc:30294 is pending", Label.CONTENT_RAW);
-        descMetadata1.setStyleName("floatleft columnheight50");
-        descMetadata1.setWidth("30%");
-        cssLayout.addComponent(descMetadata1);
-
-        // ContainerView DescMetadata2
-
-        Label descMetadata2 =
-            new Label(
-                "Created by: <a href='/ESCD/Frankie'>Frank Schwichtenberg</a> 26.01.2011, 09:33 <br>"
-                    + "last modification by <a href='/ESCD/Frankie'>Frank Schwichtenberg</a> 26.01.2011, 09:33 <br>"
-                    + "is not released, has no previous versions",
-                Label.CONTENT_RAW);
-        descMetadata2.setStyleName("floatright columnheight50");
-        descMetadata2.setWidth("70%");
-        cssLayout.addComponent(descMetadata2);
-
-        // Direct Members!//TODO KUJDES
+        // Direct Members!
         DirectMember directMembers =
             new DirectMember(mainSite, resourceProxy.getId());
+        leftCell(directMembers.containerasTree());
+
+        // right most panel
+        MetadataRecs metaData = new MetadataRecs(accordionHeight);
+        rightCell(metaData.asAccord());
+
+        // cssLayout.addComponent();
+
+        addComponent(cssLayout);
+    }
+
+    /**
+     * This is the inner Right Cell within a Context By default a set of
+     * Organizational Unit / Admin Description / RelatedItem / Resources are
+     * bound
+     * 
+     * @param comptoBind
+     */
+    private void rightCell(Component comptoBind) {
+        final Panel rightpnl = new Panel();
+        rightpnl.setStyleName("floatright");
+        rightpnl.setWidth("70%");
+        rightpnl.setHeight("100%");
+        rightpnl.addComponent(comptoBind);
+        cssLayout.addComponent(rightpnl);
+    }
+
+    private void leftCell(Component comptoBind) {
+        final Panel leftpnl = new Panel();
+        leftpnl.setStyleName("floatleft paddingtop10");
+        leftpnl.setScrollable(false);
+        leftpnl.setWidth("30%");
+        leftpnl.setHeight("86%");
+        leftpnl.addComponent(comptoBind);
 
         // Adding some buttons
         AbsoluteLayout absL = new AbsoluteLayout();
@@ -111,32 +113,64 @@ public class ContainerView extends VerticalLayout {
         horizontal.addComponent(new Button("Add"));
         horizontal.addComponent(new Button("Delete"));
         horizontal.addComponent(new Button("Edit"));
+        leftpnl.addComponent(horizontal);
 
-        final Panel leftpnl = new Panel();
-        leftpnl.setStyleName("floatleft paddingtop10");
-        leftpnl.setScrollable(false);
-        leftpnl.setWidth("30%");
-        leftpnl.setHeight("86%");
-        leftpnl.addComponent(directMembers.containerasTree());
         absL.addComponent(horizontal, "left: 0px; top: 380px;");
-        leftpnl.addComponent(absL);
-
-        // right most panel
-        MetadataRecs metadataRecs = new MetadataRecs(accordionHeight);
-        Accordion acc = metadataRecs.asAccord();
-
-        Panel rightpnl = new Panel();
-        rightpnl.setStyleName("floatright");
-        rightpnl.setWidth("70%");
-        rightpnl.setHeight("100%");
-        rightpnl.addComponent(acc);
-
         cssLayout.addComponent(leftpnl);
-        cssLayout.addComponent(rightpnl);
+    }
 
-        // cssLayout.addComponent();
+    /**
+     * Bindind Context Properties 2 sets of labels in 2 rows
+     */
+    private void bindProperties() {
+        // LEFT SIde
+        final Label descMetadata1 =
+            new Label(NAME + resourceProxy.getName() + " <br /> " + DESCRIPTION
+                + resourceProxy.getDescription() + "<br />" + "ID: "
+                + resourceProxy.getId() + " is " + resourceProxy.getStatus(),
+                Label.CONTENT_RAW);
+        descMetadata1.setStyleName("floatleft columnheight50");
+        descMetadata1.setWidth("30%");
+        cssLayout.addComponent(descMetadata1);
 
-        addComponent(cssLayout);
+        // RIGHT SIDE
+        // TODO HAS NO PREVIOUS VERSION
+        final Label descMetadata2 =
+            new Label(CREATED_BY + "<a href='/ESCD/Frankie'> "
+                + resourceProxy.getCreator() + "</a>"
+                + resourceProxy.getCreatedOn() + "<br>" + LAST_MODIFIED_BY
+                + " <a href='#user/" + resourceProxy.getModifier() + "'>"
+                + resourceProxy.getModifier() + "</a>"
+                + resourceProxy.getModifiedOn() + " <br>"
+                + resourceProxy.getStatus(), Label.CONTENT_RAW);
+        descMetadata2.setStyleName("floatright columnheight50");
+        descMetadata2.setWidth("70%");
+        cssLayout.addComponent(descMetadata2);
+    }
+
+    // TODO Fix this ruler! I cannot believe I did that line as a ruler
+    private void addHorizontalRuler() {
+        final Label descRuler =
+            new Label(
+                "____________________________________________________________________________________________________");
+        descRuler.setStyleName("hr");
+        cssLayout.addComponent(descRuler);
+    }
+
+    private void bindDescription() {
+        final Label description = new Label(resourceProxy.getDescription());
+        description.setStyleName(FULLWIDHT_STYLE_NAME);
+        cssLayout.addComponent(description);
+    }
+
+    private void createBreadCrumb() {
+        final BreadCrumbMenu bm = new BreadCrumbMenu(cssLayout, "container");
+    }
+
+    private void bindNameToHeader() {
+        final Label headerContext = new Label(resourceProxy.getName());
+        headerContext.setStyleName("h1 fullwidth");
+        cssLayout.addComponent(headerContext);
     }
 
     private void configureLayout() {
@@ -151,6 +185,6 @@ public class ContainerView extends VerticalLayout {
         // I remove 420px that are taken by elements on the de.escidoc.esdc.page
         // and 40px for the accordion elements?
         int innerelementsHeight = appHeight - 420;
-        int accordionHeight = innerelementsHeight - 40;
+        accordionHeight = innerelementsHeight - 40;
     }
 }

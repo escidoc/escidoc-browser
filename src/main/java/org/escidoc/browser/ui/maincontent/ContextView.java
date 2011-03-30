@@ -3,6 +3,9 @@ package org.escidoc.browser.ui.maincontent;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.ui.MainSite;
 import org.escidoc.browser.ui.NavigationTreeView;
+import org.escidoc.browser.ui.TreeClickListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.terminal.Sizeable;
@@ -18,6 +21,8 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
 public class ContextView extends VerticalLayout {
+    private static final Logger LOG = LoggerFactory
+    .getLogger(TreeClickListener.class);
 
     private static final String DESCRIPTION = "Description: ";
 
@@ -36,6 +41,8 @@ public class ContextView extends VerticalLayout {
     private final ResourceProxy resourceProxy;
 
     private int appHeight;
+    
+    private int accordionHeight;
 
     public ContextView(final MainSite mainSite,
         final ResourceProxy resourceProxy) throws EscidocClientException {
@@ -43,6 +50,7 @@ public class ContextView extends VerticalLayout {
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s",
             resourceProxy);
         this.mainSite = mainSite;
+        this.appHeight = mainSite.getApplicationHeight();
         this.resourceProxy = resourceProxy;
 
         init();
@@ -65,7 +73,7 @@ public class ContextView extends VerticalLayout {
         // Right Inner Cell
         // Binding Additional Info into it
         ContextAddInfo cnxAddinfo =
-            new ContextAddInfo(resourceProxy, appHeight);
+            new ContextAddInfo(resourceProxy, accordionHeight);
         rightCell(cnxAddinfo.addPanels());
 
         addComponent(cssLayout);
@@ -119,7 +127,7 @@ public class ContextView extends VerticalLayout {
 
         // RIGHT SIDE
         final Label descMetadata2 =
-            new Label(CREATED_BY + "<a href='/ESCD/Frankie'>"
+            new Label(CREATED_BY + " <a href='/ESCD/Frankie'>"
                 + resourceProxy.getCreator() + "</a>"
                 + resourceProxy.getCreatedOn() + "<br>" + LAST_MODIFIED_BY
                 + " <a href='#user/" + resourceProxy.getModifier() + "'>"
@@ -139,7 +147,6 @@ public class ContextView extends VerticalLayout {
         cssLayout.addComponent(descRuler);
     }
 
-    // TODO move these labels somewhere
     private void bindDescription() {
         final Label description = new Label(resourceProxy.getDescription());
         description.setStyleName(FULLWIDHT_STYLE_NAME);
@@ -167,7 +174,7 @@ public class ContextView extends VerticalLayout {
 
         // this is an assumtion of the height that should be left for the
         // accordion or elements of the DirectMember in the same level
-        final int accordionHeight = appHeight - 420;
+        accordionHeight = appHeight - 420;
     }
 
 }

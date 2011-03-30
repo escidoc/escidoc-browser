@@ -27,9 +27,9 @@ public class SearchSimple extends VerticalLayout {
 
     private int appHeight;
 
-    public SearchSimple(MainSite mainSite, int appHeight) {
+    public SearchSimple(MainSite mainSite) {
         this.mainSite = mainSite;
-        this.appHeight = appHeight;
+        this.appHeight = mainSite.getApplicationHeight();
 
         final CustomLayout custom = new CustomLayout("simplesearch");
         addComponent(custom);

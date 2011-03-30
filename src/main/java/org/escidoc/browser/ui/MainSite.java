@@ -9,6 +9,8 @@ import org.escidoc.browser.repository.ItemRepository;
 import org.escidoc.browser.ui.maincontent.SearchSimple;
 import org.escidoc.browser.ui.mainpage.Footer;
 import org.escidoc.browser.ui.mainpage.HeaderContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
@@ -36,6 +38,11 @@ public class MainSite extends VerticalLayout {
 
     private final BrowserApplication app;
 
+    private Window mainWindow;
+    
+    private static final Logger LOG = LoggerFactory
+    .getLogger(TreeClickListener.class);
+
     /**
      * The mainWindow should be revised whether we need it or not the appHeight
      * is the Height of the Application and I need it for calculations in the
@@ -50,6 +57,7 @@ public class MainSite extends VerticalLayout {
         // General Height for the application
         this.appHeight = appHeight;
         this.app = app;
+        this.mainWindow= mainWindow;
         this.setMargin(true);
         setSizeFull();
         this.setWidth("86%");
@@ -158,7 +166,7 @@ public class MainSite extends VerticalLayout {
      * @param event
      */
     public void OnClickSrchButton(final Button.ClickEvent event) {
-        final SearchSimple smpSearch = new SearchSimple(this, appHeight);
+        final SearchSimple smpSearch = new SearchSimple(this);
         openTab(smpSearch, "Search Results");
     }
 

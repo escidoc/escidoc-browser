@@ -25,7 +25,7 @@ public class TreeClickListener implements ItemClickListener {
     private static final int APP_HEIGHT = 500;
 
     private static final Logger LOG = LoggerFactory
-        .getLogger(TreeClickListener.class);
+    .getLogger(TreeClickListener.class);
 
     private final Repository contextRepository;
 
@@ -63,50 +63,48 @@ public class TreeClickListener implements ItemClickListener {
     @Override
     public void itemClick(final ItemClickEvent event) {
         final ResourceModel clickedResource = (ResourceModel) event.getItemId();
-
-        if (ContextModel.isContext(clickedResource)) {
-            LOG.debug("this is a context");
-            try {
-                openInNewTab(
-                    new ContextView(mainSite, tryToFindResource(
-                        contextRepository, clickedResource)), clickedResource);
+        if (event.isDoubleClick()) {
+            if (ContextModel.isContext(clickedResource)) {            
+                try {
+                    openInNewTab(
+                        new ContextView(mainSite, tryToFindResource(
+                            contextRepository, clickedResource)), clickedResource);
+                }
+                catch (EscidocClientException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
             }
-            catch (EscidocClientException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
 
-        else if (ContainerModel.isContainer(clickedResource)) {
-            LOG.debug("this is a container");
+            else if (ContainerModel.isContainer(clickedResource)) {
+                try {
+                    final ResourceProxy containerProxy =
+                        containerRepository.findById(clickedResource.getId());
 
-            try {
-                final ResourceProxy containerProxy =
-                    containerRepository.findById(clickedResource.getId());
+                    openInNewTab(
+                        new ContainerView(mainSite, tryToFindResource(
+                            containerRepository, clickedResource)), clickedResource);
+                }
+                catch (final EscidocClientException e) {
+                    showErrorMessageToUser(clickedResource, e);
+                }
+            }
+            else if (ItemModel.isItem(clickedResource)) {
+                LOG.debug("this is a item");
 
-                openInNewTab(
-                    new ContainerView(mainSite, tryToFindResource(
-                        containerRepository, clickedResource)), clickedResource);
-            }
-            catch (final EscidocClientException e) {
-                showErrorMessageToUser(clickedResource, e);
-            }
-        }
-        else if (ItemModel.isItem(clickedResource)) {
-            LOG.debug("this is a item");
+                try {
+                    final ResourceProxy itemProxy =
+                        itemRepository.findById(clickedResource.getId());
 
-            try {
-                final ResourceProxy itemProxy =
-                    itemRepository.findById(clickedResource.getId());
-
-                openInNewTab(new ItemView(mainSite, appHeight), clickedResource);
+                    openInNewTab(new ItemView(mainSite, appHeight), clickedResource);
+                }
+                catch (final EscidocClientException e) {
+                    showErrorMessageToUser(clickedResource, e);
+                }
             }
-            catch (final EscidocClientException e) {
-                showErrorMessageToUser(clickedResource, e);
+            else {
+                throw new UnsupportedOperationException("Not yet implemented");
             }
-        }
-        else {
-            throw new UnsupportedOperationException("Not yet implemented");
         }
     }
 
