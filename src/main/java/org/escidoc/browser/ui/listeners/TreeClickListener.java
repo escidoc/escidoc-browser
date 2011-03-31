@@ -40,7 +40,7 @@ public class TreeClickListener implements ItemClickListener {
 
     private final Repository itemRepository;
 
-    private EscidocServiceLocation serviceLocation;
+    private final EscidocServiceLocation serviceLocation;
 
     private final Window mainWindow;
 
@@ -66,6 +66,7 @@ public class TreeClickListener implements ItemClickListener {
         this.itemRepository = itemRepository;
         this.mainWindow = mainWindow;
         this.mainSite = mainSite;
+        this.serviceLocation = serviceLocation;
 
         appHeight = mainSite.getApplicationHeight();
     }

@@ -36,7 +36,7 @@ public class MainSite extends VerticalLayout {
 
     private final Window mainWindow;
 
-    private final EscidocServiceLocation serviceLocation;
+    private EscidocServiceLocation serviceLocation;
 
     /**
      * The mainWindow should be revised whether we need it or not the appHeight
@@ -55,6 +55,7 @@ public class MainSite extends VerticalLayout {
         this.appHeight = appHeight;
         this.app = app;
         this.mainWindow = mainWindow;
+        this.serviceLocation = serviceLocation;
         this.setMargin(true);
         setSizeFull();
         this.setWidth("86%");

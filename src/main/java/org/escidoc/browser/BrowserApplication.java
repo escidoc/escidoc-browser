@@ -9,6 +9,7 @@ import org.escidoc.browser.ui.listeners.TreeClickListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.Application;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
@@ -49,6 +50,8 @@ public class BrowserApplication extends Application {
     }
 
     private void buildMainWindow(final EscidocServiceLocation serviceLocation) {
+        Preconditions.checkNotNull(serviceLocation,
+            "serviceLocation is null: %s", serviceLocation);
         mainWindow.setImmediate(true);
         mainWindow.setScrollable(true);
         setMainWindowContent(serviceLocation);
@@ -61,7 +64,6 @@ public class BrowserApplication extends Application {
             mainWindow.setContent(createMainSite(serviceLocation, mainWindow,
                 getApplicationHeight()));
         }
-
         catch (final EscidocClientException e) {
             mainWindow.showNotification(new Window.Notification(
                 ViewConstant.ERROR, e.getMessage(),
@@ -112,6 +114,8 @@ public class BrowserApplication extends Application {
     }
 
     public void setServiceLocation(final EscidocServiceLocation serviceLocation) {
+        Preconditions.checkNotNull(serviceLocation,
+            "serviceLocation is null: %s", serviceLocation);
         this.serviceLocation = serviceLocation;
     }
 
