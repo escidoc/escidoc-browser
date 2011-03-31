@@ -4,8 +4,6 @@ import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.ListSelect;
-import com.vaadin.ui.VerticalLayout;
 
 public class ItemContent extends CustomLayout {
 

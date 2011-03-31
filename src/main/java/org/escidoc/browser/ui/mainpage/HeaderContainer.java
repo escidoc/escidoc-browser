@@ -4,7 +4,6 @@ import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.SessionHandlerImpl;
 import org.escidoc.browser.ui.MainSite;
 
-import com.vaadin.service.ApplicationContext;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;

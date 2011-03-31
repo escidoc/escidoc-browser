@@ -1,4 +1,4 @@
-package org.escidoc.browser.ui;
+package org.escidoc.browser.ui.listeners;
 
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
@@ -6,6 +6,7 @@ import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repository;
+import org.escidoc.browser.ui.MainSite;
 import org.escidoc.browser.ui.maincontent.ContainerView;
 import org.escidoc.browser.ui.maincontent.ContextView;
 import org.escidoc.browser.ui.maincontent.ItemView;
@@ -25,7 +26,7 @@ public class TreeClickListener implements ItemClickListener {
     private static final int APP_HEIGHT = 500;
 
     private static final Logger LOG = LoggerFactory
-    .getLogger(TreeClickListener.class);
+        .getLogger(TreeClickListener.class);
 
     private final Repository contextRepository;
 
@@ -64,13 +65,14 @@ public class TreeClickListener implements ItemClickListener {
     public void itemClick(final ItemClickEvent event) {
         final ResourceModel clickedResource = (ResourceModel) event.getItemId();
         if (event.isDoubleClick()) {
-            if (ContextModel.isContext(clickedResource)) {            
+            if (ContextModel.isContext(clickedResource)) {
                 try {
                     openInNewTab(
                         new ContextView(mainSite, tryToFindResource(
-                            contextRepository, clickedResource)), clickedResource);
+                            contextRepository, clickedResource)),
+                        clickedResource);
                 }
-                catch (EscidocClientException e) {
+                catch (final EscidocClientException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
@@ -83,7 +85,8 @@ public class TreeClickListener implements ItemClickListener {
 
                     openInNewTab(
                         new ContainerView(mainSite, tryToFindResource(
-                            containerRepository, clickedResource)), clickedResource);
+                            containerRepository, clickedResource)),
+                        clickedResource);
                 }
                 catch (final EscidocClientException e) {
                     showErrorMessageToUser(clickedResource, e);
@@ -96,7 +99,8 @@ public class TreeClickListener implements ItemClickListener {
                     final ResourceProxy itemProxy =
                         itemRepository.findById(clickedResource.getId());
 
-                    openInNewTab(new ItemView(mainSite, appHeight), clickedResource);
+                    openInNewTab(new ItemView(mainSite, appHeight),
+                        clickedResource);
                 }
                 catch (final EscidocClientException e) {
                     showErrorMessageToUser(clickedResource, e);

@@ -2,19 +2,16 @@ package org.escidoc.browser.ui.maincontent;
 
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.ui.MainSite;
-import org.escidoc.browser.ui.NavigationTreeView;
-import org.escidoc.browser.ui.TreeClickListener;
+import org.escidoc.browser.ui.listeners.TreeClickListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.terminal.Sizeable;
-import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -22,7 +19,7 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 @SuppressWarnings("serial")
 public class ContextView extends VerticalLayout {
     private static final Logger LOG = LoggerFactory
-    .getLogger(TreeClickListener.class);
+        .getLogger(TreeClickListener.class);
 
     private static final String DESCRIPTION = "Description: ";
 
@@ -35,7 +32,7 @@ public class ContextView extends VerticalLayout {
     private static final String LAST_MODIFIED_BY = "last modification by";
 
     private static final String DIRECT_MEMBERS = "Direct Members";
-    
+
     private final CssLayout cssLayout = new CssLayout();
 
     private final MainSite mainSite;
@@ -43,7 +40,7 @@ public class ContextView extends VerticalLayout {
     private final ResourceProxy resourceProxy;
 
     private int appHeight;
-    
+
     private int accordionHeight;
 
     public ContextView(final MainSite mainSite,
@@ -70,7 +67,7 @@ public class ContextView extends VerticalLayout {
         // Binding Direct Members in
         final DirectMember directMembers =
             new DirectMember(mainSite, resourceProxy.getId());
-        leftCell(DIRECT_MEMBERS,directMembers.contextasTree());
+        leftCell(DIRECT_MEMBERS, directMembers.contextasTree());
 
         // Right Inner Cell
         // Binding Additional Info into it
@@ -100,21 +97,24 @@ public class ContextView extends VerticalLayout {
     /**
      * This is the inner Left Cell within a Context By default the Direct
      * Members are bound here
-     * @param directMembers 
+     * 
+     * @param directMembers
      * 
      * @param comptoBind
      */
     private void leftCell(String directMembers, Component comptoBind) {
         final Panel leftpnl = new Panel();
-        
+
         leftpnl.setStyleName("directmembers floatleft paddingtop10");
         leftpnl.setScrollable(false);
         leftpnl.setWidth("30%");
         leftpnl.setHeight("86%");
-        
-        Label nameofPanel = new Label("<strong>"+DIRECT_MEMBERS+"</string>",Label.CONTENT_RAW);
+
+        Label nameofPanel =
+            new Label("<strong>" + DIRECT_MEMBERS + "</string>",
+                Label.CONTENT_RAW);
         leftpnl.addComponent(nameofPanel);
-        
+
         leftpnl.addComponent(comptoBind);
         cssLayout.addComponent(leftpnl);
     }

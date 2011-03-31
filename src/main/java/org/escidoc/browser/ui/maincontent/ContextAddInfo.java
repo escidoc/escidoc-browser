@@ -2,7 +2,6 @@ package org.escidoc.browser.ui.maincontent;
 
 import org.escidoc.browser.model.ResourceProxy;
 
-import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 

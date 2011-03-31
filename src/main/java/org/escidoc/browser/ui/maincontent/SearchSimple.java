@@ -3,7 +3,6 @@ package org.escidoc.browser.ui.maincontent;
 import org.escidoc.browser.ui.MainSite;
 
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;

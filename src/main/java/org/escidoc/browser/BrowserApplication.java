@@ -4,7 +4,7 @@ import javax.servlet.http.HttpSession;
 
 import org.escidoc.browser.ui.Constant;
 import org.escidoc.browser.ui.MainSite;
-import org.escidoc.browser.ui.TreeClickListener;
+import org.escidoc.browser.ui.listeners.TreeClickListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +18,8 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
 public class BrowserApplication extends Application {
-    private final static Window mainWindow = new Window(Constant.MAIN_WINDOW_TITLE);
+    private final static Window mainWindow = new Window(
+        Constant.MAIN_WINDOW_TITLE);
 
     private static final Logger LOG = LoggerFactory
         .getLogger(TreeClickListener.class);
@@ -63,8 +64,8 @@ public class BrowserApplication extends Application {
 
     private void setMainWindowHeight() {
         mainWindow.getContent().setHeight(100, Sizeable.UNITS_PERCENTAGE);
-        //mainWindow.getContent().setHeight(getApplicationHeight(),
-          //  Sizeable.UNITS_PIXELS);
+        // mainWindow.getContent().setHeight(getApplicationHeight(),
+        // Sizeable.UNITS_PIXELS);
     }
 
     public SessionHandlerImpl getSessionHandler() {
@@ -82,15 +83,17 @@ public class BrowserApplication extends Application {
         else
             return false;
     }
-    //TODO fix the manual Height
+
+    // TODO fix the manual Height
     private int getApplicationHeight() {
         final WebApplicationContext ctx = (WebApplicationContext) getContext();
         final int height = ctx.getBrowser().getScreenHeight();
         final int appHeight = (height / 100 * 86 - 5);
         LOG.debug("I AM IN BrowserApplication.java and Height is: " + height);
 
-        LOG.debug("Getting mainwindow Height" + mainWindow.getContent().getHeight());
-        //return appHeight;
+        LOG.debug("Getting mainwindow Height"
+            + mainWindow.getContent().getHeight());
+        // return appHeight;
         return 860;
 
     }

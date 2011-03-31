@@ -5,6 +5,7 @@ import java.util.List;
 import org.escidoc.browser.model.ResourceContainerImpl;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.repository.Repository;
+import org.escidoc.browser.ui.listeners.TreeClickListener;
 import org.escidoc.browser.ui.listeners.TreeExpandListener;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;

@@ -1,19 +1,11 @@
 package org.escidoc.browser.ui.maincontent;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.ContainerProxy;
 import org.escidoc.browser.ui.MainSite;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.AbstractLayout;
-import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
@@ -21,7 +13,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Tree;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 

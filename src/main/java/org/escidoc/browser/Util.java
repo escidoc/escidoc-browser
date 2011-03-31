@@ -2,6 +2,8 @@ package org.escidoc.browser;
 
 import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
@@ -102,5 +104,12 @@ public final class Util {
             }
         }
         throw new RuntimeException("Unrecognized type: " + record.getClass());
+    }
+
+    public static URI parseEscidocUriFrom(final Map<String, String[]> parameters)
+        throws URISyntaxException {
+        final URI escidocUri =
+            new URI(parameters.get(AppConstants.ESCIDOC_URL)[0]);
+        return escidocUri;
     }
 }

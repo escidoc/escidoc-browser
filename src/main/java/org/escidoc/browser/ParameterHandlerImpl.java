@@ -1,13 +1,11 @@
 package org.escidoc.browser;
 
+import java.net.URI;
 import java.util.Map;
-
-import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
 import com.vaadin.terminal.ParameterHandler;
 import com.vaadin.ui.Window;
 
@@ -19,7 +17,7 @@ public class ParameterHandlerImpl implements ParameterHandler {
 
     private Window mainWindow;
 
-    private BrowserApplication app;
+    private final BrowserApplication app;
 
     public ParameterHandlerImpl(final BrowserApplication app) {
         this.app = app;
@@ -31,18 +29,20 @@ public class ParameterHandlerImpl implements ParameterHandler {
             && Util.isTokenExist(parameters)) {
             LOG.debug("both escidocurl and token exists");
             // app.setEscidocUri(parseEscidocUriFrom(parameters));
+            tryToParseEscidocUriFromParameter(parameters);
             // showMainView(parameters);
         }
         if (Util.isTokenExist(parameters)) {
             LOG.debug("only token exists");
-            SessionHandlerImpl sess = app.getSessionHandler();
-            ParamaterDecoder pardec = new ParamaterDecoder(app);
+            final SessionHandlerImpl sess = app.getSessionHandler();
+            final ParamaterDecoder pardec = new ParamaterDecoder(app);
             sess.doLogin(pardec.parseAndDecodeToken(parameters));
             // showMainView(parameters);
         }
         else if (Util.isEscidocUrlExists(parameters)
             && !Util.isTokenExist(parameters)) {
             LOG.debug("escidocurl exists but no token");
+            tryToParseEscidocUriFromParameter(parameters);
             // app.setEscidocUri(parseEscidocUriFrom(parameters));
             // showLoginView();
         }
@@ -51,5 +51,10 @@ public class ParameterHandlerImpl implements ParameterHandler {
             LOG.debug("nothing");
             // app.showLandingView();
         }
+    }
+
+    private URI tryToParseEscidocUriFromParameter(
+        final Map<String, String[]> parameters) {
+        return Util.parseEscidocUriFrom(parameters);
     }
 }

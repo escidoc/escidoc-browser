@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.escidoc.browser.Util;
-import org.escidoc.browser.model.ContextProxyImpl;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
 import org.escidoc.browser.model.ResourceModel;

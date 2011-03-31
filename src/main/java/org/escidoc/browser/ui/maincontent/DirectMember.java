@@ -1,20 +1,13 @@
 package org.escidoc.browser.ui.maincontent;
 
-import java.util.List;
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.EscidocServiceLocationImpl;
-import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.ContainerRepository;
 import org.escidoc.browser.repository.ContextRepository;
 import org.escidoc.browser.repository.ItemRepository;
 import org.escidoc.browser.ui.MainSite;
 import org.escidoc.browser.ui.NavigationTreeView;
 import org.escidoc.browser.ui.UiBuilder;
-
-import com.vaadin.ui.Component;
-import com.vaadin.ui.ListSelect;
-import com.vaadin.ui.Tree;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 

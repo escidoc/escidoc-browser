@@ -3,7 +3,6 @@ package org.escidoc.browser.repository;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.escidoc.browser.model.ContextProxyImpl;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
 
@@ -14,7 +13,6 @@ import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.MetadataRecords;
 import de.escidoc.core.resources.common.versionhistory.Version;
 import de.escidoc.core.resources.om.container.Container;
-import de.escidoc.core.resources.om.context.Context;
 
 public class ContainerProxyImpl implements ContainerProxy {
     private final Container containerFromCore;
@@ -159,6 +157,5 @@ public class ContainerProxyImpl implements ContainerProxy {
         }
 
     }
-
 
 }
