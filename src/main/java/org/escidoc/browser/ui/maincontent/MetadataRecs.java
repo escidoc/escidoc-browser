@@ -1,22 +1,16 @@
 package org.escidoc.browser.ui.maincontent;
 
 import java.util.Iterator;
-import java.util.List;
 
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.ContainerProxy;
 
 import com.vaadin.Application;
-import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Window;
-
-import de.escidoc.core.resources.common.MetadataRecord;
-import de.escidoc.core.resources.common.versionhistory.Version;
 
 public class MetadataRecs{
     private int height;

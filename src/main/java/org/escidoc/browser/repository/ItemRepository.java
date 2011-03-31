@@ -4,7 +4,6 @@ import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 import java.util.List;
 
-import org.escidoc.browser.Util;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
 import org.escidoc.browser.model.ResourceModel;
@@ -12,11 +11,9 @@ import org.escidoc.browser.model.ResourceProxy;
 
 import com.google.common.base.Preconditions;
 
-import de.escidoc.core.client.ContainerHandlerClient;
 import de.escidoc.core.client.ItemHandlerClient;
 import de.escidoc.core.client.TransportProtocol;
 import de.escidoc.core.client.exceptions.EscidocClientException;
-import de.escidoc.core.client.interfaces.ContextHandlerClientInterface;
 import de.escidoc.core.client.interfaces.ItemHandlerClientInterface;
 
 public class ItemRepository implements Repository {

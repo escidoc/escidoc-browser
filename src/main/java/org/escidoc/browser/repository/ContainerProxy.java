@@ -2,9 +2,7 @@ package org.escidoc.browser.repository;
 
 import java.util.List;
 
-import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.model.ResourceType;
 
 import de.escidoc.core.resources.common.versionhistory.Version;
 

@@ -1,6 +1,6 @@
 package org.escidoc.browser.ui.maincontent;
 
-simport org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.ContainerProxy;
 import org.escidoc.browser.ui.MainSite;
@@ -87,7 +87,8 @@ public class ContainerView extends VerticalLayout {
         leftCell(DIRECT_MEMBERS, directMembers.containerAsTree());
 
         // right most panel
-        final MetadataRecs metaData = new MetadataRecs(accordionHeight);
+        final MetadataRecs metaData =
+            new MetadataRecs(resourceProxy, accordionHeight, null);
         rightCell(metaData.asAccord());
 
         // cssLayout.addComponent();

@@ -5,7 +5,6 @@ import java.util.List;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
 
-import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.om.item.Item;
 
 public class ItemProxyImpl implements ResourceProxy {
