@@ -1,7 +1,12 @@
 package org.escidoc.browser;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Map;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
@@ -9,11 +14,15 @@ import org.escidoc.browser.model.EscidocServiceLocationImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.vaadin.ui.Window.Notification;
+
 @SuppressWarnings("serial")
 public class ParameterHandlerImpl implements EscidocParameterHandler {
 
     private static final Logger LOG = LoggerFactory
         .getLogger(ParameterHandlerImpl.class);
+
+    private static final int TEN_SECONDS = 10;
 
     private final EscidocServiceLocation serviceLocation;
 
@@ -43,27 +52,54 @@ public class ParameterHandlerImpl implements EscidocParameterHandler {
             LOG.debug("only token exists");
             sessionHandler.doLogin(ParamaterDecoder
                 .parseAndDecodeToken(parameters));
-            // showMainView(parameters);
         }
         else if (Util.isEscidocUrlExists(parameters)
             && hasNotEscidocHandler(parameters)) {
             LOG.debug("escidocurl exists but no escidocHandler");
-            final URI escidocUri =
-                tryToParseEscidocUriFromParameter(parameters);
-            isEscidocOnline(escidocUri);
-            serviceLocation.setUri(escidocUri);
-            app.setServiceLocation(serviceLocation);
-            app.buildMainView();
+            if (isServerOnline(tryToParseEscidocUriFromParameter(parameters))) {
+                serviceLocation
+                    .setUri(tryToParseEscidocUriFromParameter(parameters));
+                app.setServiceLocation(serviceLocation);
+                app.buildMainView();
+            }
         }
         else if (!Util.isEscidocUrlExists(parameters)
             && hasNotEscidocHandler(parameters)) {
             LOG.debug("nothing");
-            // app.showLandingView();
         }
     }
 
-    private void isEscidocOnline(final URI escidocUri) {
-
+    private boolean isServerOnline(final URI escidocUri) {
+        URLConnection connection;
+        try {
+            connection = new URL(escidocUri.toString()).openConnection();
+            connection.setConnectTimeout(TEN_SECONDS);
+            connection.connect();
+            final int responseCode =
+                ((HttpURLConnection) connection).getResponseCode();
+            return responseCode == 200;
+        }
+        catch (final IllegalArgumentException e) {
+            LOG.warn("Malformed URL: " + e);
+            app.getMainWindow().showNotification(
+                new Notification(e.getMessage(),
+                    Notification.TYPE_ERROR_MESSAGE));
+            return false;
+        }
+        catch (final MalformedURLException e) {
+            LOG.warn("Malformed URL: " + e);
+            app.getMainWindow().showNotification(
+                new Notification(e.getMessage(),
+                    Notification.TYPE_ERROR_MESSAGE));
+            return false;
+        }
+        catch (final IOException e) {
+            LOG.warn("IOException: " + e);
+            app.getMainWindow().showNotification(
+                new Notification("Can not connect to: " + escidocUri,
+                    Notification.TYPE_ERROR_MESSAGE));
+            return false;
+        }
     }
 
     private boolean hasNotEscidocHandler(final Map<String, String[]> parameters) {

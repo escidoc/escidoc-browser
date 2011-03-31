@@ -61,6 +61,7 @@ public class BrowserApplication extends Application {
             mainWindow.setContent(createMainSite(serviceLocation, mainWindow,
                 getApplicationHeight()));
         }
+
         catch (final EscidocClientException e) {
             mainWindow.showNotification(new Window.Notification(
                 ViewConstant.ERROR, e.getMessage(),
