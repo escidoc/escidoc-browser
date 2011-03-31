@@ -1,5 +1,6 @@
 package org.escidoc.browser.ui.maincontent;
 
+import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.ui.MainSite;
 import org.escidoc.browser.ui.listeners.TreeClickListener;
@@ -13,6 +14,7 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -43,14 +45,23 @@ public class ContextView extends VerticalLayout {
 
     private int accordionHeight;
 
-    public ContextView(final MainSite mainSite,
-        final ResourceProxy resourceProxy) throws EscidocClientException {
+    private final EscidocServiceLocation serviceLocation;
+
+    private final Window mainWindow;
+
+    public ContextView(final EscidocServiceLocation serviceLocation,
+        final MainSite mainSite, final ResourceProxy resourceProxy,
+        final Window mainWindow) throws EscidocClientException {
+        Preconditions.checkNotNull(serviceLocation,
+            "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s",
             resourceProxy);
+        this.serviceLocation = serviceLocation;
         this.mainSite = mainSite;
-        this.appHeight = mainSite.getApplicationHeight();
+        appHeight = mainSite.getApplicationHeight();
         this.resourceProxy = resourceProxy;
+        this.mainWindow = mainWindow;
 
         init();
     }
@@ -66,12 +77,13 @@ public class ContextView extends VerticalLayout {
         // Left Inner Cell
         // Binding Direct Members in
         final DirectMember directMembers =
-            new DirectMember(mainSite, resourceProxy.getId());
-        leftCell(DIRECT_MEMBERS, directMembers.contextasTree());
+            new DirectMember(serviceLocation, mainSite, resourceProxy.getId(),
+                mainWindow);
+        leftCell(DIRECT_MEMBERS, directMembers.contextAsTree());
 
         // Right Inner Cell
         // Binding Additional Info into it
-        ContextAddInfo cnxAddinfo =
+        final ContextAddInfo cnxAddinfo =
             new ContextAddInfo(resourceProxy, accordionHeight);
         rightCell(cnxAddinfo.addPanels());
 
@@ -85,7 +97,7 @@ public class ContextView extends VerticalLayout {
      * 
      * @param comptoBind
      */
-    private void rightCell(Component comptoBind) {
+    private void rightCell(final Component comptoBind) {
         final Panel leftpnl = new Panel();
         leftpnl.setStyleName("floatright");
         leftpnl.setWidth("70%");
@@ -102,7 +114,7 @@ public class ContextView extends VerticalLayout {
      * 
      * @param comptoBind
      */
-    private void leftCell(String directMembers, Component comptoBind) {
+    private void leftCell(final String directMembers, final Component comptoBind) {
         final Panel leftpnl = new Panel();
 
         leftpnl.setStyleName("directmembers floatleft paddingtop10");
@@ -110,7 +122,7 @@ public class ContextView extends VerticalLayout {
         leftpnl.setWidth("30%");
         leftpnl.setHeight("86%");
 
-        Label nameofPanel =
+        final Label nameofPanel =
             new Label("<strong>" + DIRECT_MEMBERS + "</string>",
                 Label.CONTENT_RAW);
         leftpnl.addComponent(nameofPanel);

@@ -1,26 +1,32 @@
 package org.escidoc.browser;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.EscidocServiceLocationImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.terminal.ParameterHandler;
-import com.vaadin.ui.Window;
-
 @SuppressWarnings("serial")
-public class ParameterHandlerImpl implements ParameterHandler {
+public class ParameterHandlerImpl implements EscidocParameterHandler {
 
     private static final Logger LOG = LoggerFactory
         .getLogger(ParameterHandlerImpl.class);
 
-    private Window mainWindow;
+    private final EscidocServiceLocation serviceLocation;
+
+    private final SessionHandlerImpl sessionHandler;
 
     private final BrowserApplication app;
 
-    public ParameterHandlerImpl(final BrowserApplication app) {
+    public ParameterHandlerImpl(final BrowserApplication app,
+        final EscidocServiceLocation serviceLocation,
+        final SessionHandlerImpl sessionHandler) {
         this.app = app;
+        this.serviceLocation = new EscidocServiceLocationImpl();
+        this.sessionHandler = sessionHandler;
     }
 
     @Override
@@ -28,33 +34,56 @@ public class ParameterHandlerImpl implements ParameterHandler {
         if (Util.isEscidocUrlExists(parameters)
             && Util.isTokenExist(parameters)) {
             LOG.debug("both escidocurl and token exists");
-            // app.setEscidocUri(parseEscidocUriFrom(parameters));
-            tryToParseEscidocUriFromParameter(parameters);
-            // showMainView(parameters);
+            serviceLocation
+                .setUri(tryToParseEscidocUriFromParameter(parameters));
+            sessionHandler.doLogin(ParamaterDecoder
+                .parseAndDecodeToken(parameters));
         }
         if (Util.isTokenExist(parameters)) {
             LOG.debug("only token exists");
-            final SessionHandlerImpl sess = app.getSessionHandler();
-            final ParamaterDecoder pardec = new ParamaterDecoder(app);
-            sess.doLogin(pardec.parseAndDecodeToken(parameters));
+            sessionHandler.doLogin(ParamaterDecoder
+                .parseAndDecodeToken(parameters));
             // showMainView(parameters);
         }
         else if (Util.isEscidocUrlExists(parameters)
-            && !Util.isTokenExist(parameters)) {
-            LOG.debug("escidocurl exists but no token");
-            tryToParseEscidocUriFromParameter(parameters);
-            // app.setEscidocUri(parseEscidocUriFrom(parameters));
-            // showLoginView();
+            && hasNotEscidocHandler(parameters)) {
+            LOG.debug("escidocurl exists but no escidocHandler");
+            final URI escidocUri =
+                tryToParseEscidocUriFromParameter(parameters);
+            isEscidocOnline(escidocUri);
+            serviceLocation.setUri(escidocUri);
+            app.setServiceLocation(serviceLocation);
+            app.buildMainView();
         }
         else if (!Util.isEscidocUrlExists(parameters)
-            && !Util.isTokenExist(parameters)) {
+            && hasNotEscidocHandler(parameters)) {
             LOG.debug("nothing");
             // app.showLandingView();
         }
     }
 
+    private void isEscidocOnline(final URI escidocUri) {
+
+    }
+
+    private boolean hasNotEscidocHandler(final Map<String, String[]> parameters) {
+        return !Util.isTokenExist(parameters);
+    }
+
     private URI tryToParseEscidocUriFromParameter(
         final Map<String, String[]> parameters) {
-        return Util.parseEscidocUriFrom(parameters);
+        try {
+            return Util.parseEscidocUriFrom(parameters);
+        }
+        catch (final URISyntaxException e) {
+            LOG.error("Wrong URI syntax", e);
+        }
+        // FIXME: do not return null.
+        return null;
+    }
+
+    @Override
+    public EscidocServiceLocation getServiceLocation() {
+        return serviceLocation;
     }
 }

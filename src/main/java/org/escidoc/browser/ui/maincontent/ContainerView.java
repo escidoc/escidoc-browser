@@ -1,5 +1,6 @@
 package org.escidoc.browser.ui.maincontent;
 
+simport org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.ContainerProxy;
 import org.escidoc.browser.ui.MainSite;
@@ -13,6 +14,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -22,9 +24,9 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
  */
 public class ContainerView extends VerticalLayout {
 
-    private int appHeight;
+    private final int appHeight;
 
-    private MainSite mainSite;
+    private final MainSite mainSite;
 
     private final ContainerProxy resourceProxy;
 
@@ -46,9 +48,15 @@ public class ContainerView extends VerticalLayout {
 
     private int innerelementsHeight;
 
-    public ContainerView(final MainSite mainSite,
-        final ResourceProxy resourceProxy) throws EscidocClientException {
+    private EscidocServiceLocation serviceLocation;
 
+    private final Window mainWindow;
+
+    public ContainerView(final EscidocServiceLocation serviceLocation,
+        final MainSite mainSite, final ResourceProxy resourceProxy,
+        final Window mainWindow) throws EscidocClientException {
+        Preconditions.checkNotNull(serviceLocation,
+            "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s",
             resourceProxy);
@@ -57,8 +65,9 @@ public class ContainerView extends VerticalLayout {
                 + " is not an instance of ContainerProxy.class");
 
         this.mainSite = mainSite;
-        this.appHeight = mainSite.getApplicationHeight();
+        appHeight = mainSite.getApplicationHeight();
         this.resourceProxy = (ContainerProxy) resourceProxy;
+        this.mainWindow = mainWindow;
         init();
     }
 
@@ -72,12 +81,13 @@ public class ContainerView extends VerticalLayout {
         bindProperties();
 
         // Direct Members!
-        DirectMember directMembers =
-            new DirectMember(mainSite, resourceProxy.getId());
-        leftCell(DIRECT_MEMBERS, directMembers.containerasTree());
+        final DirectMember directMembers =
+            new DirectMember(serviceLocation, mainSite, resourceProxy.getId(),
+                mainWindow);
+        leftCell(DIRECT_MEMBERS, directMembers.containerAsTree());
 
         // right most panel
-        MetadataRecs metaData = new MetadataRecs(resourceProxy,accordionHeight,this.getApplication());
+        final MetadataRecs metaData = new MetadataRecs(accordionHeight);
         rightCell(metaData.asAccord());
 
         // cssLayout.addComponent();
@@ -92,7 +102,7 @@ public class ContainerView extends VerticalLayout {
      * 
      * @param comptoBind
      */
-    private void rightCell(Component comptoBind) {
+    private void rightCell(final Component comptoBind) {
         final Panel rightpnl = new Panel();
         rightpnl.setStyleName("floatright");
         rightpnl.setWidth("70%");
@@ -101,7 +111,7 @@ public class ContainerView extends VerticalLayout {
         cssLayout.addComponent(rightpnl);
     }
 
-    private void leftCell(String string, Component comptoBind) {
+    private void leftCell(final String string, final Component comptoBind) {
         final Panel leftpnl = new Panel();
 
         leftpnl.setStyleName("directmembers floatleft paddingtop10 ");
@@ -110,7 +120,7 @@ public class ContainerView extends VerticalLayout {
         leftpnl.setWidth("30%");
         leftpnl.setHeight("85%");
 
-        Label nameofPanel =
+        final Label nameofPanel =
             new Label("<strong>" + DIRECT_MEMBERS + "</string>",
                 Label.CONTENT_RAW);
         leftpnl.addComponent(nameofPanel);
@@ -118,10 +128,10 @@ public class ContainerView extends VerticalLayout {
         leftpnl.addComponent(comptoBind);
 
         // Adding some buttons
-        AbsoluteLayout absL = new AbsoluteLayout();
+        final AbsoluteLayout absL = new AbsoluteLayout();
         absL.setWidth("100%");
         absL.setHeight(innerelementsHeight + "px");
-        HorizontalLayout horizontal = new HorizontalLayout();
+        final HorizontalLayout horizontal = new HorizontalLayout();
         horizontal.addComponent(new Button("Add"));
         horizontal.addComponent(new Button("Delete"));
         horizontal.addComponent(new Button("Edit"));
@@ -196,7 +206,7 @@ public class ContainerView extends VerticalLayout {
         // accordion or elements of the DirectMember in the same level
         // I remove 420px that are taken by elements on the de.escidoc.esdc.page
         // and 40px for the accordion elements?
-        int innerelementsHeight = appHeight - 420;
+        final int innerelementsHeight = appHeight - 420;
         accordionHeight = innerelementsHeight - 40;
     }
 }

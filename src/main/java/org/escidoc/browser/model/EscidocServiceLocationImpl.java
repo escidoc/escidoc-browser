@@ -1,16 +1,15 @@
 package org.escidoc.browser.model;
 
-import org.escidoc.browser.AppConstants;
+import java.net.URI;
 
-import com.google.common.base.Preconditions;
+import org.escidoc.browser.AppConstants;
 
 public class EscidocServiceLocationImpl implements EscidocServiceLocation {
 
-    private final String eSciDocUri;
+    private String escidocUri;
 
-    public EscidocServiceLocationImpl(final String eSciDocUri) {
-        Preconditions.checkNotNull(eSciDocUri, "eSciDocUri is null");
-        this.eSciDocUri = eSciDocUri;
+    public EscidocServiceLocationImpl() {
+        // empty
     }
 
     /*
@@ -20,7 +19,7 @@ public class EscidocServiceLocationImpl implements EscidocServiceLocation {
      */
     @Override
     public String getUri() {
-        return eSciDocUri;
+        return escidocUri;
     }
 
     /*
@@ -30,7 +29,7 @@ public class EscidocServiceLocationImpl implements EscidocServiceLocation {
      */
     @Override
     public String getLoginUri() {
-        return eSciDocUri + AppConstants.LOGIN_TARGET;
+        return escidocUri + AppConstants.LOGIN_TARGET;
     }
 
     /*
@@ -40,6 +39,29 @@ public class EscidocServiceLocationImpl implements EscidocServiceLocation {
      */
     @Override
     public String getLogoutUri() {
-        return eSciDocUri + AppConstants.LOGOUT_TARGET;
+        return escidocUri + AppConstants.LOGOUT_TARGET;
     }
+
+    @Override
+    public void setUri(final URI escidocUri) {
+        this.escidocUri = escidocUri.toString();
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("EscidocServiceLocationImpl [");
+        if (getUri() != null) {
+            builder.append("getUri()=").append(getUri()).append(", ");
+        }
+        if (getLoginUri() != null) {
+            builder.append("getLoginUri()=").append(getLoginUri()).append(", ");
+        }
+        if (getLogoutUri() != null) {
+            builder.append("getLogoutUri()=").append(getLogoutUri());
+        }
+        builder.append("]");
+        return builder.toString();
+    }
+
 }

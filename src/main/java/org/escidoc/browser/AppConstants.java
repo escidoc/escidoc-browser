@@ -1,14 +1,14 @@
 package org.escidoc.browser;
 
-public class AppConstants {
+public final class AppConstants {
 
-    public static final String HARDCODED_ESCIDOC_URI =
+    // public static final String HARDCODED_ESCIDOC_URI =
     // "http://escidev6:8080"
     // "http://zbmed.fiz-karlsruhe.de/"
-        "http://escidev4:8080";
+    // "http://escidev4:8080";
 
     private AppConstants() {
-        // Contants Class
+        // not to be initialized
     }
 
     public static final String LOGIN_TARGET = "/aa/login?target=";

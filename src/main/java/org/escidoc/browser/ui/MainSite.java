@@ -1,17 +1,13 @@
 package org.escidoc.browser.ui;
 
-import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.BrowserApplication;
-import org.escidoc.browser.model.EscidocServiceLocationImpl;
+import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.repository.ContainerRepository;
 import org.escidoc.browser.repository.ContextRepository;
 import org.escidoc.browser.repository.ItemRepository;
-import org.escidoc.browser.ui.listeners.TreeClickListener;
 import org.escidoc.browser.ui.maincontent.SearchSimple;
 import org.escidoc.browser.ui.mainpage.Footer;
 import org.escidoc.browser.ui.mainpage.HeaderContainer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
@@ -25,9 +21,8 @@ import com.vaadin.ui.themes.BaseTheme;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
+@SuppressWarnings("serial")
 public class MainSite extends VerticalLayout {
-    final EscidocServiceLocationImpl serviceLocation =
-        new EscidocServiceLocationImpl(AppConstants.HARDCODED_ESCIDOC_URI);
 
     private final CssLayout mainLayout;
 
@@ -41,8 +36,7 @@ public class MainSite extends VerticalLayout {
 
     private final Window mainWindow;
 
-    private static final Logger LOG = LoggerFactory
-        .getLogger(TreeClickListener.class);
+    private final EscidocServiceLocation serviceLocation;
 
     /**
      * The mainWindow should be revised whether we need it or not the appHeight
@@ -53,8 +47,10 @@ public class MainSite extends VerticalLayout {
      * @param appHeight
      * @throws EscidocClientException
      */
-    public MainSite(final Window mainWindow, final int appHeight,
+    public MainSite(final Window mainWindow,
+        final EscidocServiceLocation serviceLocation, final int appHeight,
         final BrowserApplication app) throws EscidocClientException {
+        this.serviceLocation = serviceLocation;
         // General Height for the application
         this.appHeight = appHeight;
         this.app = app;
@@ -90,19 +86,9 @@ public class MainSite extends VerticalLayout {
      * @return TabSheet
      */
     private TabSheet buildTabContainer() {
-        // Right section TABS
-
         maincontent.setStyleName("floatright paddingtop20");
         maincontent.setWidth("70%");
         maincontent.setHeight("86%");
-
-        // adding tab elements
-        // final ContextView contextView = new ContextView(this);
-        // maincontent.addComponent(contextView);
-        // maincontent.addTab(contextView);
-        // maincontent.getTab(contextView).setCaption("Sommer 2010");
-        // maincontent.getTab(contextView).setClosable(true);
-
         return maincontent;
 
     }
@@ -115,14 +101,12 @@ public class MainSite extends VerticalLayout {
      * @throws EscidocClientException
      */
     private Panel buildNavigationPanel() throws EscidocClientException {
-        // HERE COMES THE MAIN NAVIGATION (LEFT SIDE)
         final Panel mainnav = new Panel();
         mainnav.setScrollable(true);
         mainnav.setStyleName("floatleft paddingtop20");
         mainnav.setWidth("30%");
         mainnav.setHeight("86%");
 
-        // Search icon
         final Button srchButton =
             new Button("Search", this, "OnClickSrchButton");
         srchButton.setStyleName(BaseTheme.BUTTON_LINK);
@@ -130,12 +114,11 @@ public class MainSite extends VerticalLayout {
         srchButton.setDescription("Search the Infrastructure");
         mainnav.addComponent(srchButton);
 
-        // Navication tree
-
         final NavigationTreeView treemenu =
-            new UiBuilder().buildNavigationTree(new ContextRepository(
-                serviceLocation), new ContainerRepository(serviceLocation),
-                new ItemRepository(serviceLocation), this);
+            new UiBuilder(serviceLocation).buildNavigationTree(
+                new ContextRepository(serviceLocation),
+                new ContainerRepository(serviceLocation), new ItemRepository(
+                    serviceLocation), this, mainWindow);
         mainnavtree = treemenu;
         mainnav.addComponent(mainnavtree);
 
@@ -143,8 +126,6 @@ public class MainSite extends VerticalLayout {
     }
 
     public void openTab(final Component cmp, final String tabname) {
-        // New Tab
-
         maincontent.addComponent(cmp);
         maincontent.addTab(cmp);
         maincontent.getTab(cmp).setCaption(tabname);

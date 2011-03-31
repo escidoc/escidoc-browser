@@ -1,11 +1,15 @@
 package org.escidoc.browser.model;
 
+import java.net.URI;
+
 public interface EscidocServiceLocation {
 
-    public abstract String getUri();
+    String getUri();
 
-    public abstract String getLoginUri();
+    String getLoginUri();
 
-    public abstract String getLogoutUri();
+    String getLogoutUri();
+
+    void setUri(URI tryToParseEscidocUriFromParameter);
 
 }

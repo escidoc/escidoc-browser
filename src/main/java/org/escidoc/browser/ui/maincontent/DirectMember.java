@@ -1,7 +1,6 @@
 package org.escidoc.browser.ui.maincontent;
 
-import org.escidoc.browser.AppConstants;
-import org.escidoc.browser.model.EscidocServiceLocationImpl;
+import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.repository.ContainerRepository;
 import org.escidoc.browser.repository.ContextRepository;
 import org.escidoc.browser.repository.ItemRepository;
@@ -9,39 +8,44 @@ import org.escidoc.browser.ui.MainSite;
 import org.escidoc.browser.ui.NavigationTreeView;
 import org.escidoc.browser.ui.UiBuilder;
 
+import com.vaadin.ui.Window;
+
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class DirectMember {
-    final EscidocServiceLocationImpl serviceLocation =
-        new EscidocServiceLocationImpl(AppConstants.HARDCODED_ESCIDOC_URI);
+    private final EscidocServiceLocation serviceLocation;
 
-    private String parentID;
+    private final String parentID;
 
-    private MainSite mainSite;
+    private final MainSite mainSite;
 
-    public DirectMember(MainSite mainSite, String parentID) {
+    private final Window mainWindow;
+
+    public DirectMember(final EscidocServiceLocation serviceLocation,
+        final MainSite mainSite, final String parentID, final Window mainWindow) {
+        this.serviceLocation = serviceLocation;
         this.parentID = parentID;
         this.mainSite = mainSite;
+        this.mainWindow = mainWindow;
     }
 
-    public NavigationTreeView contextasTree() throws EscidocClientException {
+    public NavigationTreeView contextAsTree() throws EscidocClientException {
         final NavigationTreeView tree =
-            new UiBuilder().buildContextDirectMemberTree(new ContextRepository(
-                serviceLocation), new ContainerRepository(serviceLocation),
-                new ItemRepository(serviceLocation), mainSite, parentID);
-
+            new UiBuilder(serviceLocation).buildContextDirectMemberTree(
+                new ContextRepository(serviceLocation),
+                new ContainerRepository(serviceLocation), new ItemRepository(
+                    serviceLocation), mainSite, parentID, mainWindow);
         tree.setSizeFull();
         return tree;
 
     }
 
-    public NavigationTreeView containerasTree() throws EscidocClientException {
+    public NavigationTreeView containerAsTree() throws EscidocClientException {
         final NavigationTreeView tree =
-            new UiBuilder().buildContainerDirectMemberTree(
+            new UiBuilder(serviceLocation).buildContainerDirectMemberTree(
                 new ContextRepository(serviceLocation),
                 new ContainerRepository(serviceLocation), new ItemRepository(
                     serviceLocation), mainSite, parentID);
-
         tree.setSizeFull();
         return tree;
 

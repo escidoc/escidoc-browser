@@ -2,108 +2,120 @@ package org.escidoc.browser;
 
 import javax.servlet.http.HttpSession;
 
-import org.escidoc.browser.ui.Constant;
+import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.ui.MainSite;
+import org.escidoc.browser.ui.ViewConstant;
 import org.escidoc.browser.ui.listeners.TreeClickListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.Application;
-import com.vaadin.terminal.ParameterHandler;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
 public class BrowserApplication extends Application {
     private final static Window mainWindow = new Window(
-        Constant.MAIN_WINDOW_TITLE);
+        ViewConstant.MAIN_WINDOW_TITLE);
 
     private static final Logger LOG = LoggerFactory
         .getLogger(TreeClickListener.class);
 
-    private ParameterHandler paramaterHandler;
+    private EscidocServiceLocation serviceLocation;
 
-    private SessionHandlerImpl sessionhndl;
+    private EscidocParameterHandler paramaterHandler;
+
+    private SessionHandlerImpl sessionHandler;
 
     @Override
     public void init() {
         setApplicationTheme();
-        addParameterHandler();
-        buildMainWindow();
         setMainWindow(mainWindow);
+        addParameterHandler();
     }
 
     private void addParameterHandler() {
-        paramaterHandler = new ParameterHandlerImpl(this);
+        paramaterHandler =
+            new ParameterHandlerImpl(this, serviceLocation, sessionHandler);
         mainWindow.addParameterHandler(paramaterHandler);
     }
 
     private void setApplicationTheme() {
-        setTheme(Constant.THEME_NAME);
+        setTheme(ViewConstant.THEME_NAME);
     }
 
-    private void buildMainWindow() {
+    private void buildMainWindow(final EscidocServiceLocation serviceLocation) {
         mainWindow.setImmediate(true);
         mainWindow.setScrollable(true);
-        setMainWindowContent();
+        setMainWindowContent(serviceLocation);
         setMainWindowHeight();
     }
 
-    private void setMainWindowContent() {
+    private void setMainWindowContent(
+        final EscidocServiceLocation serviceLocation) {
         try {
-            mainWindow.setContent(createMainSite(mainWindow,
+            mainWindow.setContent(createMainSite(serviceLocation, mainWindow,
                 getApplicationHeight()));
         }
         catch (final EscidocClientException e) {
-            mainWindow.showNotification(e.getCause().toString());
+            mainWindow.showNotification(new Window.Notification(
+                ViewConstant.ERROR, e.getMessage(),
+                Notification.TYPE_ERROR_MESSAGE));
         }
     }
 
     private void setMainWindowHeight() {
         mainWindow.getContent().setHeight(100, Sizeable.UNITS_PERCENTAGE);
-        // mainWindow.getContent().setHeight(getApplicationHeight(),
-        // Sizeable.UNITS_PIXELS);
     }
 
     public SessionHandlerImpl getSessionHandler() {
         final WebApplicationContext ctx = (WebApplicationContext) getContext();
-        HttpSession session = ctx.getHttpSession();
-        SessionHandlerImpl sessionhndl = new SessionHandlerImpl(session);
+        final HttpSession session = ctx.getHttpSession();
+        final SessionHandlerImpl sessionhndl = new SessionHandlerImpl(session);
         System.out.println("Outputting the cookie"
             + sessionhndl.geteSDBHandlervalue());
         return sessionhndl;
     }
 
     public boolean isLoggedin() {
-        if (this.sessionhndl.isLoggedin())
+        if (sessionHandler.isLoggedin()) {
             return true;
-        else
+        }
+        else {
             return false;
+        }
     }
 
-    // TODO fix the manual Height
+    // TODO Fix the manual Height
     private int getApplicationHeight() {
         final WebApplicationContext ctx = (WebApplicationContext) getContext();
         final int height = ctx.getBrowser().getScreenHeight();
-        final int appHeight = (height / 100 * 86 - 5);
         LOG.debug("I AM IN BrowserApplication.java and Height is: " + height);
-
         LOG.debug("Getting mainwindow Height"
             + mainWindow.getContent().getHeight());
-        // return appHeight;
         return 860;
-
     }
 
-    private MainSite createMainSite(final Window mainWindow, final int appHeight)
-        throws EscidocClientException {
-        final MainSite mnSite = new MainSite(mainWindow, appHeight, this);
-        mnSite.setHeight("100%");
-        mnSite.setWidth("100%");
-        return mnSite;
+    private MainSite createMainSite(
+        final EscidocServiceLocation serviceLocation, final Window mainWindow,
+        final int appHeight) throws EscidocClientException {
+        final MainSite mainSite =
+            new MainSite(mainWindow, serviceLocation, appHeight, this);
+        mainSite.setHeight("100%");
+        mainSite.setWidth("100%");
+        return mainSite;
+    }
+
+    public void setServiceLocation(final EscidocServiceLocation serviceLocation) {
+        this.serviceLocation = serviceLocation;
+    }
+
+    public void buildMainView() {
+        buildMainWindow(serviceLocation);
     }
 
 }
