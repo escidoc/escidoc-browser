@@ -12,6 +12,7 @@ import de.escidoc.core.resources.ResourceType;
 import de.escidoc.core.resources.om.GenericVersionableResource;
 import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.om.context.Context;
+import de.escidoc.core.resources.om.item.Item;
 
 public final class ModelConverter {
     private static final Logger LOG = LoggerFactory
@@ -41,6 +42,16 @@ public final class ModelConverter {
         return models;
     }
 
+    public final static List<ResourceModel> itemListToModel(
+        final Collection<Item> itemList) {
+        final List<ResourceModel> models =
+            new ArrayList<ResourceModel>(itemList.size());
+        for (final Resource item : itemList) {
+            models.add(new ItemModel(item));
+        }
+        return models;
+    }
+    
     public final static List<ResourceModel> genericResourcetoModel(
         final Collection<GenericVersionableResource> resources) {
 

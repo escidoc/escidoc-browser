@@ -107,7 +107,7 @@ public class ContextView extends VerticalLayout {
     private void leftCell(String directMembers, Component comptoBind) {
         final Panel leftpnl = new Panel();
         
-        leftpnl.setStyleName("floatleft paddingtop10");
+        leftpnl.setStyleName("directmembers floatleft paddingtop10");
         leftpnl.setScrollable(false);
         leftpnl.setWidth("30%");
         leftpnl.setHeight("86%");

@@ -108,7 +108,8 @@ public class ItemView extends VerticalLayout {
         absL.addComponent(horizontal, "left: 0px; top: 280px;");
 
         // right most panel
-        MetadataRecs metadataRecs = new MetadataRecs(accordionHeight);
+        //TODO
+        MetadataRecs metadataRecs = new MetadataRecs(null, accordionHeight, this.getApplication());
         Accordion acc = metadataRecs.asAccord();
 
         Panel rightpnl = new Panel();

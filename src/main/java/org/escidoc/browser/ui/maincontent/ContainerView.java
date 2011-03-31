@@ -7,6 +7,7 @@ import java.util.Date;
 
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.repository.ContainerProxy;
 import org.escidoc.browser.ui.MainSite;
 
 import com.google.common.base.Preconditions;
@@ -34,7 +35,7 @@ public class ContainerView extends VerticalLayout {
 
     private MainSite mainSite;
 
-    private final ResourceProxy resourceProxy;
+    private final ContainerProxy resourceProxy;
 
     private final CssLayout cssLayout = new CssLayout();
 
@@ -60,9 +61,13 @@ public class ContainerView extends VerticalLayout {
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s",
             resourceProxy);
+        Preconditions.checkArgument(resourceProxy instanceof ContainerProxy,
+            resourceProxy.getClass()
+                + " is not an instance of ContainerProxy.class");
+
         this.mainSite = mainSite;
         this.appHeight = mainSite.getApplicationHeight();
-        this.resourceProxy = resourceProxy;
+        this.resourceProxy = (ContainerProxy) resourceProxy;
         init();
     }
 
@@ -78,10 +83,10 @@ public class ContainerView extends VerticalLayout {
         // Direct Members!
         DirectMember directMembers =
             new DirectMember(mainSite, resourceProxy.getId());
-        leftCell(DIRECT_MEMBERS,directMembers.containerasTree());
+        leftCell(DIRECT_MEMBERS, directMembers.containerasTree());
 
         // right most panel
-        MetadataRecs metaData = new MetadataRecs(accordionHeight);
+        MetadataRecs metaData = new MetadataRecs(resourceProxy,accordionHeight,this.getApplication());
         rightCell(metaData.asAccord());
 
         // cssLayout.addComponent();
@@ -107,18 +112,19 @@ public class ContainerView extends VerticalLayout {
 
     private void leftCell(String string, Component comptoBind) {
         final Panel leftpnl = new Panel();
-        
+
         leftpnl.setStyleName("directmembers floatleft paddingtop10 ");
         leftpnl.setScrollable(false);
-        
+
         leftpnl.setWidth("30%");
         leftpnl.setHeight("85%");
-        
-        Label nameofPanel = new Label("<strong>"+DIRECT_MEMBERS+"</string>",Label.CONTENT_RAW);
-        leftpnl.addComponent(nameofPanel);
-        
-        leftpnl.addComponent(comptoBind);
 
+        Label nameofPanel =
+            new Label("<strong>" + DIRECT_MEMBERS + "</string>",
+                Label.CONTENT_RAW);
+        leftpnl.addComponent(nameofPanel);
+
+        leftpnl.addComponent(comptoBind);
 
         // Adding some buttons
         AbsoluteLayout absL = new AbsoluteLayout();
@@ -148,7 +154,7 @@ public class ContainerView extends VerticalLayout {
         descMetadata1.setWidth("35%");
         cssLayout.addComponent(descMetadata1);
 
-        // RIGHT SIDE     
+        // RIGHT SIDE
         final Label descMetadata2 =
             new Label(CREATED_BY + "<a href='/ESCD/Frankie'> "
                 + resourceProxy.getCreator() + "</a>"
@@ -156,7 +162,8 @@ public class ContainerView extends VerticalLayout {
                 + " <a href='#user/" + resourceProxy.getModifier() + "'>"
                 + resourceProxy.getModifier() + "</a>"
                 + resourceProxy.getModifiedOn() + " <br>"
-                + resourceProxy.getStatus(), Label.CONTENT_RAW);
+                + resourceProxy.getStatus()
+                + resourceProxy.hasPreviousVersion(), Label.CONTENT_RAW);
         descMetadata2.setStyleName("floatright columnheight50");
         descMetadata2.setWidth("65%");
         cssLayout.addComponent(descMetadata2);

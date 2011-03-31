@@ -82,7 +82,7 @@ public class HeaderContainer extends VerticalLayout {
         this.getWindow()
             .open(
                 new ExternalResource(
-                    "http://escidev6.fiz-karlsruhe.de:8080/aa/login?target=http://localhost:8084/browser/s#HandleLogin"));
+                    "http://escidev4.fiz-karlsruhe.de:8080/aa/login?target=http://localhost:8084/browser/s#HandleLogin"));
         this.login.setCaption("Loggedin!");
 
     }
