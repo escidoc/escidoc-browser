@@ -45,14 +45,15 @@ public class TreeClickListener implements ItemClickListener {
     private final Window mainWindow;
 
     // TODO RepositoryFactory
-
     public TreeClickListener(final EscidocServiceLocation serviceLocation,
         final Repository contextRepository,
         final Repository containerRepository, final Repository itemRepository,
         final Window mainWindow, final MainSite mainSite) {
 
-        Preconditions.checkNotNull(contextRepository, "repository is null: %s",
-            contextRepository);
+        Preconditions.checkNotNull(serviceLocation,
+            "serviceLocation is null: %s", serviceLocation);
+        Preconditions.checkNotNull(contextRepository,
+            "contextRepository is null: %s", contextRepository);
         Preconditions.checkNotNull(containerRepository,
             "containerRepository is null: %s", containerRepository);
         Preconditions.checkNotNull(itemRepository,

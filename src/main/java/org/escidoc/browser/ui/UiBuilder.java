@@ -65,9 +65,9 @@ public class UiBuilder {
         resourceContainer.init();
 
         navigationTreeView.setDataSource(resourceContainer, mainSite);
-        navigationTreeView.addExpandListener(new TreeExpandListener(contextRepository,
-            containerRepository, resourceContainer));
-        navigationTreeView.addClickListener(new TreeClickListener(contextRepository,
+        navigationTreeView.addExpandListener(new TreeExpandListener(
+            contextRepository, containerRepository, resourceContainer));
+        navigationTreeView.addClickListener(new TreeClickListener(
             servicelocation, contextRepository, containerRepository,
             itemRepository, mainWindow, mainSite));
 
