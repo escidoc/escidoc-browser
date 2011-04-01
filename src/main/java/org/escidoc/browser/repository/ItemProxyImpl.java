@@ -21,7 +21,7 @@ public class ItemProxyImpl implements ResourceProxy {
 
     @Override
     public String getName() {
-        return itemFromCore.getProperties().getXLinkTitle();
+        return itemFromCore.getXLinkTitle();
     }
 
     @Override

@@ -45,7 +45,7 @@ public class DirectMember {
             new UiBuilder(serviceLocation).buildContainerDirectMemberTree(
                 new ContextRepository(serviceLocation),
                 new ContainerRepository(serviceLocation), new ItemRepository(
-                    serviceLocation), mainSite, parentID);
+                    serviceLocation), mainSite, parentID,mainWindow);
         tree.setSizeFull();
         return tree;
 

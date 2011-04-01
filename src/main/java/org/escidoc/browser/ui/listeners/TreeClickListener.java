@@ -109,8 +109,9 @@ public class TreeClickListener implements ItemClickListener {
                     final ResourceProxy itemProxy =
                         itemRepository.findById(clickedResource.getId());
 
-                    openInNewTab(new ItemView(mainSite, appHeight),
-                        clickedResource);
+                    openInNewTab(new ItemView(serviceLocation, mainSite,
+                        tryToFindResource(containerRepository,
+                            clickedResource), mainWindow), clickedResource);
                 }
                 catch (final EscidocClientException e) {
                     showErrorMessageToUser(clickedResource, e);

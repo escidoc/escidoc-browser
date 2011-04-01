@@ -1,5 +1,7 @@
 package org.escidoc.browser.ui.maincontent;
 
+import org.escidoc.browser.repository.ItemProxyImpl;
+
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Embedded;
@@ -7,7 +9,7 @@ import com.vaadin.ui.Label;
 
 public class ItemContent extends CustomLayout {
 
-    public ItemContent(int accordionHeight) {
+    public ItemContent(int accordionHeight, ItemProxyImpl resourceProxy) {
         ;
         this.setTemplateName("itemtemplate");
         Embedded e =
@@ -15,7 +17,7 @@ public class ItemContent extends CustomLayout {
         addComponent(e, "thumbnail");
 
         Label lblmetadata =
-            new Label("001 (image/Jpeg)<hr />" + "THUMBNAIL<br />"
+            new Label( "001 (image/Jpeg)<hr />" + "THUMBNAIL<br />"
                 + "Metadata <a href=\"/ESDC#Metadata/13\">\"escidoc\"</a>"
                 + "Metadata <a href=\"/ESDC#Metadata/13\">\"exeif\"</a>"
                 + "Md5 990b87dd9014b258cdc85b1bc29d483e", Label.CONTENT_RAW);

@@ -1,88 +1,93 @@
 package org.escidoc.browser.ui.maincontent;
 
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.repository.ContainerProxy;
+import org.escidoc.browser.repository.ItemProxyImpl;
 import org.escidoc.browser.ui.MainSite;
 
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 public class ItemView extends VerticalLayout {
+
+    private static final String DESCRIPTION = "Description: ";
+
+    private static final String CREATED_BY = "Created by";
+
+    private static final String NAME = "Name: ";
+
+    private static final String FULLWIDHT_STYLE_NAME = "fullwidth";
+
+    private static final String LAST_MODIFIED_BY = "Last modification by";
+
+    private static final String DIRECT_MEMBERS = "Direct Members";
 
     private int appHeight;
 
     private MainSite mainSite;
 
-    public ItemView(MainSite mainSite, int appHeight) {
+    private final CssLayout cssLayout = new CssLayout();
 
-        this.appHeight = appHeight;
+    private int accordionHeight;
+
+    private int innerelementsHeight;
+
+    private ItemProxyImpl resourceProxy;
+
+    public ItemView(EscidocServiceLocation serviceLocation, MainSite mainSite, ResourceProxy resourceProxy, Window mainWindow) {
+        this.resourceProxy = (ItemProxyImpl) resourceProxy;
         this.mainSite = mainSite;
-        setMargin(true);
-        this.setHeight("100%");
-        CssLayout cssLayout = new CssLayout();
-        cssLayout.setWidth("100%");
-        cssLayout.setHeight("100%");
+        init();
+    }
 
-        // this is an assumption of the height that should be left for the
-        // accordion or elements of the DirectMember in the same level
-        // I remove 420px that are taken by elements on the de.escidoc.esdc.page
-        // and 40px for the accordion elements?
-        int innerelementsHeight = appHeight - 420;
-        int accordionHeight = innerelementsHeight - 40;
-
-        // BREADCRUMB
-        BreadCrumbMenu bm = new BreadCrumbMenu(cssLayout, "item");
-        // cssLayout.addComponent(bm);
-
-        // HEADER
-        Label headerContext = new Label("001");
-        headerContext.setStyleName("h1 fullwidth");
-        cssLayout.addComponent(headerContext);
-
-        // TODO move these labels somewhere
-        // +++++++++++++++++++++++++++++++++++//
-        // ContainerView Desc 1
-        Label descContext1 =
-            new Label(
-                "+ Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. ");
-        descContext1.setStyleName("fullwidth");
-        cssLayout.addComponent(descContext1);
-
-        // ContainerView Horizontal Ruler
-        Label descRuler =
-            new Label(
-                "____________________________________________________________________________________________________");
-        descRuler.setStyleName("hr");
-        cssLayout.addComponent(descRuler);
-        // TODO Fix this ruler! I cannot believe I did that line as a ruler
-
-        // ContainerView DescMetadata1
-        Label descMetadata1 =
-            new Label("Name: 01 <br /> " + "Description: ???<br />"
-                + "ID: escidoc:30132 is released", Label.CONTENT_RAW);
-        descMetadata1.setStyleName("floatleft columnheight50");
-        descMetadata1.setWidth("30%");
-        cssLayout.addComponent(descMetadata1);
-
-        // ContainerView DescMetadata2
-
-        Label descMetadata2 =
-            new Label(
-                "Created by: <a href='/ESCD/Frankie'>Frank Schwichtenberg</a> 26.01.2011, 09:33 <br>"
-                    + "last modification by <a href='/ESCD/Frankie'>Frank Schwichtenberg</a> 26.01.2011, 09:33 <br>"
-                    + "is not released, has <a href='/ESDC/#Item/30132'>previous versions</a>",
-                Label.CONTENT_RAW);
-        descMetadata2.setStyleName("floatright columnheight50");
-        descMetadata2.setWidth("70%");
-        cssLayout.addComponent(descMetadata2);
+    void init() {
+        buildLayout();
+        createBreadcrumbp();
+        bindNametoHeader();
+        bindDescription();
+        bindHrRuler();
+        bindProperties();
 
         // Direct Members
-        ItemContent itCnt = new ItemContent(accordionHeight - 30);
+        ItemContent itCnt = new ItemContent(accordionHeight - 30,resourceProxy);
+        buildLeftCell(itCnt);
 
+        // right most panel
+        // TODO SOME PROBLEMS WITH THE RESOURCEPROXY
+//        MetadataRecs metadataRecs =
+//            new MetadataRecs(resourceProxy, accordionHeight, this.getApplication());
+//        buildRightCell(metadataRecs.asAccord());
+
+        addComponent(cssLayout);
+    }
+
+    /**
+     * @param metadataRecs
+     */
+    private void buildRightCell(Component metadataRecs) {
+
+        Panel rightpnl = new Panel();
+        rightpnl.setStyleName("floatright");
+        rightpnl.setWidth("70%");
+        rightpnl.setHeight("86%");
+        rightpnl.addComponent(metadataRecs);
+        cssLayout.addComponent(rightpnl);
+    }
+
+    /**
+     * @param itCnt
+     * @return
+     */
+    private void buildLeftCell(Component itCnt) {
         // Adding some buttons
         AbsoluteLayout absL = new AbsoluteLayout();
         absL.setWidth("100%");
@@ -99,24 +104,74 @@ public class ItemView extends VerticalLayout {
         leftpnl.setHeight("86%");
         leftpnl.addComponent(itCnt);
         absL.addComponent(horizontal, "left: 0px; top: 280px;");
-
-        // right most panel
-        //TODO
-        MetadataRecs metadataRecs = new MetadataRecs(null, accordionHeight, this.getApplication());
-        Accordion acc = metadataRecs.asAccord();
-
-        Panel rightpnl = new Panel();
-        rightpnl.setStyleName("floatright");
-        rightpnl.setWidth("70%");
-        rightpnl.setHeight("86%");
-        rightpnl.addComponent(acc);
-
         cssLayout.addComponent(leftpnl);
-        cssLayout.addComponent(rightpnl);
-
-        // cssLayout.addComponent();
-
-        addComponent(cssLayout);
     }
 
+    private void bindProperties() {
+        // ContainerView DescMetadata1
+        Label descMetadata1 =
+            new Label(NAME + resourceProxy.getName() + " <br /> " + DESCRIPTION
+                + resourceProxy.getDescription() + "<br />" + "ID: "
+                + resourceProxy.getId() + " is " + resourceProxy.getStatus(),
+                Label.CONTENT_RAW);
+        descMetadata1.setStyleName("floatleft columnheight50");
+        descMetadata1.setWidth("30%");
+        cssLayout.addComponent(descMetadata1);
+
+        // ContainerView DescMetadata2
+
+        Label descMetadata2 =
+            new Label(CREATED_BY + "<a href='/ESCD/Frankie'> "
+                + resourceProxy.getCreator() + "</a>"
+                + resourceProxy.getCreatedOn() + "<br>" + LAST_MODIFIED_BY
+                + " <a href='#user/" + resourceProxy.getModifier() + "'>"
+                + resourceProxy.getModifier() + "</a>"
+                + resourceProxy.getModifiedOn() + " <br>"
+                + resourceProxy.getStatus(), Label.CONTENT_RAW);
+        descMetadata2.setStyleName("floatright columnheight50");
+        descMetadata2.setWidth("70%");
+        cssLayout.addComponent(descMetadata2);
+    }
+
+    private void bindHrRuler() {
+        // ContainerView Horizontal Ruler
+        Label descRuler =
+            new Label(
+                "____________________________________________________________________________________________________");
+        descRuler.setStyleName("hr");
+        cssLayout.addComponent(descRuler);
+    }
+
+    private void bindDescription() {
+        Label descContext1 =
+            new Label(resourceProxy.getDescription());
+        descContext1.setStyleName(FULLWIDHT_STYLE_NAME);
+        cssLayout.addComponent(descContext1);
+    }
+
+    private void bindNametoHeader() {
+        // HEADER
+        Label headerContext = new Label(resourceProxy.getName());
+        headerContext.setStyleName("h1 fullwidth");
+        cssLayout.addComponent(headerContext);
+    }
+
+    private void createBreadcrumbp() {
+        // BREADCRUMB
+        BreadCrumbMenu bm = new BreadCrumbMenu(cssLayout, "item");
+    }
+
+    private void buildLayout() {
+        setMargin(true);
+        this.setHeight("100%");
+        cssLayout.setWidth("100%");
+        cssLayout.setHeight("100%");
+
+        // this is an assumption of the height that should be left for the
+        // accordion or elements of the DirectMember in the same level
+        // I remove 420px that are taken by elements on the de.escidoc.esdc.page
+        // and 40px for the accordion elements?
+        innerelementsHeight = appHeight - 420;
+        accordionHeight = innerelementsHeight - 40;
+    }
 }

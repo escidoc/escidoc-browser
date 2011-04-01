@@ -77,7 +77,7 @@ public class UiBuilder {
     public NavigationTreeView buildContainerDirectMemberTree(
         final Repository contextRepository,
         final Repository containerRepository, final Repository itemRepository,
-        final MainSite mainSite, final String parentID)
+        final MainSite mainSite, final String parentID, final Window mainWindow)
         throws EscidocClientException {
 
         final NavigationTreeView navigationTreeView =
@@ -91,7 +91,8 @@ public class UiBuilder {
         resourceContainer.init();
 
         navigationTreeView.setDataSource(resourceContainer, mainSite);
-
+        navigationTreeView.addClickListener(new TreeClickListener(servicelocation, contextRepository,
+            containerRepository, itemRepository,mainWindow, mainSite));
         return navigationTreeView;
     }
 
