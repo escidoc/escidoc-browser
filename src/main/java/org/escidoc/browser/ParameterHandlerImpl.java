@@ -22,7 +22,7 @@ public class ParameterHandlerImpl implements EscidocParameterHandler {
     private static final Logger LOG = LoggerFactory
         .getLogger(ParameterHandlerImpl.class);
 
-    private static final int TEN_SECONDS = 10;
+    private static final int TEN_SECONDS = 10000;
 
     private final EscidocServiceLocation serviceLocation;
 
