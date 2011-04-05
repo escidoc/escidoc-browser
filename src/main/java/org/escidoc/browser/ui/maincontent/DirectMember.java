@@ -8,6 +8,7 @@ import org.escidoc.browser.ui.MainSite;
 import org.escidoc.browser.ui.NavigationTreeView;
 import org.escidoc.browser.ui.UiBuilder;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -23,6 +24,8 @@ public class DirectMember {
 
     public DirectMember(final EscidocServiceLocation serviceLocation,
         final MainSite mainSite, final String parentID, final Window mainWindow) {
+        Preconditions.checkNotNull(serviceLocation,
+            "serviceLocation is null: %s", serviceLocation);
         this.serviceLocation = serviceLocation;
         this.parentID = parentID;
         this.mainSite = mainSite;

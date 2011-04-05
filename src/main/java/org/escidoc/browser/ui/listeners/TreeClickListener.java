@@ -110,7 +110,7 @@ public class TreeClickListener implements ItemClickListener {
                         itemRepository.findById(clickedResource.getId());
 
                     openInNewTab(new ItemView(serviceLocation, mainSite,
-                        tryToFindResource(containerRepository,
+                        tryToFindResource(itemRepository,
                             clickedResource), mainWindow), clickedResource);
                 }
                 catch (final EscidocClientException e) {

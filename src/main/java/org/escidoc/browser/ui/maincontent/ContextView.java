@@ -77,7 +77,7 @@ public class ContextView extends VerticalLayout {
         // Left Inner Cell
         // Binding Direct Members in
         final DirectMember directMembers =
-            new DirectMember(serviceLocation, mainSite, resourceProxy.getId(),
+            new DirectMember(this.serviceLocation, mainSite, resourceProxy.getId(),
                 mainWindow);
         leftCell(DIRECT_MEMBERS, directMembers.contextAsTree());
 

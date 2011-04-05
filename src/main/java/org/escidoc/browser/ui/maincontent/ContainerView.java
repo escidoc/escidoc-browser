@@ -63,7 +63,7 @@ public class ContainerView extends VerticalLayout {
         Preconditions.checkArgument(resourceProxy instanceof ContainerProxy,
             resourceProxy.getClass()
                 + " is not an instance of ContainerProxy.class");
-
+        this.serviceLocation=serviceLocation;
         this.mainSite = mainSite;
         appHeight = mainSite.getApplicationHeight();
         this.resourceProxy = (ContainerProxy) resourceProxy;

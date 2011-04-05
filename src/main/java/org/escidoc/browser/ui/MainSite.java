@@ -126,9 +126,11 @@ public class MainSite extends VerticalLayout {
         return mainnav;
     }
 
-    public void openTab(final Component cmp, final String tabname) {
+    public void openTab(final Component cmp, String tabname) {
         maincontent.addComponent(cmp);
         maincontent.addTab(cmp);
+        if (tabname.length()>50)
+                tabname=tabname.substring(0,50)+"...";
         maincontent.getTab(cmp).setCaption(tabname);
         maincontent.setSelectedTab(cmp);
         maincontent.getTab(cmp).setClosable(true);

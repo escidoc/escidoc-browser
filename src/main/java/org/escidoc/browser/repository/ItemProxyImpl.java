@@ -1,13 +1,19 @@
 package org.escidoc.browser.repository;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
 
+import de.escidoc.core.resources.common.MetadataRecord;
+import de.escidoc.core.resources.common.Relation;
 import de.escidoc.core.resources.om.item.Item;
+import de.escidoc.core.resources.om.item.component.Component;
+import de.escidoc.core.resources.om.item.component.ComponentProperties;
 
-public class ItemProxyImpl implements ResourceProxy {
+public class ItemProxyImpl implements ItemProxy {
     private final Item itemFromCore;
     
     public ItemProxyImpl(Item resource) {
@@ -62,8 +68,42 @@ public class ItemProxyImpl implements ResourceProxy {
 
     @Override
     public List<String> getRelations() {
+        List<String> relationList = new ArrayList<String>();
+        for (Relation relation : itemFromCore.getRelations()) {
+            relationList.add(relation.getXLinkTitle());
+        }
+        return relationList;
+    }
+
+    @Override
+    public Boolean hasPreviousVersion() {
         // TODO Auto-generated method stub
         return null;
     }
+    
+    public Boolean hasComponents(){
+        if ( (itemFromCore.getComponents().size())!=0 )
+            return true;
+        return false;
+    }
+    
+    /**
+     * Get the first component in an Item
+     * Make sure the Item contains components
+     * @return
+     */
+    public  Component getFirstelementProperties(){
+        return itemFromCore.getComponents().getFirst();
+    }
+
+    public List<String> getMedataRecords() {
+        List<String> metadataList = new ArrayList<String>();
+        for (MetadataRecord metadataRecord : itemFromCore
+            .getMetadataRecords()) {
+            metadataList.add(metadataRecord.getName());
+        }
+        return metadataList;
+    }
+    
 
 }

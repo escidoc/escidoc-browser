@@ -6,6 +6,7 @@ import org.escidoc.browser.repository.ContainerProxy;
 import org.escidoc.browser.repository.ItemProxyImpl;
 import org.escidoc.browser.ui.MainSite;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
@@ -44,6 +45,7 @@ public class ItemView extends VerticalLayout {
     private ItemProxyImpl resourceProxy;
 
     public ItemView(EscidocServiceLocation serviceLocation, MainSite mainSite, ResourceProxy resourceProxy, Window mainWindow) {
+        Preconditions.checkNotNull(mainWindow, "resource is null.");
         this.resourceProxy = (ItemProxyImpl) resourceProxy;
         this.mainSite = mainSite;
         init();
@@ -63,9 +65,9 @@ public class ItemView extends VerticalLayout {
 
         // right most panel
         // TODO SOME PROBLEMS WITH THE RESOURCEPROXY
-//        MetadataRecs metadataRecs =
-//            new MetadataRecs(resourceProxy, accordionHeight, this.getApplication());
-//        buildRightCell(metadataRecs.asAccord());
+        MetadataRecsItem metadataRecs =
+            new MetadataRecsItem(resourceProxy, innerelementsHeight, this.getApplication());
+        buildRightCell(metadataRecs.asAccord());
 
         addComponent(cssLayout);
     }
