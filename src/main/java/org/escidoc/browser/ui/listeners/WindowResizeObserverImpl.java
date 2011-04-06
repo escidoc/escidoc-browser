@@ -1,5 +1,7 @@
 package org.escidoc.browser.ui.listeners;
 
+import org.escidoc.browser.ui.WindowDimension;
+import org.escidoc.browser.ui.WindowDimensionImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +19,7 @@ public final class WindowResizeObserverImpl implements WindowResizeObserver {
     }
 
     @Override
-    public int getHeight() {
-        return Math.round(windowDimension.getHeight());
+    public WindowDimension getDimension() {
+        return windowDimension;
     }
 }

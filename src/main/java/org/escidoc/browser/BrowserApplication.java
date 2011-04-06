@@ -15,6 +15,8 @@ import com.google.common.base.Preconditions;
 import com.vaadin.Application;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
@@ -44,11 +46,11 @@ public class BrowserApplication extends Application {
         setApplicationTheme();
         setMainWindow();
         addParameterHandler();
+        addWindowDimensionDetection();
+    }
 
-        observer = new WindowResizeObserverImpl();
-        windowResizeListener = new WindowResizeListener(observer);
-        mainWindow.addListener(windowResizeListener);
-
+    private void setApplicationTheme() {
+        setTheme(ViewConstant.THEME_NAME);
     }
 
     private void setMainWindow() {
@@ -61,18 +63,10 @@ public class BrowserApplication extends Application {
         mainWindow.addParameterHandler(paramaterHandler);
     }
 
-    private void setApplicationTheme() {
-        setTheme(ViewConstant.THEME_NAME);
-    }
-
-    private void buildMainWindow(final EscidocServiceLocation serviceLocation) {
-        Preconditions.checkNotNull(serviceLocation,
-            "serviceLocation is null: %s", serviceLocation);
-        LOG.debug("Window height is: " + observer.getHeight());
-        mainWindow.setImmediate(true);
-        mainWindow.setScrollable(true);
-        setMainWindowContent(serviceLocation);
-        setMainWindowHeight();
+    private void addWindowDimensionDetection() {
+        observer = new WindowResizeObserverImpl();
+        windowResizeListener = new WindowResizeListener(observer);
+        mainWindow.addListener(windowResizeListener);
     }
 
     private void setMainWindowContent(
@@ -106,7 +100,9 @@ public class BrowserApplication extends Application {
     }
 
     private int getApplicationHeight() {
-        return observer.getHeight();
+        Preconditions.checkArgument(observer.getDimension().getHeight() > 0,
+            "Can not get window size");
+        return Math.round(observer.getDimension().getHeight());
     }
 
     private MainSite createMainSite(
@@ -119,15 +115,41 @@ public class BrowserApplication extends Application {
         return mainSite;
     }
 
+    public void buildMainView() {
+        if (observer.getDimension().getHeight() > 0) {
+            LOG.debug("Dimension is: " + observer.getDimension());
+            buildMainWindow(serviceLocation);
+        }
+        else {
+            final Button button = new Button("Start");
+            mainWindow.addComponent(button);
+            button.addListener(new Button.ClickListener() {
+
+                @Override
+                public void buttonClick(final ClickEvent event) {
+                    Preconditions.checkArgument(observer
+                        .getDimension().getHeight() > 0,
+                        "Can not get window size");
+                    LOG.debug("Dimension is: " + observer.getDimension());
+                    mainWindow.removeComponent(button);
+                    buildMainWindow(serviceLocation);
+                }
+            });
+        }
+    }
+
+    private void buildMainWindow(final EscidocServiceLocation serviceLocation) {
+        Preconditions.checkNotNull(serviceLocation,
+            "serviceLocation is null: %s", serviceLocation);
+        mainWindow.setImmediate(true);
+        mainWindow.setScrollable(true);
+        setMainWindowContent(serviceLocation);
+        setMainWindowHeight();
+    }
+
     public void setServiceLocation(final EscidocServiceLocation serviceLocation) {
         Preconditions.checkNotNull(serviceLocation,
             "serviceLocation is null: %s", serviceLocation);
         this.serviceLocation = serviceLocation;
     }
-
-    public void buildMainView() {
-        LOG.debug("Height is: " + observer.getHeight());
-        buildMainWindow(serviceLocation);
-    }
-
 }

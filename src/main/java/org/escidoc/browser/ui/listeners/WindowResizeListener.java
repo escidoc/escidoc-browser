@@ -1,5 +1,7 @@
 package org.escidoc.browser.ui.listeners;
 
+import org.escidoc.browser.ui.WindowDimensionImpl;
+
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.ResizeEvent;
 

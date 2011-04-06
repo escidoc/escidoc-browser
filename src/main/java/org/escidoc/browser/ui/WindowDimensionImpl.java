@@ -1,4 +1,4 @@
-package org.escidoc.browser.ui.listeners;
+package org.escidoc.browser.ui;
 
 public class WindowDimensionImpl implements WindowDimension {
 
