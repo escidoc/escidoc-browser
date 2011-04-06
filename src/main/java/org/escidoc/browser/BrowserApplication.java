@@ -5,7 +5,9 @@ import javax.servlet.http.HttpSession;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.ui.MainSite;
 import org.escidoc.browser.ui.ViewConstant;
-import org.escidoc.browser.ui.listeners.TreeClickListener;
+import org.escidoc.browser.ui.listeners.WindowResizeListener;
+import org.escidoc.browser.ui.listeners.WindowResizeObserver;
+import org.escidoc.browser.ui.listeners.WindowResizeObserverImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,11 +22,12 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
 public class BrowserApplication extends Application {
-    private final static Window mainWindow = new Window(
-        ViewConstant.MAIN_WINDOW_TITLE);
 
     private static final Logger LOG = LoggerFactory
-        .getLogger(TreeClickListener.class);
+        .getLogger(BrowserApplication.class);
+
+    private final static Window mainWindow = new Window(
+        ViewConstant.MAIN_WINDOW_TITLE);
 
     private EscidocServiceLocation serviceLocation;
 
@@ -32,11 +35,24 @@ public class BrowserApplication extends Application {
 
     private SessionHandlerImpl sessionHandler;
 
+    private WindowResizeListener windowResizeListener;
+
+    private WindowResizeObserver observer;
+
     @Override
     public void init() {
         setApplicationTheme();
-        setMainWindow(mainWindow);
+        setMainWindow();
         addParameterHandler();
+
+        observer = new WindowResizeObserverImpl();
+        windowResizeListener = new WindowResizeListener(observer);
+        mainWindow.addListener(windowResizeListener);
+
+    }
+
+    private void setMainWindow() {
+        setMainWindow(mainWindow);
     }
 
     private void addParameterHandler() {
@@ -52,6 +68,7 @@ public class BrowserApplication extends Application {
     private void buildMainWindow(final EscidocServiceLocation serviceLocation) {
         Preconditions.checkNotNull(serviceLocation,
             "serviceLocation is null: %s", serviceLocation);
+        LOG.debug("Window height is: " + observer.getHeight());
         mainWindow.setImmediate(true);
         mainWindow.setScrollable(true);
         setMainWindowContent(serviceLocation);
@@ -85,22 +102,11 @@ public class BrowserApplication extends Application {
     }
 
     public boolean isLoggedin() {
-        if (sessionHandler.isLoggedin()) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return sessionHandler.isLoggedin();
     }
 
-    // TODO Fix the manual Height
     private int getApplicationHeight() {
-        final WebApplicationContext ctx = (WebApplicationContext) getContext();
-        final int height = ctx.getBrowser().getScreenHeight();
-        LOG.debug("I AM IN BrowserApplication.java and Height is: " + height);
-        LOG.debug("Getting mainwindow Height"
-            + mainWindow.getContent().getHeight());
-        return 860;
+        return observer.getHeight();
     }
 
     private MainSite createMainSite(
@@ -120,6 +126,7 @@ public class BrowserApplication extends Application {
     }
 
     public void buildMainView() {
+        LOG.debug("Height is: " + observer.getHeight());
         buildMainWindow(serviceLocation);
     }
 
