@@ -5,6 +5,7 @@ import java.util.Iterator;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.ContainerProxy;
+import org.escidoc.browser.ui.listeners.RelationsClickListener;
 import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
 
 import com.google.common.base.Preconditions;
@@ -59,8 +60,9 @@ public class MetadataRecs {
             .setDescription("Show Version history in a Pop-up");
 
         Button btnContentRelation =
-            new Button("Content Relations", new VersionHistoryClickListener(
-                resourceProxy, mainWindow, escidocServiceLocation));
+            new Button("Container Content Relations",
+                new RelationsClickListener(resourceProxy, mainWindow,
+                    escidocServiceLocation));
         btnContentRelation.setStyleName(BaseTheme.BUTTON_LINK);
         btnContentRelation.setDescription("Show Version history in a Pop-up");
 

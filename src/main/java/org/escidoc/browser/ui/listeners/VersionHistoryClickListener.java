@@ -28,7 +28,7 @@ public class VersionHistoryClickListener implements ClickListener {
 
     private ContainerProxy containerProxy;
 
-    private EscidocServiceLocation escidocServiceLocation;
+    private final EscidocServiceLocation escidocServiceLocation;
 
     private String wndContent;
 
@@ -39,12 +39,13 @@ public class VersionHistoryClickListener implements ClickListener {
      * 
      * @param resourceProxy
      * @param mainWindow
+     * @param escidocServiceLocation2
      */
     public VersionHistoryClickListener(ItemProxy resourceProxy,
-        Window mainWindow) {
+        Window mainWindow, EscidocServiceLocation escidocServiceLocation) {
         this.itemProxy = resourceProxy;
         this.mainWindow = mainWindow;
-
+        this.escidocServiceLocation = escidocServiceLocation;
         cr = new ItemRepository(escidocServiceLocation);
 
     }
@@ -66,11 +67,9 @@ public class VersionHistoryClickListener implements ClickListener {
 
     }
 
-    public String getVersionHistory(Repository cr)
+    public String getVersionHistory(Repository cr, String id)
         throws EscidocClientException {
-
-        VersionHistory vH = cr.findVersionHistory(containerProxy.getId());
-
+        VersionHistory vH = cr.getVersionHistory(id);
         Collection<Version> versions = vH.getVersions();
         String versionHistory = "";
         for (Version version : versions) {
@@ -137,30 +136,26 @@ public class VersionHistoryClickListener implements ClickListener {
         Window subwindow = new Window("Version History");
         subwindow.setWidth("600px");
         subwindow.setModal(true);
+        String id = "";
+        if (event.getButton().getCaption().equals("Container Version History")) {
+            id = containerProxy.getId();
+        }
+        else if (event.getButton().getCaption().equals("Item Version History")) {
+            id = itemProxy.getId();
+        }
+        else {
+            throw new RuntimeException("Bug: unexpected event button: "
+                + event.getButton());
+        }
+
         try {
-            this.wndContent = getVersionHistory(cr);
+
+            this.wndContent = getVersionHistory(cr, id);
         }
         catch (EscidocClientException e) {
             this.wndContent = "No information";
         }
-        // if
-        // (event.getButton().getCaption().equals("Container Version History"))
-        // {
-        // try {
-        // this.wndContent = getVersionHistory(cr);
-        // }
-        // catch (EscidocClientException e) {
-        // this.wndContent = "No information";
-        // }
-        // }
-        // else if
-        // (event.getButton().getCaption().equals("Item Version History")) {
-        //
-        // }
-        // else {
-        // throw new RuntimeException("Bug: unexpected event button: "
-        // + event.getButton());
-        // }
+
         Label msgWindow = new Label(wndContent, Label.CONTENT_RAW);
 
         subwindow.addComponent(msgWindow);

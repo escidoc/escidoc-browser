@@ -2,14 +2,12 @@ package org.escidoc.browser.ui.maincontent;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.repository.ContainerProxy;
 import org.escidoc.browser.repository.ItemProxyImpl;
 import org.escidoc.browser.ui.MainSite;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.Application;
 import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
@@ -35,7 +33,7 @@ public class ItemView extends VerticalLayout {
 
     private int appHeight;
 
-    private MainSite mainSite;
+    private final MainSite mainSite;
 
     private final CssLayout cssLayout = new CssLayout();
 
@@ -43,17 +41,21 @@ public class ItemView extends VerticalLayout {
 
     private int innerelementsHeight;
 
-    private ItemProxyImpl resourceProxy;
+    private final ItemProxyImpl resourceProxy;
 
     private Application app;
 
-    private Window mainWindow;
+    private final Window mainWindow;
 
-    public ItemView(EscidocServiceLocation serviceLocation, MainSite mainSite, ResourceProxy resourceProxy, Window mainWindow) {
+    private final EscidocServiceLocation serviceLocation;
+
+    public ItemView(EscidocServiceLocation serviceLocation, MainSite mainSite,
+        ResourceProxy resourceProxy, Window mainWindow) {
         Preconditions.checkNotNull(mainWindow, "resource is null.");
         this.resourceProxy = (ItemProxyImpl) resourceProxy;
         this.mainSite = mainSite;
-        this.mainWindow= mainWindow;
+        this.mainWindow = mainWindow;
+        this.serviceLocation = serviceLocation;
         init();
     }
 
@@ -66,13 +68,15 @@ public class ItemView extends VerticalLayout {
         bindProperties();
 
         // Direct Members
-        ItemContent itCnt = new ItemContent(accordionHeight - 30,resourceProxy);
+        ItemContent itCnt =
+            new ItemContent(accordionHeight - 30, resourceProxy);
         buildLeftCell(itCnt);
 
         // right most panel
         // TODO SOME PROBLEMS WITH THE RESOURCEPROXY
         MetadataRecsItem metadataRecs =
-            new MetadataRecsItem(resourceProxy, innerelementsHeight, mainWindow);
+            new MetadataRecsItem(resourceProxy, innerelementsHeight,
+                mainWindow, serviceLocation);
         buildRightCell(metadataRecs.asAccord());
 
         addComponent(cssLayout);
@@ -151,8 +155,7 @@ public class ItemView extends VerticalLayout {
     }
 
     private void bindDescription() {
-        Label descContext1 =
-            new Label(resourceProxy.getDescription());
+        Label descContext1 = new Label(resourceProxy.getDescription());
         descContext1.setStyleName(FULLWIDHT_STYLE_NAME);
         cssLayout.addComponent(descContext1);
     }
@@ -182,9 +185,10 @@ public class ItemView extends VerticalLayout {
         innerelementsHeight = appHeight - 420;
         accordionHeight = innerelementsHeight - 40;
     }
+
     @Override
     public void attach() {
-        this.app=getApplication();
+        this.app = getApplication();
     }
 
 }

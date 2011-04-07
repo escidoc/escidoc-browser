@@ -6,6 +6,7 @@ import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.common.Relations;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 
 public interface Repository {
@@ -17,6 +18,7 @@ public interface Repository {
 
     ResourceProxy findById(String id) throws EscidocClientException;
 
-    VersionHistory findVersionHistory(String id) throws EscidocClientException;
+    VersionHistory getVersionHistory(String id) throws EscidocClientException;
 
+    Relations getRelations(String id) throws EscidocClientException;
 }

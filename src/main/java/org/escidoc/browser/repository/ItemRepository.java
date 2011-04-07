@@ -15,6 +15,7 @@ import de.escidoc.core.client.ItemHandlerClient;
 import de.escidoc.core.client.TransportProtocol;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.interfaces.ItemHandlerClientInterface;
+import de.escidoc.core.resources.common.Relations;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 
 public class ItemRepository implements Repository {
@@ -48,9 +49,14 @@ public class ItemRepository implements Repository {
     }
 
     @Override
-    public VersionHistory findVersionHistory(String id)
+    public VersionHistory getVersionHistory(String id)
         throws EscidocClientException {
         return client.retrieveVersionHistory(id);
 
+    }
+
+    @Override
+    public Relations getRelations(String id) throws EscidocClientException {
+        return client.retrieveRelations(id);
     }
 }

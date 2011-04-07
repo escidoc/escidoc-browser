@@ -23,11 +23,12 @@ import de.escidoc.core.client.exceptions.EscidocException;
 import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.client.exceptions.TransportException;
 import de.escidoc.core.client.interfaces.ContainerHandlerClientInterface;
+import de.escidoc.core.resources.common.Relations;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.sb.Record;
 import de.escidoc.core.resources.sb.search.records.ResourceRecord;
 
-public class ContainerRepository implements Repository, Versionable {
+public class ContainerRepository implements Repository {
 
     private static final Logger LOG = LoggerFactory
         .getLogger(ContainerRepository.class);
@@ -85,9 +86,15 @@ public class ContainerRepository implements Repository, Versionable {
     }
 
     @Override
-    public VersionHistory findVersionHistory(String id)
+    public VersionHistory getVersionHistory(String id)
         throws EscidocClientException {
         return client.retrieveVersionHistory(id);
     }
 
+    @Override
+    public Relations getRelations(final String id)
+        throws EscidocClientException {
+        return client.retrieveRelations(id);
+
+    }
 }
