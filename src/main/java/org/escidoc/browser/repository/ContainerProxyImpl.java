@@ -1,6 +1,7 @@
 package org.escidoc.browser.repository;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.escidoc.browser.model.ResourceType;
@@ -10,6 +11,7 @@ import com.google.common.base.Preconditions;
 import de.escidoc.core.common.exceptions.remote.system.SystemException;
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.versionhistory.Version;
+import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.om.container.Container;
 
 public class ContainerProxyImpl implements ContainerProxy {
@@ -128,7 +130,7 @@ public class ContainerProxyImpl implements ContainerProxy {
      */
     @Override
     public Boolean hasPreviousVersion() {
-        if(containerFromCore.getVersionNumber() > 1)
+        if (containerFromCore.getVersionNumber() > 1)
             return true;
 
         return false;
@@ -143,15 +145,16 @@ public class ContainerProxyImpl implements ContainerProxy {
         return metadataList;
     }
 
-   
-    public List<Version> getVersionHistory(){
+    public Collection<Version> getVersionHistory() {
         try {
-            return (List<Version>) containerFromCore.getVersionHistory().getVersions();
+
+            VersionHistory vh = containerFromCore.getVersionHistory();
+            Collection<Version> v = vh.getVersions();
+            return v;
         }
         catch (SystemException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
             return null;
+            // e.printStackTrace();
         }
 
     }

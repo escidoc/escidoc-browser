@@ -3,6 +3,7 @@ package org.escidoc.browser.ui.maincontent;
 import java.util.Iterator;
 
 import org.escidoc.browser.repository.ItemProxy;
+import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.Application;
@@ -20,17 +21,16 @@ public class MetadataRecsItem {
 
     private ItemProxy resourceProxy;
 
-    private Application app;
+    private Window mainWindow;
 
     public MetadataRecsItem(ItemProxy resourceProxy, int innerelementsHeight,
-        Application application) {
-        Preconditions.checkNotNull(application, "resource is null.");
+        Window mainWindow) {
+        Preconditions.checkNotNull(mainWindow, "resource is null.");
         this.height = innerelementsHeight;
         if (this.height < 1)
             this.height = 400;
         this.resourceProxy = resourceProxy;
-        this.app = application;
-        System.out.println(height);
+        this.mainWindow = mainWindow;
     }
 
     public Accordion asAccord() {
@@ -50,32 +50,20 @@ public class MetadataRecsItem {
 
     private Panel lblAddtionalResources() {
 
-        Button btnVersionHistory = new Button("Version History");
+        Button btnVersionHistory = new Button("Version History",new VersionHistoryClickListener(resourceProxy,mainWindow));
         btnVersionHistory.setStyleName(BaseTheme.BUTTON_LINK);
         btnVersionHistory.setDescription("Show Version history in a Pop-up");
-        btnVersionHistory.addListener(new ClickListener() {
-            public void buttonClick(ClickEvent event) {
-                app.getMainWindow().showNotification("Not implemented yet");
-            }
-        }); 
+ 
 
-        Button btnContentRelation = new Button("Content Relations");
+        Button btnContentRelation = new Button("Content Relations", new VersionHistoryClickListener(resourceProxy,mainWindow));
         btnContentRelation.setStyleName(BaseTheme.BUTTON_LINK);
         btnContentRelation.setDescription("Show Version history in a Pop-up");
-        btnContentRelation.addListener(new ClickListener() {
-            public void buttonClick(ClickEvent event) {
-                app.getMainWindow().showNotification("Not implemented yet");
-            }
-        }); 
-        
-        Button btnCMDefBehavior = new Button("Version History");
+
+
+        Button btnCMDefBehavior = new Button("CM-Def-Behavior",new VersionHistoryClickListener(resourceProxy,mainWindow));
         btnCMDefBehavior.setStyleName(BaseTheme.BUTTON_LINK);
         btnCMDefBehavior.setDescription("CM-Def-Behavior");
-        btnCMDefBehavior.addListener(new ClickListener() {
-            public void buttonClick(ClickEvent event) {
-                app.getMainWindow().showNotification("Not implemented yet");
-            }
-        }); 
+       
 
         Panel pnl = new Panel();
         pnl.setHeight(height + "px");
@@ -108,28 +96,4 @@ public class MetadataRecsItem {
         l1.setHeight(height + "px");
         return l1;
     }
-    
-    /*
-     * Shows a notification when a button is clicked.
-     */
-    public void buttonClick(ClickEvent event) {
-        app.getMainWindow().showNotification("Not implemented yet");
-    }
-
-    
-    public void versionHonClick(Button.ClickEvent event) {
-        Window subwindow = new Window("A modal subwindow");
-        subwindow.setModal(true);
-        if (subwindow.getParent() != null) {
-            // window is already showing
-            app.getMainWindow().showNotification("Window is already open");
-        }
-        else {
-            // Open the subwindow by adding it to the parent
-            // window
-            app.getMainWindow().addWindow(subwindow);
-        }
-
-    }
-
 }

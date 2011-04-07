@@ -13,6 +13,7 @@ import de.escidoc.core.client.ContextHandlerClient;
 import de.escidoc.core.client.TransportProtocol;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.interfaces.ContextHandlerClientInterface;
+import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 
 public class ContextRepository implements Repository {
 
@@ -40,5 +41,12 @@ public class ContextRepository implements Repository {
     public ResourceProxy findById(final String id)
         throws EscidocClientException {
         return new ContextProxyImpl(client.retrieve(id));
+    }
+
+    @Override
+    public VersionHistory findVersionHistory(String id)
+        throws EscidocClientException {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

@@ -88,7 +88,7 @@ public class ContainerView extends VerticalLayout {
 
         // right most panel
         final MetadataRecs metaData =
-            new MetadataRecs(resourceProxy, accordionHeight, null);
+            new MetadataRecs(resourceProxy, accordionHeight, mainWindow,serviceLocation);
         rightCell(metaData.asAccord());
 
         // cssLayout.addComponent();
