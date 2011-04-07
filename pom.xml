@@ -123,7 +123,7 @@
 				<artifactId>maven-jetty-plugin</artifactId>
 				<version>6.1.26</version>
 				<configuration>
-					<stopPort>9966</stopPort>
+					<stopPort>9986</stopPort>
 					<stopKey>browser</stopKey>
 					<scanIntervalSeconds>${jetty.scan.sec}</scanIntervalSeconds>
 					<systemProperties>
