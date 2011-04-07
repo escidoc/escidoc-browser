@@ -11,4 +11,10 @@ public class ViewConstant {
 
     public static final String ERROR = "Error";
 
+    public static final String LOGIN = "Login";
+
+    public static final String LOGOUT = "Logout";
+
+    public static final String HEADER = "header";
+
 }

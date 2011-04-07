@@ -2,12 +2,12 @@ package org.escidoc.browser.repository;
 
 import java.util.List;
 
-import org.escidoc.browser.Util;
 import org.escidoc.browser.model.ContextProxyImpl;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.ui.helper.Util;
 
 import de.escidoc.core.client.ContextHandlerClient;
 import de.escidoc.core.client.TransportProtocol;
@@ -21,7 +21,7 @@ public class ContextRepository implements Repository {
     private final ContextHandlerClientInterface client;
 
     public ContextRepository(final EscidocServiceLocation escidocServiceLocation) {
-        client = new ContextHandlerClient(escidocServiceLocation.getUri());
+        client = new ContextHandlerClient(escidocServiceLocation.getEscidocUri());
         client.setTransport(TransportProtocol.REST);
     }
 

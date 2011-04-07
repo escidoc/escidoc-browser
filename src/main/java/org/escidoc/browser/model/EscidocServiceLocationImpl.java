@@ -8,6 +8,8 @@ public class EscidocServiceLocationImpl implements EscidocServiceLocation {
 
     private String escidocUri;
 
+    private URI appUri;
+
     public EscidocServiceLocationImpl() {
         // empty
     }
@@ -18,7 +20,7 @@ public class EscidocServiceLocationImpl implements EscidocServiceLocation {
      * @see org.escidoc.browser.model.EscidocServiceLocation#getUri()
      */
     @Override
-    public String getUri() {
+    public String getEscidocUri() {
         return escidocUri;
     }
 
@@ -29,7 +31,8 @@ public class EscidocServiceLocationImpl implements EscidocServiceLocation {
      */
     @Override
     public String getLoginUri() {
-        return escidocUri + AppConstants.LOGIN_TARGET;
+        return escidocUri + AppConstants.LOGIN_TARGET + appUri + "?escidocurl="
+            + escidocUri;
     }
 
     /*
@@ -39,11 +42,12 @@ public class EscidocServiceLocationImpl implements EscidocServiceLocation {
      */
     @Override
     public String getLogoutUri() {
-        return escidocUri + AppConstants.LOGOUT_TARGET;
+        return escidocUri + AppConstants.LOGOUT_TARGET + appUri
+            + "?escidocurl=" + escidocUri;
     }
 
     @Override
-    public void setUri(final URI escidocUri) {
+    public void setEscidocUri(final URI escidocUri) {
         this.escidocUri = escidocUri.toString();
     }
 
@@ -51,8 +55,8 @@ public class EscidocServiceLocationImpl implements EscidocServiceLocation {
     public String toString() {
         final StringBuilder builder = new StringBuilder();
         builder.append("EscidocServiceLocationImpl [");
-        if (getUri() != null) {
-            builder.append("getUri()=").append(getUri()).append(", ");
+        if (getEscidocUri() != null) {
+            builder.append("getUri()=").append(getEscidocUri()).append(", ");
         }
         if (getLoginUri() != null) {
             builder.append("getLoginUri()=").append(getLoginUri()).append(", ");
@@ -62,6 +66,11 @@ public class EscidocServiceLocationImpl implements EscidocServiceLocation {
         }
         builder.append("]");
         return builder.toString();
+    }
+
+    @Override
+    public void setApplicationUri(final URI appUri) {
+        this.appUri = appUri;
     }
 
 }

@@ -1,4 +1,4 @@
-package org.escidoc.browser;
+package org.escidoc.browser.ui.helper;
 
 import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
+import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ResourceModel;
@@ -27,7 +28,7 @@ public final class Util {
         return parameters.containsKey(AppConstants.ESCIDOC_URL);
     }
 
-    public final static boolean isTokenExist(
+    public final static boolean doesTokenExist(
         final Map<String, String[]> parameters) {
         Preconditions.checkNotNull(parameters, "parameters is null: %s",
             parameters);

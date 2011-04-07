@@ -4,12 +4,14 @@ import java.net.URI;
 
 public interface EscidocServiceLocation {
 
-    String getUri();
+    String getEscidocUri();
 
     String getLoginUri();
 
     String getLogoutUri();
 
-    void setUri(URI tryToParseEscidocUriFromParameter);
+    void setEscidocUri(URI escidocUri);
+
+    void setApplicationUri(URI appUri);
 
 }

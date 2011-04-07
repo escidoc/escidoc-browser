@@ -66,8 +66,8 @@ public class MainSite extends VerticalLayout {
         mainLayout.setSizeFull();
 
         final HeaderContainer header =
-            new HeaderContainer(this, appHeight, app);
-
+            new HeaderContainer(this, appHeight, app, serviceLocation);
+        header.init();
         final Footer futer = new Footer();
 
         mainLayout.addComponent(header);
@@ -129,8 +129,9 @@ public class MainSite extends VerticalLayout {
     public void openTab(final Component cmp, String tabname) {
         maincontent.addComponent(cmp);
         maincontent.addTab(cmp);
-        if (tabname.length()>50)
-                tabname=tabname.substring(0,50)+"...";
+        if (tabname.length() > 50) {
+            tabname = tabname.substring(0, 50) + "...";
+        }
         maincontent.getTab(cmp).setCaption(tabname);
         maincontent.setSelectedTab(cmp);
         maincontent.getTab(cmp).setClosable(true);

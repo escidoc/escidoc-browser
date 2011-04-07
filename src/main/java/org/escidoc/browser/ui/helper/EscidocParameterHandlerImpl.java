@@ -1,4 +1,4 @@
-package org.escidoc.browser;
+package org.escidoc.browser.ui.helper;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -9,57 +9,62 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Map;
 
+import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.EscidocServiceLocationImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.ui.Window.Notification;
 
 @SuppressWarnings("serial")
-public class ParameterHandlerImpl implements EscidocParameterHandler {
+public class EscidocParameterHandlerImpl implements EscidocParameterHandler {
 
     private static final Logger LOG = LoggerFactory
-        .getLogger(ParameterHandlerImpl.class);
+        .getLogger(EscidocParameterHandlerImpl.class);
 
     private static final int TEN_SECONDS = 10000;
 
     private final EscidocServiceLocation serviceLocation;
 
-    private final SessionHandlerImpl sessionHandler;
-
     private final BrowserApplication app;
 
-    public ParameterHandlerImpl(final BrowserApplication app,
-        final EscidocServiceLocation serviceLocation,
-        final SessionHandlerImpl sessionHandler) {
+    public EscidocParameterHandlerImpl(final BrowserApplication app,
+        final EscidocServiceLocation serviceLocation) {
+        Preconditions.checkNotNull(app, "app is null: %s", app);
+        Preconditions.checkNotNull(serviceLocation,
+            "serviceLocation is null: %s", serviceLocation);
         this.app = app;
-        this.serviceLocation = new EscidocServiceLocationImpl();
-        this.sessionHandler = sessionHandler;
+        this.serviceLocation = serviceLocation;
     }
 
     @Override
     public void handleParameters(final Map<String, String[]> parameters) {
+        LOG.debug("parameters: " + parameters.toString());
         if (Util.isEscidocUrlExists(parameters)
-            && Util.isTokenExist(parameters)) {
+            && Util.doesTokenExist(parameters)) {
             LOG.debug("both escidocurl and token exists");
             serviceLocation
-                .setUri(tryToParseEscidocUriFromParameter(parameters));
-            sessionHandler.doLogin(ParamaterDecoder
-                .parseAndDecodeToken(parameters));
+                .setEscidocUri(tryToParseEscidocUriFromParameter(parameters));
+            serviceLocation.setApplicationUri(toUri(app.getURL()));
+            app.setLogoutURL(serviceLocation.getLogoutUri());
+            login(parameters);
         }
-        if (Util.isTokenExist(parameters)) {
+        if (Util.doesTokenExist(parameters)
+            && serviceLocation.getEscidocUri() != null) {
             LOG.debug("only token exists");
-            sessionHandler.doLogin(ParamaterDecoder
-                .parseAndDecodeToken(parameters));
+            login(parameters);
+            app.setLogoutURL(serviceLocation.getLogoutUri());
         }
         else if (Util.isEscidocUrlExists(parameters)
             && hasNotEscidocHandler(parameters)) {
             LOG.debug("escidocurl exists but no escidocHandler");
             if (isServerOnline(tryToParseEscidocUriFromParameter(parameters))) {
                 serviceLocation
-                    .setUri(tryToParseEscidocUriFromParameter(parameters));
+                    .setEscidocUri(tryToParseEscidocUriFromParameter(parameters));
+                serviceLocation.setApplicationUri(toUri(app.getURL()));
                 app.setServiceLocation(serviceLocation);
+                app.setLogoutURL(serviceLocation.getLogoutUri());
                 app.buildMainView();
             }
         }
@@ -69,6 +74,28 @@ public class ParameterHandlerImpl implements EscidocParameterHandler {
         }
     }
 
+    private URI toUri(final URL url) {
+        try {
+            return url.toURI();
+        }
+        catch (final URISyntaxException e) {
+            LOG.warn("Malformed URL: " + e);
+            app.getMainWindow().showNotification(
+                new Notification(e.getMessage(),
+                    Notification.TYPE_ERROR_MESSAGE));
+        }
+        return null;
+    }
+
+    private void login(final Map<String, String[]> parameters) {
+        final String escidocToken =
+            ParamaterDecoder.parseAndDecodeToken(parameters);
+        // fire event UserLoggedIn to the listeners
+
+        // set logout URI
+    }
+
+    // TODO refactor this method, does not belong in this class.
     private boolean isServerOnline(final URI escidocUri) {
         URLConnection connection;
         try {
@@ -103,7 +130,7 @@ public class ParameterHandlerImpl implements EscidocParameterHandler {
     }
 
     private boolean hasNotEscidocHandler(final Map<String, String[]> parameters) {
-        return !Util.isTokenExist(parameters);
+        return !Util.doesTokenExist(parameters);
     }
 
     private URI tryToParseEscidocUriFromParameter(

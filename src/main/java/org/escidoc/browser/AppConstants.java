@@ -7,6 +7,9 @@ public final class AppConstants {
     // "http://zbmed.fiz-karlsruhe.de/"
     // "http://escidev4:8080";
 
+    public static final String ESCIDOC_LOGIN_PATH_AND_PARAMETER =
+    "/aa/login?target=";
+
     private AppConstants() {
         // not to be initialized
     }

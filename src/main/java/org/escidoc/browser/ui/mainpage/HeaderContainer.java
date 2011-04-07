@@ -1,13 +1,17 @@
 package org.escidoc.browser.ui.mainpage;
 
 import org.escidoc.browser.BrowserApplication;
-import org.escidoc.browser.SessionHandlerImpl;
+import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.ui.MainSite;
+import org.escidoc.browser.ui.ViewConstant;
+import org.escidoc.browser.ui.listeners.LogoutListener;
 
+import com.google.common.base.Preconditions;
+import com.vaadin.Application;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 
@@ -18,56 +22,59 @@ import com.vaadin.ui.themes.BaseTheme;
  * @author ARB
  * 
  */
+@SuppressWarnings("serial")
 public class HeaderContainer extends VerticalLayout {
+
+    // The HTML file can be found at myTheme/layouts/header.html
+    private final CustomLayout custom = new CustomLayout(ViewConstant.HEADER);
+
     private Button login;
 
     private Button logout;
 
-    private MainSite mainSite;
+    private final ClickListener logoutListener;
 
-    private int appHeight;
+    private final Application app;
 
-    private BrowserApplication app;
+    private final EscidocServiceLocation serviceLocation;
 
-    public HeaderContainer(MainSite mainSite, int appHeight,
-        BrowserApplication app) {
-        this.mainSite = mainSite;
-        this.appHeight = appHeight;
+    public HeaderContainer(final MainSite mainSite, final int appHeight,
+        final BrowserApplication app,
+        final EscidocServiceLocation serviceLocation) {
+        Preconditions.checkNotNull(app, "app is null: %s", app);
+        Preconditions.checkNotNull(serviceLocation,
+            "serviceLocation is null: %s", serviceLocation);
         this.app = app;
-
-        buildheader();
+        this.serviceLocation = serviceLocation;
+        logoutListener = new LogoutListener(app);
     }
 
-    private void buildheader() {
-        // found at myTheme/layouts/header.html
-        final CustomLayout custom = new CustomLayout("header");
+    public void init() {
+        addCustomLayout();
+        addLoginComponent();
+        addLogoutComponent();
+    }
+
+    private void addCustomLayout() {
         addComponent(custom);
+    }
 
-        // Logout
-        this.logout = new Button("Log Out", this, "onClickLogout");
-        this.logout.setStyleName(BaseTheme.BUTTON_LINK);
-        this.logout.setWidth("60px");
-        this.logout.setHeight("15px");
-        this.logout.setImmediate(true);
-
-        // Login
-        this.login = new Button("Login", this, "onClick");
-        this.login.setStyleName(BaseTheme.BUTTON_LINK);
-        this.login.setWidth("60px");
-        this.login.setHeight("15px");
-        this.login.setImmediate(true);
-        SessionHandlerImpl session = app.getSessionHandler();
-
-        Label lbl = new Label("test");
-        custom.addComponent(lbl,
-            "test " + (String) session.geteSDBHandlervalue());
-
-        System.out.println("Header " + session.geteSDBHandlervalue());
-        // if (app.isLoggedin())
+    private void addLoginComponent() {
+        login = new Button(ViewConstant.LOGIN, this, "onClick");
+        login.setStyleName(BaseTheme.BUTTON_LINK);
+        login.setWidth("60px");
+        login.setHeight("15px");
+        login.setImmediate(true);
         custom.addComponent(login, "login");
-        // else
-        // custom.addComponent(logout, "login");
+    }
 
+    private void addLogoutComponent() {
+        logout = new Button(ViewConstant.LOGOUT, logoutListener);
+        logout.setStyleName(BaseTheme.BUTTON_LINK);
+        logout.setWidth("60px");
+        logout.setHeight("15px");
+        logout.setImmediate(true);
+        custom.addComponent(logout, "logout");
     }
 
     /**
@@ -77,21 +84,12 @@ public class HeaderContainer extends VerticalLayout {
      * 
      * @param event
      */
-    public void onClick(Button.ClickEvent event) {
-        this.getWindow()
-            .open(
-                new ExternalResource(
-                    "http://escidev4.fiz-karlsruhe.de:8080/aa/login?target=http://localhost:8084/browser/s#HandleLogin"));
-        this.login.setCaption("Loggedin!");
-
+    public void onClick(final Button.ClickEvent event) {
+        redirectToLoginView();
+        // login.setCaption(ViewConstant.LOGOUT);
     }
 
-    public void onClickLogout(Button.ClickEvent event) {
-        BrowserApplication app = (BrowserApplication) (this.getApplication());
-        app.getSessionHandler().doLogout();
-        this.login.setCaption("Login!");
-        this.login.detach();
-
+    private void redirectToLoginView() {
+        getWindow().open(new ExternalResource(serviceLocation.getLoginUri()));
     }
-
 }

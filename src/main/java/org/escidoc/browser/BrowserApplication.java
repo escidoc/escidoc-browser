@@ -1,10 +1,11 @@
 package org.escidoc.browser;
 
-import javax.servlet.http.HttpSession;
-
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.EscidocServiceLocationImpl;
 import org.escidoc.browser.ui.MainSite;
 import org.escidoc.browser.ui.ViewConstant;
+import org.escidoc.browser.ui.helper.EscidocParameterHandler;
+import org.escidoc.browser.ui.helper.EscidocParameterHandlerImpl;
 import org.escidoc.browser.ui.listeners.WindowResizeListener;
 import org.escidoc.browser.ui.listeners.WindowResizeObserver;
 import org.escidoc.browser.ui.listeners.WindowResizeObserverImpl;
@@ -14,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Preconditions;
 import com.vaadin.Application;
 import com.vaadin.terminal.Sizeable;
-import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Window;
@@ -31,11 +31,10 @@ public class BrowserApplication extends Application {
     private final static Window mainWindow = new Window(
         ViewConstant.MAIN_WINDOW_TITLE);
 
-    private EscidocServiceLocation serviceLocation;
+    private EscidocServiceLocation serviceLocation =
+        new EscidocServiceLocationImpl();
 
     private EscidocParameterHandler paramaterHandler;
-
-    private SessionHandlerImpl sessionHandler;
 
     private WindowResizeListener windowResizeListener;
 
@@ -59,7 +58,7 @@ public class BrowserApplication extends Application {
 
     private void addParameterHandler() {
         paramaterHandler =
-            new ParameterHandlerImpl(this, serviceLocation, sessionHandler);
+            new EscidocParameterHandlerImpl(this, serviceLocation);
         mainWindow.addParameterHandler(paramaterHandler);
     }
 
@@ -84,19 +83,6 @@ public class BrowserApplication extends Application {
 
     private void setMainWindowHeight() {
         mainWindow.getContent().setHeight(100, Sizeable.UNITS_PERCENTAGE);
-    }
-
-    public SessionHandlerImpl getSessionHandler() {
-        final WebApplicationContext ctx = (WebApplicationContext) getContext();
-        final HttpSession session = ctx.getHttpSession();
-        final SessionHandlerImpl sessionhndl = new SessionHandlerImpl(session);
-        System.out.println("Outputting the cookie"
-            + sessionhndl.geteSDBHandlervalue());
-        return sessionhndl;
-    }
-
-    public boolean isLoggedin() {
-        return sessionHandler.isLoggedin();
     }
 
     private int getApplicationHeight() {

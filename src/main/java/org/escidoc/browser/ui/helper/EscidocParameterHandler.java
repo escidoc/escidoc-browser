@@ -1,4 +1,4 @@
-package org.escidoc.browser;
+package org.escidoc.browser.ui.helper;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 

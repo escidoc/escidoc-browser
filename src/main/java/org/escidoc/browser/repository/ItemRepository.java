@@ -25,7 +25,7 @@ public class ItemRepository implements Repository {
     public ItemRepository(final EscidocServiceLocation serviceLocation) {
         Preconditions.checkNotNull(serviceLocation,
             "escidocServiceLocation is null: %s", serviceLocation);
-        client = new ItemHandlerClient(serviceLocation.getUri());
+        client = new ItemHandlerClient(serviceLocation.getEscidocUri());
         client.setTransport(TransportProtocol.REST);
     }
 

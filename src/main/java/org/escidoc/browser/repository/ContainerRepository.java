@@ -6,11 +6,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.escidoc.browser.Util;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.ui.helper.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +39,7 @@ public class ContainerRepository implements Repository {
         final EscidocServiceLocation escidocServiceLocation) {
         Preconditions.checkNotNull(escidocServiceLocation,
             "escidocServiceLocation is null: %s", escidocServiceLocation);
-        client = new ContainerHandlerClient(escidocServiceLocation.getUri());
+        client = new ContainerHandlerClient(escidocServiceLocation.getEscidocUri());
         client.setTransport(TransportProtocol.REST);
     }
 
