@@ -85,10 +85,16 @@ public class BrowserApplication extends Application {
         mainWindow.getContent().setHeight(100, Sizeable.UNITS_PERCENTAGE);
     }
 
-    private int getApplicationHeight() {
+    public int getApplicationHeight() {
         Preconditions.checkArgument(observer.getDimension().getHeight() > 0,
             "Can not get window size");
         return Math.round(observer.getDimension().getHeight());
+    }
+
+    public int getApplicationWidth() {
+        Preconditions.checkArgument(observer.getDimension().getWidth() > 0,
+            "Can not get window size");
+        return Math.round(observer.getDimension().getWidth());
     }
 
     private MainSite createMainSite(

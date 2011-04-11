@@ -102,10 +102,11 @@ public class MainSite extends VerticalLayout {
      * @throws EscidocClientException
      */
     private Panel buildNavigationPanel() throws EscidocClientException {
+
         final Panel mainnav = new Panel();
         mainnav.setScrollable(true);
         mainnav.setStyleName("floatleft paddingtop20");
-        mainnav.setWidth("30%");
+        mainnav.setWidth(this.app.getApplicationWidth() * 29 / 100 + "px");
         mainnav.setHeight("86%");
 
         final Button srchButton =
@@ -113,7 +114,6 @@ public class MainSite extends VerticalLayout {
         srchButton.setStyleName(BaseTheme.BUTTON_LINK);
         srchButton.setIcon(new ThemeResource("../myTheme/images/search.png"));
         srchButton.setDescription("Search the Infrastructure");
-        mainnav.addComponent(srchButton);
 
         final NavigationTreeView treemenu =
             new UiBuilder(serviceLocation).buildNavigationTree(
@@ -121,6 +121,7 @@ public class MainSite extends VerticalLayout {
                 new ContainerRepository(serviceLocation), new ItemRepository(
                     serviceLocation), this, mainWindow);
         mainnavtree = treemenu;
+        mainnav.addComponent(srchButton);
         mainnav.addComponent(mainnavtree);
 
         return mainnav;
@@ -129,10 +130,13 @@ public class MainSite extends VerticalLayout {
     public void openTab(final Component cmp, String tabname) {
         maincontent.addComponent(cmp);
         maincontent.addTab(cmp);
+        String tabnameshort = null;
         if (tabname.length() > 50) {
+            maincontent.getTab(cmp).setDescription(tabname);
             tabname = tabname.substring(0, 50) + "...";
         }
         maincontent.getTab(cmp).setCaption(tabname);
+
         maincontent.setSelectedTab(cmp);
         maincontent.getTab(cmp).setClosable(true);
     }

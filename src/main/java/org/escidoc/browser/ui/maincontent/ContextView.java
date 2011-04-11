@@ -77,14 +77,14 @@ public class ContextView extends VerticalLayout {
         // Left Inner Cell
         // Binding Direct Members in
         final DirectMember directMembers =
-            new DirectMember(this.serviceLocation, mainSite, resourceProxy.getId(),
-                mainWindow);
+            new DirectMember(this.serviceLocation, mainSite,
+                resourceProxy.getId(), mainWindow);
         leftCell(DIRECT_MEMBERS, directMembers.contextAsTree());
 
         // Right Inner Cell
         // Binding Additional Info into it
         final ContextAddInfo cnxAddinfo =
-            new ContextAddInfo(resourceProxy, accordionHeight);
+            new ContextAddInfo(resourceProxy, accordionHeight, mainWindow);
         rightCell(cnxAddinfo.addPanels());
 
         addComponent(cssLayout);

@@ -91,8 +91,9 @@ public class UiBuilder {
         resourceContainer.init();
 
         navigationTreeView.setDataSource(resourceContainer, mainSite);
-        navigationTreeView.addClickListener(new TreeClickListener(servicelocation, contextRepository,
-            containerRepository, itemRepository,mainWindow, mainSite));
+        navigationTreeView.addClickListener(new TreeClickListener(
+            servicelocation, contextRepository, containerRepository,
+            itemRepository, mainWindow, mainSite));
         return navigationTreeView;
     }
 
