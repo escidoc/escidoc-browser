@@ -78,14 +78,7 @@ public class ItemProxyImpl implements ItemProxy {
     }
 
     public Boolean hasComponents() {
-        // if ((itemFromCore.getComponents().size()) != 0) {
-        // return Boolean.TRUE;
-        // }
-        // return Boolean.FALSE;
-        if ((itemFromCore.getComponents().size()) != 0) {
-            return Boolean.TRUE;
-        }
-        return Boolean.FALSE;
+        return Boolean.valueOf(itemFromCore.getComponents().size() != 0);
     }
 
     /**
