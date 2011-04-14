@@ -169,7 +169,7 @@ public class ItemView extends VerticalLayout {
 
     private void createBreadcrumbp() {
         // BREADCRUMB
-        BreadCrumbMenu bm = new BreadCrumbMenu(cssLayout, "item");
+        BreadCrumbMenu bm = new BreadCrumbMenu(cssLayout, resourceProxy);
     }
 
     private void buildLayout() {

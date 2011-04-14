@@ -48,7 +48,7 @@ public class ContainerView extends VerticalLayout {
 
     private int innerelementsHeight;
 
-    private EscidocServiceLocation serviceLocation;
+    private final EscidocServiceLocation serviceLocation;
 
     private final Window mainWindow;
 
@@ -63,7 +63,7 @@ public class ContainerView extends VerticalLayout {
         Preconditions.checkArgument(resourceProxy instanceof ContainerProxy,
             resourceProxy.getClass()
                 + " is not an instance of ContainerProxy.class");
-        this.serviceLocation=serviceLocation;
+        this.serviceLocation = serviceLocation;
         this.mainSite = mainSite;
         appHeight = mainSite.getApplicationHeight();
         this.resourceProxy = (ContainerProxy) resourceProxy;
@@ -88,7 +88,8 @@ public class ContainerView extends VerticalLayout {
 
         // right most panel
         final MetadataRecs metaData =
-            new MetadataRecs(resourceProxy, accordionHeight, mainWindow,serviceLocation);
+            new MetadataRecs(resourceProxy, accordionHeight, mainWindow,
+                serviceLocation);
         rightCell(metaData.asAccord());
 
         // cssLayout.addComponent();
@@ -187,7 +188,7 @@ public class ContainerView extends VerticalLayout {
     }
 
     private void createBreadCrumb() {
-        final BreadCrumbMenu bm = new BreadCrumbMenu(cssLayout, "container");
+        final BreadCrumbMenu bm = new BreadCrumbMenu(cssLayout, resourceProxy);
     }
 
     private void bindNameToHeader() {
