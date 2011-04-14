@@ -134,10 +134,10 @@ public class ItemView extends VerticalLayout {
 
         Label descMetadata2 =
             new Label(CREATED_BY + "<a href='/ESCD/Frankie'> "
-                + resourceProxy.getCreator() + "</a>"
-                + resourceProxy.getCreatedOn() + "<br>" + LAST_MODIFIED_BY
+                + resourceProxy.getCreator() + "</a> "
+                + resourceProxy.getCreatedOn() + " <br>" + LAST_MODIFIED_BY
                 + " <a href='#user/" + resourceProxy.getModifier() + "'>"
-                + resourceProxy.getModifier() + "</a>"
+                + resourceProxy.getModifier() + "</a> "
                 + resourceProxy.getModifiedOn() + " <br>"
                 + resourceProxy.getStatus(), Label.CONTENT_RAW);
         descMetadata2.setStyleName("floatright columnheight50");

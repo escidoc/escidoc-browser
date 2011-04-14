@@ -42,7 +42,7 @@ public class ContextProxyImpl implements ResourceProxy {
 
     @Override
     public String getCreator() {
-        return contextFromCore.getProperties().getCreatedBy().getObjid();
+        return contextFromCore.getProperties().getCreatedBy().getXLinkTitle();
     }
 
     @Override
@@ -52,7 +52,7 @@ public class ContextProxyImpl implements ResourceProxy {
 
     @Override
     public String getModifier() {
-        return contextFromCore.getProperties().getModifiedBy().getObjid();
+        return contextFromCore.getProperties().getModifiedBy().getXLinkTitle();
     }
 
     @Override

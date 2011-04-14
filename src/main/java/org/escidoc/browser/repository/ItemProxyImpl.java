@@ -44,7 +44,7 @@ public class ItemProxyImpl implements ItemProxy {
 
     @Override
     public String getCreator() {
-        return itemFromCore.getProperties().getCreatedBy().getObjid();
+        return itemFromCore.getProperties().getCreatedBy().getXLinkTitle();
     }
 
     @Override
@@ -55,7 +55,7 @@ public class ItemProxyImpl implements ItemProxy {
     @Override
     public String getModifier() {
         return itemFromCore
-            .getProperties().getVersion().getModifiedBy().getObjid();
+            .getProperties().getVersion().getModifiedBy().getXLinkTitle();
     }
 
     @Override

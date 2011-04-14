@@ -151,7 +151,7 @@ public class ContextView extends VerticalLayout {
                 + resourceProxy.getCreator() + "</a> "
                 + resourceProxy.getCreatedOn() + "<br>" + LAST_MODIFIED_BY
                 + " <a href='#user/" + resourceProxy.getModifier() + "'>"
-                + resourceProxy.getModifier() + "</a>"
+                + resourceProxy.getModifier() + "</a> "
                 + resourceProxy.getModifiedOn() + " <br>", Label.CONTENT_RAW);
         descMetadata2.setStyleName("floatright columnheight50");
         descMetadata2.setWidth("65%");

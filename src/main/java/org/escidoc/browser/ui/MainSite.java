@@ -106,7 +106,7 @@ public class MainSite extends VerticalLayout {
         final Panel mainnav = new Panel();
         mainnav.setScrollable(true);
         mainnav.setStyleName("floatleft paddingtop20");
-        mainnav.setWidth(this.app.getApplicationWidth() * 30 / 100 - 20 + "px");
+        mainnav.setWidth(this.app.getApplicationWidth() * 30 / 100 - 10 + "px");
         mainnav.setHeight("86%");
 
         final Button srchButton =

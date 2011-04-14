@@ -80,7 +80,7 @@ public class ContainerProxyImpl implements ContainerProxy {
      */
     @Override
     public String getCreator() {
-        return containerFromCore.getProperties().getCreatedBy().getObjid();
+        return containerFromCore.getProperties().getCreatedBy().getXLinkTitle();
     }
 
     /*
@@ -100,7 +100,7 @@ public class ContainerProxyImpl implements ContainerProxy {
      */
     @Override
     public String getModifier() {
-        return containerFromCore.getProperties().getCreatedBy().getObjid();
+        return containerFromCore.getProperties().getCreatedBy().getXLinkTitle();
     }
 
     /*
@@ -136,6 +136,7 @@ public class ContainerProxyImpl implements ContainerProxy {
         return false;
     }
 
+    @Override
     public List<String> getMedataRecords() {
         List<String> metadataList = new ArrayList<String>();
         for (MetadataRecord metadataRecord : containerFromCore
@@ -145,6 +146,7 @@ public class ContainerProxyImpl implements ContainerProxy {
         return metadataList;
     }
 
+    @Override
     public Collection<Version> getVersionHistory() {
         try {
 
