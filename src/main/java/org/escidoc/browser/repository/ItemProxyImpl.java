@@ -13,7 +13,7 @@ import de.escidoc.core.resources.om.item.component.Component;
 public class ItemProxyImpl implements ItemProxy {
     private final Item itemFromCore;
 
-    public ItemProxyImpl(Item resource) {
+    public ItemProxyImpl(final Item resource) {
         itemFromCore = resource;
     }
 
@@ -65,8 +65,8 @@ public class ItemProxyImpl implements ItemProxy {
 
     @Override
     public List<String> getRelations() {
-        List<String> relationList = new ArrayList<String>();
-        for (Relation relation : itemFromCore.getRelations()) {
+        final List<String> relationList = new ArrayList<String>();
+        for (final Relation relation : itemFromCore.getRelations()) {
             relationList.add(relation.getXLinkTitle());
         }
         return relationList;
@@ -74,14 +74,18 @@ public class ItemProxyImpl implements ItemProxy {
 
     @Override
     public Boolean hasPreviousVersion() {
-        // TODO Auto-generated method stub
-        return null;
+        return Boolean.FALSE;
     }
 
     public Boolean hasComponents() {
-        if ((itemFromCore.getComponents().size()) != 0)
-            return true;
-        return false;
+        // if ((itemFromCore.getComponents().size()) != 0) {
+        // return Boolean.TRUE;
+        // }
+        // return Boolean.FALSE;
+        if ((itemFromCore.getComponents().size()) != 0) {
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
     }
 
     /**
@@ -95,8 +99,9 @@ public class ItemProxyImpl implements ItemProxy {
 
     @Override
     public List<String> getMedataRecords() {
-        List<String> metadataList = new ArrayList<String>();
-        for (MetadataRecord metadataRecord : itemFromCore.getMetadataRecords()) {
+        final List<String> metadataList = new ArrayList<String>();
+        for (final MetadataRecord metadataRecord : itemFromCore
+            .getMetadataRecords()) {
             metadataList.add(metadataRecord.getName());
         }
 

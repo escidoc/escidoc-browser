@@ -8,6 +8,8 @@ import org.escidoc.browser.repository.ItemRepository;
 import org.escidoc.browser.ui.maincontent.SearchSimple;
 import org.escidoc.browser.ui.mainpage.Footer;
 import org.escidoc.browser.ui.mainpage.HeaderContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
@@ -23,6 +25,8 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
 public class MainSite extends VerticalLayout {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MainSite.class);
 
     private final CssLayout mainLayout;
 
@@ -106,7 +110,11 @@ public class MainSite extends VerticalLayout {
         final Panel mainnav = new Panel();
         mainnav.setScrollable(true);
         mainnav.setStyleName("floatleft paddingtop20");
-        mainnav.setWidth(this.app.getApplicationWidth() * 30 / 100 - 10 + "px");
+
+        final int appWidth = app.getApplicationWidth();
+        LOG.debug("app width: " + appWidth);
+
+        mainnav.setWidth(app.getApplicationWidth() * 30 / 100 - 20 + "px");
         mainnav.setHeight("86%");
 
         final Button srchButton =
@@ -130,7 +138,7 @@ public class MainSite extends VerticalLayout {
     public void openTab(final Component cmp, String tabname) {
         maincontent.addComponent(cmp);
         maincontent.addTab(cmp);
-        String tabnameshort = null;
+        final String tabnameshort = null;
         if (tabname.length() > 50) {
             maincontent.getTab(cmp).setDescription(tabname);
             tabname = tabname.substring(0, 50) + "...";
@@ -155,7 +163,7 @@ public class MainSite extends VerticalLayout {
      * 
      * @param event
      */
-    public void OnClickSrchButton(final Button.ClickEvent event) {
+    public void onClickSearchButton(final Button.ClickEvent event) {
         final SearchSimple smpSearch = new SearchSimple(this);
         openTab(smpSearch, "Search Results");
     }
