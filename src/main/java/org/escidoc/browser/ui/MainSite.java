@@ -5,12 +5,14 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.repository.ContainerRepository;
 import org.escidoc.browser.repository.ContextRepository;
 import org.escidoc.browser.repository.ItemRepository;
+import org.escidoc.browser.ui.listeners.WindowResizeListener;
+import org.escidoc.browser.ui.listeners.WindowResizeObserver;
+import org.escidoc.browser.ui.listeners.WindowResizeObserverImpl;
 import org.escidoc.browser.ui.maincontent.SearchSimple;
 import org.escidoc.browser.ui.mainpage.Footer;
 import org.escidoc.browser.ui.mainpage.HeaderContainer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -26,15 +28,11 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 @SuppressWarnings("serial")
 public class MainSite extends VerticalLayout {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MainSite.class);
-
     private final CssLayout mainLayout;
 
     private NavigationTreeView mainnavtree;
 
     private final TabSheet maincontent = new TabSheet();
-
-    private final int appHeight;
 
     private final BrowserApplication app;
 
@@ -42,24 +40,28 @@ public class MainSite extends VerticalLayout {
 
     private EscidocServiceLocation serviceLocation;
 
+    private WindowResizeListener windowResizeListener;
+
+    private WindowResizeObserver observer;
+
     /**
      * The mainWindow should be revised whether we need it or not the appHeight
      * is the Height of the Application and I need it for calculations in the
      * inner elements
      * 
      * @param mainWindow
-     * @param appHeight
      * @throws EscidocClientException
      */
     public MainSite(final Window mainWindow,
-        final EscidocServiceLocation serviceLocation, final int appHeight,
-        final BrowserApplication app) throws EscidocClientException {
+        final EscidocServiceLocation serviceLocation,
+        WindowResizeObserver observer, final BrowserApplication app)
+        throws EscidocClientException {
         this.serviceLocation = serviceLocation;
         // General Height for the application
-        this.appHeight = appHeight;
         this.app = app;
         this.mainWindow = mainWindow;
         this.serviceLocation = serviceLocation;
+        this.observer = observer;
         this.setMargin(true);
         setSizeFull();
         this.setWidth("86%");
@@ -68,9 +70,11 @@ public class MainSite extends VerticalLayout {
         mainLayout = new CssLayout();
         mainLayout.setStyleName("maincontainer");
         mainLayout.setSizeFull();
+        init();
 
         final HeaderContainer header =
-            new HeaderContainer(this, appHeight, app, serviceLocation);
+            new HeaderContainer(this, this.getApplicationHeight(), app,
+                serviceLocation);
         header.init();
         final Footer futer = new Footer();
 
@@ -83,6 +87,10 @@ public class MainSite extends VerticalLayout {
         mainLayout.addComponent(futer);
 
         addComponent(mainLayout);
+    }
+
+    private void init() {
+        // addWindowDimensionDetection();
     }
 
     /**
@@ -110,11 +118,9 @@ public class MainSite extends VerticalLayout {
         final Panel mainnav = new Panel();
         mainnav.setScrollable(true);
         mainnav.setStyleName("floatleft paddingtop20");
-
-        final int appWidth = app.getApplicationWidth();
-        LOG.debug("app width: " + appWidth);
-
-        mainnav.setWidth(app.getApplicationWidth() * 30 / 100 - 20 + "px");
+        System.out.println("APP Height tek MainSite "
+            + this.app.getApplicationWidth());
+        mainnav.setWidth(this.app.getApplicationWidth() * 30 / 100 - 10 + "px");
         mainnav.setHeight("86%");
 
         final Button srchButton =
@@ -138,7 +144,7 @@ public class MainSite extends VerticalLayout {
     public void openTab(final Component cmp, String tabname) {
         maincontent.addComponent(cmp);
         maincontent.addTab(cmp);
-        final String tabnameshort = null;
+        String tabnameshort = null;
         if (tabname.length() > 50) {
             maincontent.getTab(cmp).setDescription(tabname);
             tabname = tabname.substring(0, 50) + "...";
@@ -163,12 +169,26 @@ public class MainSite extends VerticalLayout {
      * 
      * @param event
      */
-    public void onClickSearchButton(final Button.ClickEvent event) {
+    public void OnClickSrchButton(final Button.ClickEvent event) {
         final SearchSimple smpSearch = new SearchSimple(this);
         openTab(smpSearch, "Search Results");
     }
 
+    private void addWindowDimensionDetection() {
+        observer = new WindowResizeObserverImpl();
+        windowResizeListener = new WindowResizeListener(observer);
+        mainWindow.addListener(windowResizeListener);
+    }
+
     public int getApplicationHeight() {
-        return appHeight;
+        Preconditions.checkArgument(observer.getDimension().getHeight() > 0,
+            "Can not get window size");
+        return Math.round(observer.getDimension().getHeight());
+    }
+
+    public int getApplicationWidth() {
+        Preconditions.checkArgument(observer.getDimension().getWidth() > 0,
+            "Can not get window size");
+        return Math.round(observer.getDimension().getWidth());
     }
 }

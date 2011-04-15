@@ -72,7 +72,7 @@ public class BrowserApplication extends Application {
         final EscidocServiceLocation serviceLocation) {
         try {
             mainWindow.setContent(createMainSite(serviceLocation, mainWindow,
-                getApplicationHeight()));
+                observer));
         }
         catch (final EscidocClientException e) {
             mainWindow.showNotification(new Window.Notification(
@@ -99,9 +99,9 @@ public class BrowserApplication extends Application {
 
     private MainSite createMainSite(
         final EscidocServiceLocation serviceLocation, final Window mainWindow,
-        final int appHeight) throws EscidocClientException {
+        WindowResizeObserver observer) throws EscidocClientException {
         final MainSite mainSite =
-            new MainSite(mainWindow, serviceLocation, appHeight, this);
+            new MainSite(mainWindow, serviceLocation, observer, this);
         mainSite.setHeight("100%");
         mainSite.setWidth("100%");
         return mainSite;
