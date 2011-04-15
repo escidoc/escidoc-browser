@@ -47,7 +47,8 @@ public class ContextProxyImpl implements ResourceProxy {
 
     @Override
     public String getCreatedOn() {
-        return contextFromCore.getProperties().getCreationDate().toString();
+        return contextFromCore
+            .getProperties().getCreationDate().toString("d.M.y, H:m");
     }
 
     @Override
@@ -57,7 +58,7 @@ public class ContextProxyImpl implements ResourceProxy {
 
     @Override
     public String getModifiedOn() {
-        return contextFromCore.getLastModificationDate().toString();
+        return contextFromCore.getLastModificationDate().toString("d.M.y, H:m");
     }
 
     @Override
