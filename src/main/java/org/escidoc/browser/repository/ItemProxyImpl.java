@@ -9,6 +9,7 @@ import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.Relation;
 import de.escidoc.core.resources.om.item.Item;
 import de.escidoc.core.resources.om.item.component.Component;
+import de.escidoc.core.resources.om.item.component.Components;
 
 public class ItemProxyImpl implements ItemProxy {
     private final Item itemFromCore;
@@ -90,6 +91,10 @@ public class ItemProxyImpl implements ItemProxy {
      */
     public Component getFirstelementProperties() {
         return itemFromCore.getComponents().getFirst();
+    }
+
+    public Components getElements() {
+        return itemFromCore.getComponents();
     }
 
     @Override
