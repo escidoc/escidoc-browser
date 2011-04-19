@@ -26,22 +26,23 @@ public class MetadataRecs {
 
     private final EscidocServiceLocation escidocServiceLocation;
 
-    public MetadataRecs(ResourceProxy resourceProxy, int innerelementsHeight,
-        Window mainWindow, EscidocServiceLocation escidocServiceLocation) {
+    public MetadataRecs(final ResourceProxy resourceProxy,
+        final int innerelementsHeight, final Window mainWindow,
+        final EscidocServiceLocation escidocServiceLocation) {
         Preconditions.checkNotNull(mainWindow, "resource is null.");
-        this.height = innerelementsHeight;
+        height = innerelementsHeight;
         this.resourceProxy = (ContainerProxy) resourceProxy;
         this.mainWindow = mainWindow;
         this.escidocServiceLocation = escidocServiceLocation;
     }
 
     public Accordion asAccord() {
-        Accordion metadataRecs = new Accordion();
+        final Accordion metadataRecs = new Accordion();
         metadataRecs.setSizeFull();
 
-        Label l1 = lblMetadaRecs();
-        Label l2 = lblRelations();
-        Panel pnl = lblAddtionalResources();
+        final Label l1 = lblMetadaRecs();
+        final Label l2 = lblRelations();
+        final Panel pnl = lblAddtionalResources();
 
         // Add the components as tabs in the Accordion.
         metadataRecs.addTab(l1, "Metadata Records", null);
@@ -52,7 +53,7 @@ public class MetadataRecs {
 
     private Panel lblAddtionalResources() {
 
-        Button btnVersionHistoryContainer =
+        final Button btnVersionHistoryContainer =
             new Button("Container Version History",
                 new VersionHistoryClickListener(resourceProxy, mainWindow,
                     escidocServiceLocation));
@@ -60,20 +61,20 @@ public class MetadataRecs {
         btnVersionHistoryContainer
             .setDescription("Show Version history in a Pop-up");
 
-        Button btnContentRelation =
+        final Button btnContentRelation =
             new Button("Container Content Relations",
                 new RelationsClickListener(resourceProxy, mainWindow,
                     escidocServiceLocation));
         btnContentRelation.setStyleName(BaseTheme.BUTTON_LINK);
         btnContentRelation.setDescription("Show Version history in a Pop-up");
 
-        Button btnCMDefBehavior =
+        final Button btnCMDefBehavior =
             new Button("CM-Def-Behavior", new CMDEFBehaviourClickListener(
                 resourceProxy, mainWindow, escidocServiceLocation));
         btnCMDefBehavior.setStyleName(BaseTheme.BUTTON_LINK);
         btnCMDefBehavior.setDescription("CM-Def-Behavior");
 
-        Panel pnl = new Panel();
+        final Panel pnl = new Panel();
         pnl.setHeight(height + "px");
         pnl.addComponent(btnVersionHistoryContainer);
         pnl.addComponent(btnContentRelation);
@@ -82,19 +83,19 @@ public class MetadataRecs {
     }
 
     private Label lblRelations() {
-        Label l2 = new Label("Relations - Not implemented in JCLib");
+        final Label l2 = new Label("Relations - Not implemented in JCLib");
         l2.setHeight(height + "px");
         return l2;
     }
 
     private Label lblMetadaRecs() {
-        Iterator itr = resourceProxy.getMedataRecords().iterator();
+        final Iterator itr = resourceProxy.getMedataRecords().iterator();
         String mtRecords = "";
         while (itr.hasNext()) {
             mtRecords += "<a href='/MISSING'>" + itr.next() + "</a><br />";
         }
 
-        Label l1 = new Label(mtRecords, Label.CONTENT_RAW);
+        final Label l1 = new Label(mtRecords, Label.CONTENT_RAW);
         l1.setHeight(height + "px");
         return l1;
     }

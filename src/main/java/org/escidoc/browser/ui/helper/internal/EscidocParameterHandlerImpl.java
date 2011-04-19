@@ -113,9 +113,6 @@ public class EscidocParameterHandlerImpl implements EscidocParameterHandler {
         app.setUser(currentUser);
 
         // pass token to repositories
-        // create current user
-        // fire event UserLoggedIn to the listeners
-        // replace login with logout button
     }
 
     // TODO refactor this method, does not belong in this class.

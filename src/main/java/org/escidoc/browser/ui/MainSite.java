@@ -125,7 +125,7 @@ public class MainSite extends VerticalLayout {
         mainnav.setHeight("86%");
 
         final Button srchButton =
-            new Button("Search", this, "OnClickSrchButton");
+            new Button("Search", this, "onClickSrchButton");
         srchButton.setStyleName(BaseTheme.BUTTON_LINK);
         srchButton.setIcon(new ThemeResource("../myTheme/images/search.png"));
         srchButton.setDescription("Search the Infrastructure");
@@ -170,7 +170,7 @@ public class MainSite extends VerticalLayout {
      * 
      * @param event
      */
-    public void OnClickSrchButton(final Button.ClickEvent event) {
+    public void onClickSrchButton(final Button.ClickEvent event) {
         final SearchSimple smpSearch = new SearchSimple(this);
         openTab(smpSearch, "Search Results");
     }
