@@ -1,3 +1,4 @@
+package org.escidoc.browser.ui.helper.internal;
 //package org.escidoc.browser.ui.helper;
 //
 //import javax.servlet.http.HttpSession;

@@ -1,7 +1,12 @@
-package org.escidoc.browser.model;
+package org.escidoc.browser.model.internal;
 
 import java.util.Collection;
 import java.util.List;
+
+import org.escidoc.browser.model.PropertyId;
+import org.escidoc.browser.model.ResourceContainer;
+import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.ResourceType;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.data.Container;

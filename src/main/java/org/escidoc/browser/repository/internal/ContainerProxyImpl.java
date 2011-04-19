@@ -1,10 +1,11 @@
-package org.escidoc.browser.repository;
+package org.escidoc.browser.repository.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.repository.ContainerProxy;
 
 import com.google.common.base.Preconditions;
 

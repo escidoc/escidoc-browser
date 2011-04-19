@@ -2,7 +2,7 @@ package org.escidoc.browser.ui.maincontent;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.repository.ItemProxyImpl;
+import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.escidoc.browser.ui.MainSite;
 
 import com.google.common.base.Preconditions;

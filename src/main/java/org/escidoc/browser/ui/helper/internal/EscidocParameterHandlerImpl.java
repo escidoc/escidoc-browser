@@ -1,4 +1,4 @@
-package org.escidoc.browser.ui.helper;
+package org.escidoc.browser.ui.helper.internal;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -10,7 +10,12 @@ import java.net.URLConnection;
 import java.util.Map;
 
 import org.escidoc.browser.BrowserApplication;
+import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.repository.internal.UserRepositoryImpl;
+import org.escidoc.browser.ui.helper.EscidocParameterHandler;
+import org.escidoc.browser.ui.helper.ParamaterDecoder;
+import org.escidoc.browser.ui.helper.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,27 +49,27 @@ public class EscidocParameterHandlerImpl implements EscidocParameterHandler {
         if (Util.isEscidocUrlExists(parameters)
             && Util.doesTokenExist(parameters)) {
             LOG.debug("both escidocurl and token exists");
-            serviceLocation
-                .setEscidocUri(tryToParseEscidocUriFromParameter(parameters));
-            serviceLocation.setApplicationUri(toUri(app.getURL()));
-            app.setLogoutURL(serviceLocation.getLogoutUri());
-            login(parameters);
+            setEscidocUri(parameters);
+            doLogin(parameters);
         }
         if (Util.doesTokenExist(parameters)
-            && serviceLocation.getEscidocUri() != null) {
+            && serviceLocation.getEscidocUri() == null) {
             LOG.debug("only token exists");
-            login(parameters);
-            app.setLogoutURL(serviceLocation.getLogoutUri());
+            doLogin(parameters);
         }
         else if (Util.isEscidocUrlExists(parameters)
             && hasNotEscidocHandler(parameters)) {
-            LOG.debug("escidocurl exists but no escidocHandler");
+            LOG.debug("escidocurl exists but no token");
+
             if (isServerOnline(tryToParseEscidocUriFromParameter(parameters))) {
-                serviceLocation
-                    .setEscidocUri(tryToParseEscidocUriFromParameter(parameters));
-                serviceLocation.setApplicationUri(toUri(app.getURL()));
+                setEscidocUri(parameters);
                 app.setServiceLocation(serviceLocation);
                 app.setLogoutURL(serviceLocation.getLogoutUri());
+                final UserRepositoryImpl userRepository =
+                    new UserRepositoryImpl(serviceLocation);
+                final CurrentUser currentUser =
+                    userRepository.findCurrentUser();
+                app.setUser(currentUser);
                 app.buildMainView();
             }
         }
@@ -72,6 +77,17 @@ public class EscidocParameterHandlerImpl implements EscidocParameterHandler {
             && hasNotEscidocHandler(parameters)) {
             LOG.debug("nothing");
         }
+    }
+
+    private void setEscidocUri(final Map<String, String[]> parameters) {
+        serviceLocation
+            .setEscidocUri(tryToParseEscidocUriFromParameter(parameters));
+        serviceLocation.setApplicationUri(toUri(app.getURL()));
+    }
+
+    private void doLogin(final Map<String, String[]> parameters) {
+        app.setLogoutURL(serviceLocation.getLogoutUri());
+        login(parameters);
     }
 
     private URI toUri(final URL url) {
@@ -90,9 +106,16 @@ public class EscidocParameterHandlerImpl implements EscidocParameterHandler {
     private void login(final Map<String, String[]> parameters) {
         final String escidocToken =
             ParamaterDecoder.parseAndDecodeToken(parameters);
-        // fire event UserLoggedIn to the listeners
+        final UserRepositoryImpl userRepository =
+            new UserRepositoryImpl(serviceLocation);
+        userRepository.withToken(escidocToken);
+        final CurrentUser currentUser = userRepository.findCurrentUser();
+        app.setUser(currentUser);
 
-        // set logout URI
+        // pass token to repositories
+        // create current user
+        // fire event UserLoggedIn to the listeners
+        // replace login with logout button
     }
 
     // TODO refactor this method, does not belong in this class.

@@ -1,7 +1,7 @@
 package org.escidoc.browser.ui.maincontent;
 
 import org.escidoc.browser.repository.ContainerProxy;
-import org.escidoc.browser.repository.ItemProxyImpl;
+import org.escidoc.browser.repository.internal.ItemProxyImpl;
 
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;

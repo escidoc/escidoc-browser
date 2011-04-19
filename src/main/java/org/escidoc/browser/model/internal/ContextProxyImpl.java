@@ -1,6 +1,9 @@
-package org.escidoc.browser.model;
+package org.escidoc.browser.model.internal;
 
 import java.util.List;
+
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.ResourceType;
 
 import de.escidoc.core.resources.om.context.AdminDescriptors;
 import de.escidoc.core.resources.om.context.Context;

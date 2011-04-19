@@ -3,8 +3,8 @@ package org.escidoc.browser.ui;
 import java.util.List;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.ResourceContainerImpl;
 import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.internal.ResourceContainerImpl;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.listeners.TreeClickListener;
 import org.escidoc.browser.ui.listeners.TreeExpandListener;

@@ -1,6 +1,7 @@
 package org.escidoc.browser.ui;
 
 import org.escidoc.browser.BrowserApplication;
+import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.repository.ContainerRepository;
 import org.escidoc.browser.repository.ContextRepository;
@@ -54,8 +55,8 @@ public class MainSite extends VerticalLayout {
      */
     public MainSite(final Window mainWindow,
         final EscidocServiceLocation serviceLocation,
-        WindowResizeObserver observer, final BrowserApplication app)
-        throws EscidocClientException {
+        final WindowResizeObserver observer, final BrowserApplication app,
+        final CurrentUser user) throws EscidocClientException {
         this.serviceLocation = serviceLocation;
         // General Height for the application
         this.app = app;
@@ -73,8 +74,8 @@ public class MainSite extends VerticalLayout {
         init();
 
         final HeaderContainer header =
-            new HeaderContainer(this, this.getApplicationHeight(), app,
-                serviceLocation);
+            new HeaderContainer(this, getApplicationHeight(), app,
+                serviceLocation, user);
         header.init();
         final Footer futer = new Footer();
 
@@ -119,8 +120,8 @@ public class MainSite extends VerticalLayout {
         mainnav.setScrollable(true);
         mainnav.setStyleName("floatleft paddingtop20");
         System.out.println("APP Height tek MainSite "
-            + this.app.getApplicationWidth());
-        mainnav.setWidth(this.app.getApplicationWidth() * 30 / 100 - 10 + "px");
+            + app.getApplicationWidth());
+        mainnav.setWidth(app.getApplicationWidth() * 30 / 100 - 10 + "px");
         mainnav.setHeight("86%");
 
         final Button srchButton =
@@ -144,7 +145,7 @@ public class MainSite extends VerticalLayout {
     public void openTab(final Component cmp, String tabname) {
         maincontent.addComponent(cmp);
         maincontent.addTab(cmp);
-        String tabnameshort = null;
+        final String tabnameshort = null;
         if (tabname.length() > 50) {
             maincontent.getTab(cmp).setDescription(tabname);
             tabname = tabname.substring(0, 50) + "...";

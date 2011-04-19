@@ -8,6 +8,7 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.repository.internal.ItemProxyImpl;
 
 import com.google.common.base.Preconditions;
 

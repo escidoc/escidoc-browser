@@ -1,7 +1,7 @@
 package org.escidoc.browser.ui.maincontent;
 
-import org.escidoc.browser.model.ContextProxyImpl;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.ui.listeners.ContextAdminDescriptorsClickListener;
 
 import com.vaadin.ui.Button;

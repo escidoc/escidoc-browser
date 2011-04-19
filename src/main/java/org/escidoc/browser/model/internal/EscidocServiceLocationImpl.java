@@ -1,8 +1,9 @@
-package org.escidoc.browser.model;
+package org.escidoc.browser.model.internal;
 
 import java.net.URI;
 
 import org.escidoc.browser.AppConstants;
+import org.escidoc.browser.model.EscidocServiceLocation;
 
 public class EscidocServiceLocationImpl implements EscidocServiceLocation {
 

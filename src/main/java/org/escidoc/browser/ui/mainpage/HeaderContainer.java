@@ -1,6 +1,7 @@
 package org.escidoc.browser.ui.mainpage;
 
 import org.escidoc.browser.BrowserApplication;
+import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.ui.MainSite;
 import org.escidoc.browser.ui.ViewConstant;
@@ -8,9 +9,10 @@ import org.escidoc.browser.ui.listeners.LogoutListener;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.Application;
+import com.vaadin.Application.UserChangeEvent;
+import com.vaadin.Application.UserChangeListener;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
@@ -23,7 +25,8 @@ import com.vaadin.ui.themes.BaseTheme;
  * 
  */
 @SuppressWarnings("serial")
-public class HeaderContainer extends VerticalLayout {
+public class HeaderContainer extends VerticalLayout
+    implements UserChangeListener {
 
     // The HTML file can be found at myTheme/layouts/header.html
     private final CustomLayout custom = new CustomLayout(ViewConstant.HEADER);
@@ -32,49 +35,67 @@ public class HeaderContainer extends VerticalLayout {
 
     private Button logout;
 
-    private final ClickListener logoutListener;
-
     private final Application app;
 
     private final EscidocServiceLocation serviceLocation;
 
+    private final CurrentUser user;
+
     public HeaderContainer(final MainSite mainSite, final int appHeight,
         final BrowserApplication app,
-        final EscidocServiceLocation serviceLocation) {
+        final EscidocServiceLocation serviceLocation, final CurrentUser user) {
+
+        Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
+        Preconditions.checkArgument(appHeight > 0,
+            "appHeight is zero or negative: %s");
         Preconditions.checkNotNull(app, "app is null: %s", app);
         Preconditions.checkNotNull(serviceLocation,
             "serviceLocation is null: %s", serviceLocation);
+        Preconditions.checkNotNull(user, "user is null: %s", user);
+
         this.app = app;
         this.serviceLocation = serviceLocation;
-        logoutListener = new LogoutListener(app);
+        this.user = user;
+
     }
 
     public void init() {
+        app.addListener(this);
         addCustomLayout();
-        addLoginComponent();
-        addLogoutComponent();
+        createLoginComponent();
+        createLogoutComponent();
+        setUser(user);
+    }
+
+    public void setUser(final CurrentUser user) {
+        if (user.isGuest()) {
+            custom.removeAllComponents();
+            custom.addComponent(login, "login");
+        }
+        else {
+            custom.addComponent(logout, "logout");
+        }
     }
 
     private void addCustomLayout() {
         addComponent(custom);
     }
 
-    private void addLoginComponent() {
+    private void createLoginComponent() {
         login = new Button(ViewConstant.LOGIN, this, "onClick");
-        login.setStyleName(BaseTheme.BUTTON_LINK);
-        login.setWidth("60px");
-        login.setHeight("15px");
-        login.setImmediate(true);
-        custom.addComponent(login, "login");
+        configureButton(login);
     }
 
-    private void addLogoutComponent() {
-        logout = new Button(ViewConstant.LOGOUT, logoutListener);
-        logout.setStyleName(BaseTheme.BUTTON_LINK);
-        logout.setWidth("60px");
-        logout.setHeight("15px");
-        logout.setImmediate(true);
-        custom.addComponent(logout, "logout");
+    private void configureButton(final Button button) {
+        button.setStyleName(BaseTheme.BUTTON_LINK);
+        button.setWidth("60px");
+        button.setHeight("15px");
+        button.setImmediate(true);
+    }
+
+    private void createLogoutComponent() {
+        logout = new Button(ViewConstant.LOGOUT, new LogoutListener(app));
+        configureButton(logout);
     }
 
     /**
@@ -91,5 +112,23 @@ public class HeaderContainer extends VerticalLayout {
 
     private void redirectToLoginView() {
         getWindow().open(new ExternalResource(serviceLocation.getLoginUri()));
+    }
+
+    @Override
+    public void applicationUserChanged(final UserChangeEvent event) {
+        final Object newUser = event.getNewUser();
+        if (!(newUser instanceof CurrentUser)) {
+            return;
+        }
+
+        if (((CurrentUser) newUser).isGuest()) {
+            custom.removeAllComponents();
+            custom.addComponent(login, "login");
+        }
+        else {
+            custom.removeAllComponents();
+            custom.addComponent(logout, "logout");
+        }
+
     }
 }

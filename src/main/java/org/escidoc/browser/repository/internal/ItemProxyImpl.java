@@ -1,9 +1,10 @@
-package org.escidoc.browser.repository;
+package org.escidoc.browser.repository.internal;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.repository.ItemProxy;
 
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.Relation;
