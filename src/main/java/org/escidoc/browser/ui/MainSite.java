@@ -12,6 +12,8 @@ import org.escidoc.browser.ui.listeners.WindowResizeObserverImpl;
 import org.escidoc.browser.ui.maincontent.SearchSimple;
 import org.escidoc.browser.ui.mainpage.Footer;
 import org.escidoc.browser.ui.mainpage.HeaderContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.terminal.ThemeResource;
@@ -28,6 +30,8 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
 public class MainSite extends VerticalLayout {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MainSite.class);
 
     private final CssLayout mainLayout;
 
@@ -119,8 +123,7 @@ public class MainSite extends VerticalLayout {
         final Panel mainnav = new Panel();
         mainnav.setScrollable(true);
         mainnav.setStyleName("floatleft paddingtop20");
-        System.out.println("APP Height tek MainSite "
-            + app.getApplicationWidth());
+        LOG.debug("Window width is: " + app.getApplicationWidth());
         mainnav.setWidth(app.getApplicationWidth() * 30 / 100 - 10 + "px");
         mainnav.setHeight("86%");
 

@@ -1,14 +1,16 @@
 package org.escidoc.browser.ui.listeners;
 
-import java.util.Iterator;
-
+import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.repository.ContainerProxy;
 import org.escidoc.browser.repository.ContainerRepository;
 import org.escidoc.browser.repository.ItemProxy;
 import org.escidoc.browser.repository.ItemRepository;
 import org.escidoc.browser.repository.Repository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Label;
@@ -21,17 +23,20 @@ import de.escidoc.core.resources.common.Relations;
 @SuppressWarnings("serial")
 public class RelationsClickListener implements ClickListener {
 
-    private ItemProxy itemProxy = null;
+    private static final Logger LOG = LoggerFactory
+        .getLogger(RelationsClickListener.class);
+
+    private ItemProxy itemProxy;
 
     private final Window mainWindow;
 
-    private ContainerProxy containerProxy = null;
+    private ContainerProxy containerProxy;
 
     private final EscidocServiceLocation escidocServiceLocation;
 
-    private String wndContent = "No information available";
+    private String content = "No information available";
 
-    final private Repository cr;
+    final private Repository itemRepository;
 
     /**
      * Container for the ItemProxy case
@@ -43,11 +48,16 @@ public class RelationsClickListener implements ClickListener {
     public RelationsClickListener(final ItemProxy resourceProxy,
         final Window mainWindow,
         final EscidocServiceLocation escidocServiceLocation) {
+        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s",
+            resourceProxy);
+        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s",
+            mainWindow);
+        Preconditions.checkNotNull(escidocServiceLocation,
+            "escidocServiceLocation is null: %s", escidocServiceLocation);
         itemProxy = resourceProxy;
         this.mainWindow = mainWindow;
         this.escidocServiceLocation = escidocServiceLocation;
-        cr = new ItemRepository(escidocServiceLocation);
-
+        itemRepository = new ItemRepository(escidocServiceLocation);
     }
 
     /**
@@ -64,7 +74,7 @@ public class RelationsClickListener implements ClickListener {
         this.mainWindow = mainWindow;
         this.escidocServiceLocation = escidocServiceLocation;
 
-        cr = new ContainerRepository(escidocServiceLocation);
+        itemRepository = new ContainerRepository(escidocServiceLocation);
     }
 
     public String getRelations(final Repository cr, final String id)
@@ -72,13 +82,11 @@ public class RelationsClickListener implements ClickListener {
 
         final Relations relations = cr.getRelations(id);
 
-        final Iterator<Relation> itr = relations.iterator();
-        while (itr.hasNext()) {
-            System.out.println(itr.hasNext());
+        for (final Relation relation : relations) {
+            LOG.debug("relation title: " + relation.getXLinkTitle());
         }
-        final String versionHistory = "";
 
-        return versionHistory;
+        return AppConstants.EMPTY_STRING;
 
     }
 
@@ -103,13 +111,13 @@ public class RelationsClickListener implements ClickListener {
         }
 
         try {
-            wndContent = getRelations(cr, id);
+            content = getRelations(itemRepository, id);
         }
         catch (final EscidocClientException e) {
-            wndContent = "No information";
+            content = "No information";
         }
 
-        final Label msgWindow = new Label(wndContent, Label.CONTENT_RAW);
+        final Label msgWindow = new Label(content, Label.CONTENT_RAW);
 
         subwindow.addComponent(msgWindow);
         if (subwindow.getParent() != null) {

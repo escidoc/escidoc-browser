@@ -70,13 +70,14 @@ public class EscidocParameterHandlerImpl implements EscidocParameterHandler {
                 final CurrentUser currentUser =
                     userRepository.findCurrentUser();
                 app.setUser(currentUser);
-                app.buildMainView();
             }
         }
         else if (!Util.isEscidocUrlExists(parameters)
             && hasNotEscidocHandler(parameters)) {
             LOG.debug("nothing");
         }
+
+        app.buildMainView();
     }
 
     private void setEscidocUri(final Map<String, String[]> parameters) {
@@ -88,7 +89,6 @@ public class EscidocParameterHandlerImpl implements EscidocParameterHandler {
     private void doLogin(final Map<String, String[]> parameters) {
         app.setLogoutURL(serviceLocation.getLogoutUri());
         login(parameters);
-        app.buildMainView();
     }
 
     private URI toUri(final URL url) {

@@ -1,6 +1,8 @@
 package org.escidoc.browser.ui.maincontent;
 
 import org.escidoc.browser.repository.internal.ItemProxyImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.CustomLayout;
@@ -10,13 +12,18 @@ import com.vaadin.ui.Label;
 import de.escidoc.core.resources.om.item.component.Component;
 import de.escidoc.core.resources.om.item.component.Components;
 
+@SuppressWarnings("serial")
 public class ItemContent extends CustomLayout {
+
+    private static final Logger LOG = LoggerFactory
+        .getLogger(ItemContent.class);
 
     private final ItemProxyImpl itemproxy;
 
-    public ItemContent(int accordionHeight, ItemProxyImpl resourceProxy) {
-        this.setTemplateName("itemtemplate");
-        this.itemproxy = resourceProxy;
+    public ItemContent(final int accordionHeight,
+        final ItemProxyImpl resourceProxy) {
+        setTemplateName("itemtemplate");
+        itemproxy = resourceProxy;
         if (itemproxy.hasComponents()) {
             buildMainElement();
             buildOtherComponents();
@@ -27,8 +34,8 @@ public class ItemContent extends CustomLayout {
      * 
      */
     private void buildOtherComponents() {
-        Components itemComponents = itemproxy.getElements();
-        for (Component component : itemComponents) {
+        final Components itemComponents = itemproxy.getElements();
+        for (final Component component : itemComponents) {
             buildLabel(component.getProperties().getFileName());
         }
     }
@@ -36,9 +43,9 @@ public class ItemContent extends CustomLayout {
     /**
      * @param itemContent
      */
-    private void buildLabel(String fileName) {
-        System.out.println("Label u thirra per " + fileName);
-        Label lbladdmetadata2 = new Label();
+    private void buildLabel(final String fileName) {
+        LOG.debug("Label is : " + fileName);
+        final Label lbladdmetadata2 = new Label();
         lbladdmetadata2.setCaption(fileName + "(image/jpeg)");
         lbladdmetadata2.setIcon(new ThemeResource(
             "../runo/icons/16/document-image.png"));
@@ -46,18 +53,18 @@ public class ItemContent extends CustomLayout {
     }
 
     private void buildMainElement() {
-        Component itemProperties = itemproxy.getFirstelementProperties();
+        final Component itemProperties = itemproxy.getFirstelementProperties();
 
         // get the file type from the mime:
-        String mimeType = itemProperties.getProperties().getMimeType();
-        String[] last = mimeType.split("/");
-        String lastOne = last[last.length - 1];
+        final String mimeType = itemProperties.getProperties().getMimeType();
+        final String[] last = mimeType.split("/");
+        final String lastOne = last[last.length - 1];
 
-        Embedded e =
+        final Embedded e =
             new Embedded("", new ThemeResource("../myTheme/images/filetypes/"
                 + lastOne + ".png"));
         addComponent(e, "thumbnail");
-        Label lblmetadata =
+        final Label lblmetadata =
             new Label(itemProperties.getXLinkTitle() + " ("
                 + itemProperties.getProperties().getMimeType() + ")<hr />"
                 + "<br />" + "Metadata <a href=\"/#\">"
