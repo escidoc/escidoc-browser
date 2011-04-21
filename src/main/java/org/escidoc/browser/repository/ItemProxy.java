@@ -26,5 +26,4 @@ public interface ItemProxy extends ResourceProxy {
     VersionHistory getPreviousVersion();
 
     String getContentUrl();
-
 }

@@ -54,9 +54,7 @@ public class WindowDimensionImpl implements WindowDimension {
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
-        builder
-            .append("WindowDimensionImpl [width=").append(width)
-            .append(", height=").append(height).append("]");
+        builder.append("WindowDimensionImpl [width=").append(width).append(", height=").append(height).append("]");
         return builder.toString();
     }
 }

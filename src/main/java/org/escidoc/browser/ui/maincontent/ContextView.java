@@ -55,18 +55,13 @@ public class ContextView extends VerticalLayout {
 
     private final CurrentUser currentUser;
 
-    public ContextView(final EscidocServiceLocation serviceLocation,
-        final MainSite mainSite, final ResourceProxy resourceProxy,
-        final Window mainWindow, final CurrentUser currentUser)
+    public ContextView(final EscidocServiceLocation serviceLocation, final MainSite mainSite,
+        final ResourceProxy resourceProxy, final Window mainWindow, final CurrentUser currentUser)
         throws EscidocClientException {
-        Preconditions.checkNotNull(serviceLocation,
-            "serviceLocation is null: %s", serviceLocation);
+        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
-        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s",
-            resourceProxy);
-        Preconditions.checkNotNull(currentUser, "currentUser is null: %s",
-            currentUser);
+        Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
         this.serviceLocation = serviceLocation;
         this.mainSite = mainSite;
         appHeight = mainSite.getApplicationHeight();
@@ -95,8 +90,7 @@ public class ContextView extends VerticalLayout {
 
     private void addDirectMembersView() throws EscidocClientException {
         final DirectMember directMembers =
-            new DirectMember(serviceLocation, mainSite, resourceProxy.getId(),
-                mainWindow, currentUser);
+            new DirectMember(serviceLocation, mainSite, resourceProxy.getId(), mainWindow, currentUser);
         leftCell(DIRECT_MEMBERS, directMembers.contextAsTree());
     }
 

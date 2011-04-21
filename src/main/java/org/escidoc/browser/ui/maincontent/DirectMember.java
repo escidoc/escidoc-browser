@@ -34,17 +34,13 @@ public class DirectMember {
 
     private final CurrentUser currentUser;
 
-    public DirectMember(final EscidocServiceLocation serviceLocation,
-        final MainSite mainSite, final String parentId,
+    public DirectMember(final EscidocServiceLocation serviceLocation, final MainSite mainSite, final String parentId,
         final Window mainWindow, final CurrentUser currentUser) {
-        Preconditions.checkNotNull(serviceLocation,
-            "serviceLocation is null: %s", serviceLocation);
+        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
         Preconditions.checkNotNull(parentId, "parentID is null: %s", parentId);
-        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s",
-            mainWindow);
-        Preconditions.checkNotNull(currentUser, "currentUser is null: %s",
-            currentUser);
+        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
+        Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
         this.serviceLocation = serviceLocation;
         this.parentId = parentId;
         this.mainSite = mainSite;
@@ -75,49 +71,38 @@ public class DirectMember {
     }
 
     private void checkPostConditions() {
-        Preconditions.checkNotNull(contextRepository,
-            "contextRepository is null: %s", contextRepository);
-        Preconditions.checkNotNull(containerRepository,
-            "containerRepository is null: %s", containerRepository);
-        Preconditions.checkNotNull(itemRepository,
-            "itemRepository is null: %s", itemRepository);
+        Preconditions.checkNotNull(contextRepository, "contextRepository is null: %s", contextRepository);
+        Preconditions.checkNotNull(containerRepository, "containerRepository is null: %s", containerRepository);
+        Preconditions.checkNotNull(itemRepository, "itemRepository is null: %s", itemRepository);
     }
 
     public NavigationTreeView contextAsTree() throws EscidocClientException {
         final NavigationTreeView tree =
-            createContextDirectMembers(contextRepository, containerRepository,
-                itemRepository);
+            createContextDirectMembers(contextRepository, containerRepository, itemRepository);
         tree.setSizeFull();
         return tree;
     }
 
     private NavigationTreeView createContextDirectMembers(
-        final ContextRepository contextRepository,
-        final ContainerRepository containerRepository,
+        final ContextRepository contextRepository, final ContainerRepository containerRepository,
         final ItemRepository itemRepository) throws EscidocClientException {
-        return uiBuilder
-            .buildContextDirectMemberTree(contextRepository,
-                containerRepository, itemRepository, mainSite, parentId,
-                mainWindow);
+        return uiBuilder.buildContextDirectMemberTree(contextRepository, containerRepository, itemRepository, mainSite,
+            parentId, mainWindow);
     }
 
     public NavigationTreeView containerAsTree() throws EscidocClientException {
         final NavigationTreeView tree =
-            createContainerDirectMembers(contextRepository,
-                containerRepository, itemRepository);
+            createContainerDirectMembers(contextRepository, containerRepository, itemRepository);
         tree.setSizeFull();
         return tree;
     }
 
     private NavigationTreeView createContainerDirectMembers(
-        final ContextRepository contextRepository,
-        final ContainerRepository containerRepository,
+        final ContextRepository contextRepository, final ContainerRepository containerRepository,
         final ItemRepository itemRepository) throws EscidocClientException {
 
-        return uiBuilder
-            .buildContainerDirectMemberTree(contextRepository,
-                containerRepository, itemRepository, mainSite, parentId,
-                mainWindow);
+        return uiBuilder.buildContainerDirectMemberTree(contextRepository, containerRepository, itemRepository,
+            mainSite, parentId, mainWindow);
     }
 
 }

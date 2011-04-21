@@ -24,96 +24,76 @@ public class UiBuilder {
 
     private TreeClickListener clickListener;
 
-    public UiBuilder(final EscidocServiceLocation serviceLocation,
-        final CurrentUser currentUser) {
-        Preconditions.checkNotNull(serviceLocation,
-            "serviceLocation is null: %s", serviceLocation);
-        Preconditions.checkNotNull(currentUser, "currentUser is null: %s",
-            currentUser);
+    public UiBuilder(final EscidocServiceLocation serviceLocation, final CurrentUser currentUser) {
+        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
+        Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
         this.serviceLocation = serviceLocation;
         this.currentUser = currentUser;
 
     }
 
     public NavigationTreeView buildNavigationTree(
-        final Repository contextRepository,
-        final Repository containerRepository, final Repository itemRepository,
-        final MainSite mainSite, final Window mainWindow)
-        throws EscidocClientException {
+        final Repository contextRepository, final Repository containerRepository, final Repository itemRepository,
+        final MainSite mainSite, final Window mainWindow) throws EscidocClientException {
 
-        final NavigationTreeView navigationTreeView =
-            new NavigationTreeViewImpl(mainSite);
+        final NavigationTreeView navigationTreeView = new NavigationTreeViewImpl(mainSite);
 
         final List<ResourceModel> contexts = contextRepository.findAll();
 
-        final ResourceContainer resourceContainer =
-            new ResourceContainerImpl(contexts);
+        final ResourceContainer resourceContainer = new ResourceContainerImpl(contexts);
         resourceContainer.init();
 
         clickListener =
-            new TreeClickListener(serviceLocation, contextRepository,
-                containerRepository, itemRepository, mainWindow, mainSite,
-                currentUser);
+            new TreeClickListener(serviceLocation, contextRepository, containerRepository, itemRepository, mainWindow,
+                mainSite, currentUser);
 
         navigationTreeView.setDataSource(resourceContainer, mainSite);
-        navigationTreeView.addExpandListener(new TreeExpandListener(
-            contextRepository, containerRepository, resourceContainer));
+        navigationTreeView.addExpandListener(new TreeExpandListener(contextRepository, containerRepository,
+            resourceContainer));
         navigationTreeView.addClickListener(clickListener);
 
         return navigationTreeView;
     }
 
     public NavigationTreeView buildContextDirectMemberTree(
-        final Repository contextRepository,
-        final Repository containerRepository, final Repository itemRepository,
-        final MainSite mainSite, final String parentID, final Window mainWindow)
-        throws EscidocClientException {
+        final Repository contextRepository, final Repository containerRepository, final Repository itemRepository,
+        final MainSite mainSite, final String parentID, final Window mainWindow) throws EscidocClientException {
 
-        final NavigationTreeView navigationTreeView =
-            new NavigationTreeViewImpl(mainSite);
+        final NavigationTreeView navigationTreeView = new NavigationTreeViewImpl(mainSite);
 
-        final List<ResourceModel> contexts =
-            contextRepository.findTopLevelMembersById(parentID);
+        final List<ResourceModel> contexts = contextRepository.findTopLevelMembersById(parentID);
 
-        final ResourceContainerImpl resourceContainer =
-            new ResourceContainerImpl(contexts);
+        final ResourceContainerImpl resourceContainer = new ResourceContainerImpl(contexts);
         resourceContainer.init();
 
         clickListener =
-            new TreeClickListener(serviceLocation, contextRepository,
-                containerRepository, itemRepository, mainWindow, mainSite,
-                currentUser);
+            new TreeClickListener(serviceLocation, contextRepository, containerRepository, itemRepository, mainWindow,
+                mainSite, currentUser);
 
         navigationTreeView.setDataSource(resourceContainer, mainSite);
-        navigationTreeView.addExpandListener(new TreeExpandListener(
-            contextRepository, containerRepository, resourceContainer));
+        navigationTreeView.addExpandListener(new TreeExpandListener(contextRepository, containerRepository,
+            resourceContainer));
         navigationTreeView.addClickListener(clickListener);
 
         return navigationTreeView;
     }
 
     public NavigationTreeView buildContainerDirectMemberTree(
-        final Repository contextRepository,
-        final Repository containerRepository, final Repository itemRepository,
-        final MainSite mainSite, final String parentID, final Window mainWindow)
-        throws EscidocClientException {
+        final Repository contextRepository, final Repository containerRepository, final Repository itemRepository,
+        final MainSite mainSite, final String parentID, final Window mainWindow) throws EscidocClientException {
 
-        final NavigationTreeView navigationTreeView =
-            new NavigationTreeViewImpl(mainSite);
+        final NavigationTreeView navigationTreeView = new NavigationTreeViewImpl(mainSite);
 
-        final List<ResourceModel> container =
-            containerRepository.findTopLevelMembersById(parentID);
+        final List<ResourceModel> container = containerRepository.findTopLevelMembersById(parentID);
 
-        final ResourceContainerImpl resourceContainer =
-            new ResourceContainerImpl(container);
+        final ResourceContainerImpl resourceContainer = new ResourceContainerImpl(container);
         resourceContainer.init();
 
         navigationTreeView.setDataSource(resourceContainer, mainSite);
 
         clickListener =
-            new TreeClickListener(serviceLocation, contextRepository,
-                containerRepository, itemRepository, mainWindow, mainSite,
-                currentUser);
+            new TreeClickListener(serviceLocation, contextRepository, containerRepository, itemRepository, mainWindow,
+                mainSite, currentUser);
         navigationTreeView.addClickListener(clickListener);
         return navigationTreeView;
     }

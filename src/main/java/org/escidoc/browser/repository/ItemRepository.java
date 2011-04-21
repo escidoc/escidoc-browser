@@ -25,41 +25,35 @@ public class ItemRepository implements Repository {
     private final ItemHandlerClientInterface client;
 
     public ItemRepository(final EscidocServiceLocation serviceLocation) {
-        Preconditions.checkNotNull(serviceLocation,
-            "escidocServiceLocation is null: %s", serviceLocation);
+        Preconditions.checkNotNull(serviceLocation, "escidocServiceLocation is null: %s", serviceLocation);
         client = new ItemHandlerClient(serviceLocation.getEscidocUri());
         client.setTransport(TransportProtocol.REST);
     }
 
     @Override
     public List<ResourceModel> findAll() throws EscidocClientException {
-        return ModelConverter.itemListToModel(client
-            .retrieveItemsAsList(new SearchRetrieveRequestType()));
+        return ModelConverter.itemListToModel(client.retrieveItemsAsList(new SearchRetrieveRequestType()));
 
     }
 
     @Override
-    public List<ResourceModel> findTopLevelMembersById(final String id)
-        throws EscidocClientException {
+    public List<ResourceModel> findTopLevelMembersById(final String id) throws EscidocClientException {
         throw new UnsupportedOperationException("Not applicable for item.");
     }
 
     @Override
-    public ResourceProxy findById(final String id)
-        throws EscidocClientException {
+    public ResourceProxy findById(final String id) throws EscidocClientException {
         return new ItemProxyImpl(client.retrieve(id));
     }
 
     @Override
-    public VersionHistory getVersionHistory(final String id)
-        throws EscidocClientException {
+    public VersionHistory getVersionHistory(final String id) throws EscidocClientException {
         return client.retrieveVersionHistory(id);
 
     }
 
     @Override
-    public Relations getRelations(final String id)
-        throws EscidocClientException {
+    public Relations getRelations(final String id) throws EscidocClientException {
         return client.retrieveRelations(id);
     }
 

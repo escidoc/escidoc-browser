@@ -26,14 +26,11 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 @SuppressWarnings("serial")
 public class BrowserApplication extends Application {
 
-    private static final Logger LOG = LoggerFactory
-        .getLogger(BrowserApplication.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
 
-    private final Window mainWindow =
-        new Window(ViewConstant.MAIN_WINDOW_TITLE);
+    private final Window mainWindow = new Window(ViewConstant.MAIN_WINDOW_TITLE);
 
-    private EscidocServiceLocation serviceLocation =
-        new EscidocServiceLocationImpl();
+    private EscidocServiceLocation serviceLocation = new EscidocServiceLocationImpl();
 
     private EscidocParameterHandler paramaterHandler;
 
@@ -58,8 +55,7 @@ public class BrowserApplication extends Application {
     }
 
     private void addParameterHandler() {
-        paramaterHandler =
-            new EscidocParameterHandlerImpl(this, serviceLocation);
+        paramaterHandler = new EscidocParameterHandlerImpl(this, serviceLocation);
         mainWindow.addParameterHandler(paramaterHandler);
     }
 
@@ -81,9 +77,7 @@ public class BrowserApplication extends Application {
 
                 @Override
                 public void buttonClick(final ClickEvent event) {
-                    Preconditions.checkArgument(observer
-                        .getDimension().getHeight() > 0,
-                        "Can not get window size");
+                    Preconditions.checkArgument(observer.getDimension().getHeight() > 0, "Can not get window size");
                     LOG.debug("Dimension is: " + observer.getDimension());
                     mainWindow.removeComponent(button);
                     buildMainWindow(serviceLocation);
@@ -93,34 +87,28 @@ public class BrowserApplication extends Application {
     }
 
     private void buildMainWindow(final EscidocServiceLocation serviceLocation) {
-        Preconditions.checkNotNull(serviceLocation,
-            "serviceLocation is null: %s", serviceLocation);
+        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         mainWindow.setImmediate(true);
         mainWindow.setScrollable(true);
         setMainWindowContent(serviceLocation);
         setMainWindowHeight();
     }
 
-    private void setMainWindowContent(
-        final EscidocServiceLocation serviceLocation) {
+    private void setMainWindowContent(final EscidocServiceLocation serviceLocation) {
         try {
-            mainWindow.setContent(createMainSite(serviceLocation, mainWindow,
-                observer));
+            mainWindow.setContent(createMainSite(serviceLocation, mainWindow, observer));
         }
         catch (final EscidocClientException e) {
-            mainWindow.showNotification(new Window.Notification(
-                ViewConstant.ERROR, e.getMessage(),
+            mainWindow.showNotification(new Window.Notification(ViewConstant.ERROR, e.getMessage(),
                 Notification.TYPE_ERROR_MESSAGE));
         }
     }
 
     private MainSite createMainSite(
-        final EscidocServiceLocation serviceLocation, final Window mainWindow,
-        final WindowResizeObserver observer) throws EscidocClientException {
+        final EscidocServiceLocation serviceLocation, final Window mainWindow, final WindowResizeObserver observer)
+        throws EscidocClientException {
 
-        final MainSite mainSite =
-            new MainSite(mainWindow, serviceLocation, observer, this,
-                (CurrentUser) getUser());
+        final MainSite mainSite = new MainSite(mainWindow, serviceLocation, observer, this, (CurrentUser) getUser());
         mainSite.setHeight("100%");
         mainSite.setWidth("100%");
         return mainSite;
@@ -131,20 +119,17 @@ public class BrowserApplication extends Application {
     }
 
     public int getApplicationHeight() {
-        Preconditions.checkArgument(observer.getDimension().getHeight() > 0,
-            "Can not get window size");
+        Preconditions.checkArgument(observer.getDimension().getHeight() > 0, "Can not get window size");
         return Math.round(observer.getDimension().getHeight());
     }
 
     public int getApplicationWidth() {
-        Preconditions.checkArgument(observer.getDimension().getWidth() > 0,
-            "Can not get window size");
+        Preconditions.checkArgument(observer.getDimension().getWidth() > 0, "Can not get window size");
         return Math.round(observer.getDimension().getWidth());
     }
 
     public void setServiceLocation(final EscidocServiceLocation serviceLocation) {
-        Preconditions.checkNotNull(serviceLocation,
-            "serviceLocation is null: %s", serviceLocation);
+        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         this.serviceLocation = serviceLocation;
     }
 }

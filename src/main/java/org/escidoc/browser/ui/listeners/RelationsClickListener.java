@@ -23,8 +23,7 @@ import de.escidoc.core.resources.common.Relations;
 @SuppressWarnings("serial")
 public class RelationsClickListener implements ClickListener {
 
-    private static final Logger LOG = LoggerFactory
-        .getLogger(RelationsClickListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RelationsClickListener.class);
 
     private ItemProxy itemProxy;
 
@@ -45,15 +44,12 @@ public class RelationsClickListener implements ClickListener {
      * @param mainWindow
      * @param escidocServiceLocation2
      */
-    public RelationsClickListener(final ItemProxy resourceProxy,
-        final Window mainWindow,
+    public RelationsClickListener(final ItemProxy resourceProxy, final Window mainWindow,
         final EscidocServiceLocation escidocServiceLocation) {
-        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s",
-            resourceProxy);
-        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s",
-            mainWindow);
-        Preconditions.checkNotNull(escidocServiceLocation,
-            "escidocServiceLocation is null: %s", escidocServiceLocation);
+        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
+        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
+        Preconditions
+            .checkNotNull(escidocServiceLocation, "escidocServiceLocation is null: %s", escidocServiceLocation);
         itemProxy = resourceProxy;
         this.mainWindow = mainWindow;
         this.escidocServiceLocation = escidocServiceLocation;
@@ -67,8 +63,7 @@ public class RelationsClickListener implements ClickListener {
      * @param mainWindow
      * @param escidocServiceLocation
      */
-    public RelationsClickListener(final ContainerProxy resourceProxy,
-        final Window mainWindow,
+    public RelationsClickListener(final ContainerProxy resourceProxy, final Window mainWindow,
         final EscidocServiceLocation escidocServiceLocation) {
         containerProxy = resourceProxy;
         this.mainWindow = mainWindow;
@@ -77,8 +72,7 @@ public class RelationsClickListener implements ClickListener {
         itemRepository = new ContainerRepository(escidocServiceLocation);
     }
 
-    public String getRelations(final Repository cr, final String id)
-        throws EscidocClientException {
+    public String getRelations(final Repository cr, final String id) throws EscidocClientException {
 
         final Relations relations = cr.getRelations(id);
 
@@ -97,17 +91,14 @@ public class RelationsClickListener implements ClickListener {
         subwindow.setModal(true);
 
         String id = "";
-        if (event
-            .getButton().getCaption().equals("Container Content Relations")) {
+        if (event.getButton().getCaption().equals("Container Content Relations")) {
             id = containerProxy.getId();
         }
-        else if (event
-            .getButton().getCaption().equals("Item Content Relations")) {
+        else if (event.getButton().getCaption().equals("Item Content Relations")) {
             id = itemProxy.getId();
         }
         else {
-            throw new RuntimeException("Bug: unexpected event button: "
-                + event.getButton());
+            throw new RuntimeException("Bug: unexpected event button: " + event.getButton());
         }
 
         try {

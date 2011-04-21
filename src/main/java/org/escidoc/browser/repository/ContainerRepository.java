@@ -31,17 +31,14 @@ import de.escidoc.core.resources.sb.search.records.ResourceRecord;
 
 public class ContainerRepository implements Repository {
 
-    private static final Logger LOG = LoggerFactory
-        .getLogger(ContainerRepository.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ContainerRepository.class);
 
     private final ContainerHandlerClientInterface client;
 
-    public ContainerRepository(
-        final EscidocServiceLocation escidocServiceLocation) {
-        Preconditions.checkNotNull(escidocServiceLocation,
-            "escidocServiceLocation is null: %s", escidocServiceLocation);
-        client =
-            new ContainerHandlerClient(escidocServiceLocation.getEscidocUri());
+    public ContainerRepository(final EscidocServiceLocation escidocServiceLocation) {
+        Preconditions
+            .checkNotNull(escidocServiceLocation, "escidocServiceLocation is null: %s", escidocServiceLocation);
+        client = new ContainerHandlerClient(escidocServiceLocation.getEscidocUri());
         client.setTransport(TransportProtocol.REST);
     }
 
@@ -52,20 +49,18 @@ public class ContainerRepository implements Repository {
 
     @Override
     public List<ResourceModel> findAll() throws EscidocClientException {
-        return ModelConverter.containerListToModel(client
-            .retrieveContainersAsList(new SearchRetrieveRequestType()));
+        return ModelConverter.containerListToModel(client.retrieveContainersAsList(new SearchRetrieveRequestType()));
     }
 
     @Override
-    public List<ResourceModel> findTopLevelMembersById(final String id)
-        throws EscidocClientException {
+    public List<ResourceModel> findTopLevelMembersById(final String id) throws EscidocClientException {
         Preconditions.checkNotNull(id, "id is null: %s", id);
         Preconditions.checkArgument(!id.isEmpty(), "id is empty: %s", id);
         return findDirectMembers(id);
     }
 
-    private List<ResourceModel> findDirectMembers(final String id)
-        throws EscidocException, InternalClientException, TransportException {
+    private List<ResourceModel> findDirectMembers(final String id) throws EscidocException, InternalClientException,
+        TransportException {
 
         final List<ResourceModel> results = new ArrayList<ResourceModel>();
         for (final Record<?> record : findAllDirectMembers(id)) {
@@ -80,27 +75,23 @@ public class ContainerRepository implements Repository {
         return results;
     }
 
-    private Collection<Record<?>> findAllDirectMembers(final String id)
-        throws EscidocException, InternalClientException, TransportException {
-        return client.retrieveMembers(client.retrieve(id),
-            new SearchRetrieveRequestType()).getRecords();
+    private Collection<Record<?>> findAllDirectMembers(final String id) throws EscidocException,
+        InternalClientException, TransportException {
+        return client.retrieveMembers(client.retrieve(id), new SearchRetrieveRequestType()).getRecords();
     }
 
     @Override
-    public ResourceProxy findById(final String id)
-        throws EscidocClientException {
+    public ResourceProxy findById(final String id) throws EscidocClientException {
         return new ContainerProxyImpl(client.retrieve(id));
     }
 
     @Override
-    public VersionHistory getVersionHistory(final String id)
-        throws EscidocClientException {
+    public VersionHistory getVersionHistory(final String id) throws EscidocClientException {
         return client.retrieveVersionHistory(id);
     }
 
     @Override
-    public Relations getRelations(final String id)
-        throws EscidocClientException {
+    public Relations getRelations(final String id) throws EscidocClientException {
         return client.retrieveRelations(id);
 
     }

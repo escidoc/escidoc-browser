@@ -10,21 +10,16 @@ import biz.source_code.base64Coder.Base64Coder;
 
 public class ParamaterDecoder {
 
-    private static final Logger LOG = LoggerFactory
-        .getLogger(ParamaterDecoder.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ParamaterDecoder.class);
 
-    public static String parseAndDecodeToken(
-        final Map<String, String[]> parameters) {
+    public static String parseAndDecodeToken(final Map<String, String[]> parameters) {
         return tryToDecode(findEscidocToken(parameters));
     }
 
-    private static String findEscidocToken(
-        final Map<String, String[]> parameters) {
-        final String[] escidocHandeList =
-            parameters.get(AppConstants.ESCIDOC_USER_HANDLE);
+    private static String findEscidocToken(final Map<String, String[]> parameters) {
+        final String[] escidocHandeList = parameters.get(AppConstants.ESCIDOC_USER_HANDLE);
         if (escidocHandeList.length > 1) {
-            LOG
-                .warn("Found more than one eSciDoc token. The first will be used.");
+            LOG.warn("Found more than one eSciDoc token. The first will be used.");
 
         }
         return escidocHandeList[0];

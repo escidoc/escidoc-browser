@@ -14,8 +14,7 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class UserRepositoryImpl implements UserRepository {
 
-    private static final Logger LOG = LoggerFactory
-        .getLogger(UserRepositoryImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UserRepositoryImpl.class);
 
     private final UserAccountHandlerClient client;
 

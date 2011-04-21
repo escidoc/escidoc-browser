@@ -18,7 +18,6 @@ public final class WindowResizeListener implements Window.ResizeListener {
     public void windowResized(final ResizeEvent e) {
         final float windowWidth = e.getWindow().getWidth();
         final float windowHeight = e.getWindow().getHeight();
-        observer
-            .setDimension(new WindowDimensionImpl(windowWidth, windowHeight));
+        observer.setDimension(new WindowDimensionImpl(windowWidth, windowHeight));
     }
 }

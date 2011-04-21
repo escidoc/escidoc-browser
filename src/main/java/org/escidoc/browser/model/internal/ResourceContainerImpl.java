@@ -19,10 +19,8 @@ public class ResourceContainerImpl implements ResourceContainer {
 
     private final Collection<? extends ResourceModel> topLevelResources;
 
-    public ResourceContainerImpl(
-        final Collection<? extends ResourceModel> topLevelResources) {
-        Preconditions.checkNotNull(topLevelResources,
-            "topLevelResources is null: %s", topLevelResources);
+    public ResourceContainerImpl(final Collection<? extends ResourceModel> topLevelResources) {
+        Preconditions.checkNotNull(topLevelResources, "topLevelResources is null: %s", topLevelResources);
         this.topLevelResources = topLevelResources;
     }
 
@@ -33,16 +31,13 @@ public class ResourceContainerImpl implements ResourceContainer {
     }
 
     private void addProperties() {
-        container.addContainerProperty(PropertyId.OBJECT_ID, String.class,
-            "NO ID");
-        container
-            .addContainerProperty(PropertyId.NAME, String.class, "NO NAME");
+        container.addContainerProperty(PropertyId.OBJECT_ID, String.class, "NO ID");
+        container.addContainerProperty(PropertyId.NAME, String.class, "NO NAME");
     }
 
     // FIXME: does not work as expected.
     private void sortByNameAscending() {
-        container.sort(new Object[] { PropertyId.OBJECT_ID, PropertyId.NAME },
-            new boolean[] { true, false });
+        container.sort(new Object[] { PropertyId.OBJECT_ID, PropertyId.NAME }, new boolean[] { true, false });
     }
 
     private void addTopLevel() {
@@ -52,8 +47,7 @@ public class ResourceContainerImpl implements ResourceContainer {
     }
 
     /**
-     * Adding a resource within a resource Passing as a parameter another
-     * resource
+     * Adding a resource within a resource Passing as a parameter another resource
      * 
      * @param resource
      */
@@ -87,8 +81,7 @@ public class ResourceContainerImpl implements ResourceContainer {
     }
 
     @Override
-    public void addChildren(
-        final ResourceModel parent, final List<ResourceModel> children) {
+    public void addChildren(final ResourceModel parent, final List<ResourceModel> children) {
 
         for (final ResourceModel child : children) {
             addAndBind(child);
@@ -102,11 +95,9 @@ public class ResourceContainerImpl implements ResourceContainer {
         return !child.getType().equals(ResourceType.ITEM);
     }
 
-    private void assignParent(
-        final ResourceModel parent, final ResourceModel child) {
+    private void assignParent(final ResourceModel parent, final ResourceModel child) {
         final boolean isSuccesful = container.setParent(child, parent);
-        Preconditions.checkArgument(isSuccesful, "Setting parent of " + child
-            + " to " + parent + " is not succesful.");
+        Preconditions.checkArgument(isSuccesful, "Setting parent of " + child + " to " + parent + " is not succesful.");
     }
 
 }

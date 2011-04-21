@@ -11,8 +11,7 @@ import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.ExpandListener;
 
 @SuppressWarnings("serial")
-public class NavigationTreeViewImpl extends CustomComponent
-    implements NavigationTreeView {
+public class NavigationTreeViewImpl extends CustomComponent implements NavigationTreeView {
 
     private final Tree tree = new Tree();
 
@@ -36,8 +35,7 @@ public class NavigationTreeViewImpl extends CustomComponent
     }
 
     @Override
-    public void setDataSource(
-        final ResourceContainer container, MainSite mainSite) {
+    public void setDataSource(final ResourceContainer container, MainSite mainSite) {
         tree.setContainerDataSource(container.getContainer());
         tree.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
         tree.setItemCaptionPropertyId(PropertyId.NAME);

@@ -58,9 +58,8 @@ public class SearchSimple extends VerticalLayout {
     }
 
     /**
-     * Handle the Search Event! At the moment a new window is opened to escidev6
-     * for login TODO consider including the window of login from the remote
-     * server in a iframe within the MainContent Window
+     * Handle the Search Event! At the moment a new window is opened to escidev6 for login TODO consider including the
+     * window of login from the remote server in a iframe within the MainContent Window
      * 
      * @param event
      */
@@ -71,9 +70,8 @@ public class SearchSimple extends VerticalLayout {
     }
 
     /**
-     * Handle the Advanced Search Event! At the moment a new window is opened to
-     * escidev6 for login TODO consider including the window of login from the
-     * remote server in a iframe within the MainContent Window
+     * Handle the Advanced Search Event! At the moment a new window is opened to escidev6 for login TODO consider
+     * including the window of login from the remote server in a iframe within the MainContent Window
      * 
      * @param event
      */

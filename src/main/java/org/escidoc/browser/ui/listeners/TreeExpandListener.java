@@ -18,8 +18,7 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 @SuppressWarnings("serial")
 public final class TreeExpandListener implements Tree.ExpandListener {
 
-    private static final Logger LOG = LoggerFactory
-        .getLogger(TreeExpandListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TreeExpandListener.class);
 
     private final Repository contextRepository;
 
@@ -27,14 +26,11 @@ public final class TreeExpandListener implements Tree.ExpandListener {
 
     private final ResourceContainer container;
 
-    public TreeExpandListener(final Repository contextRepository,
-        final Repository containerRepository, final ResourceContainer container) {
-        Preconditions.checkNotNull(contextRepository, "repository is null: %s",
-            contextRepository);
-        Preconditions.checkNotNull(containerRepository,
-            "containerRepository is null: %s", containerRepository);
-        Preconditions.checkNotNull(container, "container is null: %s",
-            container);
+    public TreeExpandListener(final Repository contextRepository, final Repository containerRepository,
+        final ResourceContainer container) {
+        Preconditions.checkNotNull(contextRepository, "repository is null: %s", contextRepository);
+        Preconditions.checkNotNull(containerRepository, "containerRepository is null: %s", containerRepository);
+        Preconditions.checkNotNull(container, "container is null: %s", container);
 
         this.contextRepository = contextRepository;
         this.containerRepository = containerRepository;
@@ -63,8 +59,7 @@ public final class TreeExpandListener implements Tree.ExpandListener {
 
     private void addContainerChildren(final ResourceModel resource) {
         try {
-            container.addChildren(resource,
-                containerRepository.findTopLevelMembersById(resource.getId()));
+            container.addChildren(resource, containerRepository.findTopLevelMembersById(resource.getId()));
         }
         catch (final EscidocClientException e) {
             showErrorMessageToUser(resource, e);
@@ -73,8 +68,7 @@ public final class TreeExpandListener implements Tree.ExpandListener {
 
     private void addContextChildren(final ResourceModel resource) {
         try {
-            container.addChildren(resource,
-                contextRepository.findTopLevelMembersById(resource.getId()));
+            container.addChildren(resource, contextRepository.findTopLevelMembersById(resource.getId()));
         }
         catch (final EscidocClientException e) {
             showErrorMessageToUser(resource, e);
@@ -82,8 +76,7 @@ public final class TreeExpandListener implements Tree.ExpandListener {
     }
 
     // TODO: show notification to user, not just log.
-    private void showErrorMessageToUser(
-        final ResourceModel hasChildrenResource, final EscidocClientException e) {
+    private void showErrorMessageToUser(final ResourceModel hasChildrenResource, final EscidocClientException e) {
         LOG.error("Can not find member of: " + hasChildrenResource.getId(), e);
     }
 }

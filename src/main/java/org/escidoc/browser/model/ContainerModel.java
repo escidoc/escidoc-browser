@@ -15,8 +15,7 @@ public class ContainerModel extends AbstractResourceModel {
 
     @Override
     public String toString() {
-        return "ContainerModel [getType()=" + getType() + ", getId()="
-            + getId() + ", getName()=" + getName() + "]";
+        return "ContainerModel [getType()=" + getType() + ", getId()=" + getId() + ", getName()=" + getName() + "]";
     }
 
     public static boolean isContainer(final ResourceModel resource) {

@@ -15,48 +15,40 @@ import de.escidoc.core.resources.om.context.Context;
 import de.escidoc.core.resources.om.item.Item;
 
 public final class ModelConverter {
-    private static final Logger LOG = LoggerFactory
-        .getLogger(ModelConverter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ModelConverter.class);
 
     private ModelConverter() {
         // Utility class;
     }
 
-    public final static List<ResourceModel> contextListToModel(
-        final Collection<Context> contextList) {
-        final List<ResourceModel> models =
-            new ArrayList<ResourceModel>(contextList.size());
+    public final static List<ResourceModel> contextListToModel(final Collection<Context> contextList) {
+        final List<ResourceModel> models = new ArrayList<ResourceModel>(contextList.size());
         for (final Resource context : contextList) {
             models.add(new ContextModel(context));
         }
         return models;
     }
 
-    public final static List<ResourceModel> containerListToModel(
-        final Collection<Container> containerList) {
-        final List<ResourceModel> models =
-            new ArrayList<ResourceModel>(containerList.size());
+    public final static List<ResourceModel> containerListToModel(final Collection<Container> containerList) {
+        final List<ResourceModel> models = new ArrayList<ResourceModel>(containerList.size());
         for (final Resource context : containerList) {
             models.add(new ContainerModel(context));
         }
         return models;
     }
 
-    public final static List<ResourceModel> itemListToModel(
-        final Collection<Item> itemList) {
-        final List<ResourceModel> models =
-            new ArrayList<ResourceModel>(itemList.size());
+    public final static List<ResourceModel> itemListToModel(final Collection<Item> itemList) {
+        final List<ResourceModel> models = new ArrayList<ResourceModel>(itemList.size());
         for (final Resource item : itemList) {
             models.add(new ItemModel(item));
         }
         return models;
     }
-    
+
     public final static List<ResourceModel> genericResourcetoModel(
         final Collection<GenericVersionableResource> resources) {
 
-        final List<ResourceModel> models =
-            new ArrayList<ResourceModel>(resources.size());
+        final List<ResourceModel> models = new ArrayList<ResourceModel>(resources.size());
 
         for (final Resource containerOrItem : resources) {
             createModelBasedOnType(models, containerOrItem);
@@ -65,8 +57,7 @@ public final class ModelConverter {
         return models;
     }
 
-    private static void createModelBasedOnType(
-        final List<ResourceModel> models, final Resource containerOrItem) {
+    private static void createModelBasedOnType(final List<ResourceModel> models, final Resource containerOrItem) {
         if (isContainer(containerOrItem)) {
             models.add(new ContainerModel(containerOrItem));
         }
@@ -74,8 +65,7 @@ public final class ModelConverter {
             models.add(new ItemModel(containerOrItem));
         }
         else {
-            LOG
-                .error("Not yet implemented, if members of context other than Item or Container");
+            LOG.error("Not yet implemented, if members of context other than Item or Container");
         }
     }
 

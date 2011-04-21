@@ -64,8 +64,7 @@ public class SearchAdvanced extends VerticalLayout {
 
         // Dropdown for MimeType
         final String[] mimetypes =
-            new String[] { "Berlin", "Brussels", "Helsinki", "Madrid", "Oslo",
-                "Paris", "Stockholm" };
+            new String[] { "Berlin", "Brussels", "Helsinki", "Madrid", "Oslo", "Paris", "Stockholm" };
         ComboBox mimes = new ComboBox();
         for (int i = 0; i < mimetypes.length; i++) {
             mimes.addItem(mimetypes[i]);
@@ -76,8 +75,7 @@ public class SearchAdvanced extends VerticalLayout {
 
         // Dropdown for Resource Type
         final String[] resourcearr =
-            new String[] { "Berlin", "Brussels", "Helsinki", "Madrid", "Oslo",
-                "Paris", "Stockholm" };
+            new String[] { "Berlin", "Brussels", "Helsinki", "Madrid", "Oslo", "Paris", "Stockholm" };
         ComboBox resource = new ComboBox();
         for (int i = 0; i < resourcearr.length; i++) {
             resource.addItem(resourcearr[i]);
@@ -133,9 +131,8 @@ public class SearchAdvanced extends VerticalLayout {
     }
 
     /**
-     * Handle the Login Event! At the moment a new window is opened to escidev6
-     * for login TODO consider including the window of login from the remote
-     * server in a iframe within the MainContent Window
+     * Handle the Login Event! At the moment a new window is opened to escidev6 for login TODO consider including the
+     * window of login from the remote server in a iframe within the MainContent Window
      * 
      * @param event
      */

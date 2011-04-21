@@ -133,7 +133,6 @@ public class ItemView extends VerticalLayout {
         // Label.CONTENT_RAW);
         Label descMetadata1 =
             new Label("ID: " + resourceProxy.getId() + "<br />" + STATUS + " is " + resourceProxy.getStatus(),
-                Label.CONTENT_RAW);
         descMetadata1.setStyleName("floatleft columnheight50");
         descMetadata1.setWidth("30%");
         cssLayout.addComponent(descMetadata1);

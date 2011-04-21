@@ -15,8 +15,7 @@ public class ItemModel extends AbstractResourceModel {
 
     @Override
     public String toString() {
-        return "ItemModel [getType()=" + getType() + ", getId()=" + getId()
-            + ", getName()=" + getName() + "]";
+        return "ItemModel [getType()=" + getType() + ", getId()=" + getId() + ", getName()=" + getName() + "]";
     }
 
     public static boolean isItem(final ResourceModel resource) {

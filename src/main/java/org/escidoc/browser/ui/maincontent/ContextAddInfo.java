@@ -22,8 +22,7 @@ public class ContextAddInfo {
 
     private final Window mainWindow;
 
-    public ContextAddInfo(ResourceProxy resourceProxy, int innerelementsHeight,
-        Window mainWindow) {
+    public ContextAddInfo(ResourceProxy resourceProxy, int innerelementsHeight, Window mainWindow) {
         this.height = innerelementsHeight;
         this.resourceProxy = (ContextProxyImpl) resourceProxy;
         this.mainWindow = mainWindow;
@@ -54,10 +53,7 @@ public class ContextAddInfo {
         Panel resources = new Panel("Resources");
         resources.setWidth("100%");
         resources.setHeight(elementHeight + "px");
-        Label lblresources =
-            new Label(
-                "<a href='/ESCD/#Resources/id'>Members Filtered</a><br />",
-                Label.CONTENT_RAW);
+        Label lblresources = new Label("<a href='/ESCD/#Resources/id'>Members Filtered</a><br />", Label.CONTENT_RAW);
         resources.addComponent(lblresources);
         return resources;
     }
@@ -71,9 +67,7 @@ public class ContextAddInfo {
         relations.setWidth("100%");
         relations.setHeight(elementHeight + "px");
         Label lblrelations =
-            new Label(
-                "isRelatedTo <a href='/ESCD/#Context/123'>Other Context</a><br />",
-                Label.CONTENT_RAW);
+            new Label("isRelatedTo <a href='/ESCD/#Context/123'>Other Context</a><br />", Label.CONTENT_RAW);
         relations.addComponent(lblrelations);
         return relations;
     }
@@ -92,8 +86,7 @@ public class ContextAddInfo {
         for (AdminDescriptor adminDescriptor : admDesc) {
             Button fooBtn = new Button(adminDescriptor.getName());
             fooBtn.setStyleName(BaseTheme.BUTTON_LINK);
-            fooBtn.addListener(new ContextAdminDescriptorsClickListener(
-                adminDescriptor, mainWindow));
+            fooBtn.addListener(new ContextAdminDescriptorsClickListener(adminDescriptor, mainWindow));
             admDescriptors.addComponent(fooBtn);
         }
 
@@ -118,8 +111,7 @@ public class ContextAddInfo {
 
             Button fooBtn = new Button(organizationalUnitRef.getXLinkTitle());
             fooBtn.setStyleName(BaseTheme.BUTTON_LINK);
-            fooBtn.addListener(new ContextAdminDescriptorsClickListener(
-                organizationalUnitRef, mainWindow));
+            fooBtn.addListener(new ContextAdminDescriptorsClickListener(organizationalUnitRef, mainWindow));
             orgUnit.addComponent(fooBtn);
         }
         return orgUnit;

@@ -41,8 +41,8 @@ public class VersionHistoryClickListener implements ClickListener {
      * @param mainWindow
      * @param escidocServiceLocation2
      */
-    public VersionHistoryClickListener(ItemProxy resourceProxy,
-        Window mainWindow, EscidocServiceLocation escidocServiceLocation) {
+    public VersionHistoryClickListener(ItemProxy resourceProxy, Window mainWindow,
+        EscidocServiceLocation escidocServiceLocation) {
         this.itemProxy = resourceProxy;
         this.mainWindow = mainWindow;
         this.escidocServiceLocation = escidocServiceLocation;
@@ -57,8 +57,8 @@ public class VersionHistoryClickListener implements ClickListener {
      * @param mainWindow
      * @param escidocServiceLocation
      */
-    public VersionHistoryClickListener(ContainerProxy resourceProxy,
-        Window mainWindow, EscidocServiceLocation escidocServiceLocation) {
+    public VersionHistoryClickListener(ContainerProxy resourceProxy, Window mainWindow,
+        EscidocServiceLocation escidocServiceLocation) {
         this.containerProxy = resourceProxy;
         this.mainWindow = mainWindow;
         this.escidocServiceLocation = escidocServiceLocation;
@@ -67,64 +67,40 @@ public class VersionHistoryClickListener implements ClickListener {
 
     }
 
-    public String getVersionHistory(Repository cr, String id)
-        throws EscidocClientException {
+    public String getVersionHistory(Repository cr, String id) throws EscidocClientException {
         VersionHistory vH = cr.getVersionHistory(id);
         Collection<Version> versions = vH.getVersions();
         String versionHistory = "";
         for (Version version : versions) {
-            versionHistory +=
-                "Version: " + version.getVersionNumber() + "<br />";
+            versionHistory += "Version: " + version.getVersionNumber() + "<br />";
             versionHistory += "TimeStamp: " + version.getTimestamp() + "<br />";
-            versionHistory +=
-                "Version Status: " + version.getVersionStatus() + "<br />";
-            versionHistory +=
-                "Comment: " + version.getComment() + "<br />< hr/>";
+            versionHistory += "Version Status: " + version.getVersionStatus() + "<br />";
+            versionHistory += "Comment: " + version.getComment() + "<br />< hr/>";
             Collection<Event> events = version.getEvents();
             for (Event event : events) {
+                versionHistory += "event :  @xmlID=" + event.getXmlID() + "<br />";
                 versionHistory +=
-                    "event :  @xmlID=" + event.getXmlID() + "<br />";
+                    "Event Identifier Type: " + event.getEventIdentifier().getEventIdentifierType() + "<br />";
                 versionHistory +=
-                    "Event Identifier Type: "
-                        + event.getEventIdentifier().getEventIdentifierType()
-                        + "<br />";
-                versionHistory +=
-                    "Event Identifier Value: "
-                        + event.getEventIdentifier().getEventIdentifierValue()
-                        + "<br />";
-                versionHistory +=
-                    "Event Type: " + event.getEventType() + "<br />";
-                versionHistory +=
-                    "Event DateTime: " + event.getEventDateTime() + "<br />";
-                versionHistory +=
-                    "Event Detail: " + event.getEventDetail() + "<br /><hr />";
-                versionHistory +=
-                    "Linking Agent Identifier: "
-                        + event.getLinkingAgentIdentifier() + "<br />";
+                    "Event Identifier Value: " + event.getEventIdentifier().getEventIdentifierValue() + "<br />";
+                versionHistory += "Event Type: " + event.getEventType() + "<br />";
+                versionHistory += "Event DateTime: " + event.getEventDateTime() + "<br />";
+                versionHistory += "Event Detail: " + event.getEventDetail() + "<br /><hr />";
+                versionHistory += "Linking Agent Identifier: " + event.getLinkingAgentIdentifier() + "<br />";
                 versionHistory +=
                     "Linking Agent Identifier Type: "
-                        + event
-                            .getLinkingAgentIdentifier()
-                            .getLinkingAgentIdentifierType() + "<br />";
+                        + event.getLinkingAgentIdentifier().getLinkingAgentIdentifierType() + "<br />";
                 versionHistory +=
                     "Linking Agent Identifier Value: "
-                        + event
-                            .getLinkingAgentIdentifier()
-                            .getLinkingAgentIdentifierValue() + "<br /><hr />";
+                        + event.getLinkingAgentIdentifier().getLinkingAgentIdentifierValue() + "<br /><hr />";
 
-                versionHistory +=
-                    "Linking Object Identifier: "
-                        + event.getLinkingObjectIdentifier() + "<br />";
+                versionHistory += "Linking Object Identifier: " + event.getLinkingObjectIdentifier() + "<br />";
                 versionHistory +=
                     "Linking Object Identifier Type: "
-                        + event
-                            .getLinkingObjectIdentifier()
-                            .getLinkingObjectIdentifierType() + "<br />";
+                        + event.getLinkingObjectIdentifier().getLinkingObjectIdentifierType() + "<br />";
                 versionHistory +=
                     "Linking Object Identifier Value: "
-                        + event
-                            .getLinkingObjectIdentifier()
-                            .getLinkingObjectIdentifierValue() + "<br />";
+                        + event.getLinkingObjectIdentifier().getLinkingObjectIdentifierValue() + "<br />";
             }
         }
         return versionHistory;
@@ -144,8 +120,7 @@ public class VersionHistoryClickListener implements ClickListener {
             id = itemProxy.getId();
         }
         else {
-            throw new RuntimeException("Bug: unexpected event button: "
-                + event.getButton());
+            throw new RuntimeException("Bug: unexpected event button: " + event.getButton());
         }
 
         try {

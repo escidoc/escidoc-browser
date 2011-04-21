@@ -14,8 +14,7 @@ public class LoggedInUser implements CurrentUser {
     private String token = AppConstants.EMPTY_STRING;
 
     public LoggedInUser(final UserAccount currentUser, final String token) {
-        Preconditions.checkNotNull(currentUser, "currentUser is null: %s",
-            currentUser);
+        Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
         Preconditions.checkNotNull(token, "token is null: %s", token);
         this.currentUser = currentUser;
         this.token = token;
@@ -49,9 +48,7 @@ public class LoggedInUser implements CurrentUser {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result =
-            prime * result
-                + ((currentUser == null) ? 0 : currentUser.hashCode());
+        result = prime * result + ((currentUser == null) ? 0 : currentUser.hashCode());
         result = prime * result + ((token == null) ? 0 : token.hashCode());
         return result;
     }

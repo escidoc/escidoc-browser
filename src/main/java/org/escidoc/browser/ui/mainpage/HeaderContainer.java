@@ -18,15 +18,13 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 
 /**
- * This is the Header of the page. Main Search comes here, also the login
- * ability
+ * This is the Header of the page. Main Search comes here, also the login ability
  * 
  * @author ARB
  * 
  */
 @SuppressWarnings("serial")
-public class HeaderContainer extends VerticalLayout
-    implements UserChangeListener {
+public class HeaderContainer extends VerticalLayout implements UserChangeListener {
 
     // The HTML file can be found at myTheme/layouts/header.html
     private final CustomLayout custom = new CustomLayout(ViewConstant.HEADER);
@@ -41,16 +39,13 @@ public class HeaderContainer extends VerticalLayout
 
     private final CurrentUser user;
 
-    public HeaderContainer(final MainSite mainSite, final int appHeight,
-        final BrowserApplication app,
+    public HeaderContainer(final MainSite mainSite, final int appHeight, final BrowserApplication app,
         final EscidocServiceLocation serviceLocation, final CurrentUser user) {
 
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
-        Preconditions.checkArgument(appHeight > 0,
-            "appHeight is zero or negative: %s");
+        Preconditions.checkArgument(appHeight > 0, "appHeight is zero or negative: %s");
         Preconditions.checkNotNull(app, "app is null: %s", app);
-        Preconditions.checkNotNull(serviceLocation,
-            "serviceLocation is null: %s", serviceLocation);
+        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(user, "user is null: %s", user);
 
         this.app = app;
@@ -99,9 +94,8 @@ public class HeaderContainer extends VerticalLayout
     }
 
     /**
-     * Handle the Login Event! At the moment a new window is opened to escidev6
-     * for login TODO consider including the window of login from the remote
-     * server in a iframe within the MainContent Window
+     * Handle the Login Event! At the moment a new window is opened to escidev6 for login TODO consider including the
+     * window of login from the remote server in a iframe within the MainContent Window
      * 
      * @param event
      */

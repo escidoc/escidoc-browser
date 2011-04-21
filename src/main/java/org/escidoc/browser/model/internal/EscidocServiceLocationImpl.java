@@ -32,8 +32,7 @@ public class EscidocServiceLocationImpl implements EscidocServiceLocation {
      */
     @Override
     public String getLoginUri() {
-        return escidocUri + AppConstants.LOGIN_TARGET + appUri + "?escidocurl="
-            + escidocUri;
+        return escidocUri + AppConstants.LOGIN_TARGET + appUri + "?escidocurl=" + escidocUri;
     }
 
     /*
@@ -43,8 +42,7 @@ public class EscidocServiceLocationImpl implements EscidocServiceLocation {
      */
     @Override
     public String getLogoutUri() {
-        return escidocUri + AppConstants.LOGOUT_TARGET + appUri
-            + "?escidocurl=" + escidocUri;
+        return escidocUri + AppConstants.LOGOUT_TARGET + appUri + "?escidocurl=" + escidocUri;
     }
 
     @Override

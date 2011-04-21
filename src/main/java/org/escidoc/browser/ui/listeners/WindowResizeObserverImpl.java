@@ -7,8 +7,7 @@ import org.slf4j.LoggerFactory;
 
 public final class WindowResizeObserverImpl implements WindowResizeObserver {
 
-    private static final Logger LOG = LoggerFactory
-        .getLogger(WindowResizeObserverImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(WindowResizeObserverImpl.class);
 
     private WindowDimension windowDimension = new WindowDimensionImpl(0, 0);
 

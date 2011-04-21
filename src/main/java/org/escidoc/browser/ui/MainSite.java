@@ -52,17 +52,15 @@ public class MainSite extends VerticalLayout {
     private CurrentUser currentUser;
 
     /**
-     * The mainWindow should be revised whether we need it or not the appHeight
-     * is the Height of the Application and I need it for calculations in the
-     * inner elements
+     * The mainWindow should be revised whether we need it or not the appHeight is the Height of the Application and I
+     * need it for calculations in the inner elements
      * 
      * @param mainWindow
      * @throws EscidocClientException
      */
-    public MainSite(final Window mainWindow,
-        final EscidocServiceLocation serviceLocation,
-        final WindowResizeObserver observer, final BrowserApplication app,
-        final CurrentUser user) throws EscidocClientException {
+    public MainSite(final Window mainWindow, final EscidocServiceLocation serviceLocation,
+        final WindowResizeObserver observer, final BrowserApplication app, final CurrentUser user)
+        throws EscidocClientException {
         this.serviceLocation = serviceLocation;
         // General Height for the application
         this.app = app;
@@ -79,9 +77,7 @@ public class MainSite extends VerticalLayout {
         mainLayout.setSizeFull();
         init();
 
-        final HeaderContainer header =
-            new HeaderContainer(this, getApplicationHeight(), app,
-                serviceLocation, user);
+        final HeaderContainer header = new HeaderContainer(this, getApplicationHeight(), app, serviceLocation, user);
         header.init();
         final Footer futer = new Footer();
 
@@ -114,8 +110,7 @@ public class MainSite extends VerticalLayout {
     }
 
     /**
-     * MainNavigation Panel This is the left-most (human side) panel on the page
-     * It contains a Main Navigation Tree
+     * MainNavigation Panel This is the left-most (human side) panel on the page It contains a Main Navigation Tree
      * 
      * @return Panel
      * @throws EscidocClientException
@@ -129,28 +124,23 @@ public class MainSite extends VerticalLayout {
         mainnav.setWidth(app.getApplicationWidth() * 30 / 100 - 10 + "px");
         mainnav.setHeight("86%");
 
-        final Button srchButton =
-            new Button("Search", this, "onClickSrchButton");
+        final Button srchButton = new Button("Search", this, "onClickSrchButton");
         srchButton.setStyleName(BaseTheme.BUTTON_LINK);
         srchButton.setIcon(new ThemeResource("../myTheme/images/search.png"));
         srchButton.setDescription("Search the Infrastructure");
 
-        final ContainerRepository containerRepository =
-            new ContainerRepository(serviceLocation);
+        final ContainerRepository containerRepository = new ContainerRepository(serviceLocation);
         containerRepository.loginWith(((CurrentUser) app.getUser()).getToken());
 
-        final ContextRepository contextRepository =
-            new ContextRepository(serviceLocation);
+        final ContextRepository contextRepository = new ContextRepository(serviceLocation);
         contextRepository.loginWith(((CurrentUser) app.getUser()).getToken());
 
-        final ItemRepository itemRepository =
-            new ItemRepository(serviceLocation);
+        final ItemRepository itemRepository = new ItemRepository(serviceLocation);
         itemRepository.loginWith(((CurrentUser) app.getUser()).getToken());
 
         final NavigationTreeView treemenu =
-            new UiBuilder(serviceLocation, (CurrentUser) app.getUser())
-                .buildNavigationTree(contextRepository, containerRepository,
-                    itemRepository, this, mainWindow);
+            new UiBuilder(serviceLocation, (CurrentUser) app.getUser()).buildNavigationTree(contextRepository,
+                containerRepository, itemRepository, this, mainWindow);
         mainnavtree = treemenu;
         mainnav.addComponent(srchButton);
         mainnav.addComponent(mainnavtree);
@@ -198,14 +188,12 @@ public class MainSite extends VerticalLayout {
     }
 
     public int getApplicationHeight() {
-        Preconditions.checkArgument(observer.getDimension().getHeight() > 0,
-            "Can not get window size");
+        Preconditions.checkArgument(observer.getDimension().getHeight() > 0, "Can not get window size");
         return Math.round(observer.getDimension().getHeight());
     }
 
     public int getApplicationWidth() {
-        Preconditions.checkArgument(observer.getDimension().getWidth() > 0,
-            "Can not get window size");
+        Preconditions.checkArgument(observer.getDimension().getWidth() > 0, "Can not get window size");
         return Math.round(observer.getDimension().getWidth());
     }
 }

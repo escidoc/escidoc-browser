@@ -66,7 +66,7 @@ public class MetadataRecsItem {
         btnContentRelation.setDescription("Show Version history in a Pop-up");
 
         Button btnCMDefBehavior =
-            new Button("CM-Def-Behavior", new CmDefBehaviourClickListener(
+            new Button("CM-Def-Behavior", new CmDefBehaviourClickListener(resourceProxy, mainWindow,
                 escidocServiceLocation));
         btnCMDefBehavior.setStyleName(BaseTheme.BUTTON_LINK);
         btnCMDefBehavior.setDescription("CM-Def-Behavior");

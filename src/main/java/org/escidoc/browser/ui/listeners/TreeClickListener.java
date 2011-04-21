@@ -28,8 +28,7 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 @SuppressWarnings("serial")
 public class TreeClickListener implements ItemClickListener {
 
-    private static final Logger LOG = LoggerFactory
-        .getLogger(TreeClickListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TreeClickListener.class);
 
     private final Repository contextRepository;
 
@@ -46,25 +45,17 @@ public class TreeClickListener implements ItemClickListener {
     private final CurrentUser currentUser;
 
     // TODO RepositoryFactory
-    public TreeClickListener(final EscidocServiceLocation serviceLocation,
-        final Repository contextRepository,
-        final Repository containerRepository, final Repository itemRepository,
-        final Window mainWindow, final MainSite mainSite,
-        final CurrentUser currentUser) {
+    public TreeClickListener(final EscidocServiceLocation serviceLocation, final Repository contextRepository,
+        final Repository containerRepository, final Repository itemRepository, final Window mainWindow,
+        final MainSite mainSite, final CurrentUser currentUser) {
 
-        Preconditions.checkNotNull(serviceLocation,
-            "serviceLocation is null: %s", serviceLocation);
-        Preconditions.checkNotNull(contextRepository,
-            "contextRepository is null: %s", contextRepository);
-        Preconditions.checkNotNull(containerRepository,
-            "containerRepository is null: %s", containerRepository);
-        Preconditions.checkNotNull(itemRepository,
-            "itemRepository is null: %s", itemRepository);
-        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s",
-            mainWindow);
+        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
+        Preconditions.checkNotNull(contextRepository, "contextRepository is null: %s", contextRepository);
+        Preconditions.checkNotNull(containerRepository, "containerRepository is null: %s", containerRepository);
+        Preconditions.checkNotNull(itemRepository, "itemRepository is null: %s", itemRepository);
+        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
-        Preconditions.checkNotNull(currentUser, "currentUser is null: %s",
-            currentUser);
+        Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
 
         this.contextRepository = contextRepository;
         this.containerRepository = containerRepository;
@@ -82,9 +73,10 @@ public class TreeClickListener implements ItemClickListener {
         if (event.isDoubleClick()) {
             if (ContextModel.isContext(clickedResource)) {
                 try {
-                    openInNewTab(new ContextView(serviceLocation, mainSite,
-                        tryToFindResource(contextRepository, clickedResource),
-                        mainWindow, currentUser), clickedResource);
+                    openInNewTab(
+                        new ContextView(serviceLocation, mainSite,
+                            tryToFindResource(contextRepository, clickedResource), mainWindow, currentUser),
+                        clickedResource);
                 }
                 catch (final EscidocClientException e) {
                     showErrorMessageToUser(clickedResource, e);
@@ -94,10 +86,8 @@ public class TreeClickListener implements ItemClickListener {
             else if (ContainerModel.isContainer(clickedResource)) {
                 try {
                     openInNewTab(
-                        new ContainerView(serviceLocation, mainSite,
-                            tryToFindResource(containerRepository,
-                                clickedResource), mainWindow, currentUser),
-                        clickedResource);
+                        new ContainerView(serviceLocation, mainSite, tryToFindResource(containerRepository,
+                            clickedResource), mainWindow, currentUser), clickedResource);
                 }
                 catch (final EscidocClientException e) {
                     showErrorMessageToUser(clickedResource, e);
@@ -105,8 +95,7 @@ public class TreeClickListener implements ItemClickListener {
             }
             else if (ItemModel.isItem(clickedResource)) {
                 openInNewTab(new ItemView(serviceLocation, mainSite,
-                    tryToFindResource(itemRepository, clickedResource),
-                    mainWindow), clickedResource);
+                    tryToFindResource(itemRepository, clickedResource), mainWindow), clickedResource);
             }
             else {
                 throw new UnsupportedOperationException("Not yet implemented");
@@ -114,8 +103,7 @@ public class TreeClickListener implements ItemClickListener {
         }
     }
 
-    private ResourceProxy tryToFindResource(
-        final Repository repository, final ResourceModel clickedResource) {
+    private ResourceProxy tryToFindResource(final Repository repository, final ResourceModel clickedResource) {
         try {
             return repository.findById(clickedResource.getId());
         }
@@ -125,15 +113,13 @@ public class TreeClickListener implements ItemClickListener {
         return null;
     }
 
-    private void openInNewTab(
-        final Component component, final ResourceModel clickedResource) {
+    private void openInNewTab(final Component component, final ResourceModel clickedResource) {
         mainSite.openTab(component, clickedResource.getName());
     }
 
-    private void showErrorMessageToUser(
-        final ResourceModel hasChildrenResource, final EscidocClientException e) {
+    private void showErrorMessageToUser(final ResourceModel hasChildrenResource, final EscidocClientException e) {
         LOG.error("Can not find member of: " + hasChildrenResource.getId(), e);
-        mainWindow.showNotification(new Window.Notification(ViewConstant.ERROR,
-            e.getMessage(), Notification.TYPE_ERROR_MESSAGE));
+        mainWindow.showNotification(new Window.Notification(ViewConstant.ERROR, e.getMessage(),
+            Notification.TYPE_ERROR_MESSAGE));
     }
 }

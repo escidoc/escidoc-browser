@@ -22,30 +22,27 @@ public class ContextRepository implements Repository {
     private final ContextHandlerClientInterface client;
 
     public ContextRepository(final EscidocServiceLocation escidocServiceLocation) {
-        client =
-            new ContextHandlerClient(escidocServiceLocation.getEscidocUri());
+        client = new ContextHandlerClient(escidocServiceLocation.getEscidocUri());
         client.setTransport(TransportProtocol.REST);
     }
 
     @Override
     public List<ResourceModel> findAll() throws EscidocClientException {
-        return ModelConverter.contextListToModel(client
-            .retrieveContextsAsList(Util.createEmptyFilter()));
+        return ModelConverter.contextListToModel(client.retrieveContextsAsList(Util.createEmptyFilter()));
     }
 
     // FIXME: this is a hack, it sends two requests to find context's direct
     // members.
     @Override
-    public List<ResourceModel> findTopLevelMembersById(final String id)
-        throws EscidocClientException {
+    public List<ResourceModel> findTopLevelMembersById(final String id) throws EscidocClientException {
 
         final List<ResourceModel> topLevelContainers =
-            ModelConverter.genericResourcetoModel(client.retrieveMembersAsList(
-                id, Util.createQueryForTopLevelContainers(id)));
+            ModelConverter.genericResourcetoModel(client.retrieveMembersAsList(id,
+                Util.createQueryForTopLevelContainers(id)));
 
         final List<ResourceModel> topLevelItems =
-            ModelConverter.genericResourcetoModel(client.retrieveMembersAsList(
-                id, Util.createQueryForTopLevelItems(id)));
+            ModelConverter
+                .genericResourcetoModel(client.retrieveMembersAsList(id, Util.createQueryForTopLevelItems(id)));
 
         topLevelContainers.addAll(topLevelItems);
 
@@ -53,20 +50,17 @@ public class ContextRepository implements Repository {
     }
 
     @Override
-    public ResourceProxy findById(final String id)
-        throws EscidocClientException {
+    public ResourceProxy findById(final String id) throws EscidocClientException {
         return new ContextProxyImpl(client.retrieve(id));
     }
 
     @Override
-    public VersionHistory getVersionHistory(final String id)
-        throws EscidocClientException {
+    public VersionHistory getVersionHistory(final String id) throws EscidocClientException {
         return null;
     }
 
     @Override
-    public Relations getRelations(final String id)
-        throws EscidocClientException {
+    public Relations getRelations(final String id) throws EscidocClientException {
         return null;
     }
 

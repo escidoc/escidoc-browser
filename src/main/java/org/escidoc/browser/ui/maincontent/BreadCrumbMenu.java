@@ -16,19 +16,15 @@ public class BreadCrumbMenu {
     }
 
     public BreadCrumbMenu(CssLayout cssLayout, ContainerProxy resourceProxy) {
-        cssLayout
-            .addComponent(new Label(
-                "<ul id='crumbs'><li><a href='#'>Container</a></li><li><a href='#'>...</a></li><li><a href='#'>"
-                    + resourceProxy.getName() + "</a></li></ul>",
-                Label.CONTENT_RAW));
+        cssLayout.addComponent(new Label(
+            "<ul id='crumbs'><li><a href='#'>Container</a></li><li><a href='#'>...</a></li><li><a href='#'>"
+                + resourceProxy.getName() + "</a></li></ul>", Label.CONTENT_RAW));
 
     }
 
     public BreadCrumbMenu(CssLayout cssLayout, ItemProxyImpl resourceProxy) {
-        cssLayout
-            .addComponent(new Label(
-                "<ul id='crumbs'><li><a href='#'>Item</a></li><li><a href='#'>...</a></li><li><a href='#'>"
-                    + resourceProxy.getName() + "</a></li></ul>",
-                Label.CONTENT_RAW));
+        cssLayout.addComponent(new Label(
+            "<ul id='crumbs'><li><a href='#'>Item</a></li><li><a href='#'>...</a></li><li><a href='#'>"
+                + resourceProxy.getName() + "</a></li></ul>", Label.CONTENT_RAW));
     }
 }

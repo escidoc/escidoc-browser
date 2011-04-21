@@ -29,8 +29,7 @@ public class ContextProxyImpl implements ResourceProxy {
 
     @Override
     public ResourceType getType() {
-        return ResourceType.valueOf(contextFromCore
-            .getResourceType().toString());
+        return ResourceType.valueOf(contextFromCore.getResourceType().toString());
     }
 
     @Override
@@ -50,8 +49,7 @@ public class ContextProxyImpl implements ResourceProxy {
 
     @Override
     public String getCreatedOn() {
-        return contextFromCore
-            .getProperties().getCreationDate().toString("d.M.y, H:m");
+        return contextFromCore.getProperties().getCreationDate().toString("d.M.y, H:m");
     }
 
     @Override

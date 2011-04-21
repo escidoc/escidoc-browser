@@ -22,8 +22,7 @@ public class ContextAdminDescriptorsClickListener implements ClickListener {
 
     private OrganizationalUnitRef organizationalUnitRef = null;
 
-    public ContextAdminDescriptorsClickListener(
-        AdminDescriptor adminDescriptor, Window mainWindow) {
+    public ContextAdminDescriptorsClickListener(AdminDescriptor adminDescriptor, Window mainWindow) {
         this.adminDescriptor = adminDescriptor;
         this.mainWindow = mainWindow;
         try {
@@ -35,8 +34,7 @@ public class ContextAdminDescriptorsClickListener implements ClickListener {
         }
     }
 
-    public ContextAdminDescriptorsClickListener(
-        OrganizationalUnitRef organizationalUnitRef, Window mainWindow) {
+    public ContextAdminDescriptorsClickListener(OrganizationalUnitRef organizationalUnitRef, Window mainWindow) {
         this.mainWindow = mainWindow;
         this.organizationalUnitRef = organizationalUnitRef;
 
