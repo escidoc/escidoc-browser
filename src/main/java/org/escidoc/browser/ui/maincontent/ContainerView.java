@@ -1,5 +1,6 @@
 package org.escidoc.browser.ui.maincontent;
 
+import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.ContainerProxy;
@@ -56,18 +57,29 @@ public class ContainerView extends VerticalLayout {
 
     private final Window mainWindow;
 
-    public ContainerView(final EscidocServiceLocation serviceLocation, final MainSite mainSite,
-        final ResourceProxy resourceProxy, final Window mainWindow) throws EscidocClientException {
-        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
+    private final CurrentUser currentUser;
+
+    public ContainerView(final EscidocServiceLocation serviceLocation,
+        final MainSite mainSite, final ResourceProxy resourceProxy,
+        final Window mainWindow, final CurrentUser currentUser)
+        throws EscidocClientException {
+        Preconditions.checkNotNull(serviceLocation,
+            "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         Preconditions.checkArgument(resourceProxy instanceof ContainerProxy, resourceProxy.getClass()
             + " is not an instance of ContainerProxy.class");
+        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s",
+            resourceProxy);
+        Preconditions.checkArgument(resourceProxy instanceof ContainerProxy,
+            resourceProxy.getClass()
+                + " is not an instance of ContainerProxy.class");
         this.serviceLocation = serviceLocation;
         this.mainSite = mainSite;
         appHeight = mainSite.getApplicationHeight();
         this.resourceProxy = (ContainerProxy) resourceProxy;
         this.mainWindow = mainWindow;
+        this.currentUser = currentUser;
         init();
     }
 
@@ -84,13 +96,16 @@ public class ContainerView extends VerticalLayout {
     }
 
     private void addMetadataRecords() {
-        final MetadataRecs metaData = new MetadataRecs(resourceProxy, accordionHeight, mainWindow, serviceLocation);
+        final MetadataRecs metaData =
+            new MetadataRecs(resourceProxy, accordionHeight, mainWindow,
+                serviceLocation);
         rightCell(metaData.asAccord());
     }
 
     private void addDirectMembers() throws EscidocClientException {
         final DirectMember directMembers =
-            new DirectMember(serviceLocation, mainSite, resourceProxy.getId(), mainWindow);
+            new DirectMember(serviceLocation, mainSite, resourceProxy.getId(),
+                mainWindow, currentUser);
         leftCell(DIRECT_MEMBERS, directMembers.containerAsTree());
     }
 

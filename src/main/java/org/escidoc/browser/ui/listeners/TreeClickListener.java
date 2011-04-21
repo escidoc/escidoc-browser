@@ -2,6 +2,7 @@ package org.escidoc.browser.ui.listeners;
 
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
+import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ResourceModel;
@@ -42,11 +43,14 @@ public class TreeClickListener implements ItemClickListener {
 
     private final Window mainWindow;
 
+    private final CurrentUser currentUser;
+
     // TODO RepositoryFactory
     public TreeClickListener(final EscidocServiceLocation serviceLocation,
         final Repository contextRepository,
         final Repository containerRepository, final Repository itemRepository,
-        final Window mainWindow, final MainSite mainSite) {
+        final Window mainWindow, final MainSite mainSite,
+        final CurrentUser currentUser) {
 
         Preconditions.checkNotNull(serviceLocation,
             "serviceLocation is null: %s", serviceLocation);
@@ -59,6 +63,8 @@ public class TreeClickListener implements ItemClickListener {
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s",
             mainWindow);
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
+        Preconditions.checkNotNull(currentUser, "currentUser is null: %s",
+            currentUser);
 
         this.contextRepository = contextRepository;
         this.containerRepository = containerRepository;
@@ -67,6 +73,7 @@ public class TreeClickListener implements ItemClickListener {
         this.mainWindow = mainWindow;
         this.mainSite = mainSite;
         this.serviceLocation = serviceLocation;
+        this.currentUser = currentUser;
     }
 
     @Override
@@ -77,7 +84,7 @@ public class TreeClickListener implements ItemClickListener {
                 try {
                     openInNewTab(new ContextView(serviceLocation, mainSite,
                         tryToFindResource(contextRepository, clickedResource),
-                        mainWindow), clickedResource);
+                        mainWindow, currentUser), clickedResource);
                 }
                 catch (final EscidocClientException e) {
                     showErrorMessageToUser(clickedResource, e);
@@ -89,7 +96,8 @@ public class TreeClickListener implements ItemClickListener {
                     openInNewTab(
                         new ContainerView(serviceLocation, mainSite,
                             tryToFindResource(containerRepository,
-                                clickedResource), mainWindow), clickedResource);
+                                clickedResource), mainWindow, currentUser),
+                        clickedResource);
                 }
                 catch (final EscidocClientException e) {
                     showErrorMessageToUser(clickedResource, e);

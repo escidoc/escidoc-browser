@@ -49,6 +49,8 @@ public class MainSite extends VerticalLayout {
 
     private WindowResizeObserver observer;
 
+    private CurrentUser currentUser;
+
     /**
      * The mainWindow should be revised whether we need it or not the appHeight
      * is the Height of the Application and I need it for calculations in the
@@ -146,9 +148,9 @@ public class MainSite extends VerticalLayout {
         itemRepository.loginWith(((CurrentUser) app.getUser()).getToken());
 
         final NavigationTreeView treemenu =
-            new UiBuilder(serviceLocation).buildNavigationTree(
-                contextRepository, containerRepository, itemRepository, this,
-                mainWindow);
+            new UiBuilder(serviceLocation, (CurrentUser) app.getUser())
+                .buildNavigationTree(contextRepository, containerRepository,
+                    itemRepository, this, mainWindow);
         mainnavtree = treemenu;
         mainnav.addComponent(srchButton);
         mainnav.addComponent(mainnavtree);

@@ -1,5 +1,6 @@
 package org.escidoc.browser.ui.maincontent;
 
+import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.ui.MainSite;
@@ -52,17 +53,26 @@ public class ContextView extends VerticalLayout {
 
     private final Window mainWindow;
 
-    public ContextView(final EscidocServiceLocation serviceLocation, final MainSite mainSite,
-        final ResourceProxy resourceProxy, final Window mainWindow) throws EscidocClientException {
-        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
+    private final CurrentUser currentUser;
+
+    public ContextView(final EscidocServiceLocation serviceLocation,
+        final MainSite mainSite, final ResourceProxy resourceProxy,
+        final Window mainWindow, final CurrentUser currentUser)
+        throws EscidocClientException {
+        Preconditions.checkNotNull(serviceLocation,
+            "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
+        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s",
+            resourceProxy);
+        Preconditions.checkNotNull(currentUser, "currentUser is null: %s",
+            currentUser);
         this.serviceLocation = serviceLocation;
         this.mainSite = mainSite;
         appHeight = mainSite.getApplicationHeight();
         this.resourceProxy = resourceProxy;
         this.mainWindow = mainWindow;
-
+        this.currentUser = currentUser;
         init();
     }
 
@@ -73,19 +83,21 @@ public class ContextView extends VerticalLayout {
         bindDescription();
         addHorizontalRuler();
         bindProperties();
+        addDirectMembersView();
+        addContextDetailsView();
+        addComponent(cssLayout);
+    }
 
-        // Left Inner Cell
-        // Binding Direct Members in
-        final DirectMember directMembers =
-            new DirectMember(this.serviceLocation, mainSite, resourceProxy.getId(), mainWindow);
-        leftCell(DIRECT_MEMBERS, directMembers.contextAsTree());
-
-        // Right Inner Cell
-        // Binding Additional Info into it
+    private void addContextDetailsView() {
         final ContextAddInfo cnxAddinfo = new ContextAddInfo(resourceProxy, accordionHeight, mainWindow);
         rightCell(cnxAddinfo.addPanels());
+    }
 
-        addComponent(cssLayout);
+    private void addDirectMembersView() throws EscidocClientException {
+        final DirectMember directMembers =
+            new DirectMember(serviceLocation, mainSite, resourceProxy.getId(),
+                mainWindow, currentUser);
+        leftCell(DIRECT_MEMBERS, directMembers.contextAsTree());
     }
 
     /**
