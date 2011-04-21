@@ -34,8 +34,6 @@ public class TreeClickListener implements ItemClickListener {
 
     private final MainSite mainSite;
 
-    private final int appHeight;
-
     private final Repository containerRepository;
 
     private final Repository itemRepository;
@@ -65,11 +63,10 @@ public class TreeClickListener implements ItemClickListener {
         this.contextRepository = contextRepository;
         this.containerRepository = containerRepository;
         this.itemRepository = itemRepository;
+
         this.mainWindow = mainWindow;
         this.mainSite = mainSite;
         this.serviceLocation = serviceLocation;
-
-        appHeight = mainSite.getApplicationHeight();
     }
 
     @Override
@@ -83,16 +80,12 @@ public class TreeClickListener implements ItemClickListener {
                         mainWindow), clickedResource);
                 }
                 catch (final EscidocClientException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    showErrorMessageToUser(clickedResource, e);
                 }
             }
 
             else if (ContainerModel.isContainer(clickedResource)) {
                 try {
-                    final ResourceProxy containerProxy =
-                        containerRepository.findById(clickedResource.getId());
-
                     openInNewTab(
                         new ContainerView(serviceLocation, mainSite,
                             tryToFindResource(containerRepository,
@@ -103,19 +96,9 @@ public class TreeClickListener implements ItemClickListener {
                 }
             }
             else if (ItemModel.isItem(clickedResource)) {
-                LOG.debug("this is a item");
-
-                try {
-                    final ResourceProxy itemProxy =
-                        itemRepository.findById(clickedResource.getId());
-
-                    openInNewTab(new ItemView(serviceLocation, mainSite,
-                        tryToFindResource(itemRepository,
-                            clickedResource), mainWindow), clickedResource);
-                }
-                catch (final EscidocClientException e) {
-                    showErrorMessageToUser(clickedResource, e);
-                }
+                openInNewTab(new ItemView(serviceLocation, mainSite,
+                    tryToFindResource(itemRepository, clickedResource),
+                    mainWindow), clickedResource);
             }
             else {
                 throw new UnsupportedOperationException("Not yet implemented");
@@ -139,7 +122,6 @@ public class TreeClickListener implements ItemClickListener {
         mainSite.openTab(component, clickedResource.getName());
     }
 
-    // TODO implement notification.
     private void showErrorMessageToUser(
         final ResourceModel hasChildrenResource, final EscidocClientException e) {
         LOG.error("Can not find member of: " + hasChildrenResource.getId(), e);

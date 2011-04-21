@@ -29,8 +29,8 @@ public class BrowserApplication extends Application {
     private static final Logger LOG = LoggerFactory
         .getLogger(BrowserApplication.class);
 
-    private final static Window mainWindow = new Window(
-        ViewConstant.MAIN_WINDOW_TITLE);
+    private final Window mainWindow =
+        new Window(ViewConstant.MAIN_WINDOW_TITLE);
 
     private EscidocServiceLocation serviceLocation =
         new EscidocServiceLocationImpl();
@@ -75,7 +75,7 @@ public class BrowserApplication extends Application {
             buildMainWindow(serviceLocation);
         }
         else {
-            final Button button = new Button("Start");
+            final Button button = new Button(ViewConstant.START_LABEL);
             mainWindow.addComponent(button);
             button.addListener(new Button.ClickListener() {
 

@@ -16,7 +16,7 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 public class DirectMember {
     private final EscidocServiceLocation serviceLocation;
 
-    private final String parentID;
+    private final String parentId;
 
     private final MainSite mainSite;
 
@@ -26,8 +26,12 @@ public class DirectMember {
         final MainSite mainSite, final String parentID, final Window mainWindow) {
         Preconditions.checkNotNull(serviceLocation,
             "serviceLocation is null: %s", serviceLocation);
+        Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
+        Preconditions.checkNotNull(parentID, "parentID is null: %s", parentID);
+        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s",
+            mainWindow);
         this.serviceLocation = serviceLocation;
-        this.parentID = parentID;
+        parentId = parentID;
         this.mainSite = mainSite;
         this.mainWindow = mainWindow;
     }
@@ -37,18 +41,22 @@ public class DirectMember {
             new UiBuilder(serviceLocation).buildContextDirectMemberTree(
                 new ContextRepository(serviceLocation),
                 new ContainerRepository(serviceLocation), new ItemRepository(
-                    serviceLocation), mainSite, parentID, mainWindow);
+                    serviceLocation), mainSite, parentId, mainWindow);
         tree.setSizeFull();
         return tree;
 
     }
 
     public NavigationTreeView containerAsTree() throws EscidocClientException {
+
+        final ContextRepository contextRepository =
+            new ContextRepository(serviceLocation);
+
         final NavigationTreeView tree =
             new UiBuilder(serviceLocation).buildContainerDirectMemberTree(
-                new ContextRepository(serviceLocation),
-                new ContainerRepository(serviceLocation), new ItemRepository(
-                    serviceLocation), mainSite, parentID,mainWindow);
+                contextRepository, new ContainerRepository(serviceLocation),
+                new ItemRepository(serviceLocation), mainSite, parentId,
+                mainWindow);
         tree.setSizeFull();
         return tree;
 

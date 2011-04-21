@@ -71,30 +71,30 @@ public class ContainerView extends VerticalLayout {
         init();
     }
 
-    void init() throws EscidocClientException {
-
+    private void init() throws EscidocClientException {
         configureLayout();
         createBreadCrumb();
         bindNameToHeader();
         bindDescription();
         addHorizontalRuler();
         bindProperties();
+        addDirectMembers();
+        addMetadataRecords();
+        addComponent(cssLayout);
+    }
 
-        // Direct Members!
-        final DirectMember directMembers =
-            new DirectMember(serviceLocation, mainSite, resourceProxy.getId(),
-                mainWindow);
-        leftCell(DIRECT_MEMBERS, directMembers.containerAsTree());
-
-        // right most panel
+    private void addMetadataRecords() {
         final MetadataRecs metaData =
             new MetadataRecs(resourceProxy, accordionHeight, mainWindow,
                 serviceLocation);
         rightCell(metaData.asAccord());
+    }
 
-        // cssLayout.addComponent();
-
-        addComponent(cssLayout);
+    private void addDirectMembers() throws EscidocClientException {
+        final DirectMember directMembers =
+            new DirectMember(serviceLocation, mainSite, resourceProxy.getId(),
+                mainWindow);
+        leftCell(DIRECT_MEMBERS, directMembers.containerAsTree());
     }
 
     /**

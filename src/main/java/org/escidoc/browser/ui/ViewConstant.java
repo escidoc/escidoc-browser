@@ -17,4 +17,6 @@ public class ViewConstant {
 
     public static final String HEADER = "header";
 
+    public static final String START_LABEL = "Start";
+
 }
