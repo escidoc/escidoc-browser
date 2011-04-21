@@ -9,6 +9,7 @@ import org.escidoc.browser.repository.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.ExpandEvent;
 
@@ -20,15 +21,22 @@ public final class TreeExpandListener implements Tree.ExpandListener {
     private static final Logger LOG = LoggerFactory
         .getLogger(TreeExpandListener.class);
 
-    private final Repository repository;
-
-    private final ResourceContainer container;
+    private final Repository contextRepository;
 
     private final Repository containerRepository;
 
-    public TreeExpandListener(final Repository repository,
+    private final ResourceContainer container;
+
+    public TreeExpandListener(final Repository contextRepository,
         final Repository containerRepository, final ResourceContainer container) {
-        this.repository = repository;
+        Preconditions.checkNotNull(contextRepository, "repository is null: %s",
+            contextRepository);
+        Preconditions.checkNotNull(containerRepository,
+            "containerRepository is null: %s", containerRepository);
+        Preconditions.checkNotNull(container, "container is null: %s",
+            container);
+
+        this.contextRepository = contextRepository;
         this.containerRepository = containerRepository;
         this.container = container;
     }
@@ -38,7 +46,6 @@ public final class TreeExpandListener implements Tree.ExpandListener {
         final ResourceModel resource = (ResourceModel) event.getItemId();
         LOG.debug("Node to expand: " + resource.toString());
 
-        // TODO refactor me, method too large
         if (ContextModel.isContext(resource)) {
             addContextChildren(resource);
         }
@@ -49,7 +56,7 @@ public final class TreeExpandListener implements Tree.ExpandListener {
             LOG.debug("do nothing, an item does not have any members.");
         }
         else {
-            throw new UnsupportedOperationException("Not yet implemented");
+            throw new UnsupportedOperationException("Unknown Type: " + resource);
         }
 
     }
@@ -67,7 +74,7 @@ public final class TreeExpandListener implements Tree.ExpandListener {
     private void addContextChildren(final ResourceModel resource) {
         try {
             container.addChildren(resource,
-                repository.findTopLevelMembersById(resource.getId()));
+                contextRepository.findTopLevelMembersById(resource.getId()));
         }
         catch (final EscidocClientException e) {
             showErrorMessageToUser(resource, e);

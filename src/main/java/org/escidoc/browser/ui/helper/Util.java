@@ -39,7 +39,7 @@ public final class Util {
         return new SearchRetrieveRequestType();
     }
 
-    public final static SearchRetrieveRequestType createTopLevelQuery(
+    public final static SearchRetrieveRequestType createQueryForTopLevelContainers(
         final String id) {
         Preconditions.checkNotNull(id, "id is null: %s", id);
         Preconditions.checkArgument(!id.isEmpty(), "id is empty: %s", id);
@@ -112,5 +112,25 @@ public final class Util {
         final URI escidocUri =
             new URI(parameters.get(AppConstants.ESCIDOC_URL)[0]);
         return escidocUri;
+    }
+
+    public static SearchRetrieveRequestType createQueryForTopLevelItems(
+        final String id) {
+        Preconditions.checkNotNull(id, "id is null: %s", id);
+        Preconditions.checkArgument(!id.isEmpty(), "id is empty: %s", id);
+        final SearchRetrieveRequestType filter =
+            new SearchRetrieveRequestType();
+        filter.setQuery(topLevelItems(id));
+        return filter;
+    }
+
+    private static String topLevelItems(final String id) {
+        final StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder
+            .append("top-level-items=true OR \"/properties/context/id=");
+        stringBuilder.append(id);
+        stringBuilder.append("\"");
+        final String topLevelContainerQuery = stringBuilder.toString();
+        return topLevelContainerQuery;
     }
 }

@@ -33,11 +33,23 @@ public class ContextRepository implements Repository {
             .retrieveContextsAsList(Util.createEmptyFilter()));
     }
 
+    // FIXME: this is a hack, it sends two requests to find context's direct
+    // members.
     @Override
     public List<ResourceModel> findTopLevelMembersById(final String id)
         throws EscidocClientException {
-        return ModelConverter.genericResourcetoModel(client
-            .retrieveMembersAsList(id, Util.createTopLevelQuery(id)));
+
+        final List<ResourceModel> topLevelContainers =
+            ModelConverter.genericResourcetoModel(client.retrieveMembersAsList(
+                id, Util.createQueryForTopLevelContainers(id)));
+
+        final List<ResourceModel> topLevelItems =
+            ModelConverter.genericResourcetoModel(client.retrieveMembersAsList(
+                id, Util.createQueryForTopLevelItems(id)));
+
+        topLevelContainers.addAll(topLevelItems);
+
+        return topLevelContainers;
     }
 
     @Override
