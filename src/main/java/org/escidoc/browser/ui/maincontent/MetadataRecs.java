@@ -5,7 +5,7 @@ import java.util.Iterator;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.ContainerProxy;
-import org.escidoc.browser.ui.listeners.CMDEFBehaviourClickListener;
+import org.escidoc.browser.ui.listeners.CmDefBehaviourClickListener;
 import org.escidoc.browser.ui.listeners.RelationsClickListener;
 import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
 
@@ -65,7 +65,7 @@ public class MetadataRecs {
         btnContentRelation.setDescription("Show Version history in a Pop-up");
 
         final Button btnCMDefBehavior =
-            new Button("CM-Def-Behavior", new CMDEFBehaviourClickListener(resourceProxy, mainWindow,
+            new Button("CM-Def-Behavior", new CmDefBehaviourClickListener(
                 escidocServiceLocation));
         btnCMDefBehavior.setStyleName(BaseTheme.BUTTON_LINK);
         btnCMDefBehavior.setDescription("CM-Def-Behavior");
