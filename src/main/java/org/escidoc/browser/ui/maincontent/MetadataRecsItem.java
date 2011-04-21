@@ -5,6 +5,7 @@ import java.util.Iterator;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.repository.ItemProxy;
 import org.escidoc.browser.ui.listeners.CmDefBehaviourClickListener;
+import org.escidoc.browser.ui.listeners.MetadataRecBehavour;
 import org.escidoc.browser.ui.listeners.RelationsClickListener;
 import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
 
@@ -15,6 +16,9 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
+
+import de.escidoc.core.resources.common.MetadataRecord;
+import de.escidoc.core.resources.common.MetadataRecords;
 
 public class MetadataRecsItem {
     private int height;
@@ -40,7 +44,7 @@ public class MetadataRecsItem {
         Accordion metadataRecs = new Accordion();
         metadataRecs.setSizeFull();
 
-        Label l1 = lblMetadaRecs();
+        Panel l1 = lblMetadaRecs();
         // Label l2 = lblRelations();
         Panel pnl = lblAddtionalResources();
 
@@ -91,15 +95,20 @@ public class MetadataRecsItem {
         return l2;
     }
 
-    private Label lblMetadaRecs() {
-        Iterator itr = resourceProxy.getMedataRecords().iterator();
-        String mtRecords = "";
-        while (itr.hasNext()) {
-            mtRecords += "<a href='/MISSING'>" + itr.next() + "</a><br />";
+    private Panel lblMetadaRecs() {
+        final Panel pnl = new Panel();
+        pnl.setHeight(height + "px");
+
+        MetadataRecords mdRecs = resourceProxy.getMedataRecords();
+        for (MetadataRecord metadataRecord : mdRecs) {
+            Button btnmdRec =
+                new Button(metadataRecord.getName(), new MetadataRecBehavour(metadataRecord, mainWindow,
+                    escidocServiceLocation));
+            btnmdRec.setStyleName(BaseTheme.BUTTON_LINK);
+            btnmdRec.setDescription("Show metadata information in a separate window");
+            pnl.addComponent(btnmdRec);
         }
 
-        Label l1 = new Label(mtRecords, Label.CONTENT_RAW);
-        l1.setHeight(height + "px");
-        return l1;
+        return pnl;
     }
 }

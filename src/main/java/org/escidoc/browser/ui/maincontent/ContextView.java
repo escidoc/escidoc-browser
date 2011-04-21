@@ -196,5 +196,4 @@ public class ContextView extends VerticalLayout {
         // accordion or elements of the DirectMember in the same level
         accordionHeight = appHeight - 420;
     }
-
 }

@@ -7,7 +7,7 @@ import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.repository.ItemProxy;
 
 import de.escidoc.core.common.exceptions.remote.system.SystemException;
-import de.escidoc.core.resources.common.MetadataRecord;
+import de.escidoc.core.resources.common.MetadataRecords;
 import de.escidoc.core.resources.common.Relation;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.om.item.Item;
@@ -38,7 +38,7 @@ public class ItemProxyImpl implements ItemProxy {
 
     @Override
     public String getDescription() {
-        return (String) itemFromCore.getProperties().getDescription();
+        return itemFromCore.getProperties().getDescription();
     }
 
     @Override
@@ -105,13 +105,8 @@ public class ItemProxyImpl implements ItemProxy {
     }
 
     @Override
-    public List<String> getMedataRecords() {
-        final List<String> metadataList = new ArrayList<String>();
-        for (final MetadataRecord metadataRecord : itemFromCore.getMetadataRecords()) {
-            metadataList.add(metadataRecord.getName());
-        }
-
-        return metadataList;
+    public MetadataRecords getMedataRecords() {
+        return itemFromCore.getMetadataRecords();
     }
 
     @Override

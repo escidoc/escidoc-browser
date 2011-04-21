@@ -1,6 +1,5 @@
 package org.escidoc.browser.repository.internal;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -10,7 +9,7 @@ import org.escidoc.browser.repository.ContainerProxy;
 import com.google.common.base.Preconditions;
 
 import de.escidoc.core.common.exceptions.remote.system.SystemException;
-import de.escidoc.core.resources.common.MetadataRecord;
+import de.escidoc.core.resources.common.MetadataRecords;
 import de.escidoc.core.resources.common.versionhistory.Version;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.om.container.Container;
@@ -141,12 +140,9 @@ public class ContainerProxyImpl implements ContainerProxy {
     }
 
     @Override
-    public List<String> getMedataRecords() {
-        List<String> metadataList = new ArrayList<String>();
-        for (MetadataRecord metadataRecord : containerFromCore.getMetadataRecords()) {
-            metadataList.add(metadataRecord.getName());
-        }
-        return metadataList;
+    public MetadataRecords getMedataRecords() {
+
+        return containerFromCore.getMetadataRecords();
     }
 
     @Override
