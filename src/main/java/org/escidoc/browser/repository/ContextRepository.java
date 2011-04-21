@@ -49,14 +49,12 @@ public class ContextRepository implements Repository {
     @Override
     public VersionHistory getVersionHistory(final String id)
         throws EscidocClientException {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public Relations getRelations(final String id)
         throws EscidocClientException {
-        // TODO Auto-generated method stub
         return null;
     }
 

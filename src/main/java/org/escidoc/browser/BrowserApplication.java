@@ -69,47 +69,6 @@ public class BrowserApplication extends Application {
         mainWindow.addListener(windowResizeListener);
     }
 
-    private void setMainWindowContent(
-        final EscidocServiceLocation serviceLocation) {
-        try {
-            mainWindow.setContent(createMainSite(serviceLocation, mainWindow,
-                observer));
-        }
-        catch (final EscidocClientException e) {
-            mainWindow.showNotification(new Window.Notification(
-                ViewConstant.ERROR, e.getMessage(),
-                Notification.TYPE_ERROR_MESSAGE));
-        }
-    }
-
-    private void setMainWindowHeight() {
-        mainWindow.getContent().setHeight(100, Sizeable.UNITS_PERCENTAGE);
-    }
-
-    public int getApplicationHeight() {
-        Preconditions.checkArgument(observer.getDimension().getHeight() > 0,
-            "Can not get window size");
-        return Math.round(observer.getDimension().getHeight());
-    }
-
-    public int getApplicationWidth() {
-        Preconditions.checkArgument(observer.getDimension().getWidth() > 0,
-            "Can not get window size");
-        return Math.round(observer.getDimension().getWidth());
-    }
-
-    private MainSite createMainSite(
-        final EscidocServiceLocation serviceLocation, final Window mainWindow,
-        final WindowResizeObserver observer) throws EscidocClientException {
-
-        final MainSite mainSite =
-            new MainSite(mainWindow, serviceLocation, observer, this,
-                (CurrentUser) getUser());
-        mainSite.setHeight("100%");
-        mainSite.setWidth("100%");
-        return mainSite;
-    }
-
     public void buildMainView() {
         if (observer.getDimension().getHeight() > 0) {
             LOG.debug("Dimension is: " + observer.getDimension());
@@ -140,6 +99,47 @@ public class BrowserApplication extends Application {
         mainWindow.setScrollable(true);
         setMainWindowContent(serviceLocation);
         setMainWindowHeight();
+    }
+
+    private void setMainWindowContent(
+        final EscidocServiceLocation serviceLocation) {
+        try {
+            mainWindow.setContent(createMainSite(serviceLocation, mainWindow,
+                observer));
+        }
+        catch (final EscidocClientException e) {
+            mainWindow.showNotification(new Window.Notification(
+                ViewConstant.ERROR, e.getMessage(),
+                Notification.TYPE_ERROR_MESSAGE));
+        }
+    }
+
+    private MainSite createMainSite(
+        final EscidocServiceLocation serviceLocation, final Window mainWindow,
+        final WindowResizeObserver observer) throws EscidocClientException {
+
+        final MainSite mainSite =
+            new MainSite(mainWindow, serviceLocation, observer, this,
+                (CurrentUser) getUser());
+        mainSite.setHeight("100%");
+        mainSite.setWidth("100%");
+        return mainSite;
+    }
+
+    private void setMainWindowHeight() {
+        mainWindow.getContent().setHeight(100, Sizeable.UNITS_PERCENTAGE);
+    }
+
+    public int getApplicationHeight() {
+        Preconditions.checkArgument(observer.getDimension().getHeight() > 0,
+            "Can not get window size");
+        return Math.round(observer.getDimension().getHeight());
+    }
+
+    public int getApplicationWidth() {
+        Preconditions.checkArgument(observer.getDimension().getWidth() > 0,
+            "Can not get window size");
+        return Math.round(observer.getDimension().getWidth());
     }
 
     public void setServiceLocation(final EscidocServiceLocation serviceLocation) {

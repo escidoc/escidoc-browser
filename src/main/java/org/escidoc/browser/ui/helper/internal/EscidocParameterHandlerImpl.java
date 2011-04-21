@@ -88,6 +88,7 @@ public class EscidocParameterHandlerImpl implements EscidocParameterHandler {
     private void doLogin(final Map<String, String[]> parameters) {
         app.setLogoutURL(serviceLocation.getLogoutUri());
         login(parameters);
+        app.buildMainView();
     }
 
     private URI toUri(final URL url) {
