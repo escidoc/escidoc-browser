@@ -67,11 +67,9 @@ public class ContainerView extends VerticalLayout {
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         Preconditions.checkArgument(resourceProxy instanceof ContainerProxy, resourceProxy.getClass()
             + " is not an instance of ContainerProxy.class");
-        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s",
-            resourceProxy);
-        Preconditions.checkArgument(resourceProxy instanceof ContainerProxy,
-            resourceProxy.getClass()
-                + " is not an instance of ContainerProxy.class");
+        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
+        Preconditions.checkArgument(resourceProxy instanceof ContainerProxy, resourceProxy.getClass()
+            + " is not an instance of ContainerProxy.class");
         this.serviceLocation = serviceLocation;
         this.mainSite = mainSite;
         appHeight = mainSite.getApplicationHeight();
@@ -164,7 +162,7 @@ public class ContainerView extends VerticalLayout {
             new Label(CREATED_BY + "<a href='/ESCD/Frankie'> " + resourceProxy.getCreator() + "</a> "
                 + resourceProxy.getCreatedOn() + "<br>" + LAST_MODIFIED_BY + " <a href='#user/"
                 + resourceProxy.getModifier() + "'>" + resourceProxy.getModifier() + "</a> "
-                + resourceProxy.getModifiedOn() + " <br>" + resourceProxy.getStatus()
+                + resourceProxy.getModifiedOn() + " <br>" + resourceProxy.getStatus());
         descMetadata2.setStyleName("floatright columnheight50");
         descMetadata2.setWidth("65%");
         cssLayout.addComponent(descMetadata2);

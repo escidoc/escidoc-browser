@@ -35,7 +35,7 @@ public class ItemView extends VerticalLayout {
 
     private static final String STATUS = "Status ";
 
-    private int appHeight;
+    private final int appHeight;
 
     private final MainSite mainSite;
 
@@ -53,8 +53,8 @@ public class ItemView extends VerticalLayout {
 
     private final EscidocServiceLocation serviceLocation;
 
-    public ItemView(EscidocServiceLocation serviceLocation, MainSite mainSite, ResourceProxy resourceProxy,
-        Window mainWindow) {
+    public ItemView(final EscidocServiceLocation serviceLocation, final MainSite mainSite,
+        final ResourceProxy resourceProxy, final Window mainWindow) {
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null.");
         Preconditions.checkNotNull(mainSite, "mainSite is null.");
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null.");
@@ -76,11 +76,11 @@ public class ItemView extends VerticalLayout {
         bindProperties();
 
         // Direct Members
-        ItemContent itCnt = new ItemContent(accordionHeight - 30, resourceProxy, serviceLocation);
+        final ItemContent itCnt = new ItemContent(accordionHeight - 30, resourceProxy, serviceLocation);
         buildLeftCell(itCnt);
 
         // right most panelY
-        MetadataRecsItem metadataRecs =
+        final MetadataRecsItem metadataRecs =
             new MetadataRecsItem(resourceProxy, accordionHeight, mainWindow, serviceLocation);
         buildRightCell(metadataRecs.asAccord());
 
@@ -90,9 +90,9 @@ public class ItemView extends VerticalLayout {
     /**
      * @param metadataRecs
      */
-    private void buildRightCell(Component metadataRecs) {
+    private void buildRightCell(final Component metadataRecs) {
 
-        Panel rightpnl = new Panel();
+        final Panel rightpnl = new Panel();
         rightpnl.setStyleName("floatright");
         rightpnl.setWidth("70%");
         rightpnl.setHeight("86%");
@@ -104,12 +104,12 @@ public class ItemView extends VerticalLayout {
      * @param itCnt
      * @return
      */
-    private void buildLeftCell(Component itCnt) {
+    private void buildLeftCell(final Component itCnt) {
         // Adding some buttons
-        AbsoluteLayout absL = new AbsoluteLayout();
+        final AbsoluteLayout absL = new AbsoluteLayout();
         absL.setWidth("100%");
         absL.setHeight(innerelementsHeight + "px");
-        HorizontalLayout horizontal = new HorizontalLayout();
+        final HorizontalLayout horizontal = new HorizontalLayout();
         horizontal.addComponent(new Button("Add"));
         horizontal.addComponent(new Button("Delete"));
         horizontal.addComponent(new Button("Edit"));
@@ -126,20 +126,16 @@ public class ItemView extends VerticalLayout {
 
     private void bindProperties() {
         // ContainerView DescMetadata1
-        // Label descMetadata1 =
-        // new Label(NAME + resourceProxy.getName() + " <br /> " + DESCRIPTION
-        // + resourceProxy.getDescription() + "<br />" + "ID: "
-        // + resourceProxy.getId() + " is " + resourceProxy.getStatus(),
-        // Label.CONTENT_RAW);
-        Label descMetadata1 =
-            new Label("ID: " + resourceProxy.getId() + "<br />" + STATUS + " is " + resourceProxy.getStatus(),
+        final Label descMetadata1 =
+            new Label(NAME + resourceProxy.getName() + " <br /> " + DESCRIPTION + resourceProxy.getDescription()
+                + "<br />" + "ID: " + resourceProxy.getId() + " is " + resourceProxy.getStatus(), Label.CONTENT_RAW);
         descMetadata1.setStyleName("floatleft columnheight50");
         descMetadata1.setWidth("30%");
         cssLayout.addComponent(descMetadata1);
 
         // ContainerView DescMetadata2
 
-        Label descMetadata2 =
+        final Label descMetadata2 =
             new Label(CREATED_BY + "<a href='/ESCD/Frankie'> " + resourceProxy.getCreator() + "</a> "
                 + resourceProxy.getCreatedOn() + " <br>" + LAST_MODIFIED_BY + " <a href='#user/"
                 + resourceProxy.getModifier() + "'>" + resourceProxy.getModifier() + "</a> "
@@ -151,7 +147,7 @@ public class ItemView extends VerticalLayout {
 
     private void bindHrRuler() {
         // ContainerView Horizontal Ruler
-        Label descRuler =
+        final Label descRuler =
             new Label(
                 "____________________________________________________________________________________________________");
         descRuler.setStyleName("hr");
@@ -159,21 +155,21 @@ public class ItemView extends VerticalLayout {
     }
 
     private void bindDescription() {
-        Label descContext1 = new Label(resourceProxy.getDescription());
+        final Label descContext1 = new Label(resourceProxy.getDescription());
         descContext1.setStyleName(FULLWIDHT_STYLE_NAME);
         cssLayout.addComponent(descContext1);
     }
 
     private void bindNametoHeader() {
         // HEADER
-        Label headerContext = new Label(RESOURCE_NAME + resourceProxy.getName());
+        final Label headerContext = new Label(RESOURCE_NAME + resourceProxy.getName());
         headerContext.setStyleName("h1 fullwidth");
         cssLayout.addComponent(headerContext);
     }
 
     private void createBreadcrumbp() {
         // BREADCRUMB
-        BreadCrumbMenu bm = new BreadCrumbMenu(cssLayout, resourceProxy);
+        final BreadCrumbMenu bm = new BreadCrumbMenu(cssLayout, resourceProxy);
     }
 
     private void buildLayout() {
@@ -187,7 +183,7 @@ public class ItemView extends VerticalLayout {
 
     @Override
     public void attach() {
-        this.app = getApplication();
+        app = getApplication();
     }
 
     /**
