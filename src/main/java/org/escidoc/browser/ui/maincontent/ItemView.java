@@ -55,11 +55,15 @@ public class ItemView extends VerticalLayout {
 
     public ItemView(EscidocServiceLocation serviceLocation, MainSite mainSite, ResourceProxy resourceProxy,
         Window mainWindow) {
-        Preconditions.checkNotNull(mainWindow, "resource is null.");
+        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null.");
+        Preconditions.checkNotNull(mainSite, "mainSite is null.");
+        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null.");
+        Preconditions.checkNotNull(mainWindow, "mainWindow is null.");
         this.resourceProxy = (ItemProxyImpl) resourceProxy;
         this.mainSite = mainSite;
         this.mainWindow = mainWindow;
         this.serviceLocation = serviceLocation;
+        appHeight = mainSite.getApplicationHeight();
         init();
     }
 
@@ -72,13 +76,12 @@ public class ItemView extends VerticalLayout {
         bindProperties();
 
         // Direct Members
-        ItemContent itCnt = new ItemContent(accordionHeight - 30, resourceProxy);
+        ItemContent itCnt = new ItemContent(accordionHeight - 30, resourceProxy, serviceLocation);
         buildLeftCell(itCnt);
 
-        // right most panel
-        // TODO SOME PROBLEMS WITH THE RESOURCEPROXY
+        // right most panelY
         MetadataRecsItem metadataRecs =
-            new MetadataRecsItem(resourceProxy, innerelementsHeight, mainWindow, serviceLocation);
+            new MetadataRecsItem(resourceProxy, accordionHeight, mainWindow, serviceLocation);
         buildRightCell(metadataRecs.asAccord());
 
         addComponent(cssLayout);
@@ -179,13 +182,8 @@ public class ItemView extends VerticalLayout {
         this.setHeight("100%");
         cssLayout.setWidth("100%");
         cssLayout.setHeight("100%");
-
-        // this is an assumption of the height that should be left for the
-        // accordion or elements of the DirectMember in the same level
-        // I remove 420px that are taken by elements on the de.escidoc.esdc.page
-        // and 40px for the accordion elements?
-        innerelementsHeight = appHeight - 420;
-        accordionHeight = innerelementsHeight - 40;
+        final int innerelementsHeight = appHeight - 420;
+        accordionHeight = innerelementsHeight - 20;
     }
 
     @Override

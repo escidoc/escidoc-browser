@@ -38,7 +38,7 @@ public class ItemProxyImpl implements ItemProxy {
 
     @Override
     public String getDescription() {
-        return itemFromCore.getProperties().getDescription();
+        return (String) itemFromCore.getProperties().getDescription();
     }
 
     @Override
@@ -112,6 +112,11 @@ public class ItemProxyImpl implements ItemProxy {
         }
 
         return metadataList;
+    }
+
+    @Override
+    public String getContentUrl() {
+        return itemFromCore.getProperties().getXLinkHref();
     }
 
 }

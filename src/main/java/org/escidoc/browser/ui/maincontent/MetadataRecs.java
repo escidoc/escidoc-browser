@@ -26,8 +26,7 @@ public class MetadataRecs {
 
     private final EscidocServiceLocation escidocServiceLocation;
 
-    public MetadataRecs(final ResourceProxy resourceProxy,
-        final int innerelementsHeight, final Window mainWindow,
+    public MetadataRecs(final ResourceProxy resourceProxy, final int innerelementsHeight, final Window mainWindow,
         final EscidocServiceLocation escidocServiceLocation) {
         Preconditions.checkNotNull(mainWindow, "resource is null.");
         height = innerelementsHeight;
@@ -41,12 +40,12 @@ public class MetadataRecs {
         metadataRecs.setSizeFull();
 
         final Label l1 = lblMetadaRecs();
-        final Label l2 = lblRelations();
+        // final Label l2 = lblRelations();
         final Panel pnl = lblAddtionalResources();
 
         // Add the components as tabs in the Accordion.
         metadataRecs.addTab(l1, "Metadata Records", null);
-        metadataRecs.addTab(l2, "Relations", null);
+        // metadataRecs.addTab(l2, "Relations", null);
         metadataRecs.addTab(pnl, "Additional Resources", null);
         return metadataRecs;
     }
@@ -54,23 +53,20 @@ public class MetadataRecs {
     private Panel lblAddtionalResources() {
 
         final Button btnVersionHistoryContainer =
-            new Button("Container Version History",
-                new VersionHistoryClickListener(resourceProxy, mainWindow,
-                    escidocServiceLocation));
+            new Button("Container Version History", new VersionHistoryClickListener(resourceProxy, mainWindow,
+                escidocServiceLocation));
         btnVersionHistoryContainer.setStyleName(BaseTheme.BUTTON_LINK);
-        btnVersionHistoryContainer
-            .setDescription("Show Version history in a Pop-up");
+        btnVersionHistoryContainer.setDescription("Show Version history in a Pop-up");
 
         final Button btnContentRelation =
-            new Button("Container Content Relations",
-                new RelationsClickListener(resourceProxy, mainWindow,
-                    escidocServiceLocation));
+            new Button("Container Content Relations", new RelationsClickListener(resourceProxy, mainWindow,
+                escidocServiceLocation));
         btnContentRelation.setStyleName(BaseTheme.BUTTON_LINK);
         btnContentRelation.setDescription("Show Version history in a Pop-up");
 
         final Button btnCMDefBehavior =
-            new Button("CM-Def-Behavior", new CMDEFBehaviourClickListener(
-                resourceProxy, mainWindow, escidocServiceLocation));
+            new Button("CM-Def-Behavior", new CMDEFBehaviourClickListener(resourceProxy, mainWindow,
+                escidocServiceLocation));
         btnCMDefBehavior.setStyleName(BaseTheme.BUTTON_LINK);
         btnCMDefBehavior.setDescription("CM-Def-Behavior");
 

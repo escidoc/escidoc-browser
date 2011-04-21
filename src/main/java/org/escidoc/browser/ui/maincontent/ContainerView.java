@@ -201,7 +201,7 @@ public class ContainerView extends VerticalLayout {
         // I remove 420px that are taken by elements on the de.escidoc.esdc.page
         // and 40px for the accordion elements?
         final int innerelementsHeight = appHeight - 420;
-        accordionHeight = innerelementsHeight - 40;
+        accordionHeight = innerelementsHeight - 20;
     }
 
     /**
