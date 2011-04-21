@@ -40,8 +40,14 @@ public class ContainerRepository implements Repository {
         final EscidocServiceLocation escidocServiceLocation) {
         Preconditions.checkNotNull(escidocServiceLocation,
             "escidocServiceLocation is null: %s", escidocServiceLocation);
-        client = new ContainerHandlerClient(escidocServiceLocation.getEscidocUri());
+        client =
+            new ContainerHandlerClient(escidocServiceLocation.getEscidocUri());
         client.setTransport(TransportProtocol.REST);
+    }
+
+    @Override
+    public void loginWith(final String handle) throws InternalClientException {
+        client.setHandle(handle);
     }
 
     @Override
@@ -87,7 +93,7 @@ public class ContainerRepository implements Repository {
     }
 
     @Override
-    public VersionHistory getVersionHistory(String id)
+    public VersionHistory getVersionHistory(final String id)
         throws EscidocClientException {
         return client.retrieveVersionHistory(id);
     }

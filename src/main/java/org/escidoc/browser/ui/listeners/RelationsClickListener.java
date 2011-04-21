@@ -40,9 +40,10 @@ public class RelationsClickListener implements ClickListener {
      * @param mainWindow
      * @param escidocServiceLocation2
      */
-    public RelationsClickListener(ItemProxy resourceProxy, Window mainWindow,
-        EscidocServiceLocation escidocServiceLocation) {
-        this.itemProxy = resourceProxy;
+    public RelationsClickListener(final ItemProxy resourceProxy,
+        final Window mainWindow,
+        final EscidocServiceLocation escidocServiceLocation) {
+        itemProxy = resourceProxy;
         this.mainWindow = mainWindow;
         this.escidocServiceLocation = escidocServiceLocation;
         cr = new ItemRepository(escidocServiceLocation);
@@ -56,34 +57,34 @@ public class RelationsClickListener implements ClickListener {
      * @param mainWindow
      * @param escidocServiceLocation
      */
-    public RelationsClickListener(ContainerProxy resourceProxy,
-        Window mainWindow, EscidocServiceLocation escidocServiceLocation) {
-        this.containerProxy = resourceProxy;
+    public RelationsClickListener(final ContainerProxy resourceProxy,
+        final Window mainWindow,
+        final EscidocServiceLocation escidocServiceLocation) {
+        containerProxy = resourceProxy;
         this.mainWindow = mainWindow;
         this.escidocServiceLocation = escidocServiceLocation;
 
         cr = new ContainerRepository(escidocServiceLocation);
-
     }
 
-    public String getRelations(Repository cr, String id)
+    public String getRelations(final Repository cr, final String id)
         throws EscidocClientException {
 
-        Relations relations = cr.getRelations(id);
+        final Relations relations = cr.getRelations(id);
 
-        Iterator<Relation> itr = relations.iterator();
+        final Iterator<Relation> itr = relations.iterator();
         while (itr.hasNext()) {
             System.out.println(itr.hasNext());
         }
-        String versionHistory = "";
+        final String versionHistory = "";
 
         return versionHistory;
 
     }
 
     @Override
-    public void buttonClick(ClickEvent event) {
-        Window subwindow = new Window("Relations");
+    public void buttonClick(final ClickEvent event) {
+        final Window subwindow = new Window("Relations");
         subwindow.setWidth("600px");
         subwindow.setModal(true);
 
@@ -102,13 +103,13 @@ public class RelationsClickListener implements ClickListener {
         }
 
         try {
-            this.wndContent = getRelations(cr, id);
+            wndContent = getRelations(cr, id);
         }
-        catch (EscidocClientException e) {
-            this.wndContent = "No information";
+        catch (final EscidocClientException e) {
+            wndContent = "No information";
         }
 
-        Label msgWindow = new Label(wndContent, Label.CONTENT_RAW);
+        final Label msgWindow = new Label(wndContent, Label.CONTENT_RAW);
 
         subwindow.addComponent(msgWindow);
         if (subwindow.getParent() != null) {

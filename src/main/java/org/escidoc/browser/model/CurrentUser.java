@@ -4,4 +4,6 @@ public interface CurrentUser {
 
     boolean isGuest();
 
+    String getToken();
+
 }

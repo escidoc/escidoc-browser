@@ -130,11 +130,22 @@ public class MainSite extends VerticalLayout {
         srchButton.setIcon(new ThemeResource("../myTheme/images/search.png"));
         srchButton.setDescription("Search the Infrastructure");
 
+        final ContainerRepository containerRepository =
+            new ContainerRepository(serviceLocation);
+        containerRepository.loginWith(((CurrentUser) app.getUser()).getToken());
+
+        final ContextRepository contextRepository =
+            new ContextRepository(serviceLocation);
+        contextRepository.loginWith(((CurrentUser) app.getUser()).getToken());
+
+        final ItemRepository itemRepository =
+            new ItemRepository(serviceLocation);
+        itemRepository.loginWith(((CurrentUser) app.getUser()).getToken());
+
         final NavigationTreeView treemenu =
             new UiBuilder(serviceLocation).buildNavigationTree(
-                new ContextRepository(serviceLocation),
-                new ContainerRepository(serviceLocation), new ItemRepository(
-                    serviceLocation), this, mainWindow);
+                contextRepository, containerRepository, itemRepository, this,
+                mainWindow);
         mainnavtree = treemenu;
         mainnav.addComponent(srchButton);
         mainnav.addComponent(mainnavtree);

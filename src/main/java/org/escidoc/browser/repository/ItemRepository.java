@@ -15,6 +15,7 @@ import com.google.common.base.Preconditions;
 import de.escidoc.core.client.ItemHandlerClient;
 import de.escidoc.core.client.TransportProtocol;
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.client.interfaces.ItemHandlerClientInterface;
 import de.escidoc.core.resources.common.Relations;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
@@ -50,14 +51,21 @@ public class ItemRepository implements Repository {
     }
 
     @Override
-    public VersionHistory getVersionHistory(String id)
+    public VersionHistory getVersionHistory(final String id)
         throws EscidocClientException {
         return client.retrieveVersionHistory(id);
 
     }
 
     @Override
-    public Relations getRelations(String id) throws EscidocClientException {
+    public Relations getRelations(final String id)
+        throws EscidocClientException {
         return client.retrieveRelations(id);
     }
+
+    @Override
+    public void loginWith(final String handle) throws InternalClientException {
+        client.setHandle(handle);
+    }
+
 }

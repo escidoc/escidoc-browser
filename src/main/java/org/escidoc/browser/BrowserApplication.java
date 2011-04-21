@@ -1,8 +1,8 @@
 package org.escidoc.browser;
 
+import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.internal.EscidocServiceLocationImpl;
-import org.escidoc.browser.repository.internal.UserRepositoryImpl;
 import org.escidoc.browser.ui.MainSite;
 import org.escidoc.browser.ui.ViewConstant;
 import org.escidoc.browser.ui.helper.EscidocParameterHandler;
@@ -104,7 +104,7 @@ public class BrowserApplication extends Application {
 
         final MainSite mainSite =
             new MainSite(mainWindow, serviceLocation, observer, this,
-                new UserRepositoryImpl(serviceLocation).findCurrentUser());
+                (CurrentUser) getUser());
         mainSite.setHeight("100%");
         mainSite.setWidth("100%");
         return mainSite;

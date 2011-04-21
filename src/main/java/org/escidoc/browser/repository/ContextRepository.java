@@ -12,6 +12,7 @@ import org.escidoc.browser.ui.helper.Util;
 import de.escidoc.core.client.ContextHandlerClient;
 import de.escidoc.core.client.TransportProtocol;
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.client.interfaces.ContextHandlerClientInterface;
 import de.escidoc.core.resources.common.Relations;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
@@ -21,7 +22,8 @@ public class ContextRepository implements Repository {
     private final ContextHandlerClientInterface client;
 
     public ContextRepository(final EscidocServiceLocation escidocServiceLocation) {
-        client = new ContextHandlerClient(escidocServiceLocation.getEscidocUri());
+        client =
+            new ContextHandlerClient(escidocServiceLocation.getEscidocUri());
         client.setTransport(TransportProtocol.REST);
     }
 
@@ -45,16 +47,22 @@ public class ContextRepository implements Repository {
     }
 
     @Override
-    public VersionHistory getVersionHistory(String id)
+    public VersionHistory getVersionHistory(final String id)
         throws EscidocClientException {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public Relations getRelations(String id) throws EscidocClientException {
+    public Relations getRelations(final String id)
+        throws EscidocClientException {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public void loginWith(final String handle) throws InternalClientException {
+        client.setHandle(handle);
     }
 
 }

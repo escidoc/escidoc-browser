@@ -111,8 +111,6 @@ public class EscidocParameterHandlerImpl implements EscidocParameterHandler {
         userRepository.withToken(escidocToken);
         final CurrentUser currentUser = userRepository.findCurrentUser();
         app.setUser(currentUser);
-
-        // pass token to repositories
     }
 
     // TODO refactor this method, does not belong in this class.

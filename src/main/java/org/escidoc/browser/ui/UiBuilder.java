@@ -25,24 +25,24 @@ public class UiBuilder {
     }
 
     public NavigationTreeView buildNavigationTree(
-        final Repository repository, final Repository containerRepository,
+        final Repository contextRepository, final Repository containerRepository,
         final Repository itemRepository, final MainSite mainSite,
         final Window mainWindow) throws EscidocClientException {
 
         final NavigationTreeView navigationTreeView =
             new NavigationTreeViewImpl(mainSite);
 
-        final List<ResourceModel> contexts = repository.findAll();
+        final List<ResourceModel> contexts = contextRepository.findAll();
 
         final ResourceContainerImpl resourceContainer =
             new ResourceContainerImpl(contexts);
         resourceContainer.init();
 
         navigationTreeView.setDataSource(resourceContainer, mainSite);
-        navigationTreeView.addExpandListener(new TreeExpandListener(repository,
+        navigationTreeView.addExpandListener(new TreeExpandListener(contextRepository,
             containerRepository, resourceContainer));
         navigationTreeView.addClickListener(new TreeClickListener(
-            servicelocation, repository, containerRepository, itemRepository,
+            servicelocation, contextRepository, containerRepository, itemRepository,
             mainWindow, mainSite));
 
         return navigationTreeView;

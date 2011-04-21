@@ -19,18 +19,21 @@ public class UserRepositoryImpl implements UserRepository {
 
     private final UserAccountHandlerClient client;
 
+    private String token;
+
     public UserRepositoryImpl(final EscidocServiceLocation serviceLocation) {
         client = new UserAccountHandlerClient(serviceLocation.getEscidocUri());
         client.setTransport(TransportProtocol.REST);
     }
 
     public void withToken(final String token) {
+        this.token = token;
         client.setHandle(token);
     }
 
     public CurrentUser findCurrentUser() {
         try {
-            return new LoggedInUser(client.retrieveCurrentUser());
+            return new LoggedInUser(client.retrieveCurrentUser(), token);
         }
         catch (final EscidocClientException e) {
             LOG.info("e: " + e.getMessage());

@@ -6,10 +6,13 @@ import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.resources.common.Relations;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 
 public interface Repository {
+
+    void loginWith(final String handle) throws InternalClientException;
 
     List<ResourceModel> findAll() throws EscidocClientException;
 
