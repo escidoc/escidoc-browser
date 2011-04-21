@@ -12,4 +12,6 @@ public interface ResourceContainer {
 
     void addChildren(ResourceModel parent, List<ResourceModel> children);
 
+    void init();
+
 }

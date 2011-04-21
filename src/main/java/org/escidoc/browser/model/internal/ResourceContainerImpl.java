@@ -74,7 +74,6 @@ public class ResourceContainerImpl implements ResourceContainer {
         Preconditions.checkNotNull(resource, "resource is null: %s", resource);
         item.getItemProperty(PropertyId.OBJECT_ID).setValue(resource.getId());
         item.getItemProperty(PropertyId.NAME).setValue(resource.getName());
-
     }
 
     @Override
@@ -94,10 +93,13 @@ public class ResourceContainerImpl implements ResourceContainer {
         for (final ResourceModel child : children) {
             addAndBind(child);
             assignParent(parent, child);
-            container.setChildrenAllowed(child,
-                !child.getType().equals(ResourceType.ITEM));
+            container.setChildrenAllowed(child, isNotItem(child));
         }
 
+    }
+
+    private boolean isNotItem(final ResourceModel child) {
+        return !child.getType().equals(ResourceType.ITEM);
     }
 
     private void assignParent(

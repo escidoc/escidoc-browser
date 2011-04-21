@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ResourceContainer;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.internal.ResourceContainerImpl;
 import org.escidoc.browser.repository.Repository;
@@ -45,7 +46,7 @@ public class UiBuilder {
 
         final List<ResourceModel> contexts = contextRepository.findAll();
 
-        final ResourceContainerImpl resourceContainer =
+        final ResourceContainer resourceContainer =
             new ResourceContainerImpl(contexts);
         resourceContainer.init();
 
