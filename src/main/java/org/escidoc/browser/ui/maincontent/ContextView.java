@@ -20,8 +20,7 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
 public class ContextView extends VerticalLayout {
-    private static final Logger LOG = LoggerFactory
-        .getLogger(TreeClickListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TreeClickListener.class);
 
     private static final String DESCRIPTION = "Description: ";
 
@@ -34,6 +33,10 @@ public class ContextView extends VerticalLayout {
     private static final String LAST_MODIFIED_BY = "last modification by";
 
     private static final String DIRECT_MEMBERS = "Direct Members";
+
+    private static final String RESOURCE_NAME = "Context: ";
+
+    private static final String STATUS = "Status ";
 
     private final CssLayout cssLayout = new CssLayout();
 
@@ -49,14 +52,11 @@ public class ContextView extends VerticalLayout {
 
     private final Window mainWindow;
 
-    public ContextView(final EscidocServiceLocation serviceLocation,
-        final MainSite mainSite, final ResourceProxy resourceProxy,
-        final Window mainWindow) throws EscidocClientException {
-        Preconditions.checkNotNull(serviceLocation,
-            "serviceLocation is null: %s", serviceLocation);
+    public ContextView(final EscidocServiceLocation serviceLocation, final MainSite mainSite,
+        final ResourceProxy resourceProxy, final Window mainWindow) throws EscidocClientException {
+        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
-        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s",
-            resourceProxy);
+        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         this.serviceLocation = serviceLocation;
         this.mainSite = mainSite;
         appHeight = mainSite.getApplicationHeight();
@@ -77,23 +77,20 @@ public class ContextView extends VerticalLayout {
         // Left Inner Cell
         // Binding Direct Members in
         final DirectMember directMembers =
-            new DirectMember(this.serviceLocation, mainSite,
-                resourceProxy.getId(), mainWindow);
+            new DirectMember(this.serviceLocation, mainSite, resourceProxy.getId(), mainWindow);
         leftCell(DIRECT_MEMBERS, directMembers.contextAsTree());
 
         // Right Inner Cell
         // Binding Additional Info into it
-        final ContextAddInfo cnxAddinfo =
-            new ContextAddInfo(resourceProxy, accordionHeight, mainWindow);
+        final ContextAddInfo cnxAddinfo = new ContextAddInfo(resourceProxy, accordionHeight, mainWindow);
         rightCell(cnxAddinfo.addPanels());
 
         addComponent(cssLayout);
     }
 
     /**
-     * This is the inner Right Cell within a Context By default a set of
-     * Organizational Unit / Admin Description / RelatedItem / Resources are
-     * bound
+     * This is the inner Right Cell within a Context By default a set of Organizational Unit / Admin Description /
+     * RelatedItem / Resources are bound
      * 
      * @param comptoBind
      */
@@ -107,8 +104,7 @@ public class ContextView extends VerticalLayout {
     }
 
     /**
-     * This is the inner Left Cell within a Context By default the Direct
-     * Members are bound here
+     * This is the inner Left Cell within a Context By default the Direct Members are bound here
      * 
      * @param directMembers
      * 
@@ -122,9 +118,7 @@ public class ContextView extends VerticalLayout {
         leftpnl.setWidth("30%");
         leftpnl.setHeight("86%");
 
-        final Label nameofPanel =
-            new Label("<strong>" + DIRECT_MEMBERS + "</string>",
-                Label.CONTENT_RAW);
+        final Label nameofPanel = new Label("<strong>" + DIRECT_MEMBERS + "</string>", Label.CONTENT_RAW);
         leftpnl.addComponent(nameofPanel);
 
         leftpnl.addComponent(comptoBind);
@@ -137,9 +131,11 @@ public class ContextView extends VerticalLayout {
     private void bindProperties() {
         // LEFT SIde
         final Label descMetadata1 =
-            new Label(NAME + resourceProxy.getName() + " <br /> " + DESCRIPTION
-                + resourceProxy.getDescription() + "<br />" + "ID: "
-                + resourceProxy.getId() + " is " + resourceProxy.getStatus(),
+        // new Label(NAME + resourceProxy.getName() + " <br /> " + DESCRIPTION
+        // + resourceProxy.getDescription() + "<br />" + "ID: "
+        // + resourceProxy.getId() + " is " + resourceProxy.getStatus(),
+        // Label.CONTENT_RAW);
+            new Label("ID: " + resourceProxy.getId() + "<br />" + STATUS + "is " + resourceProxy.getStatus(),
                 Label.CONTENT_RAW);
         descMetadata1.setStyleName("floatleft columnheight50");
         descMetadata1.setWidth("35%");
@@ -147,11 +143,9 @@ public class ContextView extends VerticalLayout {
 
         // RIGHT SIDE
         final Label descMetadata2 =
-            new Label(CREATED_BY + " <a href='/ESCD/Frankie'>"
-                + resourceProxy.getCreator() + "</a> "
-                + resourceProxy.getCreatedOn() + "<br>" + LAST_MODIFIED_BY
-                + " <a href='#user/" + resourceProxy.getModifier() + "'>"
-                + resourceProxy.getModifier() + "</a> "
+            new Label(CREATED_BY + " <a href='/ESCD/Frankie'>" + resourceProxy.getCreator() + "</a> "
+                + resourceProxy.getCreatedOn() + "<br>" + LAST_MODIFIED_BY + " <a href='#user/"
+                + resourceProxy.getModifier() + "'>" + resourceProxy.getModifier() + "</a> "
                 + resourceProxy.getModifiedOn() + " <br>", Label.CONTENT_RAW);
         descMetadata2.setStyleName("floatright columnheight50");
         descMetadata2.setWidth("65%");
@@ -178,7 +172,7 @@ public class ContextView extends VerticalLayout {
     }
 
     private void bindNameToHeader() {
-        final Label headerContext = new Label(resourceProxy.getName());
+        final Label headerContext = new Label(RESOURCE_NAME + resourceProxy.getName());
         headerContext.setStyleName("h1 fullwidth");
         cssLayout.addComponent(headerContext);
     }

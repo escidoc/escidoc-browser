@@ -31,6 +31,10 @@ public class ItemView extends VerticalLayout {
 
     private static final String DIRECT_MEMBERS = "Direct Members";
 
+    private static final String RESOURCE_NAME = "Item: ";
+
+    private static final String STATUS = "Status ";
+
     private int appHeight;
 
     private final MainSite mainSite;
@@ -49,8 +53,8 @@ public class ItemView extends VerticalLayout {
 
     private final EscidocServiceLocation serviceLocation;
 
-    public ItemView(EscidocServiceLocation serviceLocation, MainSite mainSite,
-        ResourceProxy resourceProxy, Window mainWindow) {
+    public ItemView(EscidocServiceLocation serviceLocation, MainSite mainSite, ResourceProxy resourceProxy,
+        Window mainWindow) {
         Preconditions.checkNotNull(mainWindow, "resource is null.");
         this.resourceProxy = (ItemProxyImpl) resourceProxy;
         this.mainSite = mainSite;
@@ -68,15 +72,13 @@ public class ItemView extends VerticalLayout {
         bindProperties();
 
         // Direct Members
-        ItemContent itCnt =
-            new ItemContent(accordionHeight - 30, resourceProxy);
+        ItemContent itCnt = new ItemContent(accordionHeight - 30, resourceProxy);
         buildLeftCell(itCnt);
 
         // right most panel
         // TODO SOME PROBLEMS WITH THE RESOURCEPROXY
         MetadataRecsItem metadataRecs =
-            new MetadataRecsItem(resourceProxy, innerelementsHeight,
-                mainWindow, serviceLocation);
+            new MetadataRecsItem(resourceProxy, innerelementsHeight, mainWindow, serviceLocation);
         buildRightCell(metadataRecs.asAccord());
 
         addComponent(cssLayout);
@@ -121,10 +123,13 @@ public class ItemView extends VerticalLayout {
 
     private void bindProperties() {
         // ContainerView DescMetadata1
+        // Label descMetadata1 =
+        // new Label(NAME + resourceProxy.getName() + " <br /> " + DESCRIPTION
+        // + resourceProxy.getDescription() + "<br />" + "ID: "
+        // + resourceProxy.getId() + " is " + resourceProxy.getStatus(),
+        // Label.CONTENT_RAW);
         Label descMetadata1 =
-            new Label(NAME + resourceProxy.getName() + " <br /> " + DESCRIPTION
-                + resourceProxy.getDescription() + "<br />" + "ID: "
-                + resourceProxy.getId() + " is " + resourceProxy.getStatus(),
+            new Label("ID: " + resourceProxy.getId() + "<br />" + STATUS + " is " + resourceProxy.getStatus(),
                 Label.CONTENT_RAW);
         descMetadata1.setStyleName("floatleft columnheight50");
         descMetadata1.setWidth("30%");
@@ -133,13 +138,10 @@ public class ItemView extends VerticalLayout {
         // ContainerView DescMetadata2
 
         Label descMetadata2 =
-            new Label(CREATED_BY + "<a href='/ESCD/Frankie'> "
-                + resourceProxy.getCreator() + "</a> "
-                + resourceProxy.getCreatedOn() + " <br>" + LAST_MODIFIED_BY
-                + " <a href='#user/" + resourceProxy.getModifier() + "'>"
-                + resourceProxy.getModifier() + "</a> "
-                + resourceProxy.getModifiedOn() + " <br>"
-                + resourceProxy.getStatus(), Label.CONTENT_RAW);
+            new Label(CREATED_BY + "<a href='/ESCD/Frankie'> " + resourceProxy.getCreator() + "</a> "
+                + resourceProxy.getCreatedOn() + " <br>" + LAST_MODIFIED_BY + " <a href='#user/"
+                + resourceProxy.getModifier() + "'>" + resourceProxy.getModifier() + "</a> "
+                + resourceProxy.getModifiedOn(), Label.CONTENT_RAW);
         descMetadata2.setStyleName("floatright columnheight50");
         descMetadata2.setWidth("70%");
         cssLayout.addComponent(descMetadata2);
@@ -162,7 +164,7 @@ public class ItemView extends VerticalLayout {
 
     private void bindNametoHeader() {
         // HEADER
-        Label headerContext = new Label(resourceProxy.getName());
+        Label headerContext = new Label(RESOURCE_NAME + resourceProxy.getName());
         headerContext.setStyleName("h1 fullwidth");
         cssLayout.addComponent(headerContext);
     }

@@ -44,6 +44,10 @@ public class ContainerView extends VerticalLayout {
 
     private static final String DIRECT_MEMBERS = "Direct Members";
 
+    private static final String RESOURCE_NAME = "Context: ";
+
+    private static final String STATUS = "Status ";
+
     private int accordionHeight;
 
     private int innerelementsHeight;
@@ -52,17 +56,13 @@ public class ContainerView extends VerticalLayout {
 
     private final Window mainWindow;
 
-    public ContainerView(final EscidocServiceLocation serviceLocation,
-        final MainSite mainSite, final ResourceProxy resourceProxy,
-        final Window mainWindow) throws EscidocClientException {
-        Preconditions.checkNotNull(serviceLocation,
-            "serviceLocation is null: %s", serviceLocation);
+    public ContainerView(final EscidocServiceLocation serviceLocation, final MainSite mainSite,
+        final ResourceProxy resourceProxy, final Window mainWindow) throws EscidocClientException {
+        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
-        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s",
-            resourceProxy);
-        Preconditions.checkArgument(resourceProxy instanceof ContainerProxy,
-            resourceProxy.getClass()
-                + " is not an instance of ContainerProxy.class");
+        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
+        Preconditions.checkArgument(resourceProxy instanceof ContainerProxy, resourceProxy.getClass()
+            + " is not an instance of ContainerProxy.class");
         this.serviceLocation = serviceLocation;
         this.mainSite = mainSite;
         appHeight = mainSite.getApplicationHeight();
@@ -84,23 +84,19 @@ public class ContainerView extends VerticalLayout {
     }
 
     private void addMetadataRecords() {
-        final MetadataRecs metaData =
-            new MetadataRecs(resourceProxy, accordionHeight, mainWindow,
-                serviceLocation);
+        final MetadataRecs metaData = new MetadataRecs(resourceProxy, accordionHeight, mainWindow, serviceLocation);
         rightCell(metaData.asAccord());
     }
 
     private void addDirectMembers() throws EscidocClientException {
         final DirectMember directMembers =
-            new DirectMember(serviceLocation, mainSite, resourceProxy.getId(),
-                mainWindow);
+            new DirectMember(serviceLocation, mainSite, resourceProxy.getId(), mainWindow);
         leftCell(DIRECT_MEMBERS, directMembers.containerAsTree());
     }
 
     /**
-     * This is the inner Right Cell within a Context By default a set of
-     * Organizational Unit / Admin Description / RelatedItem / Resources are
-     * bound
+     * This is the inner Right Cell within a Context By default a set of Organizational Unit / Admin Description /
+     * RelatedItem / Resources are bound
      * 
      * @param comptoBind
      */
@@ -122,9 +118,7 @@ public class ContainerView extends VerticalLayout {
         leftpnl.setWidth("30%");
         leftpnl.setHeight("85%");
 
-        final Label nameofPanel =
-            new Label("<strong>" + DIRECT_MEMBERS + "</string>",
-                Label.CONTENT_RAW);
+        final Label nameofPanel = new Label("<strong>" + DIRECT_MEMBERS + "</string>", Label.CONTENT_RAW);
         leftpnl.addComponent(nameofPanel);
 
         leftpnl.addComponent(comptoBind);
@@ -149,9 +143,9 @@ public class ContainerView extends VerticalLayout {
     private void bindProperties() {
         // LEFT SIde
         final Label descMetadata1 =
-            new Label(NAME + resourceProxy.getName() + " <br /> " + DESCRIPTION
-                + resourceProxy.getDescription() + "<br />" + "ID: "
-                + resourceProxy.getId() + " is " + resourceProxy.getStatus(),
+        // new Label(NAME + resourceProxy.getName() + " <br /> " + DESCRIPTION + resourceProxy.getDescription()
+        // + "<br />" + "ID: " + resourceProxy.getId() + " is " + resourceProxy.getStatus(), Label.CONTENT_RAW);
+            new Label("ID: " + resourceProxy.getId() + "<br />" + STATUS + " is " + resourceProxy.getStatus(),
                 Label.CONTENT_RAW);
         descMetadata1.setStyleName("floatleft columnheight50");
         descMetadata1.setWidth("35%");
@@ -159,13 +153,10 @@ public class ContainerView extends VerticalLayout {
 
         // RIGHT SIDE
         final Label descMetadata2 =
-            new Label(CREATED_BY + "<a href='/ESCD/Frankie'> "
-                + resourceProxy.getCreator() + "</a> "
-                + resourceProxy.getCreatedOn() + "<br>" + LAST_MODIFIED_BY
-                + " <a href='#user/" + resourceProxy.getModifier() + "'>"
-                + resourceProxy.getModifier() + "</a> "
-                + resourceProxy.getModifiedOn() + " <br>"
-                + resourceProxy.getStatus()
+            new Label(CREATED_BY + "<a href='/ESCD/Frankie'> " + resourceProxy.getCreator() + "</a> "
+                + resourceProxy.getCreatedOn() + "<br>" + LAST_MODIFIED_BY + " <a href='#user/"
+                + resourceProxy.getModifier() + "'>" + resourceProxy.getModifier() + "</a> "
+                + resourceProxy.getModifiedOn() + " <br>" + resourceProxy.getStatus()
                 + resourceProxy.hasPreviousVersion(), Label.CONTENT_RAW);
         descMetadata2.setStyleName("floatright columnheight50");
         descMetadata2.setWidth("65%");
@@ -192,7 +183,7 @@ public class ContainerView extends VerticalLayout {
     }
 
     private void bindNameToHeader() {
-        final Label headerContext = new Label(resourceProxy.getName());
+        final Label headerContext = new Label(RESOURCE_NAME + resourceProxy.getName());
         headerContext.setStyleName("h1 fullwidth");
         cssLayout.addComponent(headerContext);
     }
