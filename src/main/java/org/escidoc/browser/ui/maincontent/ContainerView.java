@@ -44,7 +44,7 @@ public class ContainerView extends VerticalLayout {
 
     private static final String DIRECT_MEMBERS = "Direct Members";
 
-    private static final String RESOURCE_NAME = "Context: ";
+    private static final String RESOURCE_NAME = "Container: ";
 
     private static final String STATUS = "Status ";
 
@@ -156,11 +156,12 @@ public class ContainerView extends VerticalLayout {
             new Label(CREATED_BY + "<a href='/ESCD/Frankie'> " + resourceProxy.getCreator() + "</a> "
                 + resourceProxy.getCreatedOn() + "<br>" + LAST_MODIFIED_BY + " <a href='#user/"
                 + resourceProxy.getModifier() + "'>" + resourceProxy.getModifier() + "</a> "
-                + resourceProxy.getModifiedOn() + " <br>" + resourceProxy.getStatus()
-                + resourceProxy.hasPreviousVersion(), Label.CONTENT_RAW);
+                + resourceProxy.getModifiedOn() + " <br>" + getHistory(), Label.CONTENT_RAW);
+
         descMetadata2.setStyleName("floatright columnheight50");
         descMetadata2.setWidth("65%");
         cssLayout.addComponent(descMetadata2);
+
     }
 
     // TODO Fix this ruler! I cannot believe I did that line as a ruler
@@ -201,5 +202,22 @@ public class ContainerView extends VerticalLayout {
         // and 40px for the accordion elements?
         final int innerelementsHeight = appHeight - 420;
         accordionHeight = innerelementsHeight - 40;
+    }
+
+    /**
+     * Checks if a resource has previous history and returns a string TODO in the future it should be a Link (Button
+     * Link) that holds a reference to the history of the resource
+     * 
+     * @return String
+     */
+    private String getHistory() {
+        String strHistory;
+        if (resourceProxy.getPreviousVersion() == null) {
+            strHistory = " has no previous history";
+        }
+        else {
+            strHistory = " previous version";
+        }
+        return strHistory;
     }
 }

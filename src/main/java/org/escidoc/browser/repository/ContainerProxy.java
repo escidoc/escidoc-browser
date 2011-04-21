@@ -23,7 +23,7 @@ public interface ContainerProxy extends ResourceProxy {
 
     List<String> getRelations();
 
-    Boolean hasPreviousVersion();
+    VersionHistory getPreviousVersion();
 
     List<String> getMedataRecords();
 

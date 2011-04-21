@@ -141,7 +141,7 @@ public class ItemView extends VerticalLayout {
             new Label(CREATED_BY + "<a href='/ESCD/Frankie'> " + resourceProxy.getCreator() + "</a> "
                 + resourceProxy.getCreatedOn() + " <br>" + LAST_MODIFIED_BY + " <a href='#user/"
                 + resourceProxy.getModifier() + "'>" + resourceProxy.getModifier() + "</a> "
-                + resourceProxy.getModifiedOn(), Label.CONTENT_RAW);
+                + resourceProxy.getModifiedOn() + " " + getHistory(), Label.CONTENT_RAW);
         descMetadata2.setStyleName("floatright columnheight50");
         descMetadata2.setWidth("70%");
         cssLayout.addComponent(descMetadata2);
@@ -191,6 +191,23 @@ public class ItemView extends VerticalLayout {
     @Override
     public void attach() {
         this.app = getApplication();
+    }
+
+    /**
+     * Checks if a resource has previous history and returns a string TODO in the future it should be a Link (Button
+     * Link) that holds a reference to the history of the resource
+     * 
+     * @return String
+     */
+    private String getHistory() {
+        String strHistory;
+        if (resourceProxy.getPreviousVersion() == null) {
+            strHistory = " has no previous history";
+        }
+        else {
+            strHistory = " previous version";
+        }
+        return strHistory;
     }
 
 }

@@ -50,8 +50,7 @@ public class ContainerProxyImpl implements ContainerProxy {
      */
     @Override
     public ResourceType getType() {
-        return ResourceType.valueOf(containerFromCore
-            .getResourceType().toString());
+        return ResourceType.valueOf(containerFromCore.getResourceType().toString());
     }
 
     /*
@@ -91,8 +90,7 @@ public class ContainerProxyImpl implements ContainerProxy {
      */
     @Override
     public String getCreatedOn() {
-        return containerFromCore
-            .getProperties().getCreationDate().toString("d.M.y, H:m");
+        return containerFromCore.getProperties().getCreationDate().toString("d.M.y, H:m");
     }
 
     /*
@@ -112,8 +110,7 @@ public class ContainerProxyImpl implements ContainerProxy {
      */
     @Override
     public String getModifiedOn() {
-        return containerFromCore.getLastModificationDate().toString(
-            "d.M.y, H:m");
+        return containerFromCore.getLastModificationDate().toString("d.M.y, H:m");
     }
 
     /*
@@ -132,18 +129,21 @@ public class ContainerProxyImpl implements ContainerProxy {
      * @see org.escidoc.browser.repository.ContainerProxy#hasPreviousVersion()
      */
     @Override
-    public Boolean hasPreviousVersion() {
+    public VersionHistory getPreviousVersion() {
         if (containerFromCore.getVersionNumber() > 1)
-            return true;
-
-        return false;
+            try {
+                return containerFromCore.getVersionHistory();
+            }
+            catch (SystemException e) {
+                return null;
+            }
+        return null;
     }
 
     @Override
     public List<String> getMedataRecords() {
         List<String> metadataList = new ArrayList<String>();
-        for (MetadataRecord metadataRecord : containerFromCore
-            .getMetadataRecords()) {
+        for (MetadataRecord metadataRecord : containerFromCore.getMetadataRecords()) {
             metadataList.add(metadataRecord.getName());
         }
         return metadataList;

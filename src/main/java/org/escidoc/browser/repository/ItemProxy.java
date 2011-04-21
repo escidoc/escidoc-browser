@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.escidoc.browser.model.ResourceProxy;
 
-import de.escidoc.core.resources.common.versionhistory.Version;
+import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 
 public interface ItemProxy extends ResourceProxy {
     String getDescription();
@@ -21,9 +21,8 @@ public interface ItemProxy extends ResourceProxy {
 
     List<String> getRelations();
 
-    Boolean hasPreviousVersion();
-
     List<String> getMedataRecords();
 
+    VersionHistory getPreviousVersion();
 
 }

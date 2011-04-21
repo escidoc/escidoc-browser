@@ -6,8 +6,10 @@ import java.util.List;
 import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.repository.ItemProxy;
 
+import de.escidoc.core.common.exceptions.remote.system.SystemException;
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.Relation;
+import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.om.item.Item;
 import de.escidoc.core.resources.om.item.component.Component;
 import de.escidoc.core.resources.om.item.component.Components;
@@ -51,20 +53,17 @@ public class ItemProxyImpl implements ItemProxy {
 
     @Override
     public String getCreatedOn() {
-        return itemFromCore
-            .getProperties().getCreationDate().toString("d.M.y, H:m");
+        return itemFromCore.getProperties().getCreationDate().toString("d.M.y, H:m");
     }
 
     @Override
     public String getModifier() {
-        return itemFromCore
-            .getProperties().getVersion().getModifiedBy().getXLinkTitle();
+        return itemFromCore.getProperties().getVersion().getModifiedBy().getXLinkTitle();
     }
 
     @Override
     public String getModifiedOn() {
-        return itemFromCore
-            .getProperties().getVersion().getDate().toString("d.M.y, H:m");
+        return itemFromCore.getProperties().getVersion().getDate().toString("d.M.y, H:m");
     }
 
     @Override
@@ -77,8 +76,15 @@ public class ItemProxyImpl implements ItemProxy {
     }
 
     @Override
-    public Boolean hasPreviousVersion() {
-        return Boolean.FALSE;
+    public VersionHistory getPreviousVersion() {
+        if (itemFromCore.getVersionNumber() > 1)
+            try {
+                return itemFromCore.getVersionHistory();
+            }
+            catch (SystemException e) {
+                return null;
+            }
+        return null;
     }
 
     public Boolean hasComponents() {
@@ -101,8 +107,7 @@ public class ItemProxyImpl implements ItemProxy {
     @Override
     public List<String> getMedataRecords() {
         final List<String> metadataList = new ArrayList<String>();
-        for (final MetadataRecord metadataRecord : itemFromCore
-            .getMetadataRecords()) {
+        for (final MetadataRecord metadataRecord : itemFromCore.getMetadataRecords()) {
             metadataList.add(metadataRecord.getName());
         }
 
