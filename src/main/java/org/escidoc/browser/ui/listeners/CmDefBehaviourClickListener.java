@@ -30,7 +30,7 @@ public class CmDefBehaviourClickListener implements ClickListener {
         subwindow.setWidth("600px");
         subwindow.setModal(true);
 
-        final Label msgWindow = new Label("Not implemented yet", Label.CONTENT_RAW);
+        final Label msgWindow = new Label("", Label.CONTENT_RAW);
 
         subwindow.addComponent(msgWindow);
         if (subwindow.getParent() != null) {

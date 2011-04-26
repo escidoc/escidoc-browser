@@ -114,4 +114,30 @@ public class ItemProxyImpl implements ItemProxy {
         return itemFromCore.getProperties().getXLinkHref();
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ItemProxyImpl other = (ItemProxyImpl) obj;
+        if (itemFromCore == null) {
+            if (other.getId() != null)
+                return false;
+        }
+        else if (!getId().equals(other.getId()))
+            return false;
+        return true;
+    }
+
 }

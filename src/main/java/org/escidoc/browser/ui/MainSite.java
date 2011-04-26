@@ -22,6 +22,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
@@ -37,7 +38,7 @@ public class MainSite extends VerticalLayout {
 
     private NavigationTreeView mainnavtree;
 
-    private final TabSheet maincontent = new TabSheet();
+    private final TabSheet maincontenttab = new TabSheet();
 
     private final BrowserApplication app;
 
@@ -102,10 +103,10 @@ public class MainSite extends VerticalLayout {
      * @return TabSheet
      */
     private TabSheet buildTabContainer() {
-        maincontent.setStyleName("floatright paddingtop20");
-        maincontent.setWidth("70%");
-        maincontent.setHeight("86%");
-        return maincontent;
+        maincontenttab.setStyleName("floatright paddingtop20");
+        maincontenttab.setWidth("70%");
+        maincontenttab.setHeight("86%");
+        return maincontenttab;
 
     }
 
@@ -149,17 +150,18 @@ public class MainSite extends VerticalLayout {
     }
 
     public void openTab(final Component cmp, String tabname) {
-        maincontent.addComponent(cmp);
-        maincontent.addTab(cmp);
+
+        Tab tb = maincontenttab.addTab(cmp);
+
         final String tabnameshort = null;
         if (tabname.length() > 50) {
-            maincontent.getTab(cmp).setDescription(tabname);
+            tb.setDescription(tabname);
             tabname = tabname.substring(0, 50) + "...";
         }
-        maincontent.getTab(cmp).setCaption(tabname);
+        tb.setCaption(tabname);
 
-        maincontent.setSelectedTab(cmp);
-        maincontent.getTab(cmp).setClosable(true);
+        maincontenttab.setSelectedTab(cmp);
+        tb.setClosable(true);
     }
 
     /**
@@ -168,7 +170,7 @@ public class MainSite extends VerticalLayout {
      * @return TabSheet
      */
     public TabSheet getMaincontent() {
-        return maincontent;
+        return maincontenttab;
     }
 
     /**
