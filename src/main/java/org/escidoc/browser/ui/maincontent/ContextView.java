@@ -137,13 +137,8 @@ public class ContextView extends VerticalLayout {
     private void bindProperties() {
         // LEFT SIde
         final Label descMetadata1 =
-        // new Label(NAME + resourceProxy.getName() + " <br /> " + DESCRIPTION
-        // + resourceProxy.getDescription() + "<br />" + "ID: "
-        // + resourceProxy.getId() + " is " + resourceProxy.getStatus(),
-        // Label.CONTENT_RAW);
-            new Label("ID: " + resourceProxy.getId() + "<br />" + STATUS + "is " + resourceProxy.getStatus(),
-                Label.CONTENT_RAW);
-        descMetadata1.setStyleName("floatleft columnheight50");
+            new Label(NAME + resourceProxy.getName() + " <br /> " + DESCRIPTION + resourceProxy.getDescription()
+                + "<br />" + "ID: " + resourceProxy.getId() + " is " + resourceProxy.getStatus(), Label.CONTENT_RAW);
         descMetadata1.setWidth("35%");
         cssLayout.addComponent(descMetadata1);
 
@@ -206,20 +201,25 @@ public class ContextView extends VerticalLayout {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
+    public boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        ContextView other = (ContextView) obj;
-        if (resourceProxy == null) {
-            if (other.resourceProxy != null)
-                return false;
         }
-        else if (!resourceProxy.equals(other.resourceProxy))
+        if (obj == null) {
             return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ContextView other = (ContextView) obj;
+        if (resourceProxy == null) {
+            if (other.resourceProxy != null) {
+                return false;
+            }
+        }
+        else if (!resourceProxy.equals(other.resourceProxy)) {
+            return false;
+        }
         return true;
     }
 

@@ -9,6 +9,7 @@ import org.escidoc.browser.repository.ContainerProxy;
 import com.google.common.base.Preconditions;
 
 import de.escidoc.core.common.exceptions.remote.system.SystemException;
+import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.MetadataRecords;
 import de.escidoc.core.resources.common.versionhistory.Version;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
@@ -129,19 +130,19 @@ public class ContainerProxyImpl implements ContainerProxy {
      */
     @Override
     public VersionHistory getPreviousVersion() {
-        if (containerFromCore.getVersionNumber() > 1)
+        if (containerFromCore.getVersionNumber() > 1) {
             try {
                 return containerFromCore.getVersionHistory();
             }
-            catch (SystemException e) {
+            catch (final SystemException e) {
                 return null;
             }
+        }
         return null;
     }
 
     @Override
     public MetadataRecords getMedataRecords() {
-
         return containerFromCore.getMetadataRecords();
     }
 
@@ -149,11 +150,11 @@ public class ContainerProxyImpl implements ContainerProxy {
     public Collection<Version> getVersionHistory() {
         try {
 
-            VersionHistory vh = containerFromCore.getVersionHistory();
-            Collection<Version> v = vh.getVersions();
+            final VersionHistory vh = containerFromCore.getVersionHistory();
+            final Collection<Version> v = vh.getVersions();
             return v;
         }
-        catch (SystemException e) {
+        catch (final SystemException e) {
             return null;
             // e.printStackTrace();
         }
@@ -168,20 +169,30 @@ public class ContainerProxyImpl implements ContainerProxy {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
+    public boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        ContainerProxyImpl other = (ContainerProxyImpl) obj;
-        if (containerFromCore == null) {
-            if (other.getId() != null)
-                return false;
         }
-        else if (!getId().equals(other.getId()))
+        if (obj == null) {
             return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ContainerProxyImpl other = (ContainerProxyImpl) obj;
+        if (containerFromCore == null) {
+            if (other.getId() != null) {
+                return false;
+            }
+        }
+        else if (!getId().equals(other.getId())) {
+            return false;
+        }
         return true;
+    }
+
+    @Override
+    public Resource getContext() {
+        return containerFromCore.getProperties().getContext();
     }
 }

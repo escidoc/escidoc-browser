@@ -5,11 +5,13 @@ import java.util.List;
 
 import org.escidoc.browser.model.ResourceProxy;
 
+import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.MetadataRecords;
 import de.escidoc.core.resources.common.versionhistory.Version;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 
 public interface ContainerProxy extends ResourceProxy {
+
     String getDescription();
 
     String getStatus();
@@ -29,5 +31,7 @@ public interface ContainerProxy extends ResourceProxy {
     MetadataRecords getMedataRecords();
 
     Collection<Version> getVersionHistory();
+
+    Resource getContext();
 
 }

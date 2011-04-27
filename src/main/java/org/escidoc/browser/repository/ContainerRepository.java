@@ -6,10 +6,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.model.internal.HasNoNameResource;
 import org.escidoc.browser.repository.internal.ContainerProxyImpl;
 import org.escidoc.browser.ui.helper.Util;
 import org.slf4j.Logger;
@@ -26,6 +29,7 @@ import de.escidoc.core.client.exceptions.TransportException;
 import de.escidoc.core.client.interfaces.ContainerHandlerClientInterface;
 import de.escidoc.core.resources.common.Relations;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
+import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.sb.Record;
 import de.escidoc.core.resources.sb.search.records.ResourceRecord;
 
@@ -93,6 +97,32 @@ public class ContainerRepository implements Repository {
     @Override
     public Relations getRelations(final String id) throws EscidocClientException {
         return client.retrieveRelations(id);
+
+    }
+
+    public List<Container> findParents(final HasNoNameResource resource) throws EscidocClientException {
+        final SearchRetrieveRequestType requestType = new SearchRetrieveRequestType();
+
+        if (resource.getType().equals(ResourceType.ITEM)) {
+            final String query = "\"/struct-map/item/id\"=\"" + resource.getId() + "\"";
+
+            requestType.setQuery(query);
+        }
+        else if (resource.getType().equals(ResourceType.CONTAINER)) {
+            final String query = "\"/struct-map/container/id\"=\"" + resource.getId() + "\"";
+            requestType.setQuery(query);
+        }
+        else {
+            throw new UnsupportedOperationException("find Parents is not supported for type: " + resource.getType());
+        }
+        final Collection<Container> parents = client.retrieveContainersAsList(requestType);
+
+        return new ArrayList<Container>(client.retrieveContainersAsList(requestType));
+
+    }
+
+    public ResourceModel findContext(final HasNoNameResource resource) throws EscidocClientException {
+        return new ContextModel(((ContainerProxy) findById(resource.getId())).getContext());
 
     }
 }

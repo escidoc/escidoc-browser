@@ -31,7 +31,6 @@ public class ItemContent extends CustomLayout {
     private final EscidocServiceLocation serviceLocation;
 
     private final Window mainWindow;
-
     public ItemContent(final int accordionHeight, final ItemProxyImpl resourceProxy,
         EscidocServiceLocation serviceLocation, final Window mainWindow) {
 

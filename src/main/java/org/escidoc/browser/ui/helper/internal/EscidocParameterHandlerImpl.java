@@ -71,14 +71,14 @@ public class EscidocParameterHandlerImpl implements EscidocParameterHandler {
         app.buildMainView();
     }
 
-    private void setEscidocUri(final Map<String, String[]> parameters) {
-        serviceLocation.setEscidocUri(tryToParseEscidocUriFromParameter(parameters));
-        serviceLocation.setApplicationUri(toUri(app.getURL()));
-    }
-
     private void doLogin(final Map<String, String[]> parameters) {
         app.setLogoutURL(serviceLocation.getLogoutUri());
         login(parameters);
+    }
+
+    private void setEscidocUri(final Map<String, String[]> parameters) {
+        serviceLocation.setEscidocUri(tryToParseEscidocUriFromParameter(parameters));
+        serviceLocation.setApplicationUri(toUri(app.getURL()));
     }
 
     private URI toUri(final URL url) {
