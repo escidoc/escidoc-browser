@@ -70,12 +70,12 @@ ul.horizontal_list li{
 	margin:0;
 	}		
 #crumbs {
-	height:2.3em;
+	height:2em;
 	border:1px solid #dedede;
 	}
 #crumbs li {
 	float:left;
-	line-height:2.3em;
+	line-height:2em;
 	color:#777;
 	padding-left:.75em;
 	}		

@@ -76,7 +76,7 @@ public class ItemView extends VerticalLayout {
         bindProperties();
 
         // Direct Members
-        final ItemContent itCnt = new ItemContent(accordionHeight - 30, resourceProxy, serviceLocation);
+        final ItemContent itCnt = new ItemContent(accordionHeight - 30, resourceProxy, serviceLocation, mainWindow);
         buildLeftCell(itCnt);
 
         // right most panelY
@@ -179,6 +179,7 @@ public class ItemView extends VerticalLayout {
         cssLayout.setHeight("100%");
         final int innerelementsHeight = appHeight - 420;
         accordionHeight = innerelementsHeight - 20;
+        System.out.println("accordionHeight" + appHeight + " " + innerelementsHeight + accordionHeight);
     }
 
     @Override
