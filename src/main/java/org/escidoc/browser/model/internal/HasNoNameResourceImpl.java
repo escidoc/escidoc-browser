@@ -8,8 +8,7 @@ public class HasNoNameResourceImpl implements HasNoNameResource {
 
     private final ResourceType type;
 
-    public HasNoNameResourceImpl(final String resourceId,
-        final ResourceType type) {
+    public HasNoNameResourceImpl(final String resourceId, final ResourceType type) {
         this.resourceId = resourceId;
         this.type = type;
     }
@@ -40,8 +39,7 @@ public class HasNoNameResourceImpl implements HasNoNameResource {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result =
-            prime * result + ((resourceId == null) ? 0 : resourceId.hashCode());
+        result = prime * result + ((resourceId == null) ? 0 : resourceId.hashCode());
         result = prime * result + ((type == null) ? 0 : type.hashCode());
         return result;
     }

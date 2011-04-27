@@ -18,19 +18,16 @@ public class FindAncestorsSpec {
 
     private static final String INPUT_ID = "escidoc:16037";
 
-    final String[] LEAF_AND_ITS_ANCESTORS = new String[] { INPUT_ID,
-        "escidoc:16038", "escidoc:16048", "escidoc:10281" };
+    final String[] LEAF_AND_ITS_ANCESTORS =
+        new String[] { INPUT_ID, "escidoc:16038", "escidoc:16048", "escidoc:10281" };
 
     private UtilRepository repository;
 
     @Test
-    public void itShouldReturnListOfResourceWithContextAsItsLastElement()
-        throws Exception {
+    public void itShouldReturnListOfResourceWithContextAsItsLastElement() throws Exception {
         initRepo();
         // when
-        final ResourceModel[] result =
-            repository.findAncestors(new HasNoNameResourceImpl(INPUT_ID,
-                ResourceType.ITEM));
+        final ResourceModel[] result = repository.findAncestors(new HasNoNameResourceImpl(INPUT_ID, ResourceType.ITEM));
 
         // should
         Assert.assertEquals(LEAF_AND_ITS_ANCESTORS, result);
@@ -42,9 +39,7 @@ public class FindAncestorsSpec {
         initRepo();
         final String parentOfItem = "escidoc:16038";
         // When:
-        final ResourceModel parent =
-            repository.findParent(new HasNoNameResourceImpl(INPUT_ID,
-                ResourceType.ITEM));
+        final ResourceModel parent = repository.findParent(new HasNoNameResourceImpl(INPUT_ID, ResourceType.ITEM));
         // AssertThat:
         org.hamcrest.MatcherAssert.assertThat(parent.getId(), is(parentOfItem));
     }
@@ -56,11 +51,9 @@ public class FindAncestorsSpec {
         final String parentOfContainer = "escidoc:16048";
         // When:
         final ResourceModel parent =
-            repository.findParent(new HasNoNameResourceImpl("escidoc:16038",
-                ResourceType.CONTAINER));
+            repository.findParent(new HasNoNameResourceImpl("escidoc:16038", ResourceType.CONTAINER));
         // AssertThat:
-        org.hamcrest.MatcherAssert.assertThat(parent.getId(),
-            is(parentOfContainer));
+        org.hamcrest.MatcherAssert.assertThat(parent.getId(), is(parentOfContainer));
     }
 
     @Test
@@ -69,11 +62,9 @@ public class FindAncestorsSpec {
 
         // When:
         final ResourceModel parent =
-            repository.findParent(new HasNoNameResourceImpl("escidoc:16048",
-                ResourceType.CONTAINER));
+            repository.findParent(new HasNoNameResourceImpl("escidoc:16048", ResourceType.CONTAINER));
 
-        org.hamcrest.MatcherAssert.assertThat(parent.getId(),
-            is("escidoc:10281"));
+        org.hamcrest.MatcherAssert.assertThat(parent.getId(), is("escidoc:10281"));
     }
 
     private void initRepo() {

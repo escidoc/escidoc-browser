@@ -7,10 +7,8 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public interface UtilRepository {
 
-    ResourceModel[] findAncestors(HasNoNameResource resource)
-        throws EscidocClientException;
+    ResourceModel[] findAncestors(HasNoNameResource resource) throws EscidocClientException;
 
-    ResourceModel findParent(HasNoNameResource resource)
-        throws EscidocClientException;
+    ResourceModel findParent(HasNoNameResource resource) throws EscidocClientException;
 
 }

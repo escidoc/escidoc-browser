@@ -25,8 +25,7 @@ import de.escidoc.core.resources.om.container.Container;
 
 public class UtilRepositoryImpl implements UtilRepository {
 
-    private static final Logger LOG = LoggerFactory
-        .getLogger(UtilRepositoryImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UtilRepositoryImpl.class);
 
     private final ContainerRepository containerRepository;
 
@@ -34,17 +33,15 @@ public class UtilRepositoryImpl implements UtilRepository {
 
     private final Repository itemRepository;
 
-    public UtilRepositoryImpl(
-        final EscidocServiceLocation escidocServiceLocation) {
-        Preconditions.checkNotNull(escidocServiceLocation,
-            "escidocServiceLocation is null: %s", escidocServiceLocation);
+    public UtilRepositoryImpl(final EscidocServiceLocation escidocServiceLocation) {
+        Preconditions
+            .checkNotNull(escidocServiceLocation, "escidocServiceLocation is null: %s", escidocServiceLocation);
 
         containerRepository = new ContainerRepository(escidocServiceLocation);
         contextRepository = new ContextRepository(escidocServiceLocation);
         itemRepository = new ItemRepository(escidocServiceLocation);
 
-        resourceFactory =
-            new ResourceModelFactory(itemRepository, containerRepository);
+        resourceFactory = new ResourceModelFactory(itemRepository, containerRepository);
     }
 
     private final List<ResourceModel> path = new ArrayList<ResourceModel>();
@@ -52,23 +49,19 @@ public class UtilRepositoryImpl implements UtilRepository {
     private final ResourceModelFactory resourceFactory;
 
     @Override
-    public ResourceModel[] findAncestors(final HasNoNameResource resource)
-        throws EscidocClientException {
+    public ResourceModel[] findAncestors(final HasNoNameResource resource) throws EscidocClientException {
 
         path.add(resourceFactory.find(resource.getId(), resource.getType()));
 
-        final List<Container> parents =
-            containerRepository.findParents(resource);
+        final List<Container> parents = containerRepository.findParents(resource);
 
         if (parents.size() > 1) {
             LOG.warn("Found more than one parent: " + parents);
-            throw new UnsupportedOperationException(
-                "Found more than one parent: " + parents);
+            throw new UnsupportedOperationException("Found more than one parent: " + parents);
         }
         else if (isContainer(parents)) {
             path.add(new ContainerModel(parents.get(0)));
-            findAncestors(new HasNoNameResourceImpl(parents.get(0).getObjid(),
-                ResourceType.CONTAINER));
+            findAncestors(new HasNoNameResourceImpl(parents.get(0).getObjid(), ResourceType.CONTAINER));
         }
         else if (isContext(parents)) {
             // final List<Context> contextList =
@@ -82,31 +75,25 @@ public class UtilRepositoryImpl implements UtilRepository {
             // return array;
             // }
             // else {
-            throw new UnsupportedOperationException(
-                "Not yet implemented for context");
+            throw new UnsupportedOperationException("Not yet implemented for context");
             // }
         }
 
-        throw new UnsupportedOperationException(
-            "Not yet implemented for parent");
+        throw new UnsupportedOperationException("Not yet implemented for parent");
     }
 
-    public ResourceModel findParent(final HasNoNameResource resource)
-        throws EscidocClientException {
+    public ResourceModel findParent(final HasNoNameResource resource) throws EscidocClientException {
 
         Preconditions.checkNotNull(resource, "resource is null: %s", resource);
         Preconditions.checkArgument(
-            resource.getType().equals(ResourceType.ITEM)
-                || resource.getType().equals(ResourceType.CONTAINER),
+            resource.getType().equals(ResourceType.ITEM) || resource.getType().equals(ResourceType.CONTAINER),
             "Only Item and Container is supported");
 
-        final List<Container> parents =
-            containerRepository.findParents(resource);
+        final List<Container> parents = containerRepository.findParents(resource);
 
         if (parents.size() > 1) {
             LOG.warn("Found more than one parent: " + parents);
-            throw new UnsupportedOperationException(
-                "Found more than one parent: " + parents);
+            throw new UnsupportedOperationException("Found more than one parent: " + parents);
         }
         else if (parentIsContainer(parents)) {
             return new ContainerModel(parents.get(0));
