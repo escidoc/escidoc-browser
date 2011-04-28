@@ -82,6 +82,7 @@ public class UtilRepositoryImpl implements UtilRepository {
         throw new UnsupportedOperationException("Not yet implemented for parent");
     }
 
+    @Override
     public ResourceModel findParent(final HasNoNameResource resource) throws EscidocClientException {
 
         Preconditions.checkNotNull(resource, "resource is null: %s", resource);
@@ -101,8 +102,8 @@ public class UtilRepositoryImpl implements UtilRepository {
         else if (parentIsContext(parents)) {
             return containerRepository.findContext(resource);
         }
-
-        throw new UnsupportedOperationException("Unsupported");
+        return null;
+        // throw new UnsupportedOperationException("Unsupported");
     }
 
     private boolean parentIsContainer(final List<Container> parents) {
