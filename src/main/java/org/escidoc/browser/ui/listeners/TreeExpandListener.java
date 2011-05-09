@@ -40,7 +40,6 @@ public final class TreeExpandListener implements Tree.ExpandListener {
     @Override
     public void nodeExpand(final ExpandEvent event) {
         final ResourceModel resource = (ResourceModel) event.getItemId();
-        LOG.debug("Node to expand: " + resource.toString());
 
         if (ContextModel.isContext(resource)) {
             addContextChildren(resource);

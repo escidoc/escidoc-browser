@@ -23,4 +23,8 @@ public final class AppConstants {
 
     public static final String EMPTY_STRING = "";
 
+    public static final String ARG_TAB = "tab";
+
+    public static final String ARG_TYPE = "type";
+
 }

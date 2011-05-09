@@ -1,5 +1,7 @@
 package org.escidoc.browser;
 
+import java.util.Map;
+
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.internal.EscidocServiceLocationImpl;
@@ -37,6 +39,8 @@ public class BrowserApplication extends Application {
     private WindowResizeListener windowResizeListener;
 
     private WindowResizeObserver observer;
+
+    private Map<String, String[]> parameters;
 
     @Override
     public void init() {
@@ -131,5 +135,14 @@ public class BrowserApplication extends Application {
     public void setServiceLocation(final EscidocServiceLocation serviceLocation) {
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         this.serviceLocation = serviceLocation;
+    }
+
+    public void setParameters(Map<String, String[]> parameters) {
+        this.parameters = parameters;
+
+    }
+
+    public Map<String, String[]> getParameters() {
+        return this.parameters;
     }
 }

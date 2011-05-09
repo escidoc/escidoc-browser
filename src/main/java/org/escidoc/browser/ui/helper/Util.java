@@ -11,6 +11,9 @@ import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.ui.helper.internal.EscidocParameterHandlerImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 
@@ -20,10 +23,24 @@ import de.escidoc.core.resources.sb.Record;
 import de.escidoc.core.resources.sb.search.records.ResourceRecord;
 
 public final class Util {
+    private static final Logger LOG = LoggerFactory.getLogger(EscidocParameterHandlerImpl.class);
 
     public final static boolean isEscidocUrlExists(final Map<String, String[]> parameters) {
         Preconditions.checkNotNull(parameters, "parameters is null: %s", parameters);
         return parameters.containsKey(AppConstants.ESCIDOC_URL);
+    }
+
+    public final static boolean hasTabArg(final Map<String, String[]> parameters) {
+        Preconditions.checkNotNull(parameters, "parameters is null: %s", parameters);
+        return parameters.containsKey(AppConstants.ARG_TAB);
+    }
+
+    public static boolean hasObjectType(Map<String, String[]> parameters) {
+        Preconditions.checkNotNull(parameters, "parameters is null: %s", parameters);
+        return parameters.containsKey(AppConstants.ARG_TYPE)
+            && (parameters.get(AppConstants.ARG_TYPE)[0].equals("Item")
+                || parameters.get(AppConstants.ARG_TYPE)[0].equals("Container") || parameters
+                .get(AppConstants.ARG_TYPE)[0].equals("Context"));
     }
 
     public final static boolean doesTokenExist(final Map<String, String[]> parameters) {
@@ -115,4 +132,5 @@ public final class Util {
         final String topLevelContainerQuery = stringBuilder.toString();
         return topLevelContainerQuery;
     }
+
 }

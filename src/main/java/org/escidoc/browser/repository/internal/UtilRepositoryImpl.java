@@ -43,7 +43,7 @@ public class UtilRepositoryImpl implements UtilRepository {
         contextRepository = new ContextRepository(escidocServiceLocation);
         itemRepository = new ItemRepository(escidocServiceLocation);
 
-        resourceFactory = new ResourceModelFactory(itemRepository, containerRepository);
+        resourceFactory = new ResourceModelFactory(itemRepository, containerRepository, contextRepository);
     }
 
     private final List<ResourceModel> path = new ArrayList<ResourceModel>();

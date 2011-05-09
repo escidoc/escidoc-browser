@@ -67,7 +67,7 @@ public class EscidocParameterHandlerImpl implements EscidocParameterHandler {
         else if (!Util.isEscidocUrlExists(parameters) && hasNotEscidocHandler(parameters)) {
             LOG.debug("nothing");
         }
-
+        app.setParameters(parameters);
         app.buildMainView();
     }
 
