@@ -87,7 +87,7 @@ public class MetadataRecsItem {
         Iterator itr = resourceProxy.getRelations().iterator();
         String relRecords = "";
         while (itr.hasNext()) {
-            relRecords += "<a href='/MISSING'>" + itr.next() + "</a><br />";
+            relRecords += "<a href='#'>" + itr.next() + "</a><br />";
         }
 
         Label l2 = new Label(relRecords, Label.CONTENT_RAW);

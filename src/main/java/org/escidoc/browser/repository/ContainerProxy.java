@@ -12,18 +12,25 @@ import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 
 public interface ContainerProxy extends ResourceProxy {
 
+    @Override
     String getDescription();
 
+    @Override
     String getStatus();
 
+    @Override
     String getCreator();
 
+    @Override
     String getCreatedOn();
 
+    @Override
     String getModifier();
 
+    @Override
     String getModifiedOn();
 
+    @Override
     List<String> getRelations();
 
     VersionHistory getPreviousVersion();

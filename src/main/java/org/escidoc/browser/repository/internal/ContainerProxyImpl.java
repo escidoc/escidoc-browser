@@ -90,7 +90,7 @@ public class ContainerProxyImpl implements ContainerProxy {
      */
     @Override
     public String getCreatedOn() {
-        return containerFromCore.getProperties().getCreationDate().toString("d.M.y, H:m");
+        return containerFromCore.getProperties().getCreationDate().toString("d.M.y, HH:mm");
     }
 
     /*
@@ -110,7 +110,7 @@ public class ContainerProxyImpl implements ContainerProxy {
      */
     @Override
     public String getModifiedOn() {
-        return containerFromCore.getLastModificationDate().toString("d.M.y, H:m");
+        return containerFromCore.getLastModificationDate().toString("d.M.y, HH:mm");
     }
 
     /*

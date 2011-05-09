@@ -16,7 +16,7 @@ public class ResourceHierarchy {
 
     private UtilRepository repository;
 
-    private final ArrayList<String> containerHierarchy = new ArrayList<String>();;
+    private final ArrayList<ResourceModel> containerHierarchy = new ArrayList<ResourceModel>();;
 
     public void itShouldReturnListOfResourceWithContextAsItsLastElement(String id) throws Exception {
         initRepo();
@@ -24,16 +24,16 @@ public class ResourceHierarchy {
         final ResourceModel[] result = repository.findAncestors(new HasNoNameResourceImpl(id, ResourceType.ITEM));
     }
 
-    public String getReturnParentOfItem(String id) throws Exception {
+    public ResourceModel getReturnParentOfItem(String id) throws Exception {
         initRepo();
         final ResourceModel parent = repository.findParent(new HasNoNameResourceImpl(id, ResourceType.ITEM));
-        return parent.getId();
+        return parent;
     }
 
-    public String getParentOfContainer(String id) throws EscidocClientException {
+    public ResourceModel getParentOfContainer(String id) throws EscidocClientException {
         initRepo();
         final ResourceModel parent = repository.findParent(new HasNoNameResourceImpl(id, ResourceType.CONTAINER));
-        return parent.getId();
+        return parent;
     }
 
     public String itShouldReturnContextOfContainer() throws Exception {
@@ -43,16 +43,25 @@ public class ResourceHierarchy {
         return parent.getId();
     }
 
-    private void createContainerHierarchy(String id) throws EscidocClientException {
-        if (getParentOfContainer(id) != null) {
-            containerHierarchy.add(getParentOfContainer(id));
-            createContainerHierarchy(getParentOfContainer(id));
+    private void createContainerHierarchy(String id) {
+        try {
+            if (getParentOfContainer(id) != null) {
+                containerHierarchy.add(getParentOfContainer(id));
+                createContainerHierarchy(getParentOfContainer(id).getId());
+            }
+        }
+        catch (EscidocClientException e) {
+            System.out.print("q");
+            // containerHierarchy.add(null);
+            // TODO Auto-generated catch block
+            // e.printStackTrace();
         }
 
     }
 
-    public ArrayList<String> getHierarchy(String id) throws EscidocClientException {
+    public ArrayList<ResourceModel> getHierarchy(String id) throws EscidocClientException {
         createContainerHierarchy(id);
+
         return containerHierarchy;
     }
 

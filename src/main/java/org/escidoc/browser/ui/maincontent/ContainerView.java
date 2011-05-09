@@ -47,7 +47,7 @@ public class ContainerView extends VerticalLayout {
 
     private static final String RESOURCE_NAME = "Container: ";
 
-    private static final String STATUS = "Status ";
+    private static final String STATUS = "Status is ";
 
     private int accordionHeight;
 
@@ -151,18 +151,18 @@ public class ContainerView extends VerticalLayout {
     private void bindProperties() {
         // LEFT SIde
         final Label descMetadata1 =
-            new Label(NAME + resourceProxy.getName() + " <br /> " + DESCRIPTION + resourceProxy.getDescription()
-                + "<br />" + "ID: " + resourceProxy.getId() + " is " + resourceProxy.getStatus(), Label.CONTENT_RAW);
+            new Label("ID: " + resourceProxy.getId() + " <br /> " + STATUS + resourceProxy.getStatus(),
+                Label.CONTENT_RAW);
         descMetadata1.setStyleName("floatleft columnheight50");
         descMetadata1.setWidth("35%");
         cssLayout.addComponent(descMetadata1);
 
         // RIGHT SIDE
         final Label descMetadata2 =
-            new Label(CREATED_BY + "<a href='/ESCD/Frankie'> " + resourceProxy.getCreator() + "</a> "
+            new Label(CREATED_BY + "<a href='#'> " + resourceProxy.getCreator() + "</a> "
                 + resourceProxy.getCreatedOn() + "<br>" + LAST_MODIFIED_BY + " <a href='#user/"
                 + resourceProxy.getModifier() + "'>" + resourceProxy.getModifier() + "</a> "
-                + resourceProxy.getModifiedOn() + " <br>" + resourceProxy.getStatus());
+                + resourceProxy.getModifiedOn() + " <br>" + STATUS + resourceProxy.getStatus(), Label.CONTENT_RAW);
         descMetadata2.setStyleName("floatright columnheight50");
         descMetadata2.setWidth("65%");
         cssLayout.addComponent(descMetadata2);
@@ -185,7 +185,7 @@ public class ContainerView extends VerticalLayout {
     }
 
     private void createBreadCrumb() {
-        final BreadCrumbMenu bm = new BreadCrumbMenu(cssLayout, resourceProxy);
+        final BreadCrumbMenu bm = new BreadCrumbMenu(cssLayout, resourceProxy, mainWindow, serviceLocation);
     }
 
     private void bindNameToHeader() {

@@ -10,6 +10,7 @@ import org.escidoc.browser.model.ResourceModelFactory;
 import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.internal.HasNoNameResource;
 import org.escidoc.browser.model.internal.HasNoNameResourceImpl;
+import org.escidoc.browser.repository.ContainerProxy;
 import org.escidoc.browser.repository.ContainerRepository;
 import org.escidoc.browser.repository.ContextRepository;
 import org.escidoc.browser.repository.ItemRepository;
@@ -21,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Preconditions;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.om.container.Container;
 
 public class UtilRepositoryImpl implements UtilRepository {
@@ -64,19 +66,7 @@ public class UtilRepositoryImpl implements UtilRepository {
             findAncestors(new HasNoNameResourceImpl(parents.get(0).getObjid(), ResourceType.CONTAINER));
         }
         else if (isContext(parents)) {
-            // final List<Context> contextList =
-            // contextRepository.findParent(resource);
-            // if (contextList.size() == 1) {
-            // final ResourceModel root = new ContextModel(contextList.get(0));
-            // path.add(root);
-            //
-            // final ResourceModel[] array =
-            // path.toArray(new ResourceModel[path.size()]);
-            // return array;
-            // }
-            // else {
-            throw new UnsupportedOperationException("Not yet implemented for context");
-            // }
+            return null;
         }
 
         throw new UnsupportedOperationException("Not yet implemented for parent");
@@ -120,5 +110,17 @@ public class UtilRepositoryImpl implements UtilRepository {
 
     private boolean isContainer(final List<Container> parents) {
         return parentIsContainer(parents);
+    }
+
+    @Override
+    public Resource getParentContext(String id) {
+        try {
+            return ((ContainerProxy) containerRepository.findById(id)).getContext();
+        }
+        catch (EscidocClientException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
     }
 }

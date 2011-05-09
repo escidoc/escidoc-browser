@@ -33,7 +33,7 @@ public class ItemView extends VerticalLayout {
 
     private static final String RESOURCE_NAME = "Item: ";
 
-    private static final String STATUS = "Status ";
+    private static final String STATUS = "Status is ";
 
     private final int appHeight;
 
@@ -127,8 +127,8 @@ public class ItemView extends VerticalLayout {
     private void bindProperties() {
         // ContainerView DescMetadata1
         final Label descMetadata1 =
-            new Label(NAME + resourceProxy.getName() + " <br /> " + DESCRIPTION + resourceProxy.getDescription()
-                + "<br />" + "ID: " + resourceProxy.getId() + " is " + resourceProxy.getStatus(), Label.CONTENT_RAW);
+            new Label("ID: " + resourceProxy.getId() + " <br /> " + STATUS + resourceProxy.getStatus(),
+                Label.CONTENT_RAW);
         descMetadata1.setStyleName("floatleft columnheight50");
         descMetadata1.setWidth("30%");
         cssLayout.addComponent(descMetadata1);
@@ -136,8 +136,8 @@ public class ItemView extends VerticalLayout {
         // ContainerView DescMetadata2
 
         final Label descMetadata2 =
-            new Label(CREATED_BY + "<a href='/ESCD/Frankie'> " + resourceProxy.getCreator() + "</a> "
-                + resourceProxy.getCreatedOn() + " <br>" + LAST_MODIFIED_BY + " <a href='#user/"
+            new Label(CREATED_BY + "<a href='#'> " + resourceProxy.getCreator() + "</a> "
+                + resourceProxy.getCreatedOn() + " <br>" + LAST_MODIFIED_BY + " <a href='#"
                 + resourceProxy.getModifier() + "'>" + resourceProxy.getModifier() + "</a> "
                 + resourceProxy.getModifiedOn() + " " + getHistory(), Label.CONTENT_RAW);
         descMetadata2.setStyleName("floatright columnheight50");
@@ -169,7 +169,7 @@ public class ItemView extends VerticalLayout {
 
     private void createBreadcrumbp() {
         // BREADCRUMB
-        final BreadCrumbMenu bm = new BreadCrumbMenu(cssLayout, resourceProxy);
+        final BreadCrumbMenu bm = new BreadCrumbMenu(cssLayout, resourceProxy, mainWindow);
     }
 
     private void buildLayout() {

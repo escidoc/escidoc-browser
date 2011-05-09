@@ -53,7 +53,7 @@ public class ItemProxyImpl implements ItemProxy {
 
     @Override
     public String getCreatedOn() {
-        return itemFromCore.getProperties().getCreationDate().toString("d.M.y, H:m");
+        return itemFromCore.getProperties().getCreationDate().toString("d.M.y, H:mm");
     }
 
     @Override
@@ -63,7 +63,7 @@ public class ItemProxyImpl implements ItemProxy {
 
     @Override
     public String getModifiedOn() {
-        return itemFromCore.getProperties().getVersion().getDate().toString("d.M.y, H:m");
+        return itemFromCore.getProperties().getVersion().getDate().toString("d.M.y, H:mm");
     }
 
     @Override

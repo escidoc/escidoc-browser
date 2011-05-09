@@ -1,9 +1,12 @@
 package org.escidoc.browser.ui.maincontent;
 
+import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.ui.listeners.ContextAdminDescriptorsClickListener;
 
+import com.google.common.base.Preconditions;
+import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
@@ -15,40 +18,39 @@ import de.escidoc.core.resources.om.context.AdminDescriptor;
 import de.escidoc.core.resources.om.context.AdminDescriptors;
 import de.escidoc.core.resources.om.context.OrganizationalUnitRefs;
 
-/**
- * Deprecated the MetadataRecsContext is used instead
- * 
- * @author ajb
- * 
- */
-public class ContextAddInfo {
+public class MetadataRecsContext {
     private int height;
 
     private final ContextProxyImpl resourceProxy;
 
     private final Window mainWindow;
 
-    public ContextAddInfo(ResourceProxy resourceProxy, int innerelementsHeight, Window mainWindow) {
+    private final EscidocServiceLocation escidocServiceLocation;
+
+    public MetadataRecsContext(ResourceProxy resourceProxy, int innerelementsHeight, Window mainWindow,
+        EscidocServiceLocation escidocServiceLocation) {
+        Preconditions.checkNotNull(mainWindow, "resource is null.");
+        this.height = innerelementsHeight;
+        if (this.height < 1)
+            this.height = 400;
         this.height = innerelementsHeight;
         this.resourceProxy = (ContextProxyImpl) resourceProxy;
         this.mainWindow = mainWindow;
+        this.escidocServiceLocation = escidocServiceLocation;
     }
 
-    public Panel addPanels() {
-
-        Panel mainpnl = new Panel();
-        mainpnl.setHeight("100%");
-        mainpnl.setWidth("100%");
-
+    public Accordion asAccord() {
+        Accordion metadataRecs = new Accordion();
+        metadataRecs.setSizeFull();
         int elementHeight = this.height / 4;
-
-        mainpnl.addComponent(buildOrganizationUnit(elementHeight));
-        mainpnl.addComponent(buildAdminDescription(elementHeight));
-        mainpnl.addComponent(buildRelations(elementHeight));
-        mainpnl.addComponent(buildResources(elementHeight));
-
-        return mainpnl;
-
+        System.out.println(elementHeight);
+        elementHeight = 410;
+        // Add the components as tabs in the Accordion.
+        metadataRecs.addTab(buildOrganizationUnit(elementHeight), "Organizational Unit", null);
+        metadataRecs.addTab(buildAdminDescription(elementHeight), "Admin Description", null);
+        metadataRecs.addTab(buildRelations(elementHeight), "Relations", null);
+        metadataRecs.addTab(buildResources(elementHeight), "Resources", null);
+        return metadataRecs;
     }
 
     /**
@@ -56,10 +58,10 @@ public class ContextAddInfo {
      * @return
      */
     private Panel buildResources(int elementHeight) {
-        Panel resources = new Panel("Resources");
+        Panel resources = new Panel();
         resources.setWidth("100%");
         resources.setHeight(elementHeight + "px");
-        Label lblresources = new Label("<a href='/ESCD/#Resources/id'>Members Filtered</a><br />", Label.CONTENT_RAW);
+        Label lblresources = new Label("<a href='#'>Members Filtered</a><br />", Label.CONTENT_RAW);
         resources.addComponent(lblresources);
         return resources;
     }
@@ -69,11 +71,10 @@ public class ContextAddInfo {
      * @return
      */
     private Panel buildRelations(int elementHeight) {
-        Panel relations = new Panel("Relations");
+        Panel relations = new Panel();
         relations.setWidth("100%");
         relations.setHeight(elementHeight + "px");
-        Label lblrelations =
-            new Label("isRelatedTo <a href='/ESCD/#Context/123'>Other Context</a><br />", Label.CONTENT_RAW);
+        Label lblrelations = new Label("isRelatedTo <a href='#'>Other Context</a><br />", Label.CONTENT_RAW);
         relations.addComponent(lblrelations);
         return relations;
     }
@@ -83,7 +84,7 @@ public class ContextAddInfo {
      * @return
      */
     private Panel buildAdminDescription(int elementHeight) {
-        Panel admDescriptors = new Panel("Admin Descriptors");
+        Panel admDescriptors = new Panel();
         admDescriptors.setWidth("100%");
         admDescriptors.setHeight(elementHeight + "px");
 
@@ -108,7 +109,7 @@ public class ContextAddInfo {
      * @return
      */
     private Panel buildOrganizationUnit(int elementHeight) {
-        Panel orgUnit = new Panel("Organizational Unit");
+        Panel orgUnit = new Panel();
         orgUnit.setWidth("100%");
         orgUnit.setHeight(elementHeight + "px");
 
@@ -130,5 +131,4 @@ public class ContextAddInfo {
     public void setHeight(int height) {
         this.height = height;
     }
-
 }

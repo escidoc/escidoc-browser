@@ -88,10 +88,7 @@ public class ItemContent extends CustomLayout {
         addComponent(e, "thumbnail");
 
         final Label lblmetadata =
-            new Label(itemProperties.getProperties().getXLinkTitle()
-                + "<br />"
-                // + " ("
-                // + itemProperties.getProperties().getMimeType() + ")<hr />" + "<br />" + "Metadata <a href=\"/#\">"
+            new Label(itemProperties.getProperties().getXLinkTitle() + "<br />"
                 + itemProperties.getProperties().getVisibility() + "<br />"
                 + itemProperties.getProperties().getChecksumAlgorithm() + " "
                 + itemProperties.getProperties().getChecksum(), Label.CONTENT_RAW);

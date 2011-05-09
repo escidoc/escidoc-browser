@@ -6,17 +6,12 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.repository.ContainerRepository;
 import org.escidoc.browser.repository.ContextRepository;
 import org.escidoc.browser.repository.ItemRepository;
-import org.escidoc.browser.ui.listeners.WindowResizeListener;
-import org.escidoc.browser.ui.listeners.WindowResizeObserver;
-import org.escidoc.browser.ui.listeners.WindowResizeObserverImpl;
 import org.escidoc.browser.ui.maincontent.SearchSimple;
 import org.escidoc.browser.ui.mainpage.Footer;
 import org.escidoc.browser.ui.mainpage.HeaderContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
@@ -25,7 +20,6 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.BaseTheme;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -46,10 +40,6 @@ public class MainSite extends VerticalLayout {
 
     private EscidocServiceLocation serviceLocation;
 
-    private WindowResizeListener windowResizeListener;
-
-    private WindowResizeObserver observer;
-
     private CurrentUser currentUser;
 
     /**
@@ -60,14 +50,12 @@ public class MainSite extends VerticalLayout {
      * @throws EscidocClientException
      */
     public MainSite(final Window mainWindow, final EscidocServiceLocation serviceLocation,
-        final WindowResizeObserver observer, final BrowserApplication app, final CurrentUser user)
-        throws EscidocClientException {
+        final BrowserApplication app, final CurrentUser user) throws EscidocClientException {
         this.serviceLocation = serviceLocation;
         // General Height for the application
         this.app = app;
         this.mainWindow = mainWindow;
         this.serviceLocation = serviceLocation;
-        this.observer = observer;
         this.setMargin(true);
         setSizeFull();
         this.setWidth("86%");
@@ -122,13 +110,13 @@ public class MainSite extends VerticalLayout {
         mainnav.setScrollable(true);
         mainnav.setStyleName("floatleft paddingtop20");
         LOG.debug("Window width is: " + app.getApplicationWidth());
-        mainnav.setWidth(app.getApplicationWidth() * 30 / 100 - 10 + "px");
-        mainnav.setHeight("86%");
+        mainnav.setWidth("30%");
+        mainnav.setHeight("85%");
 
-        final Button srchButton = new Button("Search", this, "onClickSrchButton");
-        srchButton.setStyleName(BaseTheme.BUTTON_LINK);
-        srchButton.setIcon(new ThemeResource("../myTheme/images/search.png"));
-        srchButton.setDescription("Search the Infrastructure");
+        // final Button srchButton = new Button("Search", this, "onClickSrchButton");
+        // srchButton.setStyleName(BaseTheme.BUTTON_LINK);
+        // srchButton.setIcon(new ThemeResource("../myTheme/images/search.png"));
+        // srchButton.setDescription("Search the Infrastructure");
 
         final ContainerRepository containerRepository = new ContainerRepository(serviceLocation);
         containerRepository.loginWith(((CurrentUser) app.getUser()).getToken());
@@ -143,7 +131,7 @@ public class MainSite extends VerticalLayout {
             new UiBuilder(serviceLocation, (CurrentUser) app.getUser()).buildNavigationTree(contextRepository,
                 containerRepository, itemRepository, this, mainWindow);
         mainnavtree = treemenu;
-        mainnav.addComponent(srchButton);
+
         mainnav.addComponent(mainnavtree);
 
         return mainnav;
@@ -183,19 +171,8 @@ public class MainSite extends VerticalLayout {
         openTab(smpSearch, "Search Results");
     }
 
-    private void addWindowDimensionDetection() {
-        observer = new WindowResizeObserverImpl();
-        windowResizeListener = new WindowResizeListener(observer);
-        mainWindow.addListener(windowResizeListener);
-    }
-
     public int getApplicationHeight() {
-        Preconditions.checkArgument(observer.getDimension().getHeight() > 0, "Can not get window size");
-        return Math.round(observer.getDimension().getHeight());
+        return this.app.getApplicationHeight();
     }
 
-    public int getApplicationWidth() {
-        Preconditions.checkArgument(observer.getDimension().getWidth() > 0, "Can not get window size");
-        return Math.round(observer.getDimension().getWidth());
-    }
 }

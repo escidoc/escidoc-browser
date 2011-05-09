@@ -108,7 +108,7 @@ public class BrowserApplication extends Application {
         final EscidocServiceLocation serviceLocation, final Window mainWindow, final WindowResizeObserver observer)
         throws EscidocClientException {
 
-        final MainSite mainSite = new MainSite(mainWindow, serviceLocation, observer, this, (CurrentUser) getUser());
+        final MainSite mainSite = new MainSite(mainWindow, serviceLocation, this, (CurrentUser) getUser());
         mainSite.setHeight("100%");
         mainSite.setWidth("100%");
         return mainSite;
