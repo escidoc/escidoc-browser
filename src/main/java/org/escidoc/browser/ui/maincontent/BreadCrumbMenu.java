@@ -50,7 +50,9 @@ public class BreadCrumbMenu {
             ArrayList<ResourceModel> hierarchy = rs.getHierarchy(resourceProxy.getId());
             Collections.reverse(hierarchy);
             for (ResourceModel resourceModel : hierarchy) {
-                bCstring += "<li><a href='#'>" + resourceModel.getName() + "</a></li>";
+                bCstring +=
+                    "<li><a href='/browser/mainWindow?tab=" + resourceModel.getId() + "&type="
+                        + resourceModel.getType() + "'>" + resourceModel.getName() + "</a></li>";
             }
         }
         catch (EscidocClientException e) {
@@ -71,7 +73,7 @@ public class BreadCrumbMenu {
      * @param escidocServiceLocation
      */
     public BreadCrumbMenu(CssLayout cssLayout, ItemProxyImpl resourceProxy, Window mainWindow) {
-        String bCstring = "<ul id='crumbs'><li><a href='#'>Home</a></li>";
+        String bCstring = "<ul id='crumbs'><li><a href='#'>Home Item</a></li>";
         ResourceHierarchy rs = new ResourceHierarchy();
 
         try {
@@ -80,12 +82,15 @@ public class BreadCrumbMenu {
             ArrayList<ResourceModel> hierarchy = rs.getHierarchy(parentId);
             Collections.reverse(hierarchy);
             for (ResourceModel resourceModel : hierarchy) {
-                bCstring += "<li><a href='#'>" + resourceModel.getName() + "</a></li>";
+                bCstring +=
+                    "<li><a href='/browser/mainWindow?tab=" + resourceModel.getId() + "&type="
+                        + resourceModel.getType() + "'>" + resourceModel.getName() + "</a></li>";
             }
         }
         catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            bCstring +=
+                "<li><a href='/browser/mainWindow?tab=" + resourceProxy.getContext().getObjid() + "&type=CONTEXT'>"
+                    + resourceProxy.getContext().getXLinkTitle() + "</a></li>";
         }
 
         cssLayout

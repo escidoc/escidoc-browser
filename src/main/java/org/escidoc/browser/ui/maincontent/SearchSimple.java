@@ -22,9 +22,9 @@ public class SearchSimple extends VerticalLayout {
 
     private final Button btnAdvanced;
 
-    private MainSite mainSite;
+    private final MainSite mainSite;
 
-    private int appHeight;
+    private final int appHeight;
 
     public SearchSimple(MainSite mainSite) {
         this.mainSite = mainSite;
@@ -64,7 +64,7 @@ public class SearchSimple extends VerticalLayout {
      * @param event
      */
     public void onClick(Button.ClickEvent event) {
-        SearchResults smpSearch = new SearchResults(mainSite, appHeight);
+        SearchResultsView smpSearch = new SearchResultsView(mainSite, appHeight, "null", null);
         this.mainSite.openTab(smpSearch, "Search Results");
 
     }

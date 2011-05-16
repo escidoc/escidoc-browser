@@ -7,6 +7,7 @@ import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.repository.ItemProxy;
 
 import de.escidoc.core.common.exceptions.remote.system.SystemException;
+import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.MetadataRecords;
 import de.escidoc.core.resources.common.Relation;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
@@ -33,7 +34,7 @@ public class ItemProxyImpl implements ItemProxy {
 
     @Override
     public ResourceType getType() {
-        return ResourceType.valueOf(itemFromCore.getResourceType().toString());
+        return ResourceType.valueOf(itemFromCore.getResourceType().toString().toUpperCase());
     }
 
     @Override
@@ -112,6 +113,11 @@ public class ItemProxyImpl implements ItemProxy {
     @Override
     public String getContentUrl() {
         return itemFromCore.getProperties().getXLinkHref();
+    }
+
+    @Override
+    public Resource getContext() {
+        return itemFromCore.getProperties().getContext();
     }
 
     @Override

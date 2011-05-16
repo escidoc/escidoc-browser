@@ -13,7 +13,7 @@ import com.vaadin.ui.VerticalLayout;
 
 public class SearchAdvanced extends VerticalLayout {
 
-    private MainSite mainSite;
+    private final MainSite mainSite;
 
     private final int appHeight;
 
@@ -137,7 +137,7 @@ public class SearchAdvanced extends VerticalLayout {
      * @param event
      */
     public void onClick(Button.ClickEvent event) {
-        SearchResults srchResults = new SearchResults(mainSite, appHeight);
+        SearchResultsView srchResults = new SearchResultsView(mainSite, appHeight, "null", null);
         this.mainSite.openTab(srchResults, "Search?");
 
     }

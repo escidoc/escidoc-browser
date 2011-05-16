@@ -38,9 +38,9 @@ public final class Util {
     public static boolean hasObjectType(Map<String, String[]> parameters) {
         Preconditions.checkNotNull(parameters, "parameters is null: %s", parameters);
         return parameters.containsKey(AppConstants.ARG_TYPE)
-            && (parameters.get(AppConstants.ARG_TYPE)[0].equals("Item")
-                || parameters.get(AppConstants.ARG_TYPE)[0].equals("Container") || parameters
-                .get(AppConstants.ARG_TYPE)[0].equals("Context"));
+            && (parameters.get(AppConstants.ARG_TYPE)[0].equals("ITEM")
+                || parameters.get(AppConstants.ARG_TYPE)[0].equals("CONTAINER") || parameters
+                .get(AppConstants.ARG_TYPE)[0].equals("CONTEXT"));
     }
 
     public final static boolean doesTokenExist(final Map<String, String[]> parameters) {

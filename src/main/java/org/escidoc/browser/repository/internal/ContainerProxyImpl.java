@@ -50,7 +50,7 @@ public class ContainerProxyImpl implements ContainerProxy {
      */
     @Override
     public ResourceType getType() {
-        return ResourceType.valueOf(containerFromCore.getResourceType().toString());
+        return ResourceType.valueOf(containerFromCore.getResourceType().toString().toUpperCase());
     }
 
     /*

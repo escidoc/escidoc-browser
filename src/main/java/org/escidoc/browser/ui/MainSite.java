@@ -116,7 +116,7 @@ public class MainSite extends VerticalLayout {
             itemRepository = new ItemRepository(serviceLocation);
 
             resourceFactory = new ResourceModelFactory(itemRepository, containerRepository, contextRepository);
-            if (parameters.get(AppConstants.ARG_TYPE)[0].equals("Context")) {
+            if (parameters.get(AppConstants.ARG_TYPE)[0].equals("CONTEXT")) {
                 try {
                     ContextProxyImpl context = (ContextProxyImpl) resourceFactory.find(escidocID, ResourceType.CONTEXT);
                     openTab(new ContextView(serviceLocation, this, context, mainWindow, currentUser), context.getName());
@@ -126,7 +126,7 @@ public class MainSite extends VerticalLayout {
                     e.printStackTrace();
                 }
             }
-            else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("Container")) {
+            else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("CONTAINER")) {
                 try {
                     ContainerProxy container = (ContainerProxy) resourceFactory.find(escidocID, ResourceType.CONTAINER);
                     openTab(new ContainerView(serviceLocation, this, container, mainWindow, currentUser),
@@ -137,7 +137,7 @@ public class MainSite extends VerticalLayout {
                     e.printStackTrace();
                 }
             }
-            else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("Item")) {
+            else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("ITEM")) {
                 try {
                     ItemProxy item = (ItemProxy) resourceFactory.find(escidocID, ResourceType.ITEM);
                     openTab(new ItemView(serviceLocation, this, item, mainWindow), item.getName());
@@ -210,6 +210,13 @@ public class MainSite extends VerticalLayout {
         return mainnav;
     }
 
+    /**
+     * This method handles the open of a new tab on the right section of the mainWindow This is the perfect place to
+     * inject Views that represent objects
+     * 
+     * @param cmp
+     * @param tabname
+     */
     public void openTab(final Component cmp, String tabname) {
         Tab tb = maincontenttab.addTab(cmp);
         final String tabnameshort = null;
@@ -244,6 +251,10 @@ public class MainSite extends VerticalLayout {
 
     public int getApplicationHeight() {
         return this.app.getApplicationHeight();
+    }
+
+    public CurrentUser getUser() {
+        return currentUser;
     }
 
 }

@@ -145,4 +145,8 @@ public class BrowserApplication extends Application {
     public Map<String, String[]> getParameters() {
         return this.parameters;
     }
+
+    public EscidocServiceLocation getServiceLocation() {
+        return serviceLocation;
+    }
 }
