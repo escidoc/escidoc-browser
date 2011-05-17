@@ -9,6 +9,8 @@ import org.escidoc.browser.ui.MainSite;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.helper.EscidocParameterHandler;
 import org.escidoc.browser.ui.helper.internal.EscidocParameterHandlerImpl;
+import org.escidoc.browser.ui.landingview.LandingViewImpl;
+import org.escidoc.browser.ui.listeners.StartButtonListener;
 import org.escidoc.browser.ui.listeners.WindowResizeListener;
 import org.escidoc.browser.ui.listeners.WindowResizeObserver;
 import org.escidoc.browser.ui.listeners.WindowResizeObserverImpl;
@@ -82,7 +84,7 @@ public class BrowserApplication extends Application {
             serviceLocation, this)));
     }
 
-    void buildMainWindow(final EscidocServiceLocation serviceLocation) {
+    public void buildMainWindow(final EscidocServiceLocation serviceLocation) {
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         mainWindow.setImmediate(true);
         mainWindow.setScrollable(true);

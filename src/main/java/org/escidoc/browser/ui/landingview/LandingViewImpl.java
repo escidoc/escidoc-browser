@@ -26,10 +26,11 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser;
+package org.escidoc.browser.ui.landingview;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.listeners.StartButtonListener;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Alignment;
@@ -109,7 +110,7 @@ public class LandingViewImpl extends CustomComponent implements LandingView {
             escidocServiceUrl.setInputPrompt(HTTP);
         }
         else {
-            escidocServiceUrl.setInputPrompt(serviceLocation.getEscidocUri());
+            escidocServiceUrl.setValue(serviceLocation.getEscidocUri());
         }
     }
 

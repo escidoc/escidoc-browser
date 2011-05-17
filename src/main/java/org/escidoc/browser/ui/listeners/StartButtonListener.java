@@ -26,7 +26,7 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser;
+package org.escidoc.browser.ui.listeners;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -36,8 +36,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 
+import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.ui.listeners.WindowResizeObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +84,7 @@ public final class StartButtonListener implements Button.ClickListener {
     @Override
     public void buttonClick(final ClickEvent event) {
         Preconditions.checkArgument(observer.getDimension().getHeight() > 0, "Can not get window size");
-        BrowserApplication.LOG.debug("Dimension is: " + observer.getDimension());
+        LOG.debug("Dimension is: " + observer.getDimension());
         if (validateUserInput()) {
             try {
                 serviceLocation.setEscidocUri(new URI((String) inputField.getValue()));
