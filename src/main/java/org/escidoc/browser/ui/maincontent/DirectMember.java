@@ -7,7 +7,7 @@ import org.escidoc.browser.repository.ContextRepository;
 import org.escidoc.browser.repository.ItemRepository;
 import org.escidoc.browser.ui.MainSite;
 import org.escidoc.browser.ui.NavigationTreeView;
-import org.escidoc.browser.ui.UiBuilder;
+import org.escidoc.browser.ui.NavigationTreeBuilder;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Window;
@@ -30,7 +30,7 @@ public class DirectMember {
 
     private ItemRepository itemRepository;
 
-    private final UiBuilder uiBuilder;
+    private final NavigationTreeBuilder navigationTreeBuilder;
 
     private final CurrentUser currentUser;
 
@@ -48,7 +48,7 @@ public class DirectMember {
         this.currentUser = currentUser;
 
         initRepositories(serviceLocation);
-        uiBuilder = new UiBuilder(serviceLocation, currentUser);
+        navigationTreeBuilder = new NavigationTreeBuilder(serviceLocation, currentUser);
     }
 
     private void initRepositories(final EscidocServiceLocation serviceLocation) {
@@ -86,7 +86,7 @@ public class DirectMember {
     private NavigationTreeView createContextDirectMembers(
         final ContextRepository contextRepository, final ContainerRepository containerRepository,
         final ItemRepository itemRepository) throws EscidocClientException {
-        return uiBuilder.buildContextDirectMemberTree(contextRepository, containerRepository, itemRepository, mainSite,
+        return navigationTreeBuilder.buildContextDirectMemberTree(contextRepository, containerRepository, itemRepository, mainSite,
             parentId, mainWindow);
     }
 
@@ -101,7 +101,7 @@ public class DirectMember {
         final ContextRepository contextRepository, final ContainerRepository containerRepository,
         final ItemRepository itemRepository) throws EscidocClientException {
 
-        return uiBuilder.buildContainerDirectMemberTree(contextRepository, containerRepository, itemRepository,
+        return navigationTreeBuilder.buildContainerDirectMemberTree(contextRepository, containerRepository, itemRepository,
             mainSite, parentId, mainWindow);
     }
 

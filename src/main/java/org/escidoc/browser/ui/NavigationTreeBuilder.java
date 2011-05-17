@@ -16,7 +16,7 @@ import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
-public class UiBuilder {
+public class NavigationTreeBuilder {
 
     private final EscidocServiceLocation serviceLocation;
 
@@ -24,7 +24,7 @@ public class UiBuilder {
 
     private TreeClickListener clickListener;
 
-    public UiBuilder(final EscidocServiceLocation serviceLocation, final CurrentUser currentUser) {
+    public NavigationTreeBuilder(final EscidocServiceLocation serviceLocation, final CurrentUser currentUser) {
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
         this.serviceLocation = serviceLocation;

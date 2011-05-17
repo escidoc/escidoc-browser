@@ -201,7 +201,7 @@ public class MainSite extends VerticalLayout {
         itemRepository.loginWith(((CurrentUser) app.getUser()).getToken());
 
         final NavigationTreeView treemenu =
-            new UiBuilder(serviceLocation, (CurrentUser) app.getUser()).buildNavigationTree(contextRepository,
+            new NavigationTreeBuilder(serviceLocation, (CurrentUser) app.getUser()).buildNavigationTree(contextRepository,
                 containerRepository, itemRepository, this, mainWindow);
         mainnavtree = treemenu;
 

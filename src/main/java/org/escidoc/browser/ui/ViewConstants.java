@@ -30,4 +30,10 @@ public class ViewConstants {
     public static final String HTTP = "http://";
 
     public static final String ESCIDOC_URI_CAN_NOT_BE_EMPTY = "eSciDoc URI can not be empty.";
+
+    public static final String SEARCH = "Search";
+
+    public static final String GUEST = "Guest";
+
+    public static final String CURRENT_USER = "User: ";
 }

@@ -10,8 +10,6 @@ import org.escidoc.browser.ui.MainSite;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.LogoutListener;
 import org.escidoc.browser.ui.maincontent.SearchResultsView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.Application;
@@ -22,6 +20,7 @@ import com.vaadin.terminal.UserError;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Form;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
@@ -35,10 +34,10 @@ import com.vaadin.ui.themes.BaseTheme;
 @SuppressWarnings("serial")
 public class HeaderContainer extends VerticalLayout implements UserChangeListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
-
     // The HTML file can be found at myTheme/layouts/header.html
     private final CustomLayout custom = new CustomLayout(ViewConstants.HEADER);
+
+    private final TextField searchField = new TextField(ViewConstants.SEARCH);
 
     private Button login;
 
@@ -53,8 +52,6 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
     private final MainSite mainSite;
 
     private final int appHeight;
-
-    TextField srchField = new TextField("Search");
 
     public HeaderContainer(final MainSite mainSite, final int appHeight, final BrowserApplication app,
         final EscidocServiceLocation serviceLocation, final CurrentUser user) {
@@ -83,6 +80,9 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
     }
 
     public void setUser(final CurrentUser user) {
+        custom.addComponent(new Label("<b>" + ViewConstants.CURRENT_USER + user.getLoginName() + "</b>",
+            Label.CONTENT_XHTML), "login-name");
+
         if (user.isGuest()) {
             custom.removeComponent(logout);
             custom.addComponent(login, "login");
@@ -114,14 +114,12 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
     }
 
     private void createSearchForm() {
-
-        Form form = new Form();
-        // form.setWidth("200px");
-        srchField.setImmediate(true);
-        form.getLayout().addComponent(srchField);
+        final Form form = new Form();
+        searchField.setImmediate(true);
+        form.getLayout().addComponent(searchField);
         custom.addComponent(form, "form");
 
-        Button btnSearch = new Button("Go", this, "onClickSearch");
+        final Button btnSearch = new Button("Go", this, "onClickSearch");
         btnSearch.removeStyleName("v-button");
         custom.addComponent(btnSearch, "btnSearch");
     }
@@ -134,19 +132,17 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
      */
     public void onClick(final Button.ClickEvent event) {
         redirectToLoginView();
-        // login.setCaption(ViewConstant.LOGOUT);
     }
 
     public void onClickSearch(final Button.ClickEvent event) {
-        String searchString = (String) srchField.getValue();
+        final String searchString = (String) searchField.getValue();
         if (validate(searchString)) {
-            SearchResultsView srchRes = new SearchResultsView(mainSite, appHeight, searchString, serviceLocation);
-            mainSite.openTab(srchRes, "Search results for: " + (String) srchField.getValue());
+            final SearchResultsView srchRes = new SearchResultsView(mainSite, appHeight, searchString, serviceLocation);
+            mainSite.openTab(srchRes, "Search results for: " + (String) searchField.getValue());
         }
         else {
-            srchField.setComponentError(new UserError("Must be letters and numbers"));
+            searchField.setComponentError(new UserError("Must be letters and numbers"));
         }
-        // login.setCaption(ViewConstant.LOGOUT);
     }
 
     /**
@@ -155,12 +151,10 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
      * @param searchString
      * @return boolean
      */
-    private boolean validate(String searchString) {
-        Pattern p = Pattern.compile("[A-Za-z0-9_.\\s]{3,}");
-        Matcher m = p.matcher(searchString);
-        if (m.matches())
-            return true;
-        return false;
+    private boolean validate(final String searchString) {
+        final Pattern p = Pattern.compile("[A-Za-z0-9_.\\s]{3,}");
+        final Matcher m = p.matcher(searchString);
+        return m.matches();
     }
 
     private void redirectToLoginView() {
@@ -169,19 +163,18 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
 
     @Override
     public void applicationUserChanged(final UserChangeEvent event) {
-        final Object newUser = event.getNewUser();
-        if (!(newUser instanceof CurrentUser)) {
+        final Object object = event.getNewUser();
+        if (!(object instanceof CurrentUser)) {
             return;
         }
-
-        if (((CurrentUser) newUser).isGuest()) {
-            custom.removeAllComponents();
+        custom.removeAllComponents();
+        custom.addComponent(new Label("<b>" + ViewConstants.CURRENT_USER + user.getLoginName() + "</b>",
+            Label.CONTENT_XHTML), "login-name");
+        if (((CurrentUser) object).isGuest()) {
             custom.addComponent(login, "login");
         }
         else {
-            custom.removeAllComponents();
             custom.addComponent(logout, "logout");
         }
-
     }
 }

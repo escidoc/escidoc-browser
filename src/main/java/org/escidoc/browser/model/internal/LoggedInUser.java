@@ -84,4 +84,9 @@ public class LoggedInUser implements CurrentUser {
         return true;
     }
 
+    @Override
+    public String getLoginName() {
+        return currentUser.getProperties().getLoginName();
+    }
+
 }
