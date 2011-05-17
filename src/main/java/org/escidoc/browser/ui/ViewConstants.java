@@ -26,4 +26,8 @@ public class ViewConstants {
     public static final String OK_LABEL = "Ok";
 
     public static final String ESCIDOC_URI_TEXTFIELD = "eSciDoc URI";
+
+    public static final String HTTP = "http://";
+
+    public static final String ESCIDOC_URI_CAN_NOT_BE_EMPTY = "eSciDoc URI can not be empty.";
 }

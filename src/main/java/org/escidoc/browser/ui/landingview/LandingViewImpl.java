@@ -45,10 +45,6 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 public class LandingViewImpl extends CustomComponent implements LandingView {
 
-    private static final String HTTP = "http://";
-
-    private static final String ESCIDOC_URI_CAN_NOT_BE_EMPTY = "eSciDoc URI can not be empty.";
-
     private final VerticalLayout viewLayout = new VerticalLayout();
 
     private final Panel panel = new Panel();
@@ -100,18 +96,22 @@ public class LandingViewImpl extends CustomComponent implements LandingView {
         escidocServiceUrl.setImmediate(true);
         escidocServiceUrl.focus();
         escidocServiceUrl.setRequired(true);
-        escidocServiceUrl.setRequiredError(ESCIDOC_URI_CAN_NOT_BE_EMPTY);
+        escidocServiceUrl.setRequiredError(ViewConstants.ESCIDOC_URI_CAN_NOT_BE_EMPTY);
         setInputPrompt();
         formLayout.addComponent(escidocServiceUrl);
     }
 
     private void setInputPrompt() {
-        if (serviceLocation.getEscidocUri() == null) {
-            escidocServiceUrl.setInputPrompt(HTTP);
+        if (escidocUriNotSet()) {
+            escidocServiceUrl.setInputPrompt(ViewConstants.HTTP);
         }
         else {
             escidocServiceUrl.setValue(serviceLocation.getEscidocUri());
         }
+    }
+
+    private boolean escidocUriNotSet() {
+        return serviceLocation.getEscidocUri() == null;
     }
 
     private void addFooters() {
