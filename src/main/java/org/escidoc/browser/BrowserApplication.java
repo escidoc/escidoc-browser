@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.Application;
-import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
@@ -106,13 +105,13 @@ public class BrowserApplication extends Application {
         throws EscidocClientException {
 
         final MainSite mainSite = new MainSite(mainWindow, serviceLocation, this, (CurrentUser) getUser());
-        mainSite.setHeight("100%");
+        mainSite.setHeight(getApplicationHeight() + "px");
         mainSite.setWidth("100%");
         return mainSite;
     }
 
     private void setMainWindowHeight() {
-        mainWindow.getContent().setHeight(100, Sizeable.UNITS_PERCENTAGE);
+        mainWindow.getContent().setHeight(getApplicationHeight() + "px");
     }
 
     public int getApplicationHeight() {

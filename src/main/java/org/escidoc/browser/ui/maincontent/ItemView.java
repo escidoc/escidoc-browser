@@ -76,7 +76,7 @@ public class ItemView extends VerticalLayout {
         bindProperties();
 
         // Direct Members
-        final ItemContent itCnt = new ItemContent(accordionHeight - 30, resourceProxy, serviceLocation, mainWindow);
+        final ItemContent itCnt = new ItemContent(accordionHeight - 40, resourceProxy, serviceLocation, mainWindow);
         buildLeftCell(itCnt);
 
         // right most panelY
@@ -118,7 +118,7 @@ public class ItemView extends VerticalLayout {
         leftpnl.setStyleName("floatleft paddingtop10");
         leftpnl.setScrollable(false);
         leftpnl.setWidth("30%");
-        leftpnl.setHeight("86%");
+        leftpnl.setHeight("84%");
         leftpnl.addComponent(itCnt);
         absL.addComponent(horizontal, "left: 0px; top: 280px;");
         cssLayout.addComponent(leftpnl);
