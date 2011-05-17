@@ -9,7 +9,7 @@ import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.MainSite;
-import org.escidoc.browser.ui.ViewConstant;
+import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.ContainerView;
 import org.escidoc.browser.ui.maincontent.ContextView;
 import org.escidoc.browser.ui.maincontent.ItemView;
@@ -118,7 +118,7 @@ public class TreeClickListener implements ItemClickListener {
 
     private void showErrorMessageToUser(final ResourceModel hasChildrenResource, final EscidocClientException e) {
         LOG.error("Can not find member of: " + hasChildrenResource.getId(), e);
-        mainWindow.showNotification(new Window.Notification(ViewConstant.ERROR, e.getMessage(),
+        mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
             Notification.TYPE_ERROR_MESSAGE));
     }
 }

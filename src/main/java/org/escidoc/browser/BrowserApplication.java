@@ -6,7 +6,7 @@ import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.internal.EscidocServiceLocationImpl;
 import org.escidoc.browser.ui.MainSite;
-import org.escidoc.browser.ui.ViewConstant;
+import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.helper.EscidocParameterHandler;
 import org.escidoc.browser.ui.helper.internal.EscidocParameterHandlerImpl;
 import org.escidoc.browser.ui.listeners.WindowResizeListener;
@@ -18,8 +18,6 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Preconditions;
 import com.vaadin.Application;
 import com.vaadin.terminal.Sizeable;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
@@ -28,9 +26,9 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 @SuppressWarnings("serial")
 public class BrowserApplication extends Application {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
+    static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
 
-    private final Window mainWindow = new Window(ViewConstant.MAIN_WINDOW_TITLE);
+    final Window mainWindow = new Window(ViewConstants.MAIN_WINDOW_TITLE);
 
     private EscidocServiceLocation serviceLocation = new EscidocServiceLocationImpl();
 
@@ -38,7 +36,7 @@ public class BrowserApplication extends Application {
 
     private WindowResizeListener windowResizeListener;
 
-    private WindowResizeObserver observer;
+    WindowResizeObserver observer;
 
     private Map<String, String[]> parameters;
 
@@ -51,7 +49,7 @@ public class BrowserApplication extends Application {
     }
 
     private void setApplicationTheme() {
-        setTheme(ViewConstant.THEME_NAME);
+        setTheme(ViewConstants.THEME_NAME);
     }
 
     private void setMainWindow() {
@@ -70,27 +68,22 @@ public class BrowserApplication extends Application {
     }
 
     public void buildMainView() {
-        if (observer.getDimension().getHeight() > 0) {
-            LOG.debug("Dimension is: " + observer.getDimension());
-            buildMainWindow(serviceLocation);
-        }
-        else {
-            final Button button = new Button(ViewConstant.START_LABEL);
-            mainWindow.addComponent(button);
-            button.addListener(new Button.ClickListener() {
-
-                @Override
-                public void buttonClick(final ClickEvent event) {
-                    Preconditions.checkArgument(observer.getDimension().getHeight() > 0, "Can not get window size");
-                    LOG.debug("Dimension is: " + observer.getDimension());
-                    mainWindow.removeComponent(button);
-                    buildMainWindow(serviceLocation);
-                }
-            });
-        }
+        // if (observer.getDimension().getHeight() > 0) {
+        // LOG.debug("Dimension is: " + observer.getDimension());
+        // buildMainWindow(serviceLocation);
+        // }
+        // else {
+        showLandingView();
+        // }
     }
 
-    private void buildMainWindow(final EscidocServiceLocation serviceLocation) {
+    private void showLandingView() {
+        mainWindow.removeAllComponents();
+        mainWindow.addComponent(new LandingViewImpl(serviceLocation, new StartButtonListener(observer, mainWindow,
+            serviceLocation, this)));
+    }
+
+    void buildMainWindow(final EscidocServiceLocation serviceLocation) {
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         mainWindow.setImmediate(true);
         mainWindow.setScrollable(true);
@@ -103,7 +96,7 @@ public class BrowserApplication extends Application {
             mainWindow.setContent(createMainSite(serviceLocation, mainWindow, observer));
         }
         catch (final EscidocClientException e) {
-            mainWindow.showNotification(new Window.Notification(ViewConstant.ERROR, e.getMessage(),
+            mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
                 Notification.TYPE_ERROR_MESSAGE));
         }
     }
@@ -137,13 +130,12 @@ public class BrowserApplication extends Application {
         this.serviceLocation = serviceLocation;
     }
 
-    public void setParameters(Map<String, String[]> parameters) {
+    public void setParameters(final Map<String, String[]> parameters) {
         this.parameters = parameters;
-
     }
 
     public Map<String, String[]> getParameters() {
-        return this.parameters;
+        return parameters;
     }
 
     public EscidocServiceLocation getServiceLocation() {

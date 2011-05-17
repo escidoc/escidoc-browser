@@ -7,7 +7,7 @@ import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.ui.MainSite;
-import org.escidoc.browser.ui.ViewConstant;
+import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.LogoutListener;
 import org.escidoc.browser.ui.maincontent.SearchResultsView;
 import org.slf4j.Logger;
@@ -38,7 +38,7 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
     private static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
 
     // The HTML file can be found at myTheme/layouts/header.html
-    private final CustomLayout custom = new CustomLayout(ViewConstant.HEADER);
+    private final CustomLayout custom = new CustomLayout(ViewConstants.HEADER);
 
     private Button login;
 
@@ -97,7 +97,7 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
     }
 
     private void createLoginComponent() {
-        login = new Button(ViewConstant.LOGIN, this, "onClick");
+        login = new Button(ViewConstants.LOGIN, this, "onClick");
         configureButton(login);
     }
 
@@ -109,7 +109,7 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
     }
 
     private void createLogoutComponent() {
-        logout = new Button(ViewConstant.LOGOUT, new LogoutListener(app));
+        logout = new Button(ViewConstants.LOGOUT, new LogoutListener(app));
         configureButton(logout);
     }
 
