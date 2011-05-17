@@ -32,8 +32,8 @@ public class ItemContent extends CustomLayout {
 
     private final Window mainWindow;
 
-    public ItemContent(final int accordionHeight, final ItemProxyImpl resourceProxy,
-        EscidocServiceLocation serviceLocation, final Window mainWindow) {
+    public ItemContent(final ItemProxyImpl resourceProxy, EscidocServiceLocation serviceLocation,
+        final Window mainWindow) {
 
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null.");
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null.");
@@ -76,14 +76,7 @@ public class ItemContent extends CustomLayout {
         final String mimeType = itemProperties.getProperties().getMimeType();
         final String[] last = mimeType.split("/");
         final String lastOne = last[last.length - 1];
-        try {
-            System.out
-                .println(getMimeType(serviceLocation.getEscidocUri() + itemProperties.getContent().getXLinkHref()));
-        }
-        catch (IOException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
+
         final Embedded e = new Embedded("", new ThemeResource("images/filetypes/" + lastOne + ".png"));
         addComponent(e, "thumbnail");
 

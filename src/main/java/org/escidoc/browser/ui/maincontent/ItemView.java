@@ -1,9 +1,12 @@
 package org.escidoc.browser.ui.maincontent;
 
+import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.escidoc.browser.ui.MainSite;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.Application;
@@ -53,6 +56,8 @@ public class ItemView extends VerticalLayout {
 
     private final EscidocServiceLocation serviceLocation;
 
+    private static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
+
     public ItemView(final EscidocServiceLocation serviceLocation, final MainSite mainSite,
         final ResourceProxy resourceProxy, final Window mainWindow) {
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null.");
@@ -64,6 +69,7 @@ public class ItemView extends VerticalLayout {
         this.mainWindow = mainWindow;
         this.serviceLocation = serviceLocation;
         appHeight = mainSite.getApplicationHeight();
+
         init();
     }
 
@@ -76,7 +82,7 @@ public class ItemView extends VerticalLayout {
         bindProperties();
 
         // Direct Members
-        final ItemContent itCnt = new ItemContent(accordionHeight - 40, resourceProxy, serviceLocation, mainWindow);
+        final ItemContent itCnt = new ItemContent(resourceProxy, serviceLocation, mainWindow);
         buildLeftCell(itCnt);
 
         // right most panelY
@@ -95,7 +101,7 @@ public class ItemView extends VerticalLayout {
         final Panel rightpnl = new Panel();
         rightpnl.setStyleName("floatright");
         rightpnl.setWidth("70%");
-        rightpnl.setHeight("86%");
+        rightpnl.setHeight("82%");
         rightpnl.addComponent(metadataRecs);
         cssLayout.addComponent(rightpnl);
     }
@@ -108,6 +114,7 @@ public class ItemView extends VerticalLayout {
         // Adding some buttons
         final AbsoluteLayout absL = new AbsoluteLayout();
         absL.setWidth("100%");
+        LOG.debug("Inner ElementHeight " + innerelementsHeight);
         absL.setHeight(innerelementsHeight + "px");
         final HorizontalLayout horizontal = new HorizontalLayout();
         horizontal.addComponent(new Button("Add"));
@@ -118,7 +125,7 @@ public class ItemView extends VerticalLayout {
         leftpnl.setStyleName("floatleft paddingtop10");
         leftpnl.setScrollable(false);
         leftpnl.setWidth("30%");
-        leftpnl.setHeight("84%");
+        leftpnl.setHeight("82%");
         leftpnl.addComponent(itCnt);
         absL.addComponent(horizontal, "left: 0px; top: 280px;");
         cssLayout.addComponent(leftpnl);
@@ -177,9 +184,8 @@ public class ItemView extends VerticalLayout {
         this.setHeight("100%");
         cssLayout.setWidth("100%");
         cssLayout.setHeight("100%");
-        final int innerelementsHeight = appHeight - 420;
+        innerelementsHeight = appHeight - 420;
         accordionHeight = innerelementsHeight - 20;
-        System.out.println("accordionHeight" + appHeight + " " + innerelementsHeight + accordionHeight);
     }
 
     @Override

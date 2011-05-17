@@ -102,12 +102,12 @@ public class ContextView extends VerticalLayout {
      * @param comptoBind
      */
     private void rightCell(final Component comptoBind) {
-        final Panel leftpnl = new Panel();
-        leftpnl.setStyleName("floatright");
-        leftpnl.setWidth("70%");
-        leftpnl.setHeight("86%");
-        leftpnl.addComponent(comptoBind);
-        cssLayout.addComponent(leftpnl);
+        final Panel rightCell = new Panel();
+        rightCell.setStyleName("floatright");
+        rightCell.setWidth("70%");
+        rightCell.setHeight("82%");
+        rightCell.addComponent(comptoBind);
+        cssLayout.addComponent(rightCell);
     }
 
     /**
@@ -123,7 +123,7 @@ public class ContextView extends VerticalLayout {
         leftpnl.setStyleName("directmembers floatleft paddingtop10");
         leftpnl.setScrollable(false);
         leftpnl.setWidth("30%");
-        leftpnl.setHeight("86%");
+        leftpnl.setHeight("82%");
 
         final Label nameofPanel = new Label("<strong>" + DIRECT_MEMBERS + "</string>", Label.CONTENT_RAW);
         leftpnl.addComponent(nameofPanel);

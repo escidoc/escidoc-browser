@@ -112,7 +112,7 @@ public class ContainerView extends VerticalLayout {
         final Panel rightpnl = new Panel();
         rightpnl.setStyleName("floatright");
         rightpnl.setWidth("70%");
-        rightpnl.setHeight("100%");
+        rightpnl.setHeight("82%");
         rightpnl.addComponent(comptoBind);
         cssLayout.addComponent(rightpnl);
     }
@@ -124,7 +124,7 @@ public class ContainerView extends VerticalLayout {
         leftpnl.setScrollable(false);
 
         leftpnl.setWidth("30%");
-        leftpnl.setHeight("85%");
+        leftpnl.setHeight("82%");
 
         final Label nameofPanel = new Label("<strong>" + DIRECT_MEMBERS + "</string>", Label.CONTENT_RAW);
         leftpnl.addComponent(nameofPanel);
