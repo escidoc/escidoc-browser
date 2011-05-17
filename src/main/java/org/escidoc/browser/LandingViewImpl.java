@@ -34,7 +34,6 @@ import org.escidoc.browser.ui.ViewConstants;
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -61,15 +60,17 @@ public class LandingViewImpl extends CustomComponent implements LandingView {
 
     private final Button startButton = new Button(ViewConstants.OK_LABEL);
 
-    private final ClickListener startButtonListener;
+    private final StartButtonListener startButtonListener;
 
     private final EscidocServiceLocation serviceLocation;
 
-    public LandingViewImpl(final EscidocServiceLocation serviceLocation, final ClickListener startButtonListener) {
+    public LandingViewImpl(final EscidocServiceLocation serviceLocation, final StartButtonListener startButtonListener) {
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(startButtonListener, "startButtonListener is null: %s", startButtonListener);
+
         this.serviceLocation = serviceLocation;
         this.startButtonListener = startButtonListener;
+
         setCompositionRoot(viewLayout);
 
         setSizeFull();
@@ -99,14 +100,17 @@ public class LandingViewImpl extends CustomComponent implements LandingView {
         escidocServiceUrl.focus();
         escidocServiceUrl.setRequired(true);
         escidocServiceUrl.setRequiredError(ESCIDOC_URI_CAN_NOT_BE_EMPTY);
+        setInputPrompt();
+        formLayout.addComponent(escidocServiceUrl);
+    }
 
+    private void setInputPrompt() {
         if (serviceLocation.getEscidocUri() == null) {
             escidocServiceUrl.setInputPrompt(HTTP);
         }
         else {
             escidocServiceUrl.setInputPrompt(serviceLocation.getEscidocUri());
         }
-        formLayout.addComponent(escidocServiceUrl);
     }
 
     private void addFooters() {
@@ -117,6 +121,7 @@ public class LandingViewImpl extends CustomComponent implements LandingView {
     }
 
     private void addStartButton() {
+        startButtonListener.setInputField(escidocServiceUrl);
         startButton.addListener(startButtonListener);
         horizontalLayout.addComponent(startButton);
         horizontalLayout.setComponentAlignment(startButton, Alignment.MIDDLE_RIGHT);

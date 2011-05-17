@@ -28,16 +28,34 @@
  */
 package org.escidoc.browser;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
+
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.ui.listeners.WindowResizeObserver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
+import com.vaadin.data.Validator.EmptyValueException;
+import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 @SuppressWarnings("serial")
 public final class StartButtonListener implements Button.ClickListener {
+
+    private static final Logger LOG = LoggerFactory.getLogger(StartButtonListener.class);
+
+    private static final int FIVE_SECONDS = 5000;
 
     private final WindowResizeObserver observer;
 
@@ -46,6 +64,10 @@ public final class StartButtonListener implements Button.ClickListener {
     private final Window mainWindow;
 
     private final BrowserApplication app;
+
+    private TextField inputField;
+
+    private String responseMessage;
 
     public StartButtonListener(final WindowResizeObserver observer, final Window mainWindow,
         final EscidocServiceLocation serviceLocation, final BrowserApplication app) {
@@ -63,7 +85,84 @@ public final class StartButtonListener implements Button.ClickListener {
     public void buttonClick(final ClickEvent event) {
         Preconditions.checkArgument(observer.getDimension().getHeight() > 0, "Can not get window size");
         BrowserApplication.LOG.debug("Dimension is: " + observer.getDimension());
+        if (validateUserInput()) {
+            try {
+                serviceLocation.setEscidocUri(new URI((String) inputField.getValue()));
+                showMainView();
+
+            }
+            catch (final URISyntaxException e) {
+                mainWindow.showNotification(new Notification(e.getMessage(), Notification.TYPE_ERROR_MESSAGE));
+            }
+        }
+    }
+
+    private boolean validateUserInput() {
+        Preconditions.checkNotNull(inputField, "escidocServiceUrl is null: %s", inputField);
+        return validate();
+    }
+
+    private boolean validate() {
+        try {
+            validateInputField(inputField);
+            return testConnection(inputField);
+        }
+        catch (final EmptyValueException e) {
+            mainWindow.showNotification(new Notification(e.getMessage(), Notification.TYPE_ERROR_MESSAGE));
+        }
+        return false;
+    }
+
+    private boolean testConnection(final AbstractField escidocUriField) {
+        if (validateConnection(escidocUriField)) {
+            return true;
+        }
+        else {
+            mainWindow.showNotification(new Window.Notification("Can not connect to: " + escidocUriField.getValue()
+                + ", cause: " + responseMessage, Notification.TYPE_ERROR_MESSAGE));
+            return false;
+        }
+    }
+
+    private boolean validateConnection(final AbstractField escidocUriField) {
+        final String strUrl = (String) escidocUriField.getValue();
+        URLConnection connection;
+        try {
+            connection = new URL(strUrl).openConnection();
+            connection.setConnectTimeout(FIVE_SECONDS);
+            connection.connect();
+            final int responseCode = ((HttpURLConnection) connection).getResponseCode();
+            responseMessage = ((HttpURLConnection) connection).getResponseMessage();
+            return responseCode == 200;
+        }
+        catch (final IllegalArgumentException e) {
+            LOG.warn("Malformed URL: " + e);
+            mainWindow.showNotification(new Notification(e.getMessage(), Notification.TYPE_ERROR_MESSAGE));
+            return false;
+        }
+        catch (final MalformedURLException e) {
+            LOG.warn("Malformed URL: " + e);
+            mainWindow.showNotification(new Notification(e.getMessage(), Notification.TYPE_ERROR_MESSAGE));
+            return false;
+        }
+        catch (final IOException e) {
+            LOG.warn("IOException: " + e);
+            mainWindow.showNotification(new Notification(e.getMessage(), Notification.TYPE_ERROR_MESSAGE));
+            return false;
+        }
+    }
+
+    private void validateInputField(final AbstractField escidocUriField) {
+        escidocUriField.validate();
+    }
+
+    private void showMainView() {
         mainWindow.removeAllComponents();
         app.buildMainWindow(serviceLocation);
     }
+
+    public void setInputField(final TextField inputField) {
+        this.inputField = inputField;
+    }
+
 }
