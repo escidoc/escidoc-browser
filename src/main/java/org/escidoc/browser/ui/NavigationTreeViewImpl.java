@@ -15,7 +15,7 @@ public class NavigationTreeViewImpl extends CustomComponent implements Navigatio
 
     private final Tree tree = new Tree();
 
-    public NavigationTreeViewImpl(MainSite mainSite) {
+    public NavigationTreeViewImpl(final MainSite mainSite) {
         setCompositionRoot(tree);
     }
 
@@ -35,9 +35,12 @@ public class NavigationTreeViewImpl extends CustomComponent implements Navigatio
     }
 
     @Override
-    public void setDataSource(final ResourceContainer container, MainSite mainSite) {
+    public void setDataSource(final ResourceContainer container, final MainSite mainSite) {
         tree.setContainerDataSource(container.getContainer());
         tree.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
         tree.setItemCaptionPropertyId(PropertyId.NAME);
+
+        tree.setItemIconPropertyId(PropertyId.ICON);
+        tree.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
     }
 }

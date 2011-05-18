@@ -13,6 +13,8 @@ import com.google.common.base.Preconditions;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
+import com.vaadin.terminal.Resource;
+import com.vaadin.terminal.ThemeResource;
 
 public class ResourceContainerImpl implements ResourceContainer {
 
@@ -34,6 +36,7 @@ public class ResourceContainerImpl implements ResourceContainer {
     private void addProperties() {
         container.addContainerProperty(PropertyId.OBJECT_ID, String.class, "NO ID");
         container.addContainerProperty(PropertyId.NAME, String.class, "NO NAME");
+        container.addContainerProperty(PropertyId.ICON, Resource.class, null);
     }
 
     private void sortByNameAscending() {
@@ -62,8 +65,12 @@ public class ResourceContainerImpl implements ResourceContainer {
     private void bind(final Item item, final ResourceModel resource) {
         Preconditions.checkNotNull(item, "item is null: %s", item);
         Preconditions.checkNotNull(resource, "resource is null: %s", resource);
+
         item.getItemProperty(PropertyId.OBJECT_ID).setValue(resource.getId());
         item.getItemProperty(PropertyId.NAME).setValue(resource.getName());
+        item.getItemProperty(PropertyId.ICON).setValue(
+            new ThemeResource("images/resources/" + resource.getType().toString().toLowerCase() + ".png"));
+
     }
 
     @Override

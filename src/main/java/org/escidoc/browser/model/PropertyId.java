@@ -10,4 +10,6 @@ public class PropertyId {
 
     public static final String NAME = "name";
 
+    public static final Object ICON = "icon";
+
 }
