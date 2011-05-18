@@ -123,20 +123,15 @@ public class SearchResultsView extends VerticalLayout {
             SearchResultRecord s = ((SearchResultRecordRecord) record).getRecordData();
             if (s.getContent().getResourceType().toString().equals("Container")) {
                 resourceProxy = (ContainerProxyImpl) rmf.find(s.getContent().getObjid(), ResourceType.CONTAINER);
-                cmp =
-                    new ContainerView(serviceLocation, mainSite, resourceProxy, mainSite.getWindow(),
-                        mainSite.getUser());
             }
             else if (s.getContent().getResourceType().toString().equals("Item")) {
                 resourceProxy = (ItemProxyImpl) rmf.find(s.getContent().getObjid(), ResourceType.ITEM);
-                cmp = new ItemView(serviceLocation, mainSite, resourceProxy, mainSite.getWindow());
             }
             else if (s.getContent().getResourceType().toString().equals("Context")) {
                 resourceProxy = (ContextProxyImpl) rmf.find(s.getContent().getObjid(), ResourceType.CONTEXT);
-                cmp =
-                    new ContextView(serviceLocation, mainSite, resourceProxy, mainSite.getWindow(), mainSite.getUser());
             }
-            Object[] variablesForTheTab = { cmp, resourceProxy.getName() };
+            Object[] variablesForTheTab =
+                { s.getContent().getResourceType().toString(), resourceProxy.getId(), resourceProxy.getName() };
             tbl.addItem(
                 new Object[] {
                     new Label("<img src= \"/browser/VAADIN/themes/myTheme/images/resources/"
@@ -178,8 +173,50 @@ public class SearchResultsView extends VerticalLayout {
         tblResults.addListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(ValueChangeEvent event) {
+                ResourceModelFactory rmf =
+                    new ResourceModelFactory(new ItemRepository(serviceLocation), new ContainerRepository(
+                        serviceLocation), new ContextRepository(serviceLocation));
+                ResourceProxy resourceProxy = null;
                 Object[] variablesForTheTab = (Object[]) tblResults.getValue();
-                mainSite.openTab((Component) variablesForTheTab[0], (String) variablesForTheTab[1]);
+
+                if (variablesForTheTab[0].equals("Container")) {
+                    try {
+                        resourceProxy =
+                            (ContainerProxyImpl) rmf.find((String) variablesForTheTab[1], ResourceType.CONTAINER);
+                        cmp =
+                            new ContainerView(serviceLocation, mainSite, resourceProxy, mainSite.getWindow(), mainSite
+                                .getUser());
+                    }
+                    catch (EscidocClientException e) {
+                        showerror();
+                        // e.printStackTrace();
+                    }
+                }
+                else if (variablesForTheTab[0].equals("Item")) {
+                    try {
+                        resourceProxy = (ItemProxyImpl) rmf.find((String) variablesForTheTab[1], ResourceType.ITEM);
+                        cmp = new ItemView(serviceLocation, mainSite, resourceProxy, mainSite.getWindow());
+                    }
+                    catch (EscidocClientException e) {
+                        showerror();
+                        // e.printStackTrace();
+                    }
+
+                }
+                else if (variablesForTheTab[0].equals("Context")) {
+                    try {
+                        resourceProxy =
+                            (ContextProxyImpl) rmf.find((String) variablesForTheTab[1], ResourceType.CONTEXT);
+                        cmp =
+                            new ContextView(serviceLocation, mainSite, resourceProxy, mainSite.getWindow(), mainSite
+                                .getUser());
+                    }
+                    catch (EscidocClientException e) {
+                        showerror();
+                        // e.printStackTrace();
+                    }
+                }
+                mainSite.openTab(cmp, (String) variablesForTheTab[2]);
             }
         });
         return tblResults;
@@ -205,5 +242,9 @@ public class SearchResultsView extends VerticalLayout {
     public void onClick(Button.ClickEvent event) {
         SearchAdvanced srch = new SearchAdvanced(mainSite, appHeight);
         this.mainSite.openTab(srch, "Advanced Search");
+    }
+
+    public void showerror() {
+        getWindow().showNotification("There was an error rendering the form");
     }
 }
