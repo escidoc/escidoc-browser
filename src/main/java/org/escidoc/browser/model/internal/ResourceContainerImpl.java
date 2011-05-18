@@ -27,8 +27,8 @@ public class ResourceContainerImpl implements ResourceContainer {
 
     public void init() {
         addProperties();
-        sortByNameAscending();
         addTopLevel();
+        sortByNameAscending();
     }
 
     private void addProperties() {
@@ -36,23 +36,22 @@ public class ResourceContainerImpl implements ResourceContainer {
         container.addContainerProperty(PropertyId.NAME, String.class, "NO NAME");
     }
 
-    // FIXME: does not work as expected.
     private void sortByNameAscending() {
-        container.sort(new Object[] { PropertyId.OBJECT_ID, PropertyId.NAME }, new boolean[] { true, false });
+        container.sort(new Object[] { PropertyId.NAME }, new boolean[] { true });
     }
 
     private void addTopLevel() {
         for (final ResourceModel topLevel : topLevelResources) {
             bind(add(topLevel), topLevel);
 
-            if (topLevel.getType() == ResourceType.CONTEXT && isChildless(topLevel)) {
+            if (topLevel.getType() == ResourceType.CONTEXT && isChildless((ContextModel) topLevel)) {
                 container.setChildrenAllowed(topLevel, false);
             }
         }
     }
 
-    private boolean isChildless(final ResourceModel topLevel) {
-        return !((ContextModel) topLevel).hasChildren();
+    private boolean isChildless(final ContextModel topLevel) {
+        return !topLevel.hasChildren();
     }
 
     private Item add(final ResourceModel resource) {
@@ -65,21 +64,24 @@ public class ResourceContainerImpl implements ResourceContainer {
         Preconditions.checkNotNull(resource, "resource is null: %s", resource);
         item.getItemProperty(PropertyId.OBJECT_ID).setValue(resource.getId());
         item.getItemProperty(PropertyId.NAME).setValue(resource.getName());
-
     }
 
     @Override
     public int size() {
+        Preconditions.checkNotNull(container, "container is null: %s", container);
         return container.size();
     }
 
     @Override
     public Container getContainer() {
+        Preconditions.checkNotNull(container, "container is null: %s", container);
         return container;
     }
 
     @Override
     public void addChildren(final ResourceModel parent, final List<ResourceModel> children) {
+        Preconditions.checkNotNull(parent, "parent is null: %s", parent);
+        Preconditions.checkNotNull(children, "children is null: %s", children);
 
         for (final ResourceModel child : children) {
             bind(add(child), child);

@@ -9,10 +9,14 @@ import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.ui.helper.Util;
 
+import com.google.common.base.Preconditions;
+
 import de.escidoc.core.client.ContextHandlerClient;
 import de.escidoc.core.client.TransportProtocol;
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.client.exceptions.EscidocException;
 import de.escidoc.core.client.exceptions.InternalClientException;
+import de.escidoc.core.client.exceptions.TransportException;
 import de.escidoc.core.client.interfaces.ContextHandlerClientInterface;
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.Relations;
@@ -45,18 +49,23 @@ public class ContextRepository implements Repository {
     // members.
     @Override
     public List<ResourceModel> findTopLevelMembersById(final String id) throws EscidocClientException {
-
-        final List<ResourceModel> topLevelContainers =
-            ModelConverter.genericResourcetoModel(client.retrieveMembersAsList(id,
-                Util.createQueryForTopLevelContainers(id)));
-
-        final List<ResourceModel> topLevelItems =
-            ModelConverter
-                .genericResourcetoModel(client.retrieveMembersAsList(id, Util.createQueryForTopLevelItems(id)));
-
-        topLevelContainers.addAll(topLevelItems);
+        Preconditions.checkNotNull(id, "id is null: %s", id);
+        final List<ResourceModel> topLevelContainers = findTopLevelContainerList(id);
+        topLevelContainers.addAll(findTopLevelItemList(id));
 
         return topLevelContainers;
+    }
+
+    private List<ResourceModel> findTopLevelContainerList(final String id) throws EscidocException,
+        InternalClientException, TransportException {
+        return ModelConverter.genericResourcetoModel(client.retrieveMembersAsList(id,
+            Util.createQueryForTopLevelContainers(id)));
+    }
+
+    private List<ResourceModel> findTopLevelItemList(final String id) throws EscidocException, InternalClientException,
+        TransportException {
+        return ModelConverter.genericResourcetoModel(client.retrieveMembersAsList(id,
+            Util.createQueryForTopLevelItems(id)));
     }
 
     @Override

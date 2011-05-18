@@ -39,10 +39,8 @@ public class NavigationTreeBuilder {
 
         final NavigationTreeView navigationTreeView = new NavigationTreeViewImpl(mainSite);
 
-        // final List<ResourceModel> contexts = contextRepository.findAll();
-        final List<ResourceModel> contexts = ((ContextRepository) contextRepository).findAllWithChildrenInfo();
-
-        final ResourceContainer resourceContainer = new ResourceContainerImpl(contexts);
+        final ResourceContainer resourceContainer =
+            new ResourceContainerImpl(((ContextRepository) contextRepository).findAllWithChildrenInfo());
         resourceContainer.init();
 
         clickListener =
