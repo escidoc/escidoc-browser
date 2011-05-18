@@ -95,8 +95,5 @@ ul.horizontal_list li{
   	margin-right: auto;
   	width:500px;
 }
-.directmembers .v-tree-node {
-	background: transparent url(/browser/VAADIN/themes/myTheme/images/document.png) no-repeat 3px;
-}
 
 

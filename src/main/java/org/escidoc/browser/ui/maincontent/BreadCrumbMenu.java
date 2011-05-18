@@ -52,12 +52,15 @@ public class BreadCrumbMenu {
             for (ResourceModel resourceModel : hierarchy) {
                 bCstring +=
                     "<li><a href='/browser/mainWindow?tab=" + resourceModel.getId() + "&type="
-                        + resourceModel.getType() + "'>" + resourceModel.getName() + "</a></li>";
+                        + resourceModel.getType() + "&escidocurl=" + escidocServiceLocation.getEscidocUri()
+                        + "' target='_blank'>" + resourceModel.getName() + "</a></li>";
             }
         }
         catch (EscidocClientException e) {
-            // TODO Auto-generated catch block
-            LOG.debug("I ended up in an error");
+            bCstring +=
+                "<li><a href='/browser/mainWindow?tab=" + resourceProxy.getContext().getObjid()
+                    + "&type=CONTEXT&escidocurl=" + escidocServiceLocation + "' target='_blank'>"
+                    + resourceProxy.getContext().getXLinkTitle() + "</a></li>";
         }
         cssLayout
             .addComponent(new Label(bCstring + "<li>" + resourceProxy.getName() + "</li></ul>", Label.CONTENT_RAW));
@@ -72,7 +75,8 @@ public class BreadCrumbMenu {
      * @param mainWindow
      * @param escidocServiceLocation
      */
-    public BreadCrumbMenu(CssLayout cssLayout, ItemProxyImpl resourceProxy, Window mainWindow) {
+    public BreadCrumbMenu(CssLayout cssLayout, ItemProxyImpl resourceProxy, Window mainWindow,
+        EscidocServiceLocation escidocServiceLocation) {
         String bCstring = "<ul id='crumbs'><li><a href='#'>Home Item</a></li>";
         ResourceHierarchy rs = new ResourceHierarchy();
 
@@ -84,12 +88,14 @@ public class BreadCrumbMenu {
             for (ResourceModel resourceModel : hierarchy) {
                 bCstring +=
                     "<li><a href='/browser/mainWindow?tab=" + resourceModel.getId() + "&type="
-                        + resourceModel.getType() + "'>" + resourceModel.getName() + "</a></li>";
+                        + resourceModel.getType() + "&escidocurl=" + escidocServiceLocation.getEscidocUri()
+                        + "' target='_blank'>" + resourceModel.getName() + "</a></li>";
             }
         }
         catch (Exception e) {
             bCstring +=
-                "<li><a href='/browser/mainWindow?tab=" + resourceProxy.getContext().getObjid() + "&type=CONTEXT'>"
+                "<li><a href='/browser/mainWindow?tab=" + resourceProxy.getContext().getObjid()
+                    + "&type=CONTEXT&escidocurl=" + escidocServiceLocation.getEscidocUri() + "' target='_blank'>"
                     + resourceProxy.getContext().getXLinkTitle() + "</a></li>";
         }
 
