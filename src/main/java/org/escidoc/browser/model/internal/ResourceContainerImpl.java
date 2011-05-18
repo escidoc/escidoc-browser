@@ -3,6 +3,7 @@ package org.escidoc.browser.model.internal;
 import java.util.Collection;
 import java.util.List;
 
+import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.PropertyId;
 import org.escidoc.browser.model.ResourceContainer;
 import org.escidoc.browser.model.ResourceModel;
@@ -42,25 +43,21 @@ public class ResourceContainerImpl implements ResourceContainer {
 
     private void addTopLevel() {
         for (final ResourceModel topLevel : topLevelResources) {
-            addAndBind(topLevel);
+            bind(add(topLevel), topLevel);
+
+            if (topLevel.getType() == ResourceType.CONTEXT && isChildless(topLevel)) {
+                container.setChildrenAllowed(topLevel, false);
+            }
         }
     }
 
-    /**
-     * Adding a resource within a resource Passing as a parameter another resource
-     * 
-     * @param resource
-     */
-    private void addAndBind(final ResourceModel resource) {
-        final Item item = add(resource);
-        Preconditions.checkNotNull(item, "item is null: %s", item);
-        bind(item, resource);
+    private boolean isChildless(final ResourceModel topLevel) {
+        return !((ContextModel) topLevel).hasChildren();
     }
 
     private Item add(final ResourceModel resource) {
         Preconditions.checkNotNull(resource, "resource is null: %s", resource);
-        final Item item = container.addItem(resource);
-        return item;
+        return container.addItem(resource);
     }
 
     private void bind(final Item item, final ResourceModel resource) {
@@ -68,6 +65,7 @@ public class ResourceContainerImpl implements ResourceContainer {
         Preconditions.checkNotNull(resource, "resource is null: %s", resource);
         item.getItemProperty(PropertyId.OBJECT_ID).setValue(resource.getId());
         item.getItemProperty(PropertyId.NAME).setValue(resource.getName());
+
     }
 
     @Override
@@ -84,7 +82,7 @@ public class ResourceContainerImpl implements ResourceContainer {
     public void addChildren(final ResourceModel parent, final List<ResourceModel> children) {
 
         for (final ResourceModel child : children) {
-            addAndBind(child);
+            bind(add(child), child);
             assignParent(parent, child);
             container.setChildrenAllowed(child, isNotItem(child));
         }

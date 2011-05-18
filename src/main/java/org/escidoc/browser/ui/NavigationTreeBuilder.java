@@ -7,6 +7,7 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceContainer;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.internal.ResourceContainerImpl;
+import org.escidoc.browser.repository.ContextRepository;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.listeners.TreeClickListener;
 import org.escidoc.browser.ui.listeners.TreeExpandListener;
@@ -38,7 +39,8 @@ public class NavigationTreeBuilder {
 
         final NavigationTreeView navigationTreeView = new NavigationTreeViewImpl(mainSite);
 
-        final List<ResourceModel> contexts = contextRepository.findAll();
+        // final List<ResourceModel> contexts = contextRepository.findAll();
+        final List<ResourceModel> contexts = ((ContextRepository) contextRepository).findAllWithChildrenInfo();
 
         final ResourceContainer resourceContainer = new ResourceContainerImpl(contexts);
         resourceContainer.init();

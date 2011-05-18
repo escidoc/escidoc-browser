@@ -4,6 +4,8 @@ import de.escidoc.core.resources.Resource;
 
 public class ContextModel extends AbstractResourceModel {
 
+    private boolean hasChildren;
+
     public ContextModel(final Resource resource) {
         super(resource);
     }
@@ -32,5 +34,13 @@ public class ContextModel extends AbstractResourceModel {
 
     public static boolean isContext(final ResourceModel resource) {
         return resource.getType().equals(ResourceType.CONTEXT);
+    }
+
+    public void hasChildren(final boolean hasChildren) {
+        this.hasChildren = hasChildren;
+    }
+
+    public boolean hasChildren() {
+        return hasChildren;
     }
 }

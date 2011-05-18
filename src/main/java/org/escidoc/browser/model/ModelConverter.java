@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.escidoc.browser.repository.ContextRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.ResourceType;
 import de.escidoc.core.resources.om.GenericVersionableResource;
@@ -27,6 +29,18 @@ public final class ModelConverter {
             models.add(new ContextModel(context));
         }
         return models;
+    }
+
+    public final static List<ResourceModel> contextListToModelWithChildInfo(
+        final Collection<Context> contextList, final ContextRepository repo) throws EscidocClientException {
+        final List<ResourceModel> modelList = new ArrayList<ResourceModel>(contextList.size());
+        for (final Resource context : contextList) {
+            final ContextModel contextModel = new ContextModel(context);
+            final boolean hasChildren = repo.hasChildren(context);
+            contextModel.hasChildren(hasChildren);
+            modelList.add(contextModel);
+        }
+        return modelList;
     }
 
     public final static List<ResourceModel> containerListToModel(final Collection<Container> containerList) {

@@ -14,6 +14,7 @@ import de.escidoc.core.client.TransportProtocol;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.client.interfaces.ContextHandlerClientInterface;
+import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.Relations;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 
@@ -29,6 +30,15 @@ public class ContextRepository implements Repository {
     @Override
     public List<ResourceModel> findAll() throws EscidocClientException {
         return ModelConverter.contextListToModel(client.retrieveContextsAsList(Util.createEmptyFilter()));
+    }
+
+    public List<ResourceModel> findAllWithChildrenInfo() throws EscidocClientException {
+        return ModelConverter.contextListToModelWithChildInfo(client.retrieveContextsAsList(Util.createEmptyFilter()),
+            this);
+    }
+
+    public boolean hasChildren(final Resource context) throws EscidocClientException {
+        return !findTopLevelMembersById(context.getObjid()).isEmpty();
     }
 
     // FIXME: this is a hack, it sends two requests to find context's direct
