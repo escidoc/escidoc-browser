@@ -152,7 +152,7 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
      * @return boolean
      */
     private boolean validate(final String searchString) {
-        final Pattern p = Pattern.compile("[A-Za-z0-9_.\\s]{3,}");
+        final Pattern p = Pattern.compile("[A-Za-z0-9_.\\s\"]{3,}");
         final Matcher m = p.matcher(searchString);
         return m.matches();
     }

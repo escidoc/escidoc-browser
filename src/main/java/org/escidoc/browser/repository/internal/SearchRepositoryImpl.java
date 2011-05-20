@@ -34,18 +34,18 @@ public class SearchRepositoryImpl {
     }
 
     public SearchRetrieveResponse search(String query) {
+    	/*
+    	 * 1. Split phrases in " "
+    	 * 2. Split words by space if they are not in " "
+    	 * 3. Provide support for the operators +,-
+    	 */
+    	if (query.matches("#^\"(.*)\"$#"))
+    		LOG.debug("Matched");
+    	
         try {
             // "escidoc.any-title"=b*
             return client.search("\"escidoc.any-title\"=" + query + " or \"escidoc.context.name\"=" + query + "",
                 ESCIDOCALL);
-        }
-        catch (InternalClientException e) {
-            LOG.debug("Internal Client Exeption");
-            e.printStackTrace();
-        }
-        catch (TransportException e) {
-            LOG.debug("Transport Exception ");
-            e.printStackTrace();
         }
         catch (EscidocClientException e) {
             LOG.debug("EscidocClientException");
