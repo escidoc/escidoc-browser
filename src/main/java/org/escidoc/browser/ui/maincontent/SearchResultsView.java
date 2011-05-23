@@ -115,7 +115,7 @@ public class SearchResultsView extends VerticalLayout {
         Table tbl = createTable(cssLayout);
 
         SearchRepositoryImpl srRep = new SearchRepositoryImpl(serviceLocation);
-        SearchRetrieveResponse results = srRep.search("\"escidoc.any-title\"=" + searchString + "");
+        SearchRetrieveResponse results = srRep.search(searchString);
         Collection<Record<?>> records = results.getRecords();
 
         int i = 1;
@@ -136,8 +136,8 @@ public class SearchResultsView extends VerticalLayout {
                 new Object[] {
                     new Label("<img src= \"/browser/VAADIN/themes/myTheme/images/resources/"
                         + s.getContent().getResourceType().toString() + ".png\" />", Label.CONTENT_RAW),
-                    resourceProxy.getName(), resourceProxy.getDescription(), resourceProxy.getCreatedOn() },
-                variablesForTheTab);
+                    resourceProxy.getName(), resourceProxy.getContext().getXLinkTitle(),
+                    resourceProxy.getDescription(), resourceProxy.getCreatedOn() }, variablesForTheTab);
         }
 
         cssLayout.addComponent(lblResults);
@@ -161,9 +161,11 @@ public class SearchResultsView extends VerticalLayout {
 
         tblResults.addContainerProperty("Type", Label.class, null);
         tblResults.addContainerProperty("Name", String.class, null);
+        tblResults.addContainerProperty("Belongs to Context", String.class, null);
         tblResults.addContainerProperty("Description", String.class, null);
         tblResults.addContainerProperty("Date Created", String.class, null);
         tblResults.setColumnWidth("Type", 30);
+        tblResults.setColumnWidth("Belongs to Context", 130);
         tblResults.setColumnWidth("Date Created", 90);
 
         /**
@@ -240,7 +242,7 @@ public class SearchResultsView extends VerticalLayout {
      * @param event
      */
     public void onClick(Button.ClickEvent event) {
-        SearchAdvanced srch = new SearchAdvanced(mainSite, appHeight);
+        SearchAdvancedView srch = new SearchAdvancedView(mainSite, appHeight);
         this.mainSite.openTab(srch, "Advanced Search");
     }
 

@@ -5,6 +5,7 @@ import java.util.List;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
 
+import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.om.context.AdminDescriptors;
 import de.escidoc.core.resources.om.context.Context;
 import de.escidoc.core.resources.om.context.OrganizationalUnitRefs;
@@ -73,6 +74,11 @@ public class ContextProxyImpl implements ResourceProxy {
 
     public OrganizationalUnitRefs getOrganizationalUnit() {
         return contextFromCore.getProperties().getOrganizationalUnitRefs();
+    }
+
+    @Override
+    public Resource getContext() {
+        return contextFromCore;
     }
 
     @Override

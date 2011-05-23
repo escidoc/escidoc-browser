@@ -76,7 +76,7 @@ public class SearchSimple extends VerticalLayout {
      * @param event
      */
     public void onClickAdvSearch(Button.ClickEvent event) {
-        SearchAdvanced advSearch = new SearchAdvanced(mainSite, appHeight);
+        SearchAdvancedView advSearch = new SearchAdvancedView(mainSite, appHeight);
         this.mainSite.openTab(advSearch, "Search Results");
 
     }

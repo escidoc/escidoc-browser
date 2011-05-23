@@ -11,13 +11,13 @@ import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
-public class SearchAdvanced extends VerticalLayout {
+public class SearchAdvancedView extends VerticalLayout {
 
     private final MainSite mainSite;
 
     private final int appHeight;
 
-    public SearchAdvanced(MainSite mainSite, final int appHeight) {
+    public SearchAdvancedView(MainSite mainSite, final int appHeight) {
         this.mainSite = mainSite;
         this.appHeight = appHeight;
         setWidth("100.0%");

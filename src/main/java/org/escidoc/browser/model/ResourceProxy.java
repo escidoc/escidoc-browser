@@ -2,6 +2,8 @@ package org.escidoc.browser.model;
 
 import java.util.List;
 
+import de.escidoc.core.resources.Resource;
+
 public interface ResourceProxy extends ResourceModel {
 
     String getDescription();
@@ -19,5 +21,7 @@ public interface ResourceProxy extends ResourceModel {
     String getModifiedOn();
 
     List<String> getRelations();
+
+    Resource getContext();
 
 }
