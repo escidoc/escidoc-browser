@@ -21,6 +21,9 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.PopupView;
+import com.vaadin.ui.PopupView.PopupVisibilityEvent;
+import com.vaadin.ui.PopupView.PopupVisibilityListener;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
@@ -32,7 +35,7 @@ import com.vaadin.ui.themes.BaseTheme;
  * 
  */
 @SuppressWarnings("serial")
-public class HeaderContainer extends VerticalLayout implements UserChangeListener {
+public class HeaderContainer extends VerticalLayout implements UserChangeListener, PopupVisibilityListener {
 
     // The HTML file can be found at myTheme/layouts/header.html
     private final CustomLayout custom = new CustomLayout(ViewConstants.HEADER);
@@ -122,6 +125,22 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
         final Button btnSearch = new Button("Go", this, "onClickSearch");
         btnSearch.removeStyleName("v-button");
         custom.addComponent(btnSearch, "btnSearch");
+
+        // Create the content for the popup
+        Label content =
+            new Label(
+                "<ul><li>&raquo; The default search operator is OR</li><li>&raquo; To search for a phrase place the text in double quotes</li></ul>",
+                Label.CONTENT_RAW);
+        // The PopupView popup will be as large as needed by the content
+        content.setWidth("300px");
+
+        // Construct the PopupView with simple HTML text representing the
+        // minimized view
+        PopupView popup = new PopupView("?", content);
+        popup.setHideOnMouseOut(true);
+        popup.addListener(this);
+        custom.addComponent(popup, "searchTip");
+
     }
 
     /**
@@ -177,4 +196,12 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
             custom.addComponent(logout, "logout");
         }
     }
+
+    @Override
+    public void popupVisibilityChange(PopupVisibilityEvent event) {
+        // if (!event.isPopupVisible()) {
+        // getWindow().showNotification("Popup closed");
+        // }
+    }
+
 }
