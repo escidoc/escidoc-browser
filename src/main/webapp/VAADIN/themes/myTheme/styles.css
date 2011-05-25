@@ -90,10 +90,12 @@ ul.horizontal_list li{
 	text-decoration:none;
 	}	
 .aligncenter{
-	text-align: center;
-	margin-left: auto;
-  	margin-right: auto;
-  	width:500px;
+	width:500px;
+	margin:0px auto;
+	text-align:left;
+	padding:15px;
+	border:1px dashed #333;
+	
 }
 
 

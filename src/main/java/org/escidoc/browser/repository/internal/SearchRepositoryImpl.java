@@ -1,6 +1,5 @@
 package org.escidoc.browser.repository.internal;
 
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -43,7 +42,7 @@ public class SearchRepositoryImpl {
          * +,-
          */
         final String REGEXSPLITQUOTES = "\"(.*)\"";
-        URLEncoder.encode(query);
+
         Pattern p = Pattern.compile(REGEXSPLITQUOTES, Pattern.DOTALL);
 
         Matcher matcher = p.matcher(query);
@@ -73,6 +72,7 @@ public class SearchRepositoryImpl {
                     + "\" or escidoc.creator.name=\"" + string + "\"";
         }
         System.out.println(queryString);
+        // queryString += queryString + "&maximumRecords=100";
         try {
             // "escidoc.any-title"=b*
             return client.search(queryString, ESCIDOCALL);

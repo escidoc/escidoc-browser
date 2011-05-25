@@ -21,21 +21,14 @@ public class SearchAdvancedView extends VerticalLayout {
         this.mainSite = mainSite;
         this.appHeight = appHeight;
         setWidth("100.0%");
-        setHeight(appHeight + "px");
+        setHeight("85%");
         setMargin(true);
 
         // CssLayout to hold the BreadCrumb
         final CssLayout cssLayout = new CssLayout();
-        cssLayout.setWidth("100%");
-        cssLayout.setHeight("100%");
-
-        // Here comes the breadcrumb menu
-        final BreadCrumbMenu bm = new BreadCrumbMenu(cssLayout, "search");
-
-        // CssLayout to hold search elements
-        CssLayout srchContainer = new CssLayout();
-        srchContainer.setWidth("60%");
-        srchContainer.setStyleName("paddingtop20 aligncenter");
+        cssLayout.setWidth("60%");
+        // cssLayout.setHeight("100%");
+        cssLayout.setStyleName("aligncenter");
 
         // Css Hack * Clear Div
         Label lblClear = new Label();
@@ -44,18 +37,15 @@ public class SearchAdvancedView extends VerticalLayout {
         TextField txtTitle = new TextField();
         txtTitle.setInputPrompt("Title");
         txtTitle.setImmediate(false);
-
         TextField txtDescription = new TextField();
         txtDescription.setInputPrompt("Description");
         txtDescription.setImmediate(false);
-
         // Clean Divs
         cssLayout.addComponent(lblClear);
 
         TextField txtCreator = new TextField();
         txtCreator.setInputPrompt("Creator");
         txtCreator.setImmediate(false);
-
         // DatePicker for CreationDate
         PopupDateField creationDate = new PopupDateField();
         creationDate.setInputPrompt("Start date");
@@ -64,18 +54,20 @@ public class SearchAdvancedView extends VerticalLayout {
 
         // Dropdown for MimeType
         final String[] mimetypes =
-            new String[] { "Berlin", "Brussels", "Helsinki", "Madrid", "Oslo", "Paris", "Stockholm" };
+            new String[] { "application/octet-stream", "text/html", "audio/aiff", "video/avi", "image/bmp",
+                "application/book", "text/plain", "image/gif", "image/jpeg", "audio/midi", "video/quicktime",
+                "audio/mpeg", "application/xml", "text/xml" };
         ComboBox mimes = new ComboBox();
+
         for (int i = 0; i < mimetypes.length; i++) {
             mimes.addItem(mimetypes[i]);
         }
         mimes.setInputPrompt("Mime Types");
-        mimes.setFilteringMode(Filtering.FILTERINGMODE_OFF);
+        mimes.setFilteringMode(Filtering.FILTERINGMODE_STARTSWITH);
         mimes.setImmediate(true);
 
         // Dropdown for Resource Type
-        final String[] resourcearr =
-            new String[] { "Berlin", "Brussels", "Helsinki", "Madrid", "Oslo", "Paris", "Stockholm" };
+        final String[] resourcearr = new String[] { "Context", "Container", "Item" };
         ComboBox resource = new ComboBox();
         for (int i = 0; i < resourcearr.length; i++) {
             resource.addItem(resourcearr[i]);
@@ -93,41 +85,40 @@ public class SearchAdvancedView extends VerticalLayout {
 
         // Placing the elements in the design:
         txtTitle.setWidth("50%");
-        txtTitle.setStyleName("floatleft paddingtop20 aligncenter");
-        srchContainer.addComponent(txtTitle);
+        txtTitle.setStyleName("floatleft paddingtop20 ");
+        cssLayout.addComponent(txtTitle);
 
         txtDescription.setWidth("50%");
-        txtDescription.setStyleName("floatright paddingtop20 aligncenter");
-        srchContainer.addComponent(txtDescription);
+        txtDescription.setStyleName("floatright paddingtop20 ");
+        cssLayout.addComponent(txtDescription);
 
         txtCreator.setWidth("50%");
         txtCreator.setStyleName("floatleft paddingtop20");
-        srchContainer.addComponent(txtCreator);
+        cssLayout.addComponent(txtCreator);
 
         creationDate.setWidth("50%");
         creationDate.setStyleName("floatright");
-        srchContainer.addComponent(creationDate);
+        cssLayout.addComponent(creationDate);
 
         // Clean Divs
-        srchContainer.addComponent(lblClear);
+        cssLayout.addComponent(lblClear);
 
         mimes.setWidth("45%");
         mimes.setStyleName("floatleft");
-        srchContainer.addComponent(mimes);
+        cssLayout.addComponent(mimes);
 
         resource.setWidth("45%");
         resource.setStyleName("floatright");
-        srchContainer.addComponent(resource);
+        cssLayout.addComponent(resource);
 
         txtFullText.setWidth("70%");
         txtFullText.setStyleName("floatleft");
-        srchContainer.addComponent(txtFullText);
+        cssLayout.addComponent(txtFullText);
 
         bSearch.setStyleName("floatright");
-        srchContainer.addComponent(bSearch);
+        cssLayout.addComponent(bSearch);
 
         addComponent(cssLayout);
-        addComponent(srchContainer);
     }
 
     /**

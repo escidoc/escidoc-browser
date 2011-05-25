@@ -115,7 +115,7 @@ public class SearchResultsView extends VerticalLayout {
         Table tbl = createTable(cssLayout);
 
         SearchRepositoryImpl srRep = new SearchRepositoryImpl(serviceLocation);
-        SearchRetrieveResponse results = srRep.search(searchString);
+        SearchRetrieveResponse results = srRep.search(searchString.trim());
         Collection<Record<?>> records = results.getRecords();
 
         int i = 1;
