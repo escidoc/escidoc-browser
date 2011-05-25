@@ -36,7 +36,8 @@ public final class ModelConverter {
         final List<ResourceModel> modelList = new ArrayList<ResourceModel>(contextList.size());
         for (final Resource context : contextList) {
             final ContextModel contextModel = new ContextModel(context);
-            final boolean hasChildren = repo.hasChildren(context);
+            // final boolean hasChildren = repo.hasChildren(context);
+            final boolean hasChildren = true;
             contextModel.hasChildren(hasChildren);
             modelList.add(contextModel);
         }

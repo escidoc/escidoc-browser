@@ -75,7 +75,7 @@ public class SearchRepositoryImpl {
         // queryString += queryString + "&maximumRecords=100";
         try {
             // "escidoc.any-title"=b*
-            return client.search(queryString, ESCIDOCALL);
+            return client.search(queryString, 0, 1000, "sort.escidoc.pid", ESCIDOCALL);
         }
         catch (EscidocClientException e) {
             LOG.debug("EscidocClientException");
