@@ -39,8 +39,9 @@ public final class Util {
         Preconditions.checkNotNull(parameters, "parameters is null: %s", parameters);
         return parameters.containsKey(AppConstants.ARG_TYPE)
             && (parameters.get(AppConstants.ARG_TYPE)[0].equals("ITEM")
-                || parameters.get(AppConstants.ARG_TYPE)[0].equals("CONTAINER") || parameters
-                .get(AppConstants.ARG_TYPE)[0].equals("CONTEXT"));
+                || parameters.get(AppConstants.ARG_TYPE)[0].equals("CONTAINER")
+                || parameters.get(AppConstants.ARG_TYPE)[0].equals("CONTEXT") || parameters.get(AppConstants.ARG_TYPE)[0]
+                .equals("sa"));
     }
 
     public final static boolean doesTokenExist(final Map<String, String[]> parameters) {

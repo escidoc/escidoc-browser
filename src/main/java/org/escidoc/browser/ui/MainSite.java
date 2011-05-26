@@ -19,6 +19,7 @@ import org.escidoc.browser.ui.helper.Util;
 import org.escidoc.browser.ui.maincontent.ContainerView;
 import org.escidoc.browser.ui.maincontent.ContextView;
 import org.escidoc.browser.ui.maincontent.ItemView;
+import org.escidoc.browser.ui.maincontent.SearchAdvancedView;
 import org.escidoc.browser.ui.maincontent.SearchSimple;
 import org.escidoc.browser.ui.mainpage.Footer;
 import org.escidoc.browser.ui.mainpage.HeaderContainer;
@@ -82,7 +83,7 @@ public class MainSite extends VerticalLayout {
 
         final HeaderContainer header = new HeaderContainer(this, getApplicationHeight(), app, serviceLocation, user);
         header.init();
-        final Footer futer = new Footer();
+        final Footer footer = new Footer();
 
         mainLayout.addComponent(header);
         // Creating the mainNav Panel
@@ -90,7 +91,7 @@ public class MainSite extends VerticalLayout {
         // Go Main Tab Content
         mainLayout.addComponent(buildTabContainer());
         permanentURLelement();
-        mainLayout.addComponent(futer);
+        mainLayout.addComponent(footer);
         addComponent(mainLayout);
     }
 
@@ -147,6 +148,10 @@ public class MainSite extends VerticalLayout {
                     e.printStackTrace();
                 }
             }
+            else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("sa")) {
+                SearchAdvancedView srch = new SearchAdvancedView(this, serviceLocation);
+                openTab(srch, "Advanced Search");
+            }
             else {
                 throw new UnsupportedOperationException("Not yet implemented");
             }
@@ -201,8 +206,8 @@ public class MainSite extends VerticalLayout {
         itemRepository.loginWith(((CurrentUser) app.getUser()).getToken());
 
         final NavigationTreeView treemenu =
-            new NavigationTreeBuilder(serviceLocation, (CurrentUser) app.getUser()).buildNavigationTree(contextRepository,
-                containerRepository, itemRepository, this, mainWindow);
+            new NavigationTreeBuilder(serviceLocation, (CurrentUser) app.getUser()).buildNavigationTree(
+                contextRepository, containerRepository, itemRepository, this, mainWindow);
         mainnavtree = treemenu;
 
         mainnav.addComponent(mainnavtree);
@@ -245,7 +250,7 @@ public class MainSite extends VerticalLayout {
      * @param event
      */
     public void onClickSrchButton(final Button.ClickEvent event) {
-        final SearchSimple smpSearch = new SearchSimple(this);
+        final SearchSimple smpSearch = new SearchSimple(this, serviceLocation);
         openTab(smpSearch, "Search Results");
     }
 

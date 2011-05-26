@@ -1,5 +1,6 @@
 package org.escidoc.browser.ui.maincontent;
 
+import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.ui.MainSite;
 
 import com.vaadin.ui.Button;
@@ -26,9 +27,12 @@ public class SearchSimple extends VerticalLayout {
 
     private final int appHeight;
 
-    public SearchSimple(MainSite mainSite) {
+    private final EscidocServiceLocation serviceLocation;
+
+    public SearchSimple(MainSite mainSite, EscidocServiceLocation serviceLocation) {
         this.mainSite = mainSite;
         this.appHeight = mainSite.getApplicationHeight();
+        this.serviceLocation = serviceLocation;
 
         final CustomLayout custom = new CustomLayout("simplesearch");
         addComponent(custom);
@@ -64,7 +68,7 @@ public class SearchSimple extends VerticalLayout {
      * @param event
      */
     public void onClick(Button.ClickEvent event) {
-        SearchResultsView smpSearch = new SearchResultsView(mainSite, appHeight, "null", null);
+        SearchResultsView smpSearch = new SearchResultsView(mainSite, "null", null);
         this.mainSite.openTab(smpSearch, "Search Results");
 
     }
@@ -76,7 +80,7 @@ public class SearchSimple extends VerticalLayout {
      * @param event
      */
     public void onClickAdvSearch(Button.ClickEvent event) {
-        SearchAdvancedView advSearch = new SearchAdvancedView(mainSite, appHeight);
+        SearchAdvancedView advSearch = new SearchAdvancedView(mainSite, serviceLocation);
         this.mainSite.openTab(advSearch, "Search Results");
 
     }

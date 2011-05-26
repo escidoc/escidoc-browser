@@ -156,7 +156,7 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
     public void onClickSearch(final Button.ClickEvent event) {
         final String searchString = (String) searchField.getValue();
         if (validate(searchString)) {
-            final SearchResultsView srchRes = new SearchResultsView(mainSite, appHeight, searchString, serviceLocation);
+            final SearchResultsView srchRes = new SearchResultsView(mainSite, searchString, serviceLocation);
             mainSite.openTab(srchRes, "Search results for: " + (String) searchField.getValue());
         }
         else {

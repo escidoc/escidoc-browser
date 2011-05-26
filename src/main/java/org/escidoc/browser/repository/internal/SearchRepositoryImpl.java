@@ -36,7 +36,11 @@ public class SearchRepositoryImpl {
         client.setHandle(handle);
     }
 
-    public SearchRetrieveResponse search(String query) {
+    public SearchRetrieveResponse advancedSearch(String query) {
+        return null;
+    }
+
+    public SearchRetrieveResponse simpleSearch(String query) {
         /*
          * 1. Split phrases in " " 2. Split words by space if they are not in " " 3. Provide support for the operators
          * +,-
@@ -82,5 +86,58 @@ public class SearchRepositoryImpl {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public SearchRetrieveResponse advancedSearch(
+        String titleTxt, String creatorTxt, String descriptionTxt, String creationDateTxt, String mimesTxt,
+        String resourceTxt, String fulltxtTxt) {
+        String query = "1=1 ";
+
+        /*
+         * Do I have a resource defined? If I have a resource defined, then I need to search in the correct context.name
+         * or any-title index depending on the resource
+         */
+        if (resourceTxt != null) {
+            if (resourceTxt == "Context") {
+                query += "OR escidoc.context.name=\"" + titleTxt + "\"";
+            }
+            else {
+                query += "OR escidoc.any-title=\"" + titleTxt + "\"";
+            }
+        }
+        else {
+            if (!titleTxt.isEmpty()) {
+                query += "OR escidoc.any-title=\"" + titleTxt + "\" or escidoc.context.name=\"" + titleTxt + "\"";
+            }
+        }
+
+        if (!creatorTxt.isEmpty()) {
+            query += " AND escidoc.created-by.name=\"" + creatorTxt + "\"";
+        }
+        if (!descriptionTxt.isEmpty()) {
+            // query += " AND escidoc.created-by.name=\"" + creatorTxt + "\"";
+        }
+        if (creationDateTxt != null) {
+            query +=
+                " AND (escidoc.creation-date=\"" + creationDateTxt + "*\" OR (escidoc.component.creation-date=\""
+                    + creationDateTxt + "*\"))";
+        }
+        if (mimesTxt != null) {
+            query += " AND escidoc.component.mime-type=\"" + mimesTxt + "\"";
+        }
+
+        if (!fulltxtTxt.isEmpty()) {
+            query += " AND escidoc.fulltext=\"" + fulltxtTxt + "\"";
+        }
+        try {
+            LOG.debug(query);
+            return client.search(query, 0, 1000, "sort.escidoc.pid", ESCIDOCALL);
+        }
+        catch (EscidocClientException e) {
+            LOG.debug("EscidocClientException");
+            e.printStackTrace();
+        }
+        return null;
+
     }
 }
