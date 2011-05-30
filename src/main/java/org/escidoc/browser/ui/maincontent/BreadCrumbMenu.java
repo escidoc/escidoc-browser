@@ -108,10 +108,9 @@ public class BreadCrumbMenu {
                     escidocServiceLocation), new ContextRepository(escidocServiceLocation));
             ContainerProxyImpl containerParent =
                 (ContainerProxyImpl) resourceFactory.find(parentId, ResourceType.CONTAINER);
-            bCstring += "<li>" + containerParent.getName() + "</li>";
+            bCstring += "<li><a href=\"#\">" + containerParent.getName() + "</a></li>";
         }
         catch (Exception e) {
-            System.out.println(e);
             bCstring +=
                 "<li><a href='/browser/mainWindow?tab=" + resourceProxy.getContext().getObjid()
                     + "&type=CONTEXT&escidocurl=" + escidocServiceLocation.getEscidocUri() + "' target='_blank'>"
@@ -119,7 +118,15 @@ public class BreadCrumbMenu {
         }
 
         cssLayout
-            .addComponent(new Label(bCstring + "<li>" + resourceProxy.getName() + "</li></ul>", Label.CONTENT_RAW));
+            .addComponent(new Label(
+                bCstring
+                    + "<li>"
+                    + resourceProxy.getName()
+                    + "</li><a href=\"/browser/mainWindow?tab="
+                    + resourceProxy.getId()
+                    + "&type=ITEM&escidocurl="
+                    + escidocServiceLocation.getEscidocUri()
+                    + "\" target=\"_blank\" alt=\"Permanent Link to resource\" class=\"floatright\"><img src=\"VAADIN/themes/myTheme/images/anchor.png\"/></a></ul>",
+                Label.CONTENT_RAW));
     }
-
 }
