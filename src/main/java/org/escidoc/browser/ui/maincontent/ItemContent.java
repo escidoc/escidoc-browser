@@ -16,7 +16,9 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.resources.om.item.component.Component;
 import de.escidoc.core.resources.om.item.component.Components;
@@ -32,6 +34,8 @@ public class ItemContent extends CustomLayout {
 
     private final Window mainWindow;
 
+    Panel pnlComponents;
+
     public ItemContent(final ItemProxyImpl resourceProxy, EscidocServiceLocation serviceLocation,
         final Window mainWindow) {
 
@@ -42,35 +46,32 @@ public class ItemContent extends CustomLayout {
         this.mainWindow = mainWindow;
 
         setTemplateName("itemtemplate");
+        buildComponentPanel();
+
         itemproxy = resourceProxy;
         if (itemproxy.hasComponents()) {
-            buildMainElement();
-            buildOtherComponents();
+            buildComponents();
         }
+        addComponent(pnlComponents, "components");
     }
 
     /**
      * 
      */
-    private void buildOtherComponents() {
+    private void buildComponents() {
         final Components itemComponents = itemproxy.getElements();
         for (final Component component : itemComponents) {
-            buildLabel(component.getProperties().getFileName());
+            buildComponentElement(component);
         }
     }
 
-    /**
-     * @param itemContent
-     */
-    private void buildLabel(final String fileName) {
-        final Label lbladdmetadata2 = new Label();
-        lbladdmetadata2.setCaption(fileName + "(image/jpeg)");
-        lbladdmetadata2.setIcon(new ThemeResource("../runo/icons/16/document-image.png"));
-        this.addComponent(lbladdmetadata2);
+    private void buildComponentPanel() {
+        pnlComponents = new Panel();
+        pnlComponents.addStyleName(Runo.PANEL_LIGHT);
     }
 
-    private void buildMainElement() {
-        final Component itemProperties = itemproxy.getFirstelementProperties();
+    private void buildComponentElement(Component comp) {
+        final Component itemProperties = comp;
 
         // get the file type from the mime:
         final String mimeType = itemProperties.getProperties().getMimeType();
@@ -78,22 +79,19 @@ public class ItemContent extends CustomLayout {
         final String lastOne = last[last.length - 1];
 
         final Embedded e = new Embedded("", new ThemeResource("images/filetypes/" + lastOne + ".png"));
-        addComponent(e, "thumbnail");
+        pnlComponents.addComponent(e);
 
         final Label lblmetadata =
-            new Label(itemProperties.getProperties().getXLinkTitle() + "<br />"
+            new Label(itemProperties.getContent().getXLinkTitle() + "<br />"
                 + itemProperties.getProperties().getVisibility() + "<br />"
                 + itemProperties.getProperties().getChecksumAlgorithm() + " "
                 + itemProperties.getProperties().getChecksum(), Label.CONTENT_RAW);
-
         Link lnk =
             new Link("Download File", new ExternalResource(serviceLocation.getEscidocUri()
                 + itemProperties.getContent().getXLinkHref()));
         lnk.setIcon(new ThemeResource("images/download.png"));
-        addComponent(lnk, "addmeta2");
-
-        addComponent(lblmetadata, "metadata");
-
+        pnlComponents.addComponent(lnk);
+        pnlComponents.addComponent(lblmetadata);
     }
 
     private String getMimeType(String url) throws IOException {

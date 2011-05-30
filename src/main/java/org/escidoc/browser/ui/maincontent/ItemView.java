@@ -122,7 +122,7 @@ public class ItemView extends VerticalLayout {
         horizontal.addComponent(new Button("Edit"));
 
         final Panel leftpnl = new Panel();
-        leftpnl.setStyleName("floatleft paddingtop10");
+        leftpnl.setStyleName("floatleft");
         leftpnl.setScrollable(false);
         leftpnl.setWidth("30%");
         leftpnl.setHeight("82%");
@@ -202,7 +202,7 @@ public class ItemView extends VerticalLayout {
     private String getHistory() {
         String strHistory;
         if (resourceProxy.getPreviousVersion() == null) {
-            strHistory = " has no previous history";
+            strHistory = " has no previous versions";
         }
         else {
             strHistory = " previous version";

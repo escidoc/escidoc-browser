@@ -70,6 +70,7 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
         this.user = user;
         this.mainSite = mainSite;
         this.appHeight = appHeight;
+        this.setMargin(false);
 
     }
 

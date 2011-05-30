@@ -71,8 +71,6 @@ public class NavigationTreeBuilder {
                 mainSite, currentUser);
 
         navigationTreeView.setDataSource(resourceContainer, mainSite);
-        navigationTreeView.addExpandListener(new TreeExpandListener(contextRepository, containerRepository,
-            resourceContainer));
         navigationTreeView.addClickListener(clickListener);
 
         return navigationTreeView;

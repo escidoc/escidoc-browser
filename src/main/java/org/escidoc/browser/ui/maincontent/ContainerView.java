@@ -161,8 +161,7 @@ public class ContainerView extends VerticalLayout {
         final Label descMetadata2 =
             new Label(CREATED_BY + "<a href='#'> " + resourceProxy.getCreator() + "</a> "
                 + resourceProxy.getCreatedOn() + "<br>" + LAST_MODIFIED_BY + " <a href='#user/"
-                + resourceProxy.getModifier() + "'>" + resourceProxy.getModifier() + "</a> "
-                + resourceProxy.getModifiedOn() + " <br>" + STATUS + resourceProxy.getStatus(), Label.CONTENT_RAW);
+                + resourceProxy.getModifier() + "'>" + resourceProxy.getModifier() + "</a>", Label.CONTENT_RAW);
         descMetadata2.setStyleName("floatright columnheight50");
         descMetadata2.setWidth("65%");
         cssLayout.addComponent(descMetadata2);

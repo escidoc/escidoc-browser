@@ -51,10 +51,7 @@ public class ResourceHierarchy {
             }
         }
         catch (EscidocClientException e) {
-            System.out.print("q");
-            // containerHierarchy.add(null);
-            // TODO Auto-generated catch block
-            // e.printStackTrace();
+            System.out.print("q" + id);
         }
 
     }

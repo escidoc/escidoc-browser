@@ -72,13 +72,12 @@ public class MainSite extends VerticalLayout {
         this.serviceLocation = serviceLocation;
         this.currentUser = user;
         this.setMargin(true);
-        setSizeFull();
-        this.setWidth("86%");
 
         // common part: create layout
         mainLayout = new CssLayout();
         mainLayout.setStyleName("maincontainer");
         mainLayout.setSizeFull();
+
         init();
 
         final HeaderContainer header = new HeaderContainer(this, getApplicationHeight(), app, serviceLocation, user);
@@ -169,9 +168,9 @@ public class MainSite extends VerticalLayout {
      * @return TabSheet
      */
     private TabSheet buildTabContainer() {
-        maincontenttab.setStyleName("floatright paddingtop20");
+        maincontenttab.setStyleName("floatright paddingtop10");
         maincontenttab.setWidth("70%");
-        maincontenttab.setHeight("86%");
+        maincontenttab.setHeight("88%");
         return maincontenttab;
 
     }
@@ -186,10 +185,10 @@ public class MainSite extends VerticalLayout {
 
         final Panel mainnav = new Panel();
         mainnav.setScrollable(true);
-        mainnav.setStyleName("floatleft paddingtop20");
+        mainnav.setStyleName("floatleft paddingtop10");
         LOG.debug("Window width is: " + app.getApplicationWidth());
         mainnav.setWidth("30%");
-        mainnav.setHeight("85%");
+        mainnav.setHeight("88%");
 
         // final Button srchButton = new Button("Search", this, "onClickSrchButton");
         // srchButton.setStyleName(BaseTheme.BUTTON_LINK);

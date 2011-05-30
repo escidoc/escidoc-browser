@@ -6,8 +6,14 @@ import java.util.Collections;
 import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.ResourceModelFactory;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.repository.ContainerProxy;
+import org.escidoc.browser.repository.ContainerRepository;
+import org.escidoc.browser.repository.ContextRepository;
+import org.escidoc.browser.repository.ItemRepository;
+import org.escidoc.browser.repository.internal.ContainerProxyImpl;
 import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.escidoc.browser.ui.helper.ResourceHierarchy;
 import org.slf4j.Logger;
@@ -24,6 +30,12 @@ public class BreadCrumbMenu {
 
     String bCstring = "<ul id='crumbs'><li><a href='#'>Home</a></li>";
 
+    /**
+     * Context case
+     * 
+     * @param cssLayout
+     * @param resourceProxy
+     */
     public BreadCrumbMenu(final CssLayout cssLayout, ResourceProxy resourceProxy) {
         String name;
         if (resourceProxy.getName().length() > 100)
@@ -81,8 +93,7 @@ public class BreadCrumbMenu {
         ResourceHierarchy rs = new ResourceHierarchy();
 
         try {
-            String parentId;
-            parentId = rs.getReturnParentOfItem(resourceProxy.getId()).getId();
+            String parentId = rs.getReturnParentOfItem(resourceProxy.getId()).getId();
             ArrayList<ResourceModel> hierarchy = rs.getHierarchy(parentId);
             Collections.reverse(hierarchy);
             for (ResourceModel resourceModel : hierarchy) {
@@ -90,9 +101,17 @@ public class BreadCrumbMenu {
                     "<li><a href='/browser/mainWindow?tab=" + resourceModel.getId() + "&type="
                         + resourceModel.getType() + "&escidocurl=" + escidocServiceLocation.getEscidocUri()
                         + "' target='_blank'>" + resourceModel.getName() + "</a></li>";
+                // bCstring += "<li>" + resourceModel.getName() + "</li>";
             }
+            ResourceModelFactory resourceFactory =
+                new ResourceModelFactory(new ItemRepository(escidocServiceLocation), new ContainerRepository(
+                    escidocServiceLocation), new ContextRepository(escidocServiceLocation));
+            ContainerProxyImpl containerParent =
+                (ContainerProxyImpl) resourceFactory.find(parentId, ResourceType.CONTAINER);
+            bCstring += "<li>" + containerParent.getName() + "</li>";
         }
         catch (Exception e) {
+            System.out.println(e);
             bCstring +=
                 "<li><a href='/browser/mainWindow?tab=" + resourceProxy.getContext().getObjid()
                     + "&type=CONTEXT&escidocurl=" + escidocServiceLocation.getEscidocUri() + "' target='_blank'>"
@@ -103,10 +122,4 @@ public class BreadCrumbMenu {
             .addComponent(new Label(bCstring + "<li>" + resourceProxy.getName() + "</li></ul>", Label.CONTENT_RAW));
     }
 
-    /*
-     * Search case
-     */
-    public BreadCrumbMenu(CssLayout cssLayout, String string) {
-        // TODO Auto-generated constructor stub
-    }
 }

@@ -18,7 +18,9 @@
 .paddingtop20{
  padding-top:20.0px;
 }
-
+.paddingtop10{
+ padding-top:10.0px;
+}
 .clear{
 	clear: both;
 }
@@ -89,5 +91,9 @@ ul.horizontal_list li{
 	color:#777;
 	text-decoration:none;
 	}	
+.directmembers .v-tree-node {
+	background: #ffffff;
+	padding: 0 0;
+}
 
 

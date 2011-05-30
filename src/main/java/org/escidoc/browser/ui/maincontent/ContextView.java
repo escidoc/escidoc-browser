@@ -31,13 +31,13 @@ public class ContextView extends VerticalLayout {
 
     private static final String FULLWIDHT_STYLE_NAME = "fullwidth";
 
-    private static final String LAST_MODIFIED_BY = "last modification by";
+    private static final String LAST_MODIFIED_BY = "Last modification by";
 
     private static final String DIRECT_MEMBERS = "Direct Members";
 
     private static final String RESOURCE_NAME = "Workspace: ";
 
-    private static final String STATUS = "Status is";
+    private static final String STATUS = "Status is ";
 
     private final CssLayout cssLayout = new CssLayout();
 
@@ -120,7 +120,7 @@ public class ContextView extends VerticalLayout {
     private void leftCell(final String directMembers, final Component comptoBind) {
         final Panel leftpnl = new Panel();
 
-        leftpnl.setStyleName("directmembers floatleft paddingtop10");
+        leftpnl.setStyleName("directmembers floatleft");
         leftpnl.setScrollable(false);
         leftpnl.setWidth("30%");
         leftpnl.setHeight("82%");

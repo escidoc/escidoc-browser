@@ -6,8 +6,8 @@ import org.escidoc.browser.repository.ContainerRepository;
 import org.escidoc.browser.repository.ContextRepository;
 import org.escidoc.browser.repository.ItemRepository;
 import org.escidoc.browser.ui.MainSite;
-import org.escidoc.browser.ui.NavigationTreeView;
 import org.escidoc.browser.ui.NavigationTreeBuilder;
+import org.escidoc.browser.ui.NavigationTreeView;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Window;
@@ -86,8 +86,8 @@ public class DirectMember {
     private NavigationTreeView createContextDirectMembers(
         final ContextRepository contextRepository, final ContainerRepository containerRepository,
         final ItemRepository itemRepository) throws EscidocClientException {
-        return navigationTreeBuilder.buildContextDirectMemberTree(contextRepository, containerRepository, itemRepository, mainSite,
-            parentId, mainWindow);
+        return navigationTreeBuilder.buildContextDirectMemberTree(contextRepository, containerRepository,
+            itemRepository, mainSite, parentId, mainWindow);
     }
 
     public NavigationTreeView containerAsTree() throws EscidocClientException {
@@ -101,8 +101,8 @@ public class DirectMember {
         final ContextRepository contextRepository, final ContainerRepository containerRepository,
         final ItemRepository itemRepository) throws EscidocClientException {
 
-        return navigationTreeBuilder.buildContainerDirectMemberTree(contextRepository, containerRepository, itemRepository,
-            mainSite, parentId, mainWindow);
+        return navigationTreeBuilder.buildContainerDirectMemberTree(contextRepository, containerRepository,
+            itemRepository, mainSite, parentId, mainWindow);
     }
 
 }
