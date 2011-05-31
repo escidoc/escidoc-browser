@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright ${year} Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
