@@ -128,7 +128,8 @@ public class VersionHistoryClickListener implements ClickListener {
             this.wndContent = getVersionHistory(cr, id);
         }
         catch (EscidocClientException e) {
-            this.wndContent = "No information";
+
+            this.wndContent = "No information ?" + e.getMessage();
         }
 
         Label msgWindow = new Label(wndContent, Label.CONTENT_RAW);

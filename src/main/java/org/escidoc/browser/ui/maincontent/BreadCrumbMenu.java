@@ -57,7 +57,7 @@ public class BreadCrumbMenu {
     public BreadCrumbMenu(CssLayout cssLayout, ContainerProxy resourceProxy, Window mainWindow,
         EscidocServiceLocation escidocServiceLocation) {
 
-        ResourceHierarchy rs = new ResourceHierarchy();
+        ResourceHierarchy rs = new ResourceHierarchy(escidocServiceLocation);
         try {
             ArrayList<ResourceModel> hierarchy = rs.getHierarchy(resourceProxy.getId());
             Collections.reverse(hierarchy);
@@ -90,7 +90,7 @@ public class BreadCrumbMenu {
     public BreadCrumbMenu(CssLayout cssLayout, ItemProxyImpl resourceProxy, Window mainWindow,
         EscidocServiceLocation escidocServiceLocation) {
         String bCstring = "<ul id='crumbs'><li><a href='#'>Home Item</a></li>";
-        ResourceHierarchy rs = new ResourceHierarchy();
+        ResourceHierarchy rs = new ResourceHierarchy(escidocServiceLocation);
 
         try {
             String parentId = rs.getReturnParentOfItem(resourceProxy.getId()).getId();
