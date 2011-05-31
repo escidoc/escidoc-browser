@@ -16,19 +16,13 @@
 			<version>6.5.6</version>
 			<scope>compile</scope>
 		</dependency>
-		<!--  
-		commented until maven repo is found.
+		<!-- commented until maven repo is found. <dependency> <groupId>com.google.gwt</groupId> 
+			<artifactId>gwt-user</artifactId> <version>2.1.0</version> <scope>provided</scope> 
+			</dependency> -->
 		<dependency>
-			<groupId>com.google.gwt</groupId>
-			<artifactId>gwt-user</artifactId>
-			<version>2.1.0</version>
-			<scope>provided</scope>
-		</dependency>
-		-->
-		<dependency>
-   			<groupId>org.vaadin.addons</groupId>
-   			<artifactId>pagedtable</artifactId>
-   			<version>0.5.1</version>
+			<groupId>org.vaadin.addons</groupId>
+			<artifactId>pagedtable</artifactId>
+			<version>0.5.1</version>
 		</dependency>
 
 		<!-- eSciDoc -->
@@ -170,38 +164,14 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!--
-		    commented until maven repo is found.
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>gwt-maven-plugin</artifactId>
-				<version>2.1.0</version>
-				<configuration>
-					<webappDirectory>${vaadin-widgets-dir}</webappDirectory>
-					<extraJvmArgs>-Dgwt.style=PRETTY -Xmx512M -Xss1024k</extraJvmArgs>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>resources</goal>
-							<goal>compile</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>com.vaadin</groupId>
-				<artifactId>vaadin-maven-plugin</artifactId>
-				<version>1.0.1</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>update-widgetset</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			-->
+			<!-- commented until maven repo is found. <plugin> <groupId>org.codehaus.mojo</groupId> 
+				<artifactId>gwt-maven-plugin</artifactId> <version>2.1.0</version> <configuration> 
+				<webappDirectory>${vaadin-widgets-dir}</webappDirectory> <extraJvmArgs>-Dgwt.style=PRETTY 
+				-Xmx512M -Xss1024k</extraJvmArgs> </configuration> <executions> <execution> 
+				<goals> <goal>resources</goal> <goal>compile</goal> </goals> </execution> 
+				</executions> </plugin> <plugin> <groupId>com.vaadin</groupId> <artifactId>vaadin-maven-plugin</artifactId> 
+				<version>1.0.1</version> <executions> <execution> <goals> <goal>update-widgetset</goal> 
+				</goals> </execution> </executions> </plugin> -->
 			<plugin>
 				<artifactId>maven-clean-plugin</artifactId>
 				<version>2.4.1</version>
@@ -212,6 +182,39 @@
 						</fileset>
 					</filesets>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.mycila.maven-license-plugin</groupId>
+				<artifactId>maven-license-plugin</artifactId>
+				<version>1.9.0</version>
+				<configuration>
+					<header>${basedir}/etc/header.txt</header>
+					<strictCheck>true</strictCheck>
+					<failIfMissing>false</failIfMissing>
+					<includes>
+						<include>src/**</include>
+						<include>**/test/**</include>
+					</includes>
+					<excludes>
+						<exclude>target/**</exclude>
+						<exclude>src/main/java/biz/**</exclude>
+						<exclude>src/main/resources/**</exclude>
+						<exclude>src/main/javadoc/**</exclude>
+						<exclude>src/main/webapp/**</exclude>
+						<exclude>src/main/assembly/**</exclude>
+						<exclude>src/site/**</exclude>
+						<exclude>src/test/javadoc/**</exclude>
+						<exclude>src/test/site/**</exclude>
+						<exclude>.clover/**</exclude>
+					</excludes>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 		<finalName>${project.artifactId}</finalName>
