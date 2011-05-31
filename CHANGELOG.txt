@@ -1,0 +1,76 @@
+Release Notes - eSciDoc Browser - Version 0.1
+
+** Bug
+    * [GENCLIENT-11] - Size not detected on first load of the page
+    * [GENCLIENT-25] - After running the Server, in my case the jetty-Server and type the URL in the Firefox I become a lot of Exceptions. More details about the Exceptions are listed in the File in the Attachment
+    * [GENCLIENT-27] - Show  Horizontal Bar in Navigation Tree, if the title becomes too long
+    * [GENCLIENT-29] - Click multiple times on Contexts on the left side then multiple presentation of the pulldown menu will be listed
+    * [GENCLIENT-31] - Show details of a selected Context
+    * [GENCLIENT-32] - Show details of a selected Container
+    * [GENCLIENT-35] - Deployment
+    * [GENCLIENT-43] - Some of Details become invisible to the user in Context View in Web Browser is made smaller
+    * [GENCLIENT-62] - Remove "Not Implemented in ClientLib" By Relation
+    * [GENCLIENT-63] - The user should not see "null" in the resource's description.
+    * [GENCLIENT-65] - Dublicated Tabs
+    * [GENCLIENT-67] - No information on click at Additional Resources
+    * [GENCLIENT-78] - Breadcrumb show the correct name
+    * [GENCLIENT-87] - Permanent Link on the Breadcrumb does not send eScidocUrl 
+    * [GENCLIENT-92] - Search Result returns no content from Full_text index
+    * [GENCLIENT-93] - Search does not look to return all results
+    * [GENCLIENT-98] - When clicking on a context in the breadcrumb path, the context is opened in a new browser tab
+    * [GENCLIENT-100] - Display of version history fails for all resource types
+    * [GENCLIENT-101] - In the list of direct members of containers, Items are displayed with an arrow, indicating the option to expand the view, which is not possible for Item ressources
+
+** Improvement
+    * [GENCLIENT-23] - Find all top level Containers and Items of a Context
+    * [GENCLIENT-41] - Use Horizontal SplitPane between Navigation Tree and Content View
+    * [GENCLIENT-48] - Limit the number of characters in tab title.
+    * [GENCLIENT-55] - The dynamic width of the browser is not listening to the resizer 
+    * [GENCLIENT-56] - The user should see either the name or the login name of a modifier/creator
+    * [GENCLIENT-58] - Replace Icons in Navigation Tree
+    * [GENCLIENT-59] - Replace Icon in the Navigation Tree, if a Context does not contain any containers or items.
+    * [GENCLIENT-61] - The user should not be able to open multiple tabs representing the same resources 
+    * [GENCLIENT-64] - Show Metadata, other than metadata with the name eSciDoc, if it exists.
+    * [GENCLIENT-70] - CLONE -The user should not be able to open multiple tabs representing the same resources 
+    * [GENCLIENT-79] - Permanent Link
+    * [GENCLIENT-90] - Extend serach indexes
+
+** New Feature
+    * [GENCLIENT-12] - WebApplication Routing Logic via URI
+    * [GENCLIENT-14] - Item Layout
+    * [GENCLIENT-15] - eSciDoc URL by URL parameter
+    * [GENCLIENT-17] - Integrate Search
+    * [GENCLIENT-18] - Find direct members of a context by ID
+    * [GENCLIENT-26] - Show direct members of a Container
+    * [GENCLIENT-33] - Show details of a selected Item
+    * [GENCLIENT-51] - Authentification:Enable Login
+    * [GENCLIENT-60] - The user should be able to open/download the item's content
+    * [GENCLIENT-68] - Show Container /Item Previous history link if they have one
+    * [GENCLIENT-77] - Icons describing Items
+    * [GENCLIENT-88] - Advanced Search
+    * [GENCLIENT-97] - Paginate search results
+    * [GENCLIENT-105] - Provide link to the permanent link of the resource
+
+** Task
+    * [GENCLIENT-2] - Replace Tree with a List in Direct Members View
+    * [GENCLIENT-3] - Put Add and Remove Button in Direct Members View
+    * [GENCLIENT-4] - Replace Label with a Link in Created By and Modified By
+    * [GENCLIENT-5] - Create a clickable Breadcrumb in Context/Container/Item Component
+    * [GENCLIENT-9] - Mavenize Project
+    * [GENCLIENT-19] - Hudsonize Project
+    * [GENCLIENT-46] - Add eSciDoc License on Header in every Java Files
+
+** Sub-task
+    * [GENCLIENT-28] - Research: Given a container <container id>,  how to find all its direct members i.e. containers or items.
+    * [GENCLIENT-30] - Create a Layout for "Simple Search" View
+    * [GENCLIENT-36] - Show only direct members in Context Details View instead of Tree
+    * [GENCLIENT-37] - Remove Vertical Scrollbar in  the right side of name, description, ID
+    * [GENCLIENT-38] - Show the title "Direct Members" in Context View
+    * [GENCLIENT-39] - Show Date and Time using  the format DD.MM.YYYY, hh:mm
+    * [GENCLIENT-40] - Direct Members of Context is hidden, when the list is "long"
+    * [GENCLIENT-45] - Proxy Problem when accessing ZDMED
+    * [GENCLIENT-47] - Implement the Information regarding:   Organizational Unit; Admin Descriptors; Relations; Resources
+    * [GENCLIENT-52] - Enable Login, if token does not exists
+    * [GENCLIENT-53] - When the user is login, she should be able to logout
+    * [GENCLIENT-84] - Boolean search availability
+    * [GENCLIENT-86] - When the user is logged-in, show her user name

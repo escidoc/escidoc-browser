@@ -1,16 +1,6 @@
-eSciDoc Browser Documentation
+eSciDoc Browser 0.1 Documentation
 
-0. if you don't have JRebel installed, change
-    ...
-        <jetty.scan.sec>0</jetty.scan.sec>
-    ...
-    to
-        <jetty.scan.sec>5</jetty.scan.sec>
-        
-1. $ mvn eclipse:eclipse
+Feature
+    Browsing and Searching of eSciDoc Resources i.e. Contexts, Containers and Items.
+    Can be used as Guest or SysAdmin.        
 
-3. $mvn install
-
-4. $mvn jetty:run
-
-5. URL: http://localhost:8084/browser
