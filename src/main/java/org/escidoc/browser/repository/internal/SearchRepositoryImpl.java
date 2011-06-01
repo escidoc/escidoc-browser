@@ -103,7 +103,6 @@ public class SearchRepositoryImpl {
                     + "\" or escidoc.metadata=\"" + string + "\" or escidoc.context.name=\"" + string
                     + "\" or escidoc.creator.name=\"" + string + "\"";
         }
-        System.out.println(queryString);
         // queryString += queryString + "&maximumRecords=100";
         try {
             // "escidoc.any-title"=b*

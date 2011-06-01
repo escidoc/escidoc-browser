@@ -62,6 +62,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.sb.Record;
 import de.escidoc.core.resources.sb.search.SearchResultRecord;
 import de.escidoc.core.resources.sb.search.SearchRetrieveResponse;
@@ -181,29 +182,31 @@ public class SearchResultsView extends VerticalLayout {
         for (Record<?> record : records) {
             SearchResultRecord s = ((SearchResultRecordRecord) record).getRecordData();
             if (s.getContent().getResourceType().toString().equals("Container")) {
-                resourceProxy = (ContainerProxyImpl) rmf.find(s.getContent().getObjid(), ResourceType.CONTAINER);
+                // resourceProxy = (ContainerProxyImpl) rmf.find(s.getContent().getObjid(), ResourceType.CONTAINER);
                 // Resource container = s.getContent();
-                // resourceProxy = new ContainerProxyImpl((Container) s.getContent());
+                resourceProxy =
+                    new ContainerProxyImpl((de.escidoc.core.resources.om.container.Container) s.getContent());
             }
             else if (s.getContent().getResourceType().toString().equals("Item")) {
-                // Resource item = s.getContent();
-                // resourceProxy = new ItemProxyImpl((de.escidoc.core.resources.om.item.Item) item);
-                resourceProxy = (ItemProxyImpl) rmf.find(s.getContent().getObjid(), ResourceType.ITEM);
+                Resource item = s.getContent();
+                resourceProxy = new ItemProxyImpl((de.escidoc.core.resources.om.item.Item) item);
+                // resourceProxy = (ItemProxyImpl) rmf.find(s.getContent().getObjid(), ResourceType.ITEM);
             }
             else if (s.getContent().getResourceType().toString().equals("Context")) {
-                resourceProxy = (ContextProxyImpl) rmf.find(s.getContent().getObjid(), ResourceType.CONTEXT);
-                // Resource resource = s.getContent();
-                // resourceProxy = new ContextProxyImpl((Context) resource);
+                // resourceProxy = (ContextProxyImpl) rmf.find(s.getContent().getObjid(), ResourceType.CONTEXT);
+                Resource resource = s.getContent();
+                resourceProxy = new ContextProxyImpl((de.escidoc.core.resources.om.context.Context) resource);
             }
+            // The third argument should be the resourceProxy.xLinkTitle() so we show it on the header of the Tab
             Object[] variablesForTheTab =
-                { s.getContent().getResourceType().toString(), resourceProxy.getId(), resourceProxy.getName() };
+                { s.getContent().getResourceType().toString(), resourceProxy.getId(), resourceProxy.getId() };
+
             Item item = container.addItem(variablesForTheTab);
             item.getItemProperty("Type").setValue(
-                new Label("<img src= \"/browser/VAADIN/themes/myTheme/images/resources/"
+                new Label("<img src= \"/browser/VAADIN/themes/myTheme/images/"
                     + s.getContent().getResourceType().toString() + ".png\" />", Label.CONTENT_RAW));
-            item.getItemProperty("Name").setValue(resourceProxy.getName());
-            item.getItemProperty("Belongs to Context").setValue(resourceProxy.getContext().getXLinkTitle());
-            item.getItemProperty("Description").setValue(resourceProxy.getDescription());
+            item.getItemProperty("Name").setValue(resourceProxy.getId());
+
             item.getItemProperty("Date Created").setValue(resourceProxy.getCreatedOn());
         }
 
@@ -225,8 +228,8 @@ public class SearchResultsView extends VerticalLayout {
         IndexedContainer container = new IndexedContainer();
         container.addContainerProperty("Type", Label.class, null);
         container.addContainerProperty("Name", String.class, null);
-        container.addContainerProperty("Belongs to Context", String.class, null);
-        container.addContainerProperty("Description", String.class, null);
+        // container.addContainerProperty("Belongs to Context", String.class, null);
+        // container.addContainerProperty("Description", String.class, null);
         container.addContainerProperty("Date Created", String.class, null);
         return container;
     }
@@ -241,11 +244,11 @@ public class SearchResultsView extends VerticalLayout {
 
         tblPagedResults.addContainerProperty("Type", Label.class, null);
         tblPagedResults.addContainerProperty("Name", String.class, null);
-        tblPagedResults.addContainerProperty("Belongs to Context", String.class, null);
-        tblPagedResults.addContainerProperty("Description", String.class, null);
+        // tblPagedResults.addContainerProperty("Belongs to Context", String.class, null);
+        // tblPagedResults.addContainerProperty("Description", String.class, null);
         tblPagedResults.addContainerProperty("Date Created", String.class, null);
         tblPagedResults.setColumnWidth("Type", 30);
-        tblPagedResults.setColumnWidth("Belongs to Context", 130);
+        // tblPagedResults.setColumnWidth("Belongs to Context", 130);
         tblPagedResults.setColumnWidth("Date Created", 90);
         /**
          * Create new Tab based on the click The event registers a View (see ItemView for example) and a Name for the

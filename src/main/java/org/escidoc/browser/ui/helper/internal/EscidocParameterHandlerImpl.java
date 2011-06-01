@@ -70,18 +70,15 @@ public class EscidocParameterHandlerImpl implements EscidocParameterHandler {
 
     @Override
     public void handleParameters(final Map<String, String[]> parameters) {
-        LOG.debug("parameters: " + parameters.toString());
+
         if (Util.isEscidocUrlExists(parameters) && Util.doesTokenExist(parameters)) {
-            LOG.debug("both escidocurl and token exists");
             setEscidocUri(parameters);
             doLogin(parameters);
         }
         if (Util.doesTokenExist(parameters) && serviceLocation.getEscidocUri() == null) {
-            LOG.debug("only token exists");
             doLogin(parameters);
         }
         else if (Util.isEscidocUrlExists(parameters) && hasNotEscidocHandler(parameters)) {
-            LOG.debug("escidocurl exists but no token");
 
             if (isServerOnline(tryToParseEscidocUriFromParameter(parameters))) {
                 setEscidocUri(parameters);

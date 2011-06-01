@@ -29,6 +29,7 @@
 package org.escidoc.browser.ui.listeners;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.w3c.dom.Element;
 
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -69,10 +70,15 @@ public class MetadataRecBehavour implements ClickListener {
         subwindow.setModal(true);
 
         String mtRecinfo =
-            new String(NAME + metadataRecord.getName() + "<br />" + CONTENT + metadataRecord.getContent() + "<br />"
-                + RECORD_TYPE + metadataRecord.getMdType() + "<br />" + RECORD_SCHEMA + metadataRecord.getSchema()
-                + "<br />" + LINK + "<a href='" + escidocServiceLocation.getEscidocUri()
-                + metadataRecord.getXLinkHref() + "' target='_blank'>" + metadataRecord.getXLinkTitle() + "</a><br />");
+            new String(NAME + metadataRecord.getName() + "<br />" + CONTENT
+                + metadataRecord.getContent().getTextContent() + "<br />" + RECORD_TYPE + metadataRecord.getMdType()
+                + "<br />" + RECORD_SCHEMA + metadataRecord.getSchema() + "<br />" + LINK + "<a href='"
+                + escidocServiceLocation.getEscidocUri() + metadataRecord.getXLinkHref() + "' target='_blank'>"
+                + metadataRecord.getXLinkTitle() + "</a><br />");
+
+        Element content = metadataRecord.getContent();
+
+        mtRecinfo += metadataRecord.getContent().getTextContent();
 
         Label msgWindow = new Label(mtRecinfo, Label.CONTENT_RAW);
 

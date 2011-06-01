@@ -84,7 +84,6 @@ public final class StartButtonListener implements Button.ClickListener {
     @Override
     public void buttonClick(final ClickEvent event) {
         Preconditions.checkArgument(observer.getDimension().getHeight() > 0, "Can not get window size");
-        LOG.debug("Dimension is: " + observer.getDimension());
         if (validateUserInput()) {
             try {
                 serviceLocation.setEscidocUri(new URI((String) inputField.getValue()));

@@ -142,7 +142,6 @@ public class ItemView extends VerticalLayout {
         // Adding some buttons
         final AbsoluteLayout absL = new AbsoluteLayout();
         absL.setWidth("100%");
-        LOG.debug("Inner ElementHeight " + innerelementsHeight);
         absL.setHeight(innerelementsHeight + "px");
         final HorizontalLayout horizontal = new HorizontalLayout();
         horizontal.addComponent(new Button("Add"));

@@ -214,14 +214,8 @@ public class MainSite extends VerticalLayout {
         final Panel mainnav = new Panel();
         mainnav.setScrollable(true);
         mainnav.setStyleName("floatleft paddingtop10");
-        LOG.debug("Window width is: " + app.getApplicationWidth());
         mainnav.setWidth("30%");
         mainnav.setHeight("88%");
-
-        // final Button srchButton = new Button("Search", this, "onClickSrchButton");
-        // srchButton.setStyleName(BaseTheme.BUTTON_LINK);
-        // srchButton.setIcon(new ThemeResource("../myTheme/images/search.png"));
-        // srchButton.setDescription("Search the Infrastructure");
 
         final ContainerRepository containerRepository = new ContainerRepository(serviceLocation);
         containerRepository.loginWith(((CurrentUser) app.getUser()).getToken());

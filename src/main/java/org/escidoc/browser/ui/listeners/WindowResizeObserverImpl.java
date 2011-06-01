@@ -41,7 +41,6 @@ public final class WindowResizeObserverImpl implements WindowResizeObserver {
 
     @Override
     public void setDimension(final WindowDimension windowDimension) {
-        LOG.debug("Dimension changed: " + windowDimension.toString());
         this.windowDimension = windowDimension;
     }
 

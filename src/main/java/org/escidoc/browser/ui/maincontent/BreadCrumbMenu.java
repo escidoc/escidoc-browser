@@ -90,17 +90,19 @@ public class BreadCrumbMenu {
             ArrayList<ResourceModel> hierarchy = rs.getHierarchy(resourceProxy.getId());
             Collections.reverse(hierarchy);
             for (ResourceModel resourceModel : hierarchy) {
-                bCstring +=
-                    "<li><a href='/browser/mainWindow?tab=" + resourceModel.getId() + "&type="
-                        + resourceModel.getType() + "&escidocurl=" + escidocServiceLocation.getEscidocUri()
-                        + "' target='_blank'>" + resourceModel.getName() + "</a></li>";
+                // bCstring +=
+                // "<li><a href='/browser/mainWindow?tab=" + resourceModel.getId() + "&type="
+                // + resourceModel.getType() + "&escidocurl=" + escidocServiceLocation.getEscidocUri()
+                // + "' target='_blank'>" + resourceModel.getName() + "</a></li>";
+                bCstring += "<li><a href='#'>" + resourceModel.getName() + "</a></li>";
             }
         }
         catch (EscidocClientException e) {
-            bCstring +=
-                "<li><a href='/browser/mainWindow?tab=" + resourceProxy.getContext().getObjid()
-                    + "&type=CONTEXT&escidocurl=" + escidocServiceLocation + "' target='_blank'>"
-                    + resourceProxy.getContext().getXLinkTitle() + "</a></li>";
+            // bCstring +=
+            // "<li><a href='/browser/mainWindow?tab=" + resourceProxy.getContext().getObjid()
+            // + "&type=CONTEXT&escidocurl=" + escidocServiceLocation + "' target='_blank'>"
+            // + resourceProxy.getContext().getXLinkTitle() + "</a></li>";
+            bCstring += "<li><a href='#'>" + resourceProxy.getContext().getXLinkTitle() + "</a></li>";
         }
         cssLayout
             .addComponent(new Label(bCstring + "<li>" + resourceProxy.getName() + "</li></ul>", Label.CONTENT_RAW));
@@ -125,24 +127,25 @@ public class BreadCrumbMenu {
             ArrayList<ResourceModel> hierarchy = rs.getHierarchy(parentId);
             Collections.reverse(hierarchy);
             for (ResourceModel resourceModel : hierarchy) {
-                bCstring +=
-                    "<li><a href='/browser/mainWindow?tab=" + resourceModel.getId() + "&type="
-                        + resourceModel.getType() + "&escidocurl=" + escidocServiceLocation.getEscidocUri()
-                        + "' target='_blank'>" + resourceModel.getName() + "</a></li>";
-                // bCstring += "<li>" + resourceModel.getName() + "</li>";
+                // bCstring +=
+                // "<li><a href='/browser/mainWindow?tab=" + resourceModel.getId() + "&type="
+                // + resourceModel.getType() + "&escidocurl=" + escidocServiceLocation.getEscidocUri()
+                // + "' target='_blank'>" + resourceModel.getName() + "</a></li>";
+                bCstring += "<li><a href='#'>" + resourceModel.getName() + "</a></li>";
             }
             ResourceModelFactory resourceFactory =
                 new ResourceModelFactory(new ItemRepository(escidocServiceLocation), new ContainerRepository(
                     escidocServiceLocation), new ContextRepository(escidocServiceLocation));
             ContainerProxyImpl containerParent =
                 (ContainerProxyImpl) resourceFactory.find(parentId, ResourceType.CONTAINER);
-            bCstring += "<li><a href=\"#\">" + containerParent.getName() + "</a></li>";
+            bCstring += "<li><a href='#'>" + containerParent.getName() + "</a></li>";
         }
         catch (Exception e) {
-            bCstring +=
-                "<li><a href='/browser/mainWindow?tab=" + resourceProxy.getContext().getObjid()
-                    + "&type=CONTEXT&escidocurl=" + escidocServiceLocation.getEscidocUri() + "' target='_blank'>"
-                    + resourceProxy.getContext().getXLinkTitle() + "</a></li>";
+            // bCstring +=
+            // "<li><a href='/browser/mainWindow?tab=" + resourceProxy.getContext().getObjid()
+            // + "&type=CONTEXT&escidocurl=" + escidocServiceLocation.getEscidocUri() + "' target='_blank'>"
+            // + resourceProxy.getContext().getXLinkTitle() + "</a></li>";
+            bCstring += "<li><a href='#'>" + resourceProxy.getContext().getXLinkTitle() + "</a></li>";
         }
 
         cssLayout
