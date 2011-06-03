@@ -196,7 +196,7 @@ public class MainSite extends VerticalLayout {
      * @return TabSheet
      */
     private TabSheet buildTabContainer() {
-        maincontenttab.setStyleName("floatright paddingtop10");
+        maincontenttab.setStyleName("floatright paddingtop10 tab");
         maincontenttab.setWidth("70%");
         maincontenttab.setHeight("88%");
         return maincontenttab;

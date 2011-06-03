@@ -148,16 +148,18 @@ public class BreadCrumbMenu {
             bCstring += "<li><a href='#'>" + resourceProxy.getContext().getXLinkTitle() + "</a></li>";
         }
 
-        cssLayout
-            .addComponent(new Label(
-                bCstring
-                    + "<li>"
-                    + resourceProxy.getName()
-                    + "</li><a href=\"/browser/mainWindow?tab="
-                    + resourceProxy.getId()
-                    + "&type=ITEM&escidocurl="
-                    + escidocServiceLocation.getEscidocUri()
-                    + "\" target=\"_blank\" alt=\"Permanent Link to resource\" class=\"floatright\"><img src=\"VAADIN/themes/myTheme/images/anchor.png\"/></a></ul>",
-                Label.CONTENT_RAW));
+        // cssLayout
+        // .addComponent(new Label(
+        // bCstring
+        // + "<li>"
+        // + resourceProxy.getName()
+        // + "</li><a href=\"/browser/mainWindow?tab="
+        // + resourceProxy.getId()
+        // + "&type=ITEM&escidocurl="
+        // + escidocServiceLocation.getEscidocUri()
+        // +
+        // "\" target=\"_blank\" alt=\"Permanent Link to resource\" class=\"floatright\"><img src=\"VAADIN/themes/myTheme/images/anchor.png\"/></a></ul>",
+        // Label.CONTENT_RAW));
+        cssLayout.addComponent(new Label(bCstring, Label.CONTENT_RAW));
     }
 }

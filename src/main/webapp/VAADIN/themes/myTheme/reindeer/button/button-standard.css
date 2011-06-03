@@ -88,3 +88,51 @@
 	color: #c9ccce;
 	text-shadow: #121314 0 -1px 0;
 	}
+/**************************
+ * Breadcrump style
+ **************************/
+.breadcrumb .v-button:focus {
+	background:url(/browser/VAADIN/themes/myTheme/images/crumbs.gif) no-repeat right center;
+	display:block;
+	padding:0 15px 0 0;
+	}
+	
+.breadcrumb .v-button:focus .v-button-wrap {
+	background:url(/browser/VAADIN/themes/myTheme/images/crumbs.gif) no-repeat right center;
+	display:block;
+	padding:0 15px 0 0;
+	}
+	
+.breadcrumb .v-button:active,
+.breadcrumb .v-button.v-pressed {
+	background:url(/browser/VAADIN/themes/myTheme/images/crumbs.gif) no-repeat right center;
+	display:block;
+	padding:0 15px 0 0;
+	}
+	
+.breadcrumb .v-button:active .v-button-wrap,
+.breadcrumb .v-button.v-pressed .v-button-wrap {
+	background:url(/browser/VAADIN/themes/myTheme/images/crumbs.gif) no-repeat right center;
+	display:block;
+	padding:0 15px 0 0;
+	}
+
+.breadcrumb .v-button,
+.breadcrumb .v-disabled.v-button {
+	background:url(/browser/VAADIN/themes/myTheme/images/crumbs.gif) no-repeat right center;
+	display:block;
+	padding:0 15px 0 0;
+	}
+	
+.breadcrumb .v-button-wrap,
+.breadcrumb .v-disabled.v-button .v-button-wrap {
+	background:url(/browser/VAADIN/themes/myTheme/images/crumbs.gif) no-repeat right center;
+	display:block;
+	padding:0 15px 0 0;
+	}
+	
+.breadcrumb .v-button-caption {
+	background:url(/browser/VAADIN/themes/myTheme/images/crumbs.gif) no-repeat right center;
+	display:block;
+	padding:0 15px 0 0;
+	}	
