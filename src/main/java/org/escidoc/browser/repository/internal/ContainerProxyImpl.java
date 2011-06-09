@@ -36,7 +36,6 @@ import org.escidoc.browser.repository.ContainerProxy;
 
 import com.google.common.base.Preconditions;
 
-import de.escidoc.core.common.exceptions.remote.system.SystemException;
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.MetadataRecords;
 import de.escidoc.core.resources.common.versionhistory.Version;
@@ -98,7 +97,7 @@ public class ContainerProxyImpl implements ContainerProxy {
      */
     @Override
     public String getStatus() {
-        return containerFromCore.getProperties().getPublicStatus();
+        return containerFromCore.getProperties().getPublicStatusComment();
     }
 
     /*
@@ -158,14 +157,14 @@ public class ContainerProxyImpl implements ContainerProxy {
      */
     @Override
     public VersionHistory getPreviousVersion() {
-        if (containerFromCore.getVersionNumber() > 1) {
-            try {
-                return containerFromCore.getVersionHistory();
-            }
-            catch (final SystemException e) {
-                return null;
-            }
-        }
+        // if (containerFromCore.getVersionNumber() > 1) {
+        // try {
+        // return containerFromCore.getVersionHistory();
+        // }
+        // catch (final SystemException e) {
+        // return null;
+        // }
+        // }
         return null;
     }
 
@@ -176,16 +175,11 @@ public class ContainerProxyImpl implements ContainerProxy {
 
     @Override
     public Collection<Version> getVersionHistory() {
-        try {
+        // final VersionHistory vh = containerFromCore.getVersionHistory();
+        // final Collection<Version> v = vh.getVersions();
+        // return v;
 
-            final VersionHistory vh = containerFromCore.getVersionHistory();
-            final Collection<Version> v = vh.getVersions();
-            return v;
-        }
-        catch (final SystemException e) {
-            return null;
-            // e.printStackTrace();
-        }
+        return null;
     }
 
     @Override

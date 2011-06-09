@@ -55,6 +55,7 @@ public class ResourceContainerImpl implements ResourceContainer {
         this.topLevelResources = topLevelResources;
     }
 
+    @Override
     public void init() {
         addProperties();
         addTopLevel();
@@ -119,11 +120,15 @@ public class ResourceContainerImpl implements ResourceContainer {
         Preconditions.checkNotNull(children, "children is null: %s", children);
 
         for (final ResourceModel child : children) {
-            bind(add(child), child);
-            assignParent(parent, child);
-            container.setChildrenAllowed(child, isNotItem(child));
+            addChild(parent, child);
         }
 
+    }
+
+    public void addChild(final ResourceModel parent, final ResourceModel child) {
+        bind(add(child), child);
+        assignParent(parent, child);
+        container.setChildrenAllowed(child, isNotItem(child));
     }
 
     private boolean isNotItem(final ResourceModel child) {

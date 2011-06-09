@@ -34,7 +34,6 @@ import java.util.List;
 import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.repository.ItemProxy;
 
-import de.escidoc.core.common.exceptions.remote.system.SystemException;
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.MetadataRecords;
 import de.escidoc.core.resources.common.Relation;
@@ -67,12 +66,12 @@ public class ItemProxyImpl implements ItemProxy {
 
     @Override
     public String getDescription() {
-        return itemFromCore.getProperties().getDescription();
+        return null;
     }
 
     @Override
     public String getStatus() {
-        return itemFromCore.getProperties().getPublicStatus();
+        return itemFromCore.getProperties().getPublicStatusComment();
     }
 
     @Override
@@ -107,12 +106,8 @@ public class ItemProxyImpl implements ItemProxy {
     @Override
     public VersionHistory getPreviousVersion() {
         if (itemFromCore.getVersionNumber() > 1)
-            try {
-                return itemFromCore.getVersionHistory();
-            }
-            catch (SystemException e) {
-                return null;
-            }
+            // return it from the ItemHandler
+            return null;
         return null;
     }
 

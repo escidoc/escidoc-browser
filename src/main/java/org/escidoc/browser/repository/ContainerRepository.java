@@ -58,8 +58,7 @@ import de.escidoc.core.client.interfaces.ContainerHandlerClientInterface;
 import de.escidoc.core.resources.common.Relations;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.om.container.Container;
-import de.escidoc.core.resources.sb.Record;
-import de.escidoc.core.resources.sb.search.records.ResourceRecord;
+import de.escidoc.core.resources.sb.search.SearchResultRecord;
 
 public class ContainerRepository implements Repository {
 
@@ -95,19 +94,14 @@ public class ContainerRepository implements Repository {
         TransportException {
 
         final List<ResourceModel> results = new ArrayList<ResourceModel>();
-        for (final Record<?> record : findAllDirectMembers(id)) {
-            if (record instanceof ResourceRecord) {
-                Util.addToResults(results, record);
-            }
-            else {
-                LOG.warn("Unrecognized type: " + record.getClass());
-            }
+        for (final SearchResultRecord record : findAllDirectMembers(id)) {
+            Util.addToResults(results, record.getRecordData());
         }
 
         return results;
     }
 
-    private Collection<Record<?>> findAllDirectMembers(final String id) throws EscidocException,
+    private List<SearchResultRecord> findAllDirectMembers(final String id) throws EscidocException,
         InternalClientException, TransportException {
         return client.retrieveMembers(client.retrieve(id), new SearchRetrieveRequestType()).getRecords();
     }
@@ -152,5 +146,9 @@ public class ContainerRepository implements Repository {
     public ResourceModel findContext(final HasNoNameResource resource) throws EscidocClientException {
         return new ContextModel(((ContainerProxy) findById(resource.getId())).getContext());
 
+    }
+
+    public Container create(Container newContainer) throws EscidocClientException {
+        return client.create(newContainer);
     }
 }

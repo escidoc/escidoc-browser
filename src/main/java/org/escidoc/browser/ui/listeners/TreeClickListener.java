@@ -97,9 +97,11 @@ public class TreeClickListener implements ItemClickListener {
 
     @Override
     public void itemClick(final ItemClickEvent event) {
+
         final ResourceModel clickedResource = (ResourceModel) event.getItemId();
 
         if (ContextModel.isContext(clickedResource)) {
+
             try {
                 openInNewTab(
                     new ContextView(serviceLocation, mainSite, tryToFindResource(contextRepository, clickedResource),
@@ -108,6 +110,7 @@ public class TreeClickListener implements ItemClickListener {
             catch (final EscidocClientException e) {
                 showErrorMessageToUser(clickedResource, e);
             }
+
         }
 
         else if (ContainerModel.isContainer(clickedResource)) {

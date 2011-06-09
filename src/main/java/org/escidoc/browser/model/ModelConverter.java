@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.ResourceType;
-import de.escidoc.core.resources.om.GenericVersionableResource;
+import de.escidoc.core.resources.VersionableResource;
 import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.om.context.Context;
 import de.escidoc.core.resources.om.item.Item;
@@ -88,8 +88,7 @@ public final class ModelConverter {
         return models;
     }
 
-    public final static List<ResourceModel> genericResourcetoModel(
-        final Collection<GenericVersionableResource> resources) {
+    public final static List<ResourceModel> genericResourcetoModel(final Collection<VersionableResource> resources) {
 
         final List<ResourceModel> models = new ArrayList<ResourceModel>(resources.size());
 
@@ -113,10 +112,10 @@ public final class ModelConverter {
     }
 
     private static boolean isContainer(final Resource containerOrItem) {
-        return containerOrItem.getResourceType().equals(ResourceType.Container);
+        return containerOrItem.getResourceType() == ResourceType.CONTAINER;
     }
 
     private static boolean isItem(final Resource containerOrItem) {
-        return containerOrItem.getResourceType().equals(ResourceType.Item);
+        return containerOrItem.getResourceType() == ResourceType.ITEM;
     }
 }

@@ -28,23 +28,53 @@
  */
 package org.escidoc.browser.ui;
 
+import java.net.MalformedURLException;
+
+import org.escidoc.browser.model.ContextModel;
+import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.PropertyId;
 import org.escidoc.browser.model.ResourceContainer;
 import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.repository.ContainerRepository;
+import org.escidoc.browser.repository.Repository;
+import org.escidoc.browser.ui.listeners.TreeCreateContainer;
 
+import com.vaadin.event.Action;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.event.MouseEvents.ClickEvent;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.ExpandListener;
 
+import de.escidoc.core.client.exceptions.EscidocException;
+import de.escidoc.core.client.exceptions.InternalClientException;
+import de.escidoc.core.client.exceptions.TransportException;
+
 @SuppressWarnings("serial")
-public class NavigationTreeViewImpl extends CustomComponent implements NavigationTreeView {
+public class NavigationTreeViewImpl extends CustomComponent implements Action.Handler, NavigationTreeView {
 
     private final Tree tree = new Tree();
 
-    public NavigationTreeViewImpl(final MainSite mainSite) {
+    // Actions for the context menu
+    private static final Action ACTION_ADD_CONTAINER = new Action("Add Container");
+
+    private static final Action ACTION_ADD_ITEM = new Action("Add Item");
+
+    private static final Action[] ACTIONS = new Action[] { ACTION_ADD_CONTAINER, ACTION_ADD_ITEM };
+
+    private final ContainerRepository containerRepo;
+
+    private final EscidocServiceLocation serviceLocation;
+
+    private ResourceContainer container;
+
+    public NavigationTreeViewImpl(Repository containerRepository, EscidocServiceLocation serviceLocation) {
+        this.containerRepo = (ContainerRepository) containerRepository;
+        this.serviceLocation = serviceLocation;
         setCompositionRoot(tree);
+        tree.setImmediate(true);
+        tree.addActionHandler(this);
     }
 
     @Override
@@ -64,6 +94,7 @@ public class NavigationTreeViewImpl extends CustomComponent implements Navigatio
 
     @Override
     public void setDataSource(final ResourceContainer container, final MainSite mainSite) {
+        this.container = container;
         tree.setContainerDataSource(container.getContainer());
         tree.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
         tree.setItemCaptionPropertyId(PropertyId.NAME);
@@ -71,4 +102,64 @@ public class NavigationTreeViewImpl extends CustomComponent implements Navigatio
         tree.setItemIconPropertyId(PropertyId.ICON);
         tree.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
     }
+
+    @Override
+    public void handleAction(Action action, Object sender, Object target) {
+        if (!(target instanceof ContextModel)) {
+            return;
+        }
+
+        ContextModel contextId = (ContextModel) target;
+
+        if (action == ACTION_ADD_CONTAINER) {
+            TreeCreateContainer tcc =
+                new TreeCreateContainer(target, serviceLocation, getWindow(), tree, containerRepo, container);
+            try {
+                tcc.addContainerForm();
+            }
+            catch (EscidocException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            catch (MalformedURLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            catch (InternalClientException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            catch (TransportException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        else if (action == ACTION_ADD_ITEM) {
+            // Object parent = tree.getParent(target);
+            // tree.removeItem(target);
+            // // If the deleted object's parent has no more children, set it's
+            // // childrenallowed property to false (= leaf node)
+            // if (parent != null && tree.getChildren(parent).size() == 0) {
+            // tree.setChildrenAllowed(parent, false);
+            // }
+        }
+
+    }
+
+    @Override
+    public Action[] getActions(Object target, Object sender) {
+
+        return ACTIONS;
+    }
+
+    public void buttonClick(ClickEvent event) {
+        // If the edited value contains something, set it to be the item's new
+        // 'name' property
+        // if (!editor.getValue().equals("")) {
+        // Item item = tree.getItem(tree.getValue());
+        // Property name = item.getItemProperty("name");
+        // name.setValue(editor.getValue());
+        // }
+    }
+
 }

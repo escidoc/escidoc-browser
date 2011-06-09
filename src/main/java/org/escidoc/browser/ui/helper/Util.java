@@ -47,11 +47,18 @@ import com.google.common.base.Preconditions;
 
 import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.om.item.Item;
-import de.escidoc.core.resources.sb.Record;
-import de.escidoc.core.resources.sb.search.records.ResourceRecord;
+import de.escidoc.core.resources.sb.search.SearchResult;
 
 public final class Util {
+
     private static final Logger LOG = LoggerFactory.getLogger(EscidocParameterHandlerImpl.class);
+
+    /**
+     * No instance allowed for utility classes.
+     */
+    private Util() {
+
+    }
 
     public final static boolean isEscidocUrlExists(final Map<String, String[]> parameters) {
         Preconditions.checkNotNull(parameters, "parameters is null: %s", parameters);
@@ -98,46 +105,19 @@ public final class Util {
         return topLevelContainerQuery;
     }
 
-    public static final void addToResults(final List<ResourceModel> results, final Record<?> record) {
+    public static final void addToResults(final List<ResourceModel> results, final SearchResult searchResult) {
         Preconditions.checkNotNull(results, "results is null: %s", results);
-        Preconditions.checkNotNull(record, "record is null: %s", record);
-        if (isContainer(record)) {
-            results.add(toContainerModel(record));
+        Preconditions.checkNotNull(searchResult, "record is null: %s", searchResult);
+
+        if (searchResult.getContent() == null)
+            return;
+
+        if (searchResult.getContent() instanceof Container) {
+            results.add(new ContainerModel((Container) searchResult.getContent()));
         }
-        else if (isItem(record)) {
-            results.add(toItemModel(record));
+        else if (searchResult.getContent() instanceof Item) {
+            results.add(new ItemModel((Item) searchResult.getContent()));
         }
-    }
-
-    public static final boolean isItem(final Record<?> record) {
-        Preconditions.checkNotNull(record, "record is null: %s", record);
-        return ((ResourceRecord<?>) record).getRecordDataType().equals(Item.class);
-    }
-
-    public static final boolean isContainer(final Record<?> record) {
-        Preconditions.checkNotNull(record, "record is null: %s", record);
-        return ((ResourceRecord<?>) record).getRecordDataType().equals(Container.class);
-    }
-
-    public static final ResourceModel toItemModel(final Record<?> record) {
-        return new ItemModel(getSRWResourceRecordData(record, Item.class));
-    }
-
-    public static final ResourceModel toContainerModel(final Record<?> record) {
-        return new ContainerModel(getSRWResourceRecordData(record, Container.class));
-    }
-
-    @SuppressWarnings("unchecked")
-    public static final <T> T getSRWResourceRecordData(final Record<?> record, final Class<T> resource) {
-        Preconditions.checkNotNull(record, "record is null: %s", record);
-        Preconditions.checkNotNull(resource, "resource is null: %s", resource);
-
-        if (record instanceof ResourceRecord<?>) {
-            if (((ResourceRecord<?>) ((ResourceRecord<?>) record)).getRecordDataType() == resource) {
-                return (T) record.getRecordData();
-            }
-        }
-        throw new RuntimeException("Unrecognized type: " + record.getClass());
     }
 
     public static URI parseEscidocUriFrom(final Map<String, String[]> parameters) throws URISyntaxException {
@@ -155,9 +135,9 @@ public final class Util {
 
     private static String topLevelItems(final String id) {
         final StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("top-level-items=true OR \"/properties/context/id=");
+        stringBuilder.append("\"top-level-items\"=true OR \"/properties/context/id\"=");
         stringBuilder.append(id);
-        stringBuilder.append("\"");
+        // stringBuilder.append("\"");
         final String topLevelContainerQuery = stringBuilder.toString();
         return topLevelContainerQuery;
     }

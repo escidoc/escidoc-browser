@@ -28,7 +28,7 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import java.util.Collection;
+import java.util.List;
 
 import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.EscidocServiceLocation;
@@ -63,10 +63,11 @@ import com.vaadin.ui.themes.BaseTheme;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.Resource;
-import de.escidoc.core.resources.sb.Record;
+import de.escidoc.core.resources.om.container.Container;
+import de.escidoc.core.resources.om.context.Context;
+import de.escidoc.core.resources.sb.search.SearchResult;
 import de.escidoc.core.resources.sb.search.SearchResultRecord;
 import de.escidoc.core.resources.sb.search.SearchRetrieveResponse;
-import de.escidoc.core.resources.sb.search.records.SearchResultRecordRecord;
 
 public class SearchResultsView extends VerticalLayout {
 
@@ -173,38 +174,44 @@ public class SearchResultsView extends VerticalLayout {
 
         tblPagedResults = createPagedTable(cssLayout);
 
-        Collection<Record<?>> records = results.getRecords();
+        List<SearchResultRecord> records = results.getRecords();
 
         IndexedContainer container = createPagedTableItemContainer();
 
         // Adding items in the container
         int i = 0;
-        for (Record<?> record : records) {
-            SearchResultRecord s = ((SearchResultRecordRecord) record).getRecordData();
-            if (s.getContent().getResourceType().toString().equals("Container")) {
+        for (SearchResultRecord record : records) {
+            SearchResult s = record.getRecordData();
+            if (s.getContent() instanceof Container) {
                 // resourceProxy = (ContainerProxyImpl) rmf.find(s.getContent().getObjid(), ResourceType.CONTAINER);
                 // Resource container = s.getContent();
-                resourceProxy =
-                    new ContainerProxyImpl((de.escidoc.core.resources.om.container.Container) s.getContent());
+                resourceProxy = new ContainerProxyImpl((Container) s.getContent());
             }
-            else if (s.getContent().getResourceType().toString().equals("Item")) {
-                Resource item = s.getContent();
+            else if (s.getContent() instanceof de.escidoc.core.resources.om.item.Item) {
+                Resource item = (de.escidoc.core.resources.om.item.Item) s.getContent();
                 resourceProxy = new ItemProxyImpl((de.escidoc.core.resources.om.item.Item) item);
                 // resourceProxy = (ItemProxyImpl) rmf.find(s.getContent().getObjid(), ResourceType.ITEM);
             }
-            else if (s.getContent().getResourceType().toString().equals("Context")) {
+            else if (s.getContent() instanceof Context) {
                 // resourceProxy = (ContextProxyImpl) rmf.find(s.getContent().getObjid(), ResourceType.CONTEXT);
-                Resource resource = s.getContent();
-                resourceProxy = new ContextProxyImpl((de.escidoc.core.resources.om.context.Context) resource);
+                Resource resource = (Context) s.getContent();
+                resourceProxy = new ContextProxyImpl((Context) resource);
             }
+
+            // CHECK NAME ON RESOURCETYPE
+            Resource r = (Resource) s.getContent();
+            System.out.println(r.getResourceType());
+
+            // TODO fix this! Resource name should be dynamic
             // The third argument should be the resourceProxy.xLinkTitle() so we show it on the header of the Tab
-            Object[] variablesForTheTab =
-                { s.getContent().getResourceType().toString(), resourceProxy.getId(), resourceProxy.getId() };
+            // Object[] variablesForTheTab =
+            // { s.getContent().getResourceType().toString(), resourceProxy.getId(), resourceProxy.getId() };
+            Object[] variablesForTheTab = { "Container", resourceProxy.getId(), resourceProxy.getId() };
 
             Item item = container.addItem(variablesForTheTab);
             item.getItemProperty("Type").setValue(
-                new Label("<img src= \"/browser/VAADIN/themes/myTheme/images/"
-                    + s.getContent().getResourceType().toString() + ".png\" />", Label.CONTENT_RAW));
+                new Label("<img src= \"/browser/VAADIN/themes/myTheme/images/" + "Container.png\" />",
+                    Label.CONTENT_RAW));
             item.getItemProperty("Name").setValue(resourceProxy.getId());
 
             item.getItemProperty("Date Created").setValue(resourceProxy.getCreatedOn());
