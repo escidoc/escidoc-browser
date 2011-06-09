@@ -28,15 +28,19 @@
  */
 package org.escidoc.browser.ui;
 
-import java.net.MalformedURLException;
-
+import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.PropertyId;
 import org.escidoc.browser.model.ResourceContainer;
 import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.ResourceModelFactory;
+import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.repository.ContainerRepository;
+import org.escidoc.browser.repository.ContextRepository;
+import org.escidoc.browser.repository.ItemRepository;
 import org.escidoc.browser.repository.Repository;
+import org.escidoc.browser.repository.internal.ContainerProxyImpl;
 import org.escidoc.browser.ui.listeners.TreeCreateContainer;
 
 import com.vaadin.event.Action;
@@ -47,9 +51,7 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.ExpandListener;
 
-import de.escidoc.core.client.exceptions.EscidocException;
-import de.escidoc.core.client.exceptions.InternalClientException;
-import de.escidoc.core.client.exceptions.TransportException;
+import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
 public class NavigationTreeViewImpl extends CustomComponent implements Action.Handler, NavigationTreeView {
@@ -61,13 +63,19 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
 
     private static final Action ACTION_ADD_ITEM = new Action("Add Item");
 
-    private static final Action[] ACTIONS = new Action[] { ACTION_ADD_CONTAINER, ACTION_ADD_ITEM };
+    private static final Action ACTION_DELETE = new Action("Delete Resource");
+
+    private static final Action[] ACTIONS = new Action[] { ACTION_ADD_CONTAINER, ACTION_ADD_ITEM, ACTION_DELETE };
 
     private final ContainerRepository containerRepo;
 
     private final EscidocServiceLocation serviceLocation;
 
     private ResourceContainer container;
+
+    private ContainerProxyImpl resourceProxy = null;
+
+    private ContainerModel contModel = null;
 
     public NavigationTreeViewImpl(Repository containerRepository, EscidocServiceLocation serviceLocation) {
         this.containerRepo = (ContainerRepository) containerRepository;
@@ -105,36 +113,34 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
 
     @Override
     public void handleAction(Action action, Object sender, Object target) {
-        if (!(target instanceof ContextModel)) {
-            return;
+        String contextId = "";
+
+        if (target instanceof ContextModel) {
+            contextId = (((ContextModel) target).getId());
         }
+        else if (target instanceof ContainerModel) {
+            contModel = (ContainerModel) target;
+            ResourceModelFactory rmf =
+                new ResourceModelFactory(new ItemRepository(serviceLocation), new ContainerRepository(serviceLocation),
+                    new ContextRepository(serviceLocation));
+            try {
+                resourceProxy = (ContainerProxyImpl) rmf.find(contModel.getId(), ResourceType.CONTAINER);
+                contextId = resourceProxy.getContext().getObjid();
+            }
+            catch (EscidocClientException e) {
+                // TODO Not able to retrieve a ContainerProxy
+                e.printStackTrace();
+            }
 
-        ContextModel contextId = (ContextModel) target;
-
+        }
         if (action == ACTION_ADD_CONTAINER) {
             TreeCreateContainer tcc =
-                new TreeCreateContainer(target, serviceLocation, getWindow(), tree, containerRepo, container);
-            try {
-                tcc.addContainerForm();
-            }
-            catch (EscidocException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            catch (MalformedURLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            catch (InternalClientException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            catch (TransportException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+                new TreeCreateContainer(target, contextId, serviceLocation, getWindow(), containerRepo, container);
+            tcc.createContainer();
+            resourceProxy.setStruct(contModel.getId());
         }
         else if (action == ACTION_ADD_ITEM) {
+            getWindow().showNotification("Not implemented yet");
             // Object parent = tree.getParent(target);
             // tree.removeItem(target);
             // // If the deleted object's parent has no more children, set it's
@@ -142,6 +148,9 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
             // if (parent != null && tree.getChildren(parent).size() == 0) {
             // tree.setChildrenAllowed(parent, false);
             // }
+        }
+        else if (action == ACTION_DELETE) {
+            getWindow().showNotification("Not implemented yet");
         }
 
     }

@@ -7,7 +7,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContentModelService;
-import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceContainer;
 import org.escidoc.browser.model.ResourceModel;
@@ -20,7 +19,6 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.Tree;
 import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -42,13 +40,11 @@ public class TreeCreateContainer {
 
     private final Window mainWindow;
 
-    private final Tree menutree;
-
     private TextField editor;
 
     private Button change;
 
-    private final Object contextObj;
+    private final Object target;
 
     private final ContainerRepository containerRepo;
 
@@ -58,23 +54,26 @@ public class TreeCreateContainer {
 
     private final ResourceContainer resourceContainer;
 
+    private final String contextId;
+
     /**
      * @param target
+     * @param contextId
      * @param serviceLocation
      * @param window
      * @param tree
      * @param containerRepo
      * @param resourceContainer
      */
-    public TreeCreateContainer(Object target, EscidocServiceLocation serviceLocation, Window window, Tree tree,
+    public TreeCreateContainer(Object target, String contextId, EscidocServiceLocation serviceLocation, Window window,
         ContainerRepository containerRepo, ResourceContainer resourceContainer) {
 
-        this.contextObj = target;
+        this.target = target;
         this.serviceLocation = serviceLocation;
         this.mainWindow = window;
-        this.menutree = tree;
         this.containerRepo = containerRepo;
         this.resourceContainer = resourceContainer;
+        this.contextId = contextId;
     }
 
     // TODO heavy refactoring here
@@ -102,10 +101,8 @@ public class TreeCreateContainer {
 
     public void addContainerForm() throws EscidocException, MalformedURLException, InternalClientException,
         TransportException {
-
         HorizontalLayout editBar = new HorizontalLayout();
         editBar.setMargin(false, false, false, true);
-
         // textfield
         editor = new TextField("Container name");
         editor.setImmediate(true);
@@ -120,11 +117,9 @@ public class TreeCreateContainer {
         for (Resource resource : contentModels) {
             listContentModels.addItem(resource.getObjid());
         }
-
         editBar.addComponent(listContentModels);
         editBar.addComponent(change);
         editBar.setComponentAlignment(change, Alignment.BOTTOM_LEFT);
-
         subwindow = new Window("Create Container");
         subwindow.setWidth("600px");
         subwindow.setModal(true);
@@ -135,7 +130,6 @@ public class TreeCreateContainer {
     public void clickButtonaddContainer(ClickEvent event) {
         String containerName = editor.getValue().toString();
         String contentModelId = (String) listContentModels.getValue();
-        String contextId = (((ContextModel) contextObj).getId());
 
         // We really create the container here
         try {
@@ -166,7 +160,7 @@ public class TreeCreateContainer {
 
         try {
             Container create = containerRepo.create(newContainer);
-            resourceContainer.addChild((ResourceModel) contextObj, new ContainerModel(create));
+            resourceContainer.addChild((ResourceModel) target, new ContainerModel(create));
             subwindow.getParent().removeWindow(subwindow);
         }
         catch (EscidocClientException e) {

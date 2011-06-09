@@ -38,6 +38,9 @@ import com.google.common.base.Preconditions;
 
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.MetadataRecords;
+import de.escidoc.core.resources.common.structmap.ContainerMemberRef;
+import de.escidoc.core.resources.common.structmap.MemberRef;
+import de.escidoc.core.resources.common.structmap.StructMap;
 import de.escidoc.core.resources.common.versionhistory.Version;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.om.container.Container;
@@ -171,6 +174,19 @@ public class ContainerProxyImpl implements ContainerProxy {
     @Override
     public MetadataRecords getMedataRecords() {
         return containerFromCore.getMetadataRecords();
+    }
+
+    public StructMap getStructMap() {
+        return containerFromCore.getStructMap();
+    }
+
+    public void setStruct(String objId) {
+        StructMap stMap = getStructMap();
+
+        MemberRef m = new ContainerMemberRef(objId);
+
+        stMap.add(m);
+        containerFromCore.setStructMap(stMap);
     }
 
     @Override
