@@ -34,11 +34,7 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.PropertyId;
 import org.escidoc.browser.model.ResourceContainer;
 import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.model.ResourceModelFactory;
-import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.repository.ContainerRepository;
-import org.escidoc.browser.repository.ContextRepository;
-import org.escidoc.browser.repository.ItemRepository;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.repository.internal.ContainerProxyImpl;
 import org.escidoc.browser.ui.listeners.TreeCreateContainer;
@@ -73,7 +69,7 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
 
     private ResourceContainer container;
 
-    private ContainerProxyImpl resourceProxy = null;
+    private final ContainerProxyImpl resourceProxy = null;
 
     private ContainerModel contModel = null;
 
@@ -120,12 +116,8 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
         }
         else if (target instanceof ContainerModel) {
             contModel = (ContainerModel) target;
-            ResourceModelFactory rmf =
-                new ResourceModelFactory(new ItemRepository(serviceLocation), new ContainerRepository(serviceLocation),
-                    new ContextRepository(serviceLocation));
             try {
-                resourceProxy = (ContainerProxyImpl) rmf.find(contModel.getId(), ResourceType.CONTAINER);
-                contextId = resourceProxy.getContext().getObjid();
+                contextId = containerRepo.findById(contModel.getId()).getContext().getObjid();
             }
             catch (EscidocClientException e) {
                 // TODO Not able to retrieve a ContainerProxy
