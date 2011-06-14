@@ -13,10 +13,10 @@ import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.internal.ContainerBuilder;
 import org.escidoc.browser.repository.ContainerRepository;
 
-import com.vaadin.ui.Alignment;
+import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
@@ -40,15 +40,15 @@ public class TreeCreateContainer {
 
     private final Window mainWindow;
 
-    private TextField editor;
+    private TextField txtContName;
 
-    private Button change;
+    private Button btnAdd;
 
     private final Object target;
 
     private final ContainerRepository containerRepo;
 
-    private NativeSelect listContentModels;
+    private NativeSelect slcContentModl;
 
     private Window subwindow;
 
@@ -101,43 +101,56 @@ public class TreeCreateContainer {
 
     public void addContainerForm() throws EscidocException, MalformedURLException, InternalClientException,
         TransportException {
-        HorizontalLayout editBar = new HorizontalLayout();
-        editBar.setMargin(false, false, false, true);
-        // textfield
-        editor = new TextField("Container name");
-        editor.setImmediate(true);
-        editBar.addComponent(editor);
-        // apply-button
-        change = new Button("Apply", this, "clickButtonaddContainer");
+        FormLayout frmAddCont = new FormLayout();
+        frmAddCont.setImmediate(true);
 
-        listContentModels = new NativeSelect("Please select Content Model");
+        // textfield
+        txtContName = new TextField("Container name");
+
+        txtContName.setRequired(true);
+        txtContName.setRequiredError("Please enter a Container Name");
+        txtContName.addValidator(new StringLengthValidator("Container Name must be 3-25 characters", 3, 25, false));
+        txtContName.setImmediate(true);
+
+        slcContentModl = new NativeSelect("Please select Content Model");
+        slcContentModl.setRequired(true);
         ContentModelService cMS = new ContentModelService(serviceLocation);
 
         Collection<? extends Resource> contentModels = cMS.filterUsingInput("");
         for (Resource resource : contentModels) {
-            listContentModels.addItem(resource.getObjid());
+            slcContentModl.addItem(resource.getObjid());
         }
-        editBar.addComponent(listContentModels);
-        editBar.addComponent(change);
-        editBar.setComponentAlignment(change, Alignment.BOTTOM_LEFT);
+
+        // apply-button
+        btnAdd = new Button("Add", this, "clickButtonaddContainer");
+
+        frmAddCont.addComponent(txtContName);
+        frmAddCont.addComponent(slcContentModl);
+        frmAddCont.addComponent(btnAdd);
+
         subwindow = new Window("Create Container");
         subwindow.setWidth("600px");
         subwindow.setModal(true);
-        subwindow.addComponent(editBar);
+        subwindow.addComponent(frmAddCont);
         mainWindow.addWindow(subwindow);
     }
 
     public void clickButtonaddContainer(ClickEvent event) {
-        String containerName = editor.getValue().toString();
-        String contentModelId = (String) listContentModels.getValue();
+        if (txtContName.isValid() && slcContentModl.isValid()) {
+            String containerName = txtContName.getValue().toString();
+            String contentModelId = (String) slcContentModl.getValue();
 
-        // We really create the container here
-        try {
-            createNewContainer(containerName, contentModelId, contextId);
+            // We really create the container here
+            try {
+                createNewContainer(containerName, contentModelId, contextId);
+            }
+            catch (ParserConfigurationException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
-        catch (ParserConfigurationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        else {
+            mainWindow.showNotification("Please fill in all the required elements", 1);
         }
 
     }
