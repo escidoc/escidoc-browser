@@ -3,8 +3,6 @@ package org.escidoc.browser.model.internal;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -22,8 +20,6 @@ public class ContainerBuilder {
     private static final String ESCIDOC = "escidoc";
 
     private static final String DC_NAMESPACE = "http://purl.org/dc/elements/1.1/";
-
-    private static final Logger LOG = LoggerFactory.getLogger(ItemBuilder.Builder.class);
 
     private final Container container = new Container();
 
@@ -51,11 +47,10 @@ public class ContainerBuilder {
     private Container tryBuildNewContainer(String containerName) {
         try {
             setContainerName(containerName);
-            setItemProperties();
+            setContainerProperties();
             return container;
         }
         catch (ParserConfigurationException e) {
-            LOG.error("Error creating a XML document. " + e.getMessage(), e);
             throw new RuntimeException(e);
         }
 
@@ -69,7 +64,7 @@ public class ContainerBuilder {
         return DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
     }
 
-    private void setItemProperties() {
+    private void setContainerProperties() {
         containerProps.setContext(contextRef);
         containerProps.setContentModel(contentModelRef);
         container.setProperties(containerProps);

@@ -5,13 +5,13 @@ import java.util.Collection;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContentModelService;
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ResourceContainer;
 import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.model.internal.ContainerBuilder;
-import org.escidoc.browser.repository.ContainerRepository;
+import org.escidoc.browser.model.internal.ItemBuilder;
+import org.escidoc.browser.repository.ItemRepository;
 
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.Button;
@@ -28,58 +28,44 @@ import de.escidoc.core.client.exceptions.TransportException;
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.reference.ContentModelRef;
 import de.escidoc.core.resources.common.reference.ContextRef;
-import de.escidoc.core.resources.om.container.Container;
+import de.escidoc.core.resources.om.item.Item;
 
-/**
- * @author ajb
- * 
- */
-public class TreeCreateContainer {
+public class TreeCreateItem {
 
-    private final EscidocServiceLocation serviceLocation;
+    public Object target;
 
-    private final Window mainWindow;
+    public String contextId;
 
-    private TextField txtContName;
+    public EscidocServiceLocation serviceLocation;
+
+    public ItemRepository itemRepository;
+
+    public ResourceContainer resourceContainer;
+
+    private TextField txtItemName;
 
     private Button btnAdd;
-
-    private final Object target;
-
-    private final ContainerRepository containerRepo;
 
     private NativeSelect slcContentModl;
 
     private Window subwindow;
 
-    private final ResourceContainer resourceContainer;
+    private final Window mainWindow;
 
-    private final String contextId;
-
-    /**
-     * @param target
-     * @param contextId
-     * @param serviceLocation
-     * @param window
-     * @param tree
-     * @param containerRepo
-     * @param resourceContainer
-     */
-    public TreeCreateContainer(Object target, String contextId, EscidocServiceLocation serviceLocation, Window window,
-        ContainerRepository containerRepo, ResourceContainer resourceContainer) {
-
+    public TreeCreateItem(Object target, String contextId, EscidocServiceLocation serviceLocation, Window window,
+        ItemRepository containerRepo, ResourceContainer container) {
         this.target = target;
+        this.contextId = contextId;
         this.serviceLocation = serviceLocation;
         this.mainWindow = window;
-        this.containerRepo = containerRepo;
-        this.resourceContainer = resourceContainer;
-        this.contextId = contextId;
+        this.itemRepository = containerRepo;
+        this.resourceContainer = container;
     }
 
     // TODO heavy refactoring here
-    public void createContainer() {
+    public void createItem() {
         try {
-            addContainerForm();
+            addItemForm();
         }
         catch (EscidocException e) {
             // TODO Auto-generated catch block
@@ -99,18 +85,19 @@ public class TreeCreateContainer {
         }
     }
 
-    public void addContainerForm() throws EscidocException, MalformedURLException, InternalClientException,
+    public void addItemForm() throws EscidocException, MalformedURLException, InternalClientException,
         TransportException {
         FormLayout frmAddCont = new FormLayout();
         frmAddCont.setImmediate(true);
 
         // textfield
-        txtContName = new TextField("Container name");
 
-        txtContName.setRequired(true);
-        txtContName.setRequiredError("Please enter a Container Name");
-        txtContName.addValidator(new StringLengthValidator("Container Name must be 3-25 characters", 3, 25, false));
-        txtContName.setImmediate(true);
+        txtItemName = new TextField("Item name");
+
+        txtItemName.setRequired(true);
+        txtItemName.setRequiredError("Please enter an Item Name");
+        txtItemName.addValidator(new StringLengthValidator("Item Name must be 3-25 characters", 3, 25, false));
+        txtItemName.setImmediate(true);
 
         slcContentModl = new NativeSelect("Please select Content Model");
         slcContentModl.setRequired(true);
@@ -124,11 +111,11 @@ public class TreeCreateContainer {
         // apply-button
         btnAdd = new Button("Add", this, "clickButtonaddContainer");
 
-        frmAddCont.addComponent(txtContName);
+        frmAddCont.addComponent(txtItemName);
         frmAddCont.addComponent(slcContentModl);
         frmAddCont.addComponent(btnAdd);
 
-        subwindow = new Window("Create Container");
+        subwindow = new Window("Create Item");
         subwindow.setWidth("600px");
         subwindow.setModal(true);
         subwindow.addComponent(frmAddCont);
@@ -136,17 +123,16 @@ public class TreeCreateContainer {
     }
 
     public void clickButtonaddContainer(ClickEvent event) {
-        if (txtContName.isValid() && slcContentModl.isValid()) {
-            String containerName = txtContName.getValue().toString();
+        if (txtItemName.isValid() && slcContentModl.isValid()) {
+            String containerName = txtItemName.getValue().toString();
             String contentModelId = (String) slcContentModl.getValue();
 
             // We really create the container here
             try {
-                createNewContainer(containerName, contentModelId, contextId);
+                createNewItem(containerName, contentModelId, contextId);
             }
             catch (ParserConfigurationException e) {
-                mainWindow.showNotification(
-                    "Not able to create a new Container for you. Please contact the developers", 1);
+                mainWindow.showNotification("Not able to create a new Item for you. Please contact the developers", 1);
             }
         }
         else {
@@ -160,20 +146,19 @@ public class TreeCreateContainer {
      * 
      * @param contextId
      * @param contentModelId
-     * @param containerName
+     * @param itemContainer
      * @throws ParserConfigurationException
      * 
      */
-    private void createNewContainer(String containerName, String contentModelId, String contextId)
+    private void createNewItem(String itemName, String contentModelId, String contextId)
         throws ParserConfigurationException {
 
-        ContainerBuilder cntBuild =
-            new ContainerBuilder(new ContextRef(contextId), new ContentModelRef(contentModelId));
-        Container newContainer = cntBuild.build(containerName);
+        ItemBuilder itmBuild = new ItemBuilder(new ContextRef(contextId), new ContentModelRef(contentModelId));
+        Item newItem = itmBuild.build(itemName);
 
         try {
-            Container create = containerRepo.create(newContainer);
-            resourceContainer.addChild((ResourceModel) target, new ContainerModel(create));
+            Item create = itemRepository.create(newItem);
+            resourceContainer.addChild((ResourceModel) target, new ItemModel(create));
             subwindow.getParent().removeWindow(subwindow);
         }
         catch (EscidocClientException e) {

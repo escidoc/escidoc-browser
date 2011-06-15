@@ -31,13 +31,16 @@ package org.escidoc.browser.ui;
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.PropertyId;
 import org.escidoc.browser.model.ResourceContainer;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.repository.ContainerRepository;
+import org.escidoc.browser.repository.ItemRepository;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.repository.internal.ContainerProxyImpl;
 import org.escidoc.browser.ui.listeners.TreeCreateContainer;
+import org.escidoc.browser.ui.listeners.TreeCreateItem;
 
 import com.vaadin.event.Action;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
@@ -65,6 +68,8 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
 
     private final ContainerRepository containerRepo;
 
+    private final ItemRepository itemRepo;
+
     private final EscidocServiceLocation serviceLocation;
 
     private ResourceContainer container;
@@ -73,8 +78,10 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
 
     private ContainerModel contModel = null;
 
-    public NavigationTreeViewImpl(Repository containerRepository, EscidocServiceLocation serviceLocation) {
+    public NavigationTreeViewImpl(Repository containerRepository, Repository itemRepository,
+        EscidocServiceLocation serviceLocation) {
         this.containerRepo = (ContainerRepository) containerRepository;
+        this.itemRepo = (ItemRepository) itemRepository;
         this.serviceLocation = serviceLocation;
         setCompositionRoot(tree);
         tree.setImmediate(true);
@@ -123,7 +130,16 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
                 // TODO Not able to retrieve a ContainerProxy
                 e.printStackTrace();
             }
-
+        }
+        else if (target instanceof ItemModel) {
+            contModel = (ContainerModel) target;
+            try {
+                contextId = itemRepo.findById(contModel.getId()).getContext().getObjid();
+            }
+            catch (EscidocClientException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
         if (action == ACTION_ADD_CONTAINER) {
             TreeCreateContainer tcc =
@@ -132,14 +148,9 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
             resourceProxy.setStruct(contModel.getId());
         }
         else if (action == ACTION_ADD_ITEM) {
-            getWindow().showNotification("Not implemented yet");
-            // Object parent = tree.getParent(target);
-            // tree.removeItem(target);
-            // // If the deleted object's parent has no more children, set it's
-            // // childrenallowed property to false (= leaf node)
-            // if (parent != null && tree.getChildren(parent).size() == 0) {
-            // tree.setChildrenAllowed(parent, false);
-            // }
+            TreeCreateItem tci =
+                new TreeCreateItem(target, contextId, serviceLocation, getWindow(), itemRepo, container);
+            tci.createItem();
         }
         else if (action == ACTION_DELETE) {
             getWindow().showNotification("Not implemented yet");

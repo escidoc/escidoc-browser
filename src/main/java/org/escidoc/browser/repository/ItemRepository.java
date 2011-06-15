@@ -47,6 +47,7 @@ import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.client.interfaces.ItemHandlerClientInterface;
 import de.escidoc.core.resources.common.Relations;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
+import de.escidoc.core.resources.om.item.Item;
 
 public class ItemRepository implements Repository {
 
@@ -88,6 +89,10 @@ public class ItemRepository implements Repository {
     @Override
     public void loginWith(final String handle) throws InternalClientException {
         client.setHandle(handle);
+    }
+
+    public Item create(Item newItem) throws EscidocClientException {
+        return client.create(newItem);
     }
 
 }
