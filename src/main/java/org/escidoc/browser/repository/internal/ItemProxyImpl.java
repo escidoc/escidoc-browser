@@ -71,7 +71,7 @@ public class ItemProxyImpl implements ItemProxy {
 
     @Override
     public String getStatus() {
-        return itemFromCore.getProperties().getPublicStatusComment();
+        return itemFromCore.getProperties().getPublicStatus().toString().toLowerCase();
     }
 
     @Override

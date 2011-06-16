@@ -68,7 +68,7 @@ public class ContextProxyImpl implements ResourceProxy {
 
     @Override
     public String getStatus() {
-        return contextFromCore.getProperties().getPublicStatusComment();
+        return contextFromCore.getProperties().getPublicStatus().toString().toLowerCase();
     }
 
     @Override

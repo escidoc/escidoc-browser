@@ -10,6 +10,7 @@ import com.google.common.base.Preconditions;
 
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.MetadataRecords;
+import de.escidoc.core.resources.common.properties.PublicStatus;
 import de.escidoc.core.resources.common.reference.ContentModelRef;
 import de.escidoc.core.resources.common.reference.ContextRef;
 import de.escidoc.core.resources.om.container.Container;
@@ -67,6 +68,7 @@ public class ContainerBuilder {
     private void setContainerProperties() {
         containerProps.setContext(contextRef);
         containerProps.setContentModel(contentModelRef);
+        containerProps.setPublicStatus(PublicStatus.RELEASED);
         container.setProperties(containerProps);
     }
 

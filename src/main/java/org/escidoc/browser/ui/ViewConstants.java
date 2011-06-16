@@ -64,4 +64,6 @@ public class ViewConstants {
     public static final String GUEST = "Guest";
 
     public static final String CURRENT_USER = "User: ";
+
+    public static final String EMPTY_STRING = "";
 }

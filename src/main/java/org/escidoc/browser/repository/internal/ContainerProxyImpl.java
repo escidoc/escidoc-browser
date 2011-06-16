@@ -100,7 +100,7 @@ public class ContainerProxyImpl implements ContainerProxy {
      */
     @Override
     public String getStatus() {
-        return containerFromCore.getProperties().getPublicStatusComment();
+        return containerFromCore.getProperties().getPublicStatus().toString().toLowerCase();
     }
 
     /*

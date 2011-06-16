@@ -28,11 +28,17 @@
  */
 package org.escidoc.browser;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Map;
 
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.internal.EscidocServiceLocationImpl;
+import org.escidoc.browser.service.PdpRequest;
+import org.escidoc.browser.service.PdpRequestImpl;
+import org.escidoc.browser.service.PdpService;
+import org.escidoc.browser.service.PdpServiceImpl;
 import org.escidoc.browser.ui.MainSite;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.helper.EscidocParameterHandler;
@@ -51,6 +57,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.aa.useraccount.UserAccount;
 
 @SuppressWarnings("serial")
 public class BrowserApplication extends Application {
@@ -69,12 +76,17 @@ public class BrowserApplication extends Application {
 
     private Map<String, String[]> parameters;
 
+    private PdpService pdpService;
+
+    private PdpRequest pdpRequest;
+
     @Override
     public void init() {
         setApplicationTheme();
         setMainWindow();
         addParameterHandler();
         addWindowDimensionDetection();
+        // createPdpRequest();
     }
 
     private void setApplicationTheme() {
@@ -169,5 +181,27 @@ public class BrowserApplication extends Application {
 
     public EscidocServiceLocation getServiceLocation() {
         return serviceLocation;
+    }
+
+    private void createPdpService() {
+        URL u = null;
+        try {
+            u = new URL(serviceLocation.getEscidocUri());
+        }
+        catch (MalformedURLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        pdpService = new PdpServiceImpl(u);
+
+    }
+
+    private void createPdpRequest() {
+        createPdpService();
+        pdpRequest = new PdpRequestImpl(pdpService, (UserAccount) getUser());
+    }
+
+    public PdpRequest getPdpRequest() {
+        return pdpRequest;
     }
 }

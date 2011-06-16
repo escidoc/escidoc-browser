@@ -64,7 +64,12 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
 
     private static final Action ACTION_DELETE = new Action("Delete Resource");
 
-    private static final Action[] ACTIONS = new Action[] { ACTION_ADD_CONTAINER, ACTION_ADD_ITEM, ACTION_DELETE };
+    private static final Action[] ACTIONSCONTAINER = new Action[] { ACTION_ADD_CONTAINER, ACTION_ADD_ITEM,
+        ACTION_DELETE };
+
+    private static final Action ACTION_ADD_COMPONENT = new Action("Add Component");
+
+    private static final Action[] ACTIONSITEM = new Action[] { ACTION_ADD_COMPONENT };
 
     private final ContainerRepository containerRepo;
 
@@ -155,13 +160,18 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
         else if (action == ACTION_DELETE) {
             getWindow().showNotification("Not implemented yet");
         }
+        else if (action == ACTION_ADD_COMPONENT) {
+            getWindow().showNotification("Not implemented yet");
+        }
 
     }
 
     @Override
     public Action[] getActions(Object target, Object sender) {
-
-        return ACTIONS;
+        if (target instanceof ItemModel) {
+            return ACTIONSITEM;
+        }
+        return ACTIONSCONTAINER;
     }
 
     public void buttonClick(ClickEvent event) {
