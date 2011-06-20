@@ -79,7 +79,6 @@ public class EscidocParameterHandlerImpl implements EscidocParameterHandler {
             doLogin(parameters);
         }
         else if (Util.isEscidocUrlExists(parameters) && hasNotEscidocHandler(parameters)) {
-
             if (isServerOnline(tryToParseEscidocUriFromParameter(parameters))) {
                 setEscidocUri(parameters);
                 app.setServiceLocation(serviceLocation);

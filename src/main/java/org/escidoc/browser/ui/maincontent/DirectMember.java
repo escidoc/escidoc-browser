@@ -76,7 +76,7 @@ public class DirectMember {
         this.currentUser = currentUser;
 
         initRepositories(serviceLocation);
-        navigationTreeBuilder = new NavigationTreeBuilder(serviceLocation, currentUser);
+        navigationTreeBuilder = new NavigationTreeBuilder(serviceLocation, currentUser, mainSite.getPdpService());
     }
 
     private void initRepositories(final EscidocServiceLocation serviceLocation) {

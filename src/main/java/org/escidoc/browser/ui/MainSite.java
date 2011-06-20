@@ -28,6 +28,8 @@
  */
 package org.escidoc.browser.ui;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Map;
 
 import org.escidoc.browser.AppConstants;
@@ -43,6 +45,8 @@ import org.escidoc.browser.repository.ContextRepository;
 import org.escidoc.browser.repository.ItemProxy;
 import org.escidoc.browser.repository.ItemRepository;
 import org.escidoc.browser.repository.Repository;
+import org.escidoc.browser.service.PdpService;
+import org.escidoc.browser.service.PdpServiceImpl;
 import org.escidoc.browser.ui.helper.Util;
 import org.escidoc.browser.ui.maincontent.ContainerView;
 import org.escidoc.browser.ui.maincontent.ContextView;
@@ -62,6 +66,7 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -84,6 +89,8 @@ public class MainSite extends VerticalLayout {
 
     private final CurrentUser currentUser;
 
+    private PdpService pdpService;
+
     /**
      * The mainWindow should be revised whether we need it or not the appHeight is the Height of the Application and I
      * need it for calculations in the inner elements
@@ -105,8 +112,6 @@ public class MainSite extends VerticalLayout {
         mainLayout = new CssLayout();
         mainLayout.setStyleName("maincontainer");
         mainLayout.setSizeFull();
-
-        init();
 
         final HeaderContainer header = new HeaderContainer(this, getApplicationHeight(), app, serviceLocation, user);
         header.init();
@@ -150,8 +155,7 @@ public class MainSite extends VerticalLayout {
                     openTab(new ContextView(serviceLocation, this, context, mainWindow, currentUser), context.getName());
                 }
                 catch (EscidocClientException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    showError("Cannot retrieve Context");
                 }
             }
             else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("CONTAINER")) {
@@ -161,8 +165,7 @@ public class MainSite extends VerticalLayout {
                         container.getName());
                 }
                 catch (EscidocClientException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    showError("Cannot retrieve Container");
                 }
             }
             else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("ITEM")) {
@@ -171,8 +174,7 @@ public class MainSite extends VerticalLayout {
                     openTab(new ItemView(serviceLocation, this, item, mainWindow), item.getName());
                 }
                 catch (EscidocClientException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    showError("Cannot retrieve Item");
                 }
             }
             else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("sa")) {
@@ -184,10 +186,6 @@ public class MainSite extends VerticalLayout {
             }
 
         }
-    }
-
-    private void init() {
-        // addWindowDimensionDetection();
     }
 
     /**
@@ -226,9 +224,10 @@ public class MainSite extends VerticalLayout {
         final ItemRepository itemRepository = new ItemRepository(serviceLocation);
         itemRepository.loginWith(((CurrentUser) app.getUser()).getToken());
 
+        createPdpService();
         final NavigationTreeView treemenu =
-            new NavigationTreeBuilder(serviceLocation, (CurrentUser) app.getUser()).buildNavigationTree(
-                contextRepository, containerRepository, itemRepository, this, mainWindow);
+            new NavigationTreeBuilder(serviceLocation, (CurrentUser) app.getUser(), pdpService).buildNavigationTree(
+                contextRepository, containerRepository, itemRepository, pdpService, this, mainWindow);
         mainnavtree = treemenu;
 
         mainnav.addComponent(mainnavtree);
@@ -265,6 +264,22 @@ public class MainSite extends VerticalLayout {
         return maincontenttab;
     }
 
+    private void createPdpService() {
+        try {
+            pdpService = new PdpServiceImpl(new URL(serviceLocation.getEscidocUri()));
+        }
+        catch (MalformedURLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        pdpService.loginWith(getUser().getToken());
+    }
+
+    public PdpService getPdpService() {
+        createPdpService();
+        return pdpService;
+    }
+
     /**
      * Handle the event from the srchButton Link at the buildNavigationPanel
      * 
@@ -283,4 +298,7 @@ public class MainSite extends VerticalLayout {
         return currentUser;
     }
 
+    private void showError(String msg) {
+        getWindow().showNotification(msg, Notification.TYPE_HUMANIZED_MESSAGE);
+    }
 }

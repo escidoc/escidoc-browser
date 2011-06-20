@@ -39,12 +39,12 @@ import org.escidoc.browser.repository.ContainerRepository;
 import org.escidoc.browser.repository.ItemRepository;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.repository.internal.ContainerProxyImpl;
+import org.escidoc.browser.service.PdpService;
 import org.escidoc.browser.ui.listeners.TreeCreateContainer;
 import org.escidoc.browser.ui.listeners.TreeCreateItem;
 
 import com.vaadin.event.Action;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
-import com.vaadin.event.MouseEvents.ClickEvent;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Tree;
@@ -55,14 +55,18 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 @SuppressWarnings("serial")
 public class NavigationTreeViewImpl extends CustomComponent implements Action.Handler, NavigationTreeView {
 
+    private static final String ADD_ITEM = "Add Item";
+
+    private static final String ADD_CONTAINER = "Add Container";
+
     private final Tree tree = new Tree();
 
     // Actions for the context menu
-    private static final Action ACTION_ADD_CONTAINER = new Action("Add Container");
+    private static final Action ACTION_ADD_CONTAINER = new Action(ADD_CONTAINER);
 
-    private static final Action ACTION_ADD_ITEM = new Action("Add Item");
+    private static final Action ACTION_ADD_ITEM = new Action(ADD_ITEM);
 
-    private static final Action ACTION_DELETE = new Action("Delete Resource");
+    private static final Action ACTION_DELETE = new Action(ViewConstants.DELETE_RESOURCE);
 
     private static final Action[] ACTIONSCONTAINER = new Action[] { ACTION_ADD_CONTAINER, ACTION_ADD_ITEM,
         ACTION_DELETE };
@@ -85,14 +89,19 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
 
     private ItemModel itemModel = null;
 
+    private final PdpService pdpService;
+
     public NavigationTreeViewImpl(Repository containerRepository, Repository itemRepository,
-        EscidocServiceLocation serviceLocation) {
+        EscidocServiceLocation serviceLocation, PdpService pdpService) {
+        // TODO: check preconditions
         this.containerRepo = (ContainerRepository) containerRepository;
         this.itemRepo = (ItemRepository) itemRepository;
         this.serviceLocation = serviceLocation;
         setCompositionRoot(tree);
         tree.setImmediate(true);
         tree.addActionHandler(this);
+        this.pdpService = pdpService;
+
     }
 
     @Override
@@ -134,6 +143,9 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
                 contextId = containerRepo.findById(contModel.getId()).getContext().getObjid();
             }
             catch (EscidocClientException e) {
+                // default: mainWindow.showNotification(e.getMessage(), Notification.ERROR_MESSAGE);
+                // alternative: modal Window, mainWindow....
+
                 // TODO Not able to retrieve a ContainerProxy
                 e.printStackTrace();
             }
@@ -166,6 +178,8 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
             getWindow().showNotification("Not implemented yet");
         }
 
+        // pdpService.forUser("").isAction(ActionIdConstants.CREATE_ITEM).permitted();
+
     }
 
     @Override
@@ -176,14 +190,7 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
         return ACTIONSCONTAINER;
     }
 
-    public void buttonClick(ClickEvent event) {
-        // If the edited value contains something, set it to be the item's new
-        // 'name' property
-        // if (!editor.getValue().equals("")) {
-        // Item item = tree.getItem(tree.getValue());
-        // Property name = item.getItemProperty("name");
-        // name.setValue(editor.getValue());
-        // }
-    }
+    private static void showMessage() {
 
+    }
 }
