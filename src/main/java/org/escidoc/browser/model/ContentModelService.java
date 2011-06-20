@@ -28,7 +28,7 @@ public class ContentModelService {
 
     Collection<? extends Resource> findPublicOrReleasedResources() throws EscidocException, InternalClientException,
         TransportException {
-        SearchRetrieveRequestType request = new SearchRetrieveRequestType();
+        final SearchRetrieveRequestType request = new SearchRetrieveRequestType();
         request.setMaximumRecords(new NonNegativeInteger("1000"));
         return client.retrieveContentModelsAsList(request);
     }

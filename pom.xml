@@ -57,6 +57,7 @@
 			<version>1.6.1</version>
 			<scope>runtime</scope>
 		</dependency>
+		
 		<!-- Tests -->
 		<dependency>
 			<groupId>junit</groupId>
