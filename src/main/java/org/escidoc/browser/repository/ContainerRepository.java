@@ -31,7 +31,6 @@ package org.escidoc.browser.repository;
 import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.escidoc.browser.model.ContextModel;
@@ -137,7 +136,6 @@ public class ContainerRepository implements Repository {
         else {
             throw new UnsupportedOperationException("find Parents is not supported for type: " + resource.getType());
         }
-        final Collection<Container> parents = client.retrieveContainersAsList(requestType);
 
         return new ArrayList<Container>(client.retrieveContainersAsList(requestType));
 
