@@ -73,7 +73,7 @@ public class NavigationTreeBuilder {
         PdpService pdpService, final MainSite mainSite, final Window mainWindow) throws EscidocClientException {
 
         final NavigationTreeView navigationTreeView =
-            new NavigationTreeViewImpl(containerRepository, itemRepository, serviceLocation, pdpService);
+            new NavigationTreeViewImpl(containerRepository, itemRepository, serviceLocation, pdpService, currentUser);
 
         final ResourceContainer resourceContainer =
             new ResourceContainerImpl(((ContextRepository) contextRepository).findAllWithChildrenInfo());
@@ -96,7 +96,7 @@ public class NavigationTreeBuilder {
         final MainSite mainSite, final String parentID, final Window mainWindow) throws EscidocClientException {
 
         final NavigationTreeView navigationTreeView =
-            new NavigationTreeViewImpl(containerRepository, itemRepository, serviceLocation, pdpService);
+            new NavigationTreeViewImpl(containerRepository, itemRepository, serviceLocation, pdpService, currentUser);
 
         final List<ResourceModel> contexts = contextRepository.findTopLevelMembersById(parentID);
 
@@ -118,7 +118,7 @@ public class NavigationTreeBuilder {
         final MainSite mainSite, final String parentID, final Window mainWindow) throws EscidocClientException {
 
         final NavigationTreeView navigationTreeView =
-            new NavigationTreeViewImpl(containerRepository, itemRepository, serviceLocation, pdpService);
+            new NavigationTreeViewImpl(containerRepository, itemRepository, serviceLocation, pdpService, currentUser);
 
         final List<ResourceModel> container = containerRepository.findTopLevelMembersById(parentID);
 

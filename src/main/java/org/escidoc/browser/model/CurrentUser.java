@@ -35,4 +35,6 @@ public interface CurrentUser {
     String getToken();
 
     String getLoginName();
+
+    String getUserId();
 }

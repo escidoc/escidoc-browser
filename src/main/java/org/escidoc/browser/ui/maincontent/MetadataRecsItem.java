@@ -114,10 +114,11 @@ public class MetadataRecsItem {
     private Label lblRelations() {
         Iterator itr = resourceProxy.getRelations().iterator();
         String relRecords = "";
+        StringBuffer buf = new StringBuffer();
         while (itr.hasNext()) {
-            relRecords += "<a href='#'>" + itr.next() + "</a><br />";
+            buf.append("<a href='#'>" + itr.next() + "</a><br />");
         }
-
+        relRecords = buf.toString();
         Label l2 = new Label(relRecords, Label.CONTENT_RAW);
         l2.setHeight(height + "px");
         return l2;

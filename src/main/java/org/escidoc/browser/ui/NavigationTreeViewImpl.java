@@ -28,8 +28,12 @@
  */
 package org.escidoc.browser.ui;
 
+import java.net.URISyntaxException;
+
+import org.escidoc.browser.ActionIdConstants;
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
+import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.PropertyId;
@@ -91,8 +95,10 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
 
     private final PdpService pdpService;
 
+    private final CurrentUser currentUser;
+
     public NavigationTreeViewImpl(Repository containerRepository, Repository itemRepository,
-        EscidocServiceLocation serviceLocation, PdpService pdpService) {
+        EscidocServiceLocation serviceLocation, PdpService pdpService, CurrentUser currentUser) {
         // TODO: check preconditions
         this.containerRepo = (ContainerRepository) containerRepository;
         this.itemRepo = (ItemRepository) itemRepository;
@@ -101,6 +107,7 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
         tree.setImmediate(true);
         tree.addActionHandler(this);
         this.pdpService = pdpService;
+        this.currentUser = currentUser;
 
     }
 
@@ -125,7 +132,6 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
         tree.setContainerDataSource(container.getContainer());
         tree.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
         tree.setItemCaptionPropertyId(PropertyId.NAME);
-
         tree.setItemIconPropertyId(PropertyId.ICON);
         tree.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
     }
@@ -143,11 +149,7 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
                 contextId = containerRepo.findById(contModel.getId()).getContext().getObjid();
             }
             catch (EscidocClientException e) {
-                // default: mainWindow.showNotification(e.getMessage(), Notification.ERROR_MESSAGE);
-                // alternative: modal Window, mainWindow....
-
-                // TODO Not able to retrieve a ContainerProxy
-                e.printStackTrace();
+                getWindow().showNotification("Not Able to retrieve a context");
             }
         }
         else if (target instanceof ItemModel) {
@@ -156,8 +158,7 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
                 contextId = itemRepo.findById(itemModel.getId()).getContext().getObjid();
             }
             catch (EscidocClientException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                getWindow().showNotification("Not Able to retrieve a context");
             }
         }
         if (action == ACTION_ADD_CONTAINER) {
@@ -177,20 +178,37 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
         else if (action == ACTION_ADD_COMPONENT) {
             getWindow().showNotification("Not implemented yet");
         }
-
-        // pdpService.forUser("").isAction(ActionIdConstants.CREATE_ITEM).permitted();
-
     }
 
     @Override
     public Action[] getActions(Object target, Object sender) {
-        if (target instanceof ItemModel) {
-            return ACTIONSITEM;
+        try {
+            // pdpService.loginWith(currentUser.getToken());
+            // System.out.println("Hass access!? "
+            // + pdpService
+            // .forUser(currentUser.getUserId()).isAction(ActionIdConstants.CREATE_ITEM).forResource("")
+            // .permitted());
+            if (pdpService
+                .forUser(currentUser.getUserId()).isAction(ActionIdConstants.CREATE_ITEM).forResource("").permitted() == false) {
+                return null;
+            }
+            else {
+                if (target instanceof ItemModel) {
+                    System.out.println(currentUser.getUserId());
+                    return ACTIONSITEM;
+
+                }
+                return ACTIONSCONTAINER;
+            }
         }
-        return ACTIONSCONTAINER;
-    }
-
-    private static void showMessage() {
-
+        catch (EscidocClientException e) {
+            System.out.println("*********************************");
+            getWindow().showNotification(e.getMessage());
+        }
+        catch (URISyntaxException e) {
+            System.out.println("++++++++++++++++++++++++++++++++++++++++");
+            getWindow().showNotification(e.getMessage());
+        }
+        return null;
     }
 }

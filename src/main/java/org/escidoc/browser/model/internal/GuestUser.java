@@ -49,4 +49,9 @@ public class GuestUser implements CurrentUser {
         return ViewConstants.GUEST;
     }
 
+    @Override
+    public String getUserId() {
+        return "";
+    }
+
 }

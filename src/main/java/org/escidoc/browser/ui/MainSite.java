@@ -198,7 +198,6 @@ public class MainSite extends VerticalLayout {
         maincontenttab.setWidth("70%");
         maincontenttab.setHeight("88%");
         return maincontenttab;
-
     }
 
     /**
@@ -229,7 +228,6 @@ public class MainSite extends VerticalLayout {
             new NavigationTreeBuilder(serviceLocation, (CurrentUser) app.getUser(), pdpService).buildNavigationTree(
                 contextRepository, containerRepository, itemRepository, pdpService, this, mainWindow);
         mainnavtree = treemenu;
-
         mainnav.addComponent(mainnavtree);
 
         return mainnav;
@@ -269,8 +267,7 @@ public class MainSite extends VerticalLayout {
             pdpService = new PdpServiceImpl(new URL(serviceLocation.getEscidocUri()));
         }
         catch (MalformedURLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            showError("Could not retrieve the URL from the service");
         }
         pdpService.loginWith(getUser().getToken());
     }

@@ -117,4 +117,8 @@ public class LoggedInUser implements CurrentUser {
         return currentUser.getProperties().getLoginName();
     }
 
+    public String getUserId() {
+        return currentUser.getObjid();
+    }
+
 }
