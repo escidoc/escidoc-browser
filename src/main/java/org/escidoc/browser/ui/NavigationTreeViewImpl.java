@@ -83,6 +83,8 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
 
     private ContainerModel contModel = null;
 
+    private ItemModel itemModel = null;
+
     public NavigationTreeViewImpl(Repository containerRepository, Repository itemRepository,
         EscidocServiceLocation serviceLocation) {
         this.containerRepo = (ContainerRepository) containerRepository;
@@ -137,9 +139,9 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
             }
         }
         else if (target instanceof ItemModel) {
-            contModel = (ContainerModel) target;
+            itemModel = (ItemModel) target;
             try {
-                contextId = itemRepo.findById(contModel.getId()).getContext().getObjid();
+                contextId = itemRepo.findById(itemModel.getId()).getContext().getObjid();
             }
             catch (EscidocClientException e) {
                 // TODO Auto-generated catch block

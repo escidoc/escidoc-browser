@@ -106,7 +106,6 @@ public class ItemProxyImpl implements ItemProxy {
     @Override
     public VersionHistory getPreviousVersion() {
         if (itemFromCore.getVersionNumber() > 1)
-            // return it from the ItemHandler
             return null;
         return null;
     }

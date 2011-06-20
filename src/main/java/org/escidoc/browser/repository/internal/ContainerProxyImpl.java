@@ -42,7 +42,6 @@ import de.escidoc.core.resources.common.structmap.ContainerMemberRef;
 import de.escidoc.core.resources.common.structmap.MemberRef;
 import de.escidoc.core.resources.common.structmap.StructMap;
 import de.escidoc.core.resources.common.versionhistory.Version;
-import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.om.container.Container;
 
 public class ContainerProxyImpl implements ContainerProxy {
@@ -159,16 +158,12 @@ public class ContainerProxyImpl implements ContainerProxy {
      * @see org.escidoc.browser.repository.ContainerProxy#hasPreviousVersion()
      */
     @Override
-    public VersionHistory getPreviousVersion() {
-        // if (containerFromCore.getVersionNumber() > 1) {
-        // try {
-        // return containerFromCore.getVersionHistory();
-        // }
-        // catch (final SystemException e) {
-        // return null;
-        // }
-        // }
-        return null;
+    public boolean getPreviousVersion() {
+
+        if (containerFromCore.getProperties().getLatestVersion().getNumber() != "1") {
+            return true;
+        }
+        return false;
     }
 
     @Override

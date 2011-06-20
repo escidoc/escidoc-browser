@@ -244,11 +244,11 @@ public class ContainerView extends VerticalLayout {
      */
     private String getHistory() {
         String strHistory;
-        if (resourceProxy.getPreviousVersion() == null) {
-            strHistory = " has no previous history";
+        if (resourceProxy.getPreviousVersion()) {
+            strHistory = " previous version";
         }
         else {
-            strHistory = " previous version";
+            strHistory = " has no previous history";
         }
         return strHistory;
     }

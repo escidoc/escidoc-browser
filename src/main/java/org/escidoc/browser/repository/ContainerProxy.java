@@ -36,7 +36,6 @@ import org.escidoc.browser.model.ResourceProxy;
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.MetadataRecords;
 import de.escidoc.core.resources.common.versionhistory.Version;
-import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 
 public interface ContainerProxy extends ResourceProxy {
 
@@ -61,12 +60,13 @@ public interface ContainerProxy extends ResourceProxy {
     @Override
     List<String> getRelations();
 
-    VersionHistory getPreviousVersion();
+    boolean getPreviousVersion();
 
     MetadataRecords getMedataRecords();
 
     Collection<Version> getVersionHistory();
 
+    @Override
     Resource getContext();
 
 }
