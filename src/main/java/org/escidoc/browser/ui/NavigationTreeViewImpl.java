@@ -108,7 +108,6 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
         tree.addActionHandler(this);
         this.pdpService = pdpService;
         this.currentUser = currentUser;
-
     }
 
     @Override
@@ -183,11 +182,6 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
     @Override
     public Action[] getActions(Object target, Object sender) {
         try {
-            // pdpService.loginWith(currentUser.getToken());
-            // System.out.println("Hass access!? "
-            // + pdpService
-            // .forUser(currentUser.getUserId()).isAction(ActionIdConstants.CREATE_ITEM).forResource("")
-            // .permitted());
             if (pdpService
                 .forUser(currentUser.getUserId()).isAction(ActionIdConstants.CREATE_ITEM).forResource("").permitted() == false) {
                 return null;
@@ -196,17 +190,14 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
                 if (target instanceof ItemModel) {
                     System.out.println(currentUser.getUserId());
                     return ACTIONSITEM;
-
                 }
                 return ACTIONSCONTAINER;
             }
         }
         catch (EscidocClientException e) {
-            System.out.println("*********************************");
             getWindow().showNotification(e.getMessage());
         }
         catch (URISyntaxException e) {
-            System.out.println("++++++++++++++++++++++++++++++++++++++++");
             getWindow().showNotification(e.getMessage());
         }
         return null;

@@ -33,16 +33,16 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.escidoc.browser.ui.MainSite;
+import org.escidoc.browser.ui.listeners.itemview.ItemEditDesc1;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
-import com.vaadin.Application;
+import com.vaadin.event.LayoutEvents.LayoutClickEvent;
+import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
@@ -54,13 +54,9 @@ public class ItemView extends VerticalLayout {
 
     private static final String CREATED_BY = "Created by";
 
-    private static final String NAME = "Name: ";
-
     private static final String FULLWIDHT_STYLE_NAME = "fullwidth";
 
     private static final String LAST_MODIFIED_BY = "Last modification by";
-
-    private static final String DIRECT_MEMBERS = "Direct Members";
 
     private static final String RESOURCE_NAME = "Item: ";
 
@@ -77,8 +73,6 @@ public class ItemView extends VerticalLayout {
     private int innerelementsHeight;
 
     private final ItemProxyImpl resourceProxy;
-
-    private Application app;
 
     private final Window mainWindow;
 
@@ -143,10 +137,6 @@ public class ItemView extends VerticalLayout {
         final AbsoluteLayout absL = new AbsoluteLayout();
         absL.setWidth("100%");
         absL.setHeight(innerelementsHeight + "px");
-        final HorizontalLayout horizontal = new HorizontalLayout();
-        horizontal.addComponent(new Button("Add"));
-        horizontal.addComponent(new Button("Delete"));
-        horizontal.addComponent(new Button("Edit"));
 
         final Panel leftpnl = new Panel();
         leftpnl.setStyleName("floatleft");
@@ -154,7 +144,6 @@ public class ItemView extends VerticalLayout {
         leftpnl.setWidth("30%");
         leftpnl.setHeight("82%");
         leftpnl.addComponent(itCnt);
-        absL.addComponent(horizontal, "left: 0px; top: 280px;");
         cssLayout.addComponent(leftpnl);
     }
 
@@ -165,6 +154,7 @@ public class ItemView extends VerticalLayout {
                 Label.CONTENT_RAW);
         descMetadata1.setStyleName("floatleft columnheight50");
         descMetadata1.setWidth("30%");
+        descMetadata1.addListener(new ItemEditDesc1());
         cssLayout.addComponent(descMetadata1);
 
         // ContainerView DescMetadata2
@@ -213,11 +203,25 @@ public class ItemView extends VerticalLayout {
         cssLayout.setHeight("100%");
         innerelementsHeight = appHeight - 420;
         accordionHeight = innerelementsHeight - 20;
-    }
 
-    @Override
-    public void attach() {
-        app = getApplication();
+        cssLayout.addListener(new LayoutClickListener() {
+            @Override
+            public void layoutClick(LayoutClickEvent event) {
+
+                // Get the child component which was clicked
+                Component child = event.getChildComponent();
+
+                if (child == null) {
+                    // Not over any child component
+                    getWindow().showNotification("The click was not over any component.");
+                }
+                else {
+                    // Over a child component
+                    getWindow().showNotification("The click was over a " + child.getClass().getCanonicalName());
+                }
+            }
+        });
+
     }
 
     /**

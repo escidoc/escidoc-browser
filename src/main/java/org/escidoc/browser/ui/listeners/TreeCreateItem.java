@@ -154,7 +154,6 @@ public class TreeCreateItem {
         if (txtItemName.isValid() && slcContentModl.isValid()) {
             String containerName = txtItemName.getValue().toString();
             String contentModelId = (String) slcContentModl.getValue();
-
             // We really create the container here
             try {
                 createNewItem(containerName, contentModelId, contextId);

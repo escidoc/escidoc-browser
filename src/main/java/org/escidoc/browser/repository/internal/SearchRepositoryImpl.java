@@ -97,20 +97,19 @@ public class SearchRepositoryImpl {
 
         // escidoc.fulltext, escidoc.metadata escidoc.context.name escidoc.creator.name.
         String queryString = "1=1 ";
+        StringBuffer buf = new StringBuffer();
         for (String string : allMatches) {
-            queryString +=
-                " or escidoc.any-title=\"" + string + "\" or escidoc.fulltext=\"" + string
-                    + "\" or escidoc.metadata=\"" + string + "\" or escidoc.context.name=\"" + string
-                    + "\" or escidoc.creator.name=\"" + string + "\"";
+            buf.append(" or escidoc.any-title=\"" + string + "\" or escidoc.fulltext=\"" + string
+                + "\" or escidoc.metadata=\"" + string + "\" or escidoc.context.name=\"" + string
+                + "\" or escidoc.creator.name=\"" + string + "\"");
         }
         // queryString += queryString + "&maximumRecords=100";
         try {
             // "escidoc.any-title"=b*
-            return client.search(queryString, 0, 1000, "sort.escidoc.pid", ESCIDOCALL);
+            return client.search(queryString + buf.toString(), 0, 1000, "sort.escidoc.pid", ESCIDOCALL);
         }
         catch (EscidocClientException e) {
-            LOG.debug("EscidocClientException");
-            e.printStackTrace();
+            LOG.debug("EscidocClientException" + e.getMessage());
         }
         return null;
     }
@@ -119,6 +118,7 @@ public class SearchRepositoryImpl {
         String titleTxt, String creatorTxt, String descriptionTxt, String creationDateTxt, String mimesTxt,
         String resourceTxt, String fulltxtTxt) {
         String query = "1=1 ";
+        StringBuffer buf = new StringBuffer();
 
         /*
          * Do I have a resource defined? If I have a resource defined, then I need to search in the correct context.name
@@ -126,39 +126,37 @@ public class SearchRepositoryImpl {
          */
         if (resourceTxt != null) {
             if (resourceTxt == "Context") {
-                query += "OR escidoc.context.name=\"" + titleTxt + "\"";
+                buf.append("OR escidoc.context.name=\"" + titleTxt + "\"");
             }
             else {
-                query += "OR escidoc.any-title=\"" + titleTxt + "\"";
+                buf.append("OR escidoc.any-title=\"" + titleTxt + "\"");
             }
         }
         else {
             if (!titleTxt.isEmpty()) {
-                query += "OR escidoc.any-title=\"" + titleTxt + "\" or escidoc.context.name=\"" + titleTxt + "\"";
+                buf.append("OR escidoc.any-title=\"" + titleTxt + "\" or escidoc.context.name=\"" + titleTxt + "\"");
             }
         }
 
         if (!creatorTxt.isEmpty()) {
-            query += " AND escidoc.created-by.name=\"" + creatorTxt + "\"";
+            buf.append(" AND escidoc.created-by.name=\"" + creatorTxt + "\"");
         }
         if (!descriptionTxt.isEmpty()) {
             // query += " AND escidoc.created-by.name=\"" + creatorTxt + "\"";
         }
         if (creationDateTxt != null) {
-            query +=
-                " AND (escidoc.creation-date=\"" + creationDateTxt + "*\" OR (escidoc.component.creation-date=\""
-                    + creationDateTxt + "*\"))";
+            buf.append(" AND (escidoc.creation-date=\"" + creationDateTxt
+                + "*\" OR (escidoc.component.creation-date=\"" + creationDateTxt + "*\"))");
         }
         if (mimesTxt != null) {
-            query += " AND escidoc.component.mime-type=\"" + mimesTxt + "\"";
+            buf.append(" AND escidoc.component.mime-type=\"" + mimesTxt + "\"");
         }
 
         if (!fulltxtTxt.isEmpty()) {
-            query += " AND escidoc.fulltext=\"" + fulltxtTxt + "\"";
+            buf.append(" AND escidoc.fulltext=\"" + fulltxtTxt + "\"");
         }
         try {
-            LOG.debug(query);
-            return client.search(query, 0, 1000, "sort.escidoc.pid", ESCIDOCALL);
+            return client.search(query + buf.toString(), 0, 1000, "sort.escidoc.pid", ESCIDOCALL);
         }
         catch (EscidocClientException e) {
             LOG.debug("EscidocClientException");

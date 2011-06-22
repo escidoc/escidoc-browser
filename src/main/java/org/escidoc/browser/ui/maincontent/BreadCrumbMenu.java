@@ -86,15 +86,17 @@ public class BreadCrumbMenu {
         EscidocServiceLocation escidocServiceLocation) {
 
         ResourceHierarchy rs = new ResourceHierarchy(escidocServiceLocation);
+        StringBuffer buf = new StringBuffer();
         try {
             ArrayList<ResourceModel> hierarchy = rs.getHierarchy(resourceProxy.getId());
             Collections.reverse(hierarchy);
+
             for (ResourceModel resourceModel : hierarchy) {
                 // bCstring +=
                 // "<li><a href='/browser/mainWindow?tab=" + resourceModel.getId() + "&type="
                 // + resourceModel.getType() + "&escidocurl=" + escidocServiceLocation.getEscidocUri()
                 // + "' target='_blank'>" + resourceModel.getName() + "</a></li>";
-                bCstring += "<li><a href='#'>" + resourceModel.getName() + "</a></li>";
+                buf.append("<li><a href='#'>" + resourceModel.getName() + "</a></li>");
             }
         }
         catch (EscidocClientException e) {
@@ -102,10 +104,10 @@ public class BreadCrumbMenu {
             // "<li><a href='/browser/mainWindow?tab=" + resourceProxy.getContext().getObjid()
             // + "&type=CONTEXT&escidocurl=" + escidocServiceLocation + "' target='_blank'>"
             // + resourceProxy.getContext().getXLinkTitle() + "</a></li>";
-            bCstring += "<li><a href='#'>" + resourceProxy.getContext().getXLinkTitle() + "</a></li>";
+            buf.append("<li><a href='#'>" + resourceProxy.getContext().getXLinkTitle() + "</a></li>");
         }
-        cssLayout
-            .addComponent(new Label(bCstring + "<li>" + resourceProxy.getName() + "</li></ul>", Label.CONTENT_RAW));
+        cssLayout.addComponent(new Label(buf.toString() + "<li>" + resourceProxy.getName() + "</li></ul>",
+            Label.CONTENT_RAW));
 
     }
 
@@ -122,6 +124,7 @@ public class BreadCrumbMenu {
         String bCstring = "<ul id='crumbs'><li><a href='#'>Home Item</a></li>";
         ResourceHierarchy rs = new ResourceHierarchy(escidocServiceLocation);
 
+        StringBuffer buf = new StringBuffer();
         try {
             String parentId = rs.getReturnParentOfItem(resourceProxy.getId()).getId();
             ArrayList<ResourceModel> hierarchy = rs.getHierarchy(parentId);
@@ -131,21 +134,21 @@ public class BreadCrumbMenu {
                 // "<li><a href='/browser/mainWindow?tab=" + resourceModel.getId() + "&type="
                 // + resourceModel.getType() + "&escidocurl=" + escidocServiceLocation.getEscidocUri()
                 // + "' target='_blank'>" + resourceModel.getName() + "</a></li>";
-                bCstring += "<li><a href='#'>" + resourceModel.getName() + "</a></li>";
+                buf.append("<li><a href='#'>" + resourceModel.getName() + "</a></li>");
             }
             ResourceModelFactory resourceFactory =
                 new ResourceModelFactory(new ItemRepository(escidocServiceLocation), new ContainerRepository(
                     escidocServiceLocation), new ContextRepository(escidocServiceLocation));
             ContainerProxyImpl containerParent =
                 (ContainerProxyImpl) resourceFactory.find(parentId, ResourceType.CONTAINER);
-            bCstring += "<li><a href='#'>" + containerParent.getName() + "</a></li>";
+            buf.append("<li><a href='#'>" + containerParent.getName() + "</a></li>");
         }
         catch (Exception e) {
             // bCstring +=
             // "<li><a href='/browser/mainWindow?tab=" + resourceProxy.getContext().getObjid()
             // + "&type=CONTEXT&escidocurl=" + escidocServiceLocation.getEscidocUri() + "' target='_blank'>"
             // + resourceProxy.getContext().getXLinkTitle() + "</a></li>";
-            bCstring += "<li><a href='#'>" + resourceProxy.getContext().getXLinkTitle() + "</a></li>";
+            buf.append("<li><a href='#'>" + resourceProxy.getContext().getXLinkTitle() + "</a></li>");
         }
 
         // cssLayout
@@ -160,6 +163,6 @@ public class BreadCrumbMenu {
         // +
         // "\" target=\"_blank\" alt=\"Permanent Link to resource\" class=\"floatright\"><img src=\"VAADIN/themes/myTheme/images/anchor.png\"/></a></ul>",
         // Label.CONTENT_RAW));
-        cssLayout.addComponent(new Label(bCstring, Label.CONTENT_RAW));
+        cssLayout.addComponent(new Label(bCstring + buf.toString(), Label.CONTENT_RAW));
     }
 }
