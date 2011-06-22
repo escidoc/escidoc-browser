@@ -207,15 +207,9 @@ public class ItemView extends VerticalLayout {
         cssLayout.addListener(new LayoutClickListener() {
             @Override
             public void layoutClick(LayoutClickEvent event) {
-
                 // Get the child component which was clicked
                 Component child = event.getChildComponent();
-
-                if (child == null) {
-                    // Not over any child component
-                    getWindow().showNotification("The click was not over any component.");
-                }
-                else {
+                if (child != null) {
                     // Over a child component
                     getWindow().showNotification("The click was over a " + child.getClass().getCanonicalName());
                 }
