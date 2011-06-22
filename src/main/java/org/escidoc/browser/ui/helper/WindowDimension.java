@@ -26,7 +26,7 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.ui;
+package org.escidoc.browser.ui.helper;
 
 public interface WindowDimension {
 

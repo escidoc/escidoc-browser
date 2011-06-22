@@ -28,7 +28,7 @@
  */
 package org.escidoc.browser.ui.listeners;
 
-import org.escidoc.browser.ui.WindowDimension;
+import org.escidoc.browser.ui.helper.WindowDimension;
 
 public interface WindowResizeObserver {
 

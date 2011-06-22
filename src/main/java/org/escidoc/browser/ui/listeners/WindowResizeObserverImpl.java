@@ -28,8 +28,8 @@
  */
 package org.escidoc.browser.ui.listeners;
 
-import org.escidoc.browser.ui.WindowDimension;
-import org.escidoc.browser.ui.WindowDimensionImpl;
+import org.escidoc.browser.ui.helper.WindowDimension;
+import org.escidoc.browser.ui.helper.internal.WindowDimensionImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
