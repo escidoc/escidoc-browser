@@ -55,6 +55,8 @@ import org.escidoc.browser.ui.maincontent.SearchAdvancedView;
 import org.escidoc.browser.ui.maincontent.SearchSimple;
 import org.escidoc.browser.ui.mainpage.Footer;
 import org.escidoc.browser.ui.mainpage.HeaderContainer;
+import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
+import org.escidoc.browser.ui.navigation.NavigationTreeView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

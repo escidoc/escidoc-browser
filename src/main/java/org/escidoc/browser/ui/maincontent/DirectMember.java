@@ -34,8 +34,8 @@ import org.escidoc.browser.repository.ContainerRepository;
 import org.escidoc.browser.repository.ContextRepository;
 import org.escidoc.browser.repository.ItemRepository;
 import org.escidoc.browser.ui.MainSite;
-import org.escidoc.browser.ui.NavigationTreeBuilder;
-import org.escidoc.browser.ui.NavigationTreeView;
+import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
+import org.escidoc.browser.ui.navigation.NavigationTreeView;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Window;

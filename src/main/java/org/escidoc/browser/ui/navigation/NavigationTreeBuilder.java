@@ -26,7 +26,7 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.ui;
+package org.escidoc.browser.ui.navigation;
 
 import java.util.List;
 
@@ -38,6 +38,7 @@ import org.escidoc.browser.model.internal.ResourceContainerImpl;
 import org.escidoc.browser.repository.ContextRepository;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.service.PdpService;
+import org.escidoc.browser.ui.MainSite;
 import org.escidoc.browser.ui.listeners.TreeClickListener;
 import org.escidoc.browser.ui.listeners.TreeExpandListener;
 

@@ -26,7 +26,7 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.ui;
+package org.escidoc.browser.ui.navigation;
 
 import java.net.URISyntaxException;
 
@@ -44,6 +44,8 @@ import org.escidoc.browser.repository.ItemRepository;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.repository.internal.ContainerProxyImpl;
 import org.escidoc.browser.service.PdpService;
+import org.escidoc.browser.ui.MainSite;
+import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.TreeCreateContainer;
 import org.escidoc.browser.ui.listeners.TreeCreateItem;
 

@@ -67,5 +67,5 @@ public class ViewConstants {
 
     public static final String EMPTY_STRING = "";
 
-    static final String DELETE_RESOURCE = "Delete Resource";
+    public static final String DELETE_RESOURCE = "Delete Resource";
 }
