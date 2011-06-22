@@ -107,7 +107,7 @@ public class MainSite extends VerticalLayout {
         this.app = app;
         this.mainWindow = mainWindow;
         this.serviceLocation = serviceLocation;
-        this.currentUser = user;
+        currentUser = user;
         this.setMargin(true);
 
         // common part: create layout
@@ -115,7 +115,7 @@ public class MainSite extends VerticalLayout {
         mainLayout.setStyleName("maincontainer");
         mainLayout.setSizeFull();
 
-        final HeaderContainer header = new HeaderContainer(this, getApplicationHeight(), app, serviceLocation, user);
+        final HeaderContainer header = new HeaderContainer(this, app, serviceLocation, user);
         header.init();
         final Footer footer = new Footer();
 
@@ -137,11 +137,11 @@ public class MainSite extends VerticalLayout {
      */
     private void permanentURLelement() {
 
-        Map<String, String[]> parameters = this.app.getParameters();
+        final Map<String, String[]> parameters = app.getParameters();
 
         if (Util.hasTabArg(parameters) && Util.hasObjectType(parameters)) {
 
-            String escidocID = parameters.get(AppConstants.ARG_TAB)[0];
+            final String escidocID = parameters.get(AppConstants.ARG_TAB)[0];
             final ContainerRepository containerRepository;
             final ContextRepository contextRepository;
             final Repository itemRepository;
@@ -153,34 +153,36 @@ public class MainSite extends VerticalLayout {
             resourceFactory = new ResourceModelFactory(itemRepository, containerRepository, contextRepository);
             if (parameters.get(AppConstants.ARG_TYPE)[0].equals("CONTEXT")) {
                 try {
-                    ContextProxyImpl context = (ContextProxyImpl) resourceFactory.find(escidocID, ResourceType.CONTEXT);
+                    final ContextProxyImpl context =
+                        (ContextProxyImpl) resourceFactory.find(escidocID, ResourceType.CONTEXT);
                     openTab(new ContextView(serviceLocation, this, context, mainWindow, currentUser), context.getName());
                 }
-                catch (EscidocClientException e) {
+                catch (final EscidocClientException e) {
                     showError("Cannot retrieve Context");
                 }
             }
             else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("CONTAINER")) {
                 try {
-                    ContainerProxy container = (ContainerProxy) resourceFactory.find(escidocID, ResourceType.CONTAINER);
+                    final ContainerProxy container =
+                        (ContainerProxy) resourceFactory.find(escidocID, ResourceType.CONTAINER);
                     openTab(new ContainerView(serviceLocation, this, container, mainWindow, currentUser),
                         container.getName());
                 }
-                catch (EscidocClientException e) {
+                catch (final EscidocClientException e) {
                     showError("Cannot retrieve Container");
                 }
             }
             else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("ITEM")) {
                 try {
-                    ItemProxy item = (ItemProxy) resourceFactory.find(escidocID, ResourceType.ITEM);
+                    final ItemProxy item = (ItemProxy) resourceFactory.find(escidocID, ResourceType.ITEM);
                     openTab(new ItemView(serviceLocation, this, item, mainWindow), item.getName());
                 }
-                catch (EscidocClientException e) {
+                catch (final EscidocClientException e) {
                     showError("Cannot retrieve Item");
                 }
             }
             else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("sa")) {
-                SearchAdvancedView srch = new SearchAdvancedView(this, serviceLocation);
+                final SearchAdvancedView srch = new SearchAdvancedView(this, serviceLocation);
                 openTab(srch, "Advanced Search");
             }
             else {
@@ -243,7 +245,7 @@ public class MainSite extends VerticalLayout {
      * @param tabname
      */
     public void openTab(final Component cmp, String tabname) {
-        Tab tb = maincontenttab.addTab(cmp);
+        final Tab tb = maincontenttab.addTab(cmp);
         final String tabnameshort = null;
         if (tabname.length() > 50) {
             tb.setDescription(tabname);
@@ -268,7 +270,7 @@ public class MainSite extends VerticalLayout {
         try {
             pdpService = new PdpServiceImpl(new URL(serviceLocation.getEscidocUri()));
         }
-        catch (MalformedURLException e) {
+        catch (final MalformedURLException e) {
             showError("Could not retrieve the URL from the service");
         }
         pdpService.loginWith(getUser().getToken());
@@ -290,14 +292,14 @@ public class MainSite extends VerticalLayout {
     }
 
     public int getApplicationHeight() {
-        return this.app.getApplicationHeight();
+        return app.getApplicationHeight();
     }
 
     public CurrentUser getUser() {
         return currentUser;
     }
 
-    private void showError(String msg) {
+    private void showError(final String msg) {
         getWindow().showNotification(msg, Notification.TYPE_HUMANIZED_MESSAGE);
     }
 }

@@ -82,13 +82,10 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
 
     private final MainSite mainSite;
 
-    private final int appHeight;
-
-    public HeaderContainer(final MainSite mainSite, final int appHeight, final BrowserApplication app,
+    public HeaderContainer(final MainSite mainSite, final BrowserApplication app,
         final EscidocServiceLocation serviceLocation, final CurrentUser user) {
 
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
-        Preconditions.checkArgument(appHeight > 0, "appHeight is zero or negative: %s");
         Preconditions.checkNotNull(app, "app is null: %s", app);
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(user, "user is null: %s", user);
@@ -97,9 +94,7 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
         this.serviceLocation = serviceLocation;
         this.user = user;
         this.mainSite = mainSite;
-        this.appHeight = appHeight;
         this.setMargin(false);
-
     }
 
     public void init() {
@@ -156,7 +151,7 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
         custom.addComponent(btnSearch, "btnSearch");
 
         // Create the content for the popup
-        Label content =
+        final Label content =
             new Label(
                 "<ul><li>&raquo; The default search operator is OR</li><li>&raquo; To search for a phrase place the text in double quotes</li></ul>",
                 Label.CONTENT_RAW);
@@ -165,7 +160,7 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
 
         // Construct the PopupView with simple HTML text representing the
         // minimized view
-        PopupView popup = new PopupView("?", content);
+        final PopupView popup = new PopupView("?", content);
         popup.setHideOnMouseOut(true);
         popup.addListener(this);
         custom.addComponent(popup, "searchTip");
@@ -227,7 +222,7 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
     }
 
     @Override
-    public void popupVisibilityChange(PopupVisibilityEvent event) {
+    public void popupVisibilityChange(final PopupVisibilityEvent event) {
         // if (!event.isPopupVisible()) {
         // getWindow().showNotification("Popup closed");
         // }
