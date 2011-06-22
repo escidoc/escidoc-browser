@@ -84,7 +84,6 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
 
     public HeaderContainer(final MainSite mainSite, final BrowserApplication app,
         final EscidocServiceLocation serviceLocation, final CurrentUser user) {
-
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
         Preconditions.checkNotNull(app, "app is null: %s", app);
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);

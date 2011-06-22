@@ -34,8 +34,6 @@ import java.net.URLConnection;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.repository.internal.ItemProxyImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.terminal.ExternalResource;
@@ -49,81 +47,91 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.resources.om.item.component.Component;
-import de.escidoc.core.resources.om.item.component.Components;
 
 @SuppressWarnings("serial")
 public class ItemContent extends CustomLayout {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ItemContent.class);
+    private final Panel panelComponent = new Panel();
 
-    private final ItemProxyImpl itemproxy;
+    private final ItemProxyImpl itemProxy;
 
     private final EscidocServiceLocation serviceLocation;
 
     private final Window mainWindow;
 
-    Panel pnlComponents;
-
-    public ItemContent(final ItemProxyImpl resourceProxy, EscidocServiceLocation serviceLocation,
+    public ItemContent(final ItemProxyImpl itemProxy, final EscidocServiceLocation serviceLocation,
         final Window mainWindow) {
-
-        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null.");
+        Preconditions.checkNotNull(itemProxy, "resourceProxy is null.");
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null.");
+        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
 
         this.serviceLocation = serviceLocation;
         this.mainWindow = mainWindow;
+        this.itemProxy = itemProxy;
 
+        initView();
+    }
+
+    private void initView() {
         setTemplateName("itemtemplate");
         buildComponentPanel();
 
-        itemproxy = resourceProxy;
-        if (itemproxy.hasComponents()) {
+        if (hasComponents()) {
             buildComponents();
         }
-        addComponent(pnlComponents, "components");
+
+        addComponent(panelComponent, "components");
     }
 
-    /**
-     * 
-     */
+    private boolean hasComponents() {
+        return itemProxy.hasComponents().booleanValue();
+    }
+
     private void buildComponents() {
-        final Components itemComponents = itemproxy.getElements();
-        for (final Component component : itemComponents) {
+        for (final Component component : itemProxy.getElements()) {
             buildComponentElement(component);
         }
     }
 
     private void buildComponentPanel() {
-        pnlComponents = new Panel();
-        pnlComponents.addStyleName(Runo.PANEL_LIGHT);
+        panelComponent.addStyleName(Runo.PANEL_LIGHT);
     }
 
-    private void buildComponentElement(Component comp) {
-        final Component itemProperties = comp;
+    private void buildComponentElement(final Component comp) {
+        panelComponent.addComponent(createEmbeddedImage(comp));
+        panelComponent.addComponent(createDownloadLink(comp));
+        panelComponent.addComponent(createLabelForMetadata(comp));
+    }
 
-        // get the file type from the mime:
+    private Link createDownloadLink(final Component comp) {
+        final Link link =
+            new Link("Download File", new ExternalResource(serviceLocation.getEscidocUri()
+                + comp.getContent().getXLinkHref()));
+        link.setIcon(new ThemeResource("images/download.png"));
+        return link;
+    }
+
+    private Label createLabelForMetadata(final Component comp) {
+        final Label labelMetadata =
+            new Label(comp.getContent().getXLinkTitle() + "<br />" + comp.getProperties().getVisibility() + "<br />"
+                + comp.getProperties().getChecksumAlgorithm() + " " + comp.getProperties().getChecksum(),
+                Label.CONTENT_RAW);
+        return labelMetadata;
+    }
+
+    private Embedded createEmbeddedImage(final Component comp) {
+        return new Embedded("", new ThemeResource("images/filetypes/" + getFileType(comp) + ".png"));
+    }
+
+    private String getFileType(final Component itemProperties) {
         final String mimeType = itemProperties.getProperties().getMimeType();
         final String[] last = mimeType.split("/");
         final String lastOne = last[last.length - 1];
-
-        final Embedded e = new Embedded("", new ThemeResource("images/filetypes/" + lastOne + ".png"));
-        pnlComponents.addComponent(e);
-
-        final Label lblmetadata =
-            new Label(itemProperties.getContent().getXLinkTitle() + "<br />"
-                + itemProperties.getProperties().getVisibility() + "<br />"
-                + itemProperties.getProperties().getChecksumAlgorithm() + " "
-                + itemProperties.getProperties().getChecksum(), Label.CONTENT_RAW);
-        Link lnk =
-            new Link("Download File", new ExternalResource(serviceLocation.getEscidocUri()
-                + itemProperties.getContent().getXLinkHref()));
-        lnk.setIcon(new ThemeResource("images/download.png"));
-        pnlComponents.addComponent(lnk);
-        pnlComponents.addComponent(lblmetadata);
+        return lastOne;
     }
 
-    private String getMimeType(String url) throws IOException {
-        URL u = new URL(url);
+    private String getMimeType(final String url) throws IOException {
+        final URL u = new URL(url);
         URLConnection uc = null;
         uc = u.openConnection();
         System.out.println(uc.getContentLength());
