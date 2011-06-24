@@ -84,13 +84,13 @@ public class BreadCrumbMenu {
      */
     public BreadCrumbMenu(CssLayout cssLayout, ContainerProxy resourceProxy, Window mainWindow,
         EscidocServiceLocation escidocServiceLocation) {
-
+        String bCstring = "<ul id='crumbs'><li><a href='#'>Container</a></li>";
         ResourceHierarchy rs = new ResourceHierarchy(escidocServiceLocation);
+
         StringBuffer buf = new StringBuffer();
         try {
             ArrayList<ResourceModel> hierarchy = rs.getHierarchy(resourceProxy.getId());
             Collections.reverse(hierarchy);
-
             for (ResourceModel resourceModel : hierarchy) {
                 // bCstring +=
                 // "<li><a href='/browser/mainWindow?tab=" + resourceModel.getId() + "&type="
@@ -106,9 +106,8 @@ public class BreadCrumbMenu {
             // + resourceProxy.getContext().getXLinkTitle() + "</a></li>";
             buf.append("<li><a href='#'>" + resourceProxy.getContext().getXLinkTitle() + "</a></li>");
         }
-        cssLayout.addComponent(new Label(buf.toString() + "<li>" + resourceProxy.getName() + "</li></ul>",
+        cssLayout.addComponent(new Label(bCstring + buf.toString() + "<li>" + resourceProxy.getName() + "</li></ul>",
             Label.CONTENT_RAW));
-
     }
 
     /**

@@ -33,7 +33,6 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.escidoc.browser.ui.MainSite;
-import org.escidoc.browser.ui.listeners.itemview.ItemEditDesc1;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -154,7 +153,6 @@ public class ItemView extends VerticalLayout {
                 Label.CONTENT_RAW);
         descMetadata1.setStyleName("floatleft columnheight50");
         descMetadata1.setWidth("30%");
-        descMetadata1.addListener(new ItemEditDesc1());
         cssLayout.addComponent(descMetadata1);
 
         // ContainerView DescMetadata2
@@ -167,6 +165,7 @@ public class ItemView extends VerticalLayout {
         descMetadata2.setStyleName("floatright columnheight50");
         descMetadata2.setWidth("70%");
         cssLayout.addComponent(descMetadata2);
+
     }
 
     private void bindHrRuler() {
@@ -187,6 +186,7 @@ public class ItemView extends VerticalLayout {
     private void bindNametoHeader() {
         // HEADER
         final Label headerContext = new Label(RESOURCE_NAME + resourceProxy.getName());
+        headerContext.setDescription("header");
         headerContext.setStyleName("h1 fullwidth");
         cssLayout.addComponent(headerContext);
     }
@@ -208,10 +208,13 @@ public class ItemView extends VerticalLayout {
             @Override
             public void layoutClick(LayoutClickEvent event) {
                 // Get the child component which was clicked
-                Component child = event.getChildComponent();
+                Label child = (Label) event.getChildComponent();
                 if (child != null) {
                     // Over a child component
                     getWindow().showNotification("The click was over a " + child.getClass().getCanonicalName());
+                    if ((child).getDescription() == "header") {
+                        cssLayout.replaceComponent(event.getClickedComponent(), new Label("Hello"));
+                    }
                 }
             }
         });
@@ -245,19 +248,24 @@ public class ItemView extends VerticalLayout {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         ItemView other = (ItemView) obj;
         if (resourceProxy == null) {
-            if (other.resourceProxy != null)
+            if (other.resourceProxy != null) {
                 return false;
+            }
         }
-        else if (!resourceProxy.equals(other.resourceProxy))
+        else if (!resourceProxy.equals(other.resourceProxy)) {
             return false;
+        }
         return true;
     }
 

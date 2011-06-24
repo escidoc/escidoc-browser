@@ -35,13 +35,17 @@ import org.escidoc.browser.repository.ContainerProxy;
 import org.escidoc.browser.ui.MainSite;
 
 import com.google.common.base.Preconditions;
+import com.vaadin.event.LayoutEvents.LayoutClickEvent;
+import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
@@ -52,6 +56,11 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
  * 
  */
 public class ContainerView extends VerticalLayout {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
     private final int appHeight;
 
@@ -87,6 +96,12 @@ public class ContainerView extends VerticalLayout {
 
     private final CurrentUser currentUser;
 
+    private boolean isEditing = false;
+
+    private Component oldComponent = null;
+
+    private Component swapComponent = null;
+
     public ContainerView(final EscidocServiceLocation serviceLocation, final MainSite mainSite,
         final ResourceProxy resourceProxy, final Window mainWindow, final CurrentUser currentUser)
         throws EscidocClientException {
@@ -109,6 +124,7 @@ public class ContainerView extends VerticalLayout {
 
     private void init() throws EscidocClientException {
         configureLayout();
+        handleLayoutListeners();
         createBreadCrumb();
         bindNameToHeader();
         bindDescription();
@@ -182,6 +198,7 @@ public class ContainerView extends VerticalLayout {
             new Label("ID: " + resourceProxy.getId() + " <br /> " + STATUS + resourceProxy.getStatus(),
                 Label.CONTENT_RAW);
         descMetadata1.setStyleName("floatleft columnheight50");
+        descMetadata1.setDescription("status");
         descMetadata1.setWidth("35%");
         cssLayout.addComponent(descMetadata1);
 
@@ -196,11 +213,8 @@ public class ContainerView extends VerticalLayout {
 
     }
 
-    // TODO Fix this ruler! I cannot believe I did that line as a ruler
     private void addHorizontalRuler() {
-        final Label descRuler =
-            new Label(
-                "____________________________________________________________________________________________________");
+        final Label descRuler = new Label("<hr />", Label.CONTENT_RAW);
         descRuler.setStyleName("hr");
         cssLayout.addComponent(descRuler);
     }
@@ -218,13 +232,13 @@ public class ContainerView extends VerticalLayout {
     private void bindNameToHeader() {
         final Label headerContext = new Label(RESOURCE_NAME + resourceProxy.getName());
         headerContext.setStyleName("h1 fullwidth");
+        headerContext.setDescription("header");
         cssLayout.addComponent(headerContext);
     }
 
     private void configureLayout() {
         setMargin(true);
         this.setHeight("100%");
-
         cssLayout.setWidth("100%");
         cssLayout.setHeight("100%");
 
@@ -234,6 +248,63 @@ public class ContainerView extends VerticalLayout {
         // and 40px for the accordion elements?
         final int innerelementsHeight = appHeight - 420;
         accordionHeight = innerelementsHeight - 20;
+
+    }
+
+    private void handleLayoutListeners() {
+
+        cssLayout.addListener(new LayoutClickListener() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void layoutClick(LayoutClickEvent event) {
+                // Get the child component which was clicked
+                if (event.getChildComponent() != null) {
+                    // Is Label?
+                    if (event.getChildComponent().getClass().getCanonicalName() == "com.vaadin.ui.Label") {
+                        Label child = (Label) event.getChildComponent();
+
+                        if ((child).getDescription() == "header") {
+                            oldComponent = event.getClickedComponent();
+                            swapComponent = editHeader(child.getValue().toString());
+                            cssLayout.replaceComponent(oldComponent, swapComponent);
+                            isEditing = true;
+                        }
+                        else if (child.getDescription() == "status") {
+                            oldComponent = event.getClickedComponent();
+                            swapComponent = editStatus(child.getValue().toString());
+                            cssLayout.replaceComponent(oldComponent, swapComponent);
+                            isEditing = true;
+                        }
+                    }
+                    else {
+                        getWindow().showNotification(
+                            "The click was over a " + event.getChildComponent().getClass().getCanonicalName());
+                    }
+                }
+                else {
+                    if (swapComponent != null) {
+                        if (oldComponent instanceof Label)
+                            ((Label) oldComponent).setValue(((TextField) swapComponent).getValue());
+                        cssLayout.replaceComponent(swapComponent, oldComponent);
+                        swapComponent = null;
+                    }
+                }
+            }
+
+            private Component editStatus(String string) {
+                ComboBox cmbStatus = new ComboBox();
+                cmbStatus.addItem("pending");
+                return cmbStatus;
+            }
+
+            private Component editHeader(String lblHeaderValue) {
+                final TextField txtHeader = new TextField();
+                txtHeader.setValue(lblHeaderValue.replaceAll(RESOURCE_NAME, ""));
+                return txtHeader;
+            }
+
+        });
     }
 
     /**
