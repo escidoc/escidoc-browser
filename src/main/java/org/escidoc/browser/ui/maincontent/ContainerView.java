@@ -157,15 +157,18 @@ public class ContainerView extends VerticalLayout {
         rightpnl.setStyleName("floatright");
         rightpnl.setWidth("70%");
         rightpnl.setHeight("82%");
+        rightpnl.getLayout().setMargin(false);
         rightpnl.addComponent(comptoBind);
         cssLayout.addComponent(rightpnl);
     }
 
+    @SuppressWarnings("deprecation")
     private void leftCell(final String string, final Component comptoBind) {
         final Panel leftpnl = new Panel();
 
         leftpnl.setStyleName("directmembers floatleft paddingtop10 ");
         leftpnl.setScrollable(false);
+        leftpnl.getLayout().setMargin(false);
 
         leftpnl.setWidth("30%");
         leftpnl.setHeight("82%");
@@ -194,12 +197,13 @@ public class ContainerView extends VerticalLayout {
      */
     private void bindProperties() {
         // LEFT SIde
-        final Label descMetadata1 =
-            new Label("ID: " + resourceProxy.getId() + " <br /> " + STATUS + resourceProxy.getStatus(),
-                Label.CONTENT_RAW);
-        descMetadata1.setStyleName("floatleft columnheight50");
-        descMetadata1.setDescription("status");
+        final Label descMetadata1 = new Label("ID: " + resourceProxy.getId());
+        final Label lblStatus = new Label(STATUS + resourceProxy.getStatus());
+        descMetadata1.setStyleName("floatleft");
+        lblStatus.setStyleName("floatleft");
+        lblStatus.setDescription("status");
         descMetadata1.setWidth("35%");
+        lblStatus.setWidth("35%");
         cssLayout.addComponent(descMetadata1);
 
         // RIGHT SIDE
@@ -210,6 +214,7 @@ public class ContainerView extends VerticalLayout {
         descMetadata2.setStyleName("floatright columnheight50");
         descMetadata2.setWidth("65%");
         cssLayout.addComponent(descMetadata2);
+        cssLayout.addComponent(lblStatus);
 
     }
 
@@ -229,6 +234,9 @@ public class ContainerView extends VerticalLayout {
         final BreadCrumbMenu bm = new BreadCrumbMenu(cssLayout, resourceProxy, mainWindow, serviceLocation);
     }
 
+    /**
+     * Building the Header Element that shows the title of the Container
+     */
     private void bindNameToHeader() {
         final Label headerContext = new Label(RESOURCE_NAME + resourceProxy.getName());
         headerContext.setStyleName("h1 fullwidth");
@@ -237,7 +245,7 @@ public class ContainerView extends VerticalLayout {
     }
 
     private void configureLayout() {
-        setMargin(true);
+        setMargin(true, true, false, true);
         this.setHeight("100%");
         cssLayout.setWidth("100%");
         cssLayout.setHeight("100%");
@@ -284,8 +292,13 @@ public class ContainerView extends VerticalLayout {
                 }
                 else {
                     if (swapComponent != null) {
-                        if (oldComponent instanceof Label)
+                        if (swapComponent instanceof Label) {
+                            System.out.println("oldComponent is label");
                             ((Label) oldComponent).setValue(((TextField) swapComponent).getValue());
+                        }
+                        else if ((swapComponent instanceof ComboBox)) {
+                            ((Label) oldComponent).setValue(STATUS + ((ComboBox) swapComponent).getValue());
+                        }
                         cssLayout.replaceComponent(swapComponent, oldComponent);
                         swapComponent = null;
                     }
