@@ -97,17 +97,9 @@ public class ItemView extends VerticalLayout {
         bindDescription();
         bindHrRuler();
         bindProperties();
-
-        // Direct Members
-        final ItemContent itemDirectMembers =
-            new ItemContent(repositories.staging(), resourceProxy, serviceLocation, mainWindow);
-        buildLeftCell(itemDirectMembers);
-
-        // right most panelY
-        final MetadataRecsItem metadataRecs =
-            new MetadataRecsItem(resourceProxy, accordionHeight, mainWindow, serviceLocation, repositories);
-        buildRightCell(metadataRecs.asAccord());
-
+        buildLeftCell(new ItemContent(repositories, resourceProxy, serviceLocation, mainWindow));
+        buildRightCell(new MetadataRecsItem(resourceProxy, accordionHeight, mainWindow, serviceLocation, repositories)
+            .asAccord());
         addComponent(cssLayout);
     }
 

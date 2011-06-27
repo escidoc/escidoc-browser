@@ -44,80 +44,33 @@ import com.vaadin.ui.Window;
 
 import de.escidoc.core.resources.om.item.component.Component;
 
+@SuppressWarnings("serial")
 public class DownloadFileListener implements ClickListener {
 
     private final Window mainWindow;
-
-    private final String filename;
 
     private final Component itemProperties;
 
     private final EscidocServiceLocation serviceLocation;
 
-    public DownloadFileListener(Component itemProperties, Window mainWindow, EscidocServiceLocation serviceLocation)
-        throws IOException {
+    public DownloadFileListener(final Component itemProperties, final Window mainWindow,
+        final EscidocServiceLocation serviceLocation) throws IOException {
         this.mainWindow = mainWindow;
-        this.filename = itemProperties.getProperties().getFileName();
         this.itemProperties = itemProperties;
         this.serviceLocation = serviceLocation;
 
     }
 
     @Override
-    public void buttonClick(ClickEvent event) {
-
+    public void buttonClick(final ClickEvent event) {
         mainWindow.open(new FileDownloadResource(new File(serviceLocation.getEscidocUri()
             + itemProperties.getContent().getXLinkHref() + ".xml"), mainWindow.getApplication(), itemProperties
             .getProperties().getFileName(), serviceLocation, itemProperties), "_blank");
-
-        // final Window subwindow = new Window("Relations");
-        // subwindow.setWidth("600px");
-        // subwindow.setModal(true);
-        //
-        // final Label msgWindow = new Label("Failed", Label.CONTENT_RAW);
-        //
-        // subwindow.addComponent(msgWindow);
-        // if (subwindow.getParent() != null) {
-        // mainWindow.showNotification("Window is already open");
-        // }
-        // else {
-        // mainWindow.addWindow(subwindow);
-        // }
     }
-    // private InputStream downloadremote(String file) {
-    //
-    // // Convert the resource to a URL
-    // URL url;
-    // try {
-    // url = new URL(file);
-    // InputStream in;
-    // try {
-    // in = url.openStream();
-    // return in;
-    // }
-    // catch (IOException e) {
-    // System.out.println("Failed opening URL Stream");
-    // e.printStackTrace();
-    // }
-    // }
-    // catch (MalformedURLException e1) {
-    // System.out.println("Malformed URL");
-    // e1.printStackTrace();
-    // }
-    // return null;
-    //
-    // }
-    //
-    // private DownloadStream downloadFile() {
-    // DownloadStream ds =
-    // new DownloadStream(downloadremote(serviceLocation.getEscidocUri()
-    // + itemProperties.getContent().getXLinkHref()), "text/plain", "test.txt");
-    // ds.setParameter("Content-Disposition", "attachment; filename=test.txt");
-    // return ds;
-    // }
 
 }
 
+@SuppressWarnings("serial")
 class FileDownloadResource extends FileResource {
 
     private final String filename;
@@ -126,8 +79,8 @@ class FileDownloadResource extends FileResource {
 
     private final Component itemProperties;
 
-    public FileDownloadResource(File sourceFile, Application application, String filename,
-        EscidocServiceLocation serviceLocation, Component itemProperties) {
+    public FileDownloadResource(final File sourceFile, final Application application, final String filename,
+        final EscidocServiceLocation serviceLocation, final Component itemProperties) {
         super(sourceFile, application);
         this.filename = filename;
         this.serviceLocation = serviceLocation;

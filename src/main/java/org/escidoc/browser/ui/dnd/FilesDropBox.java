@@ -28,7 +28,8 @@ package org.escidoc.browser.ui.dnd;
 
 import java.util.Collection;
 
-import org.escidoc.browser.repository.StagingRepository;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,19 +60,23 @@ public class FilesDropBox extends DragAndDropWrapper implements DropHandler {
 
     private final ProgressIndicator progressView;
 
-    private final StagingRepository stagingRepository;
-
     private int numberOfFiles;
 
     private Components componentList;
 
-    public FilesDropBox(final StagingRepository stagingRepository, final Component root,
+    private final Repositories repositories;
+
+    private final ItemProxyImpl itemProxy;
+
+    public FilesDropBox(final Repositories repositories, final ItemProxyImpl itemProxy, final Component root,
         final ProgressIndicator progressView) {
         super(root);
-        Preconditions.checkNotNull(stagingRepository, "stagingRepository is null: %s", stagingRepository);
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        Preconditions.checkNotNull(itemProxy, "itemProxy is null: %s", itemProxy);
         Preconditions.checkNotNull(root, "root is null: %s", root);
         Preconditions.checkArgument(progressView != null, "progressIndicator is null: %s", progressView);
-        this.stagingRepository = stagingRepository;
+        this.repositories = repositories;
+        this.itemProxy = itemProxy;
         this.progressView = progressView;
         setDropHandler(this);
     }
@@ -111,7 +116,7 @@ public class FilesDropBox extends DragAndDropWrapper implements DropHandler {
         final DragAndDropEvent dropEvent, final Html5File html5File, final Components componentList,
         final int numberOfFiles) {
         return new MultipleStreamVariable(progressView, getApplication().getMainWindow(), html5File, componentList,
-            this, stagingRepository);
+            this, repositories, itemProxy);
     }
 
     @Override

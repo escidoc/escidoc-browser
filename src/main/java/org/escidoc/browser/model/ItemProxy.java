@@ -35,6 +35,7 @@ import de.escidoc.core.resources.common.MetadataRecords;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 
 public interface ItemProxy extends ResourceProxy {
+
     @Override
     String getDescription();
 
@@ -63,4 +64,6 @@ public interface ItemProxy extends ResourceProxy {
     String getContentUrl();
 
     Resource getContext();
+
+    Object hasComponents();
 }

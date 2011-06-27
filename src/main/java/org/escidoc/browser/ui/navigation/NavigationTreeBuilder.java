@@ -35,6 +35,7 @@ import org.escidoc.browser.model.internal.ResourceContainerImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.MainSite;
 import org.escidoc.browser.ui.listeners.TreeClickListener;
+import org.escidoc.browser.ui.listeners.TreeExpandListener;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Window;
@@ -66,7 +67,9 @@ public class NavigationTreeBuilder {
             new ResourceContainerImpl(repositories.context().findAllWithChildrenInfo());
         resourceContainer.init();
 
-        return createNavigationTreeView(mainSite, mainWindow, resourceContainer);
+        final NavigationTreeView navigationTreeView = createNavigationTreeView(mainSite, mainWindow, resourceContainer);
+        navigationTreeView.addExpandListener(new TreeExpandListener(repositories, resourceContainer));
+        return navigationTreeView;
     }
 
     public NavigationTreeView buildContainerDirectMemberTree(

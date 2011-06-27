@@ -45,6 +45,8 @@ import org.escidoc.browser.ui.MainSite;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.TreeCreateContainer;
 import org.escidoc.browser.ui.listeners.TreeCreateItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.event.Action;
@@ -58,6 +60,8 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
 public class NavigationTreeViewImpl extends CustomComponent implements Action.Handler, NavigationTreeView {
+
+    private static final Logger LOG = LoggerFactory.getLogger(NavigationTreeViewImpl.class);
 
     private static final String ADD_ITEM = "Add Item";
 
@@ -185,7 +189,7 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
             }
             else {
                 if (target instanceof ItemModel) {
-                    System.out.println(currentUser.getUserId());
+                    LOG.debug("Current User ID: " + currentUser.getUserId());
                     return ACTIONSITEM;
                 }
                 return ACTIONSCONTAINER;

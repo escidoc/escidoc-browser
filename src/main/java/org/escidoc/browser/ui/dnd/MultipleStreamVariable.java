@@ -36,7 +36,8 @@ import java.net.URL;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.escidoc.browser.model.internal.ComponentBuilder;
-import org.escidoc.browser.repository.StagingRepository;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +50,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.om.item.Item;
 import de.escidoc.core.resources.om.item.StorageType;
 import de.escidoc.core.resources.om.item.component.Component;
 import de.escidoc.core.resources.om.item.component.Components;
@@ -57,8 +59,6 @@ import de.escidoc.core.resources.om.item.component.Components;
 public class MultipleStreamVariable implements StreamVariable {
 
     private static final Logger LOG = LoggerFactory.getLogger(MultipleStreamVariable.class);
-
-    // private final EscidocRepository escidocRepository;
 
     private final AbstractComponent progressView;
 
@@ -72,25 +72,28 @@ public class MultipleStreamVariable implements StreamVariable {
 
     private ByteArrayOutputStream outputStream;
 
-    private final StagingRepository stagingRepository;
+    private final Repositories repositories;
+
+    private final ItemProxyImpl itemProxy;
 
     public MultipleStreamVariable(final ProgressIndicator progressView, final Window mainWindow,
         final Html5File html5File, final Components componentList, final FilesDropBox itemDropBox,
-        final StagingRepository stagingRepository) {
+        final Repositories repositories, final ItemProxyImpl itemProxy) {
 
         Preconditions.checkNotNull(progressView, "progressView is null: %s", progressView);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(html5File, "html5File is null: %s", html5File);
         Preconditions.checkNotNull(componentList, "componentList is null: %s", componentList);
         Preconditions.checkNotNull(itemDropBox, "itemDropBox is null: %s", itemDropBox);
-        Preconditions.checkNotNull(stagingRepository, "stagingRepository is null: %s", stagingRepository);
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
 
         this.progressView = progressView;
         this.mainWindow = mainWindow;
         this.html5File = html5File;
         this.itemDropBox = itemDropBox;
         this.componentList = componentList;
-        this.stagingRepository = stagingRepository;
+        this.repositories = repositories;
+        this.itemProxy = itemProxy;
     }
 
     @Override
@@ -140,7 +143,18 @@ public class MultipleStreamVariable implements StreamVariable {
             addToComponentList(contentUrl);
             decrementNumberOfProcessFile();
             if (areAllFilesStreamed()) {
-                createNewItem();
+                try {
+                    final Item toBeUpdate = findWholeItem();
+                    final Item itemWithNewFiles = addFiles(toBeUpdate);
+                    final Item updatedItem = updateItem(itemWithNewFiles);
+                    LOG.debug("updated: " + updatedItem.getObjid());
+                    mainWindow.showNotification(new Notification("Item is updated",
+                        Window.Notification.TYPE_TRAY_NOTIFICATION));
+                }
+                catch (final EscidocClientException e) {
+                    mainWindow
+                        .showNotification(new Notification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE));
+                }
             }
         }
         catch (final ParserConfigurationException e) {
@@ -157,20 +171,20 @@ public class MultipleStreamVariable implements StreamVariable {
         componentList.add(buildNewComponent(contentUrl));
     }
 
-    private void createNewItem() {
-        mainWindow.showNotification(componentList.size() + " files are staged.");
-        // TODO
-        // Show Save Button.
+    private Item updateItem(final Item toBeUpdate) throws EscidocClientException {
+        final Item updatedItem = repositories.item().update(itemProxy.getId(), toBeUpdate);
+        return updatedItem;
+    }
 
-        // try {
-        // // final Item created = escidocRepository.createItem(componentList);
-        // // LOG.debug("created: " + created.getObjid());
-        // // mainWindow.showNotification("Item with multiple files created: " + created.getObjid(),
-        // // Window.Notification.TYPE_TRAY_NOTIFICATION);
-        // }
-        // catch (final EscidocClientException e) {
-        // mainWindow.showNotification(new Notification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE));
-        // }
+    private Item findWholeItem() throws EscidocClientException {
+        final Item toBeUpdate = repositories.item().findItemById(itemProxy.getId());
+        return toBeUpdate;
+    }
+
+    private Item addFiles(final Item toBeUpdate) {
+        final Components components = toBeUpdate.getComponents();
+        components.addAll(componentList);
+        return toBeUpdate;
     }
 
     private boolean areAllFilesStreamed() {
@@ -183,7 +197,7 @@ public class MultipleStreamVariable implements StreamVariable {
     }
 
     private URL putInStagingServer() throws EscidocClientException {
-        return stagingRepository.putFileInStagingServer(new ByteArrayInputStream(outputStream.toByteArray()));
+        return repositories.staging().putFileInStagingServer(new ByteArrayInputStream(outputStream.toByteArray()));
     }
 
     @Override

@@ -1,7 +1,8 @@
 package org.escidoc.browser.ui.dnd;
 
 import org.escidoc.browser.AppConstants;
-import org.escidoc.browser.repository.StagingRepository;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.internal.ItemProxyImpl;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.terminal.gwt.server.AbstractWebApplicationContext;
@@ -20,12 +21,14 @@ public class DragAndDropFileUpload extends VerticalLayout {
 
     private final Panel panel = new Panel();
 
-    private final StagingRepository stagingRepository;
+    private final Repositories repositories;
 
-    public DragAndDropFileUpload(final StagingRepository stagingRepository) {
-        Preconditions.checkNotNull(stagingRepository, "stagingRepository is null: %s", stagingRepository);
-        this.stagingRepository = stagingRepository;
+    private final ItemProxyImpl itemProxy;
 
+    public DragAndDropFileUpload(final Repositories repositories, final ItemProxyImpl itemProxy) {
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        this.repositories = repositories;
+        this.itemProxy = itemProxy;
         removeAllComponents();
         addImageDropBoxInPanel();
         addProgressIndicator();
@@ -48,7 +51,7 @@ public class DragAndDropFileUpload extends VerticalLayout {
     private FilesDropBox filesDropBox() {
         configureDropPane();
 
-        final FilesDropBox dropBox = new FilesDropBox(stagingRepository, dropPane, progressView);
+        final FilesDropBox dropBox = new FilesDropBox(repositories, itemProxy, dropPane, progressView);
         dropBox.setSizeUndefined();
 
         return dropBox;

@@ -60,7 +60,6 @@ public class ItemRepository implements Repository {
     @Override
     public List<ResourceModel> findAll() throws EscidocClientException {
         return ModelConverter.itemListToModel(client.retrieveItemsAsList(new SearchRetrieveRequestType()));
-
     }
 
     @Override
@@ -93,4 +92,12 @@ public class ItemRepository implements Repository {
         return client.create(newItem);
     }
 
+    public Item update(final String itemId, final Item toBeUpdate) throws EscidocClientException {
+        return client.update(itemId, toBeUpdate);
+    }
+
+    public Item findItemById(final String itemId) throws EscidocClientException {
+        return client.retrieve(itemId);
+
+    }
 }

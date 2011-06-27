@@ -64,21 +64,15 @@ public class ResourceHierarchy {
         return parent;
     }
 
-    private void createContainerHierarchy(final String id) {
-        try {
-            if (getParentOfContainer(id) != null) {
-                containerHierarchy.add(getParentOfContainer(id));
-                createContainerHierarchy(getParentOfContainer(id).getId());
-            }
-        }
-        catch (final EscidocClientException e) {
-            System.out.print("q" + id);
+    private void createContainerHierarchy(final String id) throws EscidocClientException {
+        if (getParentOfContainer(id) != null) {
+            containerHierarchy.add(getParentOfContainer(id));
+            createContainerHierarchy(getParentOfContainer(id).getId());
         }
     }
 
     public ArrayList<ResourceModel> getHierarchy(final String id) throws EscidocClientException {
         createContainerHierarchy(id);
-
         return containerHierarchy;
     }
 

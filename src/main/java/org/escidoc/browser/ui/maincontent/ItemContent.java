@@ -29,7 +29,7 @@
 package org.escidoc.browser.ui.maincontent;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.repository.StagingRepository;
+import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.escidoc.browser.ui.dnd.DragAndDropFileUpload;
 
@@ -55,16 +55,16 @@ public class ItemContent extends CustomLayout {
 
     private final EscidocServiceLocation serviceLocation;
 
-    private final StagingRepository stagingRepository;
+    private final Repositories repositories;
 
-    public ItemContent(final StagingRepository stagingRepository, final ItemProxyImpl itemProxy,
+    public ItemContent(final Repositories repositories, final ItemProxyImpl itemProxy,
         final EscidocServiceLocation serviceLocation, final Window mainWindow) {
-        Preconditions.checkNotNull(stagingRepository, "stagingRepository is null: %s", stagingRepository);
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(itemProxy, "resourceProxy is null.");
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null.");
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
 
-        this.stagingRepository = stagingRepository;
+        this.repositories = repositories;
         this.serviceLocation = serviceLocation;
         this.itemProxy = itemProxy;
 
@@ -90,7 +90,7 @@ public class ItemContent extends CustomLayout {
         for (final Component component : itemProxy.getElements()) {
             buildComponentElement(component);
         }
-        panelComponent.addComponent(new DragAndDropFileUpload(stagingRepository));
+        panelComponent.addComponent(new DragAndDropFileUpload(repositories, itemProxy));
     }
 
     private void buildComponentPanel() {
