@@ -32,9 +32,9 @@ import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
-import org.escidoc.browser.repository.ContainerRepository;
-import org.escidoc.browser.repository.ItemRepository;
 import org.escidoc.browser.repository.Repository;
+import org.escidoc.browser.repository.internal.ContainerRepository;
+import org.escidoc.browser.repository.internal.ItemRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

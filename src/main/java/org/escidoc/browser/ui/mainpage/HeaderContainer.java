@@ -34,6 +34,7 @@ import java.util.regex.Pattern;
 import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.MainSite;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.LogoutListener;
@@ -82,18 +83,23 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
 
     private final MainSite mainSite;
 
+    private final Repositories repositories;
+
     public HeaderContainer(final MainSite mainSite, final BrowserApplication app,
-        final EscidocServiceLocation serviceLocation, final CurrentUser user) {
+        final EscidocServiceLocation serviceLocation, final CurrentUser user, final Repositories repositories) {
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
         Preconditions.checkNotNull(app, "app is null: %s", app);
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(user, "user is null: %s", user);
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
 
         this.app = app;
         this.serviceLocation = serviceLocation;
         this.user = user;
         this.mainSite = mainSite;
+        this.repositories = repositories;
         this.setMargin(false);
+
     }
 
     public void init() {
@@ -179,7 +185,8 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
     public void onClickSearch(final Button.ClickEvent event) {
         final String searchString = (String) searchField.getValue();
         if (validate(searchString)) {
-            final SearchResultsView srchRes = new SearchResultsView(mainSite, searchString, serviceLocation);
+            final SearchResultsView srchRes =
+                new SearchResultsView(mainSite, searchString, serviceLocation, repositories);
             mainSite.openTab(srchRes, "Search results for: " + (String) searchField.getValue());
         }
         else {

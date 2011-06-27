@@ -28,8 +28,14 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import com.google.common.base.Preconditions;
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.internal.ItemProxyImpl;
+import org.escidoc.browser.ui.MainSite;
+import org.escidoc.browser.ui.listeners.itemview.ItemEditDesc1;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
@@ -37,13 +43,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.repository.StagingRepository;
-import org.escidoc.browser.repository.internal.ItemProxyImpl;
-import org.escidoc.browser.ui.MainSite;
-import org.escidoc.browser.ui.listeners.itemview.ItemEditDesc1;
 
 @SuppressWarnings("serial")
 public class ItemView extends VerticalLayout {
@@ -72,18 +71,19 @@ public class ItemView extends VerticalLayout {
 
     private final EscidocServiceLocation serviceLocation;
 
-    private final StagingRepository stagingRepository;
+    private final Repositories repositories;
 
-    public ItemView(final EscidocServiceLocation serviceLocation, StagingRepository stagingRepository,
+    public ItemView(final EscidocServiceLocation serviceLocation, final Repositories repositories,
         final MainSite mainSite, final ResourceProxy resourceProxy, final Window mainWindow) {
 
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null.");
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(mainSite, "mainSite is null.");
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null.");
         Preconditions.checkNotNull(mainWindow, "mainWindow is null.");
 
         this.resourceProxy = (ItemProxyImpl) resourceProxy;
-        this.stagingRepository = stagingRepository;
+        this.repositories = repositories;
         this.mainWindow = mainWindow;
         this.serviceLocation = serviceLocation;
         appHeight = mainSite.getApplicationHeight();
@@ -100,12 +100,13 @@ public class ItemView extends VerticalLayout {
         bindProperties();
 
         // Direct Members
-        final ItemContent itemDirectMembers = new ItemContent(stagingRepository, resourceProxy, serviceLocation, mainWindow);
+        final ItemContent itemDirectMembers =
+            new ItemContent(repositories.staging(), resourceProxy, serviceLocation, mainWindow);
         buildLeftCell(itemDirectMembers);
 
         // right most panelY
         final MetadataRecsItem metadataRecs =
-            new MetadataRecsItem(resourceProxy, accordionHeight, mainWindow, serviceLocation);
+            new MetadataRecsItem(resourceProxy, accordionHeight, mainWindow, serviceLocation, repositories);
         buildRightCell(metadataRecs.asAccord());
 
         addComponent(cssLayout);
@@ -186,7 +187,7 @@ public class ItemView extends VerticalLayout {
 
     @SuppressWarnings("unused")
     private void createBreadcrumbp() {
-        new BreadCrumbMenu(cssLayout, resourceProxy, mainWindow, serviceLocation);
+        new BreadCrumbMenu(cssLayout, resourceProxy, mainWindow, serviceLocation, repositories);
     }
 
     private void buildLayout() {
@@ -227,7 +228,7 @@ public class ItemView extends VerticalLayout {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }

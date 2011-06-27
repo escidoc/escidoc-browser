@@ -28,8 +28,19 @@
  */
 package org.escidoc.browser.ui.dnd;
 
-import com.google.common.base.Preconditions;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.net.URL;
 
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.escidoc.browser.model.internal.ComponentBuilder;
+import org.escidoc.browser.repository.StagingRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Preconditions;
 import com.vaadin.terminal.StreamVariable;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Html5File;
@@ -37,17 +48,7 @@ import com.vaadin.ui.ProgressIndicator;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
-import org.escidoc.browser.model.internal.ComponentBuilder;
-import org.escidoc.browser.repository.StagingRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
-import java.net.URL;
-
-import javax.xml.parsers.ParserConfigurationException;
-
+import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.om.item.StorageType;
 import de.escidoc.core.resources.om.item.component.Component;
 import de.escidoc.core.resources.om.item.component.Components;
@@ -118,10 +119,15 @@ public class MultipleStreamVariable implements StreamVariable {
     @Override
     public void streamingFinished(final StreamingEndEvent event) {
         LOG.debug("finish streaming, got: " + event.getBytesReceived());
-        onStreamFinished();
+        try {
+            onStreamFinished();
+        }
+        catch (final EscidocClientException e) {
+            mainWindow.showNotification(new Notification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE));
+        }
     }
 
-    private void onStreamFinished() {
+    private void onStreamFinished() throws EscidocClientException {
         progressView.setVisible(false);
 
         final URL contentUrl = putInStagingServer();
@@ -152,9 +158,11 @@ public class MultipleStreamVariable implements StreamVariable {
     }
 
     private void createNewItem() {
-        throw new UnsupportedOperationException("not-yet-implemented");
+        mainWindow.showNotification(componentList.size() + " files are staged.");
+        // TODO
+        // Show Save Button.
+
         // try {
-        // // escidocRepository.hardCodedLogin();
         // // final Item created = escidocRepository.createItem(componentList);
         // // LOG.debug("created: " + created.getObjid());
         // // mainWindow.showNotification("Item with multiple files created: " + created.getObjid(),
@@ -174,16 +182,8 @@ public class MultipleStreamVariable implements StreamVariable {
             .withMimeType(html5File.getType()).withContentUrl(contentUrl).build();
     }
 
-    private URL putInStagingServer() {
-        throw new UnsupportedOperationException("not-yet-implemented");
-        // try {
-        // stagingRepo.hardCodedLogin();
-        // return stagingRepository.putFileInStagingServer(new ByteArrayInputStream(outputStream.toByteArray()));
-        // }
-        // catch (final EscidocClientException e) {
-        // mainWindow.showNotification(new Notification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE));
-        // }
-        // return null;
+    private URL putInStagingServer() throws EscidocClientException {
+        return stagingRepository.putFileInStagingServer(new ByteArrayInputStream(outputStream.toByteArray()));
     }
 
     @Override

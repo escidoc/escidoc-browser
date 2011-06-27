@@ -28,9 +28,13 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import com.google.common.base.Preconditions;
+import org.escidoc.browser.model.ContainerProxy;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.MainSite;
+import com.google.common.base.Preconditions;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -42,12 +46,6 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-
-import org.escidoc.browser.model.ContainerProxy;
-import org.escidoc.browser.model.CurrentUser;
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.ui.MainSite;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -96,6 +94,8 @@ public class ContainerView extends VerticalLayout {
 
     private final CurrentUser currentUser;
 
+    private final Repositories repositories;
+
     private boolean isEditing = false;
 
     private Component oldComponent = null;
@@ -103,8 +103,8 @@ public class ContainerView extends VerticalLayout {
     private Component swapComponent = null;
 
     public ContainerView(final EscidocServiceLocation serviceLocation, final MainSite mainSite,
-        final ResourceProxy resourceProxy, final Window mainWindow, final CurrentUser currentUser)
-        throws EscidocClientException {
+        final ResourceProxy resourceProxy, final Window mainWindow, final CurrentUser currentUser,
+        final Repositories repositories) throws EscidocClientException {
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
@@ -119,6 +119,7 @@ public class ContainerView extends VerticalLayout {
         this.resourceProxy = (ContainerProxy) resourceProxy;
         this.mainWindow = mainWindow;
         this.currentUser = currentUser;
+        this.repositories = repositories;
         init();
     }
 
@@ -142,7 +143,7 @@ public class ContainerView extends VerticalLayout {
 
     private void addDirectMembers() throws EscidocClientException {
         final DirectMember directMembers =
-            new DirectMember(serviceLocation, mainSite, resourceProxy.getId(), mainWindow, currentUser, null);
+            new DirectMember(serviceLocation, mainSite, resourceProxy.getId(), mainWindow, currentUser, repositories);
         leftCell(DIRECT_MEMBERS, directMembers.containerAsTree());
     }
 
@@ -231,7 +232,7 @@ public class ContainerView extends VerticalLayout {
     }
 
     private void createBreadCrumb() {
-        new BreadCrumbMenu(cssLayout, resourceProxy, mainWindow, serviceLocation);
+        new BreadCrumbMenu(cssLayout, resourceProxy, mainWindow, serviceLocation, repositories);
     }
 
     /**
@@ -346,7 +347,7 @@ public class ContainerView extends VerticalLayout {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }

@@ -28,14 +28,6 @@
  */
 package org.escidoc.browser.ui.listeners;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
-
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.CurrentUser;
@@ -43,10 +35,9 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.Repository;
-import org.escidoc.browser.repository.StagingRepository;
 import org.escidoc.browser.ui.MainSite;
-import org.escidoc.browser.ui.Repositories;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.ContainerView;
 import org.escidoc.browser.ui.maincontent.ContextView;
@@ -54,20 +45,19 @@ import org.escidoc.browser.ui.maincontent.ItemView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
+
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
 public class TreeClickListener implements ItemClickListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(TreeClickListener.class);
-
-    private final Repository contextRepository;
-
-    private final Repository containerRepository;
-
-    private final Repository itemRepository;
-
-    private final StagingRepository stagingRepository;
 
     private final EscidocServiceLocation serviceLocation;
 
@@ -77,19 +67,18 @@ public class TreeClickListener implements ItemClickListener {
 
     private final CurrentUser currentUser;
 
-    public TreeClickListener(EscidocServiceLocation serviceLocation, Repositories repositories, Window mainWindow,
-        MainSite mainSite, CurrentUser currentUser) {
+    private final Repositories repositories;
+
+    public TreeClickListener(final EscidocServiceLocation serviceLocation, final Repositories repositories,
+        final Window mainWindow, final MainSite mainSite, final CurrentUser currentUser) {
 
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
         Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
 
-        this.contextRepository = repositories.context();
-        this.containerRepository = repositories.container();
-        this.itemRepository = repositories.item();
-        this.stagingRepository = repositories.staging();
-
+        this.repositories = repositories;
         this.mainWindow = mainWindow;
         this.mainSite = mainSite;
         this.serviceLocation = serviceLocation;
@@ -102,8 +91,8 @@ public class TreeClickListener implements ItemClickListener {
         if (ContextModel.isContext(clickedResource)) {
             try {
                 openInNewTab(
-                    new ContextView(serviceLocation, mainSite, tryToFindResource(contextRepository, clickedResource),
-                        mainWindow, currentUser), clickedResource);
+                    new ContextView(serviceLocation, mainSite, tryToFindResource(repositories.context(),
+                        clickedResource), mainWindow, currentUser, repositories), clickedResource);
             }
             catch (final EscidocClientException e) {
                 showErrorMessageToUser(clickedResource, e);
@@ -112,9 +101,8 @@ public class TreeClickListener implements ItemClickListener {
         else if (ContainerModel.isContainer(clickedResource)) {
             try {
                 openInNewTab(
-                    new ContainerView(serviceLocation, mainSite,
-                        tryToFindResource(containerRepository, clickedResource), mainWindow, currentUser),
-                    clickedResource);
+                    new ContainerView(serviceLocation, mainSite, tryToFindResource(repositories.container(),
+                        clickedResource), mainWindow, currentUser, repositories), clickedResource);
             }
             catch (final EscidocClientException e) {
                 showErrorMessageToUser(clickedResource, e);
@@ -122,7 +110,7 @@ public class TreeClickListener implements ItemClickListener {
         }
         else if (ItemModel.isItem(clickedResource)) {
             openInNewTab(
-                new ItemView(serviceLocation, stagingRepository, mainSite, tryToFindResource(itemRepository,
+                new ItemView(serviceLocation, repositories, mainSite, tryToFindResource(repositories.item(),
                     clickedResource), mainWindow), clickedResource);
         }
         else {

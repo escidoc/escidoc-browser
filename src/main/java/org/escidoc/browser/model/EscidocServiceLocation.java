@@ -28,7 +28,9 @@
  */
 package org.escidoc.browser.model;
 
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 
 public interface EscidocServiceLocation {
 
@@ -41,5 +43,7 @@ public interface EscidocServiceLocation {
     void setEscidocUri(URI escidocUri);
 
     void setApplicationUri(URI appUri);
+
+    URL getEscidocUrl() throws MalformedURLException;
 
 }

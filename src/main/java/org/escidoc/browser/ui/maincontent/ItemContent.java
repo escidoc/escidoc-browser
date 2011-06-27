@@ -28,8 +28,12 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import com.google.common.base.Preconditions;
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.repository.StagingRepository;
+import org.escidoc.browser.repository.internal.ItemProxyImpl;
+import org.escidoc.browser.ui.dnd.DragAndDropFileUpload;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.CustomLayout;
@@ -39,11 +43,6 @@ import com.vaadin.ui.Link;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
-
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.repository.StagingRepository;
-import org.escidoc.browser.repository.internal.ItemProxyImpl;
-import org.escidoc.browser.ui.dnd.DragAndDropFileUpload;
 
 import de.escidoc.core.resources.om.item.component.Component;
 
@@ -56,11 +55,9 @@ public class ItemContent extends CustomLayout {
 
     private final EscidocServiceLocation serviceLocation;
 
-    private final Window mainWindow;
-
     private final StagingRepository stagingRepository;
 
-    public ItemContent(StagingRepository stagingRepository, final ItemProxyImpl itemProxy,
+    public ItemContent(final StagingRepository stagingRepository, final ItemProxyImpl itemProxy,
         final EscidocServiceLocation serviceLocation, final Window mainWindow) {
         Preconditions.checkNotNull(stagingRepository, "stagingRepository is null: %s", stagingRepository);
         Preconditions.checkNotNull(itemProxy, "resourceProxy is null.");
@@ -69,7 +66,6 @@ public class ItemContent extends CustomLayout {
 
         this.stagingRepository = stagingRepository;
         this.serviceLocation = serviceLocation;
-        this.mainWindow = mainWindow;
         this.itemProxy = itemProxy;
 
         initView();

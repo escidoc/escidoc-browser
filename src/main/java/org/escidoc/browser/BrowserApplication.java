@@ -28,15 +28,14 @@
  */
 package org.escidoc.browser;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.Application;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
+import java.net.MalformedURLException;
+import java.util.Map;
 
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.internal.EscidocServiceLocationImpl;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.internal.RepositoriesImpl;
 import org.escidoc.browser.ui.MainSite;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.helper.EscidocParameterHandler;
@@ -49,7 +48,10 @@ import org.escidoc.browser.ui.listeners.WindowResizeObserverImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
+import com.google.common.base.Preconditions;
+import com.vaadin.Application;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -129,13 +131,19 @@ public class BrowserApplication extends Application {
             mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
                 Notification.TYPE_ERROR_MESSAGE));
         }
+        catch (final MalformedURLException e) {
+            mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
+                Notification.TYPE_ERROR_MESSAGE));
+        }
     }
 
     private MainSite createMainSite(
         final EscidocServiceLocation serviceLocation, final Window mainWindow, final WindowResizeObserver observer)
-        throws EscidocClientException {
+        throws EscidocClientException, MalformedURLException {
 
-        final MainSite mainSite = new MainSite(mainWindow, serviceLocation, this, getUser());
+        final Repositories repositories = new RepositoriesImpl(serviceLocation).createAllRepositories();
+        repositories.loginWith(getCurrentUser().getToken());
+        final MainSite mainSite = new MainSite(mainWindow, serviceLocation, this, getCurrentUser(), repositories);
         mainSite.setHeight(getApplicationHeight() + "px");
         mainSite.setWidth("100%");
         return mainSite;
@@ -172,8 +180,7 @@ public class BrowserApplication extends Application {
         return serviceLocation;
     }
 
-    @Override
-    public CurrentUser getUser() {
-        return getUser();
+    public CurrentUser getCurrentUser() {
+        return (CurrentUser) getUser();
     }
 }

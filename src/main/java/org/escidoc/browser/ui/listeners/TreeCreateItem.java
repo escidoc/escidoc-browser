@@ -39,7 +39,7 @@ import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ResourceContainer;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.internal.ItemBuilder;
-import org.escidoc.browser.repository.ItemRepository;
+import org.escidoc.browser.repository.internal.ItemRepository;
 
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.Button;

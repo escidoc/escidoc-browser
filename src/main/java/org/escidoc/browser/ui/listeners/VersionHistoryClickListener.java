@@ -33,9 +33,9 @@ import java.util.Collection;
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
-import org.escidoc.browser.repository.ContainerRepository;
-import org.escidoc.browser.repository.ItemRepository;
 import org.escidoc.browser.repository.Repository;
+import org.escidoc.browser.repository.internal.ContainerRepository;
+import org.escidoc.browser.repository.internal.ItemRepository;
 
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -56,11 +56,9 @@ public class VersionHistoryClickListener implements ClickListener {
 
     private ContainerProxy containerProxy;
 
-    private final EscidocServiceLocation escidocServiceLocation;
-
     private String wndContent;
 
-    final private Repository cr;
+    final private Repository repository;
 
     /**
      * Container for the ItemProxy case
@@ -69,13 +67,11 @@ public class VersionHistoryClickListener implements ClickListener {
      * @param mainWindow
      * @param escidocServiceLocation2
      */
-    public VersionHistoryClickListener(ItemProxy resourceProxy, Window mainWindow,
-        EscidocServiceLocation escidocServiceLocation) {
-        this.itemProxy = resourceProxy;
+    public VersionHistoryClickListener(final ItemProxy resourceProxy, final Window mainWindow,
+        final EscidocServiceLocation escidocServiceLocation) {
+        itemProxy = resourceProxy;
         this.mainWindow = mainWindow;
-        this.escidocServiceLocation = escidocServiceLocation;
-        cr = new ItemRepository(escidocServiceLocation);
-
+        repository = new ItemRepository(escidocServiceLocation);
     }
 
     /**
@@ -85,27 +81,24 @@ public class VersionHistoryClickListener implements ClickListener {
      * @param mainWindow
      * @param escidocServiceLocation
      */
-    public VersionHistoryClickListener(ContainerProxy resourceProxy, Window mainWindow,
-        EscidocServiceLocation escidocServiceLocation) {
-        this.containerProxy = resourceProxy;
+    public VersionHistoryClickListener(final ContainerProxy resourceProxy, final Window mainWindow,
+        final EscidocServiceLocation escidocServiceLocation) {
+        containerProxy = resourceProxy;
         this.mainWindow = mainWindow;
-        this.escidocServiceLocation = escidocServiceLocation;
-
-        cr = new ContainerRepository(escidocServiceLocation);
-
+        repository = new ContainerRepository(escidocServiceLocation);
     }
 
-    public String getVersionHistory(Repository cr, String id) throws EscidocClientException {
-        VersionHistory vH = cr.getVersionHistory(id);
-        Collection<Version> versions = vH.getVersions();
+    public String getVersionHistory(final Repository cr, final String id) throws EscidocClientException {
+        final VersionHistory vH = cr.getVersionHistory(id);
+        final Collection<Version> versions = vH.getVersions();
         String versionHistory = "";
-        for (Version version : versions) {
+        for (final Version version : versions) {
             versionHistory += "Version: " + version.getVersionNumber() + "<br />";
             versionHistory += "TimeStamp: " + version.getTimestamp() + "<br />";
             versionHistory += "Version Status: " + version.getVersionStatus() + "<br />";
             versionHistory += "Comment: " + version.getComment() + "<br />< hr/>";
-            Collection<Event> events = version.getEvents();
-            for (Event event : events) {
+            final Collection<Event> events = version.getEvents();
+            for (final Event event : events) {
                 versionHistory += "event :  @xmlID=" + event.getXmlID() + "<br />";
                 versionHistory +=
                     "Event Identifier Type: " + event.getEventIdentifier().getEventIdentifierType() + "<br />";
@@ -136,8 +129,8 @@ public class VersionHistoryClickListener implements ClickListener {
     }
 
     @Override
-    public void buttonClick(ClickEvent event) {
-        Window subwindow = new Window("Version History");
+    public void buttonClick(final ClickEvent event) {
+        final Window subwindow = new Window("Version History");
         subwindow.setWidth("600px");
         subwindow.setModal(true);
         String id = "";
@@ -153,14 +146,14 @@ public class VersionHistoryClickListener implements ClickListener {
 
         try {
 
-            this.wndContent = getVersionHistory(cr, id);
+            wndContent = getVersionHistory(repository, id);
         }
-        catch (EscidocClientException e) {
+        catch (final EscidocClientException e) {
 
-            this.wndContent = "No information ?" + e.getMessage();
+            wndContent = "No information ?" + e.getMessage();
         }
 
-        Label msgWindow = new Label(wndContent, Label.CONTENT_RAW);
+        final Label msgWindow = new Label(wndContent, Label.CONTENT_RAW);
 
         subwindow.addComponent(msgWindow);
         if (subwindow.getParent() != null) {
@@ -169,6 +162,5 @@ public class VersionHistoryClickListener implements ClickListener {
         else {
             mainWindow.addWindow(subwindow);
         }
-
     }
 }

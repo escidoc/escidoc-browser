@@ -38,8 +38,8 @@ import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ResourceContainer;
 import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.Repository;
-import org.escidoc.browser.ui.Repositories;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -28,15 +28,7 @@
  */
 package org.escidoc.browser.ui;
 
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TabSheet.Tab;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
+import java.util.Map;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.BrowserApplication;
@@ -47,16 +39,13 @@ import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.ResourceModelFactory;
 import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
-import org.escidoc.browser.repository.ContainerRepository;
-import org.escidoc.browser.repository.ContextRepository;
-import org.escidoc.browser.repository.ItemRepository;
-import org.escidoc.browser.repository.Repository;
+import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.helper.Util;
 import org.escidoc.browser.ui.maincontent.ContainerView;
 import org.escidoc.browser.ui.maincontent.ContextView;
 import org.escidoc.browser.ui.maincontent.ItemView;
 import org.escidoc.browser.ui.maincontent.SearchAdvancedView;
-import org.escidoc.browser.ui.maincontent.SearchSimple;
+import org.escidoc.browser.ui.maincontent.SimpleSearch;
 import org.escidoc.browser.ui.mainpage.Footer;
 import org.escidoc.browser.ui.mainpage.HeaderContainer;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
@@ -64,8 +53,15 @@ import org.escidoc.browser.ui.navigation.NavigationTreeView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.MalformedURLException;
-import java.util.Map;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -84,30 +80,30 @@ public class MainSite extends VerticalLayout {
 
     private final CurrentUser currentUser;
 
+    private final Repositories repositories;
+
     private EscidocServiceLocation serviceLocation;
 
     private NavigationTreeView mainNavigationTree;
-
-    private Repositories repositories;
 
     /**
      * The mainWindow should be revised whether we need it or not the appHeight is the Height of the Application and I
      * need it for calculations in the inner elements
      * 
      * @param mainWindow
+     * @param repositories
      * @throws EscidocClientException
      */
     public MainSite(final Window mainWindow, final EscidocServiceLocation serviceLocation,
-        final BrowserApplication app, final CurrentUser currentUser) throws EscidocClientException {
+        final BrowserApplication app, final CurrentUser currentUser, final Repositories repositories)
+        throws EscidocClientException {
 
         this.serviceLocation = serviceLocation;
         this.app = app;
         this.mainWindow = mainWindow;
         this.serviceLocation = serviceLocation;
         this.currentUser = currentUser;
-
-        createServices();
-        repositories.loginWith(currentUser.getToken());
+        this.repositories = repositories;
 
         setMargin(true);
 
@@ -116,7 +112,7 @@ public class MainSite extends VerticalLayout {
         mainLayout.setStyleName("maincontainer");
         mainLayout.setSizeFull();
 
-        final HeaderContainer header = new HeaderContainer(this, app, serviceLocation, currentUser);
+        final HeaderContainer header = new HeaderContainer(this, app, serviceLocation, currentUser, repositories);
         header.init();
         final Footer footer = new Footer();
 
@@ -140,21 +136,15 @@ public class MainSite extends VerticalLayout {
         final Map<String, String[]> parameters = app.getParameters();
         if (Util.hasTabArg(parameters) && Util.hasObjectType(parameters)) {
             final String escidocID = parameters.get(AppConstants.ARG_TAB)[0];
-            final ContainerRepository containerRepository;
-            final ContextRepository contextRepository;
-            final Repository itemRepository;
-            final ResourceModelFactory resourceFactory;
 
-            containerRepository = new ContainerRepository(serviceLocation);
-            contextRepository = new ContextRepository(serviceLocation);
-            itemRepository = new ItemRepository(serviceLocation);
+            final ResourceModelFactory resourceFactory = new ResourceModelFactory(repositories);
 
-            resourceFactory = new ResourceModelFactory(itemRepository, containerRepository, contextRepository);
             if (parameters.get(AppConstants.ARG_TYPE)[0].equals("CONTEXT")) {
                 try {
                     final ContextProxyImpl context =
                         (ContextProxyImpl) resourceFactory.find(escidocID, ResourceType.CONTEXT);
-                    openTab(new ContextView(serviceLocation, this, context, mainWindow, currentUser), context.getName());
+                    openTab(new ContextView(serviceLocation, this, context, mainWindow, currentUser, repositories),
+                        context.getName());
                 }
                 catch (final EscidocClientException e) {
                     showError("Cannot retrieve Context");
@@ -164,7 +154,7 @@ public class MainSite extends VerticalLayout {
                 try {
                     final ContainerProxy container =
                         (ContainerProxy) resourceFactory.find(escidocID, ResourceType.CONTAINER);
-                    openTab(new ContainerView(serviceLocation, this, container, mainWindow, currentUser),
+                    openTab(new ContainerView(serviceLocation, this, container, mainWindow, currentUser, repositories),
                         container.getName());
                 }
                 catch (final EscidocClientException e) {
@@ -174,7 +164,7 @@ public class MainSite extends VerticalLayout {
             else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("ITEM")) {
                 try {
                     final ItemProxy item = (ItemProxy) resourceFactory.find(escidocID, ResourceType.ITEM);
-                    openTab(new ItemView(serviceLocation, null, this, item, mainWindow), item.getName());
+                    openTab(new ItemView(serviceLocation, repositories, this, item, mainWindow), item.getName());
                 }
                 catch (final EscidocClientException e) {
                     showError("Cannot retrieve Item");
@@ -223,16 +213,6 @@ public class MainSite extends VerticalLayout {
         return mainNavigation;
     }
 
-    private void createServices() {
-        try {
-            repositories = new RepositoriesImpl(serviceLocation);
-        }
-        catch (final MalformedURLException e) {
-            LOG.error(e.getMessage());
-            mainWindow.showNotification(e.getMessage());
-        }
-    }
-
     /**
      * This method handles the open of a new tab on the right section of the mainWindow This is the perfect place to
      * inject Views that represent objects
@@ -247,6 +227,8 @@ public class MainSite extends VerticalLayout {
             tabname = tabname.substring(0, 50) + "...";
         }
         tb.setCaption(tabname);
+
+        tb.setDescription(tabname);
 
         mainContentTabs.setSelectedTab(cmp);
         tb.setClosable(true);
@@ -267,7 +249,7 @@ public class MainSite extends VerticalLayout {
      * @param event
      */
     public void onClickSrchButton(final Button.ClickEvent event) {
-        final SearchSimple smpSearch = new SearchSimple(this, serviceLocation);
+        final SimpleSearch smpSearch = new SimpleSearch(this, serviceLocation, repositories);
         openTab(smpSearch, "Search Results");
     }
 
@@ -275,7 +257,7 @@ public class MainSite extends VerticalLayout {
         return app.getApplicationHeight();
     }
 
-    public CurrentUser getUser() {
+    public CurrentUser getCurrentUser() {
         return currentUser;
     }
 

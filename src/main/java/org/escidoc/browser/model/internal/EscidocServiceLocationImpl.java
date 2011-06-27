@@ -28,7 +28,9 @@
  */
 package org.escidoc.browser.model.internal;
 
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.EscidocServiceLocation;
@@ -98,6 +100,11 @@ public class EscidocServiceLocationImpl implements EscidocServiceLocation {
     @Override
     public void setApplicationUri(final URI appUri) {
         this.appUri = appUri;
+    }
+
+    @Override
+    public URL getEscidocUrl() throws MalformedURLException {
+        return new URL(escidocUri);
     }
 
 }

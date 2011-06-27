@@ -175,10 +175,10 @@ public class ContainerProxyImpl implements ContainerProxy {
         return containerFromCore.getStructMap();
     }
 
-    public void setStruct(String objId) {
-        StructMap stMap = getStructMap();
+    public void setStruct(final String objId) {
+        final StructMap stMap = getStructMap();
 
-        MemberRef m = new ContainerMemberRef(objId);
+        final MemberRef m = new ContainerMemberRef(objId);
 
         stMap.add(m);
         containerFromCore.setStructMap(stMap);

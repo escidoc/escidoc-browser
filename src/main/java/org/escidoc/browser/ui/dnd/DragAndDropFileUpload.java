@@ -1,7 +1,9 @@
 package org.escidoc.browser.ui.dnd;
 
-import com.google.common.base.Preconditions;
+import org.escidoc.browser.AppConstants;
+import org.escidoc.browser.repository.StagingRepository;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.terminal.gwt.server.AbstractWebApplicationContext;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Panel;
@@ -10,32 +12,23 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
 
-import org.escidoc.browser.AppConstants;
-import org.escidoc.browser.repository.StagingRepository;
-
+@SuppressWarnings("serial")
 public class DragAndDropFileUpload extends VerticalLayout {
     private final CssLayout dropPane = new CssLayout();
 
     private final ProgressIndicator progressView = new ProgressIndicator();
 
-    private final Panel panel = new Panel(withImageDropBox());
+    private final Panel panel = new Panel();
 
     private final StagingRepository stagingRepository;
 
-    public DragAndDropFileUpload(StagingRepository stagingRepository) {
+    public DragAndDropFileUpload(final StagingRepository stagingRepository) {
         Preconditions.checkNotNull(stagingRepository, "stagingRepository is null: %s", stagingRepository);
         this.stagingRepository = stagingRepository;
 
         removeAllComponents();
-        addPanel();
+        addImageDropBoxInPanel();
         addProgressIndicator();
-    }
-
-    private FilesDropBox withImageDropBox() {
-        configureDropPane();
-        final FilesDropBox dropBox = new FilesDropBox(stagingRepository, dropPane, progressView);
-        dropBox.setSizeUndefined();
-        return dropBox;
     }
 
     private void addProgressIndicator() {
@@ -44,11 +37,21 @@ public class DragAndDropFileUpload extends VerticalLayout {
         addComponent(progressView);
     }
 
-    private void addPanel() {
+    private void addImageDropBoxInPanel() {
         panel.setSizeUndefined();
         panel.addStyleName("no-vertical-drag-hints");
         panel.addStyleName("no-horizontal-drag-hints");
+        panel.setContent(filesDropBox());
         addComponent(panel);
+    }
+
+    private FilesDropBox filesDropBox() {
+        configureDropPane();
+
+        final FilesDropBox dropBox = new FilesDropBox(stagingRepository, dropPane, progressView);
+        dropBox.setSizeUndefined();
+
+        return dropBox;
     }
 
     private void configureDropPane() {

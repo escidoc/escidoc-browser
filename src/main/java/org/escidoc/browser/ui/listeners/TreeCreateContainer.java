@@ -39,7 +39,7 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceContainer;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.internal.ContainerBuilder;
-import org.escidoc.browser.repository.ContainerRepository;
+import org.escidoc.browser.repository.internal.ContainerRepository;
 
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.Button;

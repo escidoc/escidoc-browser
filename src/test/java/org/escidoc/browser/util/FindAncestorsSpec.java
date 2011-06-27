@@ -29,17 +29,12 @@
 package org.escidoc.browser.util;
 
 import static org.hamcrest.Matchers.is;
-
-import java.net.URI;
-
 import junit.framework.Assert;
 
-import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.internal.HasNoNameResourceImpl;
 import org.escidoc.browser.repository.UtilRepository;
-import org.escidoc.browser.repository.internal.UtilRepositoryImpl;
 import org.junit.Test;
 
 public class FindAncestorsSpec {
@@ -96,35 +91,6 @@ public class FindAncestorsSpec {
     }
 
     private void initRepo() {
-        repository = new UtilRepositoryImpl(new EscidocServiceLocation() {
-
-            @Override
-            public void setEscidocUri(final URI escidocUri) {
-                throw new UnsupportedOperationException("Not yet implemented");
-
-            }
-
-            @Override
-            public void setApplicationUri(final URI appUri) {
-                throw new UnsupportedOperationException("Not yet implemented");
-
-            }
-
-            @Override
-            public String getLogoutUri() {
-                throw new UnsupportedOperationException("Not yet implemented");
-
-            }
-
-            @Override
-            public String getLoginUri() {
-                throw new UnsupportedOperationException("Not yet implemented");
-            }
-
-            @Override
-            public String getEscidocUri() {
-                return "http://escidev4:8080";
-            }
-        });
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 }

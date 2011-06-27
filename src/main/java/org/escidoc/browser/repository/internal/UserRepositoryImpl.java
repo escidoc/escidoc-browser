@@ -36,6 +36,8 @@ import org.escidoc.browser.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
+
 import de.escidoc.core.client.UserAccountHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -48,6 +50,7 @@ public class UserRepositoryImpl implements UserRepository {
     private String token;
 
     public UserRepositoryImpl(final EscidocServiceLocation serviceLocation) {
+        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         client = new UserAccountHandlerClient(serviceLocation.getEscidocUri());
     }
 

@@ -32,6 +32,7 @@ import java.util.Iterator;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
+import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.listeners.MetadataRecBehavour;
 import org.escidoc.browser.ui.listeners.RelationsClickListener;
 import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
@@ -56,24 +57,37 @@ public class MetadataRecsItem {
 
     private final EscidocServiceLocation escidocServiceLocation;
 
-    public MetadataRecsItem(ItemProxy resourceProxy, int innerelementsHeight, Window mainWindow,
-        EscidocServiceLocation escidocServiceLocation) {
+    private final Repositories repositories;
+
+    public MetadataRecsItem(final ItemProxy resourceProxy, final int innerelementsHeight, final Window mainWindow,
+        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories) {
         Preconditions.checkNotNull(mainWindow, "resource is null.");
-        this.height = innerelementsHeight;
-        if (this.height < 1)
-            this.height = 400;
+        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
+        Preconditions
+            .checkNotNull(escidocServiceLocation, "escidocServiceLocation is null: %s", escidocServiceLocation);
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+
+        // TODO: what the value of height?
+        // TODO: User Camel Case for variable, method and class name
+        height = innerelementsHeight;
+
+        if (height < 1) {
+            height = 400;
+        }
+
         this.resourceProxy = resourceProxy;
         this.mainWindow = mainWindow;
         this.escidocServiceLocation = escidocServiceLocation;
+        this.repositories = repositories;
     }
 
     public Accordion asAccord() {
-        Accordion metadataRecs = new Accordion();
+        final Accordion metadataRecs = new Accordion();
         metadataRecs.setSizeFull();
 
-        Panel l1 = lblMetadaRecs();
-        // Label l2 = lblRelations();
-        Panel pnl = lblAddtionalResources();
+        // TODO use meaningful variable, class, method name
+        final Panel l1 = lblMetadaRecs();
+        final Panel pnl = lblAddtionalResources();
 
         // Add the components as tabs in the Accordion.
         metadataRecs.addTab(l1, "Metadata Records", null);
@@ -84,19 +98,19 @@ public class MetadataRecsItem {
 
     private Panel lblAddtionalResources() {
 
-        Button btnVersionHistory =
+        final Button btnVersionHistory =
             new Button("Item Version History", new VersionHistoryClickListener(resourceProxy, mainWindow,
                 escidocServiceLocation));
         btnVersionHistory.setStyleName(BaseTheme.BUTTON_LINK);
         btnVersionHistory.setDescription("Show Version history in a Pop-up");
 
-        Button btnContentRelation =
+        final Button btnContentRelation =
             new Button("Item Content Relations", new RelationsClickListener(resourceProxy, mainWindow,
                 escidocServiceLocation));
         btnContentRelation.setStyleName(BaseTheme.BUTTON_LINK);
         btnContentRelation.setDescription("Show Version history in a Pop-up");
 
-        Panel pnl = new Panel();
+        final Panel pnl = new Panel();
         pnl.setHeight(height + "px");
         pnl.addComponent(btnVersionHistory);
         pnl.addComponent(btnContentRelation);
@@ -104,14 +118,14 @@ public class MetadataRecsItem {
     }
 
     private Label lblRelations() {
-        Iterator itr = resourceProxy.getRelations().iterator();
+        final Iterator itr = resourceProxy.getRelations().iterator();
         String relRecords = "";
-        StringBuffer buf = new StringBuffer();
+        final StringBuffer buf = new StringBuffer();
         while (itr.hasNext()) {
             buf.append("<a href='#'>" + itr.next() + "</a><br />");
         }
         relRecords = buf.toString();
-        Label l2 = new Label(relRecords, Label.CONTENT_RAW);
+        final Label l2 = new Label(relRecords, Label.CONTENT_RAW);
         l2.setHeight(height + "px");
         return l2;
     }
@@ -120,9 +134,9 @@ public class MetadataRecsItem {
         final Panel pnl = new Panel();
         pnl.setHeight(height + "px");
 
-        MetadataRecords mdRecs = resourceProxy.getMedataRecords();
-        for (MetadataRecord metadataRecord : mdRecs) {
-            Button btnmdRec =
+        final MetadataRecords mdRecs = resourceProxy.getMedataRecords();
+        for (final MetadataRecord metadataRecord : mdRecs) {
+            final Button btnmdRec =
                 new Button(metadataRecord.getName(), new MetadataRecBehavour(metadataRecord, mainWindow,
                     escidocServiceLocation));
             btnmdRec.setStyleName(BaseTheme.BUTTON_LINK);

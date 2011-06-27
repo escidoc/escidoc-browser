@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.escidoc.browser.repository.ContextRepository;
+import org.escidoc.browser.repository.internal.ContextRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

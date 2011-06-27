@@ -39,10 +39,7 @@ import org.escidoc.browser.model.ResourceModelFactory;
 import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.internal.HasNoNameResource;
 import org.escidoc.browser.model.internal.HasNoNameResourceImpl;
-import org.escidoc.browser.repository.ContainerRepository;
-import org.escidoc.browser.repository.ContextRepository;
-import org.escidoc.browser.repository.ItemRepository;
-import org.escidoc.browser.repository.Repository;
+import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.UtilRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,21 +54,15 @@ public class UtilRepositoryImpl implements UtilRepository {
 
     private static final Logger LOG = LoggerFactory.getLogger(UtilRepositoryImpl.class);
 
-    private final ContainerRepository containerRepository;
+    private final Repositories repositories;
 
-    private final ContextRepository contextRepository;
-
-    private final Repository itemRepository;
-
-    public UtilRepositoryImpl(final EscidocServiceLocation escidocServiceLocation) {
+    public UtilRepositoryImpl(final EscidocServiceLocation escidocServiceLocation, final Repositories repositories) {
         Preconditions
             .checkNotNull(escidocServiceLocation, "escidocServiceLocation is null: %s", escidocServiceLocation);
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
 
-        containerRepository = new ContainerRepository(escidocServiceLocation);
-        contextRepository = new ContextRepository(escidocServiceLocation);
-        itemRepository = new ItemRepository(escidocServiceLocation);
-
-        resourceFactory = new ResourceModelFactory(itemRepository, containerRepository, contextRepository);
+        this.repositories = repositories;
+        resourceFactory = new ResourceModelFactory(repositories);
     }
 
     private final List<ResourceModel> path = new ArrayList<ResourceModel>();
@@ -83,7 +74,7 @@ public class UtilRepositoryImpl implements UtilRepository {
 
         path.add(resourceFactory.find(resource.getId(), resource.getType()));
 
-        final List<Container> parents = containerRepository.findParents(resource);
+        final List<Container> parents = repositories.container().findParents(resource);
 
         if (parents.size() > 1) {
             LOG.warn("Found more than one parent: " + parents);
@@ -108,7 +99,7 @@ public class UtilRepositoryImpl implements UtilRepository {
             resource.getType().equals(ResourceType.ITEM) || resource.getType().equals(ResourceType.CONTAINER),
             "Only Item and Container is supported");
 
-        final List<Container> parents = containerRepository.findParents(resource);
+        final List<Container> parents = repositories.container().findParents(resource);
 
         if (parents.size() > 1) {
             LOG.warn("Found more than one parent: " + parents);
@@ -118,10 +109,9 @@ public class UtilRepositoryImpl implements UtilRepository {
             return new ContainerModel(parents.get(0));
         }
         else if (parentIsContext(parents)) {
-            return containerRepository.findContext(resource);
+            return repositories.container().findContext(resource);
         }
-        return null;
-        // throw new UnsupportedOperationException("Unsupported");
+        throw new UnsupportedOperationException("Unsupported");
     }
 
     private boolean parentIsContainer(final List<Container> parents) {
@@ -141,11 +131,11 @@ public class UtilRepositoryImpl implements UtilRepository {
     }
 
     @Override
-    public Resource getParentContext(String id) {
+    public Resource getParentContext(final String id) {
         try {
-            return ((ContainerProxy) containerRepository.findById(id)).getContext();
+            return ((ContainerProxy) repositories.container().findById(id)).getContext();
         }
-        catch (EscidocClientException e) {
+        catch (final EscidocClientException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
