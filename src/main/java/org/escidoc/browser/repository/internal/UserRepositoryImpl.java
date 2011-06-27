@@ -36,7 +36,6 @@ import org.escidoc.browser.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.escidoc.core.client.TransportProtocol;
 import de.escidoc.core.client.UserAccountHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -50,7 +49,6 @@ public class UserRepositoryImpl implements UserRepository {
 
     public UserRepositoryImpl(final EscidocServiceLocation serviceLocation) {
         client = new UserAccountHandlerClient(serviceLocation.getEscidocUri());
-        client.setTransport(TransportProtocol.REST);
     }
 
     public void withToken(final String token) {
@@ -63,7 +61,7 @@ public class UserRepositoryImpl implements UserRepository {
             return new LoggedInUser(client.retrieveCurrentUser(), token);
         }
         catch (final EscidocClientException e) {
-            LOG.info("e: " + e.getMessage());
+            LOG.info("The user is not logged in");
             return new GuestUser();
         }
     }
@@ -78,5 +76,4 @@ public class UserRepositoryImpl implements UserRepository {
         builder.append("]");
         return builder.toString();
     }
-
 }
