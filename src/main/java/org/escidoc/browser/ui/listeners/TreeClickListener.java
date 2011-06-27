@@ -87,36 +87,32 @@ public class TreeClickListener implements ItemClickListener {
 
     @Override
     public void itemClick(final ItemClickEvent event) {
-        final ResourceModel clickedResource = (ResourceModel) event.getItemId();
+        openClickedResourceInNewTab((ResourceModel) event.getItemId());
+    }
+
+    private void openClickedResourceInNewTab(final ResourceModel clickedResource) {
+        try {
+            openInNewTab(createView(clickedResource), clickedResource);
+        }
+        catch (final EscidocClientException e) {
+            LOG.error(e.getMessage());
+            showErrorMessageToUser(clickedResource, e);
+        }
+    }
+
+    private Component createView(final ResourceModel clickedResource) throws EscidocClientException {
         if (ContextModel.isContext(clickedResource)) {
-            try {
-                openInNewTab(
-                    new ContextView(serviceLocation, mainSite, tryToFindResource(repositories.context(),
-                        clickedResource), mainWindow, currentUser, repositories), clickedResource);
-            }
-            catch (final EscidocClientException e) {
-                showErrorMessageToUser(clickedResource, e);
-            }
+            return new ContextView(serviceLocation, mainSite,
+                tryToFindResource(repositories.context(), clickedResource), mainWindow, currentUser, repositories);
         }
         else if (ContainerModel.isContainer(clickedResource)) {
-            try {
-                openInNewTab(
-                    new ContainerView(serviceLocation, mainSite, tryToFindResource(repositories.container(),
-                        clickedResource), mainWindow, currentUser, repositories), clickedResource);
-            }
-            catch (final EscidocClientException e) {
-                showErrorMessageToUser(clickedResource, e);
-            }
+            return new ContainerView(serviceLocation, mainSite, tryToFindResource(repositories.container(),
+                clickedResource), mainWindow, currentUser, repositories);
+
         }
         else if (ItemModel.isItem(clickedResource)) {
-            try {
-                openInNewTab(
-                    new ItemView(serviceLocation, repositories, mainSite, tryToFindResource(repositories.item(),
-                        clickedResource), mainWindow), clickedResource);
-            }
-            catch (final EscidocClientException e) {
-                showErrorMessageToUser(clickedResource, e);
-            }
+            return new ItemView(serviceLocation, repositories, mainSite, tryToFindResource(repositories.item(),
+                clickedResource), mainWindow);
         }
         else {
             throw new UnsupportedOperationException("Not yet implemented");
