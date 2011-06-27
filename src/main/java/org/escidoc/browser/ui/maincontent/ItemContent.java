@@ -28,14 +28,8 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.repository.internal.ItemProxyImpl;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.CustomLayout;
@@ -45,6 +39,11 @@ import com.vaadin.ui.Link;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
+
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.repository.StagingRepository;
+import org.escidoc.browser.repository.internal.ItemProxyImpl;
+import org.escidoc.browser.ui.dnd.DragAndDropFileUpload;
 
 import de.escidoc.core.resources.om.item.component.Component;
 
@@ -59,12 +58,16 @@ public class ItemContent extends CustomLayout {
 
     private final Window mainWindow;
 
-    public ItemContent(final ItemProxyImpl itemProxy, final EscidocServiceLocation serviceLocation,
-        final Window mainWindow) {
+    private final StagingRepository stagingRepository;
+
+    public ItemContent(StagingRepository stagingRepository, final ItemProxyImpl itemProxy,
+        final EscidocServiceLocation serviceLocation, final Window mainWindow) {
+        Preconditions.checkNotNull(stagingRepository, "stagingRepository is null: %s", stagingRepository);
         Preconditions.checkNotNull(itemProxy, "resourceProxy is null.");
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null.");
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
 
+        this.stagingRepository = stagingRepository;
         this.serviceLocation = serviceLocation;
         this.mainWindow = mainWindow;
         this.itemProxy = itemProxy;
@@ -91,6 +94,7 @@ public class ItemContent extends CustomLayout {
         for (final Component component : itemProxy.getElements()) {
             buildComponentElement(component);
         }
+        panelComponent.addComponent(new DragAndDropFileUpload(stagingRepository));
     }
 
     private void buildComponentPanel() {
@@ -129,14 +133,4 @@ public class ItemContent extends CustomLayout {
         final String lastOne = last[last.length - 1];
         return lastOne;
     }
-
-    private String getMimeType(final String url) throws IOException {
-        final URL u = new URL(url);
-        URLConnection uc = null;
-        uc = u.openConnection();
-        System.out.println(uc.getContentLength());
-
-        return uc.getContentType();
-    }
-
 }

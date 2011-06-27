@@ -28,11 +28,9 @@
  */
 package org.escidoc.browser.repository;
 
-import gov.loc.www.zing.srw.SearchRetrieveRequestType;
+import com.google.common.base.Preconditions;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
@@ -42,13 +40,11 @@ import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.internal.HasNoNameResource;
 import org.escidoc.browser.repository.internal.ContainerProxyImpl;
 import org.escidoc.browser.ui.helper.Util;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.escidoc.core.client.ContainerHandlerClient;
-import de.escidoc.core.client.TransportProtocol;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.EscidocException;
 import de.escidoc.core.client.exceptions.InternalClientException;
@@ -58,10 +54,9 @@ import de.escidoc.core.resources.common.Relations;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.sb.search.SearchResultRecord;
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 public class ContainerRepository implements Repository {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ContainerRepository.class);
 
     private final ContainerHandlerClientInterface client;
 
@@ -69,7 +64,6 @@ public class ContainerRepository implements Repository {
         Preconditions
             .checkNotNull(escidocServiceLocation, "escidocServiceLocation is null: %s", escidocServiceLocation);
         client = new ContainerHandlerClient(escidocServiceLocation.getEscidocUri());
-        client.setTransport(TransportProtocol.REST);
     }
 
     @Override

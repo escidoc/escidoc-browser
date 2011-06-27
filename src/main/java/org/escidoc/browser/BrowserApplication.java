@@ -28,7 +28,11 @@
  */
 package org.escidoc.browser;
 
-import java.util.Map;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.Application;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
@@ -45,10 +49,7 @@ import org.escidoc.browser.ui.listeners.WindowResizeObserverImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.Application;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
+import java.util.Map;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -171,4 +172,7 @@ public class BrowserApplication extends Application {
         return serviceLocation;
     }
 
+    public CurrentUser getCurrentUser() {
+        return (CurrentUser) getUser();
+    }
 }

@@ -31,7 +31,7 @@ package org.escidoc.browser.ui.maincontent;
 import java.util.Iterator;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.repository.ItemProxy;
+import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.ui.listeners.MetadataRecBehavour;
 import org.escidoc.browser.ui.listeners.RelationsClickListener;
 import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;

@@ -28,20 +28,21 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.repository.ContainerProxy;
-import org.escidoc.browser.ui.listeners.MetadataRecBehavour;
-import org.escidoc.browser.ui.listeners.RelationsClickListener;
-import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
+
+import org.escidoc.browser.model.ContainerProxy;
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.ui.listeners.CmDefBehaviourClickListener;
+import org.escidoc.browser.ui.listeners.MetadataRecBehavour;
+import org.escidoc.browser.ui.listeners.RelationsClickListener;
+import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
 
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.MetadataRecords;
@@ -69,13 +70,12 @@ public class MetadataRecs {
         metadataRecs.setSizeFull();
 
         final Panel pnlmdRec = lblMetadaRecs();
-        // final Label l2 = lblRelations();
-        final Panel pnl = lblAddtionalResources();
+        final Panel additionalResourcesPanel = lblAddtionalResources();
 
         // Add the components as tabs in the Accordion.
         metadataRecs.addTab(pnlmdRec, "Metadata Records", null);
         // metadataRecs.addTab(l2, "Relations", null);
-        metadataRecs.addTab(pnl, "Additional Resources", null);
+        metadataRecs.addTab(additionalResourcesPanel, "Additional Resources", null);
         return metadataRecs;
     }
 
@@ -101,19 +101,13 @@ public class MetadataRecs {
         return pnl;
     }
 
-    private Label lblRelations() {
-        final Label l2 = new Label("Relations - Not implemented in JCLib");
-        l2.setHeight(height + "px");
-        return l2;
-    }
-
     private Panel lblMetadaRecs() {
         final Panel pnl = new Panel();
         pnl.setHeight(height + "px");
 
-        MetadataRecords mdRecs = resourceProxy.getMedataRecords();
-        for (MetadataRecord metadataRecord : mdRecs) {
-            Button btnmdRec =
+        final MetadataRecords mdRecs = resourceProxy.getMedataRecords();
+        for (final MetadataRecord metadataRecord : mdRecs) {
+            final Button btnmdRec =
                 new Button(metadataRecord.getName(), new MetadataRecBehavour(metadataRecord, mainWindow,
                     escidocServiceLocation));
             btnmdRec.setStyleName(BaseTheme.BUTTON_LINK);
@@ -122,15 +116,5 @@ public class MetadataRecs {
         }
 
         return pnl;
-        // final Iterator itr = resourceProxy.getMedataRecords().iterator();
-        // String mtRecords = "";
-        // while (itr.hasNext()) {
-        // mtRecords += "<a href='/MISSING'>" + itr.next() + "</a><br />";
-        // }
-        //
-        // final Label l1 = new Label(mtRecords, Label.CONTENT_RAW);
-        // l1.setHeight(height + "px");
-        // return l1;
     }
-
 }

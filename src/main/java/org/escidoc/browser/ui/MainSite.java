@@ -28,23 +28,30 @@
  */
 package org.escidoc.browser.ui;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Map;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.BrowserApplication;
+import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.ResourceModelFactory;
 import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
-import org.escidoc.browser.repository.ContainerProxy;
 import org.escidoc.browser.repository.ContainerRepository;
 import org.escidoc.browser.repository.ContextRepository;
-import org.escidoc.browser.repository.ItemProxy;
 import org.escidoc.browser.repository.ItemRepository;
 import org.escidoc.browser.repository.Repository;
+import org.escidoc.browser.repository.StagingRepository;
 import org.escidoc.browser.service.PdpService;
 import org.escidoc.browser.service.PdpServiceImpl;
 import org.escidoc.browser.ui.helper.Util;
@@ -60,15 +67,9 @@ import org.escidoc.browser.ui.navigation.NavigationTreeView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TabSheet.Tab;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Map;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -146,6 +147,7 @@ public class MainSite extends VerticalLayout {
             final ContextRepository contextRepository;
             final Repository itemRepository;
             final ResourceModelFactory resourceFactory;
+
             containerRepository = new ContainerRepository(serviceLocation);
             contextRepository = new ContextRepository(serviceLocation);
             itemRepository = new ItemRepository(serviceLocation);
@@ -175,7 +177,7 @@ public class MainSite extends VerticalLayout {
             else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("ITEM")) {
                 try {
                     final ItemProxy item = (ItemProxy) resourceFactory.find(escidocID, ResourceType.ITEM);
-                    openTab(new ItemView(serviceLocation, this, item, mainWindow), item.getName());
+                    openTab(new ItemView(serviceLocation, null, this, item, mainWindow), item.getName());
                 }
                 catch (final EscidocClientException e) {
                     showError("Cannot retrieve Item");
@@ -211,12 +213,11 @@ public class MainSite extends VerticalLayout {
      * @throws EscidocClientException
      */
     private Panel buildNavigationPanel() throws EscidocClientException {
-
-        final Panel mainnav = new Panel();
-        mainnav.setScrollable(true);
-        mainnav.setStyleName("floatleft paddingtop10");
-        mainnav.setWidth("30%");
-        mainnav.setHeight("88%");
+        final Panel mainNavigation = new Panel();
+        mainNavigation.setScrollable(true);
+        mainNavigation.setStyleName("floatleft paddingtop10");
+        mainNavigation.setWidth("30%");
+        mainNavigation.setHeight("88%");
 
         final ContainerRepository containerRepository = new ContainerRepository(serviceLocation);
         containerRepository.loginWith(((CurrentUser) app.getUser()).getToken());
@@ -227,14 +228,16 @@ public class MainSite extends VerticalLayout {
         final ItemRepository itemRepository = new ItemRepository(serviceLocation);
         itemRepository.loginWith(((CurrentUser) app.getUser()).getToken());
 
+        final StagingRepository stagingRepository = new StagingRepositoryImpl(serviceLocation);
+        itemRepository.loginWith(app.getCurrentUser().getToken());
         createPdpService();
         final NavigationTreeView treemenu =
             new NavigationTreeBuilder(serviceLocation, (CurrentUser) app.getUser(), pdpService).buildNavigationTree(
-                contextRepository, containerRepository, itemRepository, pdpService, this, mainWindow);
+                contextRepository, containerRepository, itemRepository, pdpService, this, mainWindow, null);
         mainnavtree = treemenu;
-        mainnav.addComponent(mainnavtree);
+        mainNavigation.addComponent(mainnavtree);
 
-        return mainnav;
+        return mainNavigation;
     }
 
     /**
@@ -246,7 +249,6 @@ public class MainSite extends VerticalLayout {
      */
     public void openTab(final Component cmp, String tabname) {
         final Tab tb = maincontenttab.addTab(cmp);
-        final String tabnameshort = null;
         if (tabname.length() > 50) {
             tb.setDescription(tabname);
             tabname = tabname.substring(0, 50) + "...";

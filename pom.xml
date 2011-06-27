@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -15,6 +17,12 @@
 			<artifactId>vaadin</artifactId>
 			<version>6.6.2</version>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.3</version>
+			<scope>provided</scope>
 		</dependency>
 		<!-- commented until maven repo is found. <dependency> <groupId>com.google.gwt</groupId> 
 			<artifactId>gwt-user</artifactId> <version>2.1.0</version> <scope>provided</scope> 
@@ -57,7 +65,7 @@
 			<version>1.6.1</version>
 			<scope>runtime</scope>
 		</dependency>
-		
+
 		<!-- Tests -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -79,7 +87,7 @@
 		<compiler.level>1.6</compiler.level>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jetty.port>8084</jetty.port>
-		<jetty.scan.sec>5</jetty.scan.sec>
+		<jetty.scan.sec>0</jetty.scan.sec>
 		<vaadin-widgets-dir>src/main/webapp/VAADIN/widgetsets
 		</vaadin-widgets-dir>
 	</properties>
@@ -225,7 +233,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		
+
 		<finalName>${project.artifactId}</finalName>
 	</build>
 

@@ -28,17 +28,20 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
+import com.google.common.base.Preconditions;
+
+import com.vaadin.ui.Window;
+
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.repository.ContainerRepository;
 import org.escidoc.browser.repository.ContextRepository;
 import org.escidoc.browser.repository.ItemRepository;
+import org.escidoc.browser.repository.StagingRepository;
 import org.escidoc.browser.ui.MainSite;
+import org.escidoc.browser.ui.StagingRepositoryImpl;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.navigation.NavigationTreeView;
-
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.InternalClientException;
@@ -62,6 +65,8 @@ public class DirectMember {
 
     private final CurrentUser currentUser;
 
+    private StagingRepository stagingRepository;
+
     public DirectMember(final EscidocServiceLocation serviceLocation, final MainSite mainSite, final String parentId,
         final Window mainWindow, final CurrentUser currentUser) {
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
@@ -83,6 +88,7 @@ public class DirectMember {
         contextRepository = new ContextRepository(serviceLocation);
         containerRepository = new ContainerRepository(serviceLocation);
         itemRepository = new ItemRepository(serviceLocation);
+        stagingRepository = new StagingRepositoryImpl(serviceLocation);
         tryLogin();
         checkPostConditions();
     }
@@ -92,6 +98,7 @@ public class DirectMember {
             contextRepository.loginWith(currentUser.getToken());
             containerRepository.loginWith(currentUser.getToken());
             itemRepository.loginWith(currentUser.getToken());
+            stagingRepository.loginWith(currentUser.getToken());
         }
         catch (final InternalClientException e) {
             mainWindow.showNotification("Can not Login. " + e.getMessage());
@@ -106,31 +113,31 @@ public class DirectMember {
 
     public NavigationTreeView contextAsTree() throws EscidocClientException {
         final NavigationTreeView tree =
-            createContextDirectMembers(contextRepository, containerRepository, itemRepository);
+            createContextDirectMembers(contextRepository, containerRepository, itemRepository, stagingRepository);
         tree.setSizeFull();
         return tree;
     }
 
     private NavigationTreeView createContextDirectMembers(
         final ContextRepository contextRepository, final ContainerRepository containerRepository,
-        final ItemRepository itemRepository) throws EscidocClientException {
+        final ItemRepository itemRepository, StagingRepository stagingRepository) throws EscidocClientException {
         return navigationTreeBuilder.buildContextDirectMemberTree(contextRepository, containerRepository,
-            itemRepository, mainSite, parentId, mainWindow);
+            itemRepository, mainSite, parentId, mainWindow, stagingRepository);
     }
 
     public NavigationTreeView containerAsTree() throws EscidocClientException {
         final NavigationTreeView tree =
-            createContainerDirectMembers(contextRepository, containerRepository, itemRepository);
+            createContainerDirectMembers(contextRepository, containerRepository, itemRepository, stagingRepository);
         tree.setSizeFull();
         return tree;
     }
 
     private NavigationTreeView createContainerDirectMembers(
         final ContextRepository contextRepository, final ContainerRepository containerRepository,
-        final ItemRepository itemRepository) throws EscidocClientException {
+        final ItemRepository itemRepository, StagingRepository stagingRepository) throws EscidocClientException {
 
         return navigationTreeBuilder.buildContainerDirectMemberTree(contextRepository, containerRepository,
-            itemRepository, mainSite, parentId, mainWindow);
+            itemRepository, mainSite, parentId, mainWindow, stagingRepository);
     }
 
 }

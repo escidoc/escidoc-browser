@@ -28,10 +28,10 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
+import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.repository.ContainerProxy;
 import org.escidoc.browser.ui.MainSite;
 
 import com.google.common.base.Preconditions;

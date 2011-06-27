@@ -28,24 +28,6 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import java.util.List;
-
-import org.escidoc.browser.BrowserApplication;
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.ResourceModelFactory;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.model.ResourceType;
-import org.escidoc.browser.model.internal.ContextProxyImpl;
-import org.escidoc.browser.repository.ContainerRepository;
-import org.escidoc.browser.repository.ContextRepository;
-import org.escidoc.browser.repository.ItemRepository;
-import org.escidoc.browser.repository.internal.ContainerProxyImpl;
-import org.escidoc.browser.repository.internal.ItemProxyImpl;
-import org.escidoc.browser.repository.internal.SearchRepositoryImpl;
-import org.escidoc.browser.ui.MainSite;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.jensjansson.pagedtable.PagedTable;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -58,6 +40,25 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 
+import org.escidoc.browser.BrowserApplication;
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ResourceModelFactory;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.model.internal.ContextProxyImpl;
+import org.escidoc.browser.repository.ContainerRepository;
+import org.escidoc.browser.repository.ContextRepository;
+import org.escidoc.browser.repository.ItemRepository;
+import org.escidoc.browser.repository.StagingRepository;
+import org.escidoc.browser.repository.internal.ContainerProxyImpl;
+import org.escidoc.browser.repository.internal.ItemProxyImpl;
+import org.escidoc.browser.repository.internal.SearchRepositoryImpl;
+import org.escidoc.browser.ui.MainSite;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
+
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.om.container.Container;
@@ -66,6 +67,7 @@ import de.escidoc.core.resources.sb.search.SearchResult;
 import de.escidoc.core.resources.sb.search.SearchResultRecord;
 import de.escidoc.core.resources.sb.search.SearchRetrieveResponse;
 
+@SuppressWarnings("serial")
 public class SearchResultsView extends VerticalLayout {
 
     private static final String DATE_CREATED = "Date Created";
@@ -79,8 +81,6 @@ public class SearchResultsView extends VerticalLayout {
     private Button btnAdvancedSearch;
 
     private final MainSite mainSite;
-
-    private String searchString = "";
 
     private final EscidocServiceLocation serviceLocation;
 
@@ -99,15 +99,14 @@ public class SearchResultsView extends VerticalLayout {
     public SearchResultsView(MainSite mainSite, String searchString, EscidocServiceLocation serviceLocation) {
         this.mainSite = mainSite;
         this.appHeight = mainSite.getApplicationHeight();
-        this.searchString = searchString;
         this.serviceLocation = serviceLocation;
         final CssLayout cssLayout = configureLayout();
-        SearchRepositoryImpl srRep = new SearchRepositoryImpl(serviceLocation);
+        final SearchRepositoryImpl srRep = new SearchRepositoryImpl(serviceLocation);
         results = srRep.simpleSearch(searchString.trim());
         try {
             createPaginationTblResults(cssLayout);
         }
-        catch (EscidocClientException e) {
+        catch (final EscidocClientException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
@@ -121,14 +120,14 @@ public class SearchResultsView extends VerticalLayout {
         this.appHeight = mainSite.getApplicationHeight();
         this.serviceLocation = serviceLocation;
         final CssLayout cssLayout = configureLayout();
-        SearchRepositoryImpl srRep = new SearchRepositoryImpl(serviceLocation);
+        final SearchRepositoryImpl srRep = new SearchRepositoryImpl(serviceLocation);
         results =
             srRep.advancedSearch(titleTxt, creatorTxt, descriptionTxt, creationDateTxt, mimesTxt, resourceTxt,
                 fulltxtTxt);
         try {
             createPaginationTblResults(cssLayout);
         }
-        catch (EscidocClientException e) {
+        catch (final EscidocClientException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
@@ -167,26 +166,26 @@ public class SearchResultsView extends VerticalLayout {
 
         tblPagedResults = createPagedTable(cssLayout);
 
-        List<SearchResultRecord> records = results.getRecords();
+        final List<SearchResultRecord> records = results.getRecords();
 
-        IndexedContainer container = createPagedTableItemContainer();
+        final IndexedContainer container = createPagedTableItemContainer();
 
         // Adding items in the container
-        for (SearchResultRecord record : records) {
-            SearchResult s = record.getRecordData();
+        for (final SearchResultRecord record : records) {
+            final SearchResult s = record.getRecordData();
             if (s.getContent() instanceof Container) {
                 // resourceProxy = (ContainerProxyImpl) rmf.find(s.getContent().getObjid(), ResourceType.CONTAINER);
                 // Resource container = s.getContent();
                 resourceProxy = new ContainerProxyImpl((Container) s.getContent());
             }
             else if (s.getContent() instanceof de.escidoc.core.resources.om.item.Item) {
-                Resource item = (de.escidoc.core.resources.om.item.Item) s.getContent();
+                final Resource item = (de.escidoc.core.resources.om.item.Item) s.getContent();
                 resourceProxy = new ItemProxyImpl((de.escidoc.core.resources.om.item.Item) item);
                 // resourceProxy = (ItemProxyImpl) rmf.find(s.getContent().getObjid(), ResourceType.ITEM);
             }
             else if (s.getContent() instanceof Context) {
                 // resourceProxy = (ContextProxyImpl) rmf.find(s.getContent().getObjid(), ResourceType.CONTEXT);
-                Resource resource = (Context) s.getContent();
+                final Resource resource = (Context) s.getContent();
                 resourceProxy = new ContextProxyImpl((Context) resource);
             }
 
@@ -194,9 +193,9 @@ public class SearchResultsView extends VerticalLayout {
             // The third argument should be the resourceProxy.xLinkTitle() so we show it on the header of the Tab
             // Object[] variablesForTheTab =
             // { s.getContent().getResourceType().toString(), resourceProxy.getId(), resourceProxy.getId() };
-            Object[] variablesForTheTab = { "Container", resourceProxy.getId(), resourceProxy.getId() };
+            final Object[] variablesForTheTab = { "Container", resourceProxy.getId(), resourceProxy.getId() };
 
-            Item item = container.addItem(variablesForTheTab);
+            final Item item = container.addItem(variablesForTheTab);
             item.getItemProperty("Type").setValue(
                 new Label("<img src= \"/browser/VAADIN/themes/myTheme/images/" + "Container.png\" />",
                     Label.CONTENT_RAW));
@@ -207,7 +206,8 @@ public class SearchResultsView extends VerticalLayout {
 
         // Populate the table with results
         tblPagedResults.setContainerDataSource(container);
-        Label lblResults = new Label("We found " + results.getNumberOfMatchingRecords() + " results for your search.");
+        final Label lblResults =
+            new Label("We found " + results.getNumberOfMatchingRecords() + " results for your search.");
         cssLayout.addComponent(lblResults);
         cssLayout.addComponent(tblPagedResults);
         cssLayout.addComponent(tblPagedResults.createControls());
@@ -220,11 +220,9 @@ public class SearchResultsView extends VerticalLayout {
      */
     private IndexedContainer createPagedTableItemContainer() {
         // Creating a container for the item
-        IndexedContainer container = new IndexedContainer();
+        final IndexedContainer container = new IndexedContainer();
         container.addContainerProperty("Type", Label.class, null);
         container.addContainerProperty("Name", String.class, null);
-        // container.addContainerProperty("Belongs to Context", String.class, null);
-        // container.addContainerProperty("Description", String.class, null);
         container.addContainerProperty(DATE_CREATED, String.class, null);
         return container;
     }
@@ -239,11 +237,8 @@ public class SearchResultsView extends VerticalLayout {
 
         tblPagedResults.addContainerProperty("Type", Label.class, null);
         tblPagedResults.addContainerProperty("Name", String.class, null);
-        // tblPagedResults.addContainerProperty("Belongs to Context", String.class, null);
-        // tblPagedResults.addContainerProperty("Description", String.class, null);
         tblPagedResults.addContainerProperty(DATE_CREATED, String.class, null);
         tblPagedResults.setColumnWidth("Type", 30);
-        // tblPagedResults.setColumnWidth("Belongs to Context", 130);
         tblPagedResults.setColumnWidth(DATE_CREATED, 90);
         /**
          * Create new Tab based on the click The event registers a View (see ItemView for example) and a Name for the
@@ -251,13 +246,15 @@ public class SearchResultsView extends VerticalLayout {
          */
 
         tblPagedResults.addListener(new Property.ValueChangeListener() {
+            private StagingRepository stagingRepository;
+
             @Override
             public void valueChange(ValueChangeEvent event) {
-                ResourceModelFactory rmf =
+                final ResourceModelFactory rmf =
                     new ResourceModelFactory(new ItemRepository(serviceLocation), new ContainerRepository(
                         serviceLocation), new ContextRepository(serviceLocation));
                 ResourceProxy resourceProxy = null;
-                Object[] variablesForTheTab = (Object[]) tblPagedResults.getValue();
+                final Object[] variablesForTheTab = (Object[]) tblPagedResults.getValue();
 
                 if (variablesForTheTab[0].equals("Container")) {
                     try {
@@ -267,17 +264,18 @@ public class SearchResultsView extends VerticalLayout {
                             new ContainerView(serviceLocation, mainSite, resourceProxy, mainSite.getWindow(), mainSite
                                 .getUser());
                     }
-                    catch (EscidocClientException e) {
+                    catch (final EscidocClientException e) {
                         showerror();
-                        // e.printStackTrace();
                     }
                 }
                 else if (variablesForTheTab[0].equals("Item")) {
                     try {
                         resourceProxy = (ItemProxyImpl) rmf.find((String) variablesForTheTab[1], ResourceType.ITEM);
-                        cmp = new ItemView(serviceLocation, mainSite, resourceProxy, mainSite.getWindow());
+                        cmp =
+                            new ItemView(serviceLocation, stagingRepository, mainSite, resourceProxy, mainSite
+                                .getWindow());
                     }
-                    catch (EscidocClientException e) {
+                    catch (final EscidocClientException e) {
                         showerror();
                         // e.printStackTrace();
                     }
@@ -290,9 +288,8 @@ public class SearchResultsView extends VerticalLayout {
                             new ContextView(serviceLocation, mainSite, resourceProxy, mainSite.getWindow(), mainSite
                                 .getUser());
                     }
-                    catch (EscidocClientException e) {
+                    catch (final EscidocClientException e) {
                         showerror();
-                        // e.printStackTrace();
                     }
                 }
                 mainSite.openTab(cmp, (String) variablesForTheTab[2]);
@@ -318,7 +315,7 @@ public class SearchResultsView extends VerticalLayout {
      * @param event
      */
     public void onClick(Button.ClickEvent event) {
-        SearchAdvancedView srch = new SearchAdvancedView(mainSite, serviceLocation);
+        final SearchAdvancedView srch = new SearchAdvancedView(mainSite, serviceLocation);
         this.mainSite.openTab(srch, "Advanced Search");
     }
 

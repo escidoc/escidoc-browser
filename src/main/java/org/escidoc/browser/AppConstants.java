@@ -30,16 +30,11 @@ package org.escidoc.browser;
 
 public final class AppConstants {
 
-    // public static final String HARDCODED_ESCIDOC_URI =
-    // "http://escidev6:8080"
-    // "http://zbmed.fiz-karlsruhe.de/"
-    // "http://escidev4:8080";
-
-    public static final String ESCIDOC_LOGIN_PATH_AND_PARAMETER = "/aa/login?target=";
-
     private AppConstants() {
         // not to be initialized
     }
+
+    public static final String ESCIDOC_LOGIN_PATH_AND_PARAMETER = "/aa/login?target=";
 
     public static final String LOGIN_TARGET = "/aa/login?target=";
 
@@ -65,4 +60,10 @@ public final class AppConstants {
 
     public static final String ESCIDOC_LOGO = "images/SchriftLogo.jpg";
 
+    public static final String NOT_SUPPORTED_BROWSERS =
+        "File drop is only supported on Firefox 3.6 and later. Text can be dropped into the box on other browsers.";
+
+    public static final String ESCIDOC = "escidoc";
+
+    public static final String DC_NAMESPACE = "http://purl.org/dc/elements/1.1/";
 }

@@ -26,47 +26,32 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.repository;
+package org.escidoc.browser;
 
-import java.util.Collection;
-import java.util.List;
+import java.text.DecimalFormat;
 
-import org.escidoc.browser.model.ResourceProxy;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
-import de.escidoc.core.resources.Resource;
-import de.escidoc.core.resources.common.MetadataRecords;
-import de.escidoc.core.resources.common.versionhistory.Version;
+import org.w3c.dom.Document;
 
-public interface ContainerProxy extends ResourceProxy {
+public class Utils {
 
-    @Override
-    String getDescription();
+    private Utils() {
+        // Utility class
+    }
 
-    @Override
-    String getStatus();
+    public static Document createNewDocument() throws ParserConfigurationException {
+        return DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+    }
 
-    @Override
-    String getCreator();
+    public static String readableFileSize(final long size) {
+        if (size <= 0) {
+            return "0";
+        }
 
-    @Override
-    String getCreatedOn();
-
-    @Override
-    String getModifier();
-
-    @Override
-    String getModifiedOn();
-
-    @Override
-    List<String> getRelations();
-
-    boolean getPreviousVersion();
-
-    MetadataRecords getMedataRecords();
-
-    Collection<Version> getVersionHistory();
-
-    @Override
-    Resource getContext();
-
+        final int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
+        return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " "
+            + new String[] { "B", "KB", "MB", "GB", "TB" }[digitGroups];
+    }
 }

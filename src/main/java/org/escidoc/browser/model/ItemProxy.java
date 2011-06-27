@@ -26,11 +26,10 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.repository;
+package org.escidoc.browser.model;
 
 import java.util.List;
 
-import org.escidoc.browser.model.ResourceProxy;
 
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.MetadataRecords;

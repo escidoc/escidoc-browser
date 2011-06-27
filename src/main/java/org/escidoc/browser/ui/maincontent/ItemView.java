@@ -28,17 +28,8 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import org.escidoc.browser.BrowserApplication;
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.repository.internal.ItemProxyImpl;
-import org.escidoc.browser.ui.MainSite;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Preconditions;
-import com.vaadin.event.LayoutEvents.LayoutClickEvent;
-import com.vaadin.event.LayoutEvents.LayoutClickListener;
+
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
@@ -47,9 +38,15 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
-public class ItemView extends VerticalLayout {
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.repository.StagingRepository;
+import org.escidoc.browser.repository.internal.ItemProxyImpl;
+import org.escidoc.browser.ui.MainSite;
+import org.escidoc.browser.ui.listeners.itemview.ItemEditDesc1;
 
-    private static final String DESCRIPTION = "Description: ";
+@SuppressWarnings("serial")
+public class ItemView extends VerticalLayout {
 
     private static final String CREATED_BY = "Created by";
 
@@ -61,11 +58,9 @@ public class ItemView extends VerticalLayout {
 
     private static final String STATUS = "Status is ";
 
-    private final int appHeight;
-
-    private final MainSite mainSite;
-
     private final CssLayout cssLayout = new CssLayout();
+
+    private final int appHeight;
 
     private int accordionHeight;
 
@@ -77,16 +72,18 @@ public class ItemView extends VerticalLayout {
 
     private final EscidocServiceLocation serviceLocation;
 
-    private static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
+    private final StagingRepository stagingRepository;
 
-    public ItemView(final EscidocServiceLocation serviceLocation, final MainSite mainSite,
-        final ResourceProxy resourceProxy, final Window mainWindow) {
+    public ItemView(final EscidocServiceLocation serviceLocation, StagingRepository stagingRepository,
+        final MainSite mainSite, final ResourceProxy resourceProxy, final Window mainWindow) {
+
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null.");
         Preconditions.checkNotNull(mainSite, "mainSite is null.");
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null.");
         Preconditions.checkNotNull(mainWindow, "mainWindow is null.");
+
         this.resourceProxy = (ItemProxyImpl) resourceProxy;
-        this.mainSite = mainSite;
+        this.stagingRepository = stagingRepository;
         this.mainWindow = mainWindow;
         this.serviceLocation = serviceLocation;
         appHeight = mainSite.getApplicationHeight();
@@ -103,8 +100,8 @@ public class ItemView extends VerticalLayout {
         bindProperties();
 
         // Direct Members
-        final ItemContent itCnt = new ItemContent(resourceProxy, serviceLocation, mainWindow);
-        buildLeftCell(itCnt);
+        final ItemContent itemDirectMembers = new ItemContent(stagingRepository, resourceProxy, serviceLocation, mainWindow);
+        buildLeftCell(itemDirectMembers);
 
         // right most panelY
         final MetadataRecsItem metadataRecs =
@@ -127,10 +124,6 @@ public class ItemView extends VerticalLayout {
         cssLayout.addComponent(rightpnl);
     }
 
-    /**
-     * @param itCnt
-     * @return
-     */
     private void buildLeftCell(final Component itCnt) {
         // Adding some buttons
         final AbsoluteLayout absL = new AbsoluteLayout();
@@ -191,9 +184,9 @@ public class ItemView extends VerticalLayout {
         cssLayout.addComponent(headerContext);
     }
 
+    @SuppressWarnings("unused")
     private void createBreadcrumbp() {
-        // BREADCRUMB
-        final BreadCrumbMenu bm = new BreadCrumbMenu(cssLayout, resourceProxy, mainWindow, serviceLocation);
+        new BreadCrumbMenu(cssLayout, resourceProxy, mainWindow, serviceLocation);
     }
 
     private void buildLayout() {
@@ -203,22 +196,9 @@ public class ItemView extends VerticalLayout {
         cssLayout.setHeight("100%");
         innerelementsHeight = appHeight - 420;
         accordionHeight = innerelementsHeight - 20;
-
-        cssLayout.addListener(new LayoutClickListener() {
-            @Override
-            public void layoutClick(LayoutClickEvent event) {
-                // Get the child component which was clicked
-                Label child = (Label) event.getChildComponent();
-                if (child != null) {
-                    // Over a child component
-                    getWindow().showNotification("The click was over a " + child.getClass().getCanonicalName());
                     if ((child).getDescription() == "header") {
                         cssLayout.replaceComponent(event.getClickedComponent(), new Label("Hello"));
                     }
-                }
-            }
-        });
-
     }
 
     /**
@@ -257,7 +237,7 @@ public class ItemView extends VerticalLayout {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        ItemView other = (ItemView) obj;
+        final ItemView other = (ItemView) obj;
         if (resourceProxy == null) {
             if (other.resourceProxy != null) {
                 return false;

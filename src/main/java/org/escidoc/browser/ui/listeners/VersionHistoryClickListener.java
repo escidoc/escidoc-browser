@@ -30,10 +30,10 @@ package org.escidoc.browser.ui.listeners;
 
 import java.util.Collection;
 
+import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.repository.ContainerProxy;
+import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.repository.ContainerRepository;
-import org.escidoc.browser.repository.ItemProxy;
 import org.escidoc.browser.repository.ItemRepository;
 import org.escidoc.browser.repository.Repository;
 
