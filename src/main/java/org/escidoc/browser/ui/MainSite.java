@@ -51,9 +51,6 @@ import org.escidoc.browser.repository.ContainerRepository;
 import org.escidoc.browser.repository.ContextRepository;
 import org.escidoc.browser.repository.ItemRepository;
 import org.escidoc.browser.repository.Repository;
-import org.escidoc.browser.repository.StagingRepository;
-import org.escidoc.browser.service.PdpService;
-import org.escidoc.browser.service.PdpServiceImpl;
 import org.escidoc.browser.ui.helper.Util;
 import org.escidoc.browser.ui.maincontent.ContainerView;
 import org.escidoc.browser.ui.maincontent.ContextView;
@@ -68,7 +65,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Map;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -76,23 +72,23 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 @SuppressWarnings("serial")
 public class MainSite extends VerticalLayout {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MainSite.class);
+    private final static Logger LOG = LoggerFactory.getLogger(MainSite.class);
+
+    private final TabSheet mainContentTabs = new TabSheet();
 
     private final CssLayout mainLayout;
-
-    private NavigationTreeView mainnavtree;
-
-    private final TabSheet maincontenttab = new TabSheet();
 
     private final BrowserApplication app;
 
     private final Window mainWindow;
 
-    private EscidocServiceLocation serviceLocation;
-
     private final CurrentUser currentUser;
 
-    private PdpService pdpService;
+    private EscidocServiceLocation serviceLocation;
+
+    private NavigationTreeView mainNavigationTree;
+
+    private Repositories repositories;
 
     /**
      * The mainWindow should be revised whether we need it or not the appHeight is the Height of the Application and I
@@ -102,21 +98,25 @@ public class MainSite extends VerticalLayout {
      * @throws EscidocClientException
      */
     public MainSite(final Window mainWindow, final EscidocServiceLocation serviceLocation,
-        final BrowserApplication app, final CurrentUser user) throws EscidocClientException {
+        final BrowserApplication app, final CurrentUser currentUser) throws EscidocClientException {
+
         this.serviceLocation = serviceLocation;
-        // General Height for the application
         this.app = app;
         this.mainWindow = mainWindow;
         this.serviceLocation = serviceLocation;
-        currentUser = user;
-        this.setMargin(true);
+        this.currentUser = currentUser;
+
+        createServices();
+        repositories.loginWith(currentUser.getToken());
+
+        setMargin(true);
 
         // common part: create layout
         mainLayout = new CssLayout();
         mainLayout.setStyleName("maincontainer");
         mainLayout.setSizeFull();
 
-        final HeaderContainer header = new HeaderContainer(this, app, serviceLocation, user);
+        final HeaderContainer header = new HeaderContainer(this, app, serviceLocation, currentUser);
         header.init();
         final Footer footer = new Footer();
 
@@ -137,11 +137,8 @@ public class MainSite extends VerticalLayout {
      * &type=Item&escidocurl=http://escidev4.fiz-karlsruhe.de:8080
      */
     private void permanentURLelement() {
-
         final Map<String, String[]> parameters = app.getParameters();
-
         if (Util.hasTabArg(parameters) && Util.hasObjectType(parameters)) {
-
             final String escidocID = parameters.get(AppConstants.ARG_TAB)[0];
             final ContainerRepository containerRepository;
             final ContextRepository contextRepository;
@@ -200,10 +197,10 @@ public class MainSite extends VerticalLayout {
      * @return TabSheet
      */
     private TabSheet buildTabContainer() {
-        maincontenttab.setStyleName("floatright paddingtop10 tab");
-        maincontenttab.setWidth("70%");
-        maincontenttab.setHeight("88%");
-        return maincontenttab;
+        mainContentTabs.setStyleName("floatright paddingtop10 tab");
+        mainContentTabs.setWidth("70%");
+        mainContentTabs.setHeight("88%");
+        return mainContentTabs;
     }
 
     /**
@@ -219,25 +216,21 @@ public class MainSite extends VerticalLayout {
         mainNavigation.setWidth("30%");
         mainNavigation.setHeight("88%");
 
-        final ContainerRepository containerRepository = new ContainerRepository(serviceLocation);
-        containerRepository.loginWith(((CurrentUser) app.getUser()).getToken());
-
-        final ContextRepository contextRepository = new ContextRepository(serviceLocation);
-        contextRepository.loginWith(((CurrentUser) app.getUser()).getToken());
-
-        final ItemRepository itemRepository = new ItemRepository(serviceLocation);
-        itemRepository.loginWith(((CurrentUser) app.getUser()).getToken());
-
-        final StagingRepository stagingRepository = new StagingRepositoryImpl(serviceLocation);
-        itemRepository.loginWith(app.getCurrentUser().getToken());
-        createPdpService();
-        final NavigationTreeView treemenu =
-            new NavigationTreeBuilder(serviceLocation, (CurrentUser) app.getUser(), pdpService).buildNavigationTree(
-                contextRepository, containerRepository, itemRepository, pdpService, this, mainWindow, null);
-        mainnavtree = treemenu;
-        mainNavigation.addComponent(mainnavtree);
+        mainNavigationTree =
+            new NavigationTreeBuilder(serviceLocation, currentUser, repositories).buildNavigationTree(this, mainWindow);
+        mainNavigation.addComponent(mainNavigationTree);
 
         return mainNavigation;
+    }
+
+    private void createServices() {
+        try {
+            repositories = new RepositoriesImpl(serviceLocation);
+        }
+        catch (final MalformedURLException e) {
+            LOG.error(e.getMessage());
+            mainWindow.showNotification(e.getMessage());
+        }
     }
 
     /**
@@ -248,14 +241,14 @@ public class MainSite extends VerticalLayout {
      * @param tabname
      */
     public void openTab(final Component cmp, String tabname) {
-        final Tab tb = maincontenttab.addTab(cmp);
+        final Tab tb = mainContentTabs.addTab(cmp);
         if (tabname.length() > 50) {
             tb.setDescription(tabname);
             tabname = tabname.substring(0, 50) + "...";
         }
         tb.setCaption(tabname);
 
-        maincontenttab.setSelectedTab(cmp);
+        mainContentTabs.setSelectedTab(cmp);
         tb.setClosable(true);
     }
 
@@ -265,22 +258,7 @@ public class MainSite extends VerticalLayout {
      * @return TabSheet
      */
     public TabSheet getMaincontent() {
-        return maincontenttab;
-    }
-
-    private void createPdpService() {
-        try {
-            pdpService = new PdpServiceImpl(new URL(serviceLocation.getEscidocUri()));
-        }
-        catch (final MalformedURLException e) {
-            showError("Could not retrieve the URL from the service");
-        }
-        pdpService.loginWith(getUser().getToken());
-    }
-
-    public PdpService getPdpService() {
-        createPdpService();
-        return pdpService;
+        return mainContentTabs;
     }
 
     /**

@@ -46,6 +46,7 @@ import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.repository.StagingRepository;
 import org.escidoc.browser.ui.MainSite;
+import org.escidoc.browser.ui.Repositories;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.ContainerView;
 import org.escidoc.browser.ui.maincontent.ContextView;
@@ -76,26 +77,18 @@ public class TreeClickListener implements ItemClickListener {
 
     private final CurrentUser currentUser;
 
-    // TODO RepositoryFactory
-    public TreeClickListener(final EscidocServiceLocation serviceLocation, final Repository contextRepository,
-        final Repository containerRepository, final Repository itemRepository, StagingRepository stagingRepository,
-        final Window mainWindow, final MainSite mainSite, final CurrentUser currentUser) {
+    public TreeClickListener(EscidocServiceLocation serviceLocation, Repositories repositories, Window mainWindow,
+        MainSite mainSite, CurrentUser currentUser) {
 
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
-
-        Preconditions.checkNotNull(contextRepository, "contextRepository is null: %s", contextRepository);
-        Preconditions.checkNotNull(containerRepository, "containerRepository is null: %s", containerRepository);
-        Preconditions.checkNotNull(itemRepository, "itemRepository is null: %s", itemRepository);
-        Preconditions.checkNotNull(stagingRepository, "stagingRepository is null: %s", stagingRepository);
-
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
         Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
 
-        this.contextRepository = contextRepository;
-        this.containerRepository = containerRepository;
-        this.itemRepository = itemRepository;
-        this.stagingRepository = stagingRepository;
+        this.contextRepository = repositories.context();
+        this.containerRepository = repositories.container();
+        this.itemRepository = repositories.item();
+        this.stagingRepository = repositories.staging();
 
         this.mainWindow = mainWindow;
         this.mainSite = mainSite;

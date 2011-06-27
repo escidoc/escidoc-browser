@@ -28,12 +28,6 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import org.escidoc.browser.model.ContainerProxy;
-import org.escidoc.browser.model.CurrentUser;
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.ui.MainSite;
-
 import com.google.common.base.Preconditions;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
@@ -48,6 +42,12 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+
+import org.escidoc.browser.model.ContainerProxy;
+import org.escidoc.browser.model.CurrentUser;
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.ui.MainSite;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -142,7 +142,7 @@ public class ContainerView extends VerticalLayout {
 
     private void addDirectMembers() throws EscidocClientException {
         final DirectMember directMembers =
-            new DirectMember(serviceLocation, mainSite, resourceProxy.getId(), mainWindow, currentUser);
+            new DirectMember(serviceLocation, mainSite, resourceProxy.getId(), mainWindow, currentUser, null);
         leftCell(DIRECT_MEMBERS, directMembers.containerAsTree());
     }
 
@@ -231,7 +231,7 @@ public class ContainerView extends VerticalLayout {
     }
 
     private void createBreadCrumb() {
-        final BreadCrumbMenu bm = new BreadCrumbMenu(cssLayout, resourceProxy, mainWindow, serviceLocation);
+        new BreadCrumbMenu(cssLayout, resourceProxy, mainWindow, serviceLocation);
     }
 
     /**
@@ -347,19 +347,24 @@ public class ContainerView extends VerticalLayout {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        ContainerView other = (ContainerView) obj;
-        if (resourceProxy == null) {
-            if (other.resourceProxy != null)
-                return false;
         }
-        else if (!resourceProxy.equals(other.resourceProxy))
+        if (obj == null) {
             return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ContainerView other = (ContainerView) obj;
+        if (resourceProxy == null) {
+            if (other.resourceProxy != null) {
+                return false;
+            }
+        }
+        else if (!resourceProxy.equals(other.resourceProxy)) {
+            return false;
+        }
         return true;
     }
 }

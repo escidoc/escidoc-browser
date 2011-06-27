@@ -39,6 +39,7 @@ import org.escidoc.browser.repository.ContextRepository;
 import org.escidoc.browser.repository.ItemRepository;
 import org.escidoc.browser.repository.StagingRepository;
 import org.escidoc.browser.ui.MainSite;
+import org.escidoc.browser.ui.Repositories;
 import org.escidoc.browser.ui.StagingRepositoryImpl;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.navigation.NavigationTreeView;
@@ -67,24 +68,27 @@ public class DirectMember {
 
     private StagingRepository stagingRepository;
 
+    private final Repositories repositories;
+
     public DirectMember(final EscidocServiceLocation serviceLocation, final MainSite mainSite, final String parentId,
-        final Window mainWindow, final CurrentUser currentUser) {
+        final Window mainWindow, final CurrentUser currentUser, Repositories repositories) {
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
         Preconditions.checkNotNull(parentId, "parentID is null: %s", parentId);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
+
         this.serviceLocation = serviceLocation;
         this.parentId = parentId;
         this.mainSite = mainSite;
         this.mainWindow = mainWindow;
         this.currentUser = currentUser;
+        this.repositories = repositories;
 
-        initRepositories(serviceLocation);
-        navigationTreeBuilder = new NavigationTreeBuilder(serviceLocation, currentUser, mainSite.getPdpService());
+        navigationTreeBuilder = new NavigationTreeBuilder(serviceLocation, currentUser, repositories);
     }
 
-    private void initRepositories(final EscidocServiceLocation serviceLocation) {
+    private void initRepositories() {
         contextRepository = new ContextRepository(serviceLocation);
         containerRepository = new ContainerRepository(serviceLocation);
         itemRepository = new ItemRepository(serviceLocation);

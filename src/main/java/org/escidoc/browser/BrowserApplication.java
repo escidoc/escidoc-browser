@@ -135,7 +135,7 @@ public class BrowserApplication extends Application {
         final EscidocServiceLocation serviceLocation, final Window mainWindow, final WindowResizeObserver observer)
         throws EscidocClientException {
 
-        final MainSite mainSite = new MainSite(mainWindow, serviceLocation, this, (CurrentUser) getUser());
+        final MainSite mainSite = new MainSite(mainWindow, serviceLocation, this, getUser());
         mainSite.setHeight(getApplicationHeight() + "px");
         mainSite.setWidth("100%");
         return mainSite;
@@ -172,7 +172,8 @@ public class BrowserApplication extends Application {
         return serviceLocation;
     }
 
-    public CurrentUser getCurrentUser() {
-        return (CurrentUser) getUser();
+    @Override
+    public CurrentUser getUser() {
+        return getUser();
     }
 }

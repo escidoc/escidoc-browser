@@ -28,7 +28,12 @@
  */
 package org.escidoc.browser.ui.navigation;
 
-import java.net.URISyntaxException;
+import com.vaadin.event.Action;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.Tree;
+import com.vaadin.ui.Tree.ExpandListener;
 
 import org.escidoc.browser.ActionIdConstants;
 import org.escidoc.browser.model.ContainerModel;
@@ -41,20 +46,15 @@ import org.escidoc.browser.model.ResourceContainer;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.repository.ContainerRepository;
 import org.escidoc.browser.repository.ItemRepository;
-import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.repository.internal.ContainerProxyImpl;
 import org.escidoc.browser.service.PdpService;
 import org.escidoc.browser.ui.MainSite;
+import org.escidoc.browser.ui.Repositories;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.TreeCreateContainer;
 import org.escidoc.browser.ui.listeners.TreeCreateItem;
 
-import com.vaadin.event.Action;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
-import com.vaadin.ui.AbstractSelect;
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.Tree;
-import com.vaadin.ui.Tree.ExpandListener;
+import java.net.URISyntaxException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -99,17 +99,17 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
 
     private final CurrentUser currentUser;
 
-    public NavigationTreeViewImpl(Repository containerRepository, Repository itemRepository,
-        EscidocServiceLocation serviceLocation, PdpService pdpService, CurrentUser currentUser) {
-        // TODO: check preconditions
-        this.containerRepo = (ContainerRepository) containerRepository;
-        this.itemRepo = (ItemRepository) itemRepository;
+    public NavigationTreeViewImpl(Repositories repositories, EscidocServiceLocation serviceLocation,
+        CurrentUser currentUser) {
+        this.containerRepo = repositories.container();
+        this.itemRepo = repositories.item();
         this.serviceLocation = serviceLocation;
+        this.pdpService = repositories.pdp();
+        this.currentUser = currentUser;
+
         setCompositionRoot(tree);
         tree.setImmediate(true);
         tree.addActionHandler(this);
-        this.pdpService = pdpService;
-        this.currentUser = currentUser;
     }
 
     @Override
@@ -149,7 +149,7 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
             try {
                 contextId = containerRepo.findById(contModel.getId()).getContext().getObjid();
             }
-            catch (EscidocClientException e) {
+            catch (final EscidocClientException e) {
                 getWindow().showNotification("Not Able to retrieve a context");
             }
         }
@@ -158,18 +158,18 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
             try {
                 contextId = itemRepo.findById(itemModel.getId()).getContext().getObjid();
             }
-            catch (EscidocClientException e) {
+            catch (final EscidocClientException e) {
                 getWindow().showNotification("Not Able to retrieve a context");
             }
         }
         if (action == ACTION_ADD_CONTAINER) {
-            TreeCreateContainer tcc =
+            final TreeCreateContainer tcc =
                 new TreeCreateContainer(target, contextId, serviceLocation, getWindow(), containerRepo, container);
             tcc.createContainer();
             resourceProxy.setStruct(contModel.getId());
         }
         else if (action == ACTION_ADD_ITEM) {
-            TreeCreateItem tci =
+            final TreeCreateItem tci =
                 new TreeCreateItem(target, contextId, serviceLocation, getWindow(), itemRepo, container);
             tci.createItem();
         }
@@ -196,10 +196,10 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
                 return ACTIONSCONTAINER;
             }
         }
-        catch (EscidocClientException e) {
+        catch (final EscidocClientException e) {
             getWindow().showNotification(e.getMessage());
         }
-        catch (URISyntaxException e) {
+        catch (final URISyntaxException e) {
             getWindow().showNotification(e.getMessage());
         }
         return null;

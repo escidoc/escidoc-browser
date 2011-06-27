@@ -28,18 +28,20 @@
  */
 package org.escidoc.browser.ui.listeners;
 
+import com.google.common.base.Preconditions;
+
+import com.vaadin.ui.Tree;
+import com.vaadin.ui.Tree.ExpandEvent;
+
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ResourceContainer;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.repository.Repository;
+import org.escidoc.browser.ui.Repositories;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.Tree;
-import com.vaadin.ui.Tree.ExpandEvent;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -52,17 +54,16 @@ public final class TreeExpandListener implements Tree.ExpandListener {
 
     private final Repository containerRepository;
 
-    private final ResourceContainer container;
+    private final ResourceContainer resourceContainer;
 
-    public TreeExpandListener(final Repository contextRepository, final Repository containerRepository,
-        final ResourceContainer container) {
-        Preconditions.checkNotNull(contextRepository, "repository is null: %s", contextRepository);
-        Preconditions.checkNotNull(containerRepository, "containerRepository is null: %s", containerRepository);
-        Preconditions.checkNotNull(container, "container is null: %s", container);
+    public TreeExpandListener(Repositories repositories, ResourceContainer resourceContainer) {
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        Preconditions.checkNotNull(resourceContainer, "resourceContainer is null: %s", resourceContainer);
 
-        this.contextRepository = contextRepository;
-        this.containerRepository = containerRepository;
-        this.container = container;
+        this.contextRepository = repositories.context();
+        this.containerRepository = repositories.container();
+        this.resourceContainer = resourceContainer;
+
     }
 
     @Override
@@ -86,7 +87,7 @@ public final class TreeExpandListener implements Tree.ExpandListener {
 
     private void addContainerChildren(final ResourceModel resource) {
         try {
-            container.addChildren(resource, containerRepository.findTopLevelMembersById(resource.getId()));
+            resourceContainer.addChildren(resource, containerRepository.findTopLevelMembersById(resource.getId()));
         }
         catch (final EscidocClientException e) {
             showErrorMessageToUser(resource, e);
@@ -95,7 +96,7 @@ public final class TreeExpandListener implements Tree.ExpandListener {
 
     private void addContextChildren(final ResourceModel resource) {
         try {
-            container.addChildren(resource, contextRepository.findTopLevelMembersById(resource.getId()));
+            resourceContainer.addChildren(resource, contextRepository.findTopLevelMembersById(resource.getId()));
         }
         catch (final EscidocClientException e) {
             showErrorMessageToUser(resource, e);

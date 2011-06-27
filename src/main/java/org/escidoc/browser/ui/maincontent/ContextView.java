@@ -28,15 +28,8 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import org.escidoc.browser.model.CurrentUser;
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.ui.MainSite;
-import org.escidoc.browser.ui.listeners.TreeClickListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
@@ -45,17 +38,18 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
+import org.escidoc.browser.model.CurrentUser;
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.ui.MainSite;
+import org.escidoc.browser.ui.Repositories;
+
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
 public class ContextView extends VerticalLayout {
-    private static final Logger LOG = LoggerFactory.getLogger(TreeClickListener.class);
-
-    private static final String DESCRIPTION = "Description: ";
 
     private static final String CREATED_BY = "Created by";
-
-    private static final String NAME = "Name: ";
 
     private static final String FULLWIDHT_STYLE_NAME = "fullwidth";
 
@@ -82,6 +76,8 @@ public class ContextView extends VerticalLayout {
     private final Window mainWindow;
 
     private final CurrentUser currentUser;
+
+    private Repositories repositories;
 
     public ContextView(final EscidocServiceLocation serviceLocation, final MainSite mainSite,
         final ResourceProxy resourceProxy, final Window mainWindow, final CurrentUser currentUser)
@@ -119,7 +115,7 @@ public class ContextView extends VerticalLayout {
 
     private void addDirectMembersView() throws EscidocClientException {
         final DirectMember directMembers =
-            new DirectMember(serviceLocation, mainSite, resourceProxy.getId(), mainWindow, currentUser);
+            new DirectMember(serviceLocation, mainSite, resourceProxy.getId(), mainWindow, currentUser, repositories);
         leftCell(DIRECT_MEMBERS, directMembers.contextAsTree());
     }
 
@@ -199,7 +195,7 @@ public class ContextView extends VerticalLayout {
     }
 
     private void createBreadCrumb() {
-        final BreadCrumbMenu bm = new BreadCrumbMenu(cssLayout, resourceProxy);
+        new BreadCrumbMenu(cssLayout, resourceProxy);
     }
 
     private void bindNameToHeader() {
