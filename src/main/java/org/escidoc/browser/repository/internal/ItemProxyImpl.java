@@ -168,4 +168,10 @@ public class ItemProxyImpl implements ItemProxy {
         return true;
     }
 
+    @Override
+    public void setStatus(String status) {
+        // TODO Auto-generated method stub
+
+    }
+
 }

@@ -72,6 +72,12 @@ public class ContextProxyImpl implements ResourceProxy {
     }
 
     @Override
+    public void setStatus(String status) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
     public String getCreator() {
         return contextFromCore.getProperties().getCreatedBy().getXLinkTitle();
     }

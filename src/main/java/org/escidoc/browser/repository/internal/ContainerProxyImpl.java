@@ -38,11 +38,13 @@ import com.google.common.base.Preconditions;
 
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.MetadataRecords;
+import de.escidoc.core.resources.common.properties.PublicStatus;
 import de.escidoc.core.resources.common.structmap.ContainerMemberRef;
 import de.escidoc.core.resources.common.structmap.MemberRef;
 import de.escidoc.core.resources.common.structmap.StructMap;
 import de.escidoc.core.resources.common.versionhistory.Version;
 import de.escidoc.core.resources.om.container.Container;
+import de.escidoc.core.resources.om.container.ContainerProperties;
 
 public class ContainerProxyImpl implements ContainerProxy {
     private final Container containerFromCore;
@@ -100,6 +102,17 @@ public class ContainerProxyImpl implements ContainerProxy {
     @Override
     public String getStatus() {
         return containerFromCore.getProperties().getPublicStatus().toString().toLowerCase();
+    }
+
+    @Override
+    public void setStatus(String status) {
+        PublicStatus pubStatus = null;
+        if (status == "pending") {
+            pubStatus = PublicStatus.PENDING;
+        }
+        ContainerProperties prop = new ContainerProperties();
+        prop.setPublicStatus(pubStatus);
+        containerFromCore.setProperties(prop);
     }
 
     /*
@@ -228,4 +241,5 @@ public class ContainerProxyImpl implements ContainerProxy {
     public Resource getContext() {
         return containerFromCore.getProperties().getContext();
     }
+
 }

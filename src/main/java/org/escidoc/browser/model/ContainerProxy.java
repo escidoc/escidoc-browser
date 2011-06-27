@@ -44,6 +44,9 @@ public interface ContainerProxy extends ResourceProxy {
     String getStatus();
 
     @Override
+    void setStatus(String string);
+
+    @Override
     String getCreator();
 
     @Override

@@ -100,9 +100,7 @@ public class ContainerView extends VerticalLayout {
 
     private final Repositories repositories;
 
-    private boolean isEditing = false;
-
-    Button btnEdit = null;
+    private Button btnEdit = null;
 
     private Component oldComponent = null;
 
@@ -255,14 +253,13 @@ public class ContainerView extends VerticalLayout {
 
     private void createEditBtn() {
         btnEdit = new Button("Edit Container", new Button.ClickListener() {
-
             @Override
             public void buttonClick(ClickEvent event) {
                 btnEdit.setCaption("Do not push this button again");
-
             }
         });
         btnEdit.setStyleName("floatright");
+        btnEdit.setVisible(false);
         cssLayout.addComponent(btnEdit);
 
     }
@@ -299,13 +296,13 @@ public class ContainerView extends VerticalLayout {
                             oldComponent = event.getClickedComponent();
                             swapComponent = editHeader(child.getValue().toString());
                             cssLayout.replaceComponent(oldComponent, swapComponent);
-                            isEditing = true;
+                            btnEdit.setVisible(true);
                         }
                         else if (child.getDescription() == "status") {
                             oldComponent = event.getClickedComponent();
                             swapComponent = editStatus(child.getValue().toString());
                             cssLayout.replaceComponent(oldComponent, swapComponent);
-                            isEditing = true;
+                            btnEdit.setVisible(true);
                         }
                     }
                     else {
