@@ -26,8 +26,13 @@
  */
 package org.escidoc.browser.ui.dnd;
 
-import com.google.common.base.Preconditions;
+import java.util.Collection;
 
+import org.escidoc.browser.repository.StagingRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Preconditions;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
@@ -40,12 +45,6 @@ import com.vaadin.ui.ProgressIndicator;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
-
-import org.escidoc.browser.repository.StagingRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.Collection;
 
 import de.escidoc.core.resources.om.item.component.Components;
 

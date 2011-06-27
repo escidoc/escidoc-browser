@@ -28,12 +28,7 @@
  */
 package org.escidoc.browser.ui.navigation;
 
-import com.vaadin.event.Action;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
-import com.vaadin.ui.AbstractSelect;
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.Tree;
-import com.vaadin.ui.Tree.ExpandListener;
+import java.net.URISyntaxException;
 
 import org.escidoc.browser.ActionIdConstants;
 import org.escidoc.browser.model.ContainerModel;
@@ -54,7 +49,12 @@ import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.TreeCreateContainer;
 import org.escidoc.browser.ui.listeners.TreeCreateItem;
 
-import java.net.URISyntaxException;
+import com.vaadin.event.Action;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.Tree;
+import com.vaadin.ui.Tree.ExpandListener;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 

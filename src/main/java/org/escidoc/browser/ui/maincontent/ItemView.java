@@ -33,7 +33,6 @@ import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.escidoc.browser.ui.MainSite;
-import org.escidoc.browser.ui.listeners.itemview.ItemEditDesc1;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.AbsoluteLayout;

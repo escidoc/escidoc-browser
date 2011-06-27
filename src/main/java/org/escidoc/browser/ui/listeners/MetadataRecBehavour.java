@@ -26,6 +26,8 @@
  */
 package org.escidoc.browser.ui.listeners;
 
+import org.escidoc.browser.model.EscidocServiceLocation;
+
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Label;
