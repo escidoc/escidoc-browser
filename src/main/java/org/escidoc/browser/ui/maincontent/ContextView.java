@@ -125,11 +125,13 @@ public class ContextView extends VerticalLayout {
      * 
      * @param comptoBind
      */
+    @SuppressWarnings("deprecation")
     private void rightCell(final Component comptoBind) {
         final Panel rightCell = new Panel();
         rightCell.setStyleName("floatright");
         rightCell.setWidth("70%");
         rightCell.setHeight("82%");
+        rightCell.getLayout().setMargin(false);
         rightCell.addComponent(comptoBind);
         cssLayout.addComponent(rightCell);
     }
@@ -141,6 +143,7 @@ public class ContextView extends VerticalLayout {
      * 
      * @param comptoBind
      */
+    @SuppressWarnings("deprecation")
     private void leftCell(final String directMembers, final Component comptoBind) {
         final Panel leftpnl = new Panel();
 
@@ -148,6 +151,7 @@ public class ContextView extends VerticalLayout {
         leftpnl.setScrollable(false);
         leftpnl.setWidth("30%");
         leftpnl.setHeight("82%");
+        leftpnl.getLayout().setMargin(false);
 
         final Label nameofPanel = new Label("<strong>" + DIRECT_MEMBERS + "</string>", Label.CONTENT_RAW);
         leftpnl.addComponent(nameofPanel);
@@ -179,11 +183,8 @@ public class ContextView extends VerticalLayout {
         cssLayout.addComponent(descMetadata2);
     }
 
-    // TODO Fix this ruler! I cannot believe I did that line as a ruler
     private void addHorizontalRuler() {
-        final Label descRuler =
-            new Label(
-                "____________________________________________________________________________________________________");
+        final Label descRuler = new Label("<hr />", Label.CONTENT_RAW);
         descRuler.setStyleName("hr");
         cssLayout.addComponent(descRuler);
     }
@@ -207,7 +208,7 @@ public class ContextView extends VerticalLayout {
     private void configureLayout() {
         appHeight = mainSite.getApplicationHeight();
 
-        setMargin(true);
+        setMargin(true, true, false, true);
         setHeight(100, Sizeable.UNITS_PERCENTAGE);
 
         cssLayout.setWidth(100, Sizeable.UNITS_PERCENTAGE);

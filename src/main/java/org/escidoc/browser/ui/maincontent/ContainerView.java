@@ -40,6 +40,7 @@ import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
@@ -101,6 +102,8 @@ public class ContainerView extends VerticalLayout {
 
     private boolean isEditing = false;
 
+    Button btnEdit = null;
+
     private Component oldComponent = null;
 
     private Component swapComponent = null;
@@ -131,6 +134,7 @@ public class ContainerView extends VerticalLayout {
         handleLayoutListeners();
         createBreadCrumb();
         bindNameToHeader();
+        createEditBtn();
         bindDescription();
         addHorizontalRuler();
         bindProperties();
@@ -180,7 +184,6 @@ public class ContainerView extends VerticalLayout {
 
         final Label nameofPanel = new Label("<strong>" + DIRECT_MEMBERS + "</string>", Label.CONTENT_RAW);
         leftpnl.addComponent(nameofPanel);
-
         leftpnl.addComponent(comptoBind);
 
         // Adding some buttons
@@ -244,9 +247,24 @@ public class ContainerView extends VerticalLayout {
      */
     private void bindNameToHeader() {
         final Label headerContext = new Label(RESOURCE_NAME + resourceProxy.getName());
-        headerContext.setStyleName("h1 fullwidth");
+        headerContext.setStyleName("h1 fullwidth floatleft");
+        headerContext.setWidth("80%");
         headerContext.setDescription("header");
         cssLayout.addComponent(headerContext);
+    }
+
+    private void createEditBtn() {
+        btnEdit = new Button("Edit Container", new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(ClickEvent event) {
+                btnEdit.setCaption("Do not push this button again");
+
+            }
+        });
+        btnEdit.setStyleName("floatright");
+        cssLayout.addComponent(btnEdit);
+
     }
 
     private void configureLayout() {

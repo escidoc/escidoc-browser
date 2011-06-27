@@ -100,7 +100,6 @@ public class MetadataRecs {
         pnl.setHeight(height + "px");
         pnl.addComponent(btnVersionHistoryContainer);
         pnl.addComponent(btnContentRelation);
-
         return pnl;
     }
 
