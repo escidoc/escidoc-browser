@@ -86,9 +86,7 @@ public class NavigationTreeBuilder {
             new ResourceContainerImpl(repositories.context().findTopLevelMembersById(parentId));
         resourceContainer.init();
 
-        final NavigationTreeView navigationTreeView = createNavigationTreeView(mainSite, mainWindow, resourceContainer);
-
-        return navigationTreeView;
+        return createNavigationTreeView(mainSite, mainWindow, resourceContainer);
     }
 
     private NavigationTreeView createNavigationTreeView(
