@@ -109,23 +109,23 @@ public class TreeClickListener implements ItemClickListener {
             }
         }
         else if (ItemModel.isItem(clickedResource)) {
-            openInNewTab(
-                new ItemView(serviceLocation, repositories, mainSite, tryToFindResource(repositories.item(),
-                    clickedResource), mainWindow), clickedResource);
+            try {
+                openInNewTab(
+                    new ItemView(serviceLocation, repositories, mainSite, tryToFindResource(repositories.item(),
+                        clickedResource), mainWindow), clickedResource);
+            }
+            catch (final EscidocClientException e) {
+                showErrorMessageToUser(clickedResource, e);
+            }
         }
         else {
             throw new UnsupportedOperationException("Not yet implemented");
         }
     }
 
-    private ResourceProxy tryToFindResource(final Repository repository, final ResourceModel clickedResource) {
-        try {
-            return repository.findById(clickedResource.getId());
-        }
-        catch (final EscidocClientException e) {
-            showErrorMessageToUser(clickedResource, e);
-        }
-        return null;
+    private ResourceProxy tryToFindResource(final Repository repository, final ResourceModel clickedResource)
+        throws EscidocClientException {
+        return repository.findById(clickedResource.getId());
     }
 
     private void openInNewTab(final Component component, final ResourceModel clickedResource) {

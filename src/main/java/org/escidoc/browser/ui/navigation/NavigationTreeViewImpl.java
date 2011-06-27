@@ -41,14 +41,12 @@ import org.escidoc.browser.model.ResourceContainer;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ContainerProxyImpl;
-import org.escidoc.browser.repository.internal.ContainerRepository;
-import org.escidoc.browser.repository.internal.ItemRepository;
-import org.escidoc.browser.service.PdpService;
 import org.escidoc.browser.ui.MainSite;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.TreeCreateContainer;
 import org.escidoc.browser.ui.listeners.TreeCreateItem;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.event.Action;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.AbstractSelect;
@@ -81,30 +79,25 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
 
     private static final Action[] ACTIONSITEM = new Action[] { ACTION_ADD_COMPONENT };
 
-    private final ContainerRepository containerRepo;
-
-    private final ItemRepository itemRepo;
-
     private final EscidocServiceLocation serviceLocation;
-
-    private ResourceContainer container;
-
-    private final ContainerProxyImpl resourceProxy = null;
-
-    private ContainerModel contModel = null;
-
-    private ItemModel itemModel = null;
-
-    private final PdpService pdpService;
 
     private final CurrentUser currentUser;
 
-    public NavigationTreeViewImpl(Repositories repositories, EscidocServiceLocation serviceLocation,
-        CurrentUser currentUser) {
-        this.containerRepo = repositories.container();
-        this.itemRepo = repositories.item();
+    private final Repositories repositories;
+
+    private ResourceContainer container;
+
+    private ContainerProxyImpl resourceProxy;
+
+    private ContainerModel contModel;
+
+    private ItemModel itemModel;
+
+    public NavigationTreeViewImpl(final Repositories repositories, final EscidocServiceLocation serviceLocation,
+        final CurrentUser currentUser) {
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        this.repositories = repositories;
         this.serviceLocation = serviceLocation;
-        this.pdpService = repositories.pdp();
         this.currentUser = currentUser;
 
         setCompositionRoot(tree);
@@ -138,7 +131,7 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
     }
 
     @Override
-    public void handleAction(Action action, Object sender, Object target) {
+    public void handleAction(final Action action, final Object sender, final Object target) {
         String contextId = "";
 
         if (target instanceof ContextModel) {
@@ -147,7 +140,7 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
         else if (target instanceof ContainerModel) {
             contModel = (ContainerModel) target;
             try {
-                contextId = containerRepo.findById(contModel.getId()).getContext().getObjid();
+                contextId = repositories.container().findById(contModel.getId()).getContext().getObjid();
             }
             catch (final EscidocClientException e) {
                 getWindow().showNotification("Not Able to retrieve a context");
@@ -156,7 +149,7 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
         else if (target instanceof ItemModel) {
             itemModel = (ItemModel) target;
             try {
-                contextId = itemRepo.findById(itemModel.getId()).getContext().getObjid();
+                contextId = repositories.item().findById(itemModel.getId()).getContext().getObjid();
             }
             catch (final EscidocClientException e) {
                 getWindow().showNotification("Not Able to retrieve a context");
@@ -164,13 +157,14 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
         }
         if (action == ACTION_ADD_CONTAINER) {
             final TreeCreateContainer tcc =
-                new TreeCreateContainer(target, contextId, serviceLocation, getWindow(), containerRepo, container);
+                new TreeCreateContainer(target, contextId, serviceLocation, getWindow(), repositories.container(),
+                    container);
             tcc.createContainer();
             resourceProxy.setStruct(contModel.getId());
         }
         else if (action == ACTION_ADD_ITEM) {
             final TreeCreateItem tci =
-                new TreeCreateItem(target, contextId, serviceLocation, getWindow(), itemRepo, container);
+                new TreeCreateItem(target, contextId, serviceLocation, getWindow(), repositories.item(), container);
             tci.createItem();
         }
         else if (action == ACTION_DELETE) {
@@ -182,10 +176,11 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
     }
 
     @Override
-    public Action[] getActions(Object target, Object sender) {
+    public Action[] getActions(final Object target, final Object sender) {
         try {
-            if (pdpService
-                .forUser(currentUser.getUserId()).isAction(ActionIdConstants.CREATE_ITEM).forResource("").permitted() == false) {
+            if (repositories
+                .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.CREATE_ITEM).forResource("")
+                .permitted() == false) {
                 return null;
             }
             else {

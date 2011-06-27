@@ -81,11 +81,13 @@ public class ContextView extends VerticalLayout {
     public ContextView(final EscidocServiceLocation serviceLocation, final MainSite mainSite,
         final ResourceProxy resourceProxy, final Window mainWindow, final CurrentUser currentUser,
         final Repositories repositories) throws EscidocClientException {
+
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+
         this.serviceLocation = serviceLocation;
         this.mainSite = mainSite;
         this.resourceProxy = resourceProxy;

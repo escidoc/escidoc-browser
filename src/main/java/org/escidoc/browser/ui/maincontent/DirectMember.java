@@ -50,12 +50,6 @@ public class DirectMember {
 
     private final NavigationTreeBuilder navigationTreeBuilder;
 
-    private final Repositories repositories;
-
-    // private ContainerRepository containerRepository;
-
-    // private ItemRepository itemRepository;
-
     public DirectMember(final EscidocServiceLocation serviceLocation, final MainSite mainSite, final String parentId,
         final Window mainWindow, final CurrentUser currentUser, final Repositories repositories) {
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
@@ -68,7 +62,6 @@ public class DirectMember {
         this.parentId = parentId;
         this.mainSite = mainSite;
         this.mainWindow = mainWindow;
-        this.repositories = repositories;
         navigationTreeBuilder = new NavigationTreeBuilder(serviceLocation, currentUser, repositories);
     }
 
@@ -90,6 +83,5 @@ public class DirectMember {
 
     private NavigationTreeView createContainerDirectMembers() throws EscidocClientException {
         return navigationTreeBuilder.buildContainerDirectMemberTree(mainSite, parentId, mainWindow);
-
     }
 }

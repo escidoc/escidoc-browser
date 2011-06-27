@@ -154,7 +154,7 @@ public class NavigationTreeBuilder {
         final NavigationTreeView navigationTreeView =
             new NavigationTreeViewImpl(repositories, serviceLocation, currentUser);
 
-        final List<ResourceModel> container = repositories.container().findTopLevelMembersById(parentId);
+        final List<ResourceModel> container = repositories.context().findTopLevelMembersById(parentId);
 
         final ResourceContainerImpl resourceContainer = new ResourceContainerImpl(container);
         resourceContainer.init();
