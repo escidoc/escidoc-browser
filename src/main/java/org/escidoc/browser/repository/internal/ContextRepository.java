@@ -28,7 +28,7 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import com.google.common.base.Preconditions;
+import java.util.List;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
@@ -38,7 +38,7 @@ import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.helper.Util;
 
-import java.util.List;
+import com.google.common.base.Preconditions;
 
 import de.escidoc.core.client.ContextHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -64,8 +64,7 @@ public class ContextRepository implements Repository {
     }
 
     public List<ResourceModel> findAllWithChildrenInfo() throws EscidocClientException {
-        return ModelConverter.contextListToModelWithChildInfo(client.retrieveContextsAsList(Util.createEmptyFilter()),
-            this);
+        return ModelConverter.contextListToModelWithChildInfo(client.retrieveContextsAsList(Util.createEmptyFilter()));
     }
 
     public boolean hasChildren(final Resource context) throws EscidocClientException {

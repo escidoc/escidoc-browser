@@ -30,7 +30,6 @@ package org.escidoc.browser.model;
 
 import java.util.List;
 
-
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.MetadataRecords;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;

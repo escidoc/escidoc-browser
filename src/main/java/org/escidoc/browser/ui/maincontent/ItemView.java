@@ -196,9 +196,6 @@ public class ItemView extends VerticalLayout {
         cssLayout.setHeight("100%");
         innerelementsHeight = appHeight - 420;
         accordionHeight = innerelementsHeight - 20;
-                    if ((child).getDescription() == "header") {
-                        cssLayout.replaceComponent(event.getClickedComponent(), new Label("Hello"));
-                    }
     }
 
     /**

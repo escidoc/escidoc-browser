@@ -28,20 +28,20 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import com.google.common.base.Preconditions;
+import org.escidoc.browser.model.ContainerProxy;
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.listeners.MetadataRecBehavour;
+import org.escidoc.browser.ui.listeners.RelationsClickListener;
+import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
-
-import org.escidoc.browser.model.ContainerProxy;
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.ui.listeners.MetadataRecBehavour;
-import org.escidoc.browser.ui.listeners.RelationsClickListener;
-import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
 
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.MetadataRecords;
@@ -55,13 +55,17 @@ public class MetadataRecs {
 
     private final EscidocServiceLocation escidocServiceLocation;
 
+    private final Repositories repositories;
+
     public MetadataRecs(final ResourceProxy resourceProxy, final int innerelementsHeight, final Window mainWindow,
-        final EscidocServiceLocation escidocServiceLocation) {
+        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories) {
+
         Preconditions.checkNotNull(mainWindow, "resource is null.");
         height = innerelementsHeight;
         this.resourceProxy = (ContainerProxy) resourceProxy;
         this.mainWindow = mainWindow;
         this.escidocServiceLocation = escidocServiceLocation;
+        this.repositories = repositories;
     }
 
     public Accordion asAccord() {
@@ -82,13 +86,13 @@ public class MetadataRecs {
 
         final Button btnVersionHistoryContainer =
             new Button("Container Version History", new VersionHistoryClickListener(resourceProxy, mainWindow,
-                escidocServiceLocation));
+                escidocServiceLocation, repositories));
         btnVersionHistoryContainer.setStyleName(BaseTheme.BUTTON_LINK);
         btnVersionHistoryContainer.setDescription("Show Version history in a Pop-up");
 
         final Button btnContentRelation =
             new Button("Container Content Relations", new RelationsClickListener(resourceProxy, mainWindow,
-                escidocServiceLocation));
+                escidocServiceLocation, repositories));
         btnContentRelation.setStyleName(BaseTheme.BUTTON_LINK);
         btnContentRelation.setDescription("Show Version history in a Pop-up");
 
