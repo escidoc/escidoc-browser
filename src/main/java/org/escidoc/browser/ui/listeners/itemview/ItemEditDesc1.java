@@ -38,8 +38,8 @@ import com.vaadin.data.Property.ValueChangeListener;
  */
 public class ItemEditDesc1 implements ValueChangeListener {
 
-    @Override
-    public void valueChange(ValueChangeEvent event) {
-        // TODO Auto-generated method stub
-    }
+  @Override
+  public void valueChange(ValueChangeEvent event) {
+    // TODO Auto-generated method stub
+  }
 }

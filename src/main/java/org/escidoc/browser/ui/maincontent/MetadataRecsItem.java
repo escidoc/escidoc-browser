@@ -100,13 +100,13 @@ public class MetadataRecsItem {
 
         final Button btnVersionHistory =
             new Button("Item Version History", new VersionHistoryClickListener(resourceProxy, mainWindow,
-                escidocServiceLocation, repositories));
+                escidocServiceLocation));
         btnVersionHistory.setStyleName(BaseTheme.BUTTON_LINK);
         btnVersionHistory.setDescription("Show Version history in a Pop-up");
 
         final Button btnContentRelation =
             new Button("Item Content Relations", new RelationsClickListener(resourceProxy, mainWindow,
-                escidocServiceLocation, repositories));
+                escidocServiceLocation));
         btnContentRelation.setStyleName(BaseTheme.BUTTON_LINK);
         btnContentRelation.setDescription("Show Version history in a Pop-up");
 

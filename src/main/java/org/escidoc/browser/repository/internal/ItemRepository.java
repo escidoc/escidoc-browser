@@ -28,91 +28,69 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import com.google.common.base.Preconditions;
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
+
+import java.util.List;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.repository.Repository;
-import org.escidoc.browser.ui.helper.Util;
 
-import java.util.List;
+import com.google.common.base.Preconditions;
 
-import de.escidoc.core.client.ContextHandlerClient;
+import de.escidoc.core.client.ItemHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
-import de.escidoc.core.client.exceptions.EscidocException;
 import de.escidoc.core.client.exceptions.InternalClientException;
-import de.escidoc.core.client.exceptions.TransportException;
-import de.escidoc.core.client.interfaces.ContextHandlerClientInterface;
-import de.escidoc.core.resources.Resource;
+import de.escidoc.core.client.interfaces.ItemHandlerClientInterface;
 import de.escidoc.core.resources.common.Relations;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
+import de.escidoc.core.resources.om.item.Item;
 
-public class ContextRepository implements Repository {
+public class ItemRepository implements Repository {
 
-    private final ContextHandlerClientInterface client;
+    private final ItemHandlerClientInterface client;
 
-    public ContextRepository(final EscidocServiceLocation escidocServiceLocation) {
-        client = new ContextHandlerClient(escidocServiceLocation.getEscidocUri());
+    public ItemRepository(final EscidocServiceLocation serviceLocation) {
+        Preconditions.checkNotNull(serviceLocation, "escidocServiceLocation is null: %s", serviceLocation);
+        client = new ItemHandlerClient(serviceLocation.getEscidocUri());
     }
 
     @Override
     public List<ResourceModel> findAll() throws EscidocClientException {
-        return ModelConverter.contextListToModel(client.retrieveContextsAsList(Util.createEmptyFilter()));
+        return ModelConverter.itemListToModel(client.retrieveItemsAsList(new SearchRetrieveRequestType()));
+
     }
 
-    public List<ResourceModel> findAllWithChildrenInfo() throws EscidocClientException {
-        return ModelConverter.contextListToModelWithChildInfo(client.retrieveContextsAsList(Util.createEmptyFilter()),
-            this);
-    }
-
-    public boolean hasChildren(final Resource context) throws EscidocClientException {
-        return !findTopLevelMembersById(context.getObjid()).isEmpty();
-    }
-
-    // FIXME: this is a hack, it sends two requests to find context's direct
-    // members.
     @Override
     public List<ResourceModel> findTopLevelMembersById(final String id) throws EscidocClientException {
-        Preconditions.checkNotNull(id, "id is null: %s", id);
-        final List<ResourceModel> topLevelContainers = findTopLevelContainerList(id);
-        topLevelContainers.addAll(findTopLevelItemList(id));
-
-        return topLevelContainers;
-    }
-
-    private List<ResourceModel> findTopLevelContainerList(final String id) throws EscidocException,
-        InternalClientException, TransportException {
-        return ModelConverter.genericResourcetoModel(client.retrieveMembersAsList(id,
-            Util.createQueryForTopLevelContainers(id)));
-    }
-
-    private List<ResourceModel> findTopLevelItemList(final String id) throws EscidocException, InternalClientException,
-        TransportException {
-        return ModelConverter.genericResourcetoModel(client.retrieveMembersAsList(id,
-            Util.createQueryForTopLevelItems(id)));
+        throw new UnsupportedOperationException("Not applicable for item.");
     }
 
     @Override
     public ResourceProxy findById(final String id) throws EscidocClientException {
-        return new ContextProxyImpl(client.retrieve(id));
+        return new ItemProxyImpl(client.retrieve(id));
     }
 
     @Override
     public VersionHistory getVersionHistory(final String id) throws EscidocClientException {
-        return null;
+        return client.retrieveVersionHistory(id);
+
     }
 
     @Override
     public Relations getRelations(final String id) throws EscidocClientException {
-        return null;
+        return client.retrieveRelations(id);
     }
 
     @Override
     public void loginWith(final String handle) throws InternalClientException {
         client.setHandle(handle);
+    }
+
+    public Item create(final Item newItem) throws EscidocClientException {
+        return client.create(newItem);
     }
 
 }

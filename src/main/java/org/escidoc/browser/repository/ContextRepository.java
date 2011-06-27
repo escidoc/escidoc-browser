@@ -26,7 +26,7 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.repository.internal;
+package org.escidoc.browser.repository;
 
 import com.google.common.base.Preconditions;
 
@@ -35,7 +35,6 @@ import org.escidoc.browser.model.ModelConverter;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
-import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.helper.Util;
 
 import java.util.List;

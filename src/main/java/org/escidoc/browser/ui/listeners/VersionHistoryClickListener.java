@@ -33,8 +33,9 @@ import java.util.Collection;
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
-import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.Repository;
+import org.escidoc.browser.repository.internal.ContainerRepository;
+import org.escidoc.browser.repository.internal.ItemRepository;
 
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -64,14 +65,13 @@ public class VersionHistoryClickListener implements ClickListener {
      * 
      * @param resourceProxy
      * @param mainWindow
-     * @param repositories
      * @param escidocServiceLocation2
      */
     public VersionHistoryClickListener(final ItemProxy resourceProxy, final Window mainWindow,
-        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories) {
+        final EscidocServiceLocation escidocServiceLocation) {
         itemProxy = resourceProxy;
         this.mainWindow = mainWindow;
-        repository = repositories.item();
+        repository = new ItemRepository(escidocServiceLocation);
     }
 
     /**
@@ -80,13 +80,12 @@ public class VersionHistoryClickListener implements ClickListener {
      * @param resourceProxy
      * @param mainWindow
      * @param escidocServiceLocation
-     * @param repositories
      */
     public VersionHistoryClickListener(final ContainerProxy resourceProxy, final Window mainWindow,
-        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories) {
+        final EscidocServiceLocation escidocServiceLocation) {
         containerProxy = resourceProxy;
         this.mainWindow = mainWindow;
-        repository = repositories.container();
+        repository = new ContainerRepository(escidocServiceLocation);
     }
 
     public String getVersionHistory(final Repository cr, final String id) throws EscidocClientException {
