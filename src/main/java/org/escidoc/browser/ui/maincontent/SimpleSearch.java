@@ -115,6 +115,5 @@ public class SimpleSearch extends VerticalLayout {
     public void onClickAdvSearch(final Button.ClickEvent event) {
         final SearchAdvancedView advSearch = new SearchAdvancedView(mainSite, serviceLocation);
         mainSite.openTab(advSearch, "Search Results");
-
     }
 }

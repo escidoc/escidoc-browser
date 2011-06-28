@@ -60,13 +60,13 @@ public class FilesDropBox extends DragAndDropWrapper implements DropHandler {
 
     private final ProgressIndicator progressView;
 
-    private int numberOfFiles;
-
-    private Components componentList;
-
     private final Repositories repositories;
 
     private final ItemProxyImpl itemProxy;
+
+    private Components componentList;
+
+    private int numberOfFiles;
 
     public FilesDropBox(final Repositories repositories, final ItemProxyImpl itemProxy, final Component root,
         final ProgressIndicator progressView) {

@@ -80,14 +80,14 @@ public class TreeCreateItem {
 
     private final Window mainWindow;
 
-    public TreeCreateItem(Object target, String contextId, EscidocServiceLocation serviceLocation, Window window,
-        ItemRepository containerRepo, ResourceContainer container) {
+    public TreeCreateItem(final Object target, final String contextId, final EscidocServiceLocation serviceLocation,
+        final Window window, final ItemRepository containerRepo, final ResourceContainer container) {
         this.target = target;
         this.contextId = contextId;
         this.serviceLocation = serviceLocation;
-        this.mainWindow = window;
-        this.itemRepository = containerRepo;
-        this.resourceContainer = container;
+        mainWindow = window;
+        itemRepository = containerRepo;
+        resourceContainer = container;
     }
 
     // TODO heavy refactoring here
@@ -95,19 +95,19 @@ public class TreeCreateItem {
         try {
             addItemForm();
         }
-        catch (EscidocException e) {
+        catch (final EscidocException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        catch (MalformedURLException e) {
+        catch (final MalformedURLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        catch (InternalClientException e) {
+        catch (final InternalClientException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        catch (TransportException e) {
+        catch (final TransportException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
@@ -115,7 +115,7 @@ public class TreeCreateItem {
 
     public void addItemForm() throws EscidocException, MalformedURLException, InternalClientException,
         TransportException {
-        FormLayout frmAddCont = new FormLayout();
+        final FormLayout frmAddCont = new FormLayout();
         frmAddCont.setImmediate(true);
 
         // textfield
@@ -129,10 +129,10 @@ public class TreeCreateItem {
 
         slcContentModl = new NativeSelect("Please select Content Model");
         slcContentModl.setRequired(true);
-        ContentModelService cMS = new ContentModelService(serviceLocation);
+        final ContentModelService cMS = new ContentModelService(serviceLocation);
 
-        Collection<? extends Resource> contentModels = cMS.filterUsingInput("");
-        for (Resource resource : contentModels) {
+        final Collection<? extends Resource> contentModels = cMS.filterUsingInput("");
+        for (final Resource resource : contentModels) {
             slcContentModl.addItem(resource.getObjid());
         }
 
@@ -150,15 +150,15 @@ public class TreeCreateItem {
         mainWindow.addWindow(subwindow);
     }
 
-    public void clickButtonaddContainer(ClickEvent event) {
+    public void clickButtonaddContainer(final ClickEvent event) {
         if (txtItemName.isValid() && slcContentModl.isValid()) {
-            String containerName = txtItemName.getValue().toString();
-            String contentModelId = (String) slcContentModl.getValue();
+            final String containerName = txtItemName.getValue().toString();
+            final String contentModelId = (String) slcContentModl.getValue();
             // We really create the container here
             try {
                 createNewItem(containerName, contentModelId, contextId);
             }
-            catch (ParserConfigurationException e) {
+            catch (final ParserConfigurationException e) {
                 mainWindow.showNotification("Not able to create a new Item for you. Please contact the developers", 1);
             }
         }
@@ -177,21 +177,20 @@ public class TreeCreateItem {
      * @throws ParserConfigurationException
      * 
      */
-    private void createNewItem(String itemName, String contentModelId, String contextId)
+    private void createNewItem(final String itemName, final String contentModelId, final String contextId)
         throws ParserConfigurationException {
 
-        ItemBuilder itmBuild = new ItemBuilder(new ContextRef(contextId), new ContentModelRef(contentModelId));
-        Item newItem = itmBuild.build(itemName);
+        final ItemBuilder itmBuild = new ItemBuilder(new ContextRef(contextId), new ContentModelRef(contentModelId));
+        final Item newItem = itmBuild.build(itemName);
 
         try {
-            Item create = itemRepository.create(newItem);
+            final Item create = itemRepository.create(newItem);
             resourceContainer.addChild((ResourceModel) target, new ItemModel(create));
             subwindow.getParent().removeWindow(subwindow);
         }
-        catch (EscidocClientException e) {
+        catch (final EscidocClientException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
-
 }

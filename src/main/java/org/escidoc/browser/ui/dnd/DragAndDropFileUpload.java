@@ -6,12 +6,13 @@ import org.escidoc.browser.repository.internal.ItemProxyImpl;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.terminal.gwt.server.AbstractWebApplicationContext;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.ProgressIndicator;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
-import com.vaadin.ui.themes.Reindeer;
 
 @SuppressWarnings("serial")
 public class DragAndDropFileUpload extends VerticalLayout {
@@ -58,10 +59,16 @@ public class DragAndDropFileUpload extends VerticalLayout {
     }
 
     private void configureDropPane() {
-        dropPane.setWidth("200px");
+        dropPane.setWidth("250px");
         dropPane.setHeight("200px");
         dropPane.addStyleName("image-drop-pane");
-        dropPane.addStyleName(Reindeer.LAYOUT_BLUE);
+        final Label label = new Label("Drop Files here..");
+        final VerticalLayout layout = new VerticalLayout();
+        layout.setSizeFull();
+        layout.addComponent(label);
+        layout.setComponentAlignment(label, Alignment.MIDDLE_CENTER);
+        dropPane.addComponent(layout);
+
     }
 
     @Override

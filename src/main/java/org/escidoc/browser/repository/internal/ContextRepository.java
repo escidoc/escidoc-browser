@@ -78,7 +78,6 @@ public class ContextRepository implements Repository {
         Preconditions.checkNotNull(id, "id is null: %s", id);
         final List<ResourceModel> topLevelContainers = findTopLevelContainerList(id);
         topLevelContainers.addAll(findTopLevelItemList(id));
-
         return topLevelContainers;
     }
 

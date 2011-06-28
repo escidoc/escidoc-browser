@@ -39,9 +39,6 @@ import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.ui.helper.internal.EscidocParameterHandlerImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 
@@ -51,13 +48,11 @@ import de.escidoc.core.resources.sb.search.SearchResult;
 
 public final class Util {
 
-    private static final Logger LOG = LoggerFactory.getLogger(EscidocParameterHandlerImpl.class);
-
     /**
      * No instance allowed for utility classes.
      */
     private Util() {
-
+        // utility class
     }
 
     public final static boolean isEscidocUrlExists(final Map<String, String[]> parameters) {
@@ -70,7 +65,7 @@ public final class Util {
         return parameters.containsKey(AppConstants.ARG_TAB);
     }
 
-    public static boolean hasObjectType(Map<String, String[]> parameters) {
+    public static boolean hasObjectType(final Map<String, String[]> parameters) {
         Preconditions.checkNotNull(parameters, "parameters is null: %s", parameters);
         return parameters.containsKey(AppConstants.ARG_TYPE)
             && (parameters.get(AppConstants.ARG_TYPE)[0].equals("ITEM")
@@ -109,8 +104,9 @@ public final class Util {
         Preconditions.checkNotNull(results, "results is null: %s", results);
         Preconditions.checkNotNull(searchResult, "record is null: %s", searchResult);
 
-        if (searchResult.getContent() == null)
+        if (searchResult.getContent() == null) {
             return;
+        }
 
         if (searchResult.getContent() instanceof Container) {
             results.add(new ContainerModel((Container) searchResult.getContent()));
@@ -137,9 +133,7 @@ public final class Util {
         final StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("\"top-level-items\"=true OR \"/properties/context/id\"=");
         stringBuilder.append(id);
-        // stringBuilder.append("\"");
         final String topLevelContainerQuery = stringBuilder.toString();
         return topLevelContainerQuery;
     }
-
 }

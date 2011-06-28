@@ -28,6 +28,8 @@
  */
 package org.escidoc.browser.ui.listeners;
 
+import java.util.List;
+
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.ItemModel;
@@ -55,12 +57,12 @@ public final class TreeExpandListener implements Tree.ExpandListener {
 
     private final ResourceContainer resourceContainer;
 
-    public TreeExpandListener(Repositories repositories, ResourceContainer resourceContainer) {
+    public TreeExpandListener(final Repositories repositories, final ResourceContainer resourceContainer) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(resourceContainer, "resourceContainer is null: %s", resourceContainer);
 
-        this.contextRepository = repositories.context();
-        this.containerRepository = repositories.container();
+        contextRepository = repositories.context();
+        containerRepository = repositories.container();
         this.resourceContainer = resourceContainer;
 
     }
@@ -86,7 +88,8 @@ public final class TreeExpandListener implements Tree.ExpandListener {
 
     private void addContainerChildren(final ResourceModel resource) {
         try {
-            resourceContainer.addChildren(resource, containerRepository.findTopLevelMembersById(resource.getId()));
+            final List<ResourceModel> children = containerRepository.findTopLevelMembersById(resource.getId());
+            resourceContainer.addChildren(resource, children);
         }
         catch (final EscidocClientException e) {
             showErrorMessageToUser(resource, e);
@@ -95,7 +98,8 @@ public final class TreeExpandListener implements Tree.ExpandListener {
 
     private void addContextChildren(final ResourceModel resource) {
         try {
-            resourceContainer.addChildren(resource, contextRepository.findTopLevelMembersById(resource.getId()));
+            final List<ResourceModel> children = contextRepository.findTopLevelMembersById(resource.getId());
+            resourceContainer.addChildren(resource, children);
         }
         catch (final EscidocClientException e) {
             showErrorMessageToUser(resource, e);

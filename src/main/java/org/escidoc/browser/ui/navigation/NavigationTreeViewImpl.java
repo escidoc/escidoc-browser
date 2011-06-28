@@ -167,9 +167,7 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
             resourceProxy.setStruct(contModel.getId());
         }
         else if (action == ACTION_ADD_ITEM) {
-            final TreeCreateItem tci =
-                new TreeCreateItem(target, contextId, serviceLocation, getWindow(), repositories.item(), container);
-            tci.createItem();
+            new TreeCreateItem(target, contextId, serviceLocation, getWindow(), repositories.item(), container).createItem();
         }
         else if (action == ACTION_DELETE) {
             getWindow().showNotification("Not implemented yet");

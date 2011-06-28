@@ -88,7 +88,9 @@ public class ResourceContainerImpl implements ResourceContainer {
 
     private Item add(final ResourceModel resource) {
         Preconditions.checkNotNull(resource, "resource is null: %s", resource);
-        return container.addItem(resource);
+
+        final Item item = container.addItem(resource);
+        return item;
     }
 
     private void bind(final Item item, final ResourceModel resource) {
@@ -139,5 +141,4 @@ public class ResourceContainerImpl implements ResourceContainer {
         final boolean isSuccesful = container.setParent(child, parent);
         Preconditions.checkArgument(isSuccesful, "Setting parent of " + child + " to " + parent + " is not succesful.");
     }
-
 }
