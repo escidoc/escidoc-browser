@@ -74,7 +74,11 @@ public class ResourceContainerImpl implements ResourceContainer {
 
     private void addTopLevel() {
         for (final ResourceModel topLevel : topLevelResources) {
-            bind(add(topLevel), topLevel);
+            final Item addedItem = add(topLevel);
+            if (addedItem == null) {
+                return;
+            }
+            bind(addedItem, topLevel);
 
             if (topLevel.getType() == ResourceType.CONTEXT && isChildless((ContextModel) topLevel)) {
                 container.setChildrenAllowed(topLevel, false);
@@ -88,9 +92,7 @@ public class ResourceContainerImpl implements ResourceContainer {
 
     private Item add(final ResourceModel resource) {
         Preconditions.checkNotNull(resource, "resource is null: %s", resource);
-
-        final Item item = container.addItem(resource);
-        return item;
+        return container.addItem(resource);
     }
 
     private void bind(final Item item, final ResourceModel resource) {
