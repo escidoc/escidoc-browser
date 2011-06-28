@@ -70,4 +70,6 @@ public interface ContainerProxy extends ResourceProxy {
     @Override
     Resource getContext();
 
+    void setName(String name);
+
 }

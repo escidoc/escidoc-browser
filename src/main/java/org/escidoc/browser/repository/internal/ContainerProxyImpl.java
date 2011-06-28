@@ -31,12 +31,18 @@ package org.escidoc.browser.repository.internal;
 import java.util.Collection;
 import java.util.List;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.ResourceType;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import com.google.common.base.Preconditions;
 
 import de.escidoc.core.resources.Resource;
+import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.MetadataRecords;
 import de.escidoc.core.resources.common.properties.PublicStatus;
 import de.escidoc.core.resources.common.structmap.ContainerMemberRef;
@@ -47,6 +53,8 @@ import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.om.container.ContainerProperties;
 
 public class ContainerProxyImpl implements ContainerProxy {
+    private static final String DC_NAMESPACE = "http://purl.org/dc/elements/1.1/";
+
     private final Container containerFromCore;
 
     public ContainerProxyImpl(final Container resource) {
@@ -72,6 +80,33 @@ public class ContainerProxyImpl implements ContainerProxy {
     @Override
     public String getName() {
         return containerFromCore.getXLinkTitle();
+    }
+
+    @Override
+    public void setName(String name) {
+        MetadataRecords mdRecs = getMedataRecords();
+        Document doc;
+        try {
+            doc = createNewDocument();
+            for (MetadataRecord metadataRecord : mdRecs) {
+                if (metadataRecord.getName() == "escidoc") {
+                    Element element = doc.createElementNS(DC_NAMESPACE, "dc");
+                    final Element titleElmt = doc.createElementNS(DC_NAMESPACE, "title");
+                    titleElmt.setPrefix("dc");
+                    titleElmt.setTextContent(name);
+                    element.replaceChild(titleElmt, element);
+                }
+            }
+        }
+        catch (ParserConfigurationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+
+    private Document createNewDocument() throws ParserConfigurationException {
+        return DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
     }
 
     /*

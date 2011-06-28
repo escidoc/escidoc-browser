@@ -33,6 +33,7 @@ import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.internal.ContainerRepository;
 import org.escidoc.browser.ui.MainSite;
 
 import com.google.common.base.Preconditions;
@@ -199,7 +200,7 @@ public class ContainerView extends VerticalLayout {
     }
 
     /**
-     * Bindind Context Properties 2 sets of labels in 2 rows
+     * Binding Context Properties 2 sets of labels in 2 rows
      */
     private void bindProperties() {
         // LEFT SIde
@@ -252,10 +253,19 @@ public class ContainerView extends VerticalLayout {
     }
 
     private void createEditBtn() {
-        btnEdit = new Button("Edit Container", new Button.ClickListener() {
+        btnEdit = new Button("Save Changes", new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
                 btnEdit.setCaption("Do not push this button again");
+                ContainerRepository container = repositories.container();
+
+                // repo.retrieve== get from escidoc
+                // update the retrieved container
+                // repo.update(updated container)
+                // repositories.container().update(resourceProxy);
+                // if successful
+                // update the view
+                // other wise reset view
             }
         });
         btnEdit.setStyleName("floatright");
@@ -334,6 +344,7 @@ public class ContainerView extends VerticalLayout {
             private Component editHeader(String lblHeaderValue) {
                 final TextField txtHeader = new TextField();
                 txtHeader.setValue(lblHeaderValue.replaceAll(RESOURCE_NAME, ""));
+                resourceProxy.setName(lblHeaderValue.replaceAll(RESOURCE_NAME, ""));
                 return txtHeader;
             }
 
