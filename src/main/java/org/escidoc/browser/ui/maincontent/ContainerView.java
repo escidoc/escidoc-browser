@@ -35,6 +35,7 @@ import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ContainerRepository;
 import org.escidoc.browser.ui.MainSite;
+import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
@@ -51,6 +52,7 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.BaseTheme;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -71,13 +73,11 @@ public class ContainerView extends VerticalLayout {
 
     private static final String DESCRIPTION = "Description: ";
 
-    private static final String CREATED_BY = "Created by";
-
-    private static final String NAME = "Name: ";
+    private static final String CREATED_BY = "Created by ";
 
     private static final String FULLWIDHT_STYLE_NAME = "fullwidth";
 
-    private static final String LAST_MODIFIED_BY = "Last modification by";
+    private static final String LAST_MODIFIED_BY = "Last modification by ";
 
     private static final String DIRECT_MEMBERS = "Direct Members";
 
@@ -156,6 +156,7 @@ public class ContainerView extends VerticalLayout {
      * 
      * @param comptoBind
      */
+    @SuppressWarnings("deprecation")
     private void rightCell(final Component comptoBind) {
         final Panel rightpnl = new Panel();
         rightpnl.setStyleName("floatright");
@@ -201,23 +202,29 @@ public class ContainerView extends VerticalLayout {
     private void bindProperties() {
         // LEFT SIde
         final Label descMetadata1 = new Label("ID: " + resourceProxy.getId());
-        final Label lblStatus = new Label(STATUS + resourceProxy.getStatus());
+        final Label lblStatus = new Label(STATUS + resourceProxy.getStatus() + "<br />", Label.CONTENT_RAW);
         descMetadata1.setStyleName("floatleft");
+        descMetadata1.setWidth("35%");
+
         lblStatus.setStyleName("floatleft");
         lblStatus.setDescription("status");
-        descMetadata1.setWidth("35%");
         lblStatus.setWidth("35%");
-        cssLayout.addComponent(descMetadata1);
 
         // RIGHT SIDE
         final Label descMetadata2 =
-            new Label(CREATED_BY + "<a href='#'> " + resourceProxy.getCreator() + "</a> "
-                + resourceProxy.getCreatedOn() + "<br>" + LAST_MODIFIED_BY + " <a href='#user/"
-                + resourceProxy.getModifier() + "'>" + resourceProxy.getModifier() + "</a>", Label.CONTENT_RAW);
-        descMetadata2.setStyleName("floatright columnheight50");
+            new Label(CREATED_BY + resourceProxy.getCreator() + resourceProxy.getCreatedOn() + "<br/>"
+                + LAST_MODIFIED_BY + resourceProxy.getModifier() + " " + resourceProxy.getModifier(), Label.CONTENT_RAW);
+        descMetadata2.setStyleName("floatright");
         descMetadata2.setWidth("65%");
+
+        Component versionHistory = getHistory();
+        versionHistory.setStyleName("floatright");
+        versionHistory.setWidth("65%");
+
+        cssLayout.addComponent(descMetadata1);
         cssLayout.addComponent(descMetadata2);
         cssLayout.addComponent(lblStatus);
+        cssLayout.addComponent(getHistory());
 
     }
 
@@ -353,15 +360,18 @@ public class ContainerView extends VerticalLayout {
      * 
      * @return String
      */
-    private String getHistory() {
-        String strHistory;
+    private Component getHistory() {
         if (resourceProxy.getPreviousVersion()) {
-            strHistory = " previous version";
+            Button versionHistory =
+                new Button(" Has previous version", new VersionHistoryClickListener(resourceProxy, mainWindow,
+                    serviceLocation, repositories));
+            versionHistory.setStyleName(BaseTheme.BUTTON_LINK);
+            return versionHistory;
         }
         else {
-            strHistory = " has no previous history";
+            Label strHistory = new Label("Has no previous history");
+            return strHistory;
         }
-        return strHistory;
     }
 
     @Override

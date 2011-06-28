@@ -28,12 +28,10 @@
  */
 package org.escidoc.browser.model;
 
-import java.util.Collection;
 import java.util.List;
 
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.MetadataRecords;
-import de.escidoc.core.resources.common.versionhistory.Version;
 
 public interface ContainerProxy extends ResourceProxy {
 
@@ -65,7 +63,7 @@ public interface ContainerProxy extends ResourceProxy {
 
     MetadataRecords getMedataRecords();
 
-    Collection<Version> getVersionHistory();
+    boolean getVersionHistory();
 
     @Override
     Resource getContext();

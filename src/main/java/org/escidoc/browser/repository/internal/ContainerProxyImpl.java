@@ -28,7 +28,6 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import java.util.Collection;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -48,7 +47,6 @@ import de.escidoc.core.resources.common.properties.PublicStatus;
 import de.escidoc.core.resources.common.structmap.ContainerMemberRef;
 import de.escidoc.core.resources.common.structmap.MemberRef;
 import de.escidoc.core.resources.common.structmap.StructMap;
-import de.escidoc.core.resources.common.versionhistory.Version;
 import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.om.container.ContainerProperties;
 
@@ -233,12 +231,13 @@ public class ContainerProxyImpl implements ContainerProxy {
     }
 
     @Override
-    public Collection<Version> getVersionHistory() {
-        // final VersionHistory vh = containerFromCore.getVersionHistory();
-        // final Collection<Version> v = vh.getVersions();
-        // return v;
-
-        return null;
+    public boolean getVersionHistory() {
+        String version = containerFromCore.getProperties().getVersion().getNumber();
+        int versionNumber = Integer.parseInt(version);
+        if (versionNumber > 1) {
+            return true;
+        }
+        return false;
     }
 
     @Override

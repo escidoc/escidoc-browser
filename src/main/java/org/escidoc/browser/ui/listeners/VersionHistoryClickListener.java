@@ -36,6 +36,7 @@ import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.Repository;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Label;
@@ -84,6 +85,10 @@ public class VersionHistoryClickListener implements ClickListener {
      */
     public VersionHistoryClickListener(final ContainerProxy resourceProxy, final Window mainWindow,
         final EscidocServiceLocation escidocServiceLocation, final Repositories repositories) {
+        Preconditions.checkNotNull(resourceProxy, "resource is null.");
+        Preconditions.checkNotNull(mainWindow, "mainWindow is null.");
+        Preconditions.checkNotNull(escidocServiceLocation, "escidocServiceLocation is null.");
+        Preconditions.checkNotNull(repositories, "repositories is null.");
         containerProxy = resourceProxy;
         this.mainWindow = mainWindow;
         repository = repositories.container();
