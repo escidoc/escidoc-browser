@@ -28,6 +28,10 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
+import java.net.URISyntaxException;
+
+import org.escidoc.browser.ActionIdConstants;
+import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ItemProxyImpl;
@@ -44,6 +48,7 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
 
+import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.om.item.component.Component;
 
 @SuppressWarnings("serial")
@@ -57,29 +62,54 @@ public class ItemContent extends CustomLayout {
 
     private final Repositories repositories;
 
+    private final CurrentUser currentUser;
+
+    private final Window mainWindow;
+
     public ItemContent(final Repositories repositories, final ItemProxyImpl itemProxy,
-        final EscidocServiceLocation serviceLocation, final Window mainWindow) {
+        final EscidocServiceLocation serviceLocation, final Window mainWindow, final CurrentUser currentUser) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(itemProxy, "resourceProxy is null.");
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null.");
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
+        this.currentUser = currentUser;
 
         this.repositories = repositories;
         this.serviceLocation = serviceLocation;
         this.itemProxy = itemProxy;
-
+        this.mainWindow = mainWindow;
         initView();
     }
 
     private void initView() {
         setTemplateName("itemtemplate");
         buildComponentPanel();
-
+        addDragAndDropFiles();
         if (hasComponents()) {
             buildComponents();
         }
-
         addComponent(panelComponent, "components");
+    }
+
+    private void addDragAndDropFiles() {
+        try {
+            if (repositories
+                .pdp().isAction(ActionIdConstants.UPDATE_ITEM).forUser(currentUser.getUserId())
+                .forResource(itemProxy.getId()).permitted()) {
+                panelComponent.addComponent(new DragAndDropFileUpload(repositories, itemProxy));
+            }
+        }
+        catch (final EscidocClientException e) {
+            showError(e);
+
+        }
+        catch (final URISyntaxException e) {
+            showError(e);
+        }
+    }
+
+    private void showError(final Exception e) {
+        mainWindow.showNotification(new Window.Notification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE));
     }
 
     private boolean hasComponents() {
@@ -90,7 +120,6 @@ public class ItemContent extends CustomLayout {
         for (final Component component : itemProxy.getElements()) {
             buildComponentElement(component);
         }
-        panelComponent.addComponent(new DragAndDropFileUpload(repositories, itemProxy));
     }
 
     private void buildComponentPanel() {

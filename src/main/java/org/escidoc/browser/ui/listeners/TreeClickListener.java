@@ -112,7 +112,7 @@ public class TreeClickListener implements ItemClickListener {
         }
         else if (ItemModel.isItem(clickedResource)) {
             return new ItemView(serviceLocation, repositories, mainSite, tryToFindResource(repositories.item(),
-                clickedResource), mainWindow);
+                clickedResource), mainWindow, currentUser);
         }
         else {
             throw new UnsupportedOperationException("Not yet implemented");

@@ -186,7 +186,7 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
         final String searchString = (String) searchField.getValue();
         if (validate(searchString)) {
             final SearchResultsView srchRes =
-                new SearchResultsView(mainSite, searchString, serviceLocation, repositories);
+                new SearchResultsView(mainSite, searchString, serviceLocation, repositories, user);
             mainSite.openTab(srchRes, "Search results for: " + (String) searchField.getValue());
         }
         else {

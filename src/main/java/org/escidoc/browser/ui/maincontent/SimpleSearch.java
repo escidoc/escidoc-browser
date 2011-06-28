@@ -100,7 +100,8 @@ public class SimpleSearch extends VerticalLayout {
      * @param event
      */
     public void onClick(final Button.ClickEvent event) {
-        final SearchResultsView smpSearch = new SearchResultsView(mainSite, "null", serviceLocation, repositories);
+        final SearchResultsView smpSearch =
+            new SearchResultsView(mainSite, "null", serviceLocation, repositories, null);
         mainSite.openTab(smpSearch, "Search Results");
 
     }

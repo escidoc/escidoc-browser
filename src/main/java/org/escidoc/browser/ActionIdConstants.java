@@ -160,7 +160,6 @@ public class ActionIdConstants {
     // "info:escidoc/names:aa:1.0:action:update-container"
     // "info:escidoc/names:aa:1.0:action:update-content-relation"
     // "info:escidoc/names:aa:1.0:action:update-context"
-    // "info:escidoc/names:aa:1.0:action:update-item"
     // "info:escidoc/names:aa:1.0:action:update-metadata-schema"
     // "info:escidoc/names:aa:1.0:action:update-organizational-unit"
     // "info:escidoc/names:aa:1.0:action:update-report-definition"
@@ -223,4 +222,5 @@ public class ActionIdConstants {
 
     public static final String DELETE_CONTENT_MODEL = "info:escidoc/names:aa:1.0:action:delete-content-model";
 
+    public static final String UPDATE_ITEM = "info:escidoc/names:aa:1.0:action:update-item";
 }

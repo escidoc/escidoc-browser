@@ -28,6 +28,7 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
+import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
@@ -72,8 +73,11 @@ public class ItemView extends VerticalLayout {
 
     private final Repositories repositories;
 
+    private final CurrentUser currentUser;
+
     public ItemView(final EscidocServiceLocation serviceLocation, final Repositories repositories,
-        final MainSite mainSite, final ResourceProxy resourceProxy, final Window mainWindow) {
+        final MainSite mainSite, final ResourceProxy resourceProxy, final Window mainWindow,
+        final CurrentUser currentUser) {
 
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null.");
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
@@ -86,6 +90,7 @@ public class ItemView extends VerticalLayout {
         this.mainWindow = mainWindow;
         this.serviceLocation = serviceLocation;
         appHeight = mainSite.getApplicationHeight();
+        this.currentUser = currentUser;
 
         init();
     }
@@ -97,7 +102,7 @@ public class ItemView extends VerticalLayout {
         bindDescription();
         bindHrRuler();
         bindProperties();
-        buildLeftCell(new ItemContent(repositories, resourceProxy, serviceLocation, mainWindow));
+        buildLeftCell(new ItemContent(repositories, resourceProxy, serviceLocation, mainWindow, currentUser));
         buildRightCell(new MetadataRecsItem(resourceProxy, accordionHeight, mainWindow, serviceLocation, repositories)
             .asAccord());
         addComponent(cssLayout);

@@ -164,7 +164,8 @@ public class MainSite extends VerticalLayout {
             else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("ITEM")) {
                 try {
                     final ItemProxy item = (ItemProxy) resourceFactory.find(escidocID, ResourceType.ITEM);
-                    openTab(new ItemView(serviceLocation, repositories, this, item, mainWindow), item.getName());
+                    openTab(new ItemView(serviceLocation, repositories, this, item, mainWindow, currentUser),
+                        item.getName());
                 }
                 catch (final EscidocClientException e) {
                     showError("Cannot retrieve Item");
