@@ -50,18 +50,16 @@ import org.escidoc.browser.ui.mainpage.Footer;
 import org.escidoc.browser.ui.mainpage.HeaderContainer;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.navigation.NavigationTreeView;
+import org.escidoc.browser.ui.navigation.RootNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.event.Action;
-import com.vaadin.event.Action.Handler;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
-import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
@@ -181,7 +179,6 @@ public class MainSite extends VerticalLayout {
             else {
                 throw new UnsupportedOperationException("Not yet implemented");
             }
-
         }
     }
 
@@ -197,6 +194,8 @@ public class MainSite extends VerticalLayout {
         return mainContentTabs;
     }
 
+    private final Panel mainNavigation = new Panel();
+
     /**
      * MainNavigation Panel This is the left-most (human side) panel on the page It contains a Main Navigation Tree
      * 
@@ -204,37 +203,24 @@ public class MainSite extends VerticalLayout {
      * @throws EscidocClientException
      */
     private Panel buildNavigationPanel() throws EscidocClientException {
-        final Panel mainNavigation = new Panel();
         mainNavigation.setScrollable(true);
         mainNavigation.setStyleName("floatleft paddingtop10");
         mainNavigation.setWidth("30%");
         mainNavigation.setHeight("88%");
 
-        addRoot(mainNavigation);
-        mainNavigationTree =
-            new NavigationTreeBuilder(serviceLocation, currentUser, repositories).buildNavigationTree(this, mainWindow);
-        mainNavigation.addComponent(mainNavigationTree);
-
+        addRootNode();
+        addNavigationTree();
         return mainNavigation;
     }
 
-    private void addRoot(final Panel mainNavigation) {
-        final Tree tree = new Tree();
-        tree.addItem(serviceLocation.getEscidocUri());
-        tree.setChildrenAllowed(serviceLocation.getEscidocUri(), false);
-        tree.addActionHandler(new Handler() {
+    private void addNavigationTree() throws EscidocClientException {
+        mainNavigationTree =
+            new NavigationTreeBuilder(serviceLocation, currentUser, repositories).buildNavigationTree(this, mainWindow);
+        mainNavigation.addComponent(mainNavigationTree);
+    }
 
-            @Override
-            public void handleAction(final Action action, final Object sender, final Object target) {
-                mainWindow.showNotification("Adding a new context is not yet implemented");
-            }
-
-            @Override
-            public Action[] getActions(final Object target, final Object sender) {
-                return new Action[] { new Action("Add Context") };
-            }
-        });
-        mainNavigation.addComponent(tree);
+    private void addRootNode() {
+        mainNavigation.addComponent(new RootNode(serviceLocation));
     }
 
     /**
