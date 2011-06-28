@@ -61,10 +61,6 @@ public class ItemView extends VerticalLayout {
 
     private final int appHeight;
 
-    private int accordionHeight;
-
-    private int innerelementsHeight;
-
     private final ItemProxyImpl resourceProxy;
 
     private final Window mainWindow;
@@ -74,6 +70,10 @@ public class ItemView extends VerticalLayout {
     private final Repositories repositories;
 
     private final CurrentUser currentUser;
+
+    private int accordionHeight;
+
+    private int innerelementsHeight;
 
     public ItemView(final EscidocServiceLocation serviceLocation, final Repositories repositories,
         final MainSite mainSite, final ResourceProxy resourceProxy, final Window mainWindow,

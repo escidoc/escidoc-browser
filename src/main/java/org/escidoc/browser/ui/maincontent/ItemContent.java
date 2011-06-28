@@ -36,6 +36,8 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.escidoc.browser.ui.dnd.DragAndDropFileUpload;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.terminal.ExternalResource;
@@ -54,9 +56,13 @@ import de.escidoc.core.resources.om.item.component.Component;
 @SuppressWarnings("serial")
 public class ItemContent extends CustomLayout {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ItemContent.class);
+
+    private static final String ITEM_TEMPLATE_NAME = "itemtemplate";
+
     private final Panel panelComponent = new Panel();
 
-    private final ItemProxyImpl itemProxy;
+    private ItemProxyImpl itemProxy;
 
     private final EscidocServiceLocation serviceLocation;
 
@@ -72,17 +78,17 @@ public class ItemContent extends CustomLayout {
         Preconditions.checkNotNull(itemProxy, "resourceProxy is null.");
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null.");
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
-        this.currentUser = currentUser;
 
         this.repositories = repositories;
-        this.serviceLocation = serviceLocation;
         this.itemProxy = itemProxy;
+        this.serviceLocation = serviceLocation;
+        this.currentUser = currentUser;
         this.mainWindow = mainWindow;
         initView();
     }
 
     private void initView() {
-        setTemplateName("itemtemplate");
+        setTemplateName(ITEM_TEMPLATE_NAME);
         buildComponentPanel();
         addDragAndDropFiles();
         if (hasComponents()) {
@@ -91,21 +97,32 @@ public class ItemContent extends CustomLayout {
         addComponent(panelComponent, "components");
     }
 
+    private void buildComponentPanel() {
+        panelComponent.addStyleName(Runo.PANEL_LIGHT);
+    }
+
     private void addDragAndDropFiles() {
         try {
-            if (repositories
-                .pdp().isAction(ActionIdConstants.UPDATE_ITEM).forUser(currentUser.getUserId())
-                .forResource(itemProxy.getId()).permitted()) {
-                panelComponent.addComponent(new DragAndDropFileUpload(repositories, itemProxy));
+            if (userIsPermittedToUpdate()) {
+                final DragAndDropFileUpload dragAndDropFileUpload =
+                    new DragAndDropFileUpload(repositories, itemProxy, this);
+                panelComponent.addComponent(dragAndDropFileUpload);
             }
         }
         catch (final EscidocClientException e) {
+            LOG.error(e.getMessage());
             showError(e);
-
         }
         catch (final URISyntaxException e) {
+            LOG.error(e.getMessage());
             showError(e);
         }
+    }
+
+    private boolean userIsPermittedToUpdate() throws EscidocClientException, URISyntaxException {
+        return repositories
+            .pdp().isAction(ActionIdConstants.UPDATE_ITEM).forUser(currentUser.getUserId())
+            .forResource(itemProxy.getId()).permitted();
     }
 
     private void showError(final Exception e) {
@@ -120,10 +137,6 @@ public class ItemContent extends CustomLayout {
         for (final Component component : itemProxy.getElements()) {
             buildComponentElement(component);
         }
-    }
-
-    private void buildComponentPanel() {
-        panelComponent.addStyleName(Runo.PANEL_LIGHT);
     }
 
     private void buildComponentElement(final Component comp) {
@@ -157,5 +170,14 @@ public class ItemContent extends CustomLayout {
         final String[] last = mimeType.split("/");
         final String lastOne = last[last.length - 1];
         return lastOne;
+    }
+
+    public void updateView(final ItemProxyImpl itemProxy) {
+        this.itemProxy = itemProxy;
+        panelComponent.removeAllComponents();
+        addDragAndDropFiles();
+        if (hasComponents()) {
+            buildComponents();
+        }
     }
 }

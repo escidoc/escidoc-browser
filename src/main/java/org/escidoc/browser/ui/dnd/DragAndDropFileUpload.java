@@ -3,6 +3,7 @@ package org.escidoc.browser.ui.dnd;
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ItemProxyImpl;
+import org.escidoc.browser.ui.maincontent.ItemContent;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.terminal.gwt.server.AbstractWebApplicationContext;
@@ -26,10 +27,22 @@ public class DragAndDropFileUpload extends VerticalLayout {
 
     private final ItemProxyImpl itemProxy;
 
-    public DragAndDropFileUpload(final Repositories repositories, final ItemProxyImpl itemProxy) {
+    private final ItemContent componentListView;
+
+    private FilesDropBox dropBox;
+
+    public DragAndDropFileUpload(final Repositories repositories, final ItemProxyImpl itemProxy,
+        final ItemContent componentListView) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        Preconditions.checkNotNull(itemProxy, "itemProxy is null: %s", itemProxy);
+        Preconditions.checkNotNull(componentListView, "componentListView is null: %s", componentListView);
         this.repositories = repositories;
         this.itemProxy = itemProxy;
+        this.componentListView = componentListView;
+        initView();
+    }
+
+    private void initView() {
         removeAllComponents();
         addImageDropBoxInPanel();
         addProgressIndicator();
@@ -52,7 +65,7 @@ public class DragAndDropFileUpload extends VerticalLayout {
     private FilesDropBox filesDropBox() {
         configureDropPane();
 
-        final FilesDropBox dropBox = new FilesDropBox(repositories, itemProxy, dropPane, progressView);
+        dropBox = new FilesDropBox(repositories, itemProxy, dropPane, progressView, componentListView);
         dropBox.setSizeUndefined();
 
         return dropBox;

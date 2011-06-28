@@ -30,6 +30,7 @@ import java.util.Collection;
 
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ItemProxyImpl;
+import org.escidoc.browser.ui.maincontent.ItemContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,16 +69,22 @@ public class FilesDropBox extends DragAndDropWrapper implements DropHandler {
 
     private int numberOfFiles;
 
+    private MultipleStreamVariable streamVariable;
+
+    private final ItemContent componentListView;
+
     public FilesDropBox(final Repositories repositories, final ItemProxyImpl itemProxy, final Component root,
-        final ProgressIndicator progressView) {
+        final ProgressIndicator progressView, final ItemContent componentListView) {
         super(root);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(itemProxy, "itemProxy is null: %s", itemProxy);
         Preconditions.checkNotNull(root, "root is null: %s", root);
-        Preconditions.checkArgument(progressView != null, "progressIndicator is null: %s", progressView);
+        Preconditions.checkNotNull(progressView, "progressView is null: %s", progressView);
+        Preconditions.checkNotNull(componentListView, "componentListView is null: %s", componentListView);
         this.repositories = repositories;
         this.itemProxy = itemProxy;
         this.progressView = progressView;
+        this.componentListView = componentListView;
         setDropHandler(this);
     }
 
@@ -115,8 +122,10 @@ public class FilesDropBox extends DragAndDropWrapper implements DropHandler {
     private MultipleStreamVariable createStreamVariable(
         final DragAndDropEvent dropEvent, final Html5File html5File, final Components componentList,
         final int numberOfFiles) {
-        return new MultipleStreamVariable(progressView, getApplication().getMainWindow(), html5File, componentList,
-            this, repositories, itemProxy);
+        streamVariable =
+            new MultipleStreamVariable(progressView, getApplication().getMainWindow(), html5File, componentList, this,
+                repositories, itemProxy, componentListView);
+        return streamVariable;
     }
 
     @Override

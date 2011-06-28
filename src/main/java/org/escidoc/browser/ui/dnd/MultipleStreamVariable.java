@@ -38,6 +38,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.escidoc.browser.model.internal.ComponentBuilder;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ItemProxyImpl;
+import org.escidoc.browser.ui.maincontent.ItemContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,9 +77,13 @@ public class MultipleStreamVariable implements StreamVariable {
 
     private final ItemProxyImpl itemProxy;
 
+    private ItemContent itemContent;
+
+    private final ItemContent componentListView;
+
     public MultipleStreamVariable(final ProgressIndicator progressView, final Window mainWindow,
         final Html5File html5File, final Components componentList, final FilesDropBox itemDropBox,
-        final Repositories repositories, final ItemProxyImpl itemProxy) {
+        final Repositories repositories, final ItemProxyImpl itemProxy, final ItemContent componentListView) {
 
         Preconditions.checkNotNull(progressView, "progressView is null: %s", progressView);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
@@ -86,6 +91,7 @@ public class MultipleStreamVariable implements StreamVariable {
         Preconditions.checkNotNull(componentList, "componentList is null: %s", componentList);
         Preconditions.checkNotNull(itemDropBox, "itemDropBox is null: %s", itemDropBox);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        Preconditions.checkNotNull(componentListView, "componentListView is null: %s", componentListView);
 
         this.progressView = progressView;
         this.mainWindow = mainWindow;
@@ -94,6 +100,7 @@ public class MultipleStreamVariable implements StreamVariable {
         this.componentList = componentList;
         this.repositories = repositories;
         this.itemProxy = itemProxy;
+        this.componentListView = componentListView;
     }
 
     @Override
@@ -148,8 +155,10 @@ public class MultipleStreamVariable implements StreamVariable {
                     final Item itemWithNewFiles = addFiles(toBeUpdate);
                     final Item updatedItem = updateItem(itemWithNewFiles);
                     LOG.debug("updated: " + updatedItem.getObjid());
+
                     mainWindow.showNotification(new Notification("Item is updated",
                         Window.Notification.TYPE_TRAY_NOTIFICATION));
+                    componentListView.updateView(new ItemProxyImpl(updatedItem));
                 }
                 catch (final EscidocClientException e) {
                     mainWindow
