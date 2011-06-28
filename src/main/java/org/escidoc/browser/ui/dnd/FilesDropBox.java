@@ -65,13 +65,11 @@ public class FilesDropBox extends DragAndDropWrapper implements DropHandler {
 
     private final ItemProxyImpl itemProxy;
 
+    private final ItemContent componentListView;
+
     private Components componentList;
 
     private int numberOfFiles;
-
-    private MultipleStreamVariable streamVariable;
-
-    private final ItemContent componentListView;
 
     public FilesDropBox(final Repositories repositories, final ItemProxyImpl itemProxy, final Component root,
         final ProgressIndicator progressView, final ItemContent componentListView) {
@@ -122,10 +120,8 @@ public class FilesDropBox extends DragAndDropWrapper implements DropHandler {
     private MultipleStreamVariable createStreamVariable(
         final DragAndDropEvent dropEvent, final Html5File html5File, final Components componentList,
         final int numberOfFiles) {
-        streamVariable =
-            new MultipleStreamVariable(progressView, getApplication().getMainWindow(), html5File, componentList, this,
-                repositories, itemProxy, componentListView);
-        return streamVariable;
+        return new MultipleStreamVariable(progressView, getApplication().getMainWindow(), html5File, componentList,
+            this, repositories, itemProxy, componentListView);
     }
 
     @Override

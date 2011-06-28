@@ -30,6 +30,7 @@ package org.escidoc.browser.ui.navigation;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.ui.MainSite;
+import org.escidoc.browser.ui.ViewConstants;
 
 import com.vaadin.event.Action;
 import com.vaadin.event.Action.Handler;
@@ -47,11 +48,9 @@ public class RootNode extends CustomComponent {
 
         @Override
         public Action[] getActions(final Object target, final Object sender) {
-            return new Action[] { new Action(ADD_CONTEXT) };
+            return new Action[] { new Action(ViewConstants.ADD_CONTEXT) };
         }
     }
-
-    private static final String ADD_CONTEXT = "Add Context";
 
     private final Tree tree = new Tree();
 

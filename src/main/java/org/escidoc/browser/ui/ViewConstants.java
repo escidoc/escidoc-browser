@@ -68,4 +68,6 @@ public class ViewConstants {
     public static final String EMPTY_STRING = "";
 
     public static final String DELETE_RESOURCE = "Delete Resource";
+
+    public static final String ADD_CONTEXT = "Add Context";
 }

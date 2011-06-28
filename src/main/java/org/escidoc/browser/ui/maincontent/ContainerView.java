@@ -58,12 +58,8 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
  * @author ARB
  * 
  */
+@SuppressWarnings("serial")
 public class ContainerView extends VerticalLayout {
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
 
     private final int appHeight;
 
@@ -255,7 +251,7 @@ public class ContainerView extends VerticalLayout {
     private void createEditBtn() {
         btnEdit = new Button("Save Changes", new Button.ClickListener() {
             @Override
-            public void buttonClick(ClickEvent event) {
+            public void buttonClick(final ClickEvent event) {
                 btnEdit.setCaption("Do not push this button again");
                 ContainerRepository container = repositories.container();
 
@@ -295,12 +291,12 @@ public class ContainerView extends VerticalLayout {
             private static final long serialVersionUID = 1L;
 
             @Override
-            public void layoutClick(LayoutClickEvent event) {
+            public void layoutClick(final LayoutClickEvent event) {
                 // Get the child component which was clicked
                 if (event.getChildComponent() != null) {
                     // Is Label?
                     if (event.getChildComponent().getClass().getCanonicalName() == "com.vaadin.ui.Label") {
-                        Label child = (Label) event.getChildComponent();
+                        final Label child = (Label) event.getChildComponent();
 
                         if ((child).getDescription() == "header") {
                             oldComponent = event.getClickedComponent();
@@ -335,13 +331,13 @@ public class ContainerView extends VerticalLayout {
                 }
             }
 
-            private Component editStatus(String string) {
-                ComboBox cmbStatus = new ComboBox();
+            private Component editStatus(final String string) {
+                final ComboBox cmbStatus = new ComboBox();
                 cmbStatus.addItem("pending");
                 return cmbStatus;
             }
 
-            private Component editHeader(String lblHeaderValue) {
+            private Component editHeader(final String lblHeaderValue) {
                 final TextField txtHeader = new TextField();
                 txtHeader.setValue(lblHeaderValue.replaceAll(RESOURCE_NAME, ""));
                 resourceProxy.setName(lblHeaderValue.replaceAll(RESOURCE_NAME, ""));
