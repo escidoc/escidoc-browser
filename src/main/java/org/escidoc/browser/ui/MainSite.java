@@ -53,12 +53,15 @@ import org.escidoc.browser.ui.navigation.NavigationTreeView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.vaadin.event.Action;
+import com.vaadin.event.Action.Handler;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
@@ -207,11 +210,31 @@ public class MainSite extends VerticalLayout {
         mainNavigation.setWidth("30%");
         mainNavigation.setHeight("88%");
 
+        addRoot(mainNavigation);
         mainNavigationTree =
             new NavigationTreeBuilder(serviceLocation, currentUser, repositories).buildNavigationTree(this, mainWindow);
         mainNavigation.addComponent(mainNavigationTree);
 
         return mainNavigation;
+    }
+
+    private void addRoot(final Panel mainNavigation) {
+        final Tree tree = new Tree();
+        tree.addItem(serviceLocation.getEscidocUri());
+        tree.setChildrenAllowed(serviceLocation.getEscidocUri(), false);
+        tree.addActionHandler(new Handler() {
+
+            @Override
+            public void handleAction(final Action action, final Object sender, final Object target) {
+                mainWindow.showNotification("Adding a new context is not yet implemented");
+            }
+
+            @Override
+            public Action[] getActions(final Object target, final Object sender) {
+                return new Action[] { new Action("Add Context") };
+            }
+        });
+        mainNavigation.addComponent(tree);
     }
 
     /**
