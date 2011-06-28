@@ -28,8 +28,10 @@
  */
 package org.escidoc.browser.ui;
 
+import java.net.URISyntaxException;
 import java.util.Map;
 
+import org.escidoc.browser.ActionIdConstants;
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.ContainerProxy;
@@ -51,8 +53,6 @@ import org.escidoc.browser.ui.mainpage.HeaderContainer;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.navigation.NavigationTreeView;
 import org.escidoc.browser.ui.navigation.RootNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -68,8 +68,6 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
 public class MainSite extends VerticalLayout {
-
-    private final static Logger LOG = LoggerFactory.getLogger(MainSite.class);
 
     private final TabSheet mainContentTabs = new TabSheet();
 
@@ -220,7 +218,22 @@ public class MainSite extends VerticalLayout {
     }
 
     private void addRootNode() {
-        mainNavigation.addComponent(new RootNode(serviceLocation));
+        mainNavigation.addComponent(new RootNode(serviceLocation, this));
+    }
+
+    public boolean isUserAllowedToCreateContext() {
+        try {
+            return repositories
+                .pdp().isAction(ActionIdConstants.CREATE_CONTEXT).forResource("").forUser(currentUser.getUserId())
+                .permitted();
+        }
+        catch (final EscidocClientException e) {
+            showError(e.getMessage());
+        }
+        catch (final URISyntaxException e) {
+            showError(e.getMessage());
+        }
+        return false;
     }
 
     /**

@@ -29,6 +29,7 @@
 package org.escidoc.browser.ui.navigation;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.ui.MainSite;
 
 import com.vaadin.event.Action;
 import com.vaadin.event.Action.Handler;
@@ -37,26 +38,35 @@ import com.vaadin.ui.Tree;
 
 @SuppressWarnings("serial")
 public class RootNode extends CustomComponent {
+
+    private final class RootNodeActionHandler implements Handler {
+        @Override
+        public void handleAction(final Action action, final Object sender, final Object target) {
+            getApplication().getMainWindow().showNotification("Adding a new context is not yet implemented");
+        }
+
+        @Override
+        public Action[] getActions(final Object target, final Object sender) {
+            return new Action[] { new Action(ADD_CONTEXT) };
+        }
+    }
+
     private static final String ADD_CONTEXT = "Add Context";
 
     private final Tree tree = new Tree();
 
-    public RootNode(final EscidocServiceLocation serviceLocation) {
+    public RootNode(final EscidocServiceLocation serviceLocation, final MainSite mainSite) {
         setCompositionRoot(tree);
+        tree.setSelectable(false);
         tree.addItem(serviceLocation.getEscidocUri());
         tree.setChildrenAllowed(serviceLocation.getEscidocUri(), false);
-        tree.addActionHandler(new Handler() {
-
-            @Override
-            public void handleAction(final Action action, final Object sender, final Object target) {
-                getApplication().getMainWindow().showNotification("Adding a new context is not yet implemented");
-            }
-
-            @Override
-            public Action[] getActions(final Object target, final Object sender) {
-                return new Action[] { new Action(ADD_CONTEXT) };
-            }
-        });
+        if (mainSite.isUserAllowedToCreateContext()) {
+            addContextMenu();
+        }
     }
 
+    private void addContextMenu() {
+        final Handler actionHandler = new RootNodeActionHandler();
+        tree.addActionHandler(actionHandler);
+    }
 }
