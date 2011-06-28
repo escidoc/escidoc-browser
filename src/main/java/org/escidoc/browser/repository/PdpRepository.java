@@ -26,20 +26,21 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.service;
+package org.escidoc.browser.repository;
 
 import java.net.URISyntaxException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
-public interface PdpService {
+public interface PdpRepository {
+
     void loginWith(final String token);
 
-    PdpService isAction(String actionId) throws URISyntaxException;
+    PdpRepository isAction(String actionId) throws URISyntaxException;
 
-    PdpService forResource(String resourceId) throws URISyntaxException;
+    PdpRepository forResource(String resourceId) throws URISyntaxException;
 
-    PdpService forUser(String userId) throws URISyntaxException;
+    PdpRepository forUser(String userId) throws URISyntaxException;
 
     boolean permitted() throws EscidocClientException;
 

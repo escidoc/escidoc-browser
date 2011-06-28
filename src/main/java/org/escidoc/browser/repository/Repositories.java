@@ -3,7 +3,6 @@ package org.escidoc.browser.repository;
 import org.escidoc.browser.repository.internal.ContainerRepository;
 import org.escidoc.browser.repository.internal.ContextRepository;
 import org.escidoc.browser.repository.internal.ItemRepository;
-import org.escidoc.browser.service.PdpService;
 
 import de.escidoc.core.client.exceptions.InternalClientException;
 
@@ -19,6 +18,6 @@ public interface Repositories {
 
     StagingRepository staging();
 
-    PdpService pdp();
+    PdpRepository pdp();
 
 }

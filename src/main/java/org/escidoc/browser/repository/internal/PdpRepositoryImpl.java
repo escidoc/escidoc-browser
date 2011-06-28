@@ -26,7 +26,7 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.service;
+package org.escidoc.browser.repository.internal;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -35,6 +35,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.escidoc.browser.AppConstants;
+import org.escidoc.browser.repository.PdpRepository;
 
 import com.google.common.base.Preconditions;
 import com.sun.xacml.attr.StringAttribute;
@@ -48,7 +49,7 @@ import de.escidoc.core.resources.aa.pdp.Decision;
 import de.escidoc.core.resources.aa.pdp.Requests;
 import de.escidoc.core.resources.aa.pdp.Results;
 
-public class PdpServiceImpl implements PdpService {
+public class PdpRepositoryImpl implements PdpRepository {
 
     private final PolicyDecisionPointHandlerClient client;
 
@@ -58,12 +59,12 @@ public class PdpServiceImpl implements PdpService {
 
     private Set<Subject> subjects = new HashSet<Subject>();
 
-    public PdpServiceImpl(final URL serviceAddress) {
+    public PdpRepositoryImpl(final URL serviceAddress) {
         client = new PolicyDecisionPointHandlerClient(serviceAddress);
     }
 
     @Override
-    public PdpService isAction(final String actionId) throws URISyntaxException {
+    public PdpRepository isAction(final String actionId) throws URISyntaxException {
         actionAttrs = new HashSet<Attribute>();
         actionAttrs
             .add(new Attribute(new URI(AppConstants.XACML_ACTION_ID), null, null, new StringAttribute(actionId)));
@@ -71,7 +72,7 @@ public class PdpServiceImpl implements PdpService {
     }
 
     @Override
-    public PdpService forResource(final String resourceId) throws URISyntaxException {
+    public PdpRepository forResource(final String resourceId) throws URISyntaxException {
         resourceAttrs = new HashSet<Attribute>();
         resourceAttrs
             .add(new Attribute(new URI(AppConstants.RESOURCE_ID), null, null, new StringAttribute(resourceId)));
@@ -79,7 +80,7 @@ public class PdpServiceImpl implements PdpService {
     }
 
     @Override
-    public PdpService forUser(final String userId) throws URISyntaxException {
+    public PdpRepository forUser(final String userId) throws URISyntaxException {
         final Set<Attribute> subjectAttributes = new HashSet<Attribute>();
 
         if (userId == null) {

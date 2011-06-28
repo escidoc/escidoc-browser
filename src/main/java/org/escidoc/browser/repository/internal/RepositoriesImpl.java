@@ -3,10 +3,9 @@ package org.escidoc.browser.repository.internal;
 import java.net.MalformedURLException;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.repository.PdpRepository;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.StagingRepository;
-import org.escidoc.browser.service.PdpService;
-import org.escidoc.browser.service.PdpServiceImpl;
 
 import com.google.common.base.Preconditions;
 
@@ -22,7 +21,7 @@ public class RepositoriesImpl implements Repositories {
 
     private StagingRepository stagingRepository;
 
-    private PdpService pdpRepository;
+    private PdpRepository pdpRepository;
 
     private final EscidocServiceLocation serviceLocation;
 
@@ -36,7 +35,7 @@ public class RepositoriesImpl implements Repositories {
         containerRepository = new ContainerRepository(serviceLocation);
         itemRepository = new ItemRepository(serviceLocation);
         stagingRepository = new StagingRepositoryImpl(serviceLocation);
-        pdpRepository = new PdpServiceImpl(serviceLocation.getEscidocUrl());
+        pdpRepository = new PdpRepositoryImpl(serviceLocation.getEscidocUrl());
         return this;
     }
 
@@ -74,7 +73,7 @@ public class RepositoriesImpl implements Repositories {
     }
 
     @Override
-    public PdpService pdp() {
+    public PdpRepository pdp() {
         Preconditions.checkNotNull(pdpRepository, "pdpRepository is null: %s", pdpRepository);
         return pdpRepository;
     }
