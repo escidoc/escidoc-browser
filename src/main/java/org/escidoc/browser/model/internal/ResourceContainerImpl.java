@@ -130,7 +130,11 @@ public class ResourceContainerImpl implements ResourceContainer {
     }
 
     public void addChild(final ResourceModel parent, final ResourceModel child) {
-        bind(add(child), child);
+        final Item addedItem = add(child);
+        if (addedItem == null) {
+            return;
+        }
+        bind(addedItem, child);
         assignParent(parent, child);
         container.setChildrenAllowed(child, isNotItem(child));
     }
