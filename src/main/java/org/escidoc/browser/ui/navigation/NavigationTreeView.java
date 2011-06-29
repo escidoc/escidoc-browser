@@ -31,6 +31,7 @@ package org.escidoc.browser.ui.navigation;
 import org.escidoc.browser.model.ResourceContainer;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.ui.MainSite;
+import org.escidoc.browser.ui.NavigationMenuBar;
 
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.Component;
@@ -45,5 +46,7 @@ public interface NavigationTreeView extends Component {
     ResourceModel getSelected();
 
     void setDataSource(ResourceContainer container, MainSite mainSite);
+
+    void withNavigationMenuBar(NavigationMenuBar navigationMenuBar);
 
 }

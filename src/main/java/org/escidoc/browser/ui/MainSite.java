@@ -57,7 +57,6 @@ import org.escidoc.browser.ui.navigation.RootNode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
@@ -113,11 +112,18 @@ public class MainSite extends VerticalLayout {
     private void init() throws EscidocClientException {
         configureLayout();
         addHeader();
+        addMenuBar();
         addNavigationPanel();
         addMainContentTabs();
         permanentURLelement();
         addFooter();
         addComponent(mainLayout);
+    }
+
+    private final NavigationMenuBar navigationMenuBar = new NavigationMenuBar();
+
+    private void addMenuBar() {
+        mainNavigation.addComponent(navigationMenuBar);
     }
 
     private void configureLayout() {
@@ -226,7 +232,8 @@ public class MainSite extends VerticalLayout {
 
         addRootNode();
         addNavigationTree();
-        mainNavigation.addComponent(new Label("Toolbar"));
+        navigationMenuBar.withNavigationTree(mainNavigationTree);
+        mainNavigationTree.withNavigationMenuBar(navigationMenuBar);
         return mainNavigation;
     }
 

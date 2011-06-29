@@ -42,7 +42,9 @@ import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ContainerProxyImpl;
 import org.escidoc.browser.ui.MainSite;
+import org.escidoc.browser.ui.NavigationMenuBar;
 import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.listeners.TreeClickListener;
 import org.escidoc.browser.ui.listeners.TreeCreateContainer;
 import org.escidoc.browser.ui.listeners.TreeCreateItem;
 
@@ -93,6 +95,8 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
 
     private ItemModel itemModel;
 
+    private ItemClickListener itemClickListener;
+
     public NavigationTreeViewImpl(final Repositories repositories, final EscidocServiceLocation serviceLocation,
         final CurrentUser currentUser) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
@@ -107,6 +111,7 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
 
     @Override
     public void addClickListener(final ItemClickListener clickListener) {
+        itemClickListener = clickListener;
         tree.addListener(clickListener);
     }
 
@@ -196,5 +201,10 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
             getWindow().showNotification(e.getMessage());
         }
         return null;
+    }
+
+    @Override
+    public void withNavigationMenuBar(final NavigationMenuBar navigationMenuBar) {
+        ((TreeClickListener) itemClickListener).withNavigationMenuBar(navigationMenuBar);
     }
 }

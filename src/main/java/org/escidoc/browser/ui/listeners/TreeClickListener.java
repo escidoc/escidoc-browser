@@ -38,6 +38,7 @@ import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.MainSite;
+import org.escidoc.browser.ui.NavigationMenuBar;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.ContainerView;
 import org.escidoc.browser.ui.maincontent.ContextView;
@@ -69,6 +70,8 @@ public class TreeClickListener implements ItemClickListener {
 
     private final Repositories repositories;
 
+    private NavigationMenuBar navigationMenuBar;
+
     public TreeClickListener(final EscidocServiceLocation serviceLocation, final Repositories repositories,
         final Window mainWindow, final MainSite mainSite, final CurrentUser currentUser) {
 
@@ -85,9 +88,14 @@ public class TreeClickListener implements ItemClickListener {
         this.currentUser = currentUser;
     }
 
+    public void withNavigationMenuBar(final NavigationMenuBar navigationMenuBar) {
+        this.navigationMenuBar = navigationMenuBar;
+    }
+
     @Override
     public void itemClick(final ItemClickEvent event) {
         openClickedResourceInNewTab((ResourceModel) event.getItemId());
+        navigationMenuBar.update((ResourceModel) event.getItemId());
     }
 
     private void openClickedResourceInNewTab(final ResourceModel clickedResource) {
