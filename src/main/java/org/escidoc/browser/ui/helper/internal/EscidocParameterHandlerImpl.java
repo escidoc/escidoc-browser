@@ -28,6 +28,21 @@
  */
 package org.escidoc.browser.ui.helper.internal;
 
+import com.google.common.base.Preconditions;
+
+import com.vaadin.ui.Window.Notification;
+
+import org.escidoc.browser.BrowserApplication;
+import org.escidoc.browser.model.CurrentUser;
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.internal.GuestUser;
+import org.escidoc.browser.repository.internal.UserRepositoryImpl;
+import org.escidoc.browser.ui.helper.EscidocParameterHandler;
+import org.escidoc.browser.ui.helper.ParamaterDecoder;
+import org.escidoc.browser.ui.helper.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -36,19 +51,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Map;
-
-import org.escidoc.browser.BrowserApplication;
-import org.escidoc.browser.model.CurrentUser;
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.repository.internal.UserRepositoryImpl;
-import org.escidoc.browser.ui.helper.EscidocParameterHandler;
-import org.escidoc.browser.ui.helper.ParamaterDecoder;
-import org.escidoc.browser.ui.helper.Util;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.Window.Notification;
 
 @SuppressWarnings("serial")
 public class EscidocParameterHandlerImpl implements EscidocParameterHandler {
@@ -70,7 +72,12 @@ public class EscidocParameterHandlerImpl implements EscidocParameterHandler {
 
     @Override
     public void handleParameters(final Map<String, String[]> parameters) {
+        processParameters(parameters);
+        app.setParameters(parameters);
+        app.buildMainView();
+    }
 
+    private void processParameters(final Map<String, String[]> parameters) {
         if (Util.isEscidocUrlExists(parameters) && Util.doesTokenExist(parameters)) {
             setEscidocUri(parameters);
             doLogin(parameters);
@@ -83,16 +90,13 @@ public class EscidocParameterHandlerImpl implements EscidocParameterHandler {
                 setEscidocUri(parameters);
                 app.setServiceLocation(serviceLocation);
                 app.setLogoutURL(serviceLocation.getLogoutUri());
-                final UserRepositoryImpl userRepository = new UserRepositoryImpl(serviceLocation);
-                final CurrentUser currentUser = userRepository.findCurrentUser();
-                app.setUser(currentUser);
+                app.setUser(new UserRepositoryImpl(serviceLocation).findCurrentUser());
             }
         }
         else if (!Util.isEscidocUrlExists(parameters) && hasNotEscidocHandler(parameters)) {
             LOG.debug("nothing");
+            app.setUser(new GuestUser());
         }
-        app.setParameters(parameters);
-        app.buildMainView();
     }
 
     private void doLogin(final Map<String, String[]> parameters) {
