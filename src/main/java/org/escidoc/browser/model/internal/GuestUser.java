@@ -51,7 +51,7 @@ public class GuestUser implements CurrentUser {
 
     @Override
     public String getUserId() {
-        return "";
+        return " ";
     }
 
 }

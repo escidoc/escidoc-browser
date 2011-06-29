@@ -28,17 +28,32 @@
  */
 package org.escidoc.browser.ui.navigation;
 
-import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.model.ResourceType;
-import org.escidoc.browser.ui.ViewConstants;
+import com.google.common.base.Preconditions;
 
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 
+import org.escidoc.browser.ActionIdConstants;
+import org.escidoc.browser.model.CurrentUser;
+import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.ViewConstants;
+
+import java.net.URISyntaxException;
+
+import de.escidoc.core.client.exceptions.EscidocClientException;
+
 @SuppressWarnings("serial")
 public class NavigationMenuBar extends CustomComponent {
+
+    private final Command addItemCommand = new Command() {
+        public void menuSelected(final MenuItem selectedItem) {
+            getWindow().showNotification("Action " + selectedItem.getText());
+        }
+    };
 
     private final class DeleteCommand implements Command {
         @Override
@@ -48,6 +63,10 @@ public class NavigationMenuBar extends CustomComponent {
     }
 
     private final MenuBar menuBar = new MenuBar();
+
+    private final CurrentUser currentUser;
+
+    private final Repositories repositories;
 
     private MenuBar.MenuItem add;
 
@@ -59,9 +78,32 @@ public class NavigationMenuBar extends CustomComponent {
 
     private MenuItem deleteMenuItem;
 
-    public NavigationMenuBar() {
+    public NavigationMenuBar(CurrentUser currentUser, Repositories repositories) {
+        Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        this.currentUser = currentUser;
+        this.repositories = repositories;
         setCompositionRoot(menuBar);
         init();
+        bindRole();
+    }
+
+    private void bindRole() {
+        try {
+            menuBar.setEnabled(isCreateContextAllowed());
+        }
+        catch (final EscidocClientException e) {
+            e.printStackTrace();
+        }
+        catch (final URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean isCreateContextAllowed() throws EscidocClientException, URISyntaxException {
+        return repositories
+            .pdp().isAction(ActionIdConstants.CREATE_CONTEXT).forUser(currentUser.getUserId()).forResource("")
+            .permitted();
     }
 
     private void init() {
@@ -82,12 +124,6 @@ public class NavigationMenuBar extends CustomComponent {
         deleteMenuItem = menuBar.addItem(ViewConstants.DELETE, new DeleteCommand());
         deleteMenuItem.setEnabled(false);
     }
-
-    private final Command addItemCommand = new Command() {
-        public void menuSelected(final MenuItem selectedItem) {
-            getWindow().showNotification("Action " + selectedItem.getText());
-        }
-    };
 
     public void update(final ResourceModel resourceModel) {
         switch (resourceModel.getType()) {

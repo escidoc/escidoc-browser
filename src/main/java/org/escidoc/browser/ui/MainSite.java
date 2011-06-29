@@ -28,8 +28,16 @@
  */
 package org.escidoc.browser.ui;
 
-import java.net.URISyntaxException;
-import java.util.Map;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Layout;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import org.escidoc.browser.ActionIdConstants;
 import org.escidoc.browser.AppConstants;
@@ -55,16 +63,8 @@ import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.navigation.NavigationTreeView;
 import org.escidoc.browser.ui.navigation.RootNode;
 
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Layout;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TabSheet.Tab;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
+import java.net.URISyntaxException;
+import java.util.Map;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -89,6 +89,8 @@ public class MainSite extends VerticalLayout {
 
     private NavigationTreeView mainNavigationTree;
 
+    private final NavigationMenuBar navigationMenuBar;
+
     /**
      * The mainWindow should be revised whether we need it or not the appHeight is the Height of the Application and I
      * need it for calculations in the inner elements
@@ -108,6 +110,8 @@ public class MainSite extends VerticalLayout {
         this.currentUser = currentUser;
         this.repositories = repositories;
 
+        navigationMenuBar = new NavigationMenuBar(currentUser, repositories);
+
         init();
     }
 
@@ -121,8 +125,6 @@ public class MainSite extends VerticalLayout {
         addFooter();
         addComponent(mainLayout);
     }
-
-    private final NavigationMenuBar navigationMenuBar = new NavigationMenuBar();
 
     private void addMenuBar() {
         mainNavigation.addComponent(navigationMenuBar);

@@ -28,20 +28,23 @@
  */
 package org.escidoc.browser.repository.internal;
 
+import com.google.common.base.Preconditions;
+
+import com.sun.xacml.attr.StringAttribute;
+import com.sun.xacml.ctx.Attribute;
+import com.sun.xacml.ctx.RequestCtx;
+import com.sun.xacml.ctx.Subject;
+
+import org.escidoc.browser.AppConstants;
+import org.escidoc.browser.repository.PdpRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.escidoc.browser.AppConstants;
-import org.escidoc.browser.repository.PdpRepository;
-
-import com.google.common.base.Preconditions;
-import com.sun.xacml.attr.StringAttribute;
-import com.sun.xacml.ctx.Attribute;
-import com.sun.xacml.ctx.RequestCtx;
-import com.sun.xacml.ctx.Subject;
 
 import de.escidoc.core.client.PolicyDecisionPointHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -50,6 +53,8 @@ import de.escidoc.core.resources.aa.pdp.Requests;
 import de.escidoc.core.resources.aa.pdp.Results;
 
 public class PdpRepositoryImpl implements PdpRepository {
+
+    private final static Logger LOG = LoggerFactory.getLogger(PdpRepositoryImpl.class);
 
     private final PolicyDecisionPointHandlerClient client;
 
@@ -103,8 +108,21 @@ public class PdpRepositoryImpl implements PdpRepository {
         Preconditions.checkArgument(resourceAttrs.size() <= 1, "more than one subjects are not allowed");
         Preconditions.checkArgument(actionAttrs.size() == 1, "more than one subjects are not allowed");
         final Requests requests = new Requests();
+        checkForResource();
         requests.add(new RequestCtx(subjects, resourceAttrs, actionAttrs, Requests.DEFAULT_ENVIRONMENT));
         return getDecisionFrom(client.evaluate(requests)).equals(Decision.PERMIT);
+    }
+
+    private void checkForResource() {
+        if (resourceAttrs == null) {
+            try {
+                forResource("");
+            }
+            catch (final URISyntaxException e) {
+                LOG.error(e.getMessage());
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     private Decision getDecisionFrom(final Results results) {
