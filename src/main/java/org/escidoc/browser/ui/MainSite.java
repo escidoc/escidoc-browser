@@ -58,6 +58,7 @@ import org.escidoc.browser.ui.navigation.RootNode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Layout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
@@ -241,6 +242,7 @@ public class MainSite extends VerticalLayout {
         mainNavigationTree =
             new NavigationTreeBuilder(serviceLocation, currentUser, repositories).buildNavigationTree(this, mainWindow);
         mainNavigation.addComponent(mainNavigationTree);
+        ((Layout) mainNavigation.getContent()).setMargin(false);
     }
 
     private void addRootNode() {

@@ -28,6 +28,24 @@
  */
 package org.escidoc.browser.model;
 
+import com.google.common.base.Preconditions;
+
 public enum ResourceType {
-    CONTEXT, CONTAINER, ITEM;
+
+    CONTEXT("Context"), CONTAINER("Container"), ITEM("Item");
+
+    private String label;
+
+    private ResourceType(final String label) {
+        Preconditions.checkNotNull(label, "value is null: %s", label);
+        this.label = label;
+    }
+
+    private ResourceType() {
+        label = "";
+    }
+
+    public String asLabel() {
+        return label;
+    }
 }
