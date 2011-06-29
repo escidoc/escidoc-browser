@@ -57,6 +57,7 @@ import org.escidoc.browser.ui.navigation.RootNode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
@@ -71,7 +72,9 @@ public class MainSite extends VerticalLayout {
 
     private final TabSheet mainContentTabs = new TabSheet();
 
-    private final CssLayout mainLayout;
+    private final CssLayout mainLayout = new CssLayout();
+
+    private final Panel mainNavigation = new Panel();
 
     private final BrowserApplication app;
 
@@ -104,25 +107,42 @@ public class MainSite extends VerticalLayout {
         this.currentUser = currentUser;
         this.repositories = repositories;
 
-        setMargin(true);
+        init();
+    }
 
-        // common part: create layout
-        mainLayout = new CssLayout();
+    private void init() throws EscidocClientException {
+        configureLayout();
+        addHeader();
+        addNavigationPanel();
+        addMainContentTabs();
+        permanentURLelement();
+        addFooter();
+        addComponent(mainLayout);
+    }
+
+    private void configureLayout() {
+        setMargin(true);
         mainLayout.setStyleName("maincontainer");
         mainLayout.setSizeFull();
+    }
 
+    private void addHeader() {
         final HeaderContainer header = new HeaderContainer(this, app, serviceLocation, currentUser, repositories);
         header.init();
-        final Footer footer = new Footer();
 
         mainLayout.addComponent(header);
-        // Creating the mainNav Panel
-        mainLayout.addComponent(buildNavigationPanel());
-        // Go Main Tab Content
+    }
+
+    private void addFooter() {
+        mainLayout.addComponent(new Footer());
+    }
+
+    private void addMainContentTabs() {
         mainLayout.addComponent(buildTabContainer());
-        permanentURLelement();
-        mainLayout.addComponent(footer);
-        addComponent(mainLayout);
+    }
+
+    private void addNavigationPanel() throws EscidocClientException {
+        mainLayout.addComponent(buildNavigationPanel());
     }
 
     /**
@@ -192,8 +212,6 @@ public class MainSite extends VerticalLayout {
         return mainContentTabs;
     }
 
-    private final Panel mainNavigation = new Panel();
-
     /**
      * MainNavigation Panel This is the left-most (human side) panel on the page It contains a Main Navigation Tree
      * 
@@ -208,6 +226,7 @@ public class MainSite extends VerticalLayout {
 
         addRootNode();
         addNavigationTree();
+        mainNavigation.addComponent(new Label("Toolbar"));
         return mainNavigation;
     }
 

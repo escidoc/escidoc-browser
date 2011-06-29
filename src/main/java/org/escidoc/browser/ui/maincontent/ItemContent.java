@@ -62,8 +62,6 @@ public class ItemContent extends CustomLayout {
 
     private final Panel panelComponent = new Panel();
 
-    private ItemProxyImpl itemProxy;
-
     private final EscidocServiceLocation serviceLocation;
 
     private final Repositories repositories;
@@ -71,6 +69,8 @@ public class ItemContent extends CustomLayout {
     private final CurrentUser currentUser;
 
     private final Window mainWindow;
+
+    private ItemProxyImpl itemProxy;
 
     public ItemContent(final Repositories repositories, final ItemProxyImpl itemProxy,
         final EscidocServiceLocation serviceLocation, final Window mainWindow, final CurrentUser currentUser) {

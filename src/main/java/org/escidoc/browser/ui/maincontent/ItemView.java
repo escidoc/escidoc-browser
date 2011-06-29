@@ -146,7 +146,6 @@ public class ItemView extends VerticalLayout {
         cssLayout.addComponent(descMetadata1);
 
         // ContainerView DescMetadata2
-
         final Label descMetadata2 =
             new Label(CREATED_BY + "<a href='#'> " + resourceProxy.getCreator() + "</a> "
                 + resourceProxy.getCreatedOn() + " <br>" + LAST_MODIFIED_BY + " <a href='#"
@@ -174,7 +173,6 @@ public class ItemView extends VerticalLayout {
     }
 
     private void bindNametoHeader() {
-        // HEADER
         final Label headerContext = new Label(RESOURCE_NAME + resourceProxy.getName());
         headerContext.setDescription("header");
         headerContext.setStyleName("h1 fullwidth");
@@ -188,7 +186,7 @@ public class ItemView extends VerticalLayout {
 
     private void buildLayout() {
         setMargin(true);
-        this.setHeight("100%");
+        setHeight("100%");
         cssLayout.setWidth("100%");
         cssLayout.setHeight("100%");
         innerelementsHeight = appHeight - 420;
@@ -242,5 +240,4 @@ public class ItemView extends VerticalLayout {
         }
         return true;
     }
-
 }
