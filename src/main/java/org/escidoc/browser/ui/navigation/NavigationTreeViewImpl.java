@@ -42,7 +42,6 @@ import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ContainerProxyImpl;
 import org.escidoc.browser.ui.MainSite;
-import org.escidoc.browser.ui.NavigationMenuBar;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.TreeClickListener;
 import org.escidoc.browser.ui.listeners.TreeCreateContainer;

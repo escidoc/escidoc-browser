@@ -38,11 +38,11 @@ import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.MainSite;
-import org.escidoc.browser.ui.NavigationMenuBar;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.ContainerView;
 import org.escidoc.browser.ui.maincontent.ContextView;
 import org.escidoc.browser.ui.maincontent.ItemView;
+import org.escidoc.browser.ui.navigation.NavigationMenuBar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,8 +94,9 @@ public class TreeClickListener implements ItemClickListener {
 
     @Override
     public void itemClick(final ItemClickEvent event) {
-        openClickedResourceInNewTab((ResourceModel) event.getItemId());
-        navigationMenuBar.update((ResourceModel) event.getItemId());
+        final ResourceModel resourceModel = (ResourceModel) event.getItemId();
+        openClickedResourceInNewTab(resourceModel);
+        navigationMenuBar.update(resourceModel);
     }
 
     private void openClickedResourceInNewTab(final ResourceModel clickedResource) {

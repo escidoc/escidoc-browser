@@ -50,6 +50,7 @@ import org.escidoc.browser.ui.maincontent.SearchAdvancedView;
 import org.escidoc.browser.ui.maincontent.SimpleSearch;
 import org.escidoc.browser.ui.mainpage.Footer;
 import org.escidoc.browser.ui.mainpage.HeaderContainer;
+import org.escidoc.browser.ui.navigation.NavigationMenuBar;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.navigation.NavigationTreeView;
 import org.escidoc.browser.ui.navigation.RootNode;
@@ -232,7 +233,6 @@ public class MainSite extends VerticalLayout {
 
         addRootNode();
         addNavigationTree();
-        navigationMenuBar.withNavigationTree(mainNavigationTree);
         mainNavigationTree.withNavigationMenuBar(navigationMenuBar);
         return mainNavigation;
     }

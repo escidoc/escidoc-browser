@@ -26,13 +26,12 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.ui;
+package org.escidoc.browser.ui.navigation;
 
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceType;
-import org.escidoc.browser.ui.navigation.NavigationTreeView;
+import org.escidoc.browser.ui.ViewConstants;
 
-import com.google.common.base.Preconditions;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
@@ -41,9 +40,14 @@ import com.vaadin.ui.MenuBar.MenuItem;
 @SuppressWarnings("serial")
 public class NavigationMenuBar extends CustomComponent {
 
-    private final MenuBar menuBar = new MenuBar();
+    private final class DeleteCommand implements Command {
+        @Override
+        public void menuSelected(final MenuItem selectedItem) {
+            getWindow().showNotification("Not Yet Implemented");
+        }
+    }
 
-    private NavigationTreeView mainNavigationTree;
+    private final MenuBar menuBar = new MenuBar();
 
     private MenuBar.MenuItem add;
 
@@ -53,6 +57,8 @@ public class NavigationMenuBar extends CustomComponent {
 
     private MenuItem containerMenuItem;
 
+    private MenuItem deleteMenuItem;
+
     public NavigationMenuBar() {
         setCompositionRoot(menuBar);
         init();
@@ -60,37 +66,31 @@ public class NavigationMenuBar extends CustomComponent {
 
     private void init() {
         menuBar.setSizeFull();
-
-        add = menuBar.addItem("Add", null);
-
-        contextMenuItem = add.addItem(ResourceType.CONTEXT.name(), menuCommand);
-        containerMenuItem = add.addItem(ResourceType.CONTAINER.name(), menuCommand);
-        itemMenuItem = add.addItem(ResourceType.ITEM.name(), menuCommand);
-
-        menuBar.addItem("Delete", new Command() {
-            @Override
-            public void menuSelected(final MenuItem selectedItem) {
-                getWindow().showNotification("Not Yet Implemented");
-            }
-        });
+        addCreateMenu();
+        addDeleteMenu();
     }
 
-    private final Command menuCommand = new Command() {
+    private void addCreateMenu() {
+        add = menuBar.addItem(ViewConstants.ADD, null);
+
+        contextMenuItem = add.addItem(ResourceType.CONTEXT.name(), addItemCommand);
+        containerMenuItem = add.addItem(ResourceType.CONTAINER.name(), addItemCommand);
+        itemMenuItem = add.addItem(ResourceType.ITEM.name(), addItemCommand);
+    }
+
+    private void addDeleteMenu() {
+        deleteMenuItem = menuBar.addItem(ViewConstants.DELETE, new DeleteCommand());
+        deleteMenuItem.setEnabled(false);
+    }
+
+    private final Command addItemCommand = new Command() {
         public void menuSelected(final MenuItem selectedItem) {
             getWindow().showNotification("Action " + selectedItem.getText());
         }
     };
 
-    public void withNavigationTree(final NavigationTreeView mainNavigationTree) {
-        Preconditions.checkNotNull(mainNavigationTree, "mainNavigationTree is null: %s", mainNavigationTree);
-        this.mainNavigationTree = mainNavigationTree;
-    }
-
     public void update(final ResourceModel resourceModel) {
-        if (mainNavigationTree.getSelected() == null) {
-            return;
-        }
-        switch (mainNavigationTree.getSelected().getType()) {
+        switch (resourceModel.getType()) {
             case CONTEXT:
                 showAddContainerAndItem();
                 break;
