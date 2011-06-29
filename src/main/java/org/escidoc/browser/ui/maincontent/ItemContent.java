@@ -98,6 +98,7 @@ public class ItemContent extends CustomLayout {
     }
 
     private void buildComponentPanel() {
+        panelComponent.getLayout().setMargin(false);
         panelComponent.addStyleName(Runo.PANEL_LIGHT);
     }
 

@@ -55,6 +55,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.common.properties.PublicStatus;
 
 /**
  * @author ARB
@@ -202,7 +203,7 @@ public class ContainerView extends VerticalLayout {
     private void bindProperties() {
         // LEFT SIde
         final Label descMetadata1 = new Label("ID: " + resourceProxy.getId());
-        final Label lblStatus = new Label(STATUS + resourceProxy.getStatus() + "<br />", Label.CONTENT_RAW);
+        final Label lblStatus = new Label(STATUS + resourceProxy.getStatus(), Label.CONTENT_RAW);
         descMetadata1.setStyleName("floatleft");
         descMetadata1.setWidth("35%");
 
@@ -313,7 +314,7 @@ public class ContainerView extends VerticalLayout {
                         }
                         else if (child.getDescription() == "status") {
                             oldComponent = event.getClickedComponent();
-                            swapComponent = editStatus(child.getValue().toString());
+                            swapComponent = editStatus(child.getValue().toString().replace(STATUS, ""));
                             cssLayout.replaceComponent(oldComponent, swapComponent);
                             btnEdit.setVisible(true);
                         }
@@ -340,7 +341,20 @@ public class ContainerView extends VerticalLayout {
 
             private Component editStatus(final String string) {
                 final ComboBox cmbStatus = new ComboBox();
-                cmbStatus.addItem("pending");
+                boolean found = false;
+                for (PublicStatus myEnum : PublicStatus.values()) {
+                    if (found == true) {
+                        System.out.println("found and getting out at: " + myEnum.toString().toLowerCase());
+                        cmbStatus.addItem(myEnum.toString().toLowerCase());
+                        break;
+                    }
+                    if (myEnum.toString().toLowerCase().equals(string.trim())) {
+                        cmbStatus.addItem(string);
+                        found = true;
+                    }
+
+                }
+
                 return cmbStatus;
             }
 
