@@ -42,16 +42,11 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Preconditions;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
 
@@ -95,39 +90,11 @@ public class ItemContent extends CustomLayout {
     private void initView() {
         setTemplateName(ITEM_TEMPLATE_NAME);
         buildComponentPanel();
-        addOpenComponentListViewLink();
         addDragAndDropFiles();
         if (hasComponents()) {
             buildComponents();
         }
         addComponent(panelComponent, "components");
-    }
-
-    private void addOpenComponentListViewLink() {
-        panelComponent.addComponent(new Button("Show Files", new Button.ClickListener() {
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                final Window fileListWindow = new Window("Files of " + itemProxy.getName());
-                fileListWindow.setModal(true);
-                fileListWindow.setContent(createFileList());
-                mainWindow.addWindow(fileListWindow);
-            }
-
-            private ComponentContainer createFileList() {
-
-                final VerticalLayout container = new VerticalLayout();
-                final Table table = new Table("Test");
-
-                for (final Component component : itemProxy.getElements()) {
-                    // table.addItem(component.getXLinkTitle());
-                    table.addItem("foo");
-                }
-
-                container.addComponent(table);
-                return container;
-
-            }
-        }));
     }
 
     private void buildComponentPanel() {
