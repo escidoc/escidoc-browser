@@ -151,8 +151,7 @@ public class TreeDataSourceImpl implements TreeDataSource {
     }
 
     private boolean hasMember(final ResourceModel child) {
-        final ContainerModel containerModel = (ContainerModel) child;
-        return containerModel.hasMember();
+        return ((ContainerModel) child).hasMember();
     }
 
     private static boolean isContainer(final ResourceModel child) {
