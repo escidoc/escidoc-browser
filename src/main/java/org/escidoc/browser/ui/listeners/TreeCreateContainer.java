@@ -34,8 +34,8 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.ContainerBuilder;
 import org.escidoc.browser.repository.internal.ContainerRepository;
 import org.escidoc.browser.repository.internal.ContentModelRepository;
@@ -171,7 +171,7 @@ public class TreeCreateContainer {
         throws ParserConfigurationException {
 
         final ContainerBuilder cntBuild =
-            new ContainerBuilder(new ContextRef(contextId), new ContentModelRef(contentModelId), resourceContainer);
+            new ContainerBuilder(new ContextRef(contextId), new ContentModelRef(contentModelId), treeDataSource);
         final Container newContainer = cntBuild.build(containerName);
         try {
             // final Container create = containerRepository.create(newContainer);

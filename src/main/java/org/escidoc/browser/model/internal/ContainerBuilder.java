@@ -32,13 +32,13 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.escidoc.browser.AppConstants;
+import org.escidoc.browser.model.TreeDataSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.google.common.base.Preconditions;
 
 import de.escidoc.core.resources.common.MetadataRecord;
-import de.escidoc.core.resources.common.MetadataRecords;
 import de.escidoc.core.resources.common.reference.ContentModelRef;
 import de.escidoc.core.resources.common.reference.ContextRef;
 import de.escidoc.core.resources.common.structmap.StructMap;
@@ -49,19 +49,18 @@ public class ContainerBuilder {
 
     private final Container container = new Container();
 
-    private final MetadataRecord itemMetadata = new MetadataRecord(AppConstants.ESCIDOC);
+    private final MetadataRecord containerMetadata = new MetadataRecord(AppConstants.ESCIDOC);
 
-    private final MetadataRecord containerMetadata = new MetadataRecord(ESCIDOC);
     private final ContainerProperties containerProps = new ContainerProperties();
 
     private final ContextRef contextRef;
 
     private final ContentModelRef contentModelRef;
 
-    private final ResourceContainer resourceContainer;
+    private final TreeDataSource resourceContainer;
 
     public ContainerBuilder(final ContextRef contextRef, final ContentModelRef contentModelRef,
-        final ResourceContainer resourceContainer) {
+        final TreeDataSource resourceContainer) {
 
         Preconditions.checkNotNull(contextRef, "contextRef is null: %s", contextRef);
         Preconditions.checkNotNull(contentModelRef, "contentModelRef is null: %s", contentModelRef);
@@ -90,6 +89,11 @@ public class ContainerBuilder {
         addDefaultMetadata(createNewDocument(), containerName);
     }
 
+    private void addDefaultMetadata(final Document doc, final String containerName) {
+        containerMetadata.setName(AppConstants.ESCIDOC);
+        containerMetadata.setContent(buildContentForContainerMetadata(doc, containerName));
+    }
+
     private Document createNewDocument() throws ParserConfigurationException {
         return DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
     }
@@ -104,40 +108,11 @@ public class ContainerBuilder {
      * Creates an empty struct map
      */
     private void createStructMap() {
-        StructMap structMap = new StructMap();
+        final StructMap structMap = new StructMap();
         container.setStructMap(structMap);
     }
 
-    // TODO
-    public void setStruct(final String parentObjId) {
-        // try {
-        // Container cnt = resourceContainer.findContainerById(parentObjId);
-        // cnt.setStructMap(null);
-        // resourceContainer.update(cnt);
-        // }
-        // catch (EscidocClientException e) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
-        // Container parentContainer = null;
-        // final StructMap stMap = new StructMap();
-        // final MemberRef m = new ContainerMemberRef(parentObjId);
-        // stMap.add(m);
-        // container.setStructMap(stMap);
-    }
-
-        buildDefaultMetadata(doc, containerName);
-        final MetadataRecords containerMetadataList = new MetadataRecords();
-        containerMetadataList.add(containerMetadata);
-        container.setMetadataRecords(containerMetadataList);
-    }
-
-    private void buildDefaultMetadata(final Document doc, final String containerName) {
-        containerMetadata.setName(ESCIDOC);
-        containerMetadata.setContent(buildContentForContainerMetadata(doc, containerName));
-    }
-
-    private Element buildContentForContainerMetadata(final Document doc, String containerName) {
+    private Element buildContentForContainerMetadata(final Document doc, final String containerName) {
         final Element element = doc.createElementNS(AppConstants.ESCIDOC, "dc");
         final Element titleElmt = doc.createElementNS(AppConstants.ESCIDOC, "title");
         titleElmt.setPrefix("dc");
@@ -145,28 +120,4 @@ public class ContainerBuilder {
         element.appendChild(titleElmt);
         return element;
     }
-
-    @Override
-    public String toString() {
-        final StringBuilder builder = new StringBuilder();
-        builder.append("ContainerBuilder [");
-        if (container != null) {
-            builder.append("container=").append(container).append(", ");
-        }
-        if (itemMetadata != null) {
-            builder.append("itemMetadata=").append(itemMetadata).append(", ");
-        }
-        if (containerProps != null) {
-            builder.append("containerProps=").append(containerProps).append(", ");
-        }
-        if (contextRef != null) {
-            builder.append("contextRef=").append(contextRef).append(", ");
-        }
-        if (contentModelRef != null) {
-            builder.append("contentModelRef=").append(contentModelRef);
-        }
-        builder.append("]");
-        return builder.toString();
-    }
-
 }
