@@ -58,10 +58,10 @@ import org.escidoc.browser.ui.maincontent.SearchAdvancedView;
 import org.escidoc.browser.ui.maincontent.SimpleSearch;
 import org.escidoc.browser.ui.mainpage.Footer;
 import org.escidoc.browser.ui.mainpage.HeaderContainer;
-import org.escidoc.browser.ui.navigation.NavigationMenuBar;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.navigation.NavigationTreeView;
 import org.escidoc.browser.ui.navigation.RootNode;
+import org.escidoc.browser.ui.navigation.menubar.NavigationMenuBar;
 
 import java.net.URISyntaxException;
 import java.util.Map;

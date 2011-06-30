@@ -26,27 +26,24 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.ui.navigation;
+package org.escidoc.browser.ui.navigation.menubar;
 
-import org.escidoc.browser.model.ResourceContainer;
-import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.ui.MainSite;
-import org.escidoc.browser.ui.navigation.menubar.NavigationMenuBar;
+import com.google.common.base.Preconditions;
+import com.vaadin.ui.MenuBar.Command;
+import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.Window;
 
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Tree.ExpandListener;
+@SuppressWarnings("serial")
+final class DeleteCommand implements Command {
+    private final Window mainWindow;
 
-public interface NavigationTreeView extends Component {
+    DeleteCommand(final Window mainWindow) {
+        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
+        this.mainWindow = mainWindow;
+    }
 
-    void addClickListener(ItemClickListener clickListener);
-
-    void addExpandListener(ExpandListener clickListener);
-
-    ResourceModel getSelected();
-
-    void setDataSource(ResourceContainer container, MainSite mainSite);
-
-    void withNavigationMenuBar(NavigationMenuBar navigationMenuBar);
-
+    @Override
+    public void menuSelected(final MenuItem selectedItem) {
+        mainWindow.showNotification("Not Yet Implemented");
+    }
 }

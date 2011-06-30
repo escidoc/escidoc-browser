@@ -39,17 +39,20 @@ import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.internal.ContainerBuilder;
 import org.escidoc.browser.repository.internal.ContainerRepository;
 import org.escidoc.browser.repository.internal.ContentModelRepository;
+import org.escidoc.browser.ui.ViewConstants;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.client.exceptions.EscidocException;
+import de.escidoc.core.client.exceptions.InternalClientException;
+import de.escidoc.core.client.exceptions.TransportException;
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.reference.ContentModelRef;
 import de.escidoc.core.resources.common.reference.ContextRef;
@@ -61,25 +64,27 @@ import de.escidoc.core.resources.om.container.Container;
  */
 public class TreeCreateContainer {
 
+    private final FormLayout addContainerForm = new FormLayout();
+
     private final EscidocServiceLocation serviceLocation;
 
-    private final Window mainWindow;
+    final Window mainWindow;
 
     private final ResourceContainer resourceContainer;
 
-    private final String contextId;
+    final String contextId;
 
     private final Object target;
 
     private final ContainerRepository containerRepository;
 
-    private NativeSelect slcContentModl;
+    NativeSelect contentModelSelect;
 
     private Window subwindow;
 
-    private Button btnAdd;
+    private Button addButton;
 
-    private TextField txtContName;
+    TextField nameField;
 
     public TreeCreateContainer(final Object target, final String contextId,
         final EscidocServiceLocation serviceLocation, final Window mainWindow,
@@ -105,56 +110,52 @@ public class TreeCreateContainer {
     }
 
     public void addContainerForm() throws MalformedURLException, EscidocClientException {
-        final FormLayout frmAddCont = new FormLayout();
-        frmAddCont.setImmediate(true);
+        addContainerForm.setImmediate(true);
+        addNameField();
+        addContentModelSelect();
+        addButton();
+        createSubWindow();
+        openSubWindow();
+    }
 
-        txtContName = new TextField("Container name");
-        txtContName.setRequired(true);
-        txtContName.setRequiredError("Please enter a Container Name");
-        txtContName.addValidator(new StringLengthValidator("Container Name must be 3-25 characters", 3, 25, false));
-        txtContName.setImmediate(true);
+    private void openSubWindow() {
+        mainWindow.addWindow(subwindow);
+    }
 
-        slcContentModl = new NativeSelect("Please select Content Model");
-        slcContentModl.setRequired(true);
+    private void createSubWindow() {
+        subwindow = new Window(ViewConstants.CREATE_CONTAINER);
+        subwindow.setWidth("600px");
+        subwindow.setModal(true);
+        subwindow.addComponent(addContainerForm);
+    }
+
+    private void addButton() {
+        addButton = new Button(ViewConstants.ADD, new AddCreateContainerListener(this));
+        addContainerForm.addComponent(addButton);
+    }
+
+    private void addContentModelSelect() throws MalformedURLException, EscidocException, InternalClientException,
+        TransportException {
+        contentModelSelect = new NativeSelect(ViewConstants.PLEASE_SELECT_CONTENT_MODEL);
+        contentModelSelect.setRequired(true);
 
         final ContentModelRepository cMS = new ContentModelRepository(serviceLocation);
 
         for (final Resource resource : cMS.findPublicOrReleasedResources()) {
-            slcContentModl.addItem(resource.getObjid());
+            contentModelSelect.addItem(resource.getObjid());
         }
 
-        // apply-button
-        btnAdd = new Button("Add", this, "clickButtonaddContainer");
-
-        frmAddCont.addComponent(txtContName);
-        frmAddCont.addComponent(slcContentModl);
-        frmAddCont.addComponent(btnAdd);
-
-        subwindow = new Window("Create Container");
-        subwindow.setWidth("600px");
-        subwindow.setModal(true);
-        subwindow.addComponent(frmAddCont);
-        mainWindow.addWindow(subwindow);
+        addContainerForm.addComponent(contentModelSelect);
     }
 
-    public void clickButtonaddContainer(final ClickEvent event) {
-        if (txtContName.isValid() && slcContentModl.isValid()) {
-            final String containerName = txtContName.getValue().toString();
-            final String contentModelId = (String) slcContentModl.getValue();
-
-            // We really create the container here
-            try {
-                createNewContainer(containerName, contentModelId, contextId);
-            }
-            catch (final ParserConfigurationException e) {
-                mainWindow.showNotification(
-                    "Not able to create a new Container for you. Please contact the developers", 1);
-            }
-        }
-        else {
-            mainWindow.showNotification("Please fill in all the required elements", 1);
-        }
-
+    private void addNameField() {
+        nameField = new TextField(ViewConstants.CONTAINER_NAME);
+        nameField.setRequired(true);
+        nameField.setRequiredError(ViewConstants.PLEASE_ENTER_A_CONTAINER_NAME);
+        nameField.addValidator(new StringLengthValidator(ViewConstants.CONTAINER_NAME_MUST_BE_3_25_CHARACTERS, 3, 25,
+            false));
+        nameField.setImmediate(true);
+        addContainerForm.addComponent(nameField);
     }
 
     /**
@@ -166,15 +167,17 @@ public class TreeCreateContainer {
      * @throws ParserConfigurationException
      * 
      */
-    private void createNewContainer(final String containerName, final String contentModelId, final String contextId)
+    void createNewContainer(final String containerName, final String contentModelId, final String contextId)
         throws ParserConfigurationException {
 
         final ContainerBuilder cntBuild =
             new ContainerBuilder(new ContextRef(contextId), new ContentModelRef(contentModelId), resourceContainer);
         final Container newContainer = cntBuild.build(containerName);
-
         try {
-            final Container create = containerRepository.create(newContainer);
+            // final Container create = containerRepository.create(newContainer);
+
+            final Container create =
+                containerRepository.createWithParent(newContainer, ((ResourceModel) target).getId());
             resourceContainer.addChild((ResourceModel) target, new ContainerModel(create));
             subwindow.getParent().removeWindow(subwindow);
         }

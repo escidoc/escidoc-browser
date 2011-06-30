@@ -26,27 +26,26 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.ui.navigation;
+package org.escidoc.browser.ui.navigation.menubar;
 
-import org.escidoc.browser.model.ResourceContainer;
-import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.ui.MainSite;
-import org.escidoc.browser.ui.navigation.menubar.NavigationMenuBar;
 
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Tree.ExpandListener;
+import com.vaadin.ui.MenuBar.Command;
+import com.vaadin.ui.MenuBar.MenuItem;
 
-public interface NavigationTreeView extends Component {
+final class AddItemMenuBarCommand implements Command {
+    /**
+     * 
+     */
+    private final NavigationMenuBar navigationMenuBar;
 
-    void addClickListener(ItemClickListener clickListener);
+    /**
+     * @param navigationMenuBar
+     */
+    AddItemMenuBarCommand(NavigationMenuBar navigationMenuBar) {
+        this.navigationMenuBar = navigationMenuBar;
+    }
 
-    void addExpandListener(ExpandListener clickListener);
-
-    ResourceModel getSelected();
-
-    void setDataSource(ResourceContainer container, MainSite mainSite);
-
-    void withNavigationMenuBar(NavigationMenuBar navigationMenuBar);
-
+    public void menuSelected(final MenuItem selectedItem) {
+        this.navigationMenuBar.getWindow().showNotification("Action " + selectedItem.getText());
+    }
 }

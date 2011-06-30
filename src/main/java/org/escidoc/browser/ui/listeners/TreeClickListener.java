@@ -42,7 +42,7 @@ import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.ContainerView;
 import org.escidoc.browser.ui.maincontent.ContextView;
 import org.escidoc.browser.ui.maincontent.ItemView;
-import org.escidoc.browser.ui.navigation.NavigationMenuBar;
+import org.escidoc.browser.ui.navigation.menubar.NavigationMenuBar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

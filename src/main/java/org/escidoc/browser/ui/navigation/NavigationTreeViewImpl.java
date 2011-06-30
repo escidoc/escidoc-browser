@@ -47,6 +47,7 @@ import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.TreeClickListener;
 import org.escidoc.browser.ui.listeners.TreeCreateContainer;
 import org.escidoc.browser.ui.listeners.TreeCreateItem;
+import org.escidoc.browser.ui.navigation.menubar.NavigationMenuBar;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.event.Action;
@@ -161,31 +162,37 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
             }
         }
         if (action == ACTION_ADD_CONTAINER) {
-            final TreeCreateContainer tcc =
-                new TreeCreateContainer(target, contextId, serviceLocation, getWindow(), repositories.container(),
-                    container);
-            try {
-                tcc.createContainer();
-                resourceProxy.setStruct(contModel.getId());
-            }
-            catch (final MalformedURLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            catch (final EscidocClientException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            showCreateContainerView(target, contextId);
         }
         else if (action == ACTION_ADD_ITEM) {
-            new TreeCreateItem(target, contextId, serviceLocation, getWindow(), repositories.item(), container)
-                .createItem();
+            showCreateItemView(target, contextId);
         }
         else if (action == ACTION_DELETE) {
             getWindow().showNotification("Not implemented yet");
         }
         else if (action == ACTION_ADD_COMPONENT) {
             getWindow().showNotification("Not implemented yet");
+        }
+    }
+
+    private void showCreateItemView(final Object target, final String contextId) {
+        new TreeCreateItem(target, contextId, serviceLocation, getWindow(), repositories.item(), container)
+            .createItem();
+    }
+
+    private void showCreateContainerView(final Object target, final String contextId) {
+        final TreeCreateContainer tcc =
+            new TreeCreateContainer(target, contextId, serviceLocation, getWindow(), repositories.container(),
+                container);
+        try {
+            tcc.createContainer();
+            // resourceProxy.setStruct(contModel.getId());
+        }
+        catch (final MalformedURLException e) {
+            e.printStackTrace();
+        }
+        catch (final EscidocClientException e) {
+            e.printStackTrace();
         }
     }
 

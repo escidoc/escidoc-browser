@@ -74,4 +74,14 @@ public class ViewConstants {
     public static final String DELETE = "Delete";
 
     public static final String ADD = "Add";
+
+    public static final String CREATE_CONTAINER = "Create Container";
+
+    public static final String CONTAINER_NAME = "Container name";
+
+    public static final String PLEASE_ENTER_A_CONTAINER_NAME = "Please enter a Container Name";
+
+    public static final String PLEASE_SELECT_CONTENT_MODEL = "Please select Content Model";
+
+    public static final String CONTAINER_NAME_MUST_BE_3_25_CHARACTERS = "Container Name must be 3-25 characters";
 }

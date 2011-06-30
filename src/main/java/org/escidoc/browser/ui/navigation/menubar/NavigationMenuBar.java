@@ -26,14 +26,9 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.ui.navigation;
+package org.escidoc.browser.ui.navigation.menubar;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.Command;
-import com.vaadin.ui.MenuBar.MenuItem;
+import java.net.URISyntaxException;
 
 import org.escidoc.browser.ActionIdConstants;
 import org.escidoc.browser.model.CurrentUser;
@@ -42,25 +37,19 @@ import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.ViewConstants;
 
-import java.net.URISyntaxException;
+import com.google.common.base.Preconditions;
+import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.Command;
+import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
 public class NavigationMenuBar extends CustomComponent {
 
-    private final Command addItemCommand = new Command() {
-        public void menuSelected(final MenuItem selectedItem) {
-            getWindow().showNotification("Action " + selectedItem.getText());
-        }
-    };
-
-    private final class DeleteCommand implements Command {
-        @Override
-        public void menuSelected(final MenuItem selectedItem) {
-            getWindow().showNotification("Not Yet Implemented");
-        }
-    }
+    private final Command addItemCommand = new AddItemMenuBarCommand(this);
 
     private final MenuBar menuBar = new MenuBar();
 
@@ -78,7 +67,7 @@ public class NavigationMenuBar extends CustomComponent {
 
     private MenuItem deleteMenuItem;
 
-    public NavigationMenuBar(CurrentUser currentUser, Repositories repositories) {
+    public NavigationMenuBar(final CurrentUser currentUser, final Repositories repositories) {
         Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         this.currentUser = currentUser;
@@ -110,6 +99,7 @@ public class NavigationMenuBar extends CustomComponent {
         menuBar.setSizeFull();
         addCreateMenu();
         addDeleteMenu();
+        update(null);
     }
 
     private void addCreateMenu() {
@@ -120,21 +110,37 @@ public class NavigationMenuBar extends CustomComponent {
     }
 
     private void addDeleteMenu() {
-        deleteMenuItem = menuBar.addItem(ViewConstants.DELETE, new DeleteCommand());
+        final Window window = getWindow();
+        if (window == null) {
+            return;
+        }
+        deleteMenuItem = menuBar.addItem(ViewConstants.DELETE, new DeleteCommand(window));
         deleteMenuItem.setEnabled(false);
     }
 
     public void update(final ResourceModel resourceModel) {
-        switch (resourceModel.getType()) {
-            case CONTEXT:
-                showAddContainerAndItem();
-                break;
-            case CONTAINER:
-                showAddContainerAndItem();
-                break;
-            case ITEM:
-                menuBar.setEnabled(false);
+        if (resourceModel == null) {
+            showAddContext();
         }
+        else {
+            switch (resourceModel.getType()) {
+                case CONTEXT:
+                    showAddContainerAndItem();
+                    break;
+                case CONTAINER:
+                    showAddContainerAndItem();
+                    break;
+                case ITEM:
+                    menuBar.setEnabled(false);
+            }
+        }
+    }
+
+    private void showAddContext() {
+        menuBar.setEnabled(true);
+        contextMenuItem.setVisible(true);
+        containerMenuItem.setVisible(false);
+        itemMenuItem.setVisible(false);
     }
 
     private void showAddContainerAndItem() {

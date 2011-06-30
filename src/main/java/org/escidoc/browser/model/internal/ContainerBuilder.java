@@ -31,7 +31,7 @@ package org.escidoc.browser.model.internal;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.escidoc.browser.model.ResourceContainer;
+import org.escidoc.browser.AppConstants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -47,16 +47,11 @@ import de.escidoc.core.resources.om.container.ContainerProperties;
 
 public class ContainerBuilder {
 
-    private static final String ESCIDOC = "escidoc";
-
-    private static final String DC_NAMESPACE = "http://purl.org/dc/elements/1.1/";
-
     private final Container container = new Container();
 
-    private final MetadataRecords metadataList = new MetadataRecords();
+    private final MetadataRecord itemMetadata = new MetadataRecord(AppConstants.ESCIDOC);
 
     private final MetadataRecord containerMetadata = new MetadataRecord(ESCIDOC);
-
     private final ContainerProperties containerProps = new ContainerProperties();
 
     private final ContextRef contextRef;
@@ -75,24 +70,23 @@ public class ContainerBuilder {
         this.resourceContainer = resourceContainer;
     }
 
-    public Container build(String containerName) {
+    public Container build(final String containerName) {
         return tryBuildNewContainer(containerName);
     }
 
-    private Container tryBuildNewContainer(String containerName) {
+    private Container tryBuildNewContainer(final String containerName) {
         try {
             setContainerName(containerName);
             setContainerProperties();
             createStructMap();
             return container;
         }
-        catch (ParserConfigurationException e) {
+        catch (final ParserConfigurationException e) {
             throw new RuntimeException(e);
         }
-
     }
 
-    private void setContainerName(String containerName) throws ParserConfigurationException {
+    private void setContainerName(final String containerName) throws ParserConfigurationException {
         addDefaultMetadata(createNewDocument(), containerName);
     }
 
@@ -132,25 +126,47 @@ public class ContainerBuilder {
         // container.setStructMap(stMap);
     }
 
-    private void addDefaultMetadata(final Document doc, String containerName) {
         buildDefaultMetadata(doc, containerName);
         final MetadataRecords containerMetadataList = new MetadataRecords();
         containerMetadataList.add(containerMetadata);
         container.setMetadataRecords(containerMetadataList);
     }
 
-    private void buildDefaultMetadata(final Document doc, String containerName) {
+    private void buildDefaultMetadata(final Document doc, final String containerName) {
         containerMetadata.setName(ESCIDOC);
         containerMetadata.setContent(buildContentForContainerMetadata(doc, containerName));
     }
 
     private Element buildContentForContainerMetadata(final Document doc, String containerName) {
-        Element element = doc.createElementNS(DC_NAMESPACE, "dc");
-        final Element titleElmt = doc.createElementNS(DC_NAMESPACE, "title");
+        final Element element = doc.createElementNS(AppConstants.ESCIDOC, "dc");
+        final Element titleElmt = doc.createElementNS(AppConstants.ESCIDOC, "title");
         titleElmt.setPrefix("dc");
         titleElmt.setTextContent(containerName);
         element.appendChild(titleElmt);
         return element;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("ContainerBuilder [");
+        if (container != null) {
+            builder.append("container=").append(container).append(", ");
+        }
+        if (itemMetadata != null) {
+            builder.append("itemMetadata=").append(itemMetadata).append(", ");
+        }
+        if (containerProps != null) {
+            builder.append("containerProps=").append(containerProps).append(", ");
+        }
+        if (contextRef != null) {
+            builder.append("contextRef=").append(contextRef).append(", ");
+        }
+        if (contentModelRef != null) {
+            builder.append("contentModelRef=").append(contentModelRef);
+        }
+        builder.append("]");
+        return builder.toString();
     }
 
 }

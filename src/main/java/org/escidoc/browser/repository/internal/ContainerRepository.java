@@ -53,6 +53,8 @@ import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.client.exceptions.TransportException;
 import de.escidoc.core.client.interfaces.ContainerHandlerClientInterface;
 import de.escidoc.core.resources.common.Relations;
+import de.escidoc.core.resources.common.structmap.ContainerMemberRef;
+import de.escidoc.core.resources.common.structmap.StructMap;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.sb.search.SearchResultRecord;
@@ -154,4 +156,11 @@ public class ContainerRepository implements Repository {
         return client.update(resource);
     }
 
+    private void updateParentStructMap(final Container child, final Container parent) throws EscidocException,
+        InternalClientException, TransportException {
+        parent.getStructMap().add(new ContainerMemberRef(child.getObjid()));
+        final StructMap structMap = parent.getStructMap();
+        final Container updateParent = client.update(parent);
+        updateParent.getObjid();
+    }
 }
