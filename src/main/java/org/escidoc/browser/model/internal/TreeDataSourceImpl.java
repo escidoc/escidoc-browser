@@ -159,6 +159,7 @@ public class TreeDataSourceImpl implements TreeDataSource {
     }
 
     private static boolean isAlreadyAdded(final Item addedItem) {
+    private static boolean isAlreadyAdded(final Item addedItem) {
         return addedItem == null;
     }
 
