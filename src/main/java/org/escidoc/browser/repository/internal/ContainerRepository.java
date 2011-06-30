@@ -53,8 +53,7 @@ import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.client.exceptions.TransportException;
 import de.escidoc.core.client.interfaces.ContainerHandlerClientInterface;
 import de.escidoc.core.resources.common.Relations;
-import de.escidoc.core.resources.common.structmap.ContainerMemberRef;
-import de.escidoc.core.resources.common.structmap.StructMap;
+import de.escidoc.core.resources.common.TaskParam;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.sb.search.SearchResultRecord;
@@ -155,12 +154,22 @@ public class ContainerRepository implements Repository {
     public Container update(Container resource) throws EscidocClientException {
         return client.update(resource);
     }
+    
+    public Container createWithParent(final Container newContainer, final String parentId)
+        throws EscidocClientException {
+        Preconditions.checkNotNull(newContainer, "newContainer is null: %s", newContainer);
+        Preconditions.checkNotNull(parentId, "parentId is null: %s", parentId);
 
-    private void updateParentStructMap(final Container child, final Container parent) throws EscidocException,
+        final Container child = create(newContainer);
+        addChild(client.retrieve(parentId), child);
+        return child;
+    }
+
+    private void addChild(final Container parent, final Container child) throws EscidocException,
         InternalClientException, TransportException {
-        parent.getStructMap().add(new ContainerMemberRef(child.getObjid()));
-        final StructMap structMap = parent.getStructMap();
-        final Container updateParent = client.update(parent);
-        updateParent.getObjid();
+        final TaskParam taskParam = new TaskParam();
+        taskParam.setLastModificationDate(parent.getLastModificationDate());
+        taskParam.addResourceRef(child.getObjid());
+        client.addMembers(parent, taskParam);
     }
 }

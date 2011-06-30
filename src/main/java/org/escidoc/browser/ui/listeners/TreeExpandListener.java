@@ -64,7 +64,6 @@ public final class TreeExpandListener implements Tree.ExpandListener {
         contextRepository = repositories.context();
         containerRepository = repositories.container();
         this.resourceContainer = resourceContainer;
-
     }
 
     @Override

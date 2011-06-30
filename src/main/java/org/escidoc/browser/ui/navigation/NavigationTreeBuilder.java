@@ -69,6 +69,7 @@ public class NavigationTreeBuilder {
 
         final NavigationTreeView navigationTreeView = createNavigationTreeView(mainSite, mainWindow, resourceContainer);
         navigationTreeView.addExpandListener(new TreeExpandListener(repositories, resourceContainer));
+
         return navigationTreeView;
     }
 
@@ -99,6 +100,7 @@ public class NavigationTreeBuilder {
         navigationTreeView.setDataSource(resourceContainer, mainSite);
         navigationTreeView.addClickListener(new TreeClickListener(serviceLocation, repositories, mainWindow, mainSite,
             currentUser));
+
         return navigationTreeView;
     }
 }
