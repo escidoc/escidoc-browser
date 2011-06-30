@@ -120,4 +120,27 @@ public class ContainerBuilder {
         element.appendChild(titleElmt);
         return element;
     }
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("ContainerBuilder [");
+        if (container != null) {
+            builder.append("container=").append(container).append(", ");
+        }
+        if (itemMetadata != null) {
+            builder.append("itemMetadata=").append(itemMetadata).append(", ");
+        }
+        if (containerProps != null) {
+            builder.append("containerProps=").append(containerProps).append(", ");
+        }
+        if (contextRef != null) {
+            builder.append("contextRef=").append(contextRef).append(", ");
+        }
+        if (contentModelRef != null) {
+            builder.append("contentModelRef=").append(contentModelRef);
+        }
+        builder.append("]");
+        return builder.toString();
+    }
+
 }
