@@ -35,7 +35,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemModel;
-import org.escidoc.browser.model.ResourceContainer;
+import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.internal.ItemBuilder;
 import org.escidoc.browser.repository.internal.ContentModelRepository;
@@ -68,7 +68,7 @@ public class TreeCreateItem {
 
     public ItemRepository itemRepository;
 
-    public ResourceContainer resourceContainer;
+    public TreeDataSource treeDataSource;
 
     private TextField txtItemName;
 
@@ -81,13 +81,13 @@ public class TreeCreateItem {
     private final Window mainWindow;
 
     public TreeCreateItem(final Object target, final String contextId, final EscidocServiceLocation serviceLocation,
-        final Window window, final ItemRepository containerRepo, final ResourceContainer container) {
+        final Window window, final ItemRepository containerRepo, final TreeDataSource container) {
         this.target = target;
         this.contextId = contextId;
         this.serviceLocation = serviceLocation;
         mainWindow = window;
         itemRepository = containerRepo;
-        resourceContainer = container;
+        treeDataSource = container;
     }
 
     // TODO heavy refactoring here
@@ -186,7 +186,7 @@ public class TreeCreateItem {
 
         try {
             final Item create = itemRepository.create(newItem);
-            resourceContainer.addChild((ResourceModel) target, new ItemModel(create));
+            treeDataSource.addChild((ResourceModel) target, new ItemModel(create));
             subwindow.getParent().removeWindow(subwindow);
         }
         catch (final EscidocClientException e) {

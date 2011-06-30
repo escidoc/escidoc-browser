@@ -38,10 +38,17 @@ public abstract class AbstractResourceModel implements ResourceModel {
 
     private final String name;
 
+    private final Resource resource;
+
     public AbstractResourceModel(final Resource resource) {
         Preconditions.checkNotNull(resource, "resource is null: %s", resource);
+        this.resource = resource;
         id = resource.getObjid();
         name = resource.getXLinkTitle();
+    }
+
+    protected Resource getResource() {
+        return resource;
     }
 
     @Override

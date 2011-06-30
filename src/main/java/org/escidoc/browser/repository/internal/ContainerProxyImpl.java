@@ -33,6 +33,7 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.ResourceType;
 import org.w3c.dom.Document;
@@ -51,8 +52,6 @@ import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.om.container.ContainerProperties;
 
 public class ContainerProxyImpl implements ContainerProxy {
-    private static final String DC_NAMESPACE = "http://purl.org/dc/elements/1.1/";
-
     private final Container containerFromCore;
 
     public ContainerProxyImpl(final Container resource) {
@@ -81,22 +80,22 @@ public class ContainerProxyImpl implements ContainerProxy {
     }
 
     @Override
-    public void setName(String name) {
-        MetadataRecords mdRecs = getMedataRecords();
+    public void setName(final String name) {
+        final MetadataRecords mdRecs = getMedataRecords();
         Document doc;
         try {
             doc = createNewDocument();
-            for (MetadataRecord metadataRecord : mdRecs) {
+            for (final MetadataRecord metadataRecord : mdRecs) {
                 if (metadataRecord.getName() == "escidoc") {
-                    Element element = doc.createElementNS(DC_NAMESPACE, "dc");
-                    final Element titleElmt = doc.createElementNS(DC_NAMESPACE, "title");
+                    final Element element = doc.createElementNS(AppConstants.DC_NAMESPACE, "dc");
+                    final Element titleElmt = doc.createElementNS(AppConstants.DC_NAMESPACE, "title");
                     titleElmt.setPrefix("dc");
                     titleElmt.setTextContent(name);
                     element.replaceChild(titleElmt, element);
                 }
             }
         }
-        catch (ParserConfigurationException e) {
+        catch (final ParserConfigurationException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
@@ -138,12 +137,12 @@ public class ContainerProxyImpl implements ContainerProxy {
     }
 
     @Override
-    public void setStatus(String status) {
+    public void setStatus(final String status) {
         PublicStatus pubStatus = null;
         if (status == "pending") {
             pubStatus = PublicStatus.PENDING;
         }
-        ContainerProperties prop = new ContainerProperties();
+        final ContainerProperties prop = new ContainerProperties();
         prop.setPublicStatus(pubStatus);
         containerFromCore.setProperties(prop);
     }
@@ -232,8 +231,8 @@ public class ContainerProxyImpl implements ContainerProxy {
 
     @Override
     public boolean getVersionHistory() {
-        String version = containerFromCore.getProperties().getVersion().getNumber();
-        int versionNumber = Integer.parseInt(version);
+        final String version = containerFromCore.getProperties().getVersion().getNumber();
+        final int versionNumber = Integer.parseInt(version);
         if (versionNumber > 1) {
             return true;
         }

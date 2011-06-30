@@ -29,6 +29,8 @@
 package org.escidoc.browser.model;
 
 import de.escidoc.core.resources.Resource;
+import de.escidoc.core.resources.common.structmap.StructMap;
+import de.escidoc.core.resources.om.container.Container;
 
 public class ContainerModel extends AbstractResourceModel {
 
@@ -48,5 +50,29 @@ public class ContainerModel extends AbstractResourceModel {
 
     public static boolean isContainer(final ResourceModel resource) {
         return resource.getType().equals(ResourceType.CONTAINER);
+    }
+
+    public boolean hasMember() {
+        return !(empty(getStructMap()) || (emptyContainerAndItem(getStructMap())));
+    }
+
+    private StructMap getStructMap() {
+        return ((Container) super.getResource()).getStructMap();
+    }
+
+    private static boolean emptyContainerAndItem(final StructMap structMap) {
+        return emptyContainerMember(structMap) && emptyItemMember(structMap);
+    }
+
+    private static boolean emptyItemMember(final StructMap structMap) {
+        return structMap.getItems() == null || structMap.getItems().size() == 0;
+    }
+
+    private static boolean emptyContainerMember(final StructMap structMap) {
+        return structMap.getContainers() == null || structMap.getContainers().size() == 0;
+    }
+
+    private static boolean empty(final StructMap structMap) {
+        return structMap == null || structMap.size() == 0;
     }
 }

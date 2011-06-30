@@ -32,7 +32,7 @@ import java.util.List;
 
 import com.vaadin.data.Container;
 
-public interface ResourceContainer {
+public interface TreeDataSource {
 
     int size();
 

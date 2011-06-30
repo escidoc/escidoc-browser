@@ -28,7 +28,7 @@
  */
 package org.escidoc.browser.ui.navigation;
 
-import org.escidoc.browser.model.ResourceContainer;
+import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.ui.MainSite;
 import org.escidoc.browser.ui.navigation.menubar.NavigationMenuBar;
@@ -45,7 +45,7 @@ public interface NavigationTreeView extends Component {
 
     ResourceModel getSelected();
 
-    void setDataSource(ResourceContainer container, MainSite mainSite);
+    void setDataSource(TreeDataSource container, MainSite mainSite);
 
     void withNavigationMenuBar(NavigationMenuBar navigationMenuBar);
 

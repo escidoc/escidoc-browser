@@ -34,7 +34,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.ResourceContainer;
+import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.internal.ContainerBuilder;
 import org.escidoc.browser.repository.internal.ContainerRepository;
@@ -70,7 +70,7 @@ public class TreeCreateContainer {
 
     final Window mainWindow;
 
-    private final ResourceContainer resourceContainer;
+    private final TreeDataSource treeDataSource;
 
     final String contextId;
 
@@ -88,7 +88,7 @@ public class TreeCreateContainer {
 
     public TreeCreateContainer(final Object target, final String contextId,
         final EscidocServiceLocation serviceLocation, final Window mainWindow,
-        final ContainerRepository containerRepository, final ResourceContainer resourceContainer) {
+        final ContainerRepository containerRepository, final TreeDataSource treeDataSource) {
 
         Preconditions.checkNotNull(target, "target is null: %s", target);
         Preconditions.checkNotNull(contextId, "contextId is null: %s", contextId);
@@ -102,7 +102,7 @@ public class TreeCreateContainer {
         this.serviceLocation = serviceLocation;
         this.mainWindow = mainWindow;
         this.containerRepository = containerRepository;
-        this.resourceContainer = resourceContainer;
+        this.treeDataSource = treeDataSource;
     }
 
     public void createContainer() throws MalformedURLException, EscidocClientException {
@@ -177,7 +177,7 @@ public class TreeCreateContainer {
             // final Container create = containerRepository.create(newContainer);
             final Container create =
                 containerRepository.createWithParent(newContainer, ((ResourceModel) target).getId());
-            resourceContainer.addChild((ResourceModel) target, new ContainerModel(create));
+            treeDataSource.addChild((ResourceModel) target, new ContainerModel(create));
             subwindow.getParent().removeWindow(subwindow);
         }
         catch (final EscidocClientException e) {

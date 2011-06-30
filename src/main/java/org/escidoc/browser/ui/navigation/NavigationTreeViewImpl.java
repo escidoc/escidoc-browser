@@ -38,10 +38,9 @@ import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.PropertyId;
-import org.escidoc.browser.model.ResourceContainer;
+import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.repository.internal.ContainerProxyImpl;
 import org.escidoc.browser.ui.MainSite;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.TreeClickListener;
@@ -88,9 +87,7 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
 
     private final Repositories repositories;
 
-    private ResourceContainer container;
-
-    private ContainerProxyImpl resourceProxy;
+    private TreeDataSource container;
 
     private ContainerModel contModel;
 
@@ -127,7 +124,7 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
     }
 
     @Override
-    public void setDataSource(final ResourceContainer container, final MainSite mainSite) {
+    public void setDataSource(final TreeDataSource container, final MainSite mainSite) {
         this.container = container;
         tree.setContainerDataSource(container.getContainer());
         tree.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);

@@ -33,7 +33,7 @@ import java.util.List;
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.ItemModel;
-import org.escidoc.browser.model.ResourceContainer;
+import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.Repository;
@@ -55,15 +55,15 @@ public final class TreeExpandListener implements Tree.ExpandListener {
 
     private final Repository containerRepository;
 
-    private final ResourceContainer resourceContainer;
+    private final TreeDataSource treeDataSource;
 
-    public TreeExpandListener(final Repositories repositories, final ResourceContainer resourceContainer) {
+    public TreeExpandListener(final Repositories repositories, final TreeDataSource treeDataSource) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
-        Preconditions.checkNotNull(resourceContainer, "resourceContainer is null: %s", resourceContainer);
+        Preconditions.checkNotNull(treeDataSource, "resourceContainer is null: %s", treeDataSource);
 
         contextRepository = repositories.context();
         containerRepository = repositories.container();
-        this.resourceContainer = resourceContainer;
+        this.treeDataSource = treeDataSource;
     }
 
     @Override
@@ -88,7 +88,7 @@ public final class TreeExpandListener implements Tree.ExpandListener {
     private void addContainerChildren(final ResourceModel resource) {
         try {
             final List<ResourceModel> children = containerRepository.findTopLevelMembersById(resource.getId());
-            resourceContainer.addChildren(resource, children);
+            treeDataSource.addChildren(resource, children);
         }
         catch (final EscidocClientException e) {
             showErrorMessageToUser(resource, e);
@@ -97,7 +97,7 @@ public final class TreeExpandListener implements Tree.ExpandListener {
 
     private void addContextChildren(final ResourceModel resource) {
         try {
-            resourceContainer.addChildren(resource, contextRepository.findTopLevelMembersById(resource.getId()));
+            treeDataSource.addChildren(resource, contextRepository.findTopLevelMembersById(resource.getId()));
         }
         catch (final EscidocClientException e) {
             showErrorMessageToUser(resource, e);

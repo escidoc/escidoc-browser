@@ -31,11 +31,12 @@ package org.escidoc.browser.model.internal;
 import java.util.Collection;
 import java.util.List;
 
+import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.PropertyId;
-import org.escidoc.browser.model.ResourceContainer;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.model.TreeDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,13 +47,13 @@ import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.terminal.Resource;
 import com.vaadin.terminal.ThemeResource;
 
-public class ResourceContainerImpl implements ResourceContainer {
+public class TreeDataSourceImpl implements TreeDataSource {
 
-    private final HierarchicalContainer container = new HierarchicalContainer();
+    private final HierarchicalContainer dataSource = new HierarchicalContainer();
 
     private final Collection<? extends ResourceModel> topLevelResources;
 
-    public ResourceContainerImpl(final Collection<? extends ResourceModel> topLevelResources) {
+    public TreeDataSourceImpl(final Collection<? extends ResourceModel> topLevelResources) {
         Preconditions.checkNotNull(topLevelResources, "topLevelResources is null: %s", topLevelResources);
         this.topLevelResources = topLevelResources;
     }
@@ -65,13 +66,13 @@ public class ResourceContainerImpl implements ResourceContainer {
     }
 
     private void addProperties() {
-        container.addContainerProperty(PropertyId.OBJECT_ID, String.class, "NO ID");
-        container.addContainerProperty(PropertyId.NAME, String.class, "NO NAME");
-        container.addContainerProperty(PropertyId.ICON, Resource.class, null);
+        dataSource.addContainerProperty(PropertyId.OBJECT_ID, String.class, "NO ID");
+        dataSource.addContainerProperty(PropertyId.NAME, String.class, "NO NAME");
+        dataSource.addContainerProperty(PropertyId.ICON, Resource.class, null);
     }
 
     private void sortByNameAscending() {
-        container.sort(new Object[] { PropertyId.NAME }, new boolean[] { true });
+        dataSource.sort(new Object[] { PropertyId.NAME }, new boolean[] { true });
     }
 
     private void addTopLevel() {
@@ -83,7 +84,7 @@ public class ResourceContainerImpl implements ResourceContainer {
             bind(addedItem, topLevel);
 
             if (topLevel.getType() == ResourceType.CONTEXT && isChildless((ContextModel) topLevel)) {
-                container.setChildrenAllowed(topLevel, false);
+                dataSource.setChildrenAllowed(topLevel, false);
             }
         }
     }
@@ -94,7 +95,7 @@ public class ResourceContainerImpl implements ResourceContainer {
 
     private Item add(final ResourceModel resource) {
         Preconditions.checkNotNull(resource, "resource is null: %s", resource);
-        return container.addItem(resource);
+        return dataSource.addItem(resource);
     }
 
     private void bind(final Item item, final ResourceModel resource) {
@@ -110,14 +111,14 @@ public class ResourceContainerImpl implements ResourceContainer {
 
     @Override
     public int size() {
-        Preconditions.checkNotNull(container, "container is null: %s", container);
-        return container.size();
+        Preconditions.checkNotNull(dataSource, "container is null: %s", dataSource);
+        return dataSource.size();
     }
 
     @Override
     public Container getContainer() {
-        Preconditions.checkNotNull(container, "container is null: %s", container);
-        return container;
+        Preconditions.checkNotNull(dataSource, "container is null: %s", dataSource);
+        return dataSource;
     }
 
     @Override
@@ -128,10 +129,9 @@ public class ResourceContainerImpl implements ResourceContainer {
         for (final ResourceModel child : children) {
             addChild(parent, child);
         }
-
     }
 
-    private static final Logger LOG = LoggerFactory.getLogger(ResourceContainerImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TreeDataSourceImpl.class);
 
     public void addChild(final ResourceModel parent, final ResourceModel child) {
         final Item addedItem = add(child);
@@ -141,19 +141,34 @@ public class ResourceContainerImpl implements ResourceContainer {
         }
         bind(addedItem, child);
         assignParent(parent, child);
-        container.setChildrenAllowed(child, isNotItem(child));
+
+        if (isContainer(child)) {
+            dataSource.setChildrenAllowed(child, hasMember(child));
+        }
+        else {
+            dataSource.setChildrenAllowed(child, isNotItem(child));
+        }
     }
 
-    private boolean isAlreadyAdded(final Item addedItem) {
+    private boolean hasMember(final ResourceModel child) {
+        final ContainerModel containerModel = (ContainerModel) child;
+        return containerModel.hasMember();
+    }
+
+    private static boolean isContainer(final ResourceModel child) {
+        return child.getType().equals(ResourceType.CONTAINER);
+    }
+
+    private static boolean isAlreadyAdded(final Item addedItem) {
         return addedItem == null;
     }
 
-    private boolean isNotItem(final ResourceModel child) {
+    private static boolean isNotItem(final ResourceModel child) {
         return !child.getType().equals(ResourceType.ITEM);
     }
 
     private void assignParent(final ResourceModel parent, final ResourceModel child) {
-        final boolean isSuccesful = container.setParent(child, parent);
+        final boolean isSuccesful = dataSource.setParent(child, parent);
         Preconditions.checkArgument(isSuccesful, "Setting parent of " + child + " to " + parent + " is not succesful.");
     }
 }
