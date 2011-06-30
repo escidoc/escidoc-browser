@@ -28,6 +28,7 @@
  */
 package org.escidoc.browser.ui.navigation;
 
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 
 import org.escidoc.browser.ActionIdConstants;
@@ -163,8 +164,18 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
             final TreeCreateContainer tcc =
                 new TreeCreateContainer(target, contextId, serviceLocation, getWindow(), repositories.container(),
                     container);
-            tcc.createContainer();
-            resourceProxy.setStruct(contModel.getId());
+            try {
+                tcc.createContainer();
+                resourceProxy.setStruct(contModel.getId());
+            }
+            catch (final MalformedURLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            catch (final EscidocClientException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
         else if (action == ACTION_ADD_ITEM) {
             new TreeCreateItem(target, contextId, serviceLocation, getWindow(), repositories.item(), container)

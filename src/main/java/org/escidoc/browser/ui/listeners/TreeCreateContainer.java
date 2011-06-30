@@ -29,18 +29,18 @@
 package org.escidoc.browser.ui.listeners;
 
 import java.net.MalformedURLException;
-import java.util.Collection;
 
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.escidoc.browser.model.ContainerModel;
-import org.escidoc.browser.model.ContentModelService;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceContainer;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.internal.ContainerBuilder;
 import org.escidoc.browser.repository.internal.ContainerRepository;
+import org.escidoc.browser.repository.internal.ContentModelRepository;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -50,9 +50,6 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
-import de.escidoc.core.client.exceptions.EscidocException;
-import de.escidoc.core.client.exceptions.InternalClientException;
-import de.escidoc.core.client.exceptions.TransportException;
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.reference.ContentModelRef;
 import de.escidoc.core.resources.common.reference.ContextRef;
@@ -68,73 +65,50 @@ public class TreeCreateContainer {
 
     private final Window mainWindow;
 
-    private TextField txtContName;
+    private final ResourceContainer resourceContainer;
 
-    private Button btnAdd;
+    private final String contextId;
 
     private final Object target;
 
-    private final ContainerRepository containerRepo;
+    private final ContainerRepository containerRepository;
 
     private NativeSelect slcContentModl;
 
     private Window subwindow;
 
-    private final ResourceContainer resourceContainer;
+    private Button btnAdd;
 
-    private final String contextId;
+    private TextField txtContName;
 
-    /**
-     * @param target
-     * @param contextId
-     * @param serviceLocation
-     * @param window
-     * @param tree
-     * @param containerRepo
-     * @param resourceContainer
-     */
-    public TreeCreateContainer(Object target, String contextId, EscidocServiceLocation serviceLocation, Window window,
-        ContainerRepository containerRepo, ResourceContainer resourceContainer) {
+    public TreeCreateContainer(final Object target, final String contextId,
+        final EscidocServiceLocation serviceLocation, final Window mainWindow,
+        final ContainerRepository containerRepository, final ResourceContainer resourceContainer) {
+
+        Preconditions.checkNotNull(target, "target is null: %s", target);
+        Preconditions.checkNotNull(contextId, "contextId is null: %s", contextId);
+        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
+        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
+        Preconditions.checkNotNull(containerRepository, "containerRepo is null: %s", containerRepository);
+        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
 
         this.target = target;
-        this.serviceLocation = serviceLocation;
-        this.mainWindow = window;
-        this.containerRepo = containerRepo;
-        this.resourceContainer = resourceContainer;
         this.contextId = contextId;
+        this.serviceLocation = serviceLocation;
+        this.mainWindow = mainWindow;
+        this.containerRepository = containerRepository;
+        this.resourceContainer = resourceContainer;
     }
 
-    // TODO heavy refactoring here
-    public void createContainer() {
-        try {
-            addContainerForm();
-        }
-        catch (EscidocException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        catch (MalformedURLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        catch (InternalClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        catch (TransportException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+    public void createContainer() throws MalformedURLException, EscidocClientException {
+        addContainerForm();
     }
 
-    public void addContainerForm() throws EscidocException, MalformedURLException, InternalClientException,
-        TransportException {
-        FormLayout frmAddCont = new FormLayout();
+    public void addContainerForm() throws MalformedURLException, EscidocClientException {
+        final FormLayout frmAddCont = new FormLayout();
         frmAddCont.setImmediate(true);
 
-        // textfield
         txtContName = new TextField("Container name");
-
         txtContName.setRequired(true);
         txtContName.setRequiredError("Please enter a Container Name");
         txtContName.addValidator(new StringLengthValidator("Container Name must be 3-25 characters", 3, 25, false));
@@ -142,10 +116,10 @@ public class TreeCreateContainer {
 
         slcContentModl = new NativeSelect("Please select Content Model");
         slcContentModl.setRequired(true);
-        ContentModelService cMS = new ContentModelService(serviceLocation);
 
-        Collection<? extends Resource> contentModels = cMS.filterUsingInput("");
-        for (Resource resource : contentModels) {
+        final ContentModelRepository cMS = new ContentModelRepository(serviceLocation);
+
+        for (final Resource resource : cMS.findPublicOrReleasedResources()) {
             slcContentModl.addItem(resource.getObjid());
         }
 
@@ -163,16 +137,16 @@ public class TreeCreateContainer {
         mainWindow.addWindow(subwindow);
     }
 
-    public void clickButtonaddContainer(ClickEvent event) {
+    public void clickButtonaddContainer(final ClickEvent event) {
         if (txtContName.isValid() && slcContentModl.isValid()) {
-            String containerName = txtContName.getValue().toString();
-            String contentModelId = (String) slcContentModl.getValue();
+            final String containerName = txtContName.getValue().toString();
+            final String contentModelId = (String) slcContentModl.getValue();
 
             // We really create the container here
             try {
                 createNewContainer(containerName, contentModelId, contextId);
             }
-            catch (ParserConfigurationException e) {
+            catch (final ParserConfigurationException e) {
                 mainWindow.showNotification(
                     "Not able to create a new Container for you. Please contact the developers", 1);
             }
@@ -192,20 +166,19 @@ public class TreeCreateContainer {
      * @throws ParserConfigurationException
      * 
      */
-    private void createNewContainer(String containerName, String contentModelId, String contextId)
+    private void createNewContainer(final String containerName, final String contentModelId, final String contextId)
         throws ParserConfigurationException {
 
-        ContainerBuilder cntBuild =
+        final ContainerBuilder cntBuild =
             new ContainerBuilder(new ContextRef(contextId), new ContentModelRef(contentModelId));
-        Container newContainer = cntBuild.build(containerName);
+        final Container newContainer = cntBuild.build(containerName);
 
         try {
-            Container create = containerRepo.create(newContainer);
+            final Container create = containerRepository.create(newContainer);
             resourceContainer.addChild((ResourceModel) target, new ContainerModel(create));
             subwindow.getParent().removeWindow(subwindow);
         }
-        catch (EscidocClientException e) {
-            // TODO Auto-generated catch block
+        catch (final EscidocClientException e) {
             e.printStackTrace();
         }
     }

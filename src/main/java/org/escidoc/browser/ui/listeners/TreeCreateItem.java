@@ -33,12 +33,12 @@ import java.util.Collection;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.escidoc.browser.model.ContentModelService;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ResourceContainer;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.internal.ItemBuilder;
+import org.escidoc.browser.repository.internal.ContentModelRepository;
 import org.escidoc.browser.repository.internal.ItemRepository;
 
 import com.vaadin.data.validator.StringLengthValidator;
@@ -129,9 +129,10 @@ public class TreeCreateItem {
 
         slcContentModl = new NativeSelect("Please select Content Model");
         slcContentModl.setRequired(true);
-        final ContentModelService cMS = new ContentModelService(serviceLocation);
 
-        final Collection<? extends Resource> contentModels = cMS.filterUsingInput("");
+        final ContentModelRepository cMS = new ContentModelRepository(serviceLocation);
+
+        final Collection<? extends Resource> contentModels = cMS.findPublicOrReleasedResources();
         for (final Resource resource : contentModels) {
             slcContentModl.addItem(resource.getObjid());
         }

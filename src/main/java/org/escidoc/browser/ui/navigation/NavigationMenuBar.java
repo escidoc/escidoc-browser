@@ -114,7 +114,6 @@ public class NavigationMenuBar extends CustomComponent {
 
     private void addCreateMenu() {
         add = menuBar.addItem(ViewConstants.ADD, null);
-
         contextMenuItem = add.addItem(ResourceType.CONTEXT.asLabel(), addItemCommand);
         containerMenuItem = add.addItem(ResourceType.CONTAINER.asLabel(), addItemCommand);
         itemMenuItem = add.addItem(ResourceType.ITEM.asLabel(), addItemCommand);
