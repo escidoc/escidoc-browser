@@ -175,7 +175,6 @@ public class TreeCreateContainer {
         final Container newContainer = cntBuild.build(containerName);
         try {
             // final Container create = containerRepository.create(newContainer);
-
             final Container create =
                 containerRepository.createWithParent(newContainer, ((ResourceModel) target).getId());
             resourceContainer.addChild((ResourceModel) target, new ContainerModel(create));

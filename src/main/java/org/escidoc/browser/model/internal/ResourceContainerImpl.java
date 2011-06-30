@@ -36,6 +36,8 @@ import org.escidoc.browser.model.PropertyId;
 import org.escidoc.browser.model.ResourceContainer;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.data.Container;
@@ -129,10 +131,12 @@ public class ResourceContainerImpl implements ResourceContainer {
 
     }
 
+    private static final Logger LOG = LoggerFactory.getLogger(ResourceContainerImpl.class);
+
     public void addChild(final ResourceModel parent, final ResourceModel child) {
         final Item addedItem = add(child);
         if (isAlreadyAdded(addedItem)) {
-            assignParent(parent, child);
+            LOG.warn("found multiple child: " + child.getId());
             return;
         }
         bind(addedItem, child);

@@ -87,11 +87,11 @@ public final class Util {
         Preconditions.checkNotNull(id, "id is null: %s", id);
         Preconditions.checkArgument(!id.isEmpty(), "id is empty: %s", id);
         final SearchRetrieveRequestType filter = new SearchRetrieveRequestType();
-        filter.setQuery(createQuery(id));
+        filter.setQuery(topLevelContainers(id));
         return filter;
     }
 
-    private final static String createQuery(final String id) {
+    private final static String topLevelContainers(final String id) {
         final StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("top-level-containers=true OR \"/properties/context/id=");
         stringBuilder.append(id);
@@ -147,11 +147,8 @@ public final class Util {
 
     private static String topLevelContainersAndItems(final String id) {
         final StringBuilder stringBuilder = new StringBuilder();
-        final String queryString =
-            "(top-level-containers=true or top-level-items=true) and \"/properties/context/id\"=";
-        stringBuilder.append(queryString);
+        stringBuilder.append("(top-level-containers=true or top-level-items=true) and \"/properties/context/id\"=");
         stringBuilder.append(id);
-        final String query = stringBuilder.toString();
-        return query;
+        return stringBuilder.toString();
     }
 }

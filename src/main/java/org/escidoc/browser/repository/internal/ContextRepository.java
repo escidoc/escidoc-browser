@@ -42,9 +42,7 @@ import com.google.common.base.Preconditions;
 
 import de.escidoc.core.client.ContextHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
-import de.escidoc.core.client.exceptions.EscidocException;
 import de.escidoc.core.client.exceptions.InternalClientException;
-import de.escidoc.core.client.exceptions.TransportException;
 import de.escidoc.core.client.interfaces.ContextHandlerClientInterface;
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.Relations;
@@ -71,34 +69,15 @@ public class ContextRepository implements Repository {
         return !findTopLevelMembersById(context.getObjid()).isEmpty();
     }
 
-    // FIXME: this is a hack, it sends two requests to find context's direct
-    // members.
     @Override
     public List<ResourceModel> findTopLevelMembersById(final String id) throws EscidocClientException {
         Preconditions.checkNotNull(id, "id is null: %s", id);
-
-        // final List<ResourceModel> topLevelContainers = findTopLevelContainerList(id);
-        // topLevelContainers.addAll(findTopLevelItemList(id));
-
-        final List<ResourceModel> topLevelList = findTopLevelMemberList(id);
-        return topLevelList;
+        return findTopLevelMemberList(id);
     }
 
     private List<ResourceModel> findTopLevelMemberList(final String id) throws EscidocClientException {
         return ModelConverter.genericResourcetoModel(client.retrieveMembersAsList(id,
             Util.createQueryForTopLevelContainersAndItems(id)));
-    }
-
-    private List<ResourceModel> findTopLevelContainerList(final String id) throws EscidocException,
-        InternalClientException, TransportException {
-        return ModelConverter.genericResourcetoModel(client.retrieveMembersAsList(id,
-            Util.createQueryForTopLevelContainers(id)));
-    }
-
-    private List<ResourceModel> findTopLevelItemList(final String id) throws EscidocException, InternalClientException,
-        TransportException {
-        return ModelConverter.genericResourcetoModel(client.retrieveMembersAsList(id,
-            Util.createQueryForTopLevelItems(id)));
     }
 
     @Override

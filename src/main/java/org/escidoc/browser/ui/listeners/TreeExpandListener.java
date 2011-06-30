@@ -97,8 +97,7 @@ public final class TreeExpandListener implements Tree.ExpandListener {
 
     private void addContextChildren(final ResourceModel resource) {
         try {
-            final List<ResourceModel> children = contextRepository.findTopLevelMembersById(resource.getId());
-            resourceContainer.addChildren(resource, children);
+            resourceContainer.addChildren(resource, contextRepository.findTopLevelMembersById(resource.getId()));
         }
         catch (final EscidocClientException e) {
             showErrorMessageToUser(resource, e);
