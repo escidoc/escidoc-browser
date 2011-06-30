@@ -75,7 +75,7 @@ public class ResourceContainerImpl implements ResourceContainer {
     private void addTopLevel() {
         for (final ResourceModel topLevel : topLevelResources) {
             final Item addedItem = add(topLevel);
-            if (addedItem == null) {
+            if (isAlreadyAdded(addedItem)) {
                 return;
             }
             bind(addedItem, topLevel);
@@ -131,12 +131,17 @@ public class ResourceContainerImpl implements ResourceContainer {
 
     public void addChild(final ResourceModel parent, final ResourceModel child) {
         final Item addedItem = add(child);
-        if (addedItem == null) {
+        if (isAlreadyAdded(addedItem)) {
+            assignParent(parent, child);
             return;
         }
         bind(addedItem, child);
         assignParent(parent, child);
         container.setChildrenAllowed(child, isNotItem(child));
+    }
+
+    private boolean isAlreadyAdded(final Item addedItem) {
+        return addedItem == null;
     }
 
     private boolean isNotItem(final ResourceModel child) {

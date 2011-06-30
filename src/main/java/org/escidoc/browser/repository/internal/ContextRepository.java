@@ -76,9 +76,17 @@ public class ContextRepository implements Repository {
     @Override
     public List<ResourceModel> findTopLevelMembersById(final String id) throws EscidocClientException {
         Preconditions.checkNotNull(id, "id is null: %s", id);
-        final List<ResourceModel> topLevelContainers = findTopLevelContainerList(id);
-        topLevelContainers.addAll(findTopLevelItemList(id));
-        return topLevelContainers;
+
+        // final List<ResourceModel> topLevelContainers = findTopLevelContainerList(id);
+        // topLevelContainers.addAll(findTopLevelItemList(id));
+
+        final List<ResourceModel> topLevelList = findTopLevelMemberList(id);
+        return topLevelList;
+    }
+
+    private List<ResourceModel> findTopLevelMemberList(final String id) throws EscidocClientException {
+        return ModelConverter.genericResourcetoModel(client.retrieveMembersAsList(id,
+            Util.createQueryForTopLevelContainersAndItems(id)));
     }
 
     private List<ResourceModel> findTopLevelContainerList(final String id) throws EscidocException,
