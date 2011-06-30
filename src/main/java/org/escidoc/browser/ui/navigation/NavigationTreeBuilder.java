@@ -70,6 +70,7 @@ public class NavigationTreeBuilder {
         final NavigationTreeView navigationTreeView = createNavigationTreeView(mainSite, mainWindow, treeDataSource);
         navigationTreeView.addExpandListener(new TreeExpandListener(repositories, treeDataSource));
 
+
         return navigationTreeView;
     }
 
