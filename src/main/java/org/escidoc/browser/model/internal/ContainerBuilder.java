@@ -77,7 +77,6 @@ public class ContainerBuilder {
         try {
             setContainerName(containerName);
             setContainerProperties();
-            createStructMap();
             return container;
         }
         catch (final ParserConfigurationException e) {
@@ -87,11 +86,6 @@ public class ContainerBuilder {
 
     private void setContainerName(final String containerName) throws ParserConfigurationException {
         addDefaultMetadata(createNewDocument(), containerName);
-    }
-
-    private void addDefaultMetadata(final Document doc, final String containerName) {
-        containerMetadata.setName(AppConstants.ESCIDOC);
-        containerMetadata.setContent(buildContentForContainerMetadata(doc, containerName));
     }
 
     private Document createNewDocument() throws ParserConfigurationException {
@@ -104,12 +98,16 @@ public class ContainerBuilder {
         container.setProperties(containerProps);
     }
 
-    /**
-     * Creates an empty struct map
-     */
-    private void createStructMap() {
-        final StructMap structMap = new StructMap();
-        container.setStructMap(structMap);
+    private void addDefaultMetadata(final Document doc, final String containerName) {
+        buildDefaultMetadata(doc, containerName);
+        final MetadataRecords containerMetadataList = new MetadataRecords();
+        containerMetadataList.add(containerMetadata);
+        container.setMetadataRecords(containerMetadataList);
+    }
+
+    private void buildDefaultMetadata(final Document doc, final String containerName) {
+        containerMetadata.setName(AppConstants.ESCIDOC);
+        containerMetadata.setContent(buildContentForContainerMetadata(doc, containerName));
     }
 
     private Element buildContentForContainerMetadata(final Document doc, final String containerName) {
@@ -120,27 +118,4 @@ public class ContainerBuilder {
         element.appendChild(titleElmt);
         return element;
     }
-    @Override
-    public String toString() {
-        final StringBuilder builder = new StringBuilder();
-        builder.append("ContainerBuilder [");
-        if (container != null) {
-            builder.append("container=").append(container).append(", ");
-        }
-        if (itemMetadata != null) {
-            builder.append("itemMetadata=").append(itemMetadata).append(", ");
-        }
-        if (containerProps != null) {
-            builder.append("containerProps=").append(containerProps).append(", ");
-        }
-        if (contextRef != null) {
-            builder.append("contextRef=").append(contextRef).append(", ");
-        }
-        if (contentModelRef != null) {
-            builder.append("contentModelRef=").append(contentModelRef);
-        }
-        builder.append("]");
-        return builder.toString();
-    }
-
 }
