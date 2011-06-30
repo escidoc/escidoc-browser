@@ -151,4 +151,22 @@ public final class Util {
         stringBuilder.append(id);
         return stringBuilder.toString();
     }
+
+    public static SearchRetrieveRequestType createQueryForTopLevelContainersAndItems(final String id) {
+        Preconditions.checkNotNull(id, "id is null: %s", id);
+        Preconditions.checkArgument(!id.isEmpty(), "id is empty: %s", id);
+        final SearchRetrieveRequestType filter = new SearchRetrieveRequestType();
+        filter.setQuery(topLevelContainersAndItems(id));
+        return filter;
+    }
+
+    private static String topLevelContainersAndItems(final String id) {
+        final StringBuilder stringBuilder = new StringBuilder();
+        final String queryString =
+            "(top-level-containers=true or top-level-items=true) and \"/properties/context/id\"=";
+        stringBuilder.append(queryString);
+        stringBuilder.append(id);
+        final String query = stringBuilder.toString();
+        return query;
+    }
 }
