@@ -39,7 +39,7 @@ import org.junit.Test;
 import de.escidoc.core.client.Authentication;
 import de.escidoc.core.client.ContainerHandlerClient;
 import de.escidoc.core.client.interfaces.ContainerHandlerClientInterface;
-import de.escidoc.core.resources.common.structmap.ContainerMemberRef;
+import de.escidoc.core.resources.common.TaskParam;
 import de.escidoc.core.resources.common.structmap.StructMap;
 import de.escidoc.core.resources.om.container.Container;
 
@@ -66,15 +66,15 @@ public class UpdateContainerWithMemberSpec {
     @Test
     public void testCreateContainerWithMembers() throws Exception {
         final Container parent = cc.retrieve("escidoc:1145");
-        final Container futureChild = cc.retrieve("escidoc:1159");
+        final Container futureChild = cc.retrieve("escidoc:1167");
 
-        final StructMap structMap = new StructMap();
-        structMap.add(new ContainerMemberRef(futureChild.getObjid()));
-        parent.setStructMap(structMap);
+        final TaskParam taskParam = new TaskParam();
+        taskParam.setLastModificationDate(parent.getLastModificationDate());
+        taskParam.addResourceRef(futureChild.getObjid());
 
-        final Container parentWithChild = cc.update(parent);
-
+        cc.addMembers(parent, taskParam);
+        final Container parentWithChild = cc.retrieve(parent.getObjid());
         final StructMap createdStructMap = parentWithChild.getStructMap();
-        assertEquals("Number of members is wrong", 1, createdStructMap.size());
+        assertEquals("Number of members is wrong", 3, createdStructMap.size());
     }
 }

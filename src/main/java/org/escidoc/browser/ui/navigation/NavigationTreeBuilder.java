@@ -71,6 +71,7 @@ public class NavigationTreeBuilder {
         navigationTreeView.addExpandListener(new TreeExpandListener(repositories, treeDataSource));
 
 
+
         return navigationTreeView;
     }
 
