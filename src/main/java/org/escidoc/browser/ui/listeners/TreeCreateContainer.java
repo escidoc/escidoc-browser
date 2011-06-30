@@ -170,7 +170,7 @@ public class TreeCreateContainer {
         throws ParserConfigurationException {
 
         final ContainerBuilder cntBuild =
-            new ContainerBuilder(new ContextRef(contextId), new ContentModelRef(contentModelId));
+            new ContainerBuilder(new ContextRef(contextId), new ContentModelRef(contentModelId), resourceContainer);
         final Container newContainer = cntBuild.build(containerName);
 
         try {
@@ -182,5 +182,4 @@ public class TreeCreateContainer {
             e.printStackTrace();
         }
     }
-
 }

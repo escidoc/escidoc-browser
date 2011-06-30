@@ -99,10 +99,10 @@ public class VersionHistoryClickListener implements ClickListener {
         final Collection<Version> versions = vH.getVersions();
         String versionHistory = "";
         for (final Version version : versions) {
-            versionHistory += "Version: " + version.getVersionNumber() + "<br />";
+            versionHistory += "<strong>Version: " + version.getVersionNumber() + "</strong><br />";
             versionHistory += "TimeStamp: " + version.getTimestamp() + "<br />";
             versionHistory += "Version Status: " + version.getVersionStatus() + "<br />";
-            versionHistory += "Comment: " + version.getComment() + "<br />< hr/>";
+            versionHistory += "Comment: " + version.getComment() + "<br /><hr/>";
             final Collection<Event> events = version.getEvents();
             for (final Event event : events) {
                 versionHistory += "event :  @xmlID=" + event.getXmlID() + "<br />";
@@ -127,7 +127,7 @@ public class VersionHistoryClickListener implements ClickListener {
                         + event.getLinkingObjectIdentifier().getLinkingObjectIdentifierType() + "<br />";
                 versionHistory +=
                     "Linking Object Identifier Value: "
-                        + event.getLinkingObjectIdentifier().getLinkingObjectIdentifierValue() + "<br />";
+                        + event.getLinkingObjectIdentifier().getLinkingObjectIdentifierValue() + "<br /><hr />";
             }
         }
         return versionHistory;
@@ -140,7 +140,8 @@ public class VersionHistoryClickListener implements ClickListener {
         subwindow.setWidth("600px");
         subwindow.setModal(true);
         String id = "";
-        if (event.getButton().getCaption().equals("Container Version History")) {
+        if (event.getButton().getCaption().equals("Container Version History")
+            || event.getButton().getCaption().equals(" Has previous version")) {
             id = containerProxy.getId();
         }
         else if (event.getButton().getCaption().equals("Item Version History")) {

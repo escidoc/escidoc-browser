@@ -307,10 +307,10 @@ public class ContainerView extends VerticalLayout {
                         final Label child = (Label) event.getChildComponent();
 
                         if ((child).getDescription() == "header") {
-                            oldComponent = event.getClickedComponent();
-                            swapComponent = editHeader(child.getValue().toString());
-                            cssLayout.replaceComponent(oldComponent, swapComponent);
-                            btnEdit.setVisible(true);
+                            // oldComponent = event.getClickedComponent();
+                            // swapComponent = editHeader(child.getValue().toString());
+                            // cssLayout.replaceComponent(oldComponent, swapComponent);
+                            // btnEdit.setVisible(true);
                         }
                         else if (child.getDescription() == "status") {
                             oldComponent = event.getClickedComponent();
@@ -344,7 +344,6 @@ public class ContainerView extends VerticalLayout {
                 boolean found = false;
                 for (PublicStatus myEnum : PublicStatus.values()) {
                     if (found == true) {
-                        System.out.println("found and getting out at: " + myEnum.toString().toLowerCase());
                         cmbStatus.addItem(myEnum.toString().toLowerCase());
                         break;
                     }
@@ -354,7 +353,6 @@ public class ContainerView extends VerticalLayout {
                     }
 
                 }
-
                 return cmbStatus;
             }
 

@@ -91,7 +91,13 @@ ul.horizontal_list li{
 	color:#777;
 	text-decoration:none;
 	}	
-
+.v-menubar {
+	height: 28px;
+	background: #efefef repeat-x;
+	background-image: url(/browser/VAADIN/themes/myTheme/images/assets/menubg.png); /** sprite-ref: verticals; sprite-alignment: repeat */
+	text-shadow: ;
+	color: black;
+}
 .directmembers .v-tree-node {
 	background: #ffffff;
 	padding: 0 0;

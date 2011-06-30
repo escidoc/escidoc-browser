@@ -31,6 +31,7 @@ package org.escidoc.browser.model.internal;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.escidoc.browser.model.ResourceContainer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -40,6 +41,7 @@ import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.MetadataRecords;
 import de.escidoc.core.resources.common.reference.ContentModelRef;
 import de.escidoc.core.resources.common.reference.ContextRef;
+import de.escidoc.core.resources.common.structmap.StructMap;
 import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.om.container.ContainerProperties;
 
@@ -53,7 +55,7 @@ public class ContainerBuilder {
 
     private final MetadataRecords metadataList = new MetadataRecords();
 
-    private final MetadataRecord itemMetadata = new MetadataRecord(ESCIDOC);
+    private final MetadataRecord containerMetadata = new MetadataRecord(ESCIDOC);
 
     private final ContainerProperties containerProps = new ContainerProperties();
 
@@ -61,11 +63,16 @@ public class ContainerBuilder {
 
     private final ContentModelRef contentModelRef;
 
-    public ContainerBuilder(final ContextRef contextRef, final ContentModelRef contentModelRef) {
+    private final ResourceContainer resourceContainer;
+
+    public ContainerBuilder(final ContextRef contextRef, final ContentModelRef contentModelRef,
+        final ResourceContainer resourceContainer) {
+
         Preconditions.checkNotNull(contextRef, "contextRef is null: %s", contextRef);
         Preconditions.checkNotNull(contentModelRef, "contentModelRef is null: %s", contentModelRef);
         this.contextRef = contextRef;
         this.contentModelRef = contentModelRef;
+        this.resourceContainer = resourceContainer;
     }
 
     public Container build(String containerName) {
@@ -76,6 +83,7 @@ public class ContainerBuilder {
         try {
             setContainerName(containerName);
             setContainerProperties();
+            createStructMap();
             return container;
         }
         catch (ParserConfigurationException e) {
@@ -98,19 +106,45 @@ public class ContainerBuilder {
         container.setProperties(containerProps);
     }
 
+    /**
+     * Creates an empty struct map
+     */
+    private void createStructMap() {
+        StructMap structMap = new StructMap();
+        container.setStructMap(structMap);
+    }
+
+    // TODO
+    public void setStruct(final String parentObjId) {
+        // try {
+        // Container cnt = resourceContainer.findContainerById(parentObjId);
+        // cnt.setStructMap(null);
+        // resourceContainer.update(cnt);
+        // }
+        // catch (EscidocClientException e) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
+        // Container parentContainer = null;
+        // final StructMap stMap = new StructMap();
+        // final MemberRef m = new ContainerMemberRef(parentObjId);
+        // stMap.add(m);
+        // container.setStructMap(stMap);
+    }
+
     private void addDefaultMetadata(final Document doc, String containerName) {
         buildDefaultMetadata(doc, containerName);
-        final MetadataRecords itemMetadataList = new MetadataRecords();
-        itemMetadataList.add(itemMetadata);
-        container.setMetadataRecords(itemMetadataList);
+        final MetadataRecords containerMetadataList = new MetadataRecords();
+        containerMetadataList.add(containerMetadata);
+        container.setMetadataRecords(containerMetadataList);
     }
 
     private void buildDefaultMetadata(final Document doc, String containerName) {
-        itemMetadata.setName(ESCIDOC);
-        itemMetadata.setContent(buildContentForItemMetadata(doc, containerName));
+        containerMetadata.setName(ESCIDOC);
+        containerMetadata.setContent(buildContentForContainerMetadata(doc, containerName));
     }
 
-    private Element buildContentForItemMetadata(final Document doc, String containerName) {
+    private Element buildContentForContainerMetadata(final Document doc, String containerName) {
         Element element = doc.createElementNS(DC_NAMESPACE, "dc");
         final Element titleElmt = doc.createElementNS(DC_NAMESPACE, "title");
         titleElmt.setPrefix("dc");

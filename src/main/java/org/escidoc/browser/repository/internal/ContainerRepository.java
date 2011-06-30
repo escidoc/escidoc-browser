@@ -141,28 +141,17 @@ public class ContainerRepository implements Repository {
 
     }
 
+    public Container findContainerById(final String containerId) throws EscidocClientException {
+        return client.retrieve(containerId);
+
+    }
+
     public Container create(final Container newContainer) throws EscidocClientException {
         return client.create(newContainer);
     }
 
-    public void update(Container resource) {
-        // try {
-        // Container resource1;
-        // client.update(resource);
-        // }
-        // catch (EscidocException e) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
-        // catch (InternalClientException e) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
-        // catch (TransportException e) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
-
+    public Container update(Container resource) throws EscidocClientException {
+        return client.update(resource);
     }
 
 }
