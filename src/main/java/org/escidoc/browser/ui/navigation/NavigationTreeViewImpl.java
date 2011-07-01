@@ -182,7 +182,7 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
             new TreeCreateContainer(target, contextId, serviceLocation, getWindow(), repositories.container(),
                 container);
         try {
-            tcc.createContainer();
+            tcc.showContainerAddView();
             // resourceProxy.setStruct(contModel.getId());
         }
         catch (final MalformedURLException e) {

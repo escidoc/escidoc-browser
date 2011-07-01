@@ -91,18 +91,19 @@ public class TreeCreateContainer {
 
     TextField nameField;
 
-    public TreeCreateContainer(final Object target, final String contextId,
+    public TreeCreateContainer(final Object parent, final String contextId,
         final EscidocServiceLocation serviceLocation, final Window mainWindow,
         final ContainerRepository containerRepository, final TreeDataSource treeDataSource) {
 
-        Preconditions.checkNotNull(target, "target is null: %s", target);
+        Preconditions.checkNotNull(parent, "parent is null: %s", parent);
         Preconditions.checkNotNull(contextId, "contextId is null: %s", contextId);
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(containerRepository, "containerRepo is null: %s", containerRepository);
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
+        Preconditions.checkNotNull(treeDataSource, "treeDataSource is null: %s", treeDataSource);
 
-        this.parent = target;
+        this.parent = parent;
         this.contextId = contextId;
         this.serviceLocation = serviceLocation;
         this.mainWindow = mainWindow;
@@ -110,24 +111,24 @@ public class TreeCreateContainer {
         this.treeDataSource = treeDataSource;
     }
 
-    public void createContainer() throws MalformedURLException, EscidocClientException {
-        addContainerForm();
+    public void showContainerAddView() throws MalformedURLException, EscidocClientException {
+        buildContainerForm();
+        buildSubWindowUsingContainerForm();
+        openSubWindow();
     }
 
-    public void addContainerForm() throws MalformedURLException, EscidocClientException {
+    public void buildContainerForm() throws MalformedURLException, EscidocClientException {
         addContainerForm.setImmediate(true);
         addNameField();
         addContentModelSelect();
         addButton();
-        createSubWindow();
-        openSubWindow();
     }
 
     private void openSubWindow() {
         mainWindow.addWindow(subwindow);
     }
 
-    private void createSubWindow() {
+    private void buildSubWindowUsingContainerForm() {
         subwindow = new Window(ViewConstants.CREATE_CONTAINER);
         subwindow.setWidth("600px");
         subwindow.setModal(true);
