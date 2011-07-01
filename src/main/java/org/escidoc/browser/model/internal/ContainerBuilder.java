@@ -28,15 +28,14 @@
  */
 package org.escidoc.browser.model.internal;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import com.google.common.base.Preconditions;
 
 import org.escidoc.browser.AppConstants;
-import org.escidoc.browser.model.TreeDataSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.google.common.base.Preconditions;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.MetadataRecords;
@@ -57,16 +56,12 @@ public class ContainerBuilder {
 
     private final ContentModelRef contentModelRef;
 
-    private final TreeDataSource resourceContainer;
-
-    public ContainerBuilder(final ContextRef contextRef, final ContentModelRef contentModelRef,
-        final TreeDataSource resourceContainer) {
+    public ContainerBuilder(final ContextRef contextRef, final ContentModelRef contentModelRef) {
 
         Preconditions.checkNotNull(contextRef, "contextRef is null: %s", contextRef);
         Preconditions.checkNotNull(contentModelRef, "contentModelRef is null: %s", contentModelRef);
         this.contextRef = contextRef;
         this.contentModelRef = contentModelRef;
-        this.resourceContainer = resourceContainer;
     }
 
     public Container build(final String containerName) {
@@ -111,8 +106,8 @@ public class ContainerBuilder {
     }
 
     private Element buildContentForContainerMetadata(final Document doc, final String containerName) {
-        final Element element = doc.createElementNS(AppConstants.ESCIDOC, "dc");
-        final Element titleElmt = doc.createElementNS(AppConstants.ESCIDOC, "title");
+        final Element element = doc.createElementNS(AppConstants.DC_NAMESPACE, "dc");
+        final Element titleElmt = doc.createElementNS(AppConstants.DC_NAMESPACE, "title");
         titleElmt.setPrefix("dc");
         titleElmt.setTextContent(containerName);
         element.appendChild(titleElmt);

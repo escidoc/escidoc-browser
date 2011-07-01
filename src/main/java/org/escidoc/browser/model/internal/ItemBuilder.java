@@ -28,17 +28,18 @@
  */
 package org.escidoc.browser.model.internal;
 
-import java.net.URL;
+import com.google.common.base.Preconditions;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
+import org.escidoc.browser.AppConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.google.common.base.Preconditions;
+import java.net.URL;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.MetadataRecords;
@@ -54,17 +55,13 @@ import de.escidoc.core.resources.om.item.component.Components;
 
 public class ItemBuilder {
 
-    private static final String ESCIDOC = "escidoc";
-
-    private static final String DC_NAMESPACE = "http://purl.org/dc/elements/1.1/";
-
     private static final Logger LOG = LoggerFactory.getLogger(ItemBuilder.class);
 
     private final Item item = new Item();
 
     private final MetadataRecords metadataList = new MetadataRecords();
 
-    private final MetadataRecord itemMetadata = new MetadataRecord(ESCIDOC);
+    private final MetadataRecord itemMetadata = new MetadataRecord(AppConstants.ESCIDOC);
 
     private final ItemProperties itemProps = new ItemProperties();
 
@@ -115,7 +112,7 @@ public class ItemBuilder {
             // setComponent();
             return item;
         }
-        catch (ParserConfigurationException e) {
+        catch (final ParserConfigurationException e) {
             LOG.error("Error creating a XML document. " + e.getMessage(), e);
             throw new RuntimeException(e);
         }
@@ -148,16 +145,14 @@ public class ItemBuilder {
     }
 
     private void buildDefaultMetadata(final Document doc, String itemName) {
-        itemMetadata.setName(ESCIDOC);
+        itemMetadata.setName(AppConstants.ESCIDOC);
         itemMetadata.setContent(buildContentForItemMetadata(doc, itemName));
     }
 
     private Element buildContentForItemMetadata(final Document doc, String itemName) {
-        Element element = doc.createElementNS(DC_NAMESPACE, "dc");
-        final Element titleElmt = doc.createElementNS(DC_NAMESPACE, "title");
+        final Element element = doc.createElementNS(AppConstants.DC_NAMESPACE, "dc");
+        final Element titleElmt = doc.createElementNS(AppConstants.DC_NAMESPACE, "title");
         titleElmt.setPrefix("dc");
-        // TODO temporary set
-        // titleElmt.setTextContent(path.getFileName().toString());
         titleElmt.setTextContent(itemName);
         element.appendChild(titleElmt);
         return element;
@@ -174,8 +169,8 @@ public class ItemBuilder {
 
     private void setComponentTitle(Component component, String itemName) throws ParserConfigurationException {
         final Document doc = createNewDocument();
-        itemMetadata.setName(ESCIDOC);
-        Element element = buildContentForItemMetadata(doc, itemName);
+        itemMetadata.setName(AppConstants.ESCIDOC);
+        final Element element = buildContentForItemMetadata(doc, itemName);
         itemMetadata.setContent(element);
         metadataList.add(itemMetadata);
         component.setMetadataRecords(metadataList);

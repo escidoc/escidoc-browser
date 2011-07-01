@@ -79,7 +79,7 @@ public class TreeCreateContainer {
 
     final String contextId;
 
-    private final Object target;
+    private final Object parent;
 
     private final ContainerRepository containerRepository;
 
@@ -102,7 +102,7 @@ public class TreeCreateContainer {
         Preconditions.checkNotNull(containerRepository, "containerRepo is null: %s", containerRepository);
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
 
-        this.target = target;
+        this.parent = target;
         this.contextId = contextId;
         this.serviceLocation = serviceLocation;
         this.mainWindow = mainWindow;
@@ -176,18 +176,29 @@ public class TreeCreateContainer {
         throws ParserConfigurationException {
 
         final ContainerBuilder cntBuild =
-            new ContainerBuilder(new ContextRef(contextId), new ContentModelRef(contentModelId), treeDataSource);
+            new ContainerBuilder(new ContextRef(contextId), new ContentModelRef(contentModelId));
         final Container newContainer = cntBuild.build(containerName);
         try {
-            // final Container create = containerRepository.create(newContainer);
-            final Container createdContainer =
-                containerRepository.createWithParent(newContainer, (ResourceModel) target);
-            treeDataSource.addChild((ResourceModel) target, new ContainerModel(createdContainer));
-            subwindow.getParent().removeWindow(subwindow);
+            final Container createdContainer = createContainerInRepository(newContainer);
+            updateDataSource(createdContainer);
+            closeSubWindow();
         }
         catch (final EscidocClientException e) {
             LOG.error(e.getMessage());
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
         }
+    }
+
+    private Container createContainerInRepository(final Container newContainer) throws EscidocClientException {
+        final Container createdContainer = containerRepository.createWithParent(newContainer, (ResourceModel) parent);
+        return createdContainer;
+    }
+
+    private void updateDataSource(final Container createdContainer) {
+        treeDataSource.addChild((ResourceModel) parent, new ContainerModel(createdContainer));
+    }
+
+    private void closeSubWindow() {
+        subwindow.getParent().removeWindow(subwindow);
     }
 }
