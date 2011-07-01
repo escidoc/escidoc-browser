@@ -28,23 +28,22 @@
  */
 package org.escidoc.browser.ui.helper;
 
-import gov.loc.www.zing.srw.SearchRetrieveRequestType;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Map;
+import com.google.common.base.Preconditions;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ResourceModel;
 
-import com.google.common.base.Preconditions;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Map;
 
 import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.om.item.Item;
 import de.escidoc.core.resources.sb.search.SearchResult;
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 public final class Util {
 
@@ -135,21 +134,6 @@ public final class Util {
         stringBuilder.append(id);
         final String topLevelContainerQuery = stringBuilder.toString();
         return topLevelContainerQuery;
-    }
-
-    public static SearchRetrieveRequestType createQueryForTopLevelContainersAndItems(final String id) {
-        Preconditions.checkNotNull(id, "id is null: %s", id);
-        Preconditions.checkArgument(!id.isEmpty(), "id is empty: %s", id);
-        final SearchRetrieveRequestType filter = new SearchRetrieveRequestType();
-        filter.setQuery(topLevelContainersAndItems(id));
-        return filter;
-    }
-
-    private static String topLevelContainersAndItems(final String id) {
-        final StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("(top-level-containers=true or top-level-items=true) and \"/properties/context/id\"=");
-        stringBuilder.append(id);
-        return stringBuilder.toString();
     }
 
     public static SearchRetrieveRequestType createQueryForTopLevelContainersAndItems(final String id) {

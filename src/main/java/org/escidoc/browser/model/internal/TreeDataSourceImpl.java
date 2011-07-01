@@ -28,8 +28,13 @@
  */
 package org.escidoc.browser.model.internal;
 
-import java.util.Collection;
-import java.util.List;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.data.Container;
+import com.vaadin.data.Item;
+import com.vaadin.data.util.HierarchicalContainer;
+import com.vaadin.terminal.Resource;
+import com.vaadin.terminal.ThemeResource;
 
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
@@ -40,12 +45,8 @@ import org.escidoc.browser.model.TreeDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.data.Container;
-import com.vaadin.data.Item;
-import com.vaadin.data.util.HierarchicalContainer;
-import com.vaadin.terminal.Resource;
-import com.vaadin.terminal.ThemeResource;
+import java.util.Collection;
+import java.util.List;
 
 public class TreeDataSourceImpl implements TreeDataSource {
 
@@ -158,7 +159,6 @@ public class TreeDataSourceImpl implements TreeDataSource {
         return child.getType().equals(ResourceType.CONTAINER);
     }
 
-    private static boolean isAlreadyAdded(final Item addedItem) {
     private static boolean isAlreadyAdded(final Item addedItem) {
         return addedItem == null;
     }
