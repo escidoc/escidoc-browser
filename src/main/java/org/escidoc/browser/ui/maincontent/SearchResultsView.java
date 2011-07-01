@@ -165,23 +165,23 @@ public class SearchResultsView extends VerticalLayout {
         // Adding items in the container
         for (final SearchResultRecord record : records) {
             final SearchResult s = record.getRecordData();
+            String strResourceType = "";
             if (s.getContent() instanceof Container) {
                 resourceProxy = new ContainerProxyImpl((Container) s.getContent());
+                strResourceType = "Container";
             }
             else if (s.getContent() instanceof de.escidoc.core.resources.om.item.Item) {
                 final Resource item = (de.escidoc.core.resources.om.item.Item) s.getContent();
                 resourceProxy = new ItemProxyImpl((de.escidoc.core.resources.om.item.Item) item);
+                strResourceType = "Item";
             }
             else if (s.getContent() instanceof Context) {
                 final Resource resource = (Context) s.getContent();
                 resourceProxy = new ContextProxyImpl((Context) resource);
+                strResourceType = "Context";
             }
 
-            // TODO fix this! Resource name should be dynamic
-            // The third argument should be the resourceProxy.xLinkTitle() so we show it on the header of the Tab
-            // Object[] variablesForTheTab =
-            // { s.getContent().getResourceType().toString(), resourceProxy.getId(), resourceProxy.getId() };
-            final Object[] variablesForTheTab = { "Container", resourceProxy.getId(), resourceProxy.getId() };
+            Object[] variablesForTheTab = { strResourceType, resourceProxy.getId(), resourceProxy.getId() };
 
             final Item item = container.addItem(variablesForTheTab);
             item.getItemProperty("Type").setValue(
@@ -242,6 +242,7 @@ public class SearchResultsView extends VerticalLayout {
                 final Object[] variablesForTheTab = (Object[]) tblPagedResults.getValue();
 
                 if (variablesForTheTab[0].equals("Container")) {
+
                     try {
                         resourceProxy =
                             (ContainerProxyImpl) rmf.find((String) variablesForTheTab[1], ResourceType.CONTAINER);
@@ -250,6 +251,7 @@ public class SearchResultsView extends VerticalLayout {
                                 .getCurrentUser(), repositories);
                     }
                     catch (final EscidocClientException e) {
+                        System.out.println(e.getMessage() + "Container ID " + (String) variablesForTheTab[1]);
                         showerror();
                     }
                 }
