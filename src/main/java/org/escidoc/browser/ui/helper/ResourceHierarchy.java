@@ -55,13 +55,11 @@ public class ResourceHierarchy {
     }
 
     public ResourceModel getReturnParentOfItem(final String id) throws Exception {
-        final ResourceModel parent = repository.findParent(new HasNoNameResourceImpl(id, ResourceType.ITEM));
-        return parent;
+        return repository.findParent(new HasNoNameResourceImpl(id, ResourceType.ITEM));
     }
 
     public ResourceModel getParentOfContainer(final String id) throws EscidocClientException {
-        final ResourceModel parent = repository.findParent(new HasNoNameResourceImpl(id, ResourceType.CONTAINER));
-        return parent;
+        return repository.findParent(new HasNoNameResourceImpl(id, ResourceType.CONTAINER));
     }
 
     private void createContainerHierarchy(final String id) throws EscidocClientException {

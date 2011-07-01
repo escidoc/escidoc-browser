@@ -50,6 +50,8 @@ import java.util.List;
 
 public class TreeDataSourceImpl implements TreeDataSource {
 
+    private static final Logger LOG = LoggerFactory.getLogger(TreeDataSourceImpl.class);
+
     private final HierarchicalContainer dataSource = new HierarchicalContainer();
 
     private final Collection<? extends ResourceModel> topLevelResources;
@@ -107,7 +109,6 @@ public class TreeDataSourceImpl implements TreeDataSource {
         item.getItemProperty(PropertyId.NAME).setValue(resource.getName());
         item.getItemProperty(PropertyId.ICON).setValue(
             new ThemeResource("images/resources/" + resource.getType().toString().toLowerCase() + ".png"));
-
     }
 
     @Override
@@ -127,12 +128,13 @@ public class TreeDataSourceImpl implements TreeDataSource {
         Preconditions.checkNotNull(parent, "parent is null: %s", parent);
         Preconditions.checkNotNull(children, "children is null: %s", children);
 
+        if (children.isEmpty()) {
+            dataSource.setChildrenAllowed(parent, false);
+        }
         for (final ResourceModel child : children) {
             addChild(parent, child);
         }
     }
-
-    private static final Logger LOG = LoggerFactory.getLogger(TreeDataSourceImpl.class);
 
     public void addChild(final ResourceModel parent, final ResourceModel child) {
         final Item addedItem = add(child);

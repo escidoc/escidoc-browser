@@ -28,21 +28,22 @@
  */
 package org.escidoc.browser.ui.listeners;
 
-import java.util.List;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.ui.Tree;
+import com.vaadin.ui.Tree.ExpandEvent;
 
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.ItemModel;
-import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.Tree;
-import com.vaadin.ui.Tree.ExpandEvent;
+import java.util.List;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -59,7 +60,7 @@ public final class TreeExpandListener implements Tree.ExpandListener {
 
     public TreeExpandListener(final Repositories repositories, final TreeDataSource treeDataSource) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
-        Preconditions.checkNotNull(treeDataSource, "resourceContainer is null: %s", treeDataSource);
+        Preconditions.checkNotNull(treeDataSource, "treeDataSource is null: %s", treeDataSource);
 
         contextRepository = repositories.context();
         containerRepository = repositories.container();
@@ -82,7 +83,6 @@ public final class TreeExpandListener implements Tree.ExpandListener {
         else {
             throw new UnsupportedOperationException("Unknown Type: " + resource);
         }
-
     }
 
     private void addContainerChildren(final ResourceModel resource) {

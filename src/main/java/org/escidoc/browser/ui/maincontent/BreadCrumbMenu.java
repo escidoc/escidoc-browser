@@ -28,8 +28,9 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Window;
 
 import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.ContainerProxy;
@@ -45,9 +46,8 @@ import org.escidoc.browser.ui.helper.ResourceHierarchy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Window;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
