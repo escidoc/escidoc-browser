@@ -28,9 +28,14 @@
  */
 package org.escidoc.browser.ui.listeners;
 
-import java.net.MalformedURLException;
+import com.google.common.base.Preconditions;
 
-import javax.xml.parsers.ParserConfigurationException;
+import com.vaadin.data.validator.StringLengthValidator;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.NativeSelect;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.Window;
 
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.EscidocServiceLocation;
@@ -40,14 +45,12 @@ import org.escidoc.browser.model.internal.ContainerBuilder;
 import org.escidoc.browser.repository.internal.ContainerRepository;
 import org.escidoc.browser.repository.internal.ContentModelRepository;
 import org.escidoc.browser.ui.ViewConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.data.validator.StringLengthValidator;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.NativeSelect;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.Window;
+import java.net.MalformedURLException;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.EscidocException;
@@ -63,6 +66,8 @@ import de.escidoc.core.resources.om.container.Container;
  * 
  */
 public class TreeCreateContainer {
+
+    private final static Logger LOG = LoggerFactory.getLogger(TreeCreateContainer.class);
 
     private final FormLayout addContainerForm = new FormLayout();
 
@@ -175,13 +180,14 @@ public class TreeCreateContainer {
         final Container newContainer = cntBuild.build(containerName);
         try {
             // final Container create = containerRepository.create(newContainer);
-            final Container create =
-                containerRepository.createWithParent(newContainer, ((ResourceModel) target).getId());
-            treeDataSource.addChild((ResourceModel) target, new ContainerModel(create));
+            final Container createdContainer =
+                containerRepository.createWithParent(newContainer, (ResourceModel) target);
+            treeDataSource.addChild((ResourceModel) target, new ContainerModel(createdContainer));
             subwindow.getParent().removeWindow(subwindow);
         }
         catch (final EscidocClientException e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage());
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
         }
     }
 }

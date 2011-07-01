@@ -170,6 +170,7 @@ public class TreeDataSourceImpl implements TreeDataSource {
     }
 
     private void assignParent(final ResourceModel parent, final ResourceModel child) {
+        dataSource.setChildrenAllowed(parent, true);
         final boolean isSuccesful = dataSource.setParent(child, parent);
         Preconditions.checkArgument(isSuccesful, "Setting parent of " + child + " to " + parent + " is not succesful.");
     }

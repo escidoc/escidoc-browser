@@ -28,10 +28,7 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import gov.loc.www.zing.srw.SearchRetrieveRequestType;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.base.Preconditions;
 
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.ContextModel;
@@ -44,7 +41,8 @@ import org.escidoc.browser.model.internal.HasNoNameResource;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.helper.Util;
 
-import com.google.common.base.Preconditions;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.escidoc.core.client.ContainerHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -57,6 +55,7 @@ import de.escidoc.core.resources.common.TaskParam;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.sb.search.SearchResultRecord;
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 public class ContainerRepository implements Repository {
 
@@ -154,14 +153,16 @@ public class ContainerRepository implements Repository {
     public Container update(Container resource) throws EscidocClientException {
         return client.update(resource);
     }
-    
-    public Container createWithParent(final Container newContainer, final String parentId)
+
+    public Container createWithParent(final Container newContainer, final ResourceModel parent)
         throws EscidocClientException {
         Preconditions.checkNotNull(newContainer, "newContainer is null: %s", newContainer);
-        Preconditions.checkNotNull(parentId, "parentId is null: %s", parentId);
+        Preconditions.checkNotNull(parent, "parent is null: %s", parent);
 
         final Container child = create(newContainer);
-        addChild(client.retrieve(parentId), child);
+        if (parent.getType().equals(ResourceType.CONTAINER)) {
+            addChild(client.retrieve(parent.getId()), child);
+        }
         return child;
     }
 
