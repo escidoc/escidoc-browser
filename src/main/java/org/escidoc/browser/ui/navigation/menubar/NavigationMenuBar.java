@@ -28,7 +28,13 @@
  */
 package org.escidoc.browser.ui.navigation.menubar;
 
-import java.net.URISyntaxException;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.Command;
+import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.Window;
 
 import org.escidoc.browser.ActionIdConstants;
 import org.escidoc.browser.model.CurrentUser;
@@ -37,19 +43,14 @@ import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.ViewConstants;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.Command;
-import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.Window;
+import java.net.URISyntaxException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
 public class NavigationMenuBar extends CustomComponent {
 
-    private final Command addItemCommand = new AddItemMenuBarCommand(this);
+    private final Command addNewResourceCommand = new ShowContainerAddView(this);
 
     private final MenuBar menuBar = new MenuBar();
 
@@ -104,9 +105,9 @@ public class NavigationMenuBar extends CustomComponent {
 
     private void addCreateMenu() {
         add = menuBar.addItem(ViewConstants.ADD, null);
-        contextMenuItem = add.addItem(ResourceType.CONTEXT.asLabel(), addItemCommand);
-        containerMenuItem = add.addItem(ResourceType.CONTAINER.asLabel(), addItemCommand);
-        itemMenuItem = add.addItem(ResourceType.ITEM.asLabel(), addItemCommand);
+        contextMenuItem = add.addItem(ResourceType.CONTEXT.asLabel(), addNewResourceCommand);
+        containerMenuItem = add.addItem(ResourceType.CONTAINER.asLabel(), addNewResourceCommand);
+        itemMenuItem = add.addItem(ResourceType.ITEM.asLabel(), addNewResourceCommand);
     }
 
     private void addDeleteMenu() {

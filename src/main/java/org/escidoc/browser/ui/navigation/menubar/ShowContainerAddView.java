@@ -28,24 +28,29 @@
  */
 package org.escidoc.browser.ui.navigation.menubar;
 
+import com.google.common.base.Preconditions;
 
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.Window;
 
-final class AddItemMenuBarCommand implements Command {
-    /**
-     * 
-     */
-    private final NavigationMenuBar navigationMenuBar;
+@SuppressWarnings("serial")
+final class ShowContainerAddView implements Command {
 
-    /**
-     * @param navigationMenuBar
-     */
-    AddItemMenuBarCommand(NavigationMenuBar navigationMenuBar) {
-        this.navigationMenuBar = navigationMenuBar;
+    private final Window mainWindow;
+
+    ShowContainerAddView(NavigationMenuBar navigationMenuBar) {
+        Preconditions.checkNotNull(navigationMenuBar, "navigation Menu Bar is null: %s", navigationMenuBar);
+        this.mainWindow = navigationMenuBar.getWindow();
     }
 
+    @Override
     public void menuSelected(final MenuItem selectedItem) {
-        this.navigationMenuBar.getWindow().showNotification("Action " + selectedItem.getText());
+        if (selectedItem.getText().equals("Container")) {
+            mainWindow.showNotification("Show Container Add View");
+        }
+        else {
+            mainWindow.showNotification("Action " + selectedItem.getText());
+        }
     }
 }
