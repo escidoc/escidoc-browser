@@ -41,6 +41,9 @@ import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import org.escidoc.browser.model.TreeDataSource;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.maincontent.ContainerAddView;
 
 @SuppressWarnings("serial")
 public final class ShowContainerAddView implements Command {
@@ -75,6 +78,7 @@ public final class ShowContainerAddView implements Command {
     public void menuSelected(final MenuItem selectedItem) {
         if (isContainerSelected(selectedItem)) {
             showIt();
+            new ContainerAddView(repositories, mainWindow, parent, treeDataSource);
         }
         else {
             mainWindow.showNotification("Action " + selectedItem.getText());
