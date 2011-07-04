@@ -37,9 +37,10 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.ContainerBuilder;
-import org.escidoc.browser.repository.internal.ContainerRepository;
+import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ContentModelRepository;
 import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.maincontent.ContainerAddView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,8 +81,6 @@ public class TreeCreateContainer {
 
     private final Object parent;
 
-    private final ContainerRepository containerRepository;
-
     NativeSelect contentModelSelect;
 
     private Window subwindow;
@@ -90,15 +89,19 @@ public class TreeCreateContainer {
 
     TextField nameField;
 
+    private final Repositories repositories;
+
+    private final ContainerAddView containerAddView;
+
     public TreeCreateContainer(final Object parent, final String contextId,
-        final EscidocServiceLocation serviceLocation, final Window mainWindow,
-        final ContainerRepository containerRepository, final TreeDataSource treeDataSource) {
+        final EscidocServiceLocation serviceLocation, final Window mainWindow, final Repositories repositories,
+        final TreeDataSource treeDataSource) {
 
         Preconditions.checkNotNull(parent, "parent is null: %s", parent);
         Preconditions.checkNotNull(contextId, "contextId is null: %s", contextId);
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
-        Preconditions.checkNotNull(containerRepository, "containerRepo is null: %s", containerRepository);
+        Preconditions.checkNotNull(treeDataSource, "treeDataSource is null: %s", treeDataSource);
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(treeDataSource, "treeDataSource is null: %s", treeDataSource);
 
@@ -106,14 +109,18 @@ public class TreeCreateContainer {
         this.contextId = contextId;
         this.serviceLocation = serviceLocation;
         this.mainWindow = mainWindow;
-        this.containerRepository = containerRepository;
+        this.repositories = repositories;
         this.treeDataSource = treeDataSource;
+
+        containerAddView =
+            new ContainerAddView(repositories, mainWindow, (ResourceModel) parent, treeDataSource, contextId);
     }
 
     public void showContainerAddView() throws MalformedURLException, EscidocClientException {
-        buildContainerForm();
-        buildSubWindowUsingContainerForm();
-        openSubWindow();
+        containerAddView.openSubWindow();
+        // buildContainerForm();
+        // buildSubWindowUsingContainerForm();
+        // openSubWindow();
     }
 
     public void buildContainerForm() throws MalformedURLException, EscidocClientException {
@@ -135,7 +142,7 @@ public class TreeCreateContainer {
     }
 
     private void addButton() {
-        addButton = new Button(ViewConstants.ADD, new AddContainerListener(this));
+        addButton = new Button(ViewConstants.ADD, new AddContainerListener(containerAddView));
         addContainerForm.addComponent(addButton);
     }
 
@@ -190,7 +197,8 @@ public class TreeCreateContainer {
     }
 
     private Container createContainerInRepository(final Container newContainer) throws EscidocClientException {
-        final Container createdContainer = containerRepository.createWithParent(newContainer, (ResourceModel) parent);
+        final Container createdContainer =
+            repositories.container().createWithParent(newContainer, (ResourceModel) parent);
         return createdContainer;
     }
 

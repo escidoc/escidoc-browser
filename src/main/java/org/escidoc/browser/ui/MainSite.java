@@ -40,7 +40,9 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.ResourceModelFactory;
 import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
+import org.escidoc.browser.model.internal.TreeDataSourceImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.helper.Util;
 import org.escidoc.browser.ui.maincontent.ContainerView;
@@ -89,7 +91,9 @@ public class MainSite extends VerticalLayout {
 
     private NavigationTreeView mainNavigationTree;
 
-    private final NavigationMenuBar navigationMenuBar;
+    private NavigationMenuBar navigationMenuBar;
+
+    private TreeDataSource treeDataSource;
 
     /**
      * The mainWindow should be revised whether we need it or not the appHeight is the Height of the Application and I
@@ -110,12 +114,11 @@ public class MainSite extends VerticalLayout {
         this.currentUser = currentUser;
         this.repositories = repositories;
 
-        navigationMenuBar = new NavigationMenuBar(currentUser, repositories, mainWindow);
-
         init();
     }
 
     private void init() throws EscidocClientException {
+        initTreeDataSource();
         configureLayout();
         addHeader();
         addMenuBar();
@@ -127,6 +130,7 @@ public class MainSite extends VerticalLayout {
     }
 
     private void addMenuBar() {
+        navigationMenuBar = new NavigationMenuBar(currentUser, repositories, mainWindow, treeDataSource);
         mainNavigation.addComponent(navigationMenuBar);
     }
 
@@ -242,9 +246,15 @@ public class MainSite extends VerticalLayout {
 
     private void addNavigationTree() throws EscidocClientException {
         mainNavigationTree =
-            new NavigationTreeBuilder(serviceLocation, currentUser, repositories).buildNavigationTree(this, mainWindow);
+            new NavigationTreeBuilder(serviceLocation, currentUser, repositories).buildNavigationTree(this, mainWindow,
+                treeDataSource);
         mainNavigation.addComponent(mainNavigationTree);
         ((Layout) mainNavigation.getContent()).setMargin(false);
+    }
+
+    private void initTreeDataSource() throws EscidocClientException {
+        treeDataSource = new TreeDataSourceImpl(repositories.context().findAllWithChildrenInfo());
+        treeDataSource.init();
     }
 
     private void addRootNode() {

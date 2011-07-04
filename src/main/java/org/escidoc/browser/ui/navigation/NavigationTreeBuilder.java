@@ -60,17 +60,12 @@ public class NavigationTreeBuilder {
         this.repositories = repositories;
     }
 
-    public NavigationTreeView buildNavigationTree(final MainSite mainSite, final Window mainWindow)
+    public NavigationTreeView buildNavigationTree(
+        final MainSite mainSite, final Window mainWindow, final TreeDataSource treeDataSource)
         throws EscidocClientException {
-
-        final TreeDataSource treeDataSource =
-            new TreeDataSourceImpl(repositories.context().findAllWithChildrenInfo());
-        treeDataSource.init();
 
         final NavigationTreeView navigationTreeView = createNavigationTreeView(mainSite, mainWindow, treeDataSource);
         navigationTreeView.addExpandListener(new TreeExpandListener(repositories, treeDataSource));
-
-
 
         return navigationTreeView;
     }

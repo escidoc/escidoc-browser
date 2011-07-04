@@ -1,13 +1,6 @@
 package org.escidoc.browser.ui.maincontent;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.data.validator.StringLengthValidator;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.NativeSelect;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.Window;
+import java.net.MalformedURLException;
 
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ResourceModel;
@@ -19,7 +12,13 @@ import org.escidoc.browser.ui.listeners.AddContainerListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.MalformedURLException;
+import com.google.common.base.Preconditions;
+import com.vaadin.data.validator.StringLengthValidator;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.NativeSelect;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.EscidocException;
@@ -52,22 +51,20 @@ public class ContainerAddView {
 
     private Button addButton;
 
-    public ContainerAddView(Repositories repositories, Window mainWindow, ResourceModel parent,
-        TreeDataSource treeDataSource) {
+    private final String contextId;
+
+    public ContainerAddView(final Repositories repositories, final Window mainWindow, final ResourceModel parent,
+        final TreeDataSource treeDataSource, final String contextId) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(parent, "parent is null: %s", parent);
         Preconditions.checkNotNull(treeDataSource, "treeDataSource is null: %s", treeDataSource);
+        Preconditions.checkNotNull(contextId, "contextId is null: %s", contextId);
         this.repositories = repositories;
         this.mainWindow = mainWindow;
         this.parent = parent;
         this.treeDataSource = treeDataSource;
-    }
-
-    public void showContainerAddView() throws MalformedURLException, EscidocClientException {
-        buildContainerForm();
-        buildSubWindowUsingContainerForm();
-        openSubWindow();
+        this.contextId = contextId;
     }
 
     public void buildContainerForm() throws MalformedURLException, EscidocClientException {
@@ -108,7 +105,9 @@ public class ContainerAddView {
         subwindow.addComponent(addContainerForm);
     }
 
-    private void openSubWindow() {
+    public void openSubWindow() throws MalformedURLException, EscidocClientException {
+        buildContainerForm();
+        buildSubWindowUsingContainerForm();
         mainWindow.addWindow(subwindow);
     }
 
@@ -132,7 +131,7 @@ public class ContainerAddView {
         createNewContainer(getContainerName(), getContentModelId(), getContextId());
     }
 
-    private void createNewContainer(String containerName, String contentModelId, String contextId) {
+    private void createNewContainer(final String containerName, final String contentModelId, final String contextId) {
         final ContainerBuilder cntBuild =
             new ContainerBuilder(new ContextRef(contextId), new ContentModelRef(contentModelId));
         final Container newContainer = cntBuild.build(containerName);
@@ -160,7 +159,7 @@ public class ContainerAddView {
         subwindow.getParent().removeWindow(subwindow);
     }
 
-    private static String getContextId() {
-        throw new UnsupportedOperationException("not-yet-implemented.");
+    private String getContextId() {
+        return contextId;
     }
 }

@@ -28,13 +28,8 @@
  */
 package org.escidoc.browser.model.internal;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.data.Container;
-import com.vaadin.data.Item;
-import com.vaadin.data.util.HierarchicalContainer;
-import com.vaadin.terminal.Resource;
-import com.vaadin.terminal.ThemeResource;
+import java.util.Collection;
+import java.util.List;
 
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
@@ -45,8 +40,12 @@ import org.escidoc.browser.model.TreeDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.List;
+import com.google.common.base.Preconditions;
+import com.vaadin.data.Container;
+import com.vaadin.data.Item;
+import com.vaadin.data.util.HierarchicalContainer;
+import com.vaadin.terminal.Resource;
+import com.vaadin.terminal.ThemeResource;
 
 public class TreeDataSourceImpl implements TreeDataSource {
 
@@ -170,7 +169,8 @@ public class TreeDataSourceImpl implements TreeDataSource {
     }
 
     private void assignParent(final ResourceModel parent, final ResourceModel child) {
-        dataSource.setChildrenAllowed(parent, true);
+        final boolean setChildrenAllowed = dataSource.setChildrenAllowed(parent, true);
+        final boolean hasChildren = dataSource.hasChildren(parent);
         final boolean isSuccesful = dataSource.setParent(child, parent);
         Preconditions.checkArgument(isSuccesful, "Setting parent of " + child + " to " + parent + " is not succesful.");
     }

@@ -28,9 +28,10 @@
  */
 package org.escidoc.browser.ui.navigation.menubar;
 
+import java.net.MalformedURLException;
+
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.TreeDataSource;
-import org.escidoc.browser.model.internal.TreeDataSourceImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.maincontent.ContainerAddView;
 
@@ -42,29 +43,28 @@ import com.vaadin.ui.Window;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
-final class ShowContainerAddView implements Command {
+public final class ShowContainerAddView implements Command {
 
-    private final NavigationMenuBar navigationMenuBar;
+    private final Repositories repositories;
 
-    private Repositories repositories;
-
-    private Window mainWindow;
+    private final Window mainWindow;
 
     private ResourceModel parent;
 
-    public ShowContainerAddView(final NavigationMenuBar navigationMenuBar, final Repositories repositories,
-        final Window mainWindow) {
-        Preconditions.checkNotNull(navigationMenuBar, "navigationMenuBar is null: %s", navigationMenuBar);
+    private final String contextId;
+
+    private final TreeDataSource treeDataSource;
+
+    public ShowContainerAddView(final Repositories repositories, final Window mainWindow, final String contextId,
+        final TreeDataSource treeDataSource) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
-        this.navigationMenuBar = navigationMenuBar;
+        Preconditions.checkNotNull(contextId, "contextId is null: %s", contextId);
+        Preconditions.checkNotNull(treeDataSource, "treeDataSource is null: %s", treeDataSource);
         this.repositories = repositories;
         this.mainWindow = mainWindow;
-    }
-
-    ShowContainerAddView(final NavigationMenuBar navigationMenuBar) {
-        Preconditions.checkNotNull(navigationMenuBar, "navigation Menu Bar is null: %s", navigationMenuBar);
-        this.navigationMenuBar = navigationMenuBar;
+        this.contextId = contextId;
+        this.treeDataSource = treeDataSource;
     }
 
     public void withParent(final ResourceModel parent) {
@@ -73,22 +73,33 @@ final class ShowContainerAddView implements Command {
 
     @Override
     public void menuSelected(final MenuItem selectedItem) {
-        if (selectedItem.getText().equals("Container")) {
-            navigationMenuBar.getWindow().showNotification("Show Container Add View");
-            Preconditions.checkNotNull(parent, "parent is null: %s", parent);
-            TreeDataSource treeDataSource;
-            try {
-                treeDataSource = new TreeDataSourceImpl(repositories.context().findAllWithChildrenInfo());
-                treeDataSource.init();
-                new ContainerAddView(repositories, mainWindow, parent, treeDataSource);
-            }
-            catch (final EscidocClientException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+        if (isContainerSelected(selectedItem)) {
+            showIt();
         }
         else {
-            navigationMenuBar.getWindow().showNotification("Action " + selectedItem.getText());
+            mainWindow.showNotification("Action " + selectedItem.getText());
         }
+    }
+
+    public void showIt() {
+        Preconditions.checkNotNull(parent, "parent is null: %s", parent);
+        // TreeDataSource treeDataSource;
+        try {
+            // treeDataSource = new TreeDataSourceImpl(repositories.context().findAllWithChildrenInfo());
+            // treeDataSource.init();
+            final ContainerAddView containerAddView =
+                new ContainerAddView(repositories, mainWindow, parent, treeDataSource, contextId);
+            containerAddView.openSubWindow();
+        }
+        catch (final EscidocClientException e) {
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        }
+        catch (final MalformedURLException e) {
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        }
+    }
+
+    private boolean isContainerSelected(final MenuItem selectedItem) {
+        return selectedItem.getText().equals("Container");
     }
 }

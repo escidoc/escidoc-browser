@@ -28,7 +28,6 @@
  */
 package org.escidoc.browser.ui.navigation;
 
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 
 import org.escidoc.browser.ActionIdConstants;
@@ -38,15 +37,15 @@ import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.PropertyId;
-import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.MainSite;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.TreeClickListener;
-import org.escidoc.browser.ui.listeners.TreeCreateContainer;
 import org.escidoc.browser.ui.listeners.TreeCreateItem;
 import org.escidoc.browser.ui.navigation.menubar.NavigationMenuBar;
+import org.escidoc.browser.ui.navigation.menubar.ShowContainerAddView;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.event.Action;
@@ -87,7 +86,7 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
 
     private final Repositories repositories;
 
-    private TreeDataSource container;
+    private TreeDataSource treeDataSource;
 
     private ContainerModel contModel;
 
@@ -125,7 +124,7 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
 
     @Override
     public void setDataSource(final TreeDataSource container, final MainSite mainSite) {
-        this.container = container;
+        this.treeDataSource = container;
         tree.setContainerDataSource(container.getContainer());
         tree.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
         tree.setItemCaptionPropertyId(PropertyId.NAME);
@@ -173,24 +172,15 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
     }
 
     private void showCreateItemView(final Object target, final String contextId) {
-        new TreeCreateItem(target, contextId, serviceLocation, getWindow(), repositories.item(), container)
+        new TreeCreateItem(target, contextId, serviceLocation, getWindow(), repositories.item(), treeDataSource)
             .createItem();
     }
 
     private void showCreateContainerView(final Object target, final String contextId) {
-        final TreeCreateContainer tcc =
-            new TreeCreateContainer(target, contextId, serviceLocation, getWindow(), repositories.container(),
-                container);
-        try {
-            tcc.showContainerAddView();
-            // resourceProxy.setStruct(contModel.getId());
-        }
-        catch (final MalformedURLException e) {
-            e.printStackTrace();
-        }
-        catch (final EscidocClientException e) {
-            e.printStackTrace();
-        }
+        final ShowContainerAddView showContainerAddView =
+            new ShowContainerAddView(repositories, getWindow(), contextId, treeDataSource);
+        showContainerAddView.withParent((ResourceModel) target);
+        showContainerAddView.showIt();
     }
 
     @Override

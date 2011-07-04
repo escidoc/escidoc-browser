@@ -31,9 +31,11 @@ package org.escidoc.browser.ui.navigation.menubar;
 import java.net.URISyntaxException;
 
 import org.escidoc.browser.ActionIdConstants;
+import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.ViewConstants;
 
@@ -48,7 +50,7 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 @SuppressWarnings("serial")
 public class NavigationMenuBar extends CustomComponent {
 
-    private final ShowContainerAddView addNewResourceCommand;
+    private ShowContainerAddView showContainerAddView;
 
     private final MenuBar menuBar = new MenuBar();
 
@@ -66,13 +68,20 @@ public class NavigationMenuBar extends CustomComponent {
 
     private MenuItem deleteMenuItem;
 
-    public NavigationMenuBar(final CurrentUser currentUser, final Repositories repositories, final Window mainWindow) {
+    private final Window mainWindow;
+
+    private final TreeDataSource treeDataSource;
+
+    public NavigationMenuBar(final CurrentUser currentUser, final Repositories repositories, final Window mainWindow,
+        final TreeDataSource treeDataSource) {
         Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
+        Preconditions.checkNotNull(treeDataSource, "treeDataSource is null: %s", treeDataSource);
         this.currentUser = currentUser;
         this.repositories = repositories;
-        addNewResourceCommand = new ShowContainerAddView(this, repositories, mainWindow);
+        this.mainWindow = mainWindow;
+        this.treeDataSource = treeDataSource;
         setCompositionRoot(menuBar);
         init();
         bindRole();
@@ -105,9 +114,9 @@ public class NavigationMenuBar extends CustomComponent {
 
     private void addCreateMenu() {
         add = menuBar.addItem(ViewConstants.ADD, null);
-        contextMenuItem = add.addItem(ResourceType.CONTEXT.asLabel(), addNewResourceCommand);
-        containerMenuItem = add.addItem(ResourceType.CONTAINER.asLabel(), addNewResourceCommand);
-        itemMenuItem = add.addItem(ResourceType.ITEM.asLabel(), addNewResourceCommand);
+        contextMenuItem = add.addItem(ResourceType.CONTEXT.asLabel(), showContainerAddView);
+        containerMenuItem = add.addItem(ResourceType.CONTAINER.asLabel(), showContainerAddView);
+        itemMenuItem = add.addItem(ResourceType.ITEM.asLabel(), showContainerAddView);
     }
 
     private void addDeleteMenu() {
@@ -124,18 +133,34 @@ public class NavigationMenuBar extends CustomComponent {
             showAddContext();
         }
         else {
-            addNewResourceCommand.withParent(resourceModel);
+            String contextId;
             switch (resourceModel.getType()) {
                 case CONTEXT:
+                    contextId = resourceModel.getId();
                     showAddContainerAndItem();
                     break;
                 case CONTAINER:
+                    contextId = getContextIdForContainer(resourceModel);
+                    showContainerAddView =
+                        new ShowContainerAddView(repositories, mainWindow, contextId, treeDataSource);
+                    showContainerAddView.withParent(resourceModel);
+                    containerMenuItem.setCommand(showContainerAddView);
                     showAddContainerAndItem();
                     break;
                 case ITEM:
                     menuBar.setEnabled(false);
             }
         }
+    }
+
+    private String getContextIdForContainer(final ResourceModel resourceModel) {
+        try {
+            return repositories.container().findById(resourceModel.getId()).getContext().getObjid();
+        }
+        catch (final EscidocClientException e) {
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        }
+        return AppConstants.EMPTY_STRING;
     }
 
     private void showAddContext() {
