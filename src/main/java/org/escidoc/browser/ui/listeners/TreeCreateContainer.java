@@ -28,14 +28,9 @@
  */
 package org.escidoc.browser.ui.listeners;
 
-import com.google.common.base.Preconditions;
+import java.net.MalformedURLException;
 
-import com.vaadin.data.validator.StringLengthValidator;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.NativeSelect;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.Window;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.EscidocServiceLocation;
@@ -48,9 +43,13 @@ import org.escidoc.browser.ui.ViewConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.MalformedURLException;
-
-import javax.xml.parsers.ParserConfigurationException;
+import com.google.common.base.Preconditions;
+import com.vaadin.data.validator.StringLengthValidator;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.NativeSelect;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.EscidocException;
@@ -73,11 +72,11 @@ public class TreeCreateContainer {
 
     private final EscidocServiceLocation serviceLocation;
 
-    final Window mainWindow;
+    private final Window mainWindow;
 
     private final TreeDataSource treeDataSource;
 
-    final String contextId;
+    private final String contextId;
 
     private final Object parent;
 

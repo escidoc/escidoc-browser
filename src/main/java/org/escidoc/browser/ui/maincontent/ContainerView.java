@@ -28,14 +28,19 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
+import java.net.URISyntaxException;
+
+import org.escidoc.browser.ActionIdConstants;
+import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.repository.internal.ContainerRepository;
 import org.escidoc.browser.ui.MainSite;
 import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
@@ -56,6 +61,7 @@ import com.vaadin.ui.themes.BaseTheme;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.properties.PublicStatus;
+import de.escidoc.core.resources.om.container.Container;
 
 /**
  * @author ARB
@@ -63,6 +69,7 @@ import de.escidoc.core.resources.common.properties.PublicStatus;
  */
 @SuppressWarnings("serial")
 public class ContainerView extends VerticalLayout {
+    static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
 
     private final int appHeight;
 
@@ -71,8 +78,6 @@ public class ContainerView extends VerticalLayout {
     private final ContainerProxy resourceProxy;
 
     private final CssLayout cssLayout = new CssLayout();
-
-    private static final String DESCRIPTION = "Description: ";
 
     private static final String CREATED_BY = "Created by ";
 
@@ -103,6 +108,8 @@ public class ContainerView extends VerticalLayout {
     private Component oldComponent = null;
 
     private Component swapComponent = null;
+
+    private Label lblStatus;
 
     public ContainerView(final EscidocServiceLocation serviceLocation, final MainSite mainSite,
         final ResourceProxy resourceProxy, final Window mainWindow, final CurrentUser currentUser,
@@ -203,7 +210,7 @@ public class ContainerView extends VerticalLayout {
     private void bindProperties() {
         // LEFT SIde
         final Label descMetadata1 = new Label("ID: " + resourceProxy.getId());
-        final Label lblStatus = new Label(STATUS + resourceProxy.getStatus(), Label.CONTENT_RAW);
+        lblStatus = new Label(STATUS + resourceProxy.getStatus(), Label.CONTENT_RAW);
         descMetadata1.setStyleName("floatleft");
         descMetadata1.setWidth("35%");
 
@@ -261,15 +268,16 @@ public class ContainerView extends VerticalLayout {
             @Override
             public void buttonClick(final ClickEvent event) {
                 btnEdit.setCaption("Do not push this button again");
-                ContainerRepository container = repositories.container();
-
-                // repo.retrieve== get from escidoc
-                // update the retrieved container
-                // repo.update(updated container)
-                // repositories.container().update(resourceProxy);
-                // if successful
-                // update the view
-                // other wise reset view
+                Container container;
+                try {
+                    container = repositories.container().findContainerById(resourceProxy.getId());
+                    repositories.container().changePublicStatus(container,
+                        lblStatus.getValue().toString().replace(STATUS, "").toUpperCase());
+                    btnEdit.detach();
+                }
+                catch (EscidocClientException e) {
+                    LOG.debug(e.getLocalizedMessage());
+                }
             }
         });
         btnEdit.setStyleName("floatright");
@@ -283,7 +291,6 @@ public class ContainerView extends VerticalLayout {
         this.setHeight("100%");
         cssLayout.setWidth("100%");
         cssLayout.setHeight("100%");
-
         // this is an assumption of the height that should be left for the
         // accordion or elements of the DirectMember in the same level
         // I remove 420px that are taken by elements on the de.escidoc.esdc.page
@@ -294,76 +301,100 @@ public class ContainerView extends VerticalLayout {
     }
 
     private void handleLayoutListeners() {
+        try {
+            if (repositories
+                .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.UPDATE_ITEM).forResource("")
+                .permitted() == false) {
 
-        cssLayout.addListener(new LayoutClickListener() {
-            private static final long serialVersionUID = 1L;
+                cssLayout.addListener(new LayoutClickListener() {
+                    private static final long serialVersionUID = 1L;
 
-            @Override
-            public void layoutClick(final LayoutClickEvent event) {
-                // Get the child component which was clicked
-                if (event.getChildComponent() != null) {
-                    // Is Label?
-                    if (event.getChildComponent().getClass().getCanonicalName() == "com.vaadin.ui.Label") {
-                        final Label child = (Label) event.getChildComponent();
+                    @Override
+                    public void layoutClick(final LayoutClickEvent event) {
+                        // Get the child component which was clicked
+                        if (event.getChildComponent() != null) {
+                            // Is Label?
+                            if (event.getChildComponent().getClass().getCanonicalName() == "com.vaadin.ui.Label") {
+                                final Label child = (Label) event.getChildComponent();
 
-                        if ((child).getDescription() == "header") {
-                            // oldComponent = event.getClickedComponent();
-                            // swapComponent = editHeader(child.getValue().toString());
-                            // cssLayout.replaceComponent(oldComponent, swapComponent);
-                            // btnEdit.setVisible(true);
+                                if ((child).getDescription() == "header") {
+                                    // We are not editing header anymore
+                                    // oldComponent = event.getClickedComponent();
+                                    // swapComponent = editHeader(child.getValue().toString());
+                                    // cssLayout.replaceComponent(oldComponent, swapComponent);
+                                    // btnEdit.setVisible(true);
+                                }
+                                else if (child.getDescription() == "status") {
+                                    oldComponent = event.getClickedComponent();
+                                    swapComponent = editStatus(child.getValue().toString().replace(STATUS, ""));
+                                    cssLayout.replaceComponent(oldComponent, swapComponent);
+                                }
+                            }
+                            else {
+                                getWindow().showNotification(
+                                    "The click was over a " + event.getChildComponent().getClass().getCanonicalName());
+                            }
                         }
-                        else if (child.getDescription() == "status") {
-                            oldComponent = event.getClickedComponent();
-                            swapComponent = editStatus(child.getValue().toString().replace(STATUS, ""));
-                            cssLayout.replaceComponent(oldComponent, swapComponent);
-                            btnEdit.setVisible(true);
+                        else {
+                            if (swapComponent != null) {
+                                if (swapComponent instanceof Label) {
+                                    ((Label) oldComponent).setValue(((TextField) swapComponent).getValue());
+                                }
+                                else if ((swapComponent instanceof ComboBox)) {
+                                    ((Label) oldComponent).setValue(STATUS + ((ComboBox) swapComponent).getValue());
+                                    btnEdit.setVisible(true);
+                                }
+                                cssLayout.replaceComponent(swapComponent, oldComponent);
+                                swapComponent = null;
+                            }
                         }
                     }
-                    else {
-                        getWindow().showNotification(
-                            "The click was over a " + event.getChildComponent().getClass().getCanonicalName());
-                    }
-                }
-                else {
-                    if (swapComponent != null) {
-                        if (swapComponent instanceof Label) {
-                            System.out.println("oldComponent is label");
-                            ((Label) oldComponent).setValue(((TextField) swapComponent).getValue());
+
+                    private Component editStatus(final String publicStatus) {
+                        final ComboBox cmbStatus = new ComboBox();
+                        if (publicStatus.equals("pending")) {
+                            cmbStatus.addItem(PublicStatus.PENDING.toString().toLowerCase());
+                            cmbStatus.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
                         }
-                        else if ((swapComponent instanceof ComboBox)) {
-                            ((Label) oldComponent).setValue(STATUS + ((ComboBox) swapComponent).getValue());
+                        else if (publicStatus.equals("submitted")) {
+                            cmbStatus.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
+                            cmbStatus.addItem(PublicStatus.IN_REVISION.toString().toLowerCase());
+                            cmbStatus.addItem(PublicStatus.RELEASED.toString().toLowerCase());
                         }
-                        cssLayout.replaceComponent(swapComponent, oldComponent);
-                        swapComponent = null;
+                        else if (publicStatus.equals("in_revision")) {
+                            cmbStatus.addItem(PublicStatus.IN_REVISION.toString().toLowerCase());
+                            cmbStatus.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
+                        }
+                        else if (publicStatus.equals("released")) {
+                            cmbStatus.addItem(PublicStatus.RELEASED.toString().toLowerCase());
+                            cmbStatus.addItem(PublicStatus.WITHDRAWN.toString().toLowerCase());
+                        }
+                        else if (publicStatus.equals("withdrawn")) {
+                            cmbStatus.addItem(PublicStatus.WITHDRAWN.toString().toLowerCase());
+                            cmbStatus.addItem(PublicStatus.RELEASED.toString().toLowerCase());
+                        }
+                        return cmbStatus;
                     }
-                }
+
+                    // Not used since we agreed to remove the possii
+                    // private Component editHeader(final String lblHeaderValue) {
+                    // final TextField txtHeader = new TextField();
+                    // txtHeader.setValue(lblHeaderValue.replaceAll(RESOURCE_NAME, ""));
+                    // resourceProxy.setName(lblHeaderValue.replaceAll(RESOURCE_NAME, ""));
+                    // return txtHeader;
+                    // }
+
+                });
             }
-
-            private Component editStatus(final String string) {
-                final ComboBox cmbStatus = new ComboBox();
-                boolean found = false;
-                for (PublicStatus myEnum : PublicStatus.values()) {
-                    if (found == true) {
-                        cmbStatus.addItem(myEnum.toString().toLowerCase());
-                        break;
-                    }
-                    if (myEnum.toString().toLowerCase().equals(string.trim())) {
-                        cmbStatus.addItem(string);
-                        found = true;
-                    }
-
-                }
-                return cmbStatus;
-            }
-
-            private Component editHeader(final String lblHeaderValue) {
-                final TextField txtHeader = new TextField();
-                txtHeader.setValue(lblHeaderValue.replaceAll(RESOURCE_NAME, ""));
-                resourceProxy.setName(lblHeaderValue.replaceAll(RESOURCE_NAME, ""));
-                return txtHeader;
-            }
-
-        });
+        }
+        catch (EscidocClientException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch (URISyntaxException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     /**

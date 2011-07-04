@@ -28,7 +28,10 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import com.google.common.base.Preconditions;
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.ContextModel;
@@ -41,8 +44,7 @@ import org.escidoc.browser.model.internal.HasNoNameResource;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.helper.Util;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.base.Preconditions;
 
 import de.escidoc.core.client.ContainerHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -55,7 +57,6 @@ import de.escidoc.core.resources.common.TaskParam;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.sb.search.SearchResultRecord;
-import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 public class ContainerRepository implements Repository {
 
@@ -172,5 +173,23 @@ public class ContainerRepository implements Repository {
         taskParam.setLastModificationDate(parent.getLastModificationDate());
         taskParam.addResourceRef(child.getObjid());
         client.addMembers(parent, taskParam);
+    }
+
+    public void changePublicStatus(Container container, String publicStatus) throws EscidocClientException {
+        final TaskParam taskParam = new TaskParam();
+        taskParam.setLastModificationDate(container.getLastModificationDate());
+        System.out.println("Erdhi mer po cfare ka sjelle " + publicStatus);
+        if (publicStatus.equals("SUBMITTED")) {
+            client.submit(container, taskParam);
+        }
+        else if (publicStatus.equals("IN_REVISION")) {
+            client.revise(container, taskParam);
+        }
+        else if (publicStatus.equals("RELEASED")) {
+            client.release(container, taskParam);
+        }
+        else if (publicStatus.equals("WITHDRAWN")) {
+            client.withdraw(container, taskParam);
+        }
     }
 }
