@@ -142,7 +142,7 @@ public class TreeCreateContainer {
     }
 
     private void addButton() {
-        addButton = new Button(ViewConstants.ADD, new AddContainerListener(this));
+        addButton = new Button(ViewConstants.ADD, new AddContainerListener(containerAddView));
         addContainerForm.addComponent(addButton);
     }
 

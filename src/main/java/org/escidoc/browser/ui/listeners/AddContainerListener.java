@@ -37,17 +37,11 @@ import com.vaadin.ui.Button.ClickEvent;
 @SuppressWarnings("serial")
 public final class AddContainerListener implements Button.ClickListener {
 
-    private ContainerAddView containerAddView;
-
-    private TreeCreateContainer treeCreateContainer;
+    private final ContainerAddView containerAddView;
 
     public AddContainerListener(final ContainerAddView containerAddView) {
         Preconditions.checkNotNull(containerAddView, "containerAddView is null: %s", containerAddView);
         this.containerAddView = containerAddView;
-    }
-
-    public AddContainerListener(final TreeCreateContainer treeCreateContainer) {
-        this.treeCreateContainer = treeCreateContainer;
     }
 
     @Override

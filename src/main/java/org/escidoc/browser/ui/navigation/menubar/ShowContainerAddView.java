@@ -29,8 +29,8 @@
 package org.escidoc.browser.ui.navigation.menubar;
 
 import java.net.MalformedURLException;
+
 import org.escidoc.browser.model.TreeDataSource;
-import org.escidoc.browser.model.internal.TreeDataSourceImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.maincontent.ContainerAddView;
 
@@ -56,18 +56,19 @@ public final class ShowContainerAddView implements Command {
     private ResourceModel parent;
 
     private final String contextId;
-        final Window mainWindow) {
-        Preconditions.checkNotNull(navigationMenuBar, "navigationMenuBar is null: %s", navigationMenuBar);
-        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
-        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
-        this.navigationMenuBar = navigationMenuBar;
-        this.repositories = repositories;
-        this.mainWindow = mainWindow;
-    }
 
     private final TreeDataSource treeDataSource;
 
     public ShowContainerAddView(final Repositories repositories, final Window mainWindow, final String contextId,
+        final TreeDataSource treeDataSource) {
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
+        Preconditions.checkNotNull(contextId, "contextId is null: %s", contextId);
+        Preconditions.checkNotNull(treeDataSource, "treeDataSource is null: %s", treeDataSource);
+        this.repositories = repositories;
+        this.mainWindow = mainWindow;
+        this.contextId = contextId;
+        this.treeDataSource = treeDataSource;
         final TreeDataSource treeDataSource) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
@@ -91,17 +92,6 @@ public final class ShowContainerAddView implements Command {
     public void menuSelected(final MenuItem selectedItem) {
         if (isContainerSelected(selectedItem)) {
             showIt();
-            Preconditions.checkNotNull(parent, "parent is null: %s", parent);
-            TreeDataSource treeDataSource;
-            try {
-                treeDataSource = new TreeDataSourceImpl(repositories.context().findAllWithChildrenInfo());
-                treeDataSource.init();
-                new ContainerAddView(repositories, mainWindow, parent, treeDataSource);
-            }
-            catch (final EscidocClientException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
         }
         else {
             mainWindow.showNotification("Action " + selectedItem.getText());
@@ -124,9 +114,28 @@ public final class ShowContainerAddView implements Command {
         catch (final MalformedURLException e) {
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
         }
+        }
+    }
+
+    public void showIt() {
+        Preconditions.checkNotNull(parent, "parent is null: %s", parent);
+        // TreeDataSource treeDataSource;
+        try {
+            // treeDataSource = new TreeDataSourceImpl(repositories.context().findAllWithChildrenInfo());
+            // treeDataSource.init();
+            final ContainerAddView containerAddView =
+                new ContainerAddView(repositories, mainWindow, parent, treeDataSource, contextId);
+            containerAddView.openSubWindow();
+        }
+        catch (final EscidocClientException e) {
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        }
+        catch (final MalformedURLException e) {
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
     }
 
     private boolean isContainerSelected(final MenuItem selectedItem) {
+        return selectedItem.getText().equals("Container");
         return selectedItem.getText().equals("Container");
     }
 }
