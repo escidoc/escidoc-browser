@@ -135,7 +135,7 @@ public class TreeCreateContainer {
     }
 
     private void addButton() {
-        addButton = new Button(ViewConstants.ADD, new AddCreateContainerListener(this));
+        addButton = new Button(ViewConstants.ADD, new AddContainerListener(this));
         addContainerForm.addComponent(addButton);
     }
 
@@ -200,5 +200,9 @@ public class TreeCreateContainer {
 
     private void closeSubWindow() {
         subwindow.getParent().removeWindow(subwindow);
+    }
+
+    public boolean allValid() {
+        return nameField.isValid() && contentModelSelect.isValid();
     }
 }

@@ -28,15 +28,15 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.model.internal.ContextProxyImpl;
-import org.escidoc.browser.ui.listeners.ContextAdminDescriptorsClickListener;
-
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
+
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.internal.ContextProxyImpl;
+import org.escidoc.browser.ui.listeners.ContextAdminDescriptorsClickListener;
 
 import de.escidoc.core.resources.common.reference.OrganizationalUnitRef;
 import de.escidoc.core.resources.om.context.AdminDescriptor;
@@ -64,11 +64,11 @@ public class ContextAddInfo {
 
     public Panel addPanels() {
 
-        Panel mainpnl = new Panel();
+        final Panel mainpnl = new Panel();
         mainpnl.setHeight("100%");
         mainpnl.setWidth("100%");
 
-        int elementHeight = this.height / 4;
+        final int elementHeight = this.height / 4;
 
         mainpnl.addComponent(buildOrganizationUnit(elementHeight));
         mainpnl.addComponent(buildAdminDescription(elementHeight));
@@ -83,11 +83,12 @@ public class ContextAddInfo {
      * @param elementHeight
      * @return
      */
-    private Panel buildResources(int elementHeight) {
-        Panel resources = new Panel("Resources");
+    private static Panel buildResources(int elementHeight) {
+        final Panel resources = new Panel("Resources");
         resources.setWidth("100%");
         resources.setHeight(elementHeight + "px");
-        Label lblresources = new Label("<a href='/ESCD/#Resources/id'>Members Filtered</a><br />", Label.CONTENT_RAW);
+        final Label lblresources =
+            new Label("<a href='/ESCD/#Resources/id'>Members Filtered</a><br />", Label.CONTENT_RAW);
         resources.addComponent(lblresources);
         return resources;
     }
@@ -96,11 +97,11 @@ public class ContextAddInfo {
      * @param elementHeight
      * @return
      */
-    private Panel buildRelations(int elementHeight) {
-        Panel relations = new Panel("Relations");
+    private static Panel buildRelations(int elementHeight) {
+        final Panel relations = new Panel("Relations");
         relations.setWidth("100%");
         relations.setHeight(elementHeight + "px");
-        Label lblrelations =
+        final Label lblrelations =
             new Label("isRelatedTo <a href='/ESCD/#Context/123'>Other Context</a><br />", Label.CONTENT_RAW);
         relations.addComponent(lblrelations);
         return relations;
@@ -111,14 +112,13 @@ public class ContextAddInfo {
      * @return
      */
     private Panel buildAdminDescription(int elementHeight) {
-        Panel admDescriptors = new Panel("Admin Descriptors");
+        final Panel admDescriptors = new Panel("Admin Descriptors");
         admDescriptors.setWidth("100%");
         admDescriptors.setHeight(elementHeight + "px");
 
-        AdminDescriptors admDesc = resourceProxy.getAdminDescription();
-        String txt = "";
-        for (AdminDescriptor adminDescriptor : admDesc) {
-            Button fooBtn = new Button(adminDescriptor.getName());
+        final AdminDescriptors admDesc = resourceProxy.getAdminDescription();
+        for (final AdminDescriptor adminDescriptor : admDesc) {
+            final Button fooBtn = new Button(adminDescriptor.getName());
             fooBtn.setStyleName(BaseTheme.BUTTON_LINK);
             fooBtn.addListener(new ContextAdminDescriptorsClickListener(adminDescriptor, mainWindow));
             admDescriptors.addComponent(fooBtn);
@@ -136,14 +136,14 @@ public class ContextAddInfo {
      * @return
      */
     private Panel buildOrganizationUnit(int elementHeight) {
-        Panel orgUnit = new Panel("Organizational Unit");
+        final Panel orgUnit = new Panel("Organizational Unit");
         orgUnit.setWidth("100%");
         orgUnit.setHeight(elementHeight + "px");
 
-        OrganizationalUnitRefs orgUnits = resourceProxy.getOrganizationalUnit();
-        for (OrganizationalUnitRef organizationalUnitRef : orgUnits) {
+        final OrganizationalUnitRefs orgUnits = resourceProxy.getOrganizationalUnit();
+        for (final OrganizationalUnitRef organizationalUnitRef : orgUnits) {
 
-            Button fooBtn = new Button(organizationalUnitRef.getXLinkTitle());
+            final Button fooBtn = new Button(organizationalUnitRef.getXLinkTitle());
             fooBtn.setStyleName(BaseTheme.BUTTON_LINK);
             fooBtn.addListener(new ContextAdminDescriptorsClickListener(organizationalUnitRef, mainWindow));
             orgUnit.addComponent(fooBtn);

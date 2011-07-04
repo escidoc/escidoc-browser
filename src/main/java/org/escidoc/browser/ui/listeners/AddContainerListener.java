@@ -26,45 +26,33 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.ui.navigation.menubar;
+package org.escidoc.browser.ui.listeners;
 
 import com.google.common.base.Preconditions;
 
-import com.vaadin.ui.MenuBar.Command;
-import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.Window;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 
-import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.model.TreeDataSource;
-import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.maincontent.ContainerAddView;
 
 @SuppressWarnings("serial")
-final class ShowContainerAddView implements Command {
+public final class AddContainerListener implements Button.ClickListener {
 
-    private final NavigationMenuBar navigationMenuBar;
+    private final ContainerAddView containerAddView;
 
-    private Repositories repositories;
-
-    private Window mainWindow;
-
-    private ResourceModel parent;
-
-    private TreeDataSource treeDataSource;
-
-    ShowContainerAddView(NavigationMenuBar navigationMenuBar) {
-        Preconditions.checkNotNull(navigationMenuBar, "navigation Menu Bar is null: %s", navigationMenuBar);
-        this.navigationMenuBar = navigationMenuBar;
+    public AddContainerListener(ContainerAddView containerAddView) {
+        Preconditions.checkNotNull(containerAddView, "containerAddView is null: %s", containerAddView);
+        this.containerAddView = containerAddView;
     }
 
     @Override
-    public void menuSelected(final MenuItem selectedItem) {
-        if (selectedItem.getText().equals("Container")) {
-            navigationMenuBar.getWindow().showNotification("Show Container Add View");
-            new ContainerAddView(repositories, mainWindow, parent, treeDataSource);
+    public void buttonClick(final ClickEvent event) {
+        if (containerAddView.allValid()) {
+            containerAddView.create();
         }
         else {
-            navigationMenuBar.getWindow().showNotification("Action " + selectedItem.getText());
+            containerAddView.showRequiredMessage();
         }
     }
+
 }

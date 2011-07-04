@@ -1,6 +1,7 @@
 package org.escidoc.browser.repository;
 
 import org.escidoc.browser.repository.internal.ContainerRepository;
+import org.escidoc.browser.repository.internal.ContentModelRepository;
 import org.escidoc.browser.repository.internal.ContextRepository;
 import org.escidoc.browser.repository.internal.ItemRepository;
 
@@ -19,5 +20,7 @@ public interface Repositories {
     StagingRepository staging();
 
     PdpRepository pdp();
+
+    ContentModelRepository contentModel();
 
 }
