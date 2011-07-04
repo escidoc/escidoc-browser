@@ -32,25 +32,24 @@ import com.google.common.base.Preconditions;
 
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.Window;
 
 @SuppressWarnings("serial")
 final class ShowContainerAddView implements Command {
 
-    private final Window mainWindow;
+    private final NavigationMenuBar navigationMenuBar;
 
     ShowContainerAddView(NavigationMenuBar navigationMenuBar) {
         Preconditions.checkNotNull(navigationMenuBar, "navigation Menu Bar is null: %s", navigationMenuBar);
-        this.mainWindow = navigationMenuBar.getWindow();
+        this.navigationMenuBar = navigationMenuBar;
     }
 
     @Override
     public void menuSelected(final MenuItem selectedItem) {
         if (selectedItem.getText().equals("Container")) {
-            mainWindow.showNotification("Show Container Add View");
+            navigationMenuBar.getWindow().showNotification("Show Container Add View");
         }
         else {
-            mainWindow.showNotification("Action " + selectedItem.getText());
+            navigationMenuBar.getWindow().showNotification("Action " + selectedItem.getText());
         }
     }
 }
