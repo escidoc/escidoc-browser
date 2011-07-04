@@ -29,6 +29,10 @@
 package org.escidoc.browser.ui.navigation.menubar;
 
 import java.net.MalformedURLException;
+import org.escidoc.browser.model.TreeDataSource;
+import org.escidoc.browser.model.internal.TreeDataSourceImpl;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.maincontent.ContainerAddView;
 
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.TreeDataSource;
@@ -41,9 +45,6 @@ import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
-import org.escidoc.browser.model.TreeDataSource;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.maincontent.ContainerAddView;
 
 @SuppressWarnings("serial")
 public final class ShowContainerAddView implements Command {
@@ -55,6 +56,14 @@ public final class ShowContainerAddView implements Command {
     private ResourceModel parent;
 
     private final String contextId;
+        final Window mainWindow) {
+        Preconditions.checkNotNull(navigationMenuBar, "navigationMenuBar is null: %s", navigationMenuBar);
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
+        this.navigationMenuBar = navigationMenuBar;
+        this.repositories = repositories;
+        this.mainWindow = mainWindow;
+    }
 
     private final TreeDataSource treeDataSource;
 
@@ -74,11 +83,25 @@ public final class ShowContainerAddView implements Command {
         this.parent = parent;
     }
 
+    public void withParent(final ResourceModel parent) {
+        this.parent = parent;
+    }
+
     @Override
     public void menuSelected(final MenuItem selectedItem) {
         if (isContainerSelected(selectedItem)) {
             showIt();
-            new ContainerAddView(repositories, mainWindow, parent, treeDataSource);
+            Preconditions.checkNotNull(parent, "parent is null: %s", parent);
+            TreeDataSource treeDataSource;
+            try {
+                treeDataSource = new TreeDataSourceImpl(repositories.context().findAllWithChildrenInfo());
+                treeDataSource.init();
+                new ContainerAddView(repositories, mainWindow, parent, treeDataSource);
+            }
+            catch (final EscidocClientException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
         else {
             mainWindow.showNotification("Action " + selectedItem.getText());
