@@ -124,7 +124,7 @@ public class NavigationMenuBar extends CustomComponent {
         if (window == null) {
             return;
         }
-        deleteMenuItem = menuBar.addItem(ViewConstants.DELETE, new DeleteCommand(window));
+        deleteMenuItem = menuBar.addItem(ViewConstants.DELETE, null);
         deleteMenuItem.setEnabled(false);
     }
 
