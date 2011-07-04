@@ -13,6 +13,8 @@ import de.escidoc.core.client.exceptions.InternalClientException;
 
 public class RepositoriesImpl implements Repositories {
 
+    private final EscidocServiceLocation serviceLocation;
+
     private ContextRepository contextRepository;
 
     private ContainerRepository containerRepository;
@@ -23,7 +25,7 @@ public class RepositoriesImpl implements Repositories {
 
     private PdpRepository pdpRepository;
 
-    private final EscidocServiceLocation serviceLocation;
+    private ContentModelRepository contentModelRepository;
 
     public RepositoriesImpl(final EscidocServiceLocation serviceLocation) throws MalformedURLException {
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
@@ -36,6 +38,7 @@ public class RepositoriesImpl implements Repositories {
         itemRepository = new ItemRepository(serviceLocation);
         stagingRepository = new StagingRepositoryImpl(serviceLocation);
         pdpRepository = new PdpRepositoryImpl(serviceLocation.getEscidocUrl());
+        contentModelRepository = new ContentModelRepository(serviceLocation);
         return this;
     }
 
@@ -76,5 +79,12 @@ public class RepositoriesImpl implements Repositories {
     public PdpRepository pdp() {
         Preconditions.checkNotNull(pdpRepository, "pdpRepository is null: %s", pdpRepository);
         return pdpRepository;
+    }
+
+    @Override
+    public ContentModelRepository contentModel() {
+        Preconditions
+            .checkNotNull(contentModelRepository, "contentModelRepository is null: %s", contentModelRepository);
+        return contentModelRepository;
     }
 }

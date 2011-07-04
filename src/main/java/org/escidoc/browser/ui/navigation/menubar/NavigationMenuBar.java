@@ -28,13 +28,7 @@
  */
 package org.escidoc.browser.ui.navigation.menubar;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.Command;
-import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.Window;
+import java.net.URISyntaxException;
 
 import org.escidoc.browser.ActionIdConstants;
 import org.escidoc.browser.model.CurrentUser;
@@ -43,14 +37,18 @@ import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.ViewConstants;
 
-import java.net.URISyntaxException;
+import com.google.common.base.Preconditions;
+import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
 public class NavigationMenuBar extends CustomComponent {
 
-    private final Command addNewResourceCommand = new ShowContainerAddView(this);
+    private final ShowContainerAddView addNewResourceCommand;
 
     private final MenuBar menuBar = new MenuBar();
 
@@ -68,11 +66,13 @@ public class NavigationMenuBar extends CustomComponent {
 
     private MenuItem deleteMenuItem;
 
-    public NavigationMenuBar(final CurrentUser currentUser, final Repositories repositories) {
+    public NavigationMenuBar(final CurrentUser currentUser, final Repositories repositories, final Window mainWindow) {
         Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         this.currentUser = currentUser;
         this.repositories = repositories;
+        addNewResourceCommand = new ShowContainerAddView(this, repositories, mainWindow);
         setCompositionRoot(menuBar);
         init();
         bindRole();
@@ -124,6 +124,7 @@ public class NavigationMenuBar extends CustomComponent {
             showAddContext();
         }
         else {
+            addNewResourceCommand.withParent(resourceModel);
             switch (resourceModel.getType()) {
                 case CONTEXT:
                     showAddContainerAndItem();

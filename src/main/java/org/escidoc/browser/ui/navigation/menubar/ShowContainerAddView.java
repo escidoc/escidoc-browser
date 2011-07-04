@@ -28,16 +28,18 @@
  */
 package org.escidoc.browser.ui.navigation.menubar;
 
-import com.google.common.base.Preconditions;
+import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.TreeDataSource;
+import org.escidoc.browser.model.internal.TreeDataSourceImpl;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.maincontent.ContainerAddView;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Window;
 
-import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.model.TreeDataSource;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.maincontent.ContainerAddView;
+import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
 final class ShowContainerAddView implements Command {
@@ -50,18 +52,40 @@ final class ShowContainerAddView implements Command {
 
     private ResourceModel parent;
 
-    private TreeDataSource treeDataSource;
+    public ShowContainerAddView(final NavigationMenuBar navigationMenuBar, final Repositories repositories,
+        final Window mainWindow) {
+        Preconditions.checkNotNull(navigationMenuBar, "navigationMenuBar is null: %s", navigationMenuBar);
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
+        this.navigationMenuBar = navigationMenuBar;
+        this.repositories = repositories;
+        this.mainWindow = mainWindow;
+    }
 
-    ShowContainerAddView(NavigationMenuBar navigationMenuBar) {
+    ShowContainerAddView(final NavigationMenuBar navigationMenuBar) {
         Preconditions.checkNotNull(navigationMenuBar, "navigation Menu Bar is null: %s", navigationMenuBar);
         this.navigationMenuBar = navigationMenuBar;
+    }
+
+    public void withParent(final ResourceModel parent) {
+        this.parent = parent;
     }
 
     @Override
     public void menuSelected(final MenuItem selectedItem) {
         if (selectedItem.getText().equals("Container")) {
             navigationMenuBar.getWindow().showNotification("Show Container Add View");
-            new ContainerAddView(repositories, mainWindow, parent, treeDataSource);
+            Preconditions.checkNotNull(parent, "parent is null: %s", parent);
+            TreeDataSource treeDataSource;
+            try {
+                treeDataSource = new TreeDataSourceImpl(repositories.context().findAllWithChildrenInfo());
+                treeDataSource.init();
+                new ContainerAddView(repositories, mainWindow, parent, treeDataSource);
+            }
+            catch (final EscidocClientException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
         else {
             navigationMenuBar.getWindow().showNotification("Action " + selectedItem.getText());

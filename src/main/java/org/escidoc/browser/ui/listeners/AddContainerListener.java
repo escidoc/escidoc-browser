@@ -28,21 +28,26 @@
  */
 package org.escidoc.browser.ui.listeners;
 
-import com.google.common.base.Preconditions;
+import org.escidoc.browser.ui.maincontent.ContainerAddView;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
-
-import org.escidoc.browser.ui.maincontent.ContainerAddView;
 
 @SuppressWarnings("serial")
 public final class AddContainerListener implements Button.ClickListener {
 
-    private final ContainerAddView containerAddView;
+    private ContainerAddView containerAddView;
 
-    public AddContainerListener(ContainerAddView containerAddView) {
+    private TreeCreateContainer treeCreateContainer;
+
+    public AddContainerListener(final ContainerAddView containerAddView) {
         Preconditions.checkNotNull(containerAddView, "containerAddView is null: %s", containerAddView);
         this.containerAddView = containerAddView;
+    }
+
+    public AddContainerListener(final TreeCreateContainer treeCreateContainer) {
+        this.treeCreateContainer = treeCreateContainer;
     }
 
     @Override

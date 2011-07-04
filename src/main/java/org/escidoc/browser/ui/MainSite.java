@@ -28,16 +28,8 @@
  */
 package org.escidoc.browser.ui;
 
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Layout;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TabSheet.Tab;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
+import java.net.URISyntaxException;
+import java.util.Map;
 
 import org.escidoc.browser.ActionIdConstants;
 import org.escidoc.browser.AppConstants;
@@ -63,8 +55,16 @@ import org.escidoc.browser.ui.navigation.NavigationTreeView;
 import org.escidoc.browser.ui.navigation.RootNode;
 import org.escidoc.browser.ui.navigation.menubar.NavigationMenuBar;
 
-import java.net.URISyntaxException;
-import java.util.Map;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Layout;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -110,7 +110,7 @@ public class MainSite extends VerticalLayout {
         this.currentUser = currentUser;
         this.repositories = repositories;
 
-        navigationMenuBar = new NavigationMenuBar(currentUser, repositories);
+        navigationMenuBar = new NavigationMenuBar(currentUser, repositories, mainWindow);
 
         init();
     }
