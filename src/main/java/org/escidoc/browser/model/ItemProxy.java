@@ -32,7 +32,6 @@ import java.util.List;
 
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.MetadataRecords;
-import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 
 public interface ItemProxy extends ResourceProxy {
 
@@ -59,10 +58,11 @@ public interface ItemProxy extends ResourceProxy {
 
     MetadataRecords getMedataRecords();
 
-    VersionHistory getPreviousVersion();
+    boolean getPreviousVersion();
 
     String getContentUrl();
 
+    @Override
     Resource getContext();
 
     Object hasComponents();

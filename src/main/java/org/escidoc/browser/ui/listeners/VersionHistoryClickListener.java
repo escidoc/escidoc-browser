@@ -144,7 +144,8 @@ public class VersionHistoryClickListener implements ClickListener {
             || event.getButton().getCaption().equals(" Has previous version")) {
             id = containerProxy.getId();
         }
-        else if (event.getButton().getCaption().equals("Item Version History")) {
+        else if (event.getButton().getCaption().equals("Item Version History")
+            || event.getButton().getCaption().equals(" Has previous versions")) {
             id = itemProxy.getId();
         }
         else {

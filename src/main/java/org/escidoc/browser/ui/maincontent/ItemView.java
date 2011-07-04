@@ -28,24 +28,43 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
+import java.net.URISyntaxException;
+
+import org.escidoc.browser.ActionIdConstants;
+import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.escidoc.browser.ui.MainSite;
+import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
+import com.vaadin.event.LayoutEvents.LayoutClickEvent;
+import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.BaseTheme;
+
+import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.common.properties.PublicStatus;
+import de.escidoc.core.resources.om.item.Item;
 
 @SuppressWarnings("serial")
 public class ItemView extends VerticalLayout {
+    static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
 
     private static final String CREATED_BY = "Created by";
 
@@ -75,6 +94,14 @@ public class ItemView extends VerticalLayout {
 
     private int innerelementsHeight;
 
+    private Button btnEdit = null;
+
+    private Component oldComponent = null;
+
+    private Component swapComponent = null;
+
+    private Label lblStatus;
+
     public ItemView(final EscidocServiceLocation serviceLocation, final Repositories repositories,
         final MainSite mainSite, final ResourceProxy resourceProxy, final Window mainWindow,
         final CurrentUser currentUser) {
@@ -97,9 +124,10 @@ public class ItemView extends VerticalLayout {
 
     void init() {
         buildLayout();
+        handleLayoutListeners();
         createBreadcrumbp();
+        createEditBtn();
         bindNametoHeader();
-        bindDescription();
         bindHrRuler();
         bindProperties();
         buildLeftCell(new ItemContent(repositories, resourceProxy, serviceLocation, mainWindow, currentUser));
@@ -137,39 +165,38 @@ public class ItemView extends VerticalLayout {
     }
 
     private void bindProperties() {
-        // ContainerView DescMetadata1
-        final Label descMetadata1 =
-            new Label("ID: " + resourceProxy.getId() + " <br /> " + STATUS + resourceProxy.getStatus(),
-                Label.CONTENT_RAW);
-        descMetadata1.setStyleName("floatleft columnheight50");
-        descMetadata1.setWidth("30%");
-        cssLayout.addComponent(descMetadata1);
+        final Label descMetadata1 = new Label("ID: " + resourceProxy.getId());
+        lblStatus = new Label(STATUS + resourceProxy.getStatus(), Label.CONTENT_RAW);
+        descMetadata1.setStyleName("floatleft");
+        descMetadata1.setWidth("35%");
 
-        // ContainerView DescMetadata2
+        lblStatus.setStyleName("floatleft");
+        lblStatus.setDescription("status");
+        lblStatus.setWidth("35%");
+
+        // RIGHT SIDE
         final Label descMetadata2 =
-            new Label(CREATED_BY + "<a href='#'> " + resourceProxy.getCreator() + "</a> "
-                + resourceProxy.getCreatedOn() + " <br>" + LAST_MODIFIED_BY + " <a href='#"
-                + resourceProxy.getModifier() + "'>" + resourceProxy.getModifier() + "</a> "
-                + resourceProxy.getModifiedOn() + " " + getHistory(), Label.CONTENT_RAW);
-        descMetadata2.setStyleName("floatright columnheight50");
-        descMetadata2.setWidth("70%");
+            new Label(CREATED_BY + resourceProxy.getCreator() + resourceProxy.getCreatedOn() + "<br/>"
+                + LAST_MODIFIED_BY + resourceProxy.getModifier() + " " + resourceProxy.getModifier(), Label.CONTENT_RAW);
+        descMetadata2.setStyleName("floatright");
+        descMetadata2.setWidth("65%");
+
+        Component versionHistory = getHistory();
+        versionHistory.setStyleName("floatleft");
+        versionHistory.setWidth("65%");
+
+        cssLayout.addComponent(descMetadata1);
         cssLayout.addComponent(descMetadata2);
+        cssLayout.addComponent(lblStatus);
+        cssLayout.addComponent(getHistory());
 
     }
 
     private void bindHrRuler() {
         // ContainerView Horizontal Ruler
-        final Label descRuler =
-            new Label(
-                "____________________________________________________________________________________________________");
+        final Label descRuler = new Label("<hr/>", Label.CONTENT_RAW);
         descRuler.setStyleName("hr");
         cssLayout.addComponent(descRuler);
-    }
-
-    private void bindDescription() {
-        final Label descContext1 = new Label(resourceProxy.getDescription());
-        descContext1.setStyleName(FULLWIDHT_STYLE_NAME);
-        cssLayout.addComponent(descContext1);
     }
 
     private void bindNametoHeader() {
@@ -177,6 +204,29 @@ public class ItemView extends VerticalLayout {
         headerContext.setDescription("header");
         headerContext.setStyleName("h1 fullwidth");
         cssLayout.addComponent(headerContext);
+    }
+
+    private void createEditBtn() {
+        btnEdit = new Button("Save Changes", new Button.ClickListener() {
+            @Override
+            public void buttonClick(final ClickEvent event) {
+                btnEdit.setCaption("Save Changes");
+                Item item;
+                try {
+                    item = repositories.item().findItemById(resourceProxy.getId());
+                    repositories.item().changePublicStatus(item,
+                        lblStatus.getValue().toString().replace(STATUS, "").toUpperCase());
+                    btnEdit.detach();
+                }
+                catch (EscidocClientException e) {
+                    LOG.debug(e.getLocalizedMessage());
+                }
+            }
+        });
+        btnEdit.setStyleName("floatright");
+        btnEdit.setVisible(false);
+        cssLayout.addComponent(btnEdit);
+
     }
 
     @SuppressWarnings("unused")
@@ -193,21 +243,121 @@ public class ItemView extends VerticalLayout {
         accordionHeight = innerelementsHeight - 20;
     }
 
+    private void handleLayoutListeners() {
+        try {
+            if (repositories
+                .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.UPDATE_ITEM)
+                .forResource(resourceProxy.getId()).permitted()) {
+
+                cssLayout.addListener(new LayoutClickListener() {
+                    private static final long serialVersionUID = 1L;
+
+                    @Override
+                    public void layoutClick(final LayoutClickEvent event) {
+                        // Get the child component which was clicked
+                        if (event.getChildComponent() != null) {
+                            // Is Label?
+                            if (event.getChildComponent().getClass().getCanonicalName() == "com.vaadin.ui.Label") {
+                                final Label child = (Label) event.getChildComponent();
+
+                                if ((child).getDescription() == "header") {
+                                    // We are not editing header anymore
+                                    // oldComponent = event.getClickedComponent();
+                                    // swapComponent = editHeader(child.getValue().toString());
+                                    // cssLayout.replaceComponent(oldComponent, swapComponent);
+                                    // btnEdit.setVisible(true);
+                                }
+                                else if (child.getDescription() == "status") {
+                                    oldComponent = event.getClickedComponent();
+                                    swapComponent = editStatus(child.getValue().toString().replace(STATUS, ""));
+                                    cssLayout.replaceComponent(oldComponent, swapComponent);
+                                }
+                            }
+                            else {
+                                getWindow().showNotification(
+                                    "The click was over a " + event.getChildComponent().getClass().getCanonicalName());
+                            }
+                        }
+                        else {
+                            if (swapComponent != null) {
+                                if (swapComponent instanceof Label) {
+                                    ((Label) oldComponent).setValue(((TextField) swapComponent).getValue());
+                                }
+                                else if ((swapComponent instanceof ComboBox)) {
+                                    ((Label) oldComponent).setValue(STATUS + ((ComboBox) swapComponent).getValue());
+                                    btnEdit.setVisible(true);
+                                }
+                                cssLayout.replaceComponent(swapComponent, oldComponent);
+                                swapComponent = null;
+                            }
+                        }
+                    }
+
+                    private Component editStatus(final String publicStatus) {
+                        final ComboBox cmbStatus = new ComboBox();
+                        if (publicStatus.equals("pending")) {
+                            cmbStatus.addItem(PublicStatus.PENDING.toString().toLowerCase());
+                            cmbStatus.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
+                        }
+                        else if (publicStatus.equals("submitted")) {
+                            cmbStatus.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
+                            cmbStatus.addItem(PublicStatus.IN_REVISION.toString().toLowerCase());
+                            cmbStatus.addItem(PublicStatus.RELEASED.toString().toLowerCase());
+                        }
+                        else if (publicStatus.equals("in_revision")) {
+                            cmbStatus.addItem(PublicStatus.IN_REVISION.toString().toLowerCase());
+                            cmbStatus.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
+                        }
+                        else if (publicStatus.equals("released")) {
+                            cmbStatus.addItem(PublicStatus.RELEASED.toString().toLowerCase());
+                            cmbStatus.addItem(PublicStatus.WITHDRAWN.toString().toLowerCase());
+                        }
+                        else if (publicStatus.equals("withdrawn")) {
+                            cmbStatus.addItem(PublicStatus.WITHDRAWN.toString().toLowerCase());
+                            cmbStatus.addItem(PublicStatus.RELEASED.toString().toLowerCase());
+                        }
+                        return cmbStatus;
+                    }
+
+                    // Not used since we agreed to remove the possii
+                    // private Component editHeader(final String lblHeaderValue) {
+                    // final TextField txtHeader = new TextField();
+                    // txtHeader.setValue(lblHeaderValue.replaceAll(RESOURCE_NAME, ""));
+                    // resourceProxy.setName(lblHeaderValue.replaceAll(RESOURCE_NAME, ""));
+                    // return txtHeader;
+                    // }
+
+                });
+            }
+        }
+        catch (EscidocClientException e) {
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+        catch (URISyntaxException e) {
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Checks if a resource has previous history and returns a string TODO in the future it should be a Link (Button
      * Link) that holds a reference to the history of the resource
      * 
      * @return String
      */
-    private String getHistory() {
-        String strHistory;
-        if (resourceProxy.getPreviousVersion() == null) {
-            strHistory = " has no previous versions";
+    private Component getHistory() {
+        if (resourceProxy.getPreviousVersion()) {
+            Button versionHistory =
+                new Button(" Has previous versions", new VersionHistoryClickListener(resourceProxy, mainWindow,
+                    serviceLocation, repositories));
+            versionHistory.setStyleName(BaseTheme.BUTTON_LINK);
+            return versionHistory;
         }
         else {
-            strHistory = " previous version";
+            Label strHistory = new Label("Has no previous history");
+            return strHistory;
         }
-        return strHistory;
     }
 
     @Override

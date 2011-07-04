@@ -37,7 +37,6 @@ import org.escidoc.browser.model.ResourceType;
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.MetadataRecords;
 import de.escidoc.core.resources.common.Relation;
-import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.om.item.Item;
 import de.escidoc.core.resources.om.item.component.Component;
 import de.escidoc.core.resources.om.item.component.Components;
@@ -104,12 +103,16 @@ public class ItemProxyImpl implements ItemProxy {
     }
 
     @Override
-    public VersionHistory getPreviousVersion() {
-        if (itemFromCore.getVersionNumber() > 1)
-            return null;
-        return null;
+    public boolean getPreviousVersion() {
+        final String version = itemFromCore.getProperties().getVersion().getNumber();
+        final int versionNumber = Integer.parseInt(version);
+        if (versionNumber > 1) {
+            return true;
+        }
+        return false;
     }
 
+    @Override
     public Boolean hasComponents() {
         return Boolean.valueOf(itemFromCore.getComponents().size() != 0);
     }

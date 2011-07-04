@@ -45,6 +45,7 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.client.interfaces.ItemHandlerClientInterface;
 import de.escidoc.core.resources.common.Relations;
+import de.escidoc.core.resources.common.TaskParam;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.om.item.Item;
 
@@ -98,6 +99,22 @@ public class ItemRepository implements Repository {
 
     public Item findItemById(final String itemId) throws EscidocClientException {
         return client.retrieve(itemId);
+    }
 
+    public void changePublicStatus(Item item, String publicStatus) throws EscidocClientException {
+        final TaskParam taskParam = new TaskParam();
+        taskParam.setLastModificationDate(item.getLastModificationDate());
+        if (publicStatus.equals("SUBMITTED")) {
+            client.submit(item, taskParam);
+        }
+        else if (publicStatus.equals("IN_REVISION")) {
+            client.revise(item, taskParam);
+        }
+        else if (publicStatus.equals("RELEASED")) {
+            client.release(item, taskParam);
+        }
+        else if (publicStatus.equals("WITHDRAWN")) {
+            client.withdraw(item, taskParam);
+        }
     }
 }

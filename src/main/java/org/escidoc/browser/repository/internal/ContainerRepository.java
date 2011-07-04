@@ -178,7 +178,6 @@ public class ContainerRepository implements Repository {
     public void changePublicStatus(Container container, String publicStatus) throws EscidocClientException {
         final TaskParam taskParam = new TaskParam();
         taskParam.setLastModificationDate(container.getLastModificationDate());
-        System.out.println("Erdhi mer po cfare ka sjelle " + publicStatus);
         if (publicStatus.equals("SUBMITTED")) {
             client.submit(container, taskParam);
         }

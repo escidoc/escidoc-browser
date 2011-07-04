@@ -303,8 +303,8 @@ public class ContainerView extends VerticalLayout {
     private void handleLayoutListeners() {
         try {
             if (repositories
-                .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.UPDATE_ITEM).forResource("")
-                .permitted() == false) {
+                .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.UPDATE_CONTAINER)
+                .forResource(resourceProxy.getId()).permitted()) {
 
                 cssLayout.addListener(new LayoutClickListener() {
                     private static final long serialVersionUID = 1L;
@@ -388,11 +388,11 @@ public class ContainerView extends VerticalLayout {
             }
         }
         catch (EscidocClientException e) {
-            // TODO Auto-generated catch block
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
             e.printStackTrace();
         }
         catch (URISyntaxException e) {
-            // TODO Auto-generated catch block
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
             e.printStackTrace();
         }
     }

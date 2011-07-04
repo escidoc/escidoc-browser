@@ -223,4 +223,6 @@ public class ActionIdConstants {
     public static final String DELETE_CONTENT_MODEL = "info:escidoc/names:aa:1.0:action:delete-content-model";
 
     public static final String UPDATE_ITEM = "info:escidoc/names:aa:1.0:action:update-item";
+
+    public static final String UPDATE_CONTAINER = "info:escidoc/names:aa:1.0:action:update-container";
 }
