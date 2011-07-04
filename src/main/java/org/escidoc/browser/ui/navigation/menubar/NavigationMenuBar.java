@@ -50,7 +50,7 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 @SuppressWarnings("serial")
 public class NavigationMenuBar extends CustomComponent {
 
-    private ShowContainerAddView showContainerAddView;
+    private ShowContainerAddViewMenuCommand showContainerAddViewMenuCommand;
 
     private final MenuBar menuBar = new MenuBar();
 
@@ -114,9 +114,9 @@ public class NavigationMenuBar extends CustomComponent {
 
     private void addCreateMenu() {
         add = menuBar.addItem(ViewConstants.ADD, null);
-        contextMenuItem = add.addItem(ResourceType.CONTEXT.asLabel(), showContainerAddView);
-        containerMenuItem = add.addItem(ResourceType.CONTAINER.asLabel(), showContainerAddView);
-        itemMenuItem = add.addItem(ResourceType.ITEM.asLabel(), showContainerAddView);
+        contextMenuItem = add.addItem(ResourceType.CONTEXT.asLabel(), showContainerAddViewMenuCommand);
+        containerMenuItem = add.addItem(ResourceType.CONTAINER.asLabel(), showContainerAddViewMenuCommand);
+        itemMenuItem = add.addItem(ResourceType.ITEM.asLabel(), showContainerAddViewMenuCommand);
     }
 
     private void addDeleteMenu() {
@@ -141,10 +141,10 @@ public class NavigationMenuBar extends CustomComponent {
                     break;
                 case CONTAINER:
                     contextId = getContextIdForContainer(resourceModel);
-                    showContainerAddView =
-                        new ShowContainerAddView(repositories, mainWindow, contextId, treeDataSource);
-                    showContainerAddView.withParent(resourceModel);
-                    containerMenuItem.setCommand(showContainerAddView);
+                    showContainerAddViewMenuCommand =
+                        new ShowContainerAddViewMenuCommand(repositories, mainWindow, contextId, treeDataSource);
+                    showContainerAddViewMenuCommand.withParent(resourceModel);
+                    containerMenuItem.setCommand(showContainerAddViewMenuCommand);
                     showAddContainerAndItem();
                     break;
                 case ITEM:

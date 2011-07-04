@@ -47,7 +47,7 @@ import com.vaadin.ui.Window;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
-public final class ShowContainerAddView implements Command {
+public final class ShowContainerAddViewMenuCommand implements Command {
 
     private final Repositories repositories;
 
@@ -59,7 +59,7 @@ public final class ShowContainerAddView implements Command {
 
     private final TreeDataSource treeDataSource;
 
-    public ShowContainerAddView(final Repositories repositories, final Window mainWindow, final String contextId,
+    public ShowContainerAddViewMenuCommand(final Repositories repositories, final Window mainWindow, final String contextId,
         final TreeDataSource treeDataSource) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
@@ -100,10 +100,7 @@ public final class ShowContainerAddView implements Command {
 
     public void showIt() {
         Preconditions.checkNotNull(parent, "parent is null: %s", parent);
-        // TreeDataSource treeDataSource;
         try {
-            // treeDataSource = new TreeDataSourceImpl(repositories.context().findAllWithChildrenInfo());
-            // treeDataSource.init();
             final ContainerAddView containerAddView =
                 new ContainerAddView(repositories, mainWindow, parent, treeDataSource, contextId);
             containerAddView.openSubWindow();

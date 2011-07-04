@@ -45,7 +45,7 @@ import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.TreeClickListener;
 import org.escidoc.browser.ui.listeners.TreeCreateItem;
 import org.escidoc.browser.ui.navigation.menubar.NavigationMenuBar;
-import org.escidoc.browser.ui.navigation.menubar.ShowContainerAddView;
+import org.escidoc.browser.ui.navigation.menubar.ShowContainerAddViewMenuCommand;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.event.Action;
@@ -177,10 +177,10 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
     }
 
     private void showCreateContainerView(final Object target, final String contextId) {
-        final ShowContainerAddView showContainerAddView =
-            new ShowContainerAddView(repositories, getWindow(), contextId, treeDataSource);
-        showContainerAddView.withParent((ResourceModel) target);
-        showContainerAddView.showIt();
+        final ShowContainerAddViewMenuCommand showContainerAddViewMenuCommand =
+            new ShowContainerAddViewMenuCommand(repositories, getWindow(), contextId, treeDataSource);
+        showContainerAddViewMenuCommand.withParent((ResourceModel) target);
+        showContainerAddViewMenuCommand.showIt();
     }
 
     @Override
