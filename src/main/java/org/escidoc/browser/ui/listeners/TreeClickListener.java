@@ -95,8 +95,14 @@ public class TreeClickListener implements ItemClickListener {
     @Override
     public void itemClick(final ItemClickEvent event) {
         final ResourceModel resourceModel = (ResourceModel) event.getItemId();
-        navigationMenuBar.update(resourceModel);
+        updateMenuBar(resourceModel);
         openClickedResourceInNewTab(resourceModel);
+    }
+
+    private void updateMenuBar(final ResourceModel resourceModel) {
+        if (navigationMenuBar != null) {
+            navigationMenuBar.update(resourceModel);
+        }
     }
 
     private void openClickedResourceInNewTab(final ResourceModel clickedResource) {
