@@ -48,7 +48,6 @@ import com.vaadin.ui.Link;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.om.item.component.Component;
@@ -56,11 +55,9 @@ import de.escidoc.core.resources.om.item.component.Component;
 @SuppressWarnings("serial")
 public class ItemContent extends Panel {
 
+    private static final String CREATED_ON = "Created on ";
+
     private static final Logger LOG = LoggerFactory.getLogger(ItemContent.class);
-
-    private static final String ITEM_TEMPLATE_NAME = "itemtemplate";
-
-    private final Panel panelComponent = new Panel();
 
     private final EscidocServiceLocation serviceLocation;
 
@@ -90,18 +87,13 @@ public class ItemContent extends Panel {
     }
 
     private void initView() {
-        buildComponentPanel();
-        // panelComponent.addComponent(buildTable());
-        addDragAndDropFiles();
+        this.getLayout().setMargin(false);
+        this.setScrollable(false);
+        this.setHeight("100%");
         if (hasComponents()) {
             buildTable();
         }
-        addComponent(panelComponent);
-    }
-
-    private void buildComponentPanel() {
-        panelComponent.getLayout().setMargin(false);
-        panelComponent.addStyleName(Runo.PANEL_LIGHT);
+        addDragAndDropFiles();
     }
 
     private void addDragAndDropFiles() {
@@ -109,7 +101,8 @@ public class ItemContent extends Panel {
             if (userIsPermittedToUpdate()) {
                 final DragAndDropFileUpload dragAndDropFileUpload =
                     new DragAndDropFileUpload(repositories, itemProxy, this);
-                panelComponent.addComponent(dragAndDropFileUpload);
+                dragAndDropFileUpload.setWidth("100%");
+                this.addComponent(dragAndDropFileUpload);
             }
         }
         catch (final EscidocClientException e) {
@@ -158,9 +151,11 @@ public class ItemContent extends Panel {
 
     private Label createLabelForMetadata(final Component comp) {
         final Label labelMetadata =
-            new Label(comp.getContent().getXLinkTitle() + "<br />" + comp.getProperties().getVisibility() + "<br />"
-                + comp.getProperties().getChecksumAlgorithm() + " " + comp.getProperties().getChecksum(),
-                Label.CONTENT_RAW);
+            new Label(comp.getContent().getXLinkTitle() + "<br />" + CREATED_ON
+                + comp.getProperties().getCreationDate().toString("d.M.y, H:mm") + "<br /> by "
+                + comp.getProperties().getCreatedBy().getXLinkTitle() + "<br /> Mime Type: "
+                + comp.getProperties().getMimeType() + "<br />", Label.CONTENT_RAW);
+        labelMetadata.setStyleName("smallfont");
         return labelMetadata;
     }
 
@@ -177,7 +172,7 @@ public class ItemContent extends Panel {
 
     private void buildTable() {
         table = new Table();
-
+        table.setPageLength(0);
         table.setWidth("100%");
         table.addContainerProperty("Type", Embedded.class, null);
         table.addContainerProperty("Meta", Label.class, null);
@@ -189,12 +184,12 @@ public class ItemContent extends Panel {
         }
         table.setColumnWidth("Type", 20);
         table.setColumnWidth("Link", 20);
-        panelComponent.addComponent(table);
+        this.addComponent(table);
     }
 
     public void updateView(final ItemProxyImpl itemProxy) {
         this.itemProxy = itemProxy;
-        panelComponent.removeAllComponents();
+        this.removeAllComponents();
         addDragAndDropFiles();
         if (hasComponents()) {
             buildTable();

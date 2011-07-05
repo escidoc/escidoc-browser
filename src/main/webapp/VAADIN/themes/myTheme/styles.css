@@ -102,3 +102,9 @@ ul.horizontal_list li{
 	background: #ffffff;
 	padding: 0 0;
 }
+.v-table-body{
+      overflow: hidden !important;
+}
+.smallfont{
+font-size:x-small;
+}
