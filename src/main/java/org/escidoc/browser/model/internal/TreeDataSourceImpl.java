@@ -71,10 +71,11 @@ public class TreeDataSourceImpl implements TreeDataSource {
         dataSource.addContainerProperty(PropertyId.OBJECT_ID, String.class, "NO ID");
         dataSource.addContainerProperty(PropertyId.NAME, String.class, "NO NAME");
         dataSource.addContainerProperty(PropertyId.ICON, Resource.class, null);
+        dataSource.addContainerProperty("type", ResourceType.class, null);
     }
 
     private void sortByNameAscending() {
-        dataSource.sort(new Object[] { PropertyId.NAME }, new boolean[] { true });
+        dataSource.sort(new Object[] { "type", PropertyId.NAME }, new boolean[] { true, true });
     }
 
     private void addTopLevel() {
@@ -89,6 +90,7 @@ public class TreeDataSourceImpl implements TreeDataSource {
                 dataSource.setChildrenAllowed(topLevel, false);
             }
         }
+        // sortByNameAscending();
     }
 
     private boolean isChildless(final ContextModel topLevel) {
@@ -108,6 +110,7 @@ public class TreeDataSourceImpl implements TreeDataSource {
         item.getItemProperty(PropertyId.NAME).setValue(resource.getName());
         item.getItemProperty(PropertyId.ICON).setValue(
             new ThemeResource("images/resources/" + resource.getType().toString().toLowerCase() + ".png"));
+        item.getItemProperty("type").setValue(resource.getType());
     }
 
     @Override
@@ -133,6 +136,8 @@ public class TreeDataSourceImpl implements TreeDataSource {
         for (final ResourceModel child : children) {
             addChild(parent, child);
         }
+        sortByNameAscending();
+
     }
 
     public void addChild(final ResourceModel parent, final ResourceModel child) {
@@ -150,6 +155,8 @@ public class TreeDataSourceImpl implements TreeDataSource {
         else {
             dataSource.setChildrenAllowed(child, isNotItem(child));
         }
+        // sortByNameAscending();
+
     }
 
     private boolean hasMember(final ResourceModel child) {
