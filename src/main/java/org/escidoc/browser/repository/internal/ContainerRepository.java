@@ -33,7 +33,6 @@ import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
@@ -52,6 +51,7 @@ import de.escidoc.core.client.exceptions.EscidocException;
 import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.client.exceptions.TransportException;
 import de.escidoc.core.client.interfaces.ContainerHandlerClientInterface;
+import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.Relations;
 import de.escidoc.core.resources.common.TaskParam;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
@@ -138,7 +138,10 @@ public class ContainerRepository implements Repository {
     }
 
     public ResourceModel findContext(final HasNoNameResource resource) throws EscidocClientException {
-        return new ContextModel(((ContainerProxy) findById(resource.getId())).getContext());
+        final ResourceProxy container = findById(resource.getId());
+        final Resource context = container.getContext();
+        return new ContextModel(context);
+        // return new ContextModel(((ContainerProxy) findById(resource.getId())).getContext());
 
     }
 
@@ -151,7 +154,7 @@ public class ContainerRepository implements Repository {
         return client.create(newContainer);
     }
 
-    public Container update(Container resource) throws EscidocClientException {
+    public Container update(final Container resource) throws EscidocClientException {
         return client.update(resource);
     }
 
@@ -175,7 +178,7 @@ public class ContainerRepository implements Repository {
         client.addMembers(parent, taskParam);
     }
 
-    public void changePublicStatus(Container container, String publicStatus) throws EscidocClientException {
+    public void changePublicStatus(final Container container, final String publicStatus) throws EscidocClientException {
         final TaskParam taskParam = new TaskParam();
         taskParam.setLastModificationDate(container.getLastModificationDate());
         if (publicStatus.equals("SUBMITTED")) {

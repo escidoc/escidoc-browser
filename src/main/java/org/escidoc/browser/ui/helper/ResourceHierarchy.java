@@ -63,9 +63,12 @@ public class ResourceHierarchy {
     }
 
     private void createContainerHierarchy(final String id) throws EscidocClientException {
-        if (getParentOfContainer(id) != null) {
-            containerHierarchy.add(getParentOfContainer(id));
-            createContainerHierarchy(getParentOfContainer(id).getId());
+        final ResourceModel parentOfContainer = getParentOfContainer(id);
+        if (parentOfContainer != null) {
+            containerHierarchy.add(parentOfContainer);
+            if (parentOfContainer.getType().equals(ResourceType.CONTAINER)) {
+                createContainerHierarchy(getParentOfContainer(id).getId());
+            }
         }
     }
 
