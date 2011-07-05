@@ -42,11 +42,11 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Preconditions;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
 
@@ -54,7 +54,7 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.om.item.component.Component;
 
 @SuppressWarnings("serial")
-public class ItemContent extends CustomLayout {
+public class ItemContent extends Panel {
 
     private static final Logger LOG = LoggerFactory.getLogger(ItemContent.class);
 
@@ -72,6 +72,8 @@ public class ItemContent extends CustomLayout {
 
     private ItemProxyImpl itemProxy;
 
+    private Table table;
+
     public ItemContent(final Repositories repositories, final ItemProxyImpl itemProxy,
         final EscidocServiceLocation serviceLocation, final Window mainWindow, final CurrentUser currentUser) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
@@ -88,13 +90,13 @@ public class ItemContent extends CustomLayout {
     }
 
     private void initView() {
-        setTemplateName(ITEM_TEMPLATE_NAME);
         buildComponentPanel();
+        // panelComponent.addComponent(buildTable());
         addDragAndDropFiles();
         if (hasComponents()) {
-            buildComponents();
+            buildTable();
         }
-        addComponent(panelComponent, "components");
+        addComponent(panelComponent);
     }
 
     private void buildComponentPanel() {
@@ -134,22 +136,22 @@ public class ItemContent extends CustomLayout {
         return itemProxy.hasComponents().booleanValue();
     }
 
-    private void buildComponents() {
-        for (final Component component : itemProxy.getElements()) {
-            buildComponentElement(component);
-        }
-    }
-
-    private void buildComponentElement(final Component comp) {
-        panelComponent.addComponent(createEmbeddedImage(comp));
-        panelComponent.addComponent(createDownloadLink(comp));
-        panelComponent.addComponent(createLabelForMetadata(comp));
-    }
+    // REmoved in favor of the Table ordering
+    // private void buildComponents() {
+    // for (final Component component : itemProxy.getElements()) {
+    // buildComponentElement(component);
+    // }
+    // }
+    //
+    // private void buildComponentElement(final Component comp) {
+    // panelComponent.addComponent(createEmbeddedImage(comp));
+    // panelComponent.addComponent(createDownloadLink(comp));
+    // panelComponent.addComponent(createLabelForMetadata(comp));
+    // }
 
     private Link createDownloadLink(final Component comp) {
         final Link link =
-            new Link("Download File", new ExternalResource(serviceLocation.getEscidocUri()
-                + comp.getContent().getXLinkHref()));
+            new Link("", new ExternalResource(serviceLocation.getEscidocUri() + comp.getContent().getXLinkHref()));
         link.setIcon(new ThemeResource("images/download.png"));
         return link;
     }
@@ -173,12 +175,29 @@ public class ItemContent extends CustomLayout {
         return lastOne;
     }
 
+    private void buildTable() {
+        table = new Table();
+
+        table.setWidth("100%");
+        table.addContainerProperty("Type", Embedded.class, null);
+        table.addContainerProperty("Meta", Label.class, null);
+        table.addContainerProperty("Link", Link.class, null);
+        int i = 0;
+        for (final Component comp : itemProxy.getElements()) {
+            table.addItem(new Object[] { createEmbeddedImage(comp), createLabelForMetadata(comp),
+                createDownloadLink(comp) }, i++);
+        }
+        table.setColumnWidth("Type", 20);
+        table.setColumnWidth("Link", 20);
+        panelComponent.addComponent(table);
+    }
+
     public void updateView(final ItemProxyImpl itemProxy) {
         this.itemProxy = itemProxy;
         panelComponent.removeAllComponents();
         addDragAndDropFiles();
         if (hasComponents()) {
-            buildComponents();
+            buildTable();
         }
     }
 }

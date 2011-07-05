@@ -251,7 +251,6 @@ public class SearchResultsView extends VerticalLayout {
                                 .getCurrentUser(), repositories);
                     }
                     catch (final EscidocClientException e) {
-                        System.out.println(e.getMessage() + "Container ID " + (String) variablesForTheTab[1]);
                         showerror();
                     }
                 }

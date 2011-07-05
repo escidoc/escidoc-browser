@@ -156,6 +156,7 @@ public class ItemView extends VerticalLayout {
         absL.setHeight(innerelementsHeight + "px");
 
         final Panel leftpnl = new Panel();
+        leftpnl.getLayout().setMargin(false);
         leftpnl.setStyleName("floatleft");
         leftpnl.setScrollable(false);
         leftpnl.setWidth("30%");
