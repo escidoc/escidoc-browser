@@ -124,7 +124,7 @@ public class SearchRepositoryImpl {
          * Do I have a resource defined? If I have a resource defined, then I need to search in the correct context.name
          * or any-title index depending on the resource
          */
-        if (resourceTxt.equals(null)) {
+        if (resourceTxt != null) {
             if (resourceTxt.equals("Context")) {
                 buf.append("OR escidoc.context.name=\"" + titleTxt + "\"");
             }
@@ -153,7 +153,7 @@ public class SearchRepositoryImpl {
             buf.append(" AND escidoc.fulltext=\"" + fulltxtTxt + "\"");
         }
         try {
-            return client.search(query + buf.toString(), new Integer(0), new Integer(1000), "sort.escidoc.pid",
+            return client.search(query + buf.toString(), Integer.valueOf(0), Integer.valueOf(1000), "sort.escidoc.pid",
                 ESCIDOCALL);
         }
         catch (final EscidocClientException e) {

@@ -139,7 +139,7 @@ public class ContainerProxyImpl implements ContainerProxy {
     @Override
     public void setStatus(final String status) {
         PublicStatus pubStatus = null;
-        if (status == "pending") {
+        if (status.equals("pending")) {
             pubStatus = PublicStatus.PENDING;
         }
         final ContainerProperties prop = new ContainerProperties();
