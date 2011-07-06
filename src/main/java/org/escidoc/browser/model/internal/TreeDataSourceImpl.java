@@ -137,7 +137,6 @@ public class TreeDataSourceImpl implements TreeDataSource {
             addChild(parent, child);
         }
         sortByNameAscending();
-
     }
 
     public void addChild(final ResourceModel parent, final ResourceModel child) {
@@ -155,8 +154,6 @@ public class TreeDataSourceImpl implements TreeDataSource {
         else {
             dataSource.setChildrenAllowed(child, isNotItem(child));
         }
-        // sortByNameAscending();
-
     }
 
     private boolean hasMember(final ResourceModel child) {

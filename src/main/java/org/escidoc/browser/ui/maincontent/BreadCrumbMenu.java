@@ -28,23 +28,20 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Window;
+import java.util.Collections;
+import java.util.List;
 
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.model.ResourceModelFactory;
 import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.repository.internal.ContainerProxyImpl;
 import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.escidoc.browser.ui.helper.ResourceHierarchy;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -89,7 +86,7 @@ public class BreadCrumbMenu {
         final ResourceHierarchy rs = new ResourceHierarchy(escidocServiceLocation, repositories);
         final StringBuffer buf = new StringBuffer();
         try {
-            final ArrayList<ResourceModel> hierarchy = rs.getHierarchy(resourceProxy.getId());
+            final List<ResourceModel> hierarchy = rs.getHierarchy(resourceProxy);
             Collections.reverse(hierarchy);
             for (final ResourceModel resourceModel : hierarchy) {
                 // bCstring +=
@@ -120,46 +117,22 @@ public class BreadCrumbMenu {
      */
     public BreadCrumbMenu(final CssLayout cssLayout, final ItemProxyImpl resourceProxy, final Window mainWindow,
         final EscidocServiceLocation escidocServiceLocation, final Repositories repositories) {
+
         final String bCstring = "<ul id='crumbs'><li><a href='#'>Home Item</a></li>";
         final ResourceHierarchy rs = new ResourceHierarchy(escidocServiceLocation, repositories);
 
         final StringBuffer buf = new StringBuffer();
         try {
-            final String parentId = rs.getReturnParentOfItem(resourceProxy.getId()).getId();
-            final ArrayList<ResourceModel> hierarchy = rs.getHierarchy(parentId);
+            final List<ResourceModel> hierarchy = rs.getHierarchy(resourceProxy);
             Collections.reverse(hierarchy);
             for (final ResourceModel resourceModel : hierarchy) {
-                // bCstring +=
-                // "<li><a href='/browser/mainWindow?tab=" + resourceModel.getId() + "&type="
-                // + resourceModel.getType() + "&escidocurl=" + escidocServiceLocation.getEscidocUri()
-                // + "' target='_blank'>" + resourceModel.getName() + "</a></li>";
                 buf.append("<li><a href='#'>" + resourceModel.getName() + "</a></li>");
             }
-            final ResourceModelFactory resourceFactory = new ResourceModelFactory(repositories);
-            final ContainerProxyImpl containerParent =
-                (ContainerProxyImpl) resourceFactory.find(parentId, ResourceType.CONTAINER);
-            buf.append("<li><a href='#'>" + containerParent.getName() + "</a></li>");
+            buf.append("<li><a href='#'>" + resourceProxy.getName() + "</a></li>");
         }
         catch (final Exception e) {
-            // bCstring +=
-            // "<li><a href='/browser/mainWindow?tab=" + resourceProxy.getContext().getObjid()
-            // + "&type=CONTEXT&escidocurl=" + escidocServiceLocation.getEscidocUri() + "' target='_blank'>"
-            // + resourceProxy.getContext().getXLinkTitle() + "</a></li>";
             buf.append("<li><a href='#'>" + resourceProxy.getContext().getXLinkTitle() + "</a></li>");
         }
-
-        // cssLayout
-        // .addComponent(new Label(
-        // bCstring
-        // + "<li>"
-        // + resourceProxy.getName()
-        // + "</li><a href=\"/browser/mainWindow?tab="
-        // + resourceProxy.getId()
-        // + "&type=ITEM&escidocurl="
-        // + escidocServiceLocation.getEscidocUri()
-        // +
-        // "\" target=\"_blank\" alt=\"Permanent Link to resource\" class=\"floatright\"><img src=\"VAADIN/themes/myTheme/images/anchor.png\"/></a></ul>",
-        // Label.CONTENT_RAW));
         cssLayout.addComponent(new Label(bCstring + buf.toString(), Label.CONTENT_RAW));
     }
 }

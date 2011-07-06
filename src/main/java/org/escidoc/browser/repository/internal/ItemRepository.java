@@ -32,10 +32,12 @@ import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 import java.util.List;
 
+import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.internal.HasNoNameResource;
 import org.escidoc.browser.repository.Repository;
 
 import com.google.common.base.Preconditions;
@@ -101,7 +103,7 @@ public class ItemRepository implements Repository {
         return client.retrieve(itemId);
     }
 
-    public void changePublicStatus(Item item, String publicStatus) throws EscidocClientException {
+    public void changePublicStatus(final Item item, final String publicStatus) throws EscidocClientException {
         final TaskParam taskParam = new TaskParam();
         taskParam.setLastModificationDate(item.getLastModificationDate());
         if (publicStatus.equals("SUBMITTED")) {
@@ -116,5 +118,10 @@ public class ItemRepository implements Repository {
         else if (publicStatus.equals("WITHDRAWN")) {
             client.withdraw(item, taskParam);
         }
+    }
+
+    public ResourceModel findContext(final HasNoNameResource resource) throws EscidocClientException {
+        final ResourceProxy resourceProxy = findById(resource.getId());
+        return new ContextModel(resourceProxy.getContext());
     }
 }

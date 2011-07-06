@@ -42,4 +42,6 @@ public interface UtilRepository {
 
     Resource getParentContext(String id);
 
+    // List<Container> findParent(ResourceModel model) throws EscidocClientException;
+
 }

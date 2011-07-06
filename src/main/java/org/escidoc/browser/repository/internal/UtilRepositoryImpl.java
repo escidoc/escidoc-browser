@@ -93,7 +93,6 @@ public class UtilRepositoryImpl implements UtilRepository {
 
     @Override
     public ResourceModel findParent(final HasNoNameResource resource) throws EscidocClientException {
-
         Preconditions.checkNotNull(resource, "resource is null: %s", resource);
         Preconditions.checkArgument(
             resource.getType().equals(ResourceType.ITEM) || resource.getType().equals(ResourceType.CONTAINER),
@@ -101,15 +100,24 @@ public class UtilRepositoryImpl implements UtilRepository {
 
         final List<Container> parents = repositories.container().findParents(resource);
 
+        if (parentIsContext(parents)) {
+            switch (resource.getType()) {
+                case CONTAINER:
+                    return repositories.container().findContext(resource);
+                case ITEM:
+                    return repositories.item().findContext(resource);
+                default:
+                    break;
+            }
+        }
+
+        if (parentIsContainer(parents)) {
+            return new ContainerModel(parents.get(0));
+        }
+
         if (parents.size() > 1) {
             LOG.warn("Found more than one parent: " + parents);
             throw new UnsupportedOperationException("Found more than one parent: " + parents);
-        }
-        else if (parentIsContainer(parents)) {
-            return new ContainerModel(parents.get(0));
-        }
-        else if (parentIsContext(parents)) {
-            return repositories.container().findContext(resource);
         }
         throw new UnsupportedOperationException("Unsupported");
     }
@@ -141,5 +149,10 @@ public class UtilRepositoryImpl implements UtilRepository {
         }
         return null;
     }
+
+    // @Override
+    // public List<Container> findParent(final ResourceModel model) throws EscidocClientException {
+    // return repositories.container().findParents(new HasNoNameResourceImpl(model.getId(), model.getType()));
+    // }
 
 }

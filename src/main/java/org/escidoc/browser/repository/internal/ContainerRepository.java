@@ -141,8 +141,6 @@ public class ContainerRepository implements Repository {
         final ResourceProxy container = findById(resource.getId());
         final Resource context = container.getContext();
         return new ContextModel(context);
-        // return new ContextModel(((ContainerProxy) findById(resource.getId())).getContext());
-
     }
 
     public Container findContainerById(final String containerId) throws EscidocClientException {

@@ -29,6 +29,8 @@
 package org.escidoc.browser.ui.helper;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
@@ -37,6 +39,8 @@ import org.escidoc.browser.model.internal.HasNoNameResourceImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.UtilRepository;
 import org.escidoc.browser.repository.internal.UtilRepositoryImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 
@@ -44,22 +48,39 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class ResourceHierarchy {
 
-    private final UtilRepository repository;
+    private static final Logger LOG = LoggerFactory.getLogger(ResourceHierarchy.class);
 
-    private final ArrayList<ResourceModel> containerHierarchy = new ArrayList<ResourceModel>();
+    private final UtilRepository utilRepository;
+
+    private final List<ResourceModel> containerHierarchy = new ArrayList<ResourceModel>();
 
     public ResourceHierarchy(final EscidocServiceLocation serviceLocation, final Repositories repositories) {
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
-        repository = new UtilRepositoryImpl(serviceLocation, repositories);
+        utilRepository = new UtilRepositoryImpl(serviceLocation, repositories);
     }
 
-    public ResourceModel getReturnParentOfItem(final String id) throws Exception {
-        return repository.findParent(new HasNoNameResourceImpl(id, ResourceType.ITEM));
+    public List<ResourceModel> getHierarchy(final ResourceModel model) throws EscidocClientException {
+        switch (model.getType()) {
+            case CONTAINER:
+                createContainerHierarchy(model.getId());
+                return containerHierarchy;
+            case ITEM:
+                final ResourceModel parent = getParent(model);
+                if (parent.getType().equals(ResourceType.CONTAINER)) {
+                    createContainerHierarchy(parent.getId());
+                }
+                else {
+                    containerHierarchy.add(parent);
+                }
+                return containerHierarchy;
+            default:
+                return Collections.emptyList();
+        }
     }
 
-    public ResourceModel getParentOfContainer(final String id) throws EscidocClientException {
-        return repository.findParent(new HasNoNameResourceImpl(id, ResourceType.CONTAINER));
+    private ResourceModel getParent(final ResourceModel model) throws EscidocClientException {
+        return utilRepository.findParent(new HasNoNameResourceImpl(model.getId(), model.getType()));
     }
 
     private void createContainerHierarchy(final String id) throws EscidocClientException {
@@ -72,9 +93,7 @@ public class ResourceHierarchy {
         }
     }
 
-    public ArrayList<ResourceModel> getHierarchy(final String id) throws EscidocClientException {
-        createContainerHierarchy(id);
-        return containerHierarchy;
+    private ResourceModel getParentOfContainer(final String id) throws EscidocClientException {
+        return utilRepository.findParent(new HasNoNameResourceImpl(id, ResourceType.CONTAINER));
     }
-
 }
