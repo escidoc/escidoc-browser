@@ -72,6 +72,8 @@ public class DragAndDropFileUpload extends VerticalLayout {
     }
 
     private void configureDropPane() {
+        // dropPane.setWidth("250px");
+        dropPane.setWidth("100%");
         dropPane.setHeight("100px");
         dropPane.addStyleName("image-drop-pane");
         final Label label = new Label("Drop Files here..");

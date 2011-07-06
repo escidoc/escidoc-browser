@@ -32,6 +32,8 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.ui.listeners.ContextAdminDescriptorsClickListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Accordion;
@@ -47,6 +49,9 @@ import de.escidoc.core.resources.om.context.AdminDescriptors;
 import de.escidoc.core.resources.om.context.OrganizationalUnitRefs;
 
 public class MetadataRecsContext {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MetadataRecsContext.class);
+
     private int height;
 
     private final ContextProxyImpl resourceProxy;
@@ -55,41 +60,45 @@ public class MetadataRecsContext {
 
     private final EscidocServiceLocation escidocServiceLocation;
 
-    public MetadataRecsContext(ResourceProxy resourceProxy, int innerelementsHeight, Window mainWindow,
-        EscidocServiceLocation escidocServiceLocation) {
+    public MetadataRecsContext(final ResourceProxy resourceProxy, final int innerelementsHeight,
+        final Window mainWindow, final EscidocServiceLocation escidocServiceLocation) {
         Preconditions.checkNotNull(mainWindow, "resource is null.");
-        this.height = innerelementsHeight;
-        if (this.height < 1)
-            this.height = 400;
-        this.height = innerelementsHeight;
+        height = innerelementsHeight;
+        if (height < 1) {
+            height = 400;
+        }
+        height = innerelementsHeight;
         this.resourceProxy = (ContextProxyImpl) resourceProxy;
         this.mainWindow = mainWindow;
         this.escidocServiceLocation = escidocServiceLocation;
     }
 
     public Accordion asAccord() {
-        Accordion metadataRecs = new Accordion();
+        final Accordion metadataRecs = new Accordion();
         metadataRecs.setSizeFull();
-        int elementHeight = this.height / 4;
-        System.out.println(elementHeight);
+        int elementHeight = height / 4;
+        LOG.debug("element height: " + elementHeight);
         elementHeight = 410;
-        // Add the components as tabs in the Accordion.
+        addComponentAsTabs(metadataRecs, elementHeight);
+        return metadataRecs;
+    }
+
+    private void addComponentAsTabs(final Accordion metadataRecs, final int elementHeight) {
         metadataRecs.addTab(buildOrganizationUnit(elementHeight), "Organizational Unit", null);
         metadataRecs.addTab(buildAdminDescription(elementHeight), "Admin Description", null);
         metadataRecs.addTab(buildRelations(elementHeight), "Relations", null);
         metadataRecs.addTab(buildResources(elementHeight), "Resources", null);
-        return metadataRecs;
     }
 
     /**
      * @param elementHeight
      * @return
      */
-    private Panel buildResources(int elementHeight) {
-        Panel resources = new Panel();
+    private Panel buildResources(final int elementHeight) {
+        final Panel resources = new Panel();
         resources.setWidth("100%");
         resources.setHeight(elementHeight + "px");
-        Label lblresources = new Label("<a href='#'>Members Filtered</a><br />", Label.CONTENT_RAW);
+        final Label lblresources = new Label("<a href='#'>Members Filtered</a><br />", Label.CONTENT_RAW);
         resources.addComponent(lblresources);
         return resources;
     }
@@ -98,11 +107,11 @@ public class MetadataRecsContext {
      * @param elementHeight
      * @return
      */
-    private Panel buildRelations(int elementHeight) {
-        Panel relations = new Panel();
+    private Panel buildRelations(final int elementHeight) {
+        final Panel relations = new Panel();
         relations.setWidth("100%");
         relations.setHeight(elementHeight + "px");
-        Label lblrelations = new Label("isRelatedTo <a href='#'>Other Context</a><br />", Label.CONTENT_RAW);
+        final Label lblrelations = new Label("isRelatedTo <a href='#'>Other Context</a><br />", Label.CONTENT_RAW);
         relations.addComponent(lblrelations);
         return relations;
     }
@@ -111,15 +120,15 @@ public class MetadataRecsContext {
      * @param elementHeight
      * @return
      */
-    private Panel buildAdminDescription(int elementHeight) {
-        Panel admDescriptors = new Panel();
+    private Panel buildAdminDescription(final int elementHeight) {
+        final Panel admDescriptors = new Panel();
         admDescriptors.setWidth("100%");
         admDescriptors.setHeight(elementHeight + "px");
 
-        AdminDescriptors admDesc = resourceProxy.getAdminDescription();
-        String txt = "";
-        for (AdminDescriptor adminDescriptor : admDesc) {
-            Button fooBtn = new Button(adminDescriptor.getName());
+        final AdminDescriptors admDesc = resourceProxy.getAdminDescription();
+        final String txt = "";
+        for (final AdminDescriptor adminDescriptor : admDesc) {
+            final Button fooBtn = new Button(adminDescriptor.getName());
             fooBtn.setStyleName(BaseTheme.BUTTON_LINK);
             fooBtn.addListener(new ContextAdminDescriptorsClickListener(adminDescriptor, mainWindow));
             admDescriptors.addComponent(fooBtn);
@@ -136,15 +145,15 @@ public class MetadataRecsContext {
      * @param elementHeight
      * @return
      */
-    private Panel buildOrganizationUnit(int elementHeight) {
-        Panel orgUnit = new Panel();
+    private Panel buildOrganizationUnit(final int elementHeight) {
+        final Panel orgUnit = new Panel();
         orgUnit.setWidth("100%");
         orgUnit.setHeight(elementHeight + "px");
 
-        OrganizationalUnitRefs orgUnits = resourceProxy.getOrganizationalUnit();
-        for (OrganizationalUnitRef organizationalUnitRef : orgUnits) {
+        final OrganizationalUnitRefs orgUnits = resourceProxy.getOrganizationalUnit();
+        for (final OrganizationalUnitRef organizationalUnitRef : orgUnits) {
 
-            Button fooBtn = new Button(organizationalUnitRef.getXLinkTitle());
+            final Button fooBtn = new Button(organizationalUnitRef.getXLinkTitle());
             fooBtn.setStyleName(BaseTheme.BUTTON_LINK);
             fooBtn.addListener(new ContextAdminDescriptorsClickListener(organizationalUnitRef, mainWindow));
             orgUnit.addComponent(fooBtn);
@@ -156,7 +165,7 @@ public class MetadataRecsContext {
         return height;
     }
 
-    public void setHeight(int height) {
+    public void setHeight(final int height) {
         this.height = height;
     }
 }
