@@ -101,7 +101,7 @@ public class ItemRepository implements Repository {
         clientContainer.setHandle(handle);
     }
 
-    public Item create(final Item newItem) throws EscidocClientException {
+    private Item create(final Item newItem) throws EscidocClientException {
         return client.create(newItem);
     }
 
@@ -117,11 +117,11 @@ public class ItemRepository implements Repository {
         Preconditions.checkNotNull(newItem, "newContainer is null: %s", newItem);
         Preconditions.checkNotNull(parent, "parent is null: %s", parent);
 
-        final Item child = create(newItem);
+        final Item createdItem = create(newItem);
         if (parent.getType().equals(ResourceType.CONTAINER)) {
-            addChild(clientContainer.retrieve(parent.getId()), child);
+            addChild(clientContainer.retrieve(parent.getId()), createdItem);
         }
-        return child;
+        return createdItem;
     }
 
     private void addChild(final Container parent, final Item child) throws EscidocException, InternalClientException,

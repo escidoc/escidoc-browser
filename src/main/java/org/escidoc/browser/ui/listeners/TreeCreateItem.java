@@ -185,14 +185,12 @@ public class TreeCreateItem {
         final Item newItem = itmBuild.build(itemName);
 
         try {
-            final Item create = repositories.item().create(newItem);
-            repositories.item().createWithParent(create, (ResourceModel) parent);
-            treeDataSource.addChild((ResourceModel) parent, new ItemModel(create));
+            final Item createdItem = repositories.item().createWithParent(newItem, (ResourceModel) parent);
+            treeDataSource.addChild((ResourceModel) parent, new ItemModel(createdItem));
             subwindow.getParent().removeWindow(subwindow);
         }
         catch (final EscidocClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
         }
     }
 
