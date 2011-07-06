@@ -28,22 +28,24 @@
  */
 package org.escidoc.browser.ui.helper;
 
-import com.google.common.base.Preconditions;
-
-import org.escidoc.browser.AppConstants;
-import org.escidoc.browser.model.ContainerModel;
-import org.escidoc.browser.model.ItemModel;
-import org.escidoc.browser.model.ResourceModel;
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.axis.types.NonNegativeInteger;
+import org.escidoc.browser.AppConstants;
+import org.escidoc.browser.model.ContainerModel;
+import org.escidoc.browser.model.ItemModel;
+import org.escidoc.browser.model.ResourceModel;
+
+import com.google.common.base.Preconditions;
+
 import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.om.item.Item;
 import de.escidoc.core.resources.sb.search.SearchResult;
-import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 public final class Util {
 
@@ -141,6 +143,7 @@ public final class Util {
         Preconditions.checkArgument(!id.isEmpty(), "id is empty: %s", id);
         final SearchRetrieveRequestType filter = new SearchRetrieveRequestType();
         filter.setQuery(topLevelContainersAndItems(id));
+        filter.setMaximumRecords(new NonNegativeInteger("1000"));
         return filter;
     }
 

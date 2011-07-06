@@ -62,7 +62,7 @@ public class MetadataRecBehavour implements ClickListener {
 
     @Override
     public void buttonClick(final ClickEvent event) {
-        final Window subwindow = new Window("MetadataRecs");
+        Window subwindow = new Window("Metadata Records");
         subwindow.setWidth("600px");
         subwindow.setModal(true);
 

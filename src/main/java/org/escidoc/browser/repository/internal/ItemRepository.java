@@ -37,27 +37,36 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.internal.HasNoNameResource;
 import org.escidoc.browser.repository.Repository;
 
 import com.google.common.base.Preconditions;
 
+import de.escidoc.core.client.ContainerHandlerClient;
 import de.escidoc.core.client.ItemHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.client.exceptions.EscidocException;
 import de.escidoc.core.client.exceptions.InternalClientException;
+import de.escidoc.core.client.exceptions.TransportException;
+import de.escidoc.core.client.interfaces.ContainerHandlerClientInterface;
 import de.escidoc.core.client.interfaces.ItemHandlerClientInterface;
 import de.escidoc.core.resources.common.Relations;
 import de.escidoc.core.resources.common.TaskParam;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
+import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.om.item.Item;
 
 public class ItemRepository implements Repository {
 
     private final ItemHandlerClientInterface client;
 
+    private final ContainerHandlerClientInterface clientContainer;
+
     public ItemRepository(final EscidocServiceLocation serviceLocation) {
         Preconditions.checkNotNull(serviceLocation, "escidocServiceLocation is null: %s", serviceLocation);
         client = new ItemHandlerClient(serviceLocation.getEscidocUri());
+        clientContainer = new ContainerHandlerClient(serviceLocation.getEscidocUri());
     }
 
     @Override
@@ -89,6 +98,7 @@ public class ItemRepository implements Repository {
     @Override
     public void loginWith(final String handle) throws InternalClientException {
         client.setHandle(handle);
+        clientContainer.setHandle(handle);
     }
 
     public Item create(final Item newItem) throws EscidocClientException {
@@ -101,6 +111,25 @@ public class ItemRepository implements Repository {
 
     public Item findItemById(final String itemId) throws EscidocClientException {
         return client.retrieve(itemId);
+    }
+
+    public Item createWithParent(final Item newItem, final ResourceModel parent) throws EscidocClientException {
+        Preconditions.checkNotNull(newItem, "newContainer is null: %s", newItem);
+        Preconditions.checkNotNull(parent, "parent is null: %s", parent);
+
+        final Item child = create(newItem);
+        if (parent.getType().equals(ResourceType.CONTAINER)) {
+            addChild(clientContainer.retrieve(parent.getId()), child);
+        }
+        return child;
+    }
+
+    private void addChild(final Container parent, final Item child) throws EscidocException, InternalClientException,
+        TransportException {
+        final TaskParam taskParam = new TaskParam();
+        taskParam.setLastModificationDate(parent.getLastModificationDate());
+        taskParam.addResourceRef(child.getObjid());
+        clientContainer.addMembers(parent, taskParam);
     }
 
     public void changePublicStatus(final Item item, final String publicStatus) throws EscidocClientException {

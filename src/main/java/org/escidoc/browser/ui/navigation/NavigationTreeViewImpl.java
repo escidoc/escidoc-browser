@@ -172,8 +172,7 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
     }
 
     private void showCreateItemView(final Object target, final String contextId) {
-        new TreeCreateItem(target, contextId, serviceLocation, getWindow(), repositories.item(), treeDataSource)
-            .createItem();
+        new TreeCreateItem(target, contextId, serviceLocation, getWindow(), repositories, treeDataSource).createItem();
     }
 
     private void showCreateContainerView(final Object target, final String contextId) {

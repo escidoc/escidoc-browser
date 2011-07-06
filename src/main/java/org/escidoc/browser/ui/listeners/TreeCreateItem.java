@@ -35,11 +35,11 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemModel;
-import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.ItemBuilder;
+import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ContentModelRepository;
-import org.escidoc.browser.repository.internal.ItemRepository;
 
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.Button;
@@ -60,13 +60,13 @@ import de.escidoc.core.resources.om.item.Item;
 
 public class TreeCreateItem {
 
-    public Object target;
+    public Object parent;
 
     public String contextId;
 
     public EscidocServiceLocation serviceLocation;
 
-    public ItemRepository itemRepository;
+    public Repositories repositories;
 
     public TreeDataSource treeDataSource;
 
@@ -80,13 +80,13 @@ public class TreeCreateItem {
 
     private final Window mainWindow;
 
-    public TreeCreateItem(final Object target, final String contextId, final EscidocServiceLocation serviceLocation,
-        final Window window, final ItemRepository containerRepo, final TreeDataSource container) {
-        this.target = target;
+    public TreeCreateItem(final Object parent, final String contextId, final EscidocServiceLocation serviceLocation,
+        final Window window, final Repositories repositories, final TreeDataSource container) {
+        this.parent = parent;
         this.contextId = contextId;
         this.serviceLocation = serviceLocation;
         mainWindow = window;
-        itemRepository = containerRepo;
+        this.repositories = repositories;
         treeDataSource = container;
     }
 
@@ -153,11 +153,11 @@ public class TreeCreateItem {
 
     public void clickButtonaddContainer(final ClickEvent event) {
         if (txtItemName.isValid() && slcContentModl.isValid()) {
-            final String containerName = txtItemName.getValue().toString();
+            final String itemName = txtItemName.getValue().toString();
             final String contentModelId = (String) slcContentModl.getValue();
             // We really create the container here
             try {
-                createNewItem(containerName, contentModelId, contextId);
+                createNewItem(itemName, contentModelId, contextId);
             }
             catch (final ParserConfigurationException e) {
                 mainWindow.showNotification("Not able to create a new Item for you. Please contact the developers", 1);
@@ -185,8 +185,9 @@ public class TreeCreateItem {
         final Item newItem = itmBuild.build(itemName);
 
         try {
-            final Item create = itemRepository.create(newItem);
-            treeDataSource.addChild((ResourceModel) target, new ItemModel(create));
+            final Item create = repositories.item().create(newItem);
+            repositories.item().createWithParent(create, (ResourceModel) parent);
+            treeDataSource.addChild((ResourceModel) parent, new ItemModel(create));
             subwindow.getParent().removeWindow(subwindow);
         }
         catch (final EscidocClientException e) {
@@ -194,4 +195,5 @@ public class TreeCreateItem {
             e.printStackTrace();
         }
     }
+
 }
