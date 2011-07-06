@@ -89,18 +89,10 @@ public class BreadCrumbMenu {
             final List<ResourceModel> hierarchy = rs.getHierarchy(resourceProxy);
             Collections.reverse(hierarchy);
             for (final ResourceModel resourceModel : hierarchy) {
-                // bCstring +=
-                // "<li><a href='/browser/mainWindow?tab=" + resourceModel.getId() + "&type="
-                // + resourceModel.getType() + "&escidocurl=" + escidocServiceLocation.getEscidocUri()
-                // + "' target='_blank'>" + resourceModel.getName() + "</a></li>";
                 buf.append("<li><a href='#'>" + resourceModel.getName() + "</a></li>");
             }
         }
         catch (final EscidocClientException e) {
-            // bCstring +=
-            // "<li><a href='/browser/mainWindow?tab=" + resourceProxy.getContext().getObjid()
-            // + "&type=CONTEXT&escidocurl=" + escidocServiceLocation + "' target='_blank'>"
-            // + resourceProxy.getContext().getXLinkTitle() + "</a></li>";
             buf.append("<li><a href='#'>" + resourceProxy.getContext().getXLinkTitle() + "</a></li>");
         }
         cssLayout.addComponent(new Label(bCstring + buf.toString() + "<li>" + resourceProxy.getName() + "</li></ul>",

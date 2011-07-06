@@ -87,13 +87,14 @@ public class ItemContent extends Panel {
     }
 
     private void initView() {
-        this.getLayout().setMargin(false);
-        this.setScrollable(false);
+        getLayout().setMargin(false);
+        setScrollable(false);
         this.setHeight("100%");
+
+        addDragAndDropFiles();
         if (hasComponents()) {
             buildTable();
         }
-        addDragAndDropFiles();
     }
 
     private void addDragAndDropFiles() {
@@ -102,7 +103,7 @@ public class ItemContent extends Panel {
                 final DragAndDropFileUpload dragAndDropFileUpload =
                     new DragAndDropFileUpload(repositories, itemProxy, this);
                 dragAndDropFileUpload.setWidth("100%");
-                this.addComponent(dragAndDropFileUpload);
+                addComponent(dragAndDropFileUpload);
             }
         }
         catch (final EscidocClientException e) {
@@ -128,19 +129,6 @@ public class ItemContent extends Panel {
     private boolean hasComponents() {
         return itemProxy.hasComponents().booleanValue();
     }
-
-    // REmoved in favor of the Table ordering
-    // private void buildComponents() {
-    // for (final Component component : itemProxy.getElements()) {
-    // buildComponentElement(component);
-    // }
-    // }
-    //
-    // private void buildComponentElement(final Component comp) {
-    // panelComponent.addComponent(createEmbeddedImage(comp));
-    // panelComponent.addComponent(createDownloadLink(comp));
-    // panelComponent.addComponent(createLabelForMetadata(comp));
-    // }
 
     private Link createDownloadLink(final Component comp) {
         final Link link =
@@ -180,16 +168,16 @@ public class ItemContent extends Panel {
         int i = 0;
         for (final Component comp : itemProxy.getElements()) {
             table.addItem(new Object[] { createEmbeddedImage(comp), createLabelForMetadata(comp),
-                createDownloadLink(comp) }, i++);
+                createDownloadLink(comp) }, new Integer(i++));
         }
         table.setColumnWidth("Type", 20);
         table.setColumnWidth("Link", 20);
-        this.addComponent(table);
+        addComponent(table);
     }
 
     public void updateView(final ItemProxyImpl itemProxy) {
         this.itemProxy = itemProxy;
-        this.removeAllComponents();
+        removeAllComponents();
         addDragAndDropFiles();
         if (hasComponents()) {
             buildTable();

@@ -182,7 +182,7 @@ public class ItemView extends VerticalLayout {
         descMetadata2.setStyleName("floatright");
         descMetadata2.setWidth("65%");
 
-        Component versionHistory = getHistory();
+        final Component versionHistory = getHistory();
         versionHistory.setStyleName("floatleft");
         versionHistory.setWidth("65%");
 
@@ -219,7 +219,7 @@ public class ItemView extends VerticalLayout {
                         lblStatus.getValue().toString().replace(STATUS, "").toUpperCase());
                     btnEdit.detach();
                 }
-                catch (EscidocClientException e) {
+                catch (final EscidocClientException e) {
                     LOG.debug(e.getLocalizedMessage());
                 }
             }
@@ -319,23 +319,14 @@ public class ItemView extends VerticalLayout {
                         }
                         return cmbStatus;
                     }
-
-                    // Not used since we agreed to remove the possii
-                    // private Component editHeader(final String lblHeaderValue) {
-                    // final TextField txtHeader = new TextField();
-                    // txtHeader.setValue(lblHeaderValue.replaceAll(RESOURCE_NAME, ""));
-                    // resourceProxy.setName(lblHeaderValue.replaceAll(RESOURCE_NAME, ""));
-                    // return txtHeader;
-                    // }
-
                 });
             }
         }
-        catch (EscidocClientException e) {
+        catch (final EscidocClientException e) {
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
             e.printStackTrace();
         }
-        catch (URISyntaxException e) {
+        catch (final URISyntaxException e) {
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
             e.printStackTrace();
         }
@@ -349,14 +340,14 @@ public class ItemView extends VerticalLayout {
      */
     private Component getHistory() {
         if (resourceProxy.getPreviousVersion()) {
-            Button versionHistory =
+            final Button versionHistory =
                 new Button(" Has previous versions", new VersionHistoryClickListener(resourceProxy, mainWindow,
                     serviceLocation, repositories));
             versionHistory.setStyleName(BaseTheme.BUTTON_LINK);
             return versionHistory;
         }
         else {
-            Label strHistory = new Label("Has no previous history");
+            final Label strHistory = new Label("Has no previous history");
             return strHistory;
         }
     }
