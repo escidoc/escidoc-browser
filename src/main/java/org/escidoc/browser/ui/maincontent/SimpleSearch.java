@@ -28,6 +28,7 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
+import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.MainSite;
@@ -58,13 +59,18 @@ public class SimpleSearch extends VerticalLayout {
 
     private final Repositories repositories;
 
+    private final CurrentUser currentUser;
+
     public SimpleSearch(final MainSite mainSite, final EscidocServiceLocation serviceLocation,
-        final Repositories repositories) {
+        final Repositories repositories, final CurrentUser currentUser) {
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
         this.mainSite = mainSite;
         this.serviceLocation = serviceLocation;
         this.repositories = repositories;
+        this.currentUser = currentUser;
 
         final CustomLayout custom = new CustomLayout("simplesearch");
         addComponent(custom);
@@ -101,7 +107,7 @@ public class SimpleSearch extends VerticalLayout {
      */
     public void onClick(final Button.ClickEvent event) {
         final SearchResultsView smpSearch =
-            new SearchResultsView(mainSite, "null", serviceLocation, repositories, null);
+            new SearchResultsView(mainSite, "null", serviceLocation, repositories, currentUser);
         mainSite.openTab(smpSearch, "Search Results");
 
     }

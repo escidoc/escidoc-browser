@@ -64,23 +64,23 @@ public class SearchRepositoryImpl {
         client.setHandle(handle);
     }
 
-    public SearchRetrieveResponse advancedSearch(String query) {
+    public SearchRetrieveResponse advancedSearch(final String query) {
         return null;
     }
 
-    public SearchRetrieveResponse simpleSearch(String query) {
+    public SearchRetrieveResponse simpleSearch(final String query) {
         /*
          * 1. Split phrases in " " 2. Split words by space if they are not in " " 3. Provide support for the operators
          * +,-
          */
         final String REGEXSPLITQUOTES = "\"(.*)\"";
 
-        Pattern p = Pattern.compile(REGEXSPLITQUOTES, Pattern.DOTALL);
+        final Pattern p = Pattern.compile(REGEXSPLITQUOTES, Pattern.DOTALL);
 
         Matcher matcher = p.matcher(query);
 
         final Pattern csvPattern = Pattern.compile("\"([^\"]*)\"|(?<= |^)([^ ]*)(?: |$)");
-        ArrayList<String> allMatches = new ArrayList<String>();
+        final ArrayList<String> allMatches = new ArrayList<String>();
         String match = null;
         matcher = csvPattern.matcher(query);
         allMatches.clear();
@@ -96,9 +96,9 @@ public class SearchRepositoryImpl {
         }
 
         // escidoc.fulltext, escidoc.metadata escidoc.context.name escidoc.creator.name.
-        String queryString = "1=1 ";
-        StringBuffer buf = new StringBuffer();
-        for (String string : allMatches) {
+        final String queryString = "1=1 ";
+        final StringBuffer buf = new StringBuffer();
+        for (final String string : allMatches) {
             buf.append(" or escidoc.any-title=\"" + string + "\" or escidoc.fulltext=\"" + string
                 + "\" or escidoc.metadata=\"" + string + "\" or escidoc.context.name=\"" + string
                 + "\" or escidoc.creator.name=\"" + string + "\"");
@@ -108,24 +108,24 @@ public class SearchRepositoryImpl {
             // "escidoc.any-title"=b*
             return client.search(queryString + buf.toString(), 0, 1000, "sort.escidoc.pid", ESCIDOCALL);
         }
-        catch (EscidocClientException e) {
+        catch (final EscidocClientException e) {
             LOG.debug("EscidocClientException" + e.getMessage());
         }
         return null;
     }
 
     public SearchRetrieveResponse advancedSearch(
-        String titleTxt, String creatorTxt, String descriptionTxt, String creationDateTxt, String mimesTxt,
-        String resourceTxt, String fulltxtTxt) {
-        String query = "1=1 ";
-        StringBuffer buf = new StringBuffer();
+        final String titleTxt, final String creatorTxt, final String descriptionTxt, final String creationDateTxt,
+        final String mimesTxt, final String resourceTxt, final String fulltxtTxt) {
+        final String query = "1=1 ";
+        final StringBuffer buf = new StringBuffer();
 
         /*
          * Do I have a resource defined? If I have a resource defined, then I need to search in the correct context.name
          * or any-title index depending on the resource
          */
-        if (resourceTxt != null) {
-            if (resourceTxt == "Context") {
+        if (resourceTxt.equals(null)) {
+            if (resourceTxt.equals("Context")) {
                 buf.append("OR escidoc.context.name=\"" + titleTxt + "\"");
             }
             else {
@@ -141,10 +141,7 @@ public class SearchRepositoryImpl {
         if (!creatorTxt.isEmpty()) {
             buf.append(" AND escidoc.created-by.name=\"" + creatorTxt + "\"");
         }
-        if (!descriptionTxt.isEmpty()) {
-            // query += " AND escidoc.created-by.name=\"" + creatorTxt + "\"";
-        }
-        if (creationDateTxt != null) {
+        if (!creationDateTxt.isEmpty()) {
             buf.append(" AND (escidoc.creation-date=\"" + creationDateTxt
                 + "*\" OR (escidoc.component.creation-date=\"" + creationDateTxt + "*\"))");
         }
@@ -156,9 +153,10 @@ public class SearchRepositoryImpl {
             buf.append(" AND escidoc.fulltext=\"" + fulltxtTxt + "\"");
         }
         try {
-            return client.search(query + buf.toString(), 0, 1000, "sort.escidoc.pid", ESCIDOCALL);
+            return client.search(query + buf.toString(), new Integer(0), new Integer(1000), "sort.escidoc.pid",
+                ESCIDOCALL);
         }
-        catch (EscidocClientException e) {
+        catch (final EscidocClientException e) {
             LOG.debug("EscidocClientException");
             e.printStackTrace();
         }

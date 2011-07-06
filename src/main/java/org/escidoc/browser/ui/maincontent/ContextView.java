@@ -198,7 +198,7 @@ public class ContextView extends VerticalLayout {
     }
 
     private void createBreadCrumb() {
-        new BreadCrumbMenu(cssLayout, resourceProxy, repositories);
+        new BreadCrumbMenu(cssLayout, resourceProxy);
     }
 
     private void bindNameToHeader() {

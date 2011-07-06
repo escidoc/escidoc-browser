@@ -165,10 +165,10 @@ public class ItemContent extends Panel {
         table.addContainerProperty("Type", Embedded.class, null);
         table.addContainerProperty("Meta", Label.class, null);
         table.addContainerProperty("Link", Link.class, null);
-        int i = 0;
+        int rowIndex = 0;
         for (final Component comp : itemProxy.getElements()) {
             table.addItem(new Object[] { createEmbeddedImage(comp), createLabelForMetadata(comp),
-                createDownloadLink(comp) }, new Integer(i++));
+                createDownloadLink(comp) }, Integer.valueOf(rowIndex++));
         }
         table.setColumnWidth("Type", 20);
         table.setColumnWidth("Link", 20);

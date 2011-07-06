@@ -64,18 +64,18 @@ public class TreeDataSourceImpl implements TreeDataSource {
     public void init() {
         addProperties();
         addTopLevel();
-        sortByNameAscending();
+        sortByTypeAndNameAscending();
     }
 
     private void addProperties() {
         dataSource.addContainerProperty(PropertyId.OBJECT_ID, String.class, "NO ID");
         dataSource.addContainerProperty(PropertyId.NAME, String.class, "NO NAME");
         dataSource.addContainerProperty(PropertyId.ICON, Resource.class, null);
-        dataSource.addContainerProperty("type", ResourceType.class, null);
+        dataSource.addContainerProperty(PropertyId.TYPE, ResourceType.class, null);
     }
 
-    private void sortByNameAscending() {
-        dataSource.sort(new Object[] { "type", PropertyId.NAME }, new boolean[] { true, true });
+    private void sortByTypeAndNameAscending() {
+        dataSource.sort(new String[] { PropertyId.TYPE, PropertyId.NAME }, new boolean[] { true, true });
     }
 
     private void addTopLevel() {
@@ -90,7 +90,6 @@ public class TreeDataSourceImpl implements TreeDataSource {
                 dataSource.setChildrenAllowed(topLevel, false);
             }
         }
-        // sortByNameAscending();
     }
 
     private boolean isChildless(final ContextModel topLevel) {
@@ -110,7 +109,7 @@ public class TreeDataSourceImpl implements TreeDataSource {
         item.getItemProperty(PropertyId.NAME).setValue(resource.getName());
         item.getItemProperty(PropertyId.ICON).setValue(
             new ThemeResource("images/resources/" + resource.getType().toString().toLowerCase() + ".png"));
-        item.getItemProperty("type").setValue(resource.getType());
+        item.getItemProperty(PropertyId.TYPE).setValue(resource.getType());
     }
 
     @Override
@@ -136,7 +135,7 @@ public class TreeDataSourceImpl implements TreeDataSource {
         for (final ResourceModel child : children) {
             addChild(parent, child);
         }
-        sortByNameAscending();
+        sortByTypeAndNameAscending();
     }
 
     public void addChild(final ResourceModel parent, final ResourceModel child) {
@@ -173,8 +172,6 @@ public class TreeDataSourceImpl implements TreeDataSource {
     }
 
     private void assignParent(final ResourceModel parent, final ResourceModel child) {
-        final boolean setChildrenAllowed = dataSource.setChildrenAllowed(parent, true);
-        final boolean hasChildren = dataSource.hasChildren(parent);
         final boolean isSuccesful = dataSource.setParent(child, parent);
         Preconditions.checkArgument(isSuccesful, "Setting parent of " + child + " to " + parent + " is not succesful.");
     }

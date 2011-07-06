@@ -30,6 +30,8 @@ package org.escidoc.browser.model;
 
 public class PropertyId {
 
+    public static final String TYPE = "type";
+
     private PropertyId() {
         // Constant class
     }

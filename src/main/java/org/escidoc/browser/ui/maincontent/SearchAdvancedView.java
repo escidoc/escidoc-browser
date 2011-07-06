@@ -68,9 +68,9 @@ public class SearchAdvancedView extends VerticalLayout {
 
     private final EscidocServiceLocation serviceLocation;
 
-    public SearchAdvancedView(MainSite mainSite, final EscidocServiceLocation serviceLocation) {
+    public SearchAdvancedView(final MainSite mainSite, final EscidocServiceLocation serviceLocation) {
         this.mainSite = mainSite;
-        this.appHeight = mainSite.getApplicationHeight();
+        appHeight = mainSite.getApplicationHeight();
         this.serviceLocation = serviceLocation;
         setWidth("100.0%");
         setHeight("85%");
@@ -81,7 +81,7 @@ public class SearchAdvancedView extends VerticalLayout {
         cssLayout.setWidth("60%");
         cssLayout.setCaption("Advanced Search");
         // Css Hack * Clear Div
-        Label lblClear = new Label();
+        final Label lblClear = new Label();
         lblClear.setStyleName("clear");
 
         txtTitle = new TextField();
@@ -109,8 +109,8 @@ public class SearchAdvancedView extends VerticalLayout {
                 "audio/mpeg", "application/xml", "text/xml" };
         mimes = new ComboBox();
 
-        for (int i = 0; i < mimetypes.length; i++) {
-            mimes.addItem(mimetypes[i]);
+        for (final String mimetype : mimetypes) {
+            mimes.addItem(mimetype);
         }
         mimes.setInputPrompt("Mime Types");
         mimes.setFilteringMode(Filtering.FILTERINGMODE_STARTSWITH);
@@ -119,8 +119,8 @@ public class SearchAdvancedView extends VerticalLayout {
         // Dropdown for Resource Type
         final String[] resourcearr = new String[] { "Context", "Container", "Item" };
         resource = new ComboBox();
-        for (int i = 0; i < resourcearr.length; i++) {
-            resource.addItem(resourcearr[i]);
+        for (final String element : resourcearr) {
+            resource.addItem(element);
         }
         resource.setInputPrompt("Resource Type");
         resource.setFilteringMode(Filtering.FILTERINGMODE_OFF);
@@ -130,7 +130,7 @@ public class SearchAdvancedView extends VerticalLayout {
         txtFullText.setInputPrompt("FullText");
         txtFullText.setImmediate(false);
 
-        Button bSearch = new Button("Search", this, "onClick");
+        final Button bSearch = new Button("Search", this, "onClick");
         bSearch.setDescription("Search Tooltip");
 
         // Placing the elements in the design:
@@ -179,7 +179,7 @@ public class SearchAdvancedView extends VerticalLayout {
      * 
      * @param event
      */
-    public void onClick(Button.ClickEvent event) {
+    public void onClick(final Button.ClickEvent event) {
         final String titleTxt = (String) txtTitle.getValue();
         final String creatorTxt = (String) txtCreator.getValue();
         final String descriptionTxt = (String) txtDescription.getValue();
@@ -192,7 +192,7 @@ public class SearchAdvancedView extends VerticalLayout {
             final SearchResultsView srchRes =
                 new SearchResultsView(mainSite, serviceLocation, titleTxt, creatorTxt, descriptionTxt, creationDateTxt,
                     mimesTxt, resourceTxt, fulltxtTxt);
-            this.mainSite.openTab(srchRes, "Advanced Search " + titleTxt + " " + creationDateTxt + " " + mimesTxt);
+            mainSite.openTab(srchRes, "Advanced Search " + titleTxt + " " + creationDateTxt + " " + mimesTxt);
         }
         else {
             txtTitle.setComponentError(new UserError(
@@ -213,8 +213,8 @@ public class SearchAdvancedView extends VerticalLayout {
      * @return
      */
     public boolean validateInputs(
-        String titleTxt, String creatorTxt, String descriptionTxt, String creationDateTxt, String mimesTxt,
-        String resourceTxt, String fulltxtTxt) {
+        final String titleTxt, final String creatorTxt, final String descriptionTxt, final String creationDateTxt,
+        final String mimesTxt, final String resourceTxt, final String fulltxtTxt) {
 
         if ((!titleTxt.isEmpty() && validateValidInputs(titleTxt))
             || (!creatorTxt.isEmpty() && validateValidInputs(creatorTxt))
@@ -232,20 +232,13 @@ public class SearchAdvancedView extends VerticalLayout {
      * @param searchString
      * @return boolean
      */
-    private boolean validateValidInputs(String term) {
+    private boolean validateValidInputs(final String term) {
         final Pattern p = Pattern.compile("[A-Za-z0-9_.\\s\":#*]{3,}");
         final Matcher m = p.matcher(term);
         return m.matches();
     }
 
-    private String convertDateToTime(Date date) {
-        SimpleDateFormat dateformatYYYYMMDD = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            String nowYYYYMMDD = new String(dateformatYYYYMMDD.format(date));
-            return nowYYYYMMDD;
-        }
-        catch (Exception e) {
-            return null;
-        }
+    private String convertDateToTime(final Date date) {
+        return new SimpleDateFormat("yyyy-MM-dd").format(date);
     }
 }

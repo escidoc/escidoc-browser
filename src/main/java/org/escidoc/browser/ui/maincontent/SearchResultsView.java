@@ -181,7 +181,7 @@ public class SearchResultsView extends VerticalLayout {
                 strResourceType = "Context";
             }
 
-            Object[] variablesForTheTab = { strResourceType, resourceProxy.getId(), resourceProxy.getId() };
+            final Object[] variablesForTheTab = { strResourceType, resourceProxy.getId(), resourceProxy.getId() };
 
             final Item item = container.addItem(variablesForTheTab);
             item.getItemProperty("Type").setValue(

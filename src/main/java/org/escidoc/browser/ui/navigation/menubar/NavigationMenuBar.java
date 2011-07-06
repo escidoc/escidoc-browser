@@ -133,16 +133,14 @@ public class NavigationMenuBar extends CustomComponent {
             showAddContext();
         }
         else {
-            String contextId;
             switch (resourceModel.getType()) {
                 case CONTEXT:
-                    contextId = resourceModel.getId();
                     showAddContainerAndItem();
                     break;
                 case CONTAINER:
-                    contextId = getContextIdForContainer(resourceModel);
                     showContainerAddViewMenuCommand =
-                        new ShowContainerAddViewMenuCommand(repositories, mainWindow, contextId, treeDataSource);
+                        new ShowContainerAddViewMenuCommand(repositories, mainWindow,
+                            getContextIdForContainer(resourceModel), treeDataSource);
                     showContainerAddViewMenuCommand.withParent(resourceModel);
                     containerMenuItem.setCommand(showContainerAddViewMenuCommand);
                     showAddContainerAndItem();

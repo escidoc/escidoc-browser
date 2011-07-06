@@ -53,29 +53,43 @@ public class MetadataRecBehavour implements ClickListener {
 
     private final EscidocServiceLocation escidocServiceLocation;
 
-    public MetadataRecBehavour(MetadataRecord metadataRecord, Window mainWindow,
-        EscidocServiceLocation escidocServiceLocation) {
+    public MetadataRecBehavour(final MetadataRecord metadataRecord, final Window mainWindow,
+        final EscidocServiceLocation escidocServiceLocation) {
         this.mainWindow = mainWindow;
         this.metadataRecord = metadataRecord;
         this.escidocServiceLocation = escidocServiceLocation;
     }
 
     @Override
-    public void buttonClick(ClickEvent event) {
-        Window subwindow = new Window("MetadataRecs");
+    public void buttonClick(final ClickEvent event) {
+        final Window subwindow = new Window("MetadataRecs");
         subwindow.setWidth("600px");
         subwindow.setModal(true);
 
-        String mtRecinfo =
-            new String(NAME + metadataRecord.getName() + "<br />" + CONTENT
-                + metadataRecord.getContent().getTextContent() + "<br />" + RECORD_TYPE + metadataRecord.getMdType()
-                + "<br />" + RECORD_SCHEMA + metadataRecord.getSchema() + "<br />" + LINK + "<a href='"
-                + escidocServiceLocation.getEscidocUri() + metadataRecord.getXLinkHref() + "' target='_blank'>"
-                + metadataRecord.getXLinkTitle() + "</a><br />");
-
+        final StringBuilder builder = new StringBuilder();
+        builder.append(NAME);
+        builder.append(metadataRecord.getName());
+        builder.append("<br />");
+        builder.append(CONTENT);
+        builder.append(metadataRecord.getContent().getTextContent());
+        builder.append("<br />");
+        builder.append(RECORD_TYPE);
+        builder.append(metadataRecord.getMdType());
+        builder.append("<br />");
+        builder.append(RECORD_SCHEMA);
+        builder.append(metadataRecord.getSchema());
+        builder.append("<br />");
+        builder.append(LINK);
+        builder.append("<a href='");
+        builder.append(escidocServiceLocation.getEscidocUri());
+        builder.append(metadataRecord.getXLinkHref());
+        builder.append("' target='_blank'>");
+        builder.append(metadataRecord.getXLinkTitle());
+        builder.append("</a><br />");
+        String mtRecinfo = builder.toString();
         mtRecinfo += metadataRecord.getContent().getTextContent();
 
-        Label msgWindow = new Label(mtRecinfo, Label.CONTENT_RAW);
+        final Label msgWindow = new Label(mtRecinfo, Label.CONTENT_RAW);
 
         subwindow.addComponent(msgWindow);
         if (subwindow.getParent() != null) {

@@ -49,8 +49,6 @@ public class BreadCrumbMenu {
 
     String bCstring = "<ul id='crumbs'><li><a href='#'>Home</a></li>";
 
-    private Repositories repositories;
-
     /**
      * Context case
      * 
@@ -58,8 +56,7 @@ public class BreadCrumbMenu {
      * @param resourceProxy
      * @param repositories
      */
-    public BreadCrumbMenu(final CssLayout cssLayout, final ResourceProxy resourceProxy, final Repositories repositories) {
-        this.repositories = repositories;
+    public BreadCrumbMenu(final CssLayout cssLayout, final ResourceProxy resourceProxy) {
         String name;
         if (resourceProxy.getName().length() > 100) {
             name = resourceProxy.getName().substring(0, 100);
@@ -82,7 +79,6 @@ public class BreadCrumbMenu {
      */
     public BreadCrumbMenu(final CssLayout cssLayout, final ContainerProxy resourceProxy, final Window mainWindow,
         final EscidocServiceLocation escidocServiceLocation, final Repositories repositories) {
-        this.repositories = repositories;
         final ResourceHierarchy rs = new ResourceHierarchy(escidocServiceLocation, repositories);
         final StringBuffer buf = new StringBuffer();
         try {

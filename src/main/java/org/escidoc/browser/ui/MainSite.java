@@ -312,7 +312,7 @@ public class MainSite extends VerticalLayout {
      * @param event
      */
     public void onClickSrchButton(final Button.ClickEvent event) {
-        final SimpleSearch smpSearch = new SimpleSearch(this, serviceLocation, repositories);
+        final SimpleSearch smpSearch = new SimpleSearch(this, serviceLocation, repositories, currentUser);
         openTab(smpSearch, "Search Results");
     }
 
