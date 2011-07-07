@@ -159,17 +159,19 @@ public class ItemAddView {
     }
 
     private void createNewResource() {
-        final ItemBuilder itmBuild =
-            new ItemBuilder(new ContextRef(getContextId()), new ContentModelRef(getContentModelId()));
-        final Item newItem = itmBuild.build(getName());
         try {
-            final Item create = repositories.item().create(newItem);
-            treeDataSource.addChild(parent, new ItemModel(create));
+            final Item createdItem = repositories.item().createWithParent(buildItem(), parent);
+            treeDataSource.addChild(parent, new ItemModel(createdItem));
             subwindow.getParent().removeWindow(subwindow);
         }
         catch (final EscidocClientException e) {
-            mainWindow.showNotification(e.getMessage());
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
         }
+    }
+
+    private Item buildItem() {
+        return new ItemBuilder(new ContextRef(getContextId()), new ContentModelRef(getContentModelId()))
+            .build(getName());
     }
 
     private String getContextId() {
