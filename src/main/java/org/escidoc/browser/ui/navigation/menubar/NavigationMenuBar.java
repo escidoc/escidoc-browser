@@ -38,17 +38,22 @@ import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.ViewConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
 public class NavigationMenuBar extends CustomComponent {
+
+    private static final Logger LOG = LoggerFactory.getLogger(NavigationMenuBar.class);
 
     private final MenuBar menuBar = new MenuBar();
 
@@ -72,8 +77,6 @@ public class NavigationMenuBar extends CustomComponent {
 
     private ShowAddViewCommand showAddViewCommand;
 
-    private ShowItemAddViewMenuCommand showItemAddViewCommand;
-
     public NavigationMenuBar(final CurrentUser currentUser, final Repositories repositories, final Window mainWindow,
         final TreeDataSource treeDataSource) {
         Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
@@ -94,10 +97,14 @@ public class NavigationMenuBar extends CustomComponent {
             menuBar.setEnabled(isCreateContextAllowed());
         }
         catch (final EscidocClientException e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage());
+            mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
+                Notification.TYPE_ERROR_MESSAGE));
         }
         catch (final URISyntaxException e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage());
+            mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
+                Notification.TYPE_ERROR_MESSAGE));
         }
     }
 
@@ -111,7 +118,17 @@ public class NavigationMenuBar extends CustomComponent {
         menuBar.setSizeFull();
         addCreateMenu();
         addDeleteMenu();
-        update(null);
+        try {
+            updateMenuBar(null);
+        }
+        catch (final EscidocClientException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch (final URISyntaxException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     private void addCreateMenu() {
@@ -130,7 +147,7 @@ public class NavigationMenuBar extends CustomComponent {
         deleteMenuItem.setEnabled(false);
     }
 
-    public void update(final ResourceModel resourceModel) {
+    public void updateMenuBar(final ResourceModel resourceModel) throws EscidocClientException, URISyntaxException {
         if (resourceModel == null) {
             showAddContext();
         }
@@ -140,18 +157,25 @@ public class NavigationMenuBar extends CustomComponent {
                     showAddContainerAndItem();
                     break;
                 case CONTAINER:
-                    showAddViewCommand =
-                        new ShowAddViewCommand(repositories, mainWindow, getContextIdForContainer(resourceModel),
-                            treeDataSource);
-                    showAddViewCommand.withParent(resourceModel);
-                    containerMenuItem.setCommand(showAddViewCommand);
-                    itemMenuItem.setCommand(showAddViewCommand);
+                    buildCommand(resourceModel);
                     showAddContainerAndItem();
                     break;
                 case ITEM:
-                    menuBar.setEnabled(false);
+                    disableMenuBar();
             }
         }
+    }
+
+    private void disableMenuBar() {
+        menuBar.setEnabled(false);
+    }
+
+    private void buildCommand(final ResourceModel resourceModel) {
+        showAddViewCommand =
+            new ShowAddViewCommand(repositories, mainWindow, getContextIdForContainer(resourceModel), treeDataSource);
+        showAddViewCommand.withParent(resourceModel);
+        containerMenuItem.setCommand(showAddViewCommand);
+        itemMenuItem.setCommand(showAddViewCommand);
     }
 
     private String getContextIdForContainer(final ResourceModel resourceModel) {
@@ -164,17 +188,31 @@ public class NavigationMenuBar extends CustomComponent {
         return AppConstants.EMPTY_STRING;
     }
 
-    private void showAddContext() {
-        menuBar.setEnabled(true);
-        contextMenuItem.setVisible(true);
+    private void showAddContext() throws EscidocClientException, URISyntaxException {
+        final boolean isCreateContextAllowed = isCreateContextAllowed();
+        menuBar.setEnabled(isCreateContextAllowed);
+        contextMenuItem.setVisible(isCreateContextAllowed);
         containerMenuItem.setVisible(false);
         itemMenuItem.setVisible(false);
     }
 
-    private void showAddContainerAndItem() {
-        menuBar.setEnabled(true);
+    private void showAddContainerAndItem() throws EscidocClientException, URISyntaxException {
+        final boolean createItemAllowed = isCreateItemAllowed();
+        final boolean createContainerAllowed = isCreateContainerAllowed();
+        menuBar.setEnabled(createItemAllowed || createContainerAllowed);
         contextMenuItem.setVisible(false);
-        containerMenuItem.setVisible(true);
-        itemMenuItem.setVisible(true);
+        containerMenuItem.setVisible(createContainerAllowed);
+        itemMenuItem.setVisible(createItemAllowed);
+    }
+
+    private boolean isCreateContainerAllowed() throws EscidocClientException, URISyntaxException {
+        return repositories
+            .pdp().isAction(ActionIdConstants.CREATE_CONTAINER).forUser(currentUser.getUserId()).forResource("")
+            .permitted();
+    }
+
+    private boolean isCreateItemAllowed() throws EscidocClientException, URISyntaxException {
+        return repositories
+            .pdp().isAction(ActionIdConstants.CREATE_ITEM).forUser(currentUser.getUserId()).forResource("").permitted();
     }
 }

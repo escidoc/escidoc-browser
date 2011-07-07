@@ -48,7 +48,6 @@ public class ActionIdConstants {
     // "info:escidoc/names:aa:1.0:action:close-organizational-unit"
     // "info:escidoc/names:aa:1.0:action:container-move-to-context"
     // "info:escidoc/names:aa:1.0:action:create-aggregation-definition"
-    // "info:escidoc/names:aa:1.0:action:create-container"
     // "info:escidoc/names:aa:1.0:action:create-content-model"
     // "info:escidoc/names:aa:1.0:action:create-content-relation"
     // "info:escidoc/names:aa:1.0:action:create-context"
@@ -225,4 +224,6 @@ public class ActionIdConstants {
     public static final String UPDATE_ITEM = "info:escidoc/names:aa:1.0:action:update-item";
 
     public static final String UPDATE_CONTAINER = "info:escidoc/names:aa:1.0:action:update-container";
+
+    public static final String CREATE_CONTAINER = "info:escidoc/names:aa:1.0:action:create-container";
 }

@@ -28,6 +28,8 @@
  */
 package org.escidoc.browser.ui.listeners;
 
+import java.net.URISyntaxException;
+
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.CurrentUser;
@@ -94,14 +96,27 @@ public class TreeClickListener implements ItemClickListener {
 
     @Override
     public void itemClick(final ItemClickEvent event) {
-        final ResourceModel resourceModel = (ResourceModel) event.getItemId();
-        updateMenuBar(resourceModel);
-        openClickedResourceInNewTab(resourceModel);
+        try {
+
+            final ResourceModel resourceModel = (ResourceModel) event.getItemId();
+            updateMenuBar(resourceModel);
+            openClickedResourceInNewTab(resourceModel);
+        }
+        catch (final EscidocClientException e) {
+            LOG.error(e.getMessage());
+            mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
+                Notification.TYPE_ERROR_MESSAGE));
+        }
+        catch (final URISyntaxException e) {
+            LOG.error(e.getMessage());
+            mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
+                Notification.TYPE_ERROR_MESSAGE));
+        }
     }
 
-    private void updateMenuBar(final ResourceModel resourceModel) {
+    private void updateMenuBar(final ResourceModel resourceModel) throws EscidocClientException, URISyntaxException {
         if (navigationMenuBar != null) {
-            navigationMenuBar.update(resourceModel);
+            navigationMenuBar.updateMenuBar(resourceModel);
         }
     }
 
