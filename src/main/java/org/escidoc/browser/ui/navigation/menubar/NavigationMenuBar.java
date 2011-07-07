@@ -54,7 +54,6 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 public class NavigationMenuBar extends CustomComponent {
 
     private static final Logger LOG = LoggerFactory.getLogger(NavigationMenuBar.class);
-
     private final MenuBar menuBar = new MenuBar();
 
     private final CurrentUser currentUser;
@@ -158,6 +157,7 @@ public class NavigationMenuBar extends CustomComponent {
                     break;
                 case CONTAINER:
                     buildCommand(resourceModel);
+                    itemMenuItem.setCommand(showAddViewCommand);
                     showAddContainerAndItem();
                     break;
                 case ITEM:
