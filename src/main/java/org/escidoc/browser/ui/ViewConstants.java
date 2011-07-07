@@ -92,4 +92,10 @@ public class ViewConstants {
     public static final String ITEM_NAME_MUST_BE_3_25_CHARACTERS = "Item Name must be 3-25 characters";
 
     public static final String CREATE_ITEM = "Create Item";
+
+    public static final String ADD_COMPONENT = "Add Component";
+
+    public static final String ADD_ITEM = "Add Item";
+
+    public static final String ADD_CONTAINER = "Add Container";
 }

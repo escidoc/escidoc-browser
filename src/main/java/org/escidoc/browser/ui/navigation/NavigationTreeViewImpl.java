@@ -33,7 +33,6 @@ import java.net.URISyntaxException;
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.CurrentUser;
-import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.PropertyId;
 import org.escidoc.browser.model.ResourceModel;
@@ -59,27 +58,20 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 @SuppressWarnings("serial")
 public class NavigationTreeViewImpl extends CustomComponent implements Action.Handler, NavigationTreeView {
 
-    private static final String ADD_ITEM = "Add Item";
-
-    private static final String ADD_CONTAINER = "Add Container";
-
-    private final Tree tree = new Tree();
-
     // Actions for the context menu
-    private static final Action ACTION_ADD_CONTAINER = new Action(ADD_CONTAINER);
+    private static final Action ACTION_ADD_CONTAINER = new Action(ViewConstants.ADD_CONTAINER);
 
-    private static final Action ACTION_ADD_ITEM = new Action(ADD_ITEM);
+    private static final Action ACTION_ADD_ITEM = new Action(ViewConstants.ADD_ITEM);
 
     private static final Action ACTION_DELETE = new Action(ViewConstants.DELETE_RESOURCE);
 
-    private static final Action[] ACTIONSCONTAINER = new Action[] { ACTION_ADD_CONTAINER, ACTION_ADD_ITEM,
-        ACTION_DELETE };
+    private static final Action ACTION_ADD_COMPONENT = new Action(ViewConstants.ADD_COMPONENT);
 
-    private static final Action ACTION_ADD_COMPONENT = new Action("Add Component");
+    private static final Action[] ACTIONS_CONTAINER = new Action[] { ACTION_ADD_CONTAINER, ACTION_ADD_ITEM };
 
-    private static final Action[] ACTIONSITEM = new Action[] { ACTION_ADD_COMPONENT };
+    private static final Action[] ACTIONS_ITEM = new Action[] { ACTION_ADD_COMPONENT };
 
-    private final EscidocServiceLocation serviceLocation;
+    private final Tree tree = new Tree();
 
     private final CurrentUser currentUser;
 
@@ -93,11 +85,9 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
 
     private ItemClickListener itemClickListener;
 
-    public NavigationTreeViewImpl(final Repositories repositories, final EscidocServiceLocation serviceLocation,
-        final CurrentUser currentUser) {
+    public NavigationTreeViewImpl(final Repositories repositories, final CurrentUser currentUser) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         this.repositories = repositories;
-        this.serviceLocation = serviceLocation;
         this.currentUser = currentUser;
 
         setCompositionRoot(tree);
@@ -190,17 +180,13 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
     @Override
     public Action[] getActions(final Object target, final Object sender) {
         try {
-            if (repositories
-                .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.CREATE_ITEM).forResource("")
-                .permitted() == false) {
-                return null;
-            }
-            else {
+            if (allowedToCreateItem()) {
                 if (target instanceof ItemModel) {
-                    return ACTIONSITEM;
+                    return ACTIONS_ITEM;
                 }
-                return ACTIONSCONTAINER;
+                return ACTIONS_CONTAINER;
             }
+            return new Action[] {};
         }
         catch (final EscidocClientException e) {
             getWindow().showNotification(e.getMessage());
@@ -208,7 +194,12 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
         catch (final URISyntaxException e) {
             getWindow().showNotification(e.getMessage());
         }
-        return null;
+        return new Action[] {};
+    }
+
+    private boolean allowedToCreateItem() throws EscidocClientException, URISyntaxException {
+        return repositories
+            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.CREATE_ITEM).forResource("").permitted();
     }
 
     @Override

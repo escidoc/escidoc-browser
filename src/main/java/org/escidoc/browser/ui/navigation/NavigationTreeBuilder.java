@@ -92,8 +92,7 @@ public class NavigationTreeBuilder {
 
     private NavigationTreeView createNavigationTreeView(
         final MainSite mainSite, final Window mainWindow, final TreeDataSource treeDataSource) {
-        final NavigationTreeView navigationTreeView =
-            new NavigationTreeViewImpl(repositories, serviceLocation, currentUser);
+        final NavigationTreeView navigationTreeView = new NavigationTreeViewImpl(repositories, currentUser);
         navigationTreeView.setDataSource(treeDataSource, mainSite);
         navigationTreeView.addClickListener(new TreeClickListener(serviceLocation, repositories, mainWindow, mainSite,
             currentUser));

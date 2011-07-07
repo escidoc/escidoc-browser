@@ -39,14 +39,15 @@ public class ActionIdConstants {
 
     public final static String GET_PURGE_STATUS_ACTION = "info:escidoc/names:aa:1.0:action:get-purge-status";
 
+    // "info:escidoc/names:aa:1.0:action:add-members-to-container"
+    // "info:escidoc/names:aa:1.0:action:container-move-to-context"
+
     // "info:escidoc/names:aa:1.0:action:activate-user-account"
     // "info:escidoc/names:aa:1.0:action:activate-user-group"
-    // "info:escidoc/names:aa:1.0:action:add-members-to-container"
     // "info:escidoc/names:aa:1.0:action:add-user-group-selectors"
     // "info:escidoc/names:aa:1.0:action:check-user-privilege"
     // "info:escidoc/names:aa:1.0:action:close-context"
     // "info:escidoc/names:aa:1.0:action:close-organizational-unit"
-    // "info:escidoc/names:aa:1.0:action:container-move-to-context"
     // "info:escidoc/names:aa:1.0:action:create-aggregation-definition"
     // "info:escidoc/names:aa:1.0:action:create-content-model"
     // "info:escidoc/names:aa:1.0:action:create-content-relation"

@@ -154,10 +154,11 @@ public class NavigationMenuBar extends CustomComponent {
         else {
             switch (resourceModel.getType()) {
                 case CONTEXT:
+                    buildCommand(resourceModel, resourceModel.getId());
                     showAddContainerAndItem();
                     break;
                 case CONTAINER:
-                    buildCommand(resourceModel);
+                    buildCommand(resourceModel, getContextIdForContainer(resourceModel));
                     showAddContainerAndItem();
                     break;
                 case ITEM:
@@ -170,9 +171,8 @@ public class NavigationMenuBar extends CustomComponent {
         menuBar.setEnabled(false);
     }
 
-    private void buildCommand(final ResourceModel resourceModel) {
-        showAddViewCommand =
-            new ShowAddViewCommand(repositories, mainWindow, getContextIdForContainer(resourceModel), treeDataSource);
+    private void buildCommand(final ResourceModel resourceModel, final String contextId) {
+        showAddViewCommand = new ShowAddViewCommand(repositories, mainWindow, contextId, treeDataSource);
         showAddViewCommand.withParent(resourceModel);
         containerMenuItem.setCommand(showAddViewCommand);
         itemMenuItem.setCommand(showAddViewCommand);
