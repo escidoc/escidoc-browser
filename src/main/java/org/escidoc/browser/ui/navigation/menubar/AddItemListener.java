@@ -26,22 +26,20 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.ui.listeners;
-
-import org.escidoc.browser.ui.maincontent.ContainerAddView;
+package org.escidoc.browser.ui.navigation.menubar;
 
 import com.google.common.base.Preconditions;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 
 @SuppressWarnings("serial")
-public final class AddContainerListener implements Button.ClickListener {
+public class AddItemListener implements ClickListener {
 
-    private final ContainerAddView addView;
+    private final ItemAddView addView;
 
-    public AddContainerListener(final ContainerAddView containerAddView) {
-        Preconditions.checkNotNull(containerAddView, "containerAddView is null: %s", containerAddView);
-        this.addView = containerAddView;
+    public AddItemListener(final ItemAddView addView) {
+        Preconditions.checkNotNull(addView, "addView is null: %s", addView);
+        this.addView = addView;
     }
 
     @Override
@@ -53,5 +51,4 @@ public final class AddContainerListener implements Button.ClickListener {
             addView.showRequiredMessage();
         }
     }
-
 }

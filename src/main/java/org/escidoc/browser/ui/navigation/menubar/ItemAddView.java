@@ -1,14 +1,41 @@
-package org.escidoc.browser.ui.maincontent;
+/**
+ * CDDL HEADER START
+ *
+ * The contents of this file are subject to the terms of the
+ * Common Development and Distribution License, Version 1.0 only
+ * (the "License").  You may not use this file except in compliance
+ * with the License.
+ *
+ * You can obtain a copy of the license at license/ESCIDOC.LICENSE
+ * or https://www.escidoc.org/license/ESCIDOC.LICENSE .
+ * See the License for the specific language governing permissions
+ * and limitations under the License.
+ *
+ * When distributing Covered Code, include this CDDL HEADER in each
+ * file and include the License file at license/ESCIDOC.LICENSE.
+ * If applicable, add the following below this CDDL HEADER, with the
+ * fields enclosed by brackets "[]" replaced with your own identifying
+ * information: Portions Copyright [yyyy] [name of copyright owner]
+ *
+ * CDDL HEADER END
+ *
+ *
+ *
+ * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * fuer wissenschaftlich-technische Information mbH and Max-Planck-
+ * Gesellschaft zur Foerderung der Wissenschaft e.V.
+ * All rights reserved.  Use is subject to license terms.
+ */
+package org.escidoc.browser.ui.navigation.menubar;
 
 import java.net.MalformedURLException;
 
-import org.escidoc.browser.model.ContainerModel;
+import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.TreeDataSource;
-import org.escidoc.browser.model.internal.ContainerBuilder;
+import org.escidoc.browser.model.internal.ItemBuilder;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.listeners.AddContainerListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,19 +54,19 @@ import de.escidoc.core.client.exceptions.TransportException;
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.reference.ContentModelRef;
 import de.escidoc.core.resources.common.reference.ContextRef;
-import de.escidoc.core.resources.om.container.Container;
+import de.escidoc.core.resources.om.item.Item;
 
-public class ContainerAddView {
+public class ItemAddView {
 
-    private final static Logger LOG = LoggerFactory.getLogger(ContainerAddView.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ItemAddView.class);
 
-    private final FormLayout addContainerForm = new FormLayout();
+    private final FormLayout addForm = new FormLayout();
 
-    private final TextField nameField = new TextField(ViewConstants.CONTAINER_NAME);
+    private final TextField nameField = new TextField(ViewConstants.ITEM_NAME);
 
     private final NativeSelect contentModelSelect = new NativeSelect(ViewConstants.PLEASE_SELECT_CONTENT_MODEL);
 
-    private final Window subwindow = new Window(ViewConstants.CREATE_CONTAINER);
+    private final Window subwindow = new Window(ViewConstants.CREATE_ITEM);
 
     private final Repositories repositories;
 
@@ -53,7 +80,7 @@ public class ContainerAddView {
 
     private Button addButton;
 
-    public ContainerAddView(final Repositories repositories, final Window mainWindow, final ResourceModel parent,
+    public ItemAddView(final Repositories repositories, final Window mainWindow, final ResourceModel parent,
         final TreeDataSource treeDataSource, final String contextId) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
@@ -67,8 +94,8 @@ public class ContainerAddView {
         this.contextId = contextId;
     }
 
-    public void buildContainerForm() throws MalformedURLException, EscidocClientException {
-        addContainerForm.setImmediate(true);
+    public void buildForm() throws MalformedURLException, EscidocClientException {
+        addForm.setImmediate(true);
         addNameField();
         addContentModelSelect();
         addButton();
@@ -76,11 +103,11 @@ public class ContainerAddView {
 
     private void addNameField() {
         nameField.setRequired(true);
-        nameField.setRequiredError(ViewConstants.PLEASE_ENTER_A_CONTAINER_NAME);
-        nameField.addValidator(new StringLengthValidator(ViewConstants.CONTAINER_NAME_MUST_BE_3_25_CHARACTERS, 3, 25,
-            false));
+        nameField.setRequiredError(ViewConstants.PLEASE_ENTER_AN_ITEM_NAME);
+        nameField
+            .addValidator(new StringLengthValidator(ViewConstants.ITEM_NAME_MUST_BE_3_25_CHARACTERS, 3, 25, false));
         nameField.setImmediate(true);
-        addContainerForm.addComponent(nameField);
+        addForm.addComponent(nameField);
     }
 
     private void addContentModelSelect() throws MalformedURLException, EscidocException, InternalClientException,
@@ -91,23 +118,23 @@ public class ContainerAddView {
         for (final Resource resource : repositories.contentModel().findPublicOrReleasedResources()) {
             contentModelSelect.addItem(resource.getObjid());
         }
-        addContainerForm.addComponent(contentModelSelect);
+        addForm.addComponent(contentModelSelect);
     }
 
     private void addButton() {
-        addButton = new Button(ViewConstants.ADD, new AddContainerListener(this));
-        addContainerForm.addComponent(addButton);
+        addButton = new Button(ViewConstants.ADD, new AddItemListener(this));
+        addForm.addComponent(addButton);
     }
 
-    private void buildSubWindowUsingContainerForm() {
+    private void buildSubWindowUsingForm() {
         subwindow.setWidth("600px");
         subwindow.setModal(true);
-        subwindow.addComponent(addContainerForm);
+        subwindow.addComponent(addForm);
     }
 
     public void openSubWindow() throws MalformedURLException, EscidocClientException {
-        buildContainerForm();
-        buildSubWindowUsingContainerForm();
+        buildForm();
+        buildSubWindowUsingForm();
         mainWindow.addWindow(subwindow);
     }
 
@@ -119,7 +146,7 @@ public class ContainerAddView {
         return (String) contentModelSelect.getValue();
     }
 
-    public String getContainerName() {
+    public String getName() {
         return nameField.getValue().toString();
     }
 
@@ -128,35 +155,21 @@ public class ContainerAddView {
     }
 
     public void create() {
-        createNewContainer(getContainerName(), getContentModelId(), getContextId());
+        createNewResource();
     }
 
-    private void createNewContainer(final String containerName, final String contentModelId, final String contextId) {
-        final ContainerBuilder cntBuild =
-            new ContainerBuilder(new ContextRef(contextId), new ContentModelRef(contentModelId));
-        final Container newContainer = cntBuild.build(containerName);
+    private void createNewResource() {
+        final ItemBuilder itmBuild =
+            new ItemBuilder(new ContextRef(getContextId()), new ContentModelRef(getContentModelId()));
+        final Item newItem = itmBuild.build(getName());
         try {
-            final Container createdContainer = createContainerInRepository(newContainer);
-            updateDataSource(createdContainer);
-            closeSubWindow();
+            final Item create = repositories.item().create(newItem);
+            treeDataSource.addChild(parent, new ItemModel(create));
+            subwindow.getParent().removeWindow(subwindow);
         }
         catch (final EscidocClientException e) {
-            LOG.error(e.getMessage());
-            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            mainWindow.showNotification(e.getMessage());
         }
-    }
-
-    private Container createContainerInRepository(final Container newContainer) throws EscidocClientException {
-        final Container createdContainer = repositories.container().createWithParent(newContainer, parent);
-        return createdContainer;
-    }
-
-    private void updateDataSource(final Container createdContainer) {
-        treeDataSource.addChild(parent, new ContainerModel(createdContainer));
-    }
-
-    private void closeSubWindow() {
-        subwindow.getParent().removeWindow(subwindow);
     }
 
     private String getContextId() {

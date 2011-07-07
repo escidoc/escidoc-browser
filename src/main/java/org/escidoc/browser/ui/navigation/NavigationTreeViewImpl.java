@@ -30,7 +30,6 @@ package org.escidoc.browser.ui.navigation;
 
 import java.net.URISyntaxException;
 
-import org.escidoc.browser.ActionIdConstants;
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.CurrentUser;
@@ -40,12 +39,12 @@ import org.escidoc.browser.model.PropertyId;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.MainSite;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.TreeClickListener;
-import org.escidoc.browser.ui.listeners.TreeCreateItem;
 import org.escidoc.browser.ui.navigation.menubar.NavigationMenuBar;
-import org.escidoc.browser.ui.navigation.menubar.ShowContainerAddViewMenuCommand;
+import org.escidoc.browser.ui.navigation.menubar.ShowAddViewCommand;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.event.Action;
@@ -124,7 +123,7 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
 
     @Override
     public void setDataSource(final TreeDataSource container, final MainSite mainSite) {
-        this.treeDataSource = container;
+        treeDataSource = container;
         tree.setContainerDataSource(container.getContainer());
         tree.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
         tree.setItemCaptionPropertyId(PropertyId.NAME);
@@ -172,14 +171,20 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
     }
 
     private void showCreateItemView(final Object target, final String contextId) {
-        new TreeCreateItem(target, contextId, serviceLocation, getWindow(), repositories, treeDataSource).createItem();
+        final ShowAddViewCommand showAddViewCommand = buildCommand(target, contextId);
+        showAddViewCommand.showItemAddView();
     }
 
     private void showCreateContainerView(final Object target, final String contextId) {
-        final ShowContainerAddViewMenuCommand showContainerAddViewMenuCommand =
-            new ShowContainerAddViewMenuCommand(repositories, getWindow(), contextId, treeDataSource);
-        showContainerAddViewMenuCommand.withParent((ResourceModel) target);
-        showContainerAddViewMenuCommand.showIt();
+        final ShowAddViewCommand showAddViewCommand = buildCommand(target, contextId);
+        showAddViewCommand.showContainerAddView();
+    }
+
+    private ShowAddViewCommand buildCommand(final Object target, final String contextId) {
+        final ShowAddViewCommand showAddViewCommand =
+            new ShowAddViewCommand(repositories, getWindow(), contextId, treeDataSource);
+        showAddViewCommand.withParent((ResourceModel) target);
+        return showAddViewCommand;
     }
 
     @Override

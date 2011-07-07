@@ -43,7 +43,7 @@ import com.vaadin.ui.Window;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
-public final class ShowContainerAddViewMenuCommand implements Command {
+public final class ShowAddViewCommand implements Command {
 
     private final Repositories repositories;
 
@@ -55,8 +55,8 @@ public final class ShowContainerAddViewMenuCommand implements Command {
 
     private final TreeDataSource treeDataSource;
 
-    public ShowContainerAddViewMenuCommand(final Repositories repositories, final Window mainWindow,
-        final String contextId, final TreeDataSource treeDataSource) {
+    public ShowAddViewCommand(final Repositories repositories, final Window mainWindow, final String contextId,
+        final TreeDataSource treeDataSource) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(contextId, "contextId is null: %s", contextId);
@@ -74,19 +74,37 @@ public final class ShowContainerAddViewMenuCommand implements Command {
     @Override
     public void menuSelected(final MenuItem selectedItem) {
         if (isContainerSelected(selectedItem)) {
-            showIt();
+            showContainerAddView();
+        }
+        else if (isItemSelected(selectedItem)) {
+            showItemAddView();
         }
         else {
             mainWindow.showNotification("Action " + selectedItem.getText());
         }
     }
 
-    public void showIt() {
+    public void showItemAddView() {
         Preconditions.checkNotNull(parent, "parent is null: %s", parent);
         try {
-            final ContainerAddView containerAddView =
+            final ItemAddView addView = new ItemAddView(repositories, mainWindow, parent, treeDataSource, contextId);
+            addView.openSubWindow();
+
+        }
+        catch (final EscidocClientException e) {
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        }
+        catch (final MalformedURLException e) {
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        }
+    }
+
+    public void showContainerAddView() {
+        Preconditions.checkNotNull(parent, "parent is null: %s", parent);
+        try {
+            final ContainerAddView addView =
                 new ContainerAddView(repositories, mainWindow, parent, treeDataSource, contextId);
-            containerAddView.openSubWindow();
+            addView.openSubWindow();
         }
         catch (final EscidocClientException e) {
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
@@ -99,4 +117,9 @@ public final class ShowContainerAddViewMenuCommand implements Command {
     private boolean isContainerSelected(final MenuItem selectedItem) {
         return selectedItem.getText().equals("Container");
     }
+
+    private boolean isItemSelected(final MenuItem selectedItem) {
+        return selectedItem.getText().equals("Item");
+    }
+
 }

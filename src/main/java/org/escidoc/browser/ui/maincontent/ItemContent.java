@@ -30,10 +30,10 @@ package org.escidoc.browser.ui.maincontent;
 
 import java.net.URISyntaxException;
 
-import org.escidoc.browser.ActionIdConstants;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.escidoc.browser.ui.dnd.DragAndDropFileUpload;
 import org.slf4j.Logger;

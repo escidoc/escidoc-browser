@@ -31,7 +31,6 @@ package org.escidoc.browser.ui;
 import java.net.URISyntaxException;
 import java.util.Map;
 
-import org.escidoc.browser.ActionIdConstants;
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.ContainerProxy;
@@ -44,6 +43,7 @@ import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.model.internal.TreeDataSourceImpl;
 import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.helper.Util;
 import org.escidoc.browser.ui.maincontent.ContainerView;
 import org.escidoc.browser.ui.maincontent.ContextView;

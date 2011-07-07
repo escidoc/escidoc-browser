@@ -26,32 +26,28 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.ui.listeners;
+package org.escidoc.browser.ui.navigation.menubar;
 
-import org.escidoc.browser.ui.maincontent.ContainerAddView;
+import org.escidoc.browser.model.TreeDataSource;
+import org.escidoc.browser.repository.Repositories;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.MenuBar.Command;
+import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.Window;
 
 @SuppressWarnings("serial")
-public final class AddContainerListener implements Button.ClickListener {
+public class ShowItemAddViewMenuCommand implements Command {
 
-    private final ContainerAddView addView;
-
-    public AddContainerListener(final ContainerAddView containerAddView) {
-        Preconditions.checkNotNull(containerAddView, "containerAddView is null: %s", containerAddView);
-        this.addView = containerAddView;
+    public ShowItemAddViewMenuCommand(final Repositories repositories, final Window mainWindow,
+        final String contextIdForContainer, final TreeDataSource treeDataSource) {
+        // TODO Auto-generated constructor stub
     }
 
     @Override
-    public void buttonClick(final ClickEvent event) {
-        if (addView.allValid()) {
-            addView.create();
-        }
-        else {
-            addView.showRequiredMessage();
-        }
+    public void menuSelected(final MenuItem selectedItem) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Not yet implemented");
+
     }
 
 }

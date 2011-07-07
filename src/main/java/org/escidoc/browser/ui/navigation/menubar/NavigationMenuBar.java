@@ -30,13 +30,13 @@ package org.escidoc.browser.ui.navigation.menubar;
 
 import java.net.URISyntaxException;
 
-import org.escidoc.browser.ActionIdConstants;
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.ViewConstants;
 
 import com.google.common.base.Preconditions;
@@ -50,13 +50,15 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 @SuppressWarnings("serial")
 public class NavigationMenuBar extends CustomComponent {
 
-    private ShowContainerAddViewMenuCommand showContainerAddViewMenuCommand;
-
     private final MenuBar menuBar = new MenuBar();
 
     private final CurrentUser currentUser;
 
     private final Repositories repositories;
+
+    private final Window mainWindow;
+
+    private final TreeDataSource treeDataSource;
 
     private MenuBar.MenuItem add;
 
@@ -68,9 +70,9 @@ public class NavigationMenuBar extends CustomComponent {
 
     private MenuItem deleteMenuItem;
 
-    private final Window mainWindow;
+    private ShowAddViewCommand showAddViewCommand;
 
-    private final TreeDataSource treeDataSource;
+    private ShowItemAddViewMenuCommand showItemAddViewCommand;
 
     public NavigationMenuBar(final CurrentUser currentUser, final Repositories repositories, final Window mainWindow,
         final TreeDataSource treeDataSource) {
@@ -114,9 +116,9 @@ public class NavigationMenuBar extends CustomComponent {
 
     private void addCreateMenu() {
         add = menuBar.addItem(ViewConstants.ADD, null);
-        contextMenuItem = add.addItem(ResourceType.CONTEXT.asLabel(), showContainerAddViewMenuCommand);
-        containerMenuItem = add.addItem(ResourceType.CONTAINER.asLabel(), showContainerAddViewMenuCommand);
-        itemMenuItem = add.addItem(ResourceType.ITEM.asLabel(), showContainerAddViewMenuCommand);
+        contextMenuItem = add.addItem(ResourceType.CONTEXT.asLabel(), showAddViewCommand);
+        containerMenuItem = add.addItem(ResourceType.CONTAINER.asLabel(), null);
+        itemMenuItem = add.addItem(ResourceType.ITEM.asLabel(), null);
     }
 
     private void addDeleteMenu() {
@@ -138,11 +140,12 @@ public class NavigationMenuBar extends CustomComponent {
                     showAddContainerAndItem();
                     break;
                 case CONTAINER:
-                    showContainerAddViewMenuCommand =
-                        new ShowContainerAddViewMenuCommand(repositories, mainWindow,
-                            getContextIdForContainer(resourceModel), treeDataSource);
-                    showContainerAddViewMenuCommand.withParent(resourceModel);
-                    containerMenuItem.setCommand(showContainerAddViewMenuCommand);
+                    showAddViewCommand =
+                        new ShowAddViewCommand(repositories, mainWindow, getContextIdForContainer(resourceModel),
+                            treeDataSource);
+                    showAddViewCommand.withParent(resourceModel);
+                    containerMenuItem.setCommand(showAddViewCommand);
+                    itemMenuItem.setCommand(showAddViewCommand);
                     showAddContainerAndItem();
                     break;
                 case ITEM:
