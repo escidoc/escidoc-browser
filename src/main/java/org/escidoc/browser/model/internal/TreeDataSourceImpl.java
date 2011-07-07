@@ -142,7 +142,7 @@ public class TreeDataSourceImpl implements TreeDataSource {
     public void addChild(final ResourceModel parent, final ResourceModel child) {
         final Item addedItem = add(child);
         if (isAlreadyAdded(addedItem)) {
-            LOG.warn("found multiple child: " + child.getId());
+            LOG.debug("Resource: " + child + " already added to the tree.");
             return;
         }
         bind(addedItem, child);
