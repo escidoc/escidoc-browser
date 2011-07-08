@@ -28,18 +28,23 @@
  */
 package org.escidoc.browser.model.internal;
 
-import com.google.common.base.Preconditions;
+import java.io.IOException;
+import java.io.StringReader;
+import java.net.URL;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.escidoc.browser.AppConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
-import java.net.URL;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import com.google.common.base.Preconditions;
 
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.MetadataRecords;
@@ -79,11 +84,14 @@ public class ItemBuilder {
 
     private URL contentUrl;
 
-    public ItemBuilder(final ContextRef contextRef, final ContentModelRef contentModelRef) {
+    private final String strMedataData;
+
+    public ItemBuilder(final ContextRef contextRef, final ContentModelRef contentModelRef, final String strMetaData) {
         Preconditions.checkNotNull(contextRef, "contextRef is null: %s", contextRef);
         Preconditions.checkNotNull(contentModelRef, "contentModelRef is null: %s", contentModelRef);
         this.contextRef = contextRef;
         this.contentModelRef = contentModelRef;
+        this.strMedataData = strMetaData;
     }
 
     public ItemBuilder withContent(final URL contentUrl) {
@@ -119,10 +127,6 @@ public class ItemBuilder {
 
     }
 
-    private void setComponent(String itemName) throws ParserConfigurationException {
-        addComponents(item, contentUrl, itemName);
-    }
-
     private void setItemName(String itemName) throws ParserConfigurationException {
         addDefaultMetadata(createNewDocument(), itemName);
     }
@@ -146,7 +150,13 @@ public class ItemBuilder {
 
     private void buildDefaultMetadata(final Document doc, String itemName) {
         itemMetadata.setName(AppConstants.ESCIDOC);
-        itemMetadata.setContent(buildContentForItemMetadata(doc, itemName));
+        if (strMedataData.isEmpty()) {
+            itemMetadata.setContent(buildContentForItemMetadata(doc, itemName));
+        }
+        else {
+            itemMetadata.setContent(buildContentForItemMetadataFromUploadedFile());
+        }
+
     }
 
     private Element buildContentForItemMetadata(final Document doc, String itemName) {
@@ -189,5 +199,29 @@ public class ItemBuilder {
         componentProps.setVisibility("isVisible?");
         componentProps.setContentCategory("which one?");
         component.setProperties(componentProps);
+    }
+
+    private Element buildContentForItemMetadataFromUploadedFile() {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+
+        try {
+            builder = factory.newDocumentBuilder();
+            InputSource is = new InputSource(new StringReader(strMedataData));
+            Document d;
+            try {
+                d = builder.parse(is);
+                return d.getDocumentElement();
+            }
+            catch (SAXException e) {
+                return null;
+            }
+            catch (IOException e) {
+                return null;
+            }
+        }
+        catch (ParserConfigurationException e) {
+            return null;
+        }
     }
 }

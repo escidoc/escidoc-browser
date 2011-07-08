@@ -28,14 +28,20 @@
  */
 package org.escidoc.browser.model.internal;
 
-import com.google.common.base.Preconditions;
+import java.io.IOException;
+import java.io.StringReader;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.escidoc.browser.AppConstants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import com.google.common.base.Preconditions;
 
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.MetadataRecords;
@@ -56,12 +62,15 @@ public class ContainerBuilder {
 
     private final ContentModelRef contentModelRef;
 
-    public ContainerBuilder(final ContextRef contextRef, final ContentModelRef contentModelRef) {
+    private final String strMedataData;
+
+    public ContainerBuilder(final ContextRef contextRef, final ContentModelRef contentModelRef, final String strMetadata) {
 
         Preconditions.checkNotNull(contextRef, "contextRef is null: %s", contextRef);
         Preconditions.checkNotNull(contentModelRef, "contentModelRef is null: %s", contentModelRef);
         this.contextRef = contextRef;
         this.contentModelRef = contentModelRef;
+        this.strMedataData = strMetadata;
     }
 
     public Container build(final String containerName) {
@@ -102,7 +111,37 @@ public class ContainerBuilder {
 
     private void buildDefaultMetadata(final Document doc, final String containerName) {
         containerMetadata.setName(AppConstants.ESCIDOC);
-        containerMetadata.setContent(buildContentForContainerMetadata(doc, containerName));
+        if (strMedataData.isEmpty()) {
+            containerMetadata.setContent(buildContentForContainerMetadata(doc, containerName));
+        }
+        else {
+            containerMetadata.setContent(buildContentForContainerMetadataFromUploadedFile());
+        }
+
+    }
+
+    private Element buildContentForContainerMetadataFromUploadedFile() {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+
+        try {
+            builder = factory.newDocumentBuilder();
+            InputSource is = new InputSource(new StringReader(strMedataData));
+            Document d;
+            try {
+                d = builder.parse(is);
+                return d.getDocumentElement();
+            }
+            catch (SAXException e) {
+                return null;
+            }
+            catch (IOException e) {
+                return null;
+            }
+        }
+        catch (ParserConfigurationException e) {
+            return null;
+        }
     }
 
     private Element buildContentForContainerMetadata(final Document doc, final String containerName) {
