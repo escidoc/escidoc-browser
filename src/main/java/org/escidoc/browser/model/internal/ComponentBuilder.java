@@ -1,15 +1,15 @@
 package org.escidoc.browser.model.internal;
 
-import java.net.URL;
-
-import javax.xml.parsers.ParserConfigurationException;
+import com.google.common.base.Preconditions;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.Utils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.google.common.base.Preconditions;
+import java.net.URL;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.MetadataRecords;
@@ -47,7 +47,7 @@ public class ComponentBuilder {
 
     private final ComponentContent componentContent = new ComponentContent();
 
-    private final MetadataRecord componentMetadata = new MetadataRecord("escidoc");
+    private final MetadataRecord componentMetadata = new MetadataRecord(AppConstants.ESCIDOC);
 
     private final String fileName;
 
@@ -85,7 +85,7 @@ public class ComponentBuilder {
 
     private void setComponentProperties() {
         componentProperties.setFileName(fileName);
-        componentProperties.setVisibility("isVisible?");
+        componentProperties.setVisibility(ComponentVisibility.PUBLIC.label());
         componentProperties.setContentCategory("Content Category?");
         component.setProperties(componentProperties);
     }
