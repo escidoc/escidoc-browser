@@ -28,7 +28,15 @@
  */
 package org.escidoc.browser.ui.navigation;
 
-import java.net.URISyntaxException;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.event.Action;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.Tree;
+import com.vaadin.ui.Tree.ExpandListener;
+import com.vaadin.ui.Window;
 
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
@@ -45,13 +53,7 @@ import org.escidoc.browser.ui.listeners.TreeClickListener;
 import org.escidoc.browser.ui.navigation.menubar.NavigationMenuBar;
 import org.escidoc.browser.ui.navigation.menubar.ShowAddViewCommand;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.event.Action;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
-import com.vaadin.ui.AbstractSelect;
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.Tree;
-import com.vaadin.ui.Tree.ExpandListener;
+import java.net.URISyntaxException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -65,11 +67,11 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
 
     private static final Action ACTION_DELETE = new Action(ViewConstants.DELETE_RESOURCE);
 
-    private static final Action ACTION_ADD_COMPONENT = new Action(ViewConstants.ADD_COMPONENT);
+    // private static final Action ACTION_ADD_COMPONENT = new Action(ViewConstants.ADD_COMPONENT);
 
     private static final Action[] ACTIONS_CONTAINER = new Action[] { ACTION_ADD_CONTAINER, ACTION_ADD_ITEM };
 
-    private static final Action[] ACTIONS_ITEM = new Action[] { ACTION_ADD_COMPONENT };
+    private static final Action[] ACTIONS_ITEM = new Action[] { ACTION_DELETE };
 
     private final Tree tree = new Tree();
 
@@ -153,11 +155,17 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
             showCreateItemView(target, contextId);
         }
         else if (action == ACTION_DELETE) {
-            getWindow().showNotification("Not implemented yet");
+            try {
+                deleteSelected((ResourceModel) target);
+            }
+            catch (final EscidocClientException e) {
+                getWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            }
         }
-        else if (action == ACTION_ADD_COMPONENT) {
-            getWindow().showNotification("Not implemented yet");
-        }
+    }
+
+    private void deleteSelected(ResourceModel target) throws EscidocClientException {
+        repositories.item().delete(target.getId());
     }
 
     private void showCreateItemView(final Object target, final String contextId) {
@@ -180,10 +188,10 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
     @Override
     public Action[] getActions(final Object target, final Object sender) {
         try {
-            if (allowedToCreateItem()) {
-                if (target instanceof ItemModel) {
-                    return ACTIONS_ITEM;
-                }
+            if (target instanceof ItemModel && allowedToDeleteITem((ItemModel) target)) {
+                return ACTIONS_ITEM;
+            }
+            if (allowedToCreateContainer()) {
                 return ACTIONS_CONTAINER;
             }
             return new Action[] {};
@@ -197,9 +205,16 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
         return new Action[] {};
     }
 
-    private boolean allowedToCreateItem() throws EscidocClientException, URISyntaxException {
+    private boolean allowedToDeleteITem(ItemModel selected) throws EscidocClientException, URISyntaxException {
         return repositories
-            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.CREATE_ITEM).forResource("").permitted();
+            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_ITEM)
+            .forResource(selected.getId()).permitted();
+    }
+
+    private boolean allowedToCreateContainer() throws EscidocClientException, URISyntaxException {
+        return repositories
+            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.CREATE_CONTAINER).forResource("")
+            .permitted();
     }
 
     @Override

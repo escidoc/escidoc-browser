@@ -28,9 +28,7 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import gov.loc.www.zing.srw.SearchRetrieveRequestType;
-
-import java.util.List;
+import com.google.common.base.Preconditions;
 
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.EscidocServiceLocation;
@@ -41,7 +39,7 @@ import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.internal.HasNoNameResource;
 import org.escidoc.browser.repository.Repository;
 
-import com.google.common.base.Preconditions;
+import java.util.List;
 
 import de.escidoc.core.client.ContainerHandlerClient;
 import de.escidoc.core.client.ItemHandlerClient;
@@ -56,6 +54,7 @@ import de.escidoc.core.resources.common.TaskParam;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.om.item.Item;
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 public class ItemRepository implements Repository {
 
@@ -152,5 +151,9 @@ public class ItemRepository implements Repository {
     public ResourceModel findContext(final HasNoNameResource resource) throws EscidocClientException {
         final ResourceProxy resourceProxy = findById(resource.getId());
         return new ContextModel(resourceProxy.getContext());
+    }
+
+    public void delete(String id) throws EscidocClientException {
+        client.delete(id);
     }
 }

@@ -227,4 +227,6 @@ public class ActionIdConstants {
     public static final String UPDATE_CONTAINER = "info:escidoc/names:aa:1.0:action:update-container";
 
     public static final String CREATE_CONTAINER = "info:escidoc/names:aa:1.0:action:create-container";
+
+    public static final String DELETE_ITEM = "info:escidoc/names:aa:1.0:action:delete-item";
 }
