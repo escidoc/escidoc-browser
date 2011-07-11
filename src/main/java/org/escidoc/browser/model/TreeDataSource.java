@@ -42,6 +42,8 @@ public interface TreeDataSource {
 
     void addChild(final ResourceModel parent, final ResourceModel child);
 
+    void remove(ResourceModel resourceModel);
+
     void init();
 
 }

@@ -177,4 +177,17 @@ public class TreeDataSourceImpl implements TreeDataSource {
         final boolean isSuccesful = dataSource.setParent(child, parent);
         Preconditions.checkArgument(isSuccesful, "Setting parent of " + child + " to " + parent + " is not succesful.");
     }
+
+    @Override
+    public void remove(final ResourceModel resourceModel) {
+        Preconditions.checkNotNull(resourceModel, "resourceModel is null: %s", resourceModel);
+        switch (resourceModel.getType()) {
+            case ITEM:
+                final boolean isSuccessful = dataSource.removeItem(resourceModel);
+                Preconditions.checkArgument(isSuccessful, "Can not remove " + resourceModel + " from data source.");
+                break;
+            default:
+                throw new UnsupportedOperationException("Not yet implemented");
+        }
+    }
 }

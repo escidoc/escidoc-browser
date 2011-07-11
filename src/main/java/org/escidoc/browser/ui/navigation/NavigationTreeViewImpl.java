@@ -28,15 +28,7 @@
  */
 package org.escidoc.browser.ui.navigation;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.event.Action;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
-import com.vaadin.ui.AbstractSelect;
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.Tree;
-import com.vaadin.ui.Tree.ExpandListener;
-import com.vaadin.ui.Window;
+import java.net.URISyntaxException;
 
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
@@ -53,21 +45,25 @@ import org.escidoc.browser.ui.listeners.TreeClickListener;
 import org.escidoc.browser.ui.navigation.menubar.NavigationMenuBar;
 import org.escidoc.browser.ui.navigation.menubar.ShowAddViewCommand;
 
-import java.net.URISyntaxException;
+import com.google.common.base.Preconditions;
+import com.vaadin.event.Action;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.Tree;
+import com.vaadin.ui.Tree.ExpandListener;
+import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
 public class NavigationTreeViewImpl extends CustomComponent implements Action.Handler, NavigationTreeView {
 
-    // Actions for the context menu
     private static final Action ACTION_ADD_CONTAINER = new Action(ViewConstants.ADD_CONTAINER);
 
     private static final Action ACTION_ADD_ITEM = new Action(ViewConstants.ADD_ITEM);
 
     private static final Action ACTION_DELETE = new Action(ViewConstants.DELETE_RESOURCE);
-
-    // private static final Action ACTION_ADD_COMPONENT = new Action(ViewConstants.ADD_COMPONENT);
 
     private static final Action[] ACTIONS_CONTAINER = new Action[] { ACTION_ADD_CONTAINER, ACTION_ADD_ITEM };
 
@@ -155,16 +151,21 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
             showCreateItemView(target, contextId);
         }
         else if (action == ACTION_DELETE) {
-            try {
-                deleteSelected((ResourceModel) target);
-            }
-            catch (final EscidocClientException e) {
-                getWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-            }
+            tryDelete(target);
         }
     }
 
-    private void deleteSelected(ResourceModel target) throws EscidocClientException {
+    private void tryDelete(final Object target) {
+        try {
+            deleteSelected((ResourceModel) target);
+            treeDataSource.remove((ResourceModel) target);
+        }
+        catch (final EscidocClientException e) {
+            getWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        }
+    }
+
+    private void deleteSelected(final ResourceModel target) throws EscidocClientException {
         repositories.item().delete(target.getId());
     }
 
@@ -205,7 +206,7 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
         return new Action[] {};
     }
 
-    private boolean allowedToDeleteITem(ItemModel selected) throws EscidocClientException, URISyntaxException {
+    private boolean allowedToDeleteITem(final ItemModel selected) throws EscidocClientException, URISyntaxException {
         return repositories
             .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_ITEM)
             .forResource(selected.getId()).permitted();
@@ -219,6 +220,7 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
 
     @Override
     public void withNavigationMenuBar(final NavigationMenuBar navigationMenuBar) {
+        Preconditions.checkNotNull(navigationMenuBar, "navigationMenuBar is null: %s", navigationMenuBar);
         ((TreeClickListener) itemClickListener).withNavigationMenuBar(navigationMenuBar);
     }
 }
