@@ -32,6 +32,7 @@ import java.net.URISyntaxException;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.CurrentUser;
+import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.TreeDataSource;
@@ -44,6 +45,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
@@ -52,6 +54,51 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
 public class NavigationMenuBar extends CustomComponent {
+
+    private final class DeleteContainerOrItemMenuCommand implements Command {
+
+        private final ResourceModel resourceModel;
+
+        private final TreeDataSource treeDataSource;
+
+        private final Repositories repositories;
+
+        public DeleteContainerOrItemMenuCommand(final Repositories repositories, final ResourceModel resourceModel,
+            final TreeDataSource treeDataSource) {
+            Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+            Preconditions.checkNotNull(resourceModel, "resourceModel is null: %s", resourceModel);
+            Preconditions.checkNotNull(treeDataSource, "treeDataSource is null: %s", treeDataSource);
+            this.repositories = repositories;
+            this.resourceModel = resourceModel;
+            this.treeDataSource = treeDataSource;
+        }
+
+        @Override
+        public void menuSelected(final MenuItem selectedItem) {
+            deleteResource();
+        }
+
+        private void deleteResource() {
+            try {
+                switch (resourceModel.getType()) {
+                    case CONTAINER:
+                        repositories.container().delete(resourceModel);
+                        break;
+                    case ITEM:
+                        repositories.item().delete(resourceModel);
+                        break;
+                    default:
+                        getWindow().showNotification("Deleting " + resourceModel.getType() + " is not yet implemented",
+                            Window.Notification.TYPE_ERROR_MESSAGE);
+                }
+                treeDataSource.remove(resourceModel);
+            }
+            catch (final EscidocClientException e) {
+                getWindow().showNotification("Can not delete " + resourceModel.getName(), e.getMessage(),
+                    Window.Notification.TYPE_ERROR_MESSAGE);
+            }
+        }
+    }
 
     private static final Logger LOG = LoggerFactory.getLogger(NavigationMenuBar.class);
 
@@ -122,12 +169,10 @@ public class NavigationMenuBar extends CustomComponent {
             updateMenuBar(null);
         }
         catch (final EscidocClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
         }
         catch (final URISyntaxException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
         }
     }
 
@@ -160,15 +205,27 @@ public class NavigationMenuBar extends CustomComponent {
                 case CONTAINER:
                     buildCommand(resourceModel, getContextIdForContainer(resourceModel));
                     showAddContainerAndItem();
+                    showDelete(resourceModel);
                     break;
                 case ITEM:
-                    disableMenuBar();
+                    showDelete(resourceModel);
+                    add.setEnabled(false);
             }
         }
     }
 
-    private void disableMenuBar() {
-        menuBar.setEnabled(false);
+    private void showDelete(final ResourceModel resourceModel) {
+        if (deleteMenuItem == null) {
+            addDeleteMenu();
+        }
+        deleteMenuItem.setCommand(new DeleteContainerOrItemMenuCommand(repositories, resourceModel, treeDataSource));
+        deleteMenuItem.setEnabled(true);
+    }
+
+    private boolean allowedToDeleteItem(final ItemModel selected) throws EscidocClientException, URISyntaxException {
+        return repositories
+            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_ITEM)
+            .forResource(selected.getId()).permitted();
     }
 
     private void buildCommand(final ResourceModel resourceModel, final String contextId) {

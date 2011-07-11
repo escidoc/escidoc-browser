@@ -51,4 +51,7 @@ public interface Repository {
     VersionHistory getVersionHistory(String id) throws EscidocClientException;
 
     Relations getRelations(String id) throws EscidocClientException;
+
+    void delete(final ResourceModel model) throws EscidocClientException;
+
 }

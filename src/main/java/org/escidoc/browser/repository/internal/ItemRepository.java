@@ -166,7 +166,8 @@ public class ItemRepository implements Repository {
         return new ContextModel(resourceProxy.getContext());
     }
 
-    public void delete(String id) throws EscidocClientException {
-        client.delete(id);
+    @Override
+    public void delete(final ResourceModel model) throws EscidocClientException {
+        client.delete(model.getId());
     }
 }

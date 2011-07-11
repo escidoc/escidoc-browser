@@ -206,7 +206,13 @@ public class ContainerRepository implements Repository {
         }
     }
 
-    public void delete(final ContainerModel shouldBeDeleted) throws EscidocClientException {
+    private void delete(final ContainerModel shouldBeDeleted) throws EscidocClientException {
         client.delete(shouldBeDeleted.getId());
     }
+
+    @Override
+    public void delete(final ResourceModel model) throws EscidocClientException {
+        client.delete(model.getId());
+    }
+
 }

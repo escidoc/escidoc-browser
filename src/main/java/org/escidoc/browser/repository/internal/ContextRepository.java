@@ -100,4 +100,9 @@ public class ContextRepository implements Repository {
         client.setHandle(handle);
     }
 
+    @Override
+    public void delete(final ResourceModel model) throws EscidocClientException {
+        client.delete(model.getId());
+    }
+
 }

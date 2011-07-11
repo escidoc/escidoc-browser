@@ -220,6 +220,6 @@ final class ActionHandlerImpl implements Action.Handler {
     }
 
     private void deleteSelected(final ItemModel selected) throws EscidocClientException {
-        repositories.item().delete(selected.getId());
+        repositories.item().delete(selected);
     }
 }
