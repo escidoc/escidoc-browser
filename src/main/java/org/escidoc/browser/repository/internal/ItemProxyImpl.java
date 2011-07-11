@@ -177,4 +177,9 @@ public class ItemProxyImpl implements ItemProxy {
 
     }
 
+    @Override
+    public String getLockStatus() {
+        return itemFromCore.getProperties().getLockStatus().toString().toLowerCase();
+    }
+
 }

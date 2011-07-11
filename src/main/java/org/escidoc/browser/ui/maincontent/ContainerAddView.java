@@ -184,6 +184,7 @@ public class ContainerAddView {
                 status.setValue("Uploading file \"" + event.getFilename() + "\" succeeded");
                 if (isValidXml(receiver.getFileContent())) {
                     status.setValue("XML Looks correct");
+                    upload.setEnabled(false);
                 }
                 else {
                     status.setValue("Not valid");

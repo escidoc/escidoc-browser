@@ -54,4 +54,6 @@ public interface ResourceProxy extends ResourceModel {
 
     Resource getContext();
 
+    String getLockStatus();
+
 }

@@ -26,7 +26,17 @@
  */
 package org.escidoc.browser.ui.listeners;
 
+import java.io.StringWriter;
+
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.w3c.dom.Element;
 
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -70,33 +80,51 @@ public class MetadataRecBehavour implements ClickListener {
         builder.append(NAME);
         builder.append(metadataRecord.getName());
         builder.append("<br />");
-        builder.append(CONTENT);
-        builder.append(metadataRecord.getContent().getTextContent());
-        builder.append("<br />");
-        builder.append(RECORD_TYPE);
-        builder.append(metadataRecord.getMdType());
-        builder.append("<br />");
-        builder.append(RECORD_SCHEMA);
-        builder.append(metadataRecord.getSchema());
-        builder.append("<br />");
+        // builder.append(RECORD_TYPE);
+        // builder.append(metadataRecord.getMdType());
+        // builder.append("<br />");
+        // builder.append(RECORD_SCHEMA);
+        // builder.append(metadataRecord.getSchema());
+        // builder.append("<br />");
         builder.append(LINK);
         builder.append("<a href='");
         builder.append(escidocServiceLocation.getEscidocUri());
         builder.append(metadataRecord.getXLinkHref());
         builder.append("' target='_blank'>");
         builder.append(metadataRecord.getXLinkTitle());
-        builder.append("</a><br />");
+        builder.append("</a><br />" + CONTENT);
         String mtRecinfo = builder.toString();
-        mtRecinfo += metadataRecord.getContent().getTextContent();
 
         final Label msgWindow = new Label(mtRecinfo, Label.CONTENT_PREFORMATTED);
+        final Label msgMetaDataXml =
+            new Label(getContentAsString(metadataRecord.getContent()), Label.CONTENT_PREFORMATTED);
 
         subwindow.addComponent(msgWindow);
+        subwindow.addComponent(msgMetaDataXml);
         if (subwindow.getParent() != null) {
             mainWindow.showNotification("Window is already open");
         }
         else {
             mainWindow.addWindow(subwindow);
         }
+    }
+
+    private String getContentAsString(Element el) {
+
+        TransformerFactory transFactory = TransformerFactory.newInstance();
+        Transformer transformer;
+        try {
+            transformer = transFactory.newTransformer();
+            StringWriter buffer = new StringWriter();
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            transformer.transform(new DOMSource(el), new StreamResult(buffer));
+            return buffer.toString();
+        }
+        catch (TransformerException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
+
     }
 }

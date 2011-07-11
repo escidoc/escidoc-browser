@@ -70,4 +70,7 @@ public interface ContainerProxy extends ResourceProxy {
 
     void setName(String name);
 
+    @Override
+    String getLockStatus();
+
 }

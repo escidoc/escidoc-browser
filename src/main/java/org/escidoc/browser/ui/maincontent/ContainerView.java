@@ -60,6 +60,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.common.properties.LockStatus;
 import de.escidoc.core.resources.common.properties.PublicStatus;
 import de.escidoc.core.resources.om.container.Container;
 
@@ -110,6 +111,8 @@ public class ContainerView extends VerticalLayout {
     private Component swapComponent = null;
 
     private Label lblStatus;
+
+    private Label lblLockstatus;
 
     public ContainerView(final EscidocServiceLocation serviceLocation, final MainSite mainSite,
         final ResourceProxy resourceProxy, final Window mainWindow, final CurrentUser currentUser,
@@ -211,13 +214,16 @@ public class ContainerView extends VerticalLayout {
         // LEFT SIde
         final Label descMetadata1 = new Label("ID: " + resourceProxy.getId());
         lblStatus = new Label(STATUS + resourceProxy.getStatus(), Label.CONTENT_RAW);
+        lblLockstatus = new Label(STATUS + resourceProxy.getLockStatus(), Label.CONTENT_RAW);
         descMetadata1.setStyleName("floatleft");
         descMetadata1.setWidth("35%");
 
         lblStatus.setStyleName("floatleft");
         lblStatus.setDescription("status");
         lblStatus.setWidth("35%");
-
+        lblLockstatus.setStyleName("floatleft");
+        lblLockstatus.setDescription("lockstatus");
+        lblStatus.setWidth("35%");
         // RIGHT SIDE
         final Label descMetadata2 =
             new Label(CREATED_BY + resourceProxy.getCreator() + resourceProxy.getCreatedOn() + "<br/>"
@@ -232,6 +238,7 @@ public class ContainerView extends VerticalLayout {
         cssLayout.addComponent(descMetadata1);
         cssLayout.addComponent(descMetadata2);
         cssLayout.addComponent(lblStatus);
+        cssLayout.addComponent(lblLockstatus);
         cssLayout.addComponent(getHistory());
 
     }
@@ -271,12 +278,37 @@ public class ContainerView extends VerticalLayout {
                 Container container;
                 try {
                     container = repositories.container().findContainerById(resourceProxy.getId());
-                    repositories.container().changePublicStatus(container,
-                        lblStatus.getValue().toString().replace(STATUS, "").toUpperCase());
+                    if (resourceProxy.getLockStatus().equals("unlocked")) {
+                        updatePublicStatus(container);
+                        // retrive the container to get the last modifiaction date.
+                        container = repositories.container().findContainerById(resourceProxy.getId());
+                        updateLockStatus(container);
+                    }
+                    else {
+                        updateLockStatus(container);
+                        updatePublicStatus(container);
+                    }
+
                     btnEdit.detach();
                 }
                 catch (EscidocClientException e) {
                     LOG.debug(e.getLocalizedMessage());
+                }
+            }
+
+            private void updatePublicStatus(Container container) throws EscidocClientException {
+                // Update PublicStatus if there is a change
+                if (!resourceProxy.getStatus().equals(lblStatus.getValue().toString().replace(STATUS, ""))) {
+                    repositories.container().changePublicStatus(container,
+                        lblStatus.getValue().toString().replace(STATUS, "").toUpperCase());
+                }
+            }
+
+            private void updateLockStatus(Container container) throws EscidocClientException {
+                // Update LockStatus if there is a change
+                if (!resourceProxy.getLockStatus().equals(lblLockstatus.getValue().toString().replace(STATUS, ""))) {
+                    repositories.container().changeLockStatus(container,
+                        lblLockstatus.getValue().toString().replace(STATUS, "").toUpperCase());
                 }
             }
         });
@@ -316,7 +348,7 @@ public class ContainerView extends VerticalLayout {
                             // Is Label?
                             if (event.getChildComponent().getClass().getCanonicalName() == "com.vaadin.ui.Label") {
                                 final Label child = (Label) event.getChildComponent();
-
+                                System.out.println("Is label" + child.getDescription());
                                 if ((child).getDescription() == "header") {
                                     // We are not editing header anymore
                                     // oldComponent = event.getClickedComponent();
@@ -327,6 +359,11 @@ public class ContainerView extends VerticalLayout {
                                 else if (child.getDescription() == "status") {
                                     oldComponent = event.getClickedComponent();
                                     swapComponent = editStatus(child.getValue().toString().replace(STATUS, ""));
+                                    cssLayout.replaceComponent(oldComponent, swapComponent);
+                                }
+                                else if (child.getDescription() == "lockstatus") {
+                                    oldComponent = event.getClickedComponent();
+                                    swapComponent = editLockStatus(child.getValue().toString().replace(STATUS, ""));
                                     cssLayout.replaceComponent(oldComponent, swapComponent);
                                 }
                             }
@@ -350,8 +387,22 @@ public class ContainerView extends VerticalLayout {
                         }
                     }
 
+                    private Component editLockStatus(String lockStatus) {
+                        final ComboBox cmbLockStatus = new ComboBox();
+                        cmbLockStatus.setNullSelectionAllowed(false);
+                        if (lockStatus.equals("unlocked")) {
+                            cmbLockStatus.addItem(LockStatus.LOCKED.toString().toLowerCase());
+                        }
+                        else {
+                            cmbLockStatus.addItem(LockStatus.UNLOCKED.toString().toLowerCase());
+                        }
+                        return cmbLockStatus;
+
+                    }
+
                     private Component editStatus(final String publicStatus) {
                         final ComboBox cmbStatus = new ComboBox();
+                        cmbStatus.setNullSelectionAllowed(false);
                         if (publicStatus.equals("pending")) {
                             cmbStatus.addItem(PublicStatus.PENDING.toString().toLowerCase());
                             cmbStatus.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
@@ -371,7 +422,7 @@ public class ContainerView extends VerticalLayout {
                         }
                         else if (publicStatus.equals("withdrawn")) {
                             cmbStatus.addItem(PublicStatus.WITHDRAWN.toString().toLowerCase());
-                            cmbStatus.addItem(PublicStatus.RELEASED.toString().toLowerCase());
+                            cmbStatus.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
                         }
                         return cmbStatus;
                     }

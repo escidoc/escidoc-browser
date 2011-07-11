@@ -141,4 +141,9 @@ public class ContextProxyImpl implements ResourceProxy {
         return true;
     }
 
+    @Override
+    public String getLockStatus() {
+        return null;
+    }
+
 }

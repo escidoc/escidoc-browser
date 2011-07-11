@@ -275,4 +275,9 @@ public class ContainerProxyImpl implements ContainerProxy {
         return containerFromCore.getProperties().getContext();
     }
 
+    @Override
+    public String getLockStatus() {
+        return containerFromCore.getProperties().getLockStatus().toString().toLowerCase();
+    }
+
 }
