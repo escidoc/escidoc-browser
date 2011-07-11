@@ -62,7 +62,7 @@ public class MetadataRecBehavour implements ClickListener {
 
     @Override
     public void buttonClick(final ClickEvent event) {
-        Window subwindow = new Window("Metadata Records");
+        final Window subwindow = new Window("Metadata Records");
         subwindow.setWidth("600px");
         subwindow.setModal(true);
 
@@ -89,7 +89,7 @@ public class MetadataRecBehavour implements ClickListener {
         String mtRecinfo = builder.toString();
         mtRecinfo += metadataRecord.getContent().getTextContent();
 
-        final Label msgWindow = new Label(mtRecinfo, Label.CONTENT_RAW);
+        final Label msgWindow = new Label(mtRecinfo, Label.CONTENT_PREFORMATTED);
 
         subwindow.addComponent(msgWindow);
         if (subwindow.getParent() != null) {

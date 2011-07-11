@@ -28,69 +28,33 @@
  */
 package org.escidoc.browser.ui.navigation;
 
-import java.net.URISyntaxException;
-
-import org.escidoc.browser.model.ContainerModel;
-import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.CurrentUser;
-import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.PropertyId;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.MainSite;
-import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.TreeClickListener;
 import org.escidoc.browser.ui.navigation.menubar.NavigationMenuBar;
-import org.escidoc.browser.ui.navigation.menubar.ShowAddViewCommand;
 
 import com.google.common.base.Preconditions;
-import com.vaadin.event.Action;
+import com.vaadin.event.Action.Handler;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.ExpandListener;
-import com.vaadin.ui.Window;
-
-import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
-public class NavigationTreeViewImpl extends CustomComponent implements Action.Handler, NavigationTreeView {
-
-    private static final Action ACTION_ADD_CONTAINER = new Action(ViewConstants.ADD_CONTAINER);
-
-    private static final Action ACTION_ADD_ITEM = new Action(ViewConstants.ADD_ITEM);
-
-    private static final Action ACTION_DELETE = new Action(ViewConstants.DELETE_RESOURCE);
-
-    private static final Action[] ACTIONS_CONTAINER = new Action[] { ACTION_ADD_CONTAINER, ACTION_ADD_ITEM };
-
-    private static final Action[] ACTIONS_ITEM = new Action[] { ACTION_DELETE };
+public class NavigationTreeViewImpl extends CustomComponent implements NavigationTreeView {
 
     private final Tree tree = new Tree();
-
-    private final CurrentUser currentUser;
-
-    private final Repositories repositories;
-
-    private TreeDataSource treeDataSource;
-
-    private ContainerModel contModel;
-
-    private ItemModel itemModel;
 
     private ItemClickListener itemClickListener;
 
     public NavigationTreeViewImpl(final Repositories repositories, final CurrentUser currentUser) {
-        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
-        this.repositories = repositories;
-        this.currentUser = currentUser;
-
         setCompositionRoot(tree);
         tree.setImmediate(true);
-        tree.addActionHandler(this);
     }
 
     @Override
@@ -110,9 +74,8 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
     }
 
     @Override
-    public void setDataSource(final TreeDataSource container, final MainSite mainSite) {
-        treeDataSource = container;
-        tree.setContainerDataSource(container.getContainer());
+    public void setDataSource(final TreeDataSource dataSource, final MainSite mainSite) {
+        tree.setContainerDataSource(dataSource.getContainer());
         tree.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
         tree.setItemCaptionPropertyId(PropertyId.NAME);
         tree.setItemIconPropertyId(PropertyId.ICON);
@@ -120,107 +83,14 @@ public class NavigationTreeViewImpl extends CustomComponent implements Action.Ha
     }
 
     @Override
-    public void handleAction(final Action action, final Object sender, final Object target) {
-        String contextId = "";
-
-        if (target instanceof ContextModel) {
-            contextId = (((ContextModel) target).getId());
-        }
-        else if (target instanceof ContainerModel) {
-            contModel = (ContainerModel) target;
-            try {
-                contextId = repositories.container().findById(contModel.getId()).getContext().getObjid();
-            }
-            catch (final EscidocClientException e) {
-                getWindow().showNotification("Not Able to retrieve a context");
-            }
-        }
-        else if (target instanceof ItemModel) {
-            itemModel = (ItemModel) target;
-            try {
-                contextId = repositories.item().findById(itemModel.getId()).getContext().getObjid();
-            }
-            catch (final EscidocClientException e) {
-                getWindow().showNotification("Not Able to retrieve a context");
-            }
-        }
-        if (action == ACTION_ADD_CONTAINER) {
-            showCreateContainerView(target, contextId);
-        }
-        else if (action == ACTION_ADD_ITEM) {
-            showCreateItemView(target, contextId);
-        }
-        else if (action == ACTION_DELETE) {
-            tryDelete(target);
-        }
-    }
-
-    private void tryDelete(final Object target) {
-        try {
-            deleteSelected((ResourceModel) target);
-            treeDataSource.remove((ResourceModel) target);
-        }
-        catch (final EscidocClientException e) {
-            getWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-        }
-    }
-
-    private void deleteSelected(final ResourceModel target) throws EscidocClientException {
-        repositories.item().delete(target.getId());
-    }
-
-    private void showCreateItemView(final Object target, final String contextId) {
-        final ShowAddViewCommand showAddViewCommand = buildCommand(target, contextId);
-        showAddViewCommand.showItemAddView();
-    }
-
-    private void showCreateContainerView(final Object target, final String contextId) {
-        final ShowAddViewCommand showAddViewCommand = buildCommand(target, contextId);
-        showAddViewCommand.showContainerAddView();
-    }
-
-    private ShowAddViewCommand buildCommand(final Object target, final String contextId) {
-        final ShowAddViewCommand showAddViewCommand =
-            new ShowAddViewCommand(repositories, getWindow(), contextId, treeDataSource);
-        showAddViewCommand.withParent((ResourceModel) target);
-        return showAddViewCommand;
-    }
-
-    @Override
-    public Action[] getActions(final Object target, final Object sender) {
-        try {
-            if (target instanceof ItemModel && allowedToDeleteITem((ItemModel) target)) {
-                return ACTIONS_ITEM;
-            }
-            if (allowedToCreateContainer()) {
-                return ACTIONS_CONTAINER;
-            }
-            return new Action[] {};
-        }
-        catch (final EscidocClientException e) {
-            getWindow().showNotification(e.getMessage());
-        }
-        catch (final URISyntaxException e) {
-            getWindow().showNotification(e.getMessage());
-        }
-        return new Action[] {};
-    }
-
-    private boolean allowedToDeleteITem(final ItemModel selected) throws EscidocClientException, URISyntaxException {
-        return repositories
-            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_ITEM)
-            .forResource(selected.getId()).permitted();
-    }
-
-    private boolean allowedToCreateContainer() throws EscidocClientException, URISyntaxException {
-        return repositories
-            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.CREATE_CONTAINER).forResource("")
-            .permitted();
-    }
-
-    @Override
     public void withNavigationMenuBar(final NavigationMenuBar navigationMenuBar) {
         Preconditions.checkNotNull(navigationMenuBar, "navigationMenuBar is null: %s", navigationMenuBar);
         ((TreeClickListener) itemClickListener).withNavigationMenuBar(navigationMenuBar);
+    }
+
+    @Override
+    public void addActionHandler(final Handler handler) {
+        Preconditions.checkNotNull(handler, "handler is null: %s", handler);
+        tree.addActionHandler(handler);
     }
 }

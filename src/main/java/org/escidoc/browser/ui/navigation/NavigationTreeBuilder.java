@@ -96,7 +96,8 @@ public class NavigationTreeBuilder {
         navigationTreeView.setDataSource(treeDataSource, mainSite);
         navigationTreeView.addClickListener(new TreeClickListener(serviceLocation, repositories, mainWindow, mainSite,
             currentUser));
-
+        navigationTreeView
+            .addActionHandler(new ActionHandlerImpl(mainWindow, repositories, currentUser, treeDataSource));
         return navigationTreeView;
     }
 }

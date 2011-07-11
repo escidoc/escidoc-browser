@@ -28,28 +28,19 @@
  */
 package org.escidoc.browser.ui.navigation;
 
-import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.model.TreeDataSource;
-import org.escidoc.browser.ui.MainSite;
-import org.escidoc.browser.ui.navigation.menubar.NavigationMenuBar;
+import org.escidoc.browser.ui.ViewConstants;
 
-import com.vaadin.event.Action.Handler;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Tree.ExpandListener;
+import com.vaadin.event.Action;
 
-public interface NavigationTreeView extends Component {
+public class ActionList {
 
-    void addClickListener(ItemClickListener clickListener);
+    static final Action ACTION_ADD_CONTAINER = new Action(ViewConstants.ADD_CONTAINER);
 
-    void addExpandListener(ExpandListener clickListener);
+    static final Action ACTION_ADD_ITEM = new Action(ViewConstants.ADD_ITEM);
 
-    ResourceModel getSelected();
+    static final Action ACTION_DELETE = new Action(ViewConstants.DELETE_RESOURCE);
 
-    void setDataSource(TreeDataSource container, MainSite mainSite);
+    static final Action[] ACTIONS_CONTAINER = new Action[] { ACTION_ADD_CONTAINER, ACTION_ADD_ITEM };
 
-    void withNavigationMenuBar(NavigationMenuBar navigationMenuBar);
-
-    void addActionHandler(Handler handler);
-
+    static final Action[] ACTIONS_ITEM = new Action[] { ACTION_DELETE };
 }
