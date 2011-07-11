@@ -149,11 +149,13 @@ final class ActionHandlerImpl implements Action.Handler {
 
     @Override
     public Action[] getActions(final Object target, final Object sender) {
+        LOG.debug(target + "/" + sender);
         try {
-            if (target instanceof ItemModel && allowedToDeleteITem((ItemModel) target)) {
+            if (target instanceof ItemModel && allowedToDeleteITem((ItemModel) target)
+                && isInStatusPending((ItemModel) target)) {
                 return ActionList.ACTIONS_ITEM;
             }
-            if (allowedToCreateContainer()) {
+            if (target instanceof ContainerModel || target instanceof ContextModel && allowedToCreateContainer()) {
                 return ActionList.ACTIONS_CONTAINER;
             }
             return new Action[] {};
@@ -165,6 +167,10 @@ final class ActionHandlerImpl implements Action.Handler {
             getWindow().showNotification(e.getMessage());
         }
         return new Action[] {};
+    }
+
+    private boolean isInStatusPending(final ItemModel target) throws EscidocClientException {
+        return repositories.item().findById(target.getId()).getStatus().equalsIgnoreCase("pending");
     }
 
     private boolean allowedToCreateContainer() throws EscidocClientException, URISyntaxException {
