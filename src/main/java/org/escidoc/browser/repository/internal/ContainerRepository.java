@@ -194,8 +194,8 @@ public class ContainerRepository implements Repository {
         }
     }
 
-    public void delete(final ContainerModel shouldBeDeleted) throws EscidocClientException {
-        client.delete(shouldBeDeleted.getId());
+    public void changeLockStatus(final Container container, final String lockStatus) throws EscidocClientException {
+        final TaskParam taskParam = new TaskParam();
         taskParam.setLastModificationDate(container.getLastModificationDate());
         System.out.println(lockStatus);
         if (lockStatus.equals("LOCKED")) {
