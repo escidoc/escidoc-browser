@@ -79,12 +79,15 @@ final class ActionHandlerImpl implements Action.Handler {
     public Action[] getActions(final Object target, final Object sender) {
         LOG.debug("target: " + target + "\nsender: " + sender);
         try {
-            if (target instanceof ItemModel && allowedToDeleteITem((ItemModel) target)
-                && isInStatusPending((ItemModel) target)) {
-                return ActionList.ACTIONS_ITEM;
+            if (isItem(target) && allowedToDeleteItem((ItemModel) target) && isInStatusPending((ItemModel) target)) {
+                return new Action[] { ActionList.ACTION_DELETE_ITEM };
             }
-            if (target instanceof ContainerModel || target instanceof ContextModel && allowedToCreateContainer()) {
-                return ActionList.ACTIONS_CONTAINER;
+            if (isContainer(target) && allowedToCreateContainer()) {
+                return new Action[] { ActionList.ACTION_ADD_CONTAINER, ActionList.ACTION_ADD_ITEM,
+                    ActionList.ACTION_DELETE_CONTAINER };
+            }
+            if (isContext(target) && allowedToCreateContainer()) {
+                return new Action[] { ActionList.ACTION_ADD_CONTAINER, ActionList.ACTION_ADD_ITEM };
             }
             return new Action[] {};
         }
@@ -97,11 +100,16 @@ final class ActionHandlerImpl implements Action.Handler {
         return new Action[] {};
     }
 
-    private boolean allowedToDeleteContainer(final ContainerModel containerModel) throws EscidocClientException,
-        URISyntaxException {
-        return repositories
-            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_CONTAINER)
-            .forResource(containerModel.getId()).permitted();
+    private boolean isContext(final Object target) {
+        return target instanceof ContextModel;
+    }
+
+    private boolean isContainer(final Object target) {
+        return target instanceof ContainerModel;
+    }
+
+    private boolean isItem(final Object target) {
+        return target instanceof ItemModel;
     }
 
     private boolean isInStatusPending(final ItemModel target) throws EscidocClientException {
@@ -118,7 +126,7 @@ final class ActionHandlerImpl implements Action.Handler {
         return mainWindow;
     }
 
-    private boolean allowedToDeleteITem(final ItemModel selected) throws EscidocClientException, URISyntaxException {
+    private boolean allowedToDeleteItem(final ItemModel selected) throws EscidocClientException, URISyntaxException {
         return repositories
             .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_ITEM)
             .forResource(selected.getId()).permitted();
@@ -160,10 +168,10 @@ final class ActionHandlerImpl implements Action.Handler {
     }
 
     private String findContextId(final Object target) {
-        if (target instanceof ContextModel) {
+        if (isContext(target)) {
             return (((ContextModel) target).getId());
         }
-        else if (target instanceof ContainerModel) {
+        else if (isContainer(target)) {
             final ContainerModel containerModel = (ContainerModel) target;
             try {
                 return repositories.container().findById(containerModel.getId()).getContext().getObjid();
@@ -172,7 +180,7 @@ final class ActionHandlerImpl implements Action.Handler {
                 getWindow().showNotification(ViewConstants.NOT_ABLE_TO_RETRIEVE_A_CONTEXT);
             }
         }
-        else if (target instanceof ItemModel) {
+        else if (isItem(target)) {
             final ItemModel itemModel = (ItemModel) target;
             try {
                 return repositories.item().findById(itemModel.getId()).getContext().getObjid();
