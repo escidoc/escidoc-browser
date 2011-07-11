@@ -33,6 +33,7 @@ import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
@@ -191,5 +192,9 @@ public class ContainerRepository implements Repository {
         else if (publicStatus.equals("WITHDRAWN")) {
             client.withdraw(container, taskParam);
         }
+    }
+
+    public void delete(final ContainerModel shouldBeDeleted) throws EscidocClientException {
+        client.delete(shouldBeDeleted.getId());
     }
 }

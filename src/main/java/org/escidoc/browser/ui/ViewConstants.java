@@ -100,4 +100,6 @@ public class ViewConstants {
     public static final String ADD_CONTAINER = "Add Container";
 
     public static final String NOT_ABLE_TO_RETRIEVE_A_CONTEXT = "Not Able to retrieve a context";
+
+    public static final String DELETE_CONTAINER = "Delete Container";
 }

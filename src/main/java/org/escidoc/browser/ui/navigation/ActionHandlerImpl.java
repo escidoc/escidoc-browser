@@ -30,6 +30,7 @@ package org.escidoc.browser.ui.navigation;
 
 import java.net.URISyntaxException;
 
+import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.CurrentUser;
@@ -75,6 +76,55 @@ final class ActionHandlerImpl implements Action.Handler {
     }
 
     @Override
+    public Action[] getActions(final Object target, final Object sender) {
+        LOG.debug("target: " + target + "\nsender: " + sender);
+        try {
+            if (target instanceof ItemModel && allowedToDeleteITem((ItemModel) target)
+                && isInStatusPending((ItemModel) target)) {
+                return ActionList.ACTIONS_ITEM;
+            }
+            if (target instanceof ContainerModel || target instanceof ContextModel && allowedToCreateContainer()) {
+                return ActionList.ACTIONS_CONTAINER;
+            }
+            return new Action[] {};
+        }
+        catch (final EscidocClientException e) {
+            getWindow().showNotification(e.getMessage());
+        }
+        catch (final URISyntaxException e) {
+            getWindow().showNotification(e.getMessage());
+        }
+        return new Action[] {};
+    }
+
+    private boolean allowedToDeleteContainer(final ContainerModel containerModel) throws EscidocClientException,
+        URISyntaxException {
+        return repositories
+            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_CONTAINER)
+            .forResource(containerModel.getId()).permitted();
+    }
+
+    private boolean isInStatusPending(final ItemModel target) throws EscidocClientException {
+        return repositories.item().findById(target.getId()).getStatus().equalsIgnoreCase(AppConstants.PENDING);
+    }
+
+    private boolean allowedToCreateContainer() throws EscidocClientException, URISyntaxException {
+        return repositories
+            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.CREATE_CONTAINER).forResource("")
+            .permitted();
+    }
+
+    private Window getWindow() {
+        return mainWindow;
+    }
+
+    private boolean allowedToDeleteITem(final ItemModel selected) throws EscidocClientException, URISyntaxException {
+        return repositories
+            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_ITEM)
+            .forResource(selected.getId()).permitted();
+    }
+
+    @Override
     public void handleAction(final Action action, final Object sender, final Object target) {
         LOG.debug(action + "/" + sender + "/" + target);
 
@@ -86,8 +136,26 @@ final class ActionHandlerImpl implements Action.Handler {
         else if (action.equals(ActionList.ACTION_ADD_ITEM)) {
             showCreateItemView(target, contextId);
         }
-        else if (action.equals(ActionList.ACTION_DELETE)) {
-            tryDelete(target);
+        else if (action.equals(ActionList.ACTION_DELETE_ITEM)) {
+            deleteItem((ItemModel) target);
+        }
+        else if (action.equals(ActionList.ACTION_DELETE_CONTAINER)) {
+            deleteContainer((ContainerModel) target);
+        }
+        else {
+            mainWindow.showNotification("Unknown Action: " + action.getCaption(),
+                Window.Notification.TYPE_ERROR_MESSAGE);
+        }
+    }
+
+    private void deleteContainer(final ContainerModel selected) {
+        try {
+            repositories.container().delete(selected);
+            treeDataSource.remove(selected);
+        }
+        catch (final EscidocClientException e) {
+            getWindow().showNotification("Can not delete " + selected.getName(), e.getMessage(),
+                Window.Notification.TYPE_ERROR_MESSAGE);
         }
     }
 
@@ -133,59 +201,17 @@ final class ActionHandlerImpl implements Action.Handler {
         return showAddViewCommand;
     }
 
-    private void tryDelete(final Object target) {
+    private void deleteItem(final ItemModel selectedItem) {
         try {
-            deleteSelected((ResourceModel) target);
-            treeDataSource.remove((ResourceModel) target);
+            deleteSelected(selectedItem);
+            treeDataSource.remove(selectedItem);
         }
         catch (final EscidocClientException e) {
             getWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
         }
     }
 
-    private void deleteSelected(final ResourceModel target) throws EscidocClientException {
-        repositories.item().delete(target.getId());
-    }
-
-    @Override
-    public Action[] getActions(final Object target, final Object sender) {
-        LOG.debug(target + "/" + sender);
-        try {
-            if (target instanceof ItemModel && allowedToDeleteITem((ItemModel) target)
-                && isInStatusPending((ItemModel) target)) {
-                return ActionList.ACTIONS_ITEM;
-            }
-            if (target instanceof ContainerModel || target instanceof ContextModel && allowedToCreateContainer()) {
-                return ActionList.ACTIONS_CONTAINER;
-            }
-            return new Action[] {};
-        }
-        catch (final EscidocClientException e) {
-            getWindow().showNotification(e.getMessage());
-        }
-        catch (final URISyntaxException e) {
-            getWindow().showNotification(e.getMessage());
-        }
-        return new Action[] {};
-    }
-
-    private boolean isInStatusPending(final ItemModel target) throws EscidocClientException {
-        return repositories.item().findById(target.getId()).getStatus().equalsIgnoreCase("pending");
-    }
-
-    private boolean allowedToCreateContainer() throws EscidocClientException, URISyntaxException {
-        return repositories
-            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.CREATE_CONTAINER).forResource("")
-            .permitted();
-    }
-
-    private Window getWindow() {
-        return mainWindow;
-    }
-
-    private boolean allowedToDeleteITem(final ItemModel selected) throws EscidocClientException, URISyntaxException {
-        return repositories
-            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_ITEM)
-            .forResource(selected.getId()).permitted();
+    private void deleteSelected(final ItemModel selected) throws EscidocClientException {
+        repositories.item().delete(selected.getId());
     }
 }

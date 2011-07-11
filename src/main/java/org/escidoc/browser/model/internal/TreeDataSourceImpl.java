@@ -181,9 +181,14 @@ public class TreeDataSourceImpl implements TreeDataSource {
     @Override
     public void remove(final ResourceModel resourceModel) {
         Preconditions.checkNotNull(resourceModel, "resourceModel is null: %s", resourceModel);
+        boolean isSuccessful;
         switch (resourceModel.getType()) {
             case ITEM:
-                final boolean isSuccessful = dataSource.removeItem(resourceModel);
+                isSuccessful = dataSource.removeItem(resourceModel);
+                Preconditions.checkArgument(isSuccessful, "Can not remove " + resourceModel + " from data source.");
+                break;
+            case CONTAINER:
+                isSuccessful = dataSource.removeItem(resourceModel);
                 Preconditions.checkArgument(isSuccessful, "Can not remove " + resourceModel + " from data source.");
                 break;
             default:

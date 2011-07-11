@@ -30,6 +30,8 @@ package org.escidoc.browser;
 
 public final class AppConstants {
 
+    public static final String PENDING = "pending";
+
     private AppConstants() {
         // not to be initialized
     }
