@@ -77,7 +77,6 @@ final class ActionHandlerImpl implements Action.Handler {
 
     @Override
     public Action[] getActions(final Object target, final Object sender) {
-        LOG.debug("target: " + target + "\nsender: " + sender);
         try {
             if (isItem(target) && allowedToDeleteItem((ItemModel) target) && isInStatusPending((ItemModel) target)) {
                 return new Action[] { ActionList.ACTION_DELETE_ITEM };
