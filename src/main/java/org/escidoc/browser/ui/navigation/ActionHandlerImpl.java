@@ -78,9 +78,9 @@ final class ActionHandlerImpl implements Action.Handler {
     @Override
     public Action[] getActions(final Object target, final Object sender) {
         try {
-            if (isItem(target) && allowedToDeleteItem((ItemModel) target) && isInStatusPending((ItemModel) target)) {
-                return new Action[] { ActionList.ACTION_DELETE_ITEM };
-            }
+            // if (isItem(target) && allowedToDeleteItem((ItemModel) target) && isInStatusPending((ItemModel) target)) {
+            // return new Action[] { ActionList.ACTION_DELETE_ITEM };
+            // }
             if (isContainer(target) && allowedToCreateContainer()) {
                 return new Action[] { ActionList.ACTION_ADD_CONTAINER, ActionList.ACTION_ADD_ITEM,
                     ActionList.ACTION_DELETE_CONTAINER };
