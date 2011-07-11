@@ -28,7 +28,9 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import com.google.common.base.Preconditions;
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
+
+import java.util.List;
 
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.EscidocServiceLocation;
@@ -39,7 +41,7 @@ import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.internal.HasNoNameResource;
 import org.escidoc.browser.repository.Repository;
 
-import java.util.List;
+import com.google.common.base.Preconditions;
 
 import de.escidoc.core.client.ContainerHandlerClient;
 import de.escidoc.core.client.ItemHandlerClient;
@@ -54,7 +56,6 @@ import de.escidoc.core.resources.common.TaskParam;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.om.item.Item;
-import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 public class ItemRepository implements Repository {
 
@@ -145,6 +146,18 @@ public class ItemRepository implements Repository {
         }
         else if (publicStatus.equals("WITHDRAWN")) {
             client.withdraw(item, taskParam);
+        }
+    }
+
+    public void changeLockStatus(final Item item, final String lockStatus) throws EscidocClientException {
+        final TaskParam taskParam = new TaskParam();
+        taskParam.setLastModificationDate(item.getLastModificationDate());
+        System.out.println(lockStatus);
+        if (lockStatus.equals("LOCKED")) {
+            client.lock(item.getObjid(), taskParam);
+        }
+        else {
+            client.unlock(item.getObjid(), taskParam);
         }
     }
 

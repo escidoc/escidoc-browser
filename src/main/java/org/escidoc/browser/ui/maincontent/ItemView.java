@@ -59,6 +59,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.common.properties.LockStatus;
 import de.escidoc.core.resources.common.properties.PublicStatus;
 import de.escidoc.core.resources.om.item.Item;
 
@@ -101,6 +102,8 @@ public class ItemView extends VerticalLayout {
     private Component swapComponent = null;
 
     private Label lblStatus;
+
+    private Label lblLockstatus;
 
     public ItemView(final EscidocServiceLocation serviceLocation, final Repositories repositories,
         final MainSite mainSite, final ResourceProxy resourceProxy, final Window mainWindow,
@@ -168,12 +171,16 @@ public class ItemView extends VerticalLayout {
     private void bindProperties() {
         final Label descMetadata1 = new Label("ID: " + resourceProxy.getId());
         lblStatus = new Label(STATUS + resourceProxy.getStatus(), Label.CONTENT_RAW);
+        lblLockstatus = new Label(STATUS + resourceProxy.getLockStatus(), Label.CONTENT_RAW);
         descMetadata1.setStyleName("floatleft");
         descMetadata1.setWidth("35%");
 
         lblStatus.setStyleName("floatleft");
         lblStatus.setDescription("status");
         lblStatus.setWidth("35%");
+        lblLockstatus.setStyleName("floatleft");
+        lblLockstatus.setDescription("lockstatus");
+        lblLockstatus.setWidth("35%");
 
         // RIGHT SIDE
         final Label descMetadata2 =
@@ -189,6 +196,7 @@ public class ItemView extends VerticalLayout {
         cssLayout.addComponent(descMetadata1);
         cssLayout.addComponent(descMetadata2);
         cssLayout.addComponent(lblStatus);
+        cssLayout.addComponent(lblLockstatus);
         cssLayout.addComponent(getHistory());
 
     }
@@ -215,12 +223,39 @@ public class ItemView extends VerticalLayout {
                 Item item;
                 try {
                     item = repositories.item().findItemById(resourceProxy.getId());
+                    if (resourceProxy.getLockStatus().equals("unlocked")) {
+                        updatePublicStatus(item);
+                        // retrive the container to get the last modifiaction date.
+                        item = repositories.item().findItemById(resourceProxy.getId());
+                        updateLockStatus(item);
+                    }
+                    else {
+                        updateLockStatus(item);
+                        updatePublicStatus(item);
+                    }
+
                     repositories.item().changePublicStatus(item,
                         lblStatus.getValue().toString().replace(STATUS, "").toUpperCase());
                     btnEdit.detach();
                 }
                 catch (final EscidocClientException e) {
                     LOG.debug(e.getLocalizedMessage());
+                }
+            }
+
+            private void updatePublicStatus(Item item) throws EscidocClientException {
+                // Update PublicStatus if there is a change
+                if (!resourceProxy.getStatus().equals(lblStatus.getValue().toString().replace(STATUS, ""))) {
+                    repositories.item().changePublicStatus(item,
+                        lblStatus.getValue().toString().replace(STATUS, "").toUpperCase());
+                }
+            }
+
+            private void updateLockStatus(Item item) throws EscidocClientException {
+                // Update LockStatus if there is a change
+                if (!resourceProxy.getLockStatus().equals(lblLockstatus.getValue().toString().replace(STATUS, ""))) {
+                    repositories.item().changeLockStatus(item,
+                        lblLockstatus.getValue().toString().replace(STATUS, "").toUpperCase());
                 }
             }
         });
@@ -273,6 +308,11 @@ public class ItemView extends VerticalLayout {
                                     swapComponent = editStatus(child.getValue().toString().replace(STATUS, ""));
                                     cssLayout.replaceComponent(oldComponent, swapComponent);
                                 }
+                                else if (child.getDescription() == "lockstatus") {
+                                    oldComponent = event.getClickedComponent();
+                                    swapComponent = editLockStatus(child.getValue().toString().replace(STATUS, ""));
+                                    cssLayout.replaceComponent(oldComponent, swapComponent);
+                                }
                             }
                             else {
                                 getWindow().showNotification(
@@ -292,6 +332,18 @@ public class ItemView extends VerticalLayout {
                                 swapComponent = null;
                             }
                         }
+                    }
+
+                    private Component editLockStatus(String lockStatus) {
+                        final ComboBox cmbLockStatus = new ComboBox();
+                        cmbLockStatus.setNullSelectionAllowed(false);
+                        if (lockStatus.equals("unlocked")) {
+                            cmbLockStatus.addItem(LockStatus.LOCKED.toString().toLowerCase());
+                        }
+                        else {
+                            cmbLockStatus.addItem(LockStatus.UNLOCKED.toString().toLowerCase());
+                        }
+                        return cmbLockStatus;
                     }
 
                     private Component editStatus(final String publicStatus) {
@@ -315,7 +367,7 @@ public class ItemView extends VerticalLayout {
                         }
                         else if (publicStatus.equals("withdrawn")) {
                             cmbStatus.addItem(PublicStatus.WITHDRAWN.toString().toLowerCase());
-                            cmbStatus.addItem(PublicStatus.RELEASED.toString().toLowerCase());
+                            cmbStatus.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
                         }
                         return cmbStatus;
                     }

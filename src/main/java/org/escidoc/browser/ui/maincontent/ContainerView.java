@@ -223,7 +223,7 @@ public class ContainerView extends VerticalLayout {
         lblStatus.setWidth("35%");
         lblLockstatus.setStyleName("floatleft");
         lblLockstatus.setDescription("lockstatus");
-        lblStatus.setWidth("35%");
+        lblLockstatus.setWidth("35%");
         // RIGHT SIDE
         final Label descMetadata2 =
             new Label(CREATED_BY + resourceProxy.getCreator() + resourceProxy.getCreatedOn() + "<br/>"
