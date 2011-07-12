@@ -57,7 +57,6 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.BaseTheme;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.properties.LockStatus;
@@ -182,7 +181,7 @@ public class ContainerView extends VerticalLayout {
     private void leftCell(final String string, final Component comptoBind) {
         final Panel leftpnl = new Panel();
 
-        leftpnl.setStyleName("directmembers floatleft paddingtop10 ");
+        leftpnl.setStyleName("directmembers floatleft");
         leftpnl.setScrollable(false);
         leftpnl.getLayout().setMargin(false);
 
@@ -225,21 +224,35 @@ public class ContainerView extends VerticalLayout {
         lblLockstatus.setDescription("lockstatus");
         lblLockstatus.setWidth("35%");
         // RIGHT SIDE
-        final Label descMetadata2 =
-            new Label(CREATED_BY + resourceProxy.getCreator() + resourceProxy.getCreatedOn() + "<br/>"
-                + LAST_MODIFIED_BY + resourceProxy.getModifier() + " " + resourceProxy.getModifier(), Label.CONTENT_RAW);
+        final Label descMetadata2 = new Label(CREATED_BY + resourceProxy.getCreator() + resourceProxy.getCreatedOn());
+        final Label descMetadata2a =
+            new Label(LAST_MODIFIED_BY + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(),
+                Label.CONTENT_RAW);
         descMetadata2.setStyleName("floatright");
         descMetadata2.setWidth("65%");
+        descMetadata2a.setStyleName("floatright");
+        descMetadata2a.setWidth("65%");
+
+        final Label padder = new Label("&nbsp;");
+        padder.setStyleName("floatright");
+        padder.setWidth("5%");
 
         Component versionHistory = getHistory();
         versionHistory.setStyleName("floatright");
-        versionHistory.setWidth("65%");
+        versionHistory.setWidth("60%");
+
+        Label test = new Label("History should come here");
+        test.setStyleName("floatright");
+        test.setWidth("65%");
 
         cssLayout.addComponent(descMetadata1);
         cssLayout.addComponent(descMetadata2);
         cssLayout.addComponent(lblStatus);
+        cssLayout.addComponent(descMetadata2a);
         cssLayout.addComponent(lblLockstatus);
-        cssLayout.addComponent(getHistory());
+        cssLayout.addComponent(test);
+        // cssLayout.addComponent(getHistory());
+        cssLayout.addComponent(test);
 
     }
 
@@ -459,7 +472,7 @@ public class ContainerView extends VerticalLayout {
             Button versionHistory =
                 new Button(" Has previous version", new VersionHistoryClickListener(resourceProxy, mainWindow,
                     serviceLocation, repositories));
-            versionHistory.setStyleName(BaseTheme.BUTTON_LINK);
+            // versionHistory.setStyleName(BaseTheme.BUTTON_LINK);
             return versionHistory;
         }
         else {

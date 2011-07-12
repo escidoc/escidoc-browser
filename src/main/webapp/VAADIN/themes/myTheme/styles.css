@@ -21,6 +21,12 @@
 .paddingtop10{
  padding-top:10.0px;
 }
+.paddingtop30{
+ padding-top:60.0px;
+}
+.paddingbottom10{
+ padding-bottom:10px;
+}
 .clear{
 	clear: both;
 }

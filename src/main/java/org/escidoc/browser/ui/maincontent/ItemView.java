@@ -185,7 +185,8 @@ public class ItemView extends VerticalLayout {
         // RIGHT SIDE
         final Label descMetadata2 =
             new Label(CREATED_BY + resourceProxy.getCreator() + resourceProxy.getCreatedOn() + "<br/>"
-                + LAST_MODIFIED_BY + resourceProxy.getModifier() + " " + resourceProxy.getModifier(), Label.CONTENT_RAW);
+                + LAST_MODIFIED_BY + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(),
+                Label.CONTENT_RAW);
         descMetadata2.setStyleName("floatright");
         descMetadata2.setWidth("65%");
 
@@ -193,11 +194,16 @@ public class ItemView extends VerticalLayout {
         versionHistory.setStyleName("floatleft");
         versionHistory.setWidth("65%");
 
+        Label test = new Label("History should come here");
+        test.setStyleName("floatright");
+        test.setWidth("65%");
+
         cssLayout.addComponent(descMetadata1);
         cssLayout.addComponent(descMetadata2);
         cssLayout.addComponent(lblStatus);
         cssLayout.addComponent(lblLockstatus);
-        cssLayout.addComponent(getHistory());
+        cssLayout.addComponent(test);
+        // cssLayout.addComponent(getHistory());
 
     }
 
