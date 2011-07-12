@@ -30,7 +30,6 @@ package org.escidoc.browser.ui.navigation;
 
 import java.net.URISyntaxException;
 
-import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.CurrentUser;
@@ -78,9 +77,6 @@ final class ActionHandlerImpl implements Action.Handler {
     @Override
     public Action[] getActions(final Object target, final Object sender) {
         try {
-            // if (isItem(target) && allowedToDeleteItem((ItemModel) target) && isInStatusPending((ItemModel) target)) {
-            // return new Action[] { ActionList.ACTION_DELETE_ITEM };
-            // }
             if (isContainer(target) && allowedToCreateContainer()) {
                 return new Action[] { ActionList.ACTION_ADD_CONTAINER, ActionList.ACTION_ADD_ITEM,
                     ActionList.ACTION_DELETE_CONTAINER };
@@ -111,10 +107,6 @@ final class ActionHandlerImpl implements Action.Handler {
         return target instanceof ItemModel;
     }
 
-    private boolean isInStatusPending(final ItemModel target) throws EscidocClientException {
-        return repositories.item().findById(target.getId()).getStatus().equalsIgnoreCase(AppConstants.PENDING);
-    }
-
     private boolean allowedToCreateContainer() throws EscidocClientException, URISyntaxException {
         return repositories
             .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.CREATE_CONTAINER).forResource("")
@@ -125,18 +117,9 @@ final class ActionHandlerImpl implements Action.Handler {
         return mainWindow;
     }
 
-    private boolean allowedToDeleteItem(final ItemModel selected) throws EscidocClientException, URISyntaxException {
-        return repositories
-            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_ITEM)
-            .forResource(selected.getId()).permitted();
-    }
-
     @Override
     public void handleAction(final Action action, final Object sender, final Object target) {
-        LOG.debug(action + "/" + sender + "/" + target);
-
         final String contextId = findContextId(target);
-
         if (action.equals(ActionList.ACTION_ADD_CONTAINER)) {
             showCreateContainerView(target, contextId);
         }

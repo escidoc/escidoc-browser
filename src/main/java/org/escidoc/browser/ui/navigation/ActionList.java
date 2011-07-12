@@ -41,8 +41,4 @@ public class ActionList {
     static final Action ACTION_DELETE_ITEM = new Action(ViewConstants.DELETE_RESOURCE);
 
     static final Action ACTION_DELETE_CONTAINER = new Action(ViewConstants.DELETE_CONTAINER);
-
-    static final Action[] ACTIONS_CONTAINER = new Action[] { ACTION_ADD_CONTAINER, ACTION_ADD_ITEM,
-        ACTION_DELETE_CONTAINER };
-
 }

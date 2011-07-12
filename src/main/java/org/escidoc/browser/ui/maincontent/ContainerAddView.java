@@ -18,7 +18,6 @@ import org.escidoc.browser.ui.listeners.AddContainerListener;
 import org.escidoc.browser.ui.listeners.MyReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -145,7 +144,7 @@ public class ContainerAddView {
         final Button cancelProcessing = new Button("Cancel");
         cancelProcessing.addListener(new Button.ClickListener() {
             @Override
-            public void buttonClick(ClickEvent event) {
+            public void buttonClick(final ClickEvent event) {
                 upload.interruptUpload();
             }
         });
@@ -158,7 +157,7 @@ public class ContainerAddView {
 
         upload.addListener(new Upload.StartedListener() {
             @Override
-            public void uploadStarted(StartedEvent event) {
+            public void uploadStarted(final StartedEvent event) {
                 // This method gets called immediatedly after upload is started
                 upload.setVisible(false);
                 progressLayout.setVisible(true);
@@ -170,7 +169,7 @@ public class ContainerAddView {
 
         upload.addListener(new Upload.ProgressListener() {
             @Override
-            public void updateProgress(long readBytes, long contentLength) {
+            public void updateProgress(final long readBytes, final long contentLength) {
                 // This method gets called several times during the update
                 pi.setValue(new Float(readBytes / (float) contentLength));
             }
@@ -179,7 +178,7 @@ public class ContainerAddView {
 
         upload.addListener(new Upload.SucceededListener() {
             @Override
-            public void uploadSucceeded(SucceededEvent event) {
+            public void uploadSucceeded(final SucceededEvent event) {
                 // This method gets called when the upload finished successfully
                 status.setValue("Uploading file \"" + event.getFilename() + "\" succeeded");
                 if (isValidXml(receiver.getFileContent())) {
@@ -194,7 +193,7 @@ public class ContainerAddView {
 
         upload.addListener(new Upload.FailedListener() {
             @Override
-            public void uploadFailed(FailedEvent event) {
+            public void uploadFailed(final FailedEvent event) {
                 // This method gets called when the upload failed
                 status.setValue("Uploading interrupted");
             }
@@ -202,7 +201,7 @@ public class ContainerAddView {
 
         upload.addListener(new Upload.FinishedListener() {
             @Override
-            public void uploadFinished(FinishedEvent event) {
+            public void uploadFinished(final FinishedEvent event) {
                 // This method gets called always when the upload finished,
                 // either succeeding or failing
                 progressLayout.setVisible(false);
@@ -220,26 +219,24 @@ public class ContainerAddView {
      * @return boolean
      */
     private boolean isValidXml(final String xml) {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
 
         try {
             builder = factory.newDocumentBuilder();
-            InputSource is = new InputSource(new StringReader(xml));
-            Document d;
+            final InputSource is = new InputSource(new StringReader(xml));
             try {
-                d = builder.parse(is);
+                builder.parse(is);
                 return true;
-                // Element content = d.getDocumentElement();
             }
-            catch (SAXException e) {
+            catch (final SAXException e) {
                 return false;
             }
-            catch (IOException e) {
+            catch (final IOException e) {
                 return false;
             }
         }
-        catch (ParserConfigurationException e) {
+        catch (final ParserConfigurationException e) {
             return false;
         }
 
@@ -287,7 +284,7 @@ public class ContainerAddView {
     }
 
     private void createNewContainer(
-        final String containerName, final String contentModelId, final String contextId, String metaData) {
+        final String containerName, final String contentModelId, final String contextId, final String metaData) {
         final ContainerBuilder cntBuild =
             new ContainerBuilder(new ContextRef(contextId), new ContentModelRef(contentModelId), metaData);
         final Container newContainer = cntBuild.build(containerName);
