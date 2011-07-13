@@ -89,7 +89,7 @@ public class ContainerView extends VerticalLayout {
 
     private static final String RESOURCE_NAME = "Container: ";
 
-    private static final String STATUS = "Status is ";
+    private String status;
 
     private int accordionHeight;
 
@@ -212,8 +212,9 @@ public class ContainerView extends VerticalLayout {
     private void bindProperties() {
         // LEFT SIde
         final Label descMetadata1 = new Label("ID: " + resourceProxy.getId());
-        lblStatus = new Label(STATUS + resourceProxy.getStatus(), Label.CONTENT_RAW);
-        lblLockstatus = new Label(STATUS + resourceProxy.getLockStatus(), Label.CONTENT_RAW);
+        status = resourceProxy.getType().asLabel() + " is ";
+        lblStatus = new Label(status + resourceProxy.getStatus(), Label.CONTENT_RAW);
+        lblLockstatus = new Label(status + resourceProxy.getLockStatus(), Label.CONTENT_RAW);
         descMetadata1.setStyleName("floatleft");
         descMetadata1.setWidth("35%");
 
@@ -223,6 +224,7 @@ public class ContainerView extends VerticalLayout {
         lblLockstatus.setStyleName("floatleft");
         lblLockstatus.setDescription("lockstatus");
         lblLockstatus.setWidth("35%");
+
         // RIGHT SIDE
         final Label descMetadata2 =
             new Label(CREATED_BY + " " + resourceProxy.getCreator() + " " + resourceProxy.getCreatedOn());
@@ -238,11 +240,11 @@ public class ContainerView extends VerticalLayout {
         padder.setStyleName("floatright");
         padder.setWidth("5%");
 
-        Component versionHistory = getHistory();
+        final Component versionHistory = getHistory();
         versionHistory.setStyleName("floatright");
         versionHistory.setWidth("60%");
 
-        Label test = new Label("History should come here");
+        final Label test = new Label("History should come here");
         test.setStyleName("floatright");
         test.setWidth("65%");
 
@@ -305,24 +307,24 @@ public class ContainerView extends VerticalLayout {
 
                     btnEdit.detach();
                 }
-                catch (EscidocClientException e) {
+                catch (final EscidocClientException e) {
                     LOG.debug(e.getLocalizedMessage());
                 }
             }
 
-            private void updatePublicStatus(Container container) throws EscidocClientException {
+            private void updatePublicStatus(final Container container) throws EscidocClientException {
                 // Update PublicStatus if there is a change
-                if (!resourceProxy.getStatus().equals(lblStatus.getValue().toString().replace(STATUS, ""))) {
+                if (!resourceProxy.getStatus().equals(lblStatus.getValue().toString().replace(status, ""))) {
                     repositories.container().changePublicStatus(container,
-                        lblStatus.getValue().toString().replace(STATUS, "").toUpperCase());
+                        lblStatus.getValue().toString().replace(status, "").toUpperCase());
                 }
             }
 
-            private void updateLockStatus(Container container) throws EscidocClientException {
+            private void updateLockStatus(final Container container) throws EscidocClientException {
                 // Update LockStatus if there is a change
-                if (!resourceProxy.getLockStatus().equals(lblLockstatus.getValue().toString().replace(STATUS, ""))) {
+                if (!resourceProxy.getLockStatus().equals(lblLockstatus.getValue().toString().replace(status, ""))) {
                     repositories.container().changeLockStatus(container,
-                        lblLockstatus.getValue().toString().replace(STATUS, "").toUpperCase());
+                        lblLockstatus.getValue().toString().replace(status, "").toUpperCase());
                 }
             }
         });
@@ -373,13 +375,13 @@ public class ContainerView extends VerticalLayout {
                                 else if (child.getDescription() == "status") {
                                     reSwapComponents();
                                     oldComponent = event.getClickedComponent();
-                                    swapComponent = editStatus(child.getValue().toString().replace(STATUS, ""));
+                                    swapComponent = editStatus(child.getValue().toString().replace(status, ""));
                                     cssLayout.replaceComponent(oldComponent, swapComponent);
                                 }
                                 else if (child.getDescription() == "lockstatus") {
                                     reSwapComponents();
                                     oldComponent = event.getClickedComponent();
-                                    swapComponent = editLockStatus(child.getValue().toString().replace(STATUS, ""));
+                                    swapComponent = editLockStatus(child.getValue().toString().replace(status, ""));
                                     cssLayout.replaceComponent(oldComponent, swapComponent);
                                 }
                             }
@@ -399,7 +401,7 @@ public class ContainerView extends VerticalLayout {
                                 ((Label) oldComponent).setValue(((TextField) swapComponent).getValue());
                             }
                             else if ((swapComponent instanceof ComboBox)) {
-                                ((Label) oldComponent).setValue(STATUS + ((ComboBox) swapComponent).getValue());
+                                ((Label) oldComponent).setValue(status + ((ComboBox) swapComponent).getValue());
                                 btnEdit.setVisible(true);
                             }
                             cssLayout.replaceComponent(swapComponent, oldComponent);
@@ -407,7 +409,7 @@ public class ContainerView extends VerticalLayout {
                         }
                     }
 
-                    private Component editLockStatus(String lockStatus) {
+                    private Component editLockStatus(final String lockStatus) {
                         final ComboBox cmbLockStatus = new ComboBox();
                         cmbLockStatus.setNullSelectionAllowed(false);
                         if (lockStatus.equals("unlocked")) {
@@ -425,7 +427,7 @@ public class ContainerView extends VerticalLayout {
                         final ComboBox cmbStatus = new ComboBox();
                         cmbStatus.setInvalidAllowed(false);
                         cmbStatus.setNullSelectionAllowed(false);
-                        String pubStatus = publicStatus.toUpperCase();
+                        final String pubStatus = publicStatus.toUpperCase();
                         if (publicStatus.equals("pending")) {
                             cmbStatus.addItem(PublicStatus.PENDING.toString().toLowerCase());
                             cmbStatus.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
@@ -471,11 +473,11 @@ public class ContainerView extends VerticalLayout {
                 });
             }
         }
-        catch (EscidocClientException e) {
+        catch (final EscidocClientException e) {
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
             e.printStackTrace();
         }
-        catch (URISyntaxException e) {
+        catch (final URISyntaxException e) {
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
             e.printStackTrace();
         }
@@ -489,14 +491,14 @@ public class ContainerView extends VerticalLayout {
      */
     private Component getHistory() {
         if (resourceProxy.getPreviousVersion()) {
-            Button versionHistory =
+            final Button versionHistory =
                 new Button(" Has previous version", new VersionHistoryClickListener(resourceProxy, mainWindow,
                     serviceLocation, repositories));
             // versionHistory.setStyleName(BaseTheme.BUTTON_LINK);
             return versionHistory;
         }
         else {
-            Label strHistory = new Label("Has no previous history");
+            final Label strHistory = new Label("Has no previous history");
             return strHistory;
         }
     }

@@ -58,8 +58,6 @@ public class ContextView extends VerticalLayout {
 
     private static final String RESOURCE_NAME = "Workspace: ";
 
-    private static final String STATUS = "Status is ";
-
     private final CssLayout cssLayout = new CssLayout();
 
     private final MainSite mainSite;
@@ -166,10 +164,9 @@ public class ContextView extends VerticalLayout {
      * Bindind Context Properties 2 sets of labels in 2 rows
      */
     private void bindProperties() {
-        // LEFT SIde
         final Label descMetadata1 =
-            new Label("ID: " + resourceProxy.getId() + " <br /> " + STATUS + resourceProxy.getStatus(),
-                Label.CONTENT_RAW);
+            new Label("ID: " + resourceProxy.getId() + " <br /> " + resourceProxy.getType().asLabel() + " is "
+                + resourceProxy.getStatus(), Label.CONTENT_RAW);
         descMetadata1.setWidth("35%");
         descMetadata1.setStyleName("floatleft columnheight50");
         cssLayout.addComponent(descMetadata1);

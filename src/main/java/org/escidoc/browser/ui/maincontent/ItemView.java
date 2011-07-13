@@ -72,7 +72,7 @@ public class ItemView extends VerticalLayout {
 
     private static final String RESOURCE_NAME = "Item: ";
 
-    private static final String STATUS = "Status is ";
+    private String status;
 
     private final CssLayout cssLayout = new CssLayout();
 
@@ -122,7 +122,7 @@ public class ItemView extends VerticalLayout {
         init();
     }
 
-    void init() {
+    private void init() {
         buildLayout();
         handleLayoutListeners();
         createBreadcrumbp();
@@ -164,8 +164,9 @@ public class ItemView extends VerticalLayout {
 
     private void bindProperties() {
         final Label descMetadata1 = new Label("ID: " + resourceProxy.getId());
-        lblStatus = new Label(STATUS + resourceProxy.getStatus(), Label.CONTENT_RAW);
-        lblLockstatus = new Label(STATUS + resourceProxy.getLockStatus(), Label.CONTENT_RAW);
+        status = resourceProxy.getType().asLabel() + " is ";
+        lblStatus = new Label(status + resourceProxy.getStatus(), Label.CONTENT_RAW);
+        lblLockstatus = new Label(status + resourceProxy.getLockStatus(), Label.CONTENT_RAW);
         descMetadata1.setStyleName("floatleft");
         descMetadata1.setWidth("35%");
 
@@ -197,12 +198,10 @@ public class ItemView extends VerticalLayout {
         cssLayout.addComponent(lblStatus);
         cssLayout.addComponent(lblLockstatus);
         cssLayout.addComponent(test);
-        // cssLayout.addComponent(getHistory());
 
     }
 
     private void bindHrRuler() {
-        // ContainerView Horizontal Ruler
         final Label descRuler = new Label("<hr/>", Label.CONTENT_RAW);
         descRuler.setStyleName("hr");
         cssLayout.addComponent(descRuler);
@@ -235,7 +234,7 @@ public class ItemView extends VerticalLayout {
                     }
 
                     repositories.item().changePublicStatus(item,
-                        lblStatus.getValue().toString().replace(STATUS, "").toUpperCase());
+                        lblStatus.getValue().toString().replace(status, "").toUpperCase());
                     btnEdit.detach();
                 }
                 catch (final EscidocClientException e) {
@@ -245,17 +244,17 @@ public class ItemView extends VerticalLayout {
 
             private void updatePublicStatus(final Item item) throws EscidocClientException {
                 // Update PublicStatus if there is a change
-                if (!resourceProxy.getStatus().equals(lblStatus.getValue().toString().replace(STATUS, ""))) {
+                if (!resourceProxy.getStatus().equals(lblStatus.getValue().toString().replace(status, ""))) {
                     repositories.item().changePublicStatus(item,
-                        lblStatus.getValue().toString().replace(STATUS, "").toUpperCase());
+                        lblStatus.getValue().toString().replace(status, "").toUpperCase());
                 }
             }
 
             private void updateLockStatus(final Item item) throws EscidocClientException {
                 // Update LockStatus if there is a change
-                if (!resourceProxy.getLockStatus().equals(lblLockstatus.getValue().toString().replace(STATUS, ""))) {
+                if (!resourceProxy.getLockStatus().equals(lblLockstatus.getValue().toString().replace(status, ""))) {
                     repositories.item().changeLockStatus(item,
-                        lblLockstatus.getValue().toString().replace(STATUS, "").toUpperCase());
+                        lblLockstatus.getValue().toString().replace(status, "").toUpperCase());
                 }
             }
         });
@@ -286,7 +285,6 @@ public class ItemView extends VerticalLayout {
                 .forResource(resourceProxy.getId()).permitted()) {
 
                 cssLayout.addListener(new LayoutClickListener() {
-                    private static final long serialVersionUID = 1L;
 
                     @Override
                     public void layoutClick(final LayoutClickEvent event) {
@@ -305,12 +303,12 @@ public class ItemView extends VerticalLayout {
                                 }
                                 else if (child.getDescription() == "status") {
                                     oldComponent = event.getClickedComponent();
-                                    swapComponent = editStatus(child.getValue().toString().replace(STATUS, ""));
+                                    swapComponent = editStatus(child.getValue().toString().replace(status, ""));
                                     cssLayout.replaceComponent(oldComponent, swapComponent);
                                 }
                                 else if (child.getDescription() == "lockstatus") {
                                     oldComponent = event.getClickedComponent();
-                                    swapComponent = editLockStatus(child.getValue().toString().replace(STATUS, ""));
+                                    swapComponent = editLockStatus(child.getValue().toString().replace(status, ""));
                                     cssLayout.replaceComponent(oldComponent, swapComponent);
                                 }
                             }
@@ -325,7 +323,7 @@ public class ItemView extends VerticalLayout {
                                     ((Label) oldComponent).setValue(((TextField) swapComponent).getValue());
                                 }
                                 else if ((swapComponent instanceof ComboBox)) {
-                                    ((Label) oldComponent).setValue(STATUS + ((ComboBox) swapComponent).getValue());
+                                    ((Label) oldComponent).setValue(status + ((ComboBox) swapComponent).getValue());
                                     btnEdit.setVisible(true);
                                 }
                                 cssLayout.replaceComponent(swapComponent, oldComponent);
