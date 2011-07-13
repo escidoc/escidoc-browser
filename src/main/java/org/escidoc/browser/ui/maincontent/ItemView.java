@@ -45,7 +45,6 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Preconditions;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
-import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComboBox;
@@ -68,8 +67,6 @@ public class ItemView extends VerticalLayout {
     static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
 
     private static final String CREATED_BY = "Created by";
-
-    private static final String FULLWIDHT_STYLE_NAME = "fullwidth";
 
     private static final String LAST_MODIFIED_BY = "Last modification by";
 
@@ -133,9 +130,11 @@ public class ItemView extends VerticalLayout {
         bindNametoHeader();
         bindHrRuler();
         bindProperties();
+
         buildLeftCell(new ItemContent(repositories, resourceProxy, serviceLocation, mainWindow, currentUser));
         buildRightCell(new MetadataRecsItem(resourceProxy, accordionHeight, mainWindow, serviceLocation, repositories)
             .asAccord());
+
         addComponent(cssLayout);
     }
 
@@ -143,30 +142,24 @@ public class ItemView extends VerticalLayout {
      * @param metadataRecs
      */
     private void buildRightCell(final Component metadataRecs) {
-
-        final Panel rightpnl = new Panel();
-        rightpnl.setStyleName("floatright");
-        rightpnl.setWidth("70%");
-        rightpnl.setHeight("82%");
-        rightpnl.addComponent(metadataRecs);
+        final Panel rightPanel = new Panel();
+        rightPanel.setStyleName("floatright");
+        rightPanel.setWidth("70%");
+        rightPanel.setHeight("82%");
+        rightPanel.addComponent(metadataRecs);
+        cssLayout.addComponent(rightPanel);
         rightpnl.getLayout().setMargin(false);
-        cssLayout.addComponent(rightpnl);
     }
 
     private void buildLeftCell(final Component itCnt) {
-        // Adding some buttons
-        final AbsoluteLayout absL = new AbsoluteLayout();
-        absL.setWidth("100%");
-        absL.setHeight(innerelementsHeight + "px");
-
-        final Panel leftpnl = new Panel();
-        leftpnl.getLayout().setMargin(false);
-        leftpnl.setStyleName("floatleft");
-        leftpnl.setScrollable(false);
-        leftpnl.setWidth("30%");
-        leftpnl.setHeight("82%");
-        leftpnl.addComponent(itCnt);
-        cssLayout.addComponent(leftpnl);
+        final Panel leftPanel = new Panel();
+        leftPanel.getLayout().setMargin(false);
+        leftPanel.setStyleName("floatleft");
+        leftPanel.setScrollable(false);
+        leftPanel.setWidth("30%");
+        leftPanel.setHeight("82%");
+        leftPanel.addComponent(itCnt);
+        cssLayout.addComponent(leftPanel);
     }
 
     private void bindProperties() {
@@ -195,7 +188,7 @@ public class ItemView extends VerticalLayout {
         versionHistory.setStyleName("floatleft");
         versionHistory.setWidth("65%");
 
-        Label test = new Label("History should come here");
+        final Label test = new Label("History should come here");
         test.setStyleName("floatright");
         test.setWidth("65%");
 
@@ -250,7 +243,7 @@ public class ItemView extends VerticalLayout {
                 }
             }
 
-            private void updatePublicStatus(Item item) throws EscidocClientException {
+            private void updatePublicStatus(final Item item) throws EscidocClientException {
                 // Update PublicStatus if there is a change
                 if (!resourceProxy.getStatus().equals(lblStatus.getValue().toString().replace(STATUS, ""))) {
                     repositories.item().changePublicStatus(item,
@@ -258,7 +251,7 @@ public class ItemView extends VerticalLayout {
                 }
             }
 
-            private void updateLockStatus(Item item) throws EscidocClientException {
+            private void updateLockStatus(final Item item) throws EscidocClientException {
                 // Update LockStatus if there is a change
                 if (!resourceProxy.getLockStatus().equals(lblLockstatus.getValue().toString().replace(STATUS, ""))) {
                     repositories.item().changeLockStatus(item,
@@ -341,7 +334,7 @@ public class ItemView extends VerticalLayout {
                         }
                     }
 
-                    private Component editLockStatus(String lockStatus) {
+                    private Component editLockStatus(final String lockStatus) {
                         final ComboBox cmbLockStatus = new ComboBox();
                         cmbLockStatus.setNullSelectionAllowed(false);
                         if (lockStatus.equals("unlocked")) {

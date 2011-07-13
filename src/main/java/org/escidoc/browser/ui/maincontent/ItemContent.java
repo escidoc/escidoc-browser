@@ -30,6 +30,7 @@ package org.escidoc.browser.ui.maincontent;
 
 import java.net.URISyntaxException;
 
+import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.repository.Repositories;
@@ -47,6 +48,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -86,23 +88,27 @@ public class ItemContent extends Panel {
         initView();
     }
 
+    private final VerticalLayout verticalLayout = new VerticalLayout();
+
     private void initView() {
         getLayout().setMargin(false);
         setScrollable(false);
         this.setHeight("100%");
-
-        addDragAndDropFiles();
+        wrap(verticalLayout);
         if (hasComponents()) {
-            buildTable();
+            verticalLayout.addComponent(buildTable());
         }
     }
 
-    private void addDragAndDropFiles() {
+    private void wrap(final VerticalLayout verticalLayout) {
+
         try {
             if (userIsPermittedToUpdate()) {
+                verticalLayout.setHeight("750px");
+                verticalLayout.setWidth("100%");
                 final DragAndDropFileUpload dragAndDropFileUpload =
-                    new DragAndDropFileUpload(repositories, itemProxy, this);
-                dragAndDropFileUpload.setWidth("100%");
+                    new DragAndDropFileUpload(repositories, itemProxy, this, verticalLayout);
+                dragAndDropFileUpload.setSizeFull();
                 addComponent(dragAndDropFileUpload);
             }
         }
@@ -115,6 +121,25 @@ public class ItemContent extends Panel {
             showError(e);
         }
     }
+
+    // private void addDragAndDropFiles() {
+    // try {
+    // if (userIsPermittedToUpdate()) {
+    // final DragAndDropFileUpload dragAndDropFileUpload =
+    // new DragAndDropFileUpload(repositories, itemProxy, this);
+    // dragAndDropFileUpload.setWidth("100%");
+    // addComponent(dragAndDropFileUpload);
+    // }
+    // }
+    // catch (final EscidocClientException e) {
+    // LOG.error(e.getMessage());
+    // showError(e);
+    // }
+    // catch (final URISyntaxException e) {
+    // LOG.error(e.getMessage());
+    // showError(e);
+    // }
+    // }
 
     private boolean userIsPermittedToUpdate() throws EscidocClientException, URISyntaxException {
         return repositories
@@ -153,12 +178,15 @@ public class ItemContent extends Panel {
 
     private String getFileType(final Component itemProperties) {
         final String mimeType = itemProperties.getProperties().getMimeType();
+        if (mimeType == null) {
+            return AppConstants.EMPTY_STRING;
+        }
         final String[] last = mimeType.split("/");
         final String lastOne = last[last.length - 1];
         return lastOne;
     }
 
-    private void buildTable() {
+    private Table buildTable() {
         table = new Table();
         table.setPageLength(0);
         table.setWidth("100%");
@@ -172,15 +200,19 @@ public class ItemContent extends Panel {
         }
         table.setColumnWidth("Type", 20);
         table.setColumnWidth("Link", 20);
-        addComponent(table);
+        return table;
     }
 
     public void updateView(final ItemProxyImpl itemProxy) {
         this.itemProxy = itemProxy;
         removeAllComponents();
-        addDragAndDropFiles();
+        // addDragAndDropFiles();
+        // if (hasComponents()) {
+        // buildTable();
+        // }
+        wrap(verticalLayout);
         if (hasComponents()) {
-            buildTable();
+            verticalLayout.addComponent(buildTable());
         }
     }
 }

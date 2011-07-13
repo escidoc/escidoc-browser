@@ -59,13 +59,13 @@ public class FilesDropBox extends DragAndDropWrapper implements DropHandler {
 
     private static final long FILE_SIZE_LIMIT = FILE_SIZE_IN_MEGABYTE * 1024 * 1024;
 
-    private final ProgressIndicator progressView;
+    private ProgressIndicator progressView;
 
     private final Repositories repositories;
 
     private final ItemProxyImpl itemProxy;
 
-    private final ItemContent componentListView;
+    private ItemContent componentListView;
 
     private Components componentList;
 
@@ -83,6 +83,16 @@ public class FilesDropBox extends DragAndDropWrapper implements DropHandler {
         this.itemProxy = itemProxy;
         this.progressView = progressView;
         this.componentListView = componentListView;
+        setDropHandler(this);
+    }
+
+    public FilesDropBox(final Repositories repositories, final ItemProxyImpl itemProxy, final Component root) {
+        super(root);
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        Preconditions.checkNotNull(itemProxy, "itemProxy is null: %s", itemProxy);
+        Preconditions.checkNotNull(root, "root is null: %s", root);
+        this.repositories = repositories;
+        this.itemProxy = itemProxy;
         setDropHandler(this);
     }
 

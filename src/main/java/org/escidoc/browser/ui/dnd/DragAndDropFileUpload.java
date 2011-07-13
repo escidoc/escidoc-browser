@@ -7,9 +7,8 @@ import org.escidoc.browser.ui.maincontent.ItemContent;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.terminal.gwt.server.AbstractWebApplicationContext;
-import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.ProgressIndicator;
 import com.vaadin.ui.VerticalLayout;
@@ -31,14 +30,18 @@ public class DragAndDropFileUpload extends VerticalLayout {
 
     private FilesDropBox dropBox;
 
+    private final Component verticalLayout;
+
     public DragAndDropFileUpload(final Repositories repositories, final ItemProxyImpl itemProxy,
-        final ItemContent componentListView) {
+        final ItemContent componentListView, final VerticalLayout verticalLayout) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(itemProxy, "itemProxy is null: %s", itemProxy);
         Preconditions.checkNotNull(componentListView, "componentListView is null: %s", componentListView);
+        Preconditions.checkNotNull(verticalLayout, "verticalLayout is null: %s", verticalLayout);
         this.repositories = repositories;
         this.itemProxy = itemProxy;
         this.componentListView = componentListView;
+        this.verticalLayout = verticalLayout;
         initView();
     }
 
@@ -55,7 +58,7 @@ public class DragAndDropFileUpload extends VerticalLayout {
     }
 
     private void addImageDropBoxInPanel() {
-        panel.setSizeUndefined();
+        // panel.setSizeUndefined();
         panel.addStyleName("no-vertical-drag-hints");
         panel.addStyleName("no-horizontal-drag-hints");
         panel.setContent(filesDropBox());
@@ -63,26 +66,26 @@ public class DragAndDropFileUpload extends VerticalLayout {
     }
 
     private FilesDropBox filesDropBox() {
-        configureDropPane();
+        // configureDropPane();
 
-        dropBox = new FilesDropBox(repositories, itemProxy, dropPane, progressView, componentListView);
-        dropBox.setSizeUndefined();
+        dropBox = new FilesDropBox(repositories, itemProxy, verticalLayout, progressView, componentListView);
+        dropBox.setSizeFull();
 
         return dropBox;
     }
 
-    private void configureDropPane() {
-        dropPane.setWidth("375px");
-        dropPane.setHeight("100px");
-        dropPane.addStyleName("image-drop-pane");
-        final Label label = new Label("Drop Files to add..");
-        final VerticalLayout layout = new VerticalLayout();
-        layout.setSizeFull();
-        layout.addComponent(label);
-        layout.setComponentAlignment(label, Alignment.MIDDLE_CENTER);
-        dropPane.addComponent(layout);
-
-    }
+    // private void configureDropPane() {
+    // dropPane.setWidth("375px");
+    // dropPane.setHeight("100px");
+    // dropPane.addStyleName("image-drop-pane");
+    // final Label label = new Label("Drop Files to add..");
+    // final VerticalLayout layout = new VerticalLayout();
+    // layout.setSizeFull();
+    // layout.addComponent(label);
+    // layout.setComponentAlignment(label, Alignment.MIDDLE_CENTER);
+    // dropPane.addComponent(layout);
+    //
+    // }
 
     @Override
     public void attach() {
