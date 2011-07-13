@@ -51,7 +51,7 @@ import com.vaadin.ui.Window.Notification;
 import de.escidoc.core.resources.om.item.component.Components;
 
 @SuppressWarnings("serial")
-public class FilesDropBox extends DragAndDropWrapper implements DropHandler {
+class FilesDropBox extends DragAndDropWrapper implements DropHandler {
 
     private final static Logger LOG = LoggerFactory.getLogger(FilesDropBox.class);
 
@@ -59,19 +59,17 @@ public class FilesDropBox extends DragAndDropWrapper implements DropHandler {
 
     private static final long FILE_SIZE_LIMIT = FILE_SIZE_IN_MEGABYTE * 1024 * 1024;
 
-    private ProgressIndicator progressView;
+    private final ProgressIndicator progressView;
 
     private final Repositories repositories;
 
     private final ItemProxyImpl itemProxy;
 
-    private ItemContent componentListView;
-
-    private Components componentList;
+    private final ItemContent componentListView;
 
     private int numberOfFiles;
 
-    public FilesDropBox(final Repositories repositories, final ItemProxyImpl itemProxy, final Component root,
+    FilesDropBox(final Repositories repositories, final ItemProxyImpl itemProxy, final Component root,
         final ProgressIndicator progressView, final ItemContent componentListView) {
         super(root);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
@@ -83,16 +81,6 @@ public class FilesDropBox extends DragAndDropWrapper implements DropHandler {
         this.itemProxy = itemProxy;
         this.progressView = progressView;
         this.componentListView = componentListView;
-        setDropHandler(this);
-    }
-
-    public FilesDropBox(final Repositories repositories, final ItemProxyImpl itemProxy, final Component root) {
-        super(root);
-        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
-        Preconditions.checkNotNull(itemProxy, "itemProxy is null: %s", itemProxy);
-        Preconditions.checkNotNull(root, "root is null: %s", root);
-        this.repositories = repositories;
-        this.itemProxy = itemProxy;
         setDropHandler(this);
     }
 
@@ -112,7 +100,6 @@ public class FilesDropBox extends DragAndDropWrapper implements DropHandler {
     }
 
     private void handleFiles(final DragAndDropEvent dropEvent) {
-        componentList = new Components();
         numberOfFiles = getFilesFrom(dropEvent).length;
 
         for (final Html5File html5File : getFilesFrom(dropEvent)) {
@@ -121,16 +108,14 @@ public class FilesDropBox extends DragAndDropWrapper implements DropHandler {
                 return;
             }
             else {
-                html5File.setStreamVariable(createStreamVariable(dropEvent, html5File, componentList, numberOfFiles));
+                html5File.setStreamVariable(createStreamVariable(html5File));
                 progressView.setVisible(true);
             }
         }
     }
 
-    private MultipleStreamVariable createStreamVariable(
-        final DragAndDropEvent dropEvent, final Html5File html5File, final Components componentList,
-        final int numberOfFiles) {
-        return new MultipleStreamVariable(progressView, getApplication().getMainWindow(), html5File, componentList,
+    private MultipleStreamVariable createStreamVariable(final Html5File html5File) {
+        return new MultipleStreamVariable(progressView, getApplication().getMainWindow(), html5File, new Components(),
             this, repositories, itemProxy, componentListView);
     }
 
@@ -181,18 +166,18 @@ public class FilesDropBox extends DragAndDropWrapper implements DropHandler {
         showComponent(new Label(text), "Wrapped text content");
     }
 
-    private void showComponent(final Component c, final String name) {
+    private void showComponent(final Component component, final String name) {
         final VerticalLayout layout = new VerticalLayout();
         layout.setSizeUndefined();
         layout.setMargin(true);
-        final Window w = new Window(name, layout);
-        w.setSizeUndefined();
-        c.setSizeUndefined();
-        w.addComponent(c);
-        getWindow().addWindow(w);
+        final Window window = new Window(name, layout);
+        window.setSizeUndefined();
+        component.setSizeUndefined();
+        window.addComponent(component);
+        getWindow().addWindow(window);
     }
 
-    public void decrementNumberOfFiles() {
+    void decrementNumberOfFiles() {
         numberOfFiles--;
     }
 

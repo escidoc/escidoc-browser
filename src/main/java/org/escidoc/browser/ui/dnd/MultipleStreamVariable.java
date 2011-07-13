@@ -57,7 +57,7 @@ import de.escidoc.core.resources.om.item.component.Component;
 import de.escidoc.core.resources.om.item.component.Components;
 
 @SuppressWarnings("serial")
-public class MultipleStreamVariable implements StreamVariable {
+class MultipleStreamVariable implements StreamVariable {
 
     private static final Logger LOG = LoggerFactory.getLogger(MultipleStreamVariable.class);
 
@@ -77,13 +77,11 @@ public class MultipleStreamVariable implements StreamVariable {
 
     private final ItemProxyImpl itemProxy;
 
-    private ItemContent itemContent;
-
     private final ItemContent componentListView;
 
-    public MultipleStreamVariable(final ProgressIndicator progressView, final Window mainWindow,
-        final Html5File html5File, final Components componentList, final FilesDropBox itemDropBox,
-        final Repositories repositories, final ItemProxyImpl itemProxy, final ItemContent componentListView) {
+    MultipleStreamVariable(final ProgressIndicator progressView, final Window mainWindow, final Html5File html5File,
+        final Components componentList, final FilesDropBox itemDropBox, final Repositories repositories,
+        final ItemProxyImpl itemProxy, final ItemContent componentListView) {
 
         Preconditions.checkNotNull(progressView, "progressView is null: %s", progressView);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
@@ -181,13 +179,11 @@ public class MultipleStreamVariable implements StreamVariable {
     }
 
     private Item updateItem(final Item toBeUpdate) throws EscidocClientException {
-        final Item updatedItem = repositories.item().update(itemProxy.getId(), toBeUpdate);
-        return updatedItem;
+        return repositories.item().update(itemProxy.getId(), toBeUpdate);
     }
 
     private Item findWholeItem() throws EscidocClientException {
-        final Item toBeUpdate = repositories.item().findItemById(itemProxy.getId());
-        return toBeUpdate;
+        return repositories.item().findItemById(itemProxy.getId());
     }
 
     private Item addFiles(final Item toBeUpdate) {

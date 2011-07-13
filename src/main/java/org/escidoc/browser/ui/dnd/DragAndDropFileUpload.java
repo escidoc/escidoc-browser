@@ -8,7 +8,6 @@ import org.escidoc.browser.ui.maincontent.ItemContent;
 import com.google.common.base.Preconditions;
 import com.vaadin.terminal.gwt.server.AbstractWebApplicationContext;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.ProgressIndicator;
 import com.vaadin.ui.VerticalLayout;
@@ -16,7 +15,6 @@ import com.vaadin.ui.Window.Notification;
 
 @SuppressWarnings("serial")
 public class DragAndDropFileUpload extends VerticalLayout {
-    private final CssLayout dropPane = new CssLayout();
 
     private final ProgressIndicator progressView = new ProgressIndicator();
 
@@ -27,8 +25,6 @@ public class DragAndDropFileUpload extends VerticalLayout {
     private final ItemProxyImpl itemProxy;
 
     private final ItemContent componentListView;
-
-    private FilesDropBox dropBox;
 
     private final Component verticalLayout;
 
@@ -58,7 +54,6 @@ public class DragAndDropFileUpload extends VerticalLayout {
     }
 
     private void addImageDropBoxInPanel() {
-        // panel.setSizeUndefined();
         panel.addStyleName("no-vertical-drag-hints");
         panel.addStyleName("no-horizontal-drag-hints");
         panel.setContent(filesDropBox());
@@ -66,26 +61,11 @@ public class DragAndDropFileUpload extends VerticalLayout {
     }
 
     private FilesDropBox filesDropBox() {
-        // configureDropPane();
-
-        dropBox = new FilesDropBox(repositories, itemProxy, verticalLayout, progressView, componentListView);
+        final FilesDropBox dropBox =
+            new FilesDropBox(repositories, itemProxy, verticalLayout, progressView, componentListView);
         dropBox.setSizeFull();
-
         return dropBox;
     }
-
-    // private void configureDropPane() {
-    // dropPane.setWidth("375px");
-    // dropPane.setHeight("100px");
-    // dropPane.addStyleName("image-drop-pane");
-    // final Label label = new Label("Drop Files to add..");
-    // final VerticalLayout layout = new VerticalLayout();
-    // layout.setSizeFull();
-    // layout.addComponent(label);
-    // layout.setComponentAlignment(label, Alignment.MIDDLE_CENTER);
-    // dropPane.addComponent(layout);
-    //
-    // }
 
     @Override
     public void attach() {

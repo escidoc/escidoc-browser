@@ -101,7 +101,6 @@ public class ItemContent extends Panel {
     }
 
     private void wrap(final VerticalLayout verticalLayout) {
-
         try {
             if (userIsPermittedToUpdate()) {
                 verticalLayout.setHeight("750px");
@@ -121,25 +120,6 @@ public class ItemContent extends Panel {
             showError(e);
         }
     }
-
-    // private void addDragAndDropFiles() {
-    // try {
-    // if (userIsPermittedToUpdate()) {
-    // final DragAndDropFileUpload dragAndDropFileUpload =
-    // new DragAndDropFileUpload(repositories, itemProxy, this);
-    // dragAndDropFileUpload.setWidth("100%");
-    // addComponent(dragAndDropFileUpload);
-    // }
-    // }
-    // catch (final EscidocClientException e) {
-    // LOG.error(e.getMessage());
-    // showError(e);
-    // }
-    // catch (final URISyntaxException e) {
-    // LOG.error(e.getMessage());
-    // showError(e);
-    // }
-    // }
 
     private boolean userIsPermittedToUpdate() throws EscidocClientException, URISyntaxException {
         return repositories
@@ -205,14 +185,13 @@ public class ItemContent extends Panel {
 
     public void updateView(final ItemProxyImpl itemProxy) {
         this.itemProxy = itemProxy;
-        removeAllComponents();
-        // addDragAndDropFiles();
-        // if (hasComponents()) {
-        // buildTable();
-        // }
-        wrap(verticalLayout);
         if (hasComponents()) {
-            verticalLayout.addComponent(buildTable());
+            rebuildFilesTable();
         }
+    }
+
+    private void rebuildFilesTable() {
+        verticalLayout.removeAllComponents();
+        verticalLayout.addComponent(buildTable());
     }
 }

@@ -29,7 +29,7 @@ package org.escidoc.browser.ui.dnd;
 import com.vaadin.Application;
 import com.vaadin.terminal.gwt.server.AbstractWebApplicationContext;
 
-public class WebBrowserUtil {
+final class WebBrowserUtil {
 
     private WebBrowserUtil() {
         // util class
@@ -43,33 +43,32 @@ public class WebBrowserUtil {
         return !(isFirefox || isChromeOrSafari(app));
     }
 
-    static boolean isChromeOrSafari(final Application app) {
+    private static boolean isChromeOrSafari(final Application app) {
         return isGoogleChrome(app) || isSafariVersionFour(app);
     }
 
-    static boolean isSafariVersionFour(final Application app) {
+    private static boolean isSafariVersionFour(final Application app) {
         final AbstractWebApplicationContext context = (AbstractWebApplicationContext) app.getContext();
         return context.getBrowser().isSafari() && context.getBrowser().getBrowserMajorVersion() > 4;
     }
 
-    static boolean isGoogleChrome(final Application app) {
+    private static boolean isGoogleChrome(final Application app) {
         final AbstractWebApplicationContext context = (AbstractWebApplicationContext) app.getContext();
         return context.getBrowser().isChrome();
     }
 
-    static boolean isFirefoxVersionFour(final Application app) {
+    private static boolean isFirefoxVersionFour(final Application app) {
         final AbstractWebApplicationContext context = (AbstractWebApplicationContext) app.getContext();
         return (context).getBrowser().getBrowserMajorVersion() >= 4;
     }
 
-    static boolean isFirefoxVersionThreePointSix(final Application app) {
-
+    private static boolean isFirefoxVersionThreePointSix(final Application app) {
         final AbstractWebApplicationContext context = (AbstractWebApplicationContext) app.getContext();
         return ((context).getBrowser().getBrowserMajorVersion() == 3 && (context).getBrowser().getBrowserMinorVersion() >= 6);
     }
 
-    static boolean isFirefox(final Application app) {
+    private static boolean isFirefox(final Application app) {
         final AbstractWebApplicationContext context = (AbstractWebApplicationContext) app.getContext();
-        return (context).getBrowser().isFirefox();
+        return context.getBrowser().isFirefox();
     }
 }
