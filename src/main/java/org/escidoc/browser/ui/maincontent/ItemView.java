@@ -149,6 +149,7 @@ public class ItemView extends VerticalLayout {
         rightpnl.setWidth("70%");
         rightpnl.setHeight("82%");
         rightpnl.addComponent(metadataRecs);
+        rightpnl.getLayout().setMargin(false);
         cssLayout.addComponent(rightpnl);
     }
 
@@ -184,7 +185,7 @@ public class ItemView extends VerticalLayout {
 
         // RIGHT SIDE
         final Label descMetadata2 =
-            new Label(CREATED_BY + resourceProxy.getCreator() + resourceProxy.getCreatedOn() + "<br/>"
+            new Label(CREATED_BY + resourceProxy.getCreator() + " " + resourceProxy.getCreatedOn() + "<br/>"
                 + LAST_MODIFIED_BY + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(),
                 Label.CONTENT_RAW);
         descMetadata2.setStyleName("floatright");

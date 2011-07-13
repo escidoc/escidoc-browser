@@ -224,9 +224,10 @@ public class ContainerView extends VerticalLayout {
         lblLockstatus.setDescription("lockstatus");
         lblLockstatus.setWidth("35%");
         // RIGHT SIDE
-        final Label descMetadata2 = new Label(CREATED_BY + resourceProxy.getCreator() + resourceProxy.getCreatedOn());
+        final Label descMetadata2 =
+            new Label(CREATED_BY + " " + resourceProxy.getCreator() + " " + resourceProxy.getCreatedOn());
         final Label descMetadata2a =
-            new Label(LAST_MODIFIED_BY + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(),
+            new Label(LAST_MODIFIED_BY + " " + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(),
                 Label.CONTENT_RAW);
         descMetadata2.setStyleName("floatright");
         descMetadata2.setWidth("65%");
@@ -370,33 +371,39 @@ public class ContainerView extends VerticalLayout {
                                     // btnEdit.setVisible(true);
                                 }
                                 else if (child.getDescription() == "status") {
+                                    reSwapComponents();
                                     oldComponent = event.getClickedComponent();
                                     swapComponent = editStatus(child.getValue().toString().replace(STATUS, ""));
                                     cssLayout.replaceComponent(oldComponent, swapComponent);
                                 }
                                 else if (child.getDescription() == "lockstatus") {
+                                    reSwapComponents();
                                     oldComponent = event.getClickedComponent();
                                     swapComponent = editLockStatus(child.getValue().toString().replace(STATUS, ""));
                                     cssLayout.replaceComponent(oldComponent, swapComponent);
                                 }
                             }
                             else {
-                                getWindow().showNotification(
-                                    "The click was over a " + event.getChildComponent().getClass().getCanonicalName());
+                                // getWindow().showNotification(
+                                // "The click was over a " + event.getChildComponent().getClass().getCanonicalName());
                             }
                         }
                         else {
-                            if (swapComponent != null) {
-                                if (swapComponent instanceof Label) {
-                                    ((Label) oldComponent).setValue(((TextField) swapComponent).getValue());
-                                }
-                                else if ((swapComponent instanceof ComboBox)) {
-                                    ((Label) oldComponent).setValue(STATUS + ((ComboBox) swapComponent).getValue());
-                                    btnEdit.setVisible(true);
-                                }
-                                cssLayout.replaceComponent(swapComponent, oldComponent);
-                                swapComponent = null;
+                            reSwapComponents();
+                        }
+                    }
+
+                    private void reSwapComponents() {
+                        if (swapComponent != null) {
+                            if (swapComponent instanceof Label) {
+                                ((Label) oldComponent).setValue(((TextField) swapComponent).getValue());
                             }
+                            else if ((swapComponent instanceof ComboBox)) {
+                                ((Label) oldComponent).setValue(STATUS + ((ComboBox) swapComponent).getValue());
+                                btnEdit.setVisible(true);
+                            }
+                            cssLayout.replaceComponent(swapComponent, oldComponent);
+                            swapComponent = null;
                         }
                     }
 
@@ -409,34 +416,47 @@ public class ContainerView extends VerticalLayout {
                         else {
                             cmbLockStatus.addItem(LockStatus.UNLOCKED.toString().toLowerCase());
                         }
+                        cmbLockStatus.select(1);
                         return cmbLockStatus;
 
                     }
 
                     private Component editStatus(final String publicStatus) {
                         final ComboBox cmbStatus = new ComboBox();
+                        cmbStatus.setInvalidAllowed(false);
                         cmbStatus.setNullSelectionAllowed(false);
+                        String pubStatus = publicStatus.toUpperCase();
                         if (publicStatus.equals("pending")) {
                             cmbStatus.addItem(PublicStatus.PENDING.toString().toLowerCase());
                             cmbStatus.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
+                            cmbStatus.setNullSelectionItemId(PublicStatus.PENDING.toString().toLowerCase());
                         }
                         else if (publicStatus.equals("submitted")) {
+                            cmbStatus.setNullSelectionItemId(PublicStatus.SUBMITTED.toString().toLowerCase());
                             cmbStatus.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
                             cmbStatus.addItem(PublicStatus.IN_REVISION.toString().toLowerCase());
                             cmbStatus.addItem(PublicStatus.RELEASED.toString().toLowerCase());
                         }
                         else if (publicStatus.equals("in_revision")) {
+                            cmbStatus.setNullSelectionItemId(PublicStatus.IN_REVISION.toString().toLowerCase());
                             cmbStatus.addItem(PublicStatus.IN_REVISION.toString().toLowerCase());
                             cmbStatus.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
                         }
                         else if (publicStatus.equals("released")) {
+                            cmbStatus.setNullSelectionItemId(PublicStatus.RELEASED.toString().toLowerCase());
                             cmbStatus.addItem(PublicStatus.RELEASED.toString().toLowerCase());
                             cmbStatus.addItem(PublicStatus.WITHDRAWN.toString().toLowerCase());
                         }
                         else if (publicStatus.equals("withdrawn")) {
+                            cmbStatus.setNullSelectionItemId(PublicStatus.WITHDRAWN.toString().toLowerCase());
                             cmbStatus.addItem(PublicStatus.WITHDRAWN.toString().toLowerCase());
                             cmbStatus.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
                         }
+                        else {
+                            cmbStatus.addItem(PublicStatus.valueOf(pubStatus));
+                        }
+                        cmbStatus.select(1);
+
                         return cmbStatus;
                     }
 

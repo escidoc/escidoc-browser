@@ -99,7 +99,7 @@ public class ItemAddView {
 
     private Button addButton;
 
-    private final Label status = new Label("Please select a file to upload");
+    private final Label status = new Label("Upload a wellformed XML file to create metadata!");
 
     private final ProgressIndicator pi = new ProgressIndicator();
 

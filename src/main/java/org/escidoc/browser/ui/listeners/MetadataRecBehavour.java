@@ -49,10 +49,6 @@ public class MetadataRecBehavour implements ClickListener {
 
     private static final String NAME = "Name :";
 
-    private static final String RECORD_TYPE = "Record Type";
-
-    private static final String RECORD_SCHEMA = "Record Schema ";
-
     private static final String LINK = "Link ";
 
     private static final String CONTENT = "Content ";
@@ -95,7 +91,7 @@ public class MetadataRecBehavour implements ClickListener {
         builder.append("</a><br />" + CONTENT);
         String mtRecinfo = builder.toString();
 
-        final Label msgWindow = new Label(mtRecinfo, Label.CONTENT_PREFORMATTED);
+        final Label msgWindow = new Label(mtRecinfo, Label.CONTENT_RAW);
         final Label msgMetaDataXml =
             new Label(getContentAsString(metadataRecord.getContent()), Label.CONTENT_PREFORMATTED);
 

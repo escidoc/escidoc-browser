@@ -73,7 +73,7 @@ public class ViewConstants {
 
     public static final String DELETE = "Delete";
 
-    public static final String ADD = "Add";
+    public static final String ADD = "Create";
 
     public static final String CREATE_CONTAINER = "Create Container";
 
