@@ -97,10 +97,8 @@ public class TreeClickListener implements ItemClickListener {
     @Override
     public void itemClick(final ItemClickEvent event) {
         try {
-
-            final ResourceModel resourceModel = (ResourceModel) event.getItemId();
-            updateMenuBar(resourceModel);
-            openClickedResourceInNewTab(resourceModel);
+            updateMenuBar((ResourceModel) event.getItemId());
+            openClickedResourceInNewTab((ResourceModel) event.getItemId());
         }
         catch (final EscidocClientException e) {
             LOG.error(e.getMessage());

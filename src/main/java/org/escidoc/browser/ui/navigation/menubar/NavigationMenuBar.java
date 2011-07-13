@@ -53,6 +53,8 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 @SuppressWarnings("serial")
 public class NavigationMenuBar extends CustomComponent {
 
+    private static final String PENDING = "pending";
+
     private static final Logger LOG = LoggerFactory.getLogger(NavigationMenuBar.class);
 
     private final MenuBar menuBar = new MenuBar();
@@ -158,12 +160,39 @@ public class NavigationMenuBar extends CustomComponent {
                 case CONTAINER:
                     buildCommand(resourceModel, getContextIdForContainer(resourceModel));
                     showAddContainerAndItem();
-                    showDelete(resourceModel);
+                    updateDeleteMenu(resourceModel);
                     break;
                 case ITEM:
-                    showDelete(resourceModel);
+                    updateDeleteMenu(resourceModel);
                     add.setEnabled(false);
             }
+        }
+    }
+
+    private void updateDeleteMenu(final ResourceModel resourceModel) throws EscidocClientException {
+        if (resourceCanBeDeleted(resourceModel)) {
+            showDelete(resourceModel);
+        }
+        else {
+            hideDelete(resourceModel);
+        }
+    }
+
+    private void hideDelete(final ResourceModel resourceModel) {
+        if (deleteMenuItem == null) {
+            return;
+        }
+        deleteMenuItem.setEnabled(false);
+    }
+
+    private boolean resourceCanBeDeleted(final ResourceModel resourceModel) throws EscidocClientException {
+        switch (resourceModel.getType()) {
+            case CONTAINER:
+                return repositories.container().findById(resourceModel.getId()).getStatus().equals(PENDING);
+            case ITEM:
+                return repositories.item().findById(resourceModel.getId()).getStatus().equals(PENDING);
+            default:
+                return false;
         }
     }
 
