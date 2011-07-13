@@ -173,10 +173,10 @@ public class ContextView extends VerticalLayout {
 
         // RIGHT SIDE
         final Label descMetadata2 =
-            new Label(CREATED_BY + " <a href='#'>" + resourceProxy.getCreator() + "</a> "
-                + resourceProxy.getCreatedOn() + "<br>" + LAST_MODIFIED_BY + " <a href='#"
-                + resourceProxy.getModifier() + "'>" + resourceProxy.getModifier() + "</a> "
-                + resourceProxy.getModifiedOn() + " <br>", Label.CONTENT_RAW);
+            new Label(CREATED_BY + " " + resourceProxy.getCreator() + " on " + resourceProxy.getCreatedOn() + "<br/>"
+                + LAST_MODIFIED_BY + " " + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(),
+                Label.CONTENT_XHTML);
+
         descMetadata2.setStyleName("floatright columnheight50");
         descMetadata2.setWidth("65%");
         cssLayout.addComponent(descMetadata2);

@@ -225,16 +225,13 @@ public class ContainerView extends VerticalLayout {
         lblLockstatus.setDescription("lockstatus");
         lblLockstatus.setWidth("35%");
 
-        // RIGHT SIDE
         final Label descMetadata2 =
-            new Label(CREATED_BY + " " + resourceProxy.getCreator() + " " + resourceProxy.getCreatedOn());
-        final Label descMetadata2a =
-            new Label(LAST_MODIFIED_BY + " " + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(),
-                Label.CONTENT_RAW);
+            new Label(CREATED_BY + " " + resourceProxy.getCreator() + " on " + resourceProxy.getCreatedOn() + "<br/>"
+                + LAST_MODIFIED_BY + " " + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(),
+                Label.CONTENT_XHTML);
+
         descMetadata2.setStyleName("floatright");
         descMetadata2.setWidth("65%");
-        descMetadata2a.setStyleName("floatright");
-        descMetadata2a.setWidth("65%");
 
         final Label padder = new Label("&nbsp;");
         padder.setStyleName("floatright");
@@ -251,12 +248,8 @@ public class ContainerView extends VerticalLayout {
         cssLayout.addComponent(descMetadata1);
         cssLayout.addComponent(descMetadata2);
         cssLayout.addComponent(lblStatus);
-        cssLayout.addComponent(descMetadata2a);
         cssLayout.addComponent(lblLockstatus);
         cssLayout.addComponent(test);
-        // cssLayout.addComponent(getHistory());
-        cssLayout.addComponent(test);
-
     }
 
     private void addHorizontalRuler() {

@@ -179,9 +179,9 @@ public class ItemView extends VerticalLayout {
 
         // RIGHT SIDE
         final Label descMetadata2 =
-            new Label(CREATED_BY + resourceProxy.getCreator() + " " + resourceProxy.getCreatedOn() + "<br/>"
-                + LAST_MODIFIED_BY + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(),
-                Label.CONTENT_RAW);
+            new Label(CREATED_BY + " " + resourceProxy.getCreator() + " on " + resourceProxy.getCreatedOn() + "<br/>"
+                + LAST_MODIFIED_BY + " " + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(),
+                Label.CONTENT_XHTML);
         descMetadata2.setStyleName("floatright");
         descMetadata2.setWidth("65%");
 
