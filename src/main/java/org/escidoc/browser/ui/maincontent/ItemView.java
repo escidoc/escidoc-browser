@@ -148,7 +148,7 @@ public class ItemView extends VerticalLayout {
         rightPanel.setHeight("82%");
         rightPanel.addComponent(metadataRecs);
         cssLayout.addComponent(rightPanel);
-        rightpnl.getLayout().setMargin(false);
+        rightPanel.getLayout().setMargin(false);
     }
 
     private void buildLeftCell(final Component itCnt) {
