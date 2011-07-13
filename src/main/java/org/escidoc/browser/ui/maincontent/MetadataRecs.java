@@ -61,6 +61,7 @@ public class MetadataRecs {
         final EscidocServiceLocation escidocServiceLocation, final Repositories repositories) {
 
         Preconditions.checkNotNull(mainWindow, "resource is null.");
+        Preconditions.checkNotNull(escidocServiceLocation, "escidocServiceLocation is null.");
         height = innerelementsHeight;
         this.resourceProxy = (ContainerProxy) resourceProxy;
         this.mainWindow = mainWindow;

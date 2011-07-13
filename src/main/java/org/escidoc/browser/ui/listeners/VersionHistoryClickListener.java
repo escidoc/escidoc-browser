@@ -60,6 +60,8 @@ public class VersionHistoryClickListener implements ClickListener {
 
     final private Repository repository;
 
+    private final EscidocServiceLocation escidocServiceLocation;
+
     /**
      * Container for the ItemProxy case
      * 
@@ -70,9 +72,13 @@ public class VersionHistoryClickListener implements ClickListener {
      */
     public VersionHistoryClickListener(final ItemProxy resourceProxy, final Window mainWindow,
         final EscidocServiceLocation escidocServiceLocation, final Repositories repositories) {
+        Preconditions.checkNotNull(escidocServiceLocation, "escidocServiceLocation is null.");
+
         itemProxy = resourceProxy;
         this.mainWindow = mainWindow;
         repository = repositories.item();
+        this.escidocServiceLocation = escidocServiceLocation;
+        System.out.println("The service " + escidocServiceLocation);
     }
 
     /**
@@ -92,6 +98,8 @@ public class VersionHistoryClickListener implements ClickListener {
         containerProxy = resourceProxy;
         this.mainWindow = mainWindow;
         repository = repositories.container();
+        this.escidocServiceLocation = escidocServiceLocation;
+
     }
 
     public String getVersionHistory(final Repository cr, final String id) throws EscidocClientException {
@@ -99,7 +107,9 @@ public class VersionHistoryClickListener implements ClickListener {
         final Collection<Version> versions = vH.getVersions();
         String versionHistory = "";
         for (final Version version : versions) {
-            versionHistory += "<strong>Version: " + version.getVersionNumber() + "</strong><br />";
+            versionHistory +=
+                "<strong>Version: <a href=\"" + escidocServiceLocation.getEscidocUri() + version.getXLinkHref()
+                    + "\" target=\"_blank\">" + version.getVersionNumber() + "</a></strong><br />";
             versionHistory += "TimeStamp: " + version.getTimestamp() + "<br />";
             versionHistory += "Version Status: " + version.getVersionStatus() + "<br />";
             versionHistory += "Comment: " + version.getComment() + "<br /><hr/>";
