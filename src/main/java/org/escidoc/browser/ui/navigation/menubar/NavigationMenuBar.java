@@ -33,6 +33,7 @@ import java.net.URISyntaxException;
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.repository.Repositories;
@@ -52,6 +53,10 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
 public class NavigationMenuBar extends CustomComponent {
+
+    private static final String UNLOCK = "unlock";
+
+    private static final String IN_REVISION = "in-revision";
 
     private static final String PENDING = "pending";
 
@@ -169,7 +174,7 @@ public class NavigationMenuBar extends CustomComponent {
         }
     }
 
-    private void updateDeleteMenu(final ResourceModel resourceModel) throws EscidocClientException {
+    private void updateDeleteMenu(final ResourceModel resourceModel) throws EscidocClientException, URISyntaxException {
         if (resourceCanBeDeleted(resourceModel)) {
             showDelete(resourceModel);
         }
@@ -185,15 +190,44 @@ public class NavigationMenuBar extends CustomComponent {
         deleteMenuItem.setEnabled(false);
     }
 
-    private boolean resourceCanBeDeleted(final ResourceModel resourceModel) throws EscidocClientException {
+    private boolean resourceCanBeDeleted(final ResourceModel resourceModel) throws EscidocClientException,
+        URISyntaxException {
         switch (resourceModel.getType()) {
             case CONTAINER:
-                return repositories.container().findById(resourceModel.getId()).getStatus().equals(PENDING);
+                return canUserDeleteContainer(resourceModel) && isDeletable(retrieveContainer(resourceModel));
             case ITEM:
-                return repositories.item().findById(resourceModel.getId()).getStatus().equals(PENDING);
+                return canUserDeleteItem(resourceModel) && isDeletable(retrieveItem(resourceModel));
             default:
                 return false;
         }
+    }
+
+    private ResourceProxy retrieveItem(final ResourceModel resourceModel) throws EscidocClientException {
+        return repositories.item().findById(resourceModel.getId());
+    }
+
+    private ResourceProxy retrieveContainer(final ResourceModel resourceModel) throws EscidocClientException {
+        return repositories.container().findById(resourceModel.getId());
+    }
+
+    private boolean isDeletable(final ResourceProxy container) {
+        return container.getStatus().equals(PENDING) || container.getStatus().equals(IN_REVISION)
+            || container.getLockStatus().equals(UNLOCK);
+
+    }
+
+    private boolean canUserDeleteContainer(final ResourceModel resourceModel) throws EscidocClientException,
+        URISyntaxException {
+        return repositories
+            .pdp().isAction(ActionIdConstants.DELETE_CONTAINER).forUser(currentUser.getUserId())
+            .forResource(resourceModel.getId()).permitted();
+    }
+
+    private boolean canUserDeleteItem(final ResourceModel resourceModel) throws EscidocClientException,
+        URISyntaxException {
+        return repositories
+            .pdp().isAction(ActionIdConstants.DELETE_CONTAINER).forUser(currentUser.getUserId())
+            .forResource(resourceModel.getId()).permitted();
     }
 
     private void showDelete(final ResourceModel resourceModel) {
@@ -214,7 +248,7 @@ public class NavigationMenuBar extends CustomComponent {
 
     private String getContextIdForContainer(final ResourceModel resourceModel) {
         try {
-            return repositories.container().findById(resourceModel.getId()).getContext().getObjid();
+            return retrieveContainer(resourceModel).getContext().getObjid();
         }
         catch (final EscidocClientException e) {
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
