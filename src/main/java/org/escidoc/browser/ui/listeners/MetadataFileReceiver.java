@@ -3,38 +3,42 @@ package org.escidoc.browser.ui.listeners;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.ui.Upload.Receiver;
 
-public class MyReceiver implements Receiver {
+@SuppressWarnings("serial")
+public class MetadataFileReceiver implements Receiver {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MetadataFileReceiver.class);
+
     private String fileName;
 
-    private String mtype;
+    private String mimeType;
 
     private boolean sleep;
 
     private int total = 0;
 
-    final StringBuffer filecontent = new StringBuffer();
+    private final StringBuffer filecontent = new StringBuffer();
 
     @Override
-    public OutputStream receiveUpload(String filename, String mimetype) {
-        fileName = filename;
-        mtype = mimetype;
-
+    public OutputStream receiveUpload(final String fileName, final String mimeType) {
+        this.fileName = fileName;
+        this.mimeType = mimeType;
         return new OutputStream() {
             @Override
-            public void write(int b) throws IOException {
+            public void write(final int b) throws IOException {
                 total++;
                 filecontent.append((char) b);
                 if (sleep && total % 10000 == 0) {
                     try {
-
                         Thread.sleep(100);
-                        System.out.println(b);
+                        LOG.debug(Integer.toString(b));
                     }
-                    catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                    catch (final InterruptedException e) {
+                        LOG.warn(e.getMessage());
                     }
                 }
             }
@@ -50,11 +54,10 @@ public class MyReceiver implements Receiver {
     }
 
     public String getMimeType() {
-        return mtype;
+        return mimeType;
     }
 
-    public void setSlow(boolean value) {
+    public void setSlow(final boolean value) {
         sleep = value;
     }
-
 }

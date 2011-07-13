@@ -152,7 +152,6 @@ public class ItemRepository implements Repository {
     public void changeLockStatus(final Item item, final String lockStatus) throws EscidocClientException {
         final TaskParam taskParam = new TaskParam();
         taskParam.setLastModificationDate(item.getLastModificationDate());
-        System.out.println(lockStatus);
         if (lockStatus.equals("LOCKED")) {
             client.lock(item.getObjid(), taskParam);
         }

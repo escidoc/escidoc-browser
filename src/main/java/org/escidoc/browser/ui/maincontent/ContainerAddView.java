@@ -15,7 +15,7 @@ import org.escidoc.browser.model.internal.ContainerBuilder;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.AddContainerListener;
-import org.escidoc.browser.ui.listeners.MyReceiver;
+import org.escidoc.browser.ui.listeners.MetadataFileReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
@@ -76,7 +76,7 @@ public class ContainerAddView {
 
     private final ProgressIndicator pi = new ProgressIndicator();
 
-    private final MyReceiver receiver = new MyReceiver();
+    private final MetadataFileReceiver receiver = new MetadataFileReceiver();
 
     private final HorizontalLayout progressLayout = new HorizontalLayout();
 

@@ -33,7 +33,6 @@ import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
@@ -197,17 +196,12 @@ public class ContainerRepository implements Repository {
     public void changeLockStatus(final Container container, final String lockStatus) throws EscidocClientException {
         final TaskParam taskParam = new TaskParam();
         taskParam.setLastModificationDate(container.getLastModificationDate());
-        System.out.println(lockStatus);
         if (lockStatus.equals("LOCKED")) {
             client.lock(container.getObjid(), taskParam);
         }
         else {
             client.unlock(container.getObjid(), taskParam);
         }
-    }
-
-    private void delete(final ContainerModel shouldBeDeleted) throws EscidocClientException {
-        client.delete(shouldBeDeleted.getId());
     }
 
     @Override
