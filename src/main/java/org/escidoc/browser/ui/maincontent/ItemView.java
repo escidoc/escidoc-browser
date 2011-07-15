@@ -52,8 +52,10 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
@@ -185,6 +187,8 @@ public class ItemView extends VerticalLayout {
 
     private Label lockStatusLabel;
 
+    protected Window subwindow;
+
     public ItemView(final EscidocServiceLocation serviceLocation, final Repositories repositories,
         final MainSite mainSite, final ResourceProxy resourceProxy, final Window mainWindow,
         final CurrentUser currentUser) {
@@ -309,25 +313,30 @@ public class ItemView extends VerticalLayout {
 
     private void createEditBtn() {
         btnEdit = new Button("Save Changes", new Button.ClickListener() {
+
             @Override
             public void buttonClick(final ClickEvent event) {
-                btnEdit.setCaption("Save Changes");
+                btnEdit.setVisible(false);
+                this.addCommentWindow();
+            }
+
+            private void updateItem(String comment) {
                 Item item;
                 try {
                     item = repositories.item().findItemById(resourceProxy.getId());
                     if (resourceProxy.getLockStatus().equals("unlocked")) {
-                        updatePublicStatus(item);
+                        updatePublicStatus(item, comment);
                         // retrive the container to get the last modifiaction date.
                         item = repositories.item().findItemById(resourceProxy.getId());
-                        updateLockStatus(item);
+                        updateLockStatus(item, comment);
                     }
                     else {
-                        updateLockStatus(item);
-                        updatePublicStatus(item);
+                        updateLockStatus(item, comment);
+                        updatePublicStatus(item, comment);
                     }
 
                     repositories.item().changePublicStatus(item,
-                        publicStatusLabel.getValue().toString().replace(resourceIs, "").toUpperCase());
+                        publicStatusLabel.getValue().toString().replace(resourceIs, "").toUpperCase(), comment);
                     btnEdit.detach();
                 }
                 catch (final EscidocClientException e) {
@@ -335,20 +344,62 @@ public class ItemView extends VerticalLayout {
                 }
             }
 
-            private void updatePublicStatus(final Item item) throws EscidocClientException {
+            private void addCommentWindow() {
+                subwindow = new Window("Add Comment to the Edit Operation");
+                subwindow.setModal(true);
+
+                // Configure the windws layout; by default a VerticalLayout
+                VerticalLayout layout = (VerticalLayout) subwindow.getContent();
+                layout.setMargin(true);
+                layout.setSpacing(true);
+                layout.setSizeUndefined();
+
+                final TextField editor = new TextField("Your Comment");
+
+                editor.setRequired(true);
+                editor.setRequiredError("The Field may not be empty.");
+
+                HorizontalLayout hl = new HorizontalLayout();
+
+                Button close = new Button("Update", new Button.ClickListener() {
+                    // inline click-listener
+                    @Override
+                    public void buttonClick(ClickEvent event) {
+                        // close the window by removing it from the parent window
+                        updateItem(editor.getValue().toString());
+                        (subwindow.getParent()).removeWindow(subwindow);
+                    }
+                });
+                Button cancel = new Button("Cancel", new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(ClickEvent event) {
+                        (subwindow.getParent()).removeWindow(subwindow);
+                    }
+                });
+
+                hl.addComponent(close);
+                hl.addComponent(cancel);
+
+                subwindow.addComponent(editor);
+                subwindow.addComponent(hl);
+                mainWindow.addWindow(subwindow);
+
+            }
+
+            private void updatePublicStatus(final Item item, final String comment) throws EscidocClientException {
                 // Update PublicStatus if there is a change
                 if (!resourceProxy.getStatus().equals(publicStatusLabel.getValue().toString().replace(resourceIs, ""))) {
                     repositories.item().changePublicStatus(item,
-                        publicStatusLabel.getValue().toString().replace(resourceIs, "").toUpperCase());
+                        publicStatusLabel.getValue().toString().replace(resourceIs, "").toUpperCase(), comment);
                 }
             }
 
-            private void updateLockStatus(final Item item) throws EscidocClientException {
+            private void updateLockStatus(final Item item, final String comment) throws EscidocClientException {
                 // Update LockStatus if there is a change
                 if (!resourceProxy
                     .getLockStatus().equals(lockStatusLabel.getValue().toString().replace(resourceIs, ""))) {
                     repositories.item().changeLockStatus(item,
-                        lockStatusLabel.getValue().toString().replace(resourceIs, "").toUpperCase());
+                        lockStatusLabel.getValue().toString().replace(resourceIs, "").toUpperCase(), comment);
                 }
             }
         });

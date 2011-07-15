@@ -132,9 +132,11 @@ public class ItemRepository implements Repository {
         clientContainer.addMembers(parent, taskParam);
     }
 
-    public void changePublicStatus(final Item item, final String publicStatus) throws EscidocClientException {
+    public void changePublicStatus(final Item item, final String publicStatus, final String comment)
+        throws EscidocClientException {
         final TaskParam taskParam = new TaskParam();
         taskParam.setLastModificationDate(item.getLastModificationDate());
+        taskParam.setComment(comment);
         if (publicStatus.equals("SUBMITTED")) {
             client.submit(item, taskParam);
         }
@@ -149,9 +151,11 @@ public class ItemRepository implements Repository {
         }
     }
 
-    public void changeLockStatus(final Item item, final String lockStatus) throws EscidocClientException {
+    public void changeLockStatus(final Item item, final String lockStatus, final String comment)
+        throws EscidocClientException {
         final TaskParam taskParam = new TaskParam();
         taskParam.setLastModificationDate(item.getLastModificationDate());
+        taskParam.setComment(comment);
         if (lockStatus.equals("LOCKED")) {
             client.lock(item.getObjid(), taskParam);
         }

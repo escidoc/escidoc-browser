@@ -29,6 +29,7 @@
 package org.escidoc.browser.ui.maincontent;
 
 import java.net.URISyntaxException;
+import java.util.Iterator;
 
 import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.ContainerProxy;
@@ -46,6 +47,7 @@ import com.google.common.base.Preconditions;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComboBox;
@@ -69,6 +71,8 @@ import de.escidoc.core.resources.om.container.Container;
  */
 @SuppressWarnings("serial")
 public class ContainerView extends VerticalLayout {
+    private static final String RIGHT_PANEL = "Right Panel";
+
     static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
 
     private final int appHeight;
@@ -173,6 +177,7 @@ public class ContainerView extends VerticalLayout {
     @SuppressWarnings("deprecation")
     private void rightCell(final Component comptoBind) {
         final Panel rightpnl = new Panel();
+        rightpnl.setDescription(RIGHT_PANEL);
         rightpnl.setStyleName("floatright");
         rightpnl.setWidth("70%");
         rightpnl.setHeight("82%");
@@ -291,7 +296,7 @@ public class ContainerView extends VerticalLayout {
             }
 
             private void updateContainer(String comment) {
-                btnEdit.setCaption("Do not push this button again");
+                btnEdit.setVisible(false);
                 Container container;
                 try {
                     container = repositories.container().findContainerById(resourceProxy.getId());
@@ -316,7 +321,6 @@ public class ContainerView extends VerticalLayout {
             public void addCommentWindow() {
                 subwindow = new Window("Add Comment to the Edit operation");
                 subwindow.setModal(true);
-
                 // Configure the windws layout; by default a VerticalLayout
                 VerticalLayout layout = (VerticalLayout) subwindow.getContent();
                 layout.setMargin(true);
@@ -324,13 +328,12 @@ public class ContainerView extends VerticalLayout {
                 layout.setSizeUndefined();
 
                 final TextField editor = new TextField("Your Comment");
-
                 editor.setRequired(true);
                 editor.setRequiredError("The Field may not be empty.");
 
                 HorizontalLayout hl = new HorizontalLayout();
 
-                Button close = new Button("Create", new Button.ClickListener() {
+                Button close = new Button("Update", new Button.ClickListener() {
                     // inline click-listener
                     @Override
                     public void buttonClick(ClickEvent event) {
@@ -408,7 +411,6 @@ public class ContainerView extends VerticalLayout {
                             // Is Label?
                             if (event.getChildComponent().getClass().getCanonicalName() == "com.vaadin.ui.Label") {
                                 final Label child = (Label) event.getChildComponent();
-                                System.out.println("Is label" + child.getDescription());
                                 if ((child).getDescription() == "header") {
                                     // We are not editing header anymore
                                     // oldComponent = event.getClickedComponent();
@@ -429,9 +431,24 @@ public class ContainerView extends VerticalLayout {
                                     cssLayout.replaceComponent(oldComponent, swapComponent);
                                 }
                             }
+                            else if (event.getChildComponent().getClass().getCanonicalName() == "com.vaadin.ui.Panel") {
+                                final Panel child = (Panel) event.getChildComponent();
+                                if (child.getDescription() == RIGHT_PANEL) {
+                                    Iterator itr = child.getComponentIterator();
+                                    while (itr.hasNext()) {
+                                        final Accordion element = (Accordion) itr.next();
+
+                                        System.out.print(element + " ");
+
+                                    }
+                                    System.out.println("GOOD TO GO!");
+                                }
+                            }
+
                             else {
-                                // getWindow().showNotification(
-                                // "The click was over a " + event.getChildComponent().getClass().getCanonicalName());
+                                getWindow().showNotification(
+                                    "The click was over a " + event.getChildComponent().getClass().getCanonicalName()
+                                        + event.getChildComponent().getStyleName());
                             }
                         }
                         else {

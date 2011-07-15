@@ -28,7 +28,10 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import com.google.common.base.Preconditions;
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.EscidocServiceLocation;
@@ -40,8 +43,7 @@ import org.escidoc.browser.model.internal.HasNoNameResource;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.helper.Util;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.base.Preconditions;
 
 import de.escidoc.core.client.ContainerHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -55,7 +57,6 @@ import de.escidoc.core.resources.common.TaskParam;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.sb.search.SearchResultRecord;
-import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 public class ContainerRepository implements Repository {
 
@@ -175,9 +176,11 @@ public class ContainerRepository implements Repository {
         client.addMembers(parent, taskParam);
     }
 
-    public void changePublicStatus(final Container container, final String publicStatus) throws EscidocClientException {
+    public void changePublicStatus(final Container container, final String publicStatus, final String comment)
+        throws EscidocClientException {
         final TaskParam taskParam = new TaskParam();
         taskParam.setLastModificationDate(container.getLastModificationDate());
+        taskParam.setComment(comment);
         if (publicStatus.equals("SUBMITTED")) {
             client.submit(container, taskParam);
         }
@@ -192,11 +195,15 @@ public class ContainerRepository implements Repository {
         }
     }
 
-    public void changeLockStatus(final Container container, final String lockStatus) throws EscidocClientException {
+    public void changeLockStatus(final Container container, final String lockStatus, final String comment)
+        throws EscidocClientException {
         final TaskParam taskParam = new TaskParam();
         taskParam.setLastModificationDate(container.getLastModificationDate());
+        taskParam.setComment(comment);
+
         if (lockStatus.equals("LOCKED")) {
             client.lock(container.getObjid(), taskParam);
+
         }
         else {
             client.unlock(container.getObjid(), taskParam);
@@ -206,38 +213,6 @@ public class ContainerRepository implements Repository {
     @Override
     public void delete(final ResourceModel model) throws EscidocClientException {
         client.delete(model.getId());
-    }
-
-    public void changePublicStatus(Container container, String publicStatus, String comment)
-        throws InternalClientException, TransportException, EscidocClientException {
-        final TaskParam taskParam = new TaskParam();
-        taskParam.setLastModificationDate(container.getLastModificationDate());
-        taskParam.setComment(comment);
-        if (publicStatus.equals("SUBMITTED")) {
-            client.submit(container, taskParam);
-        }
-        else if (publicStatus.equals("IN_REVISION")) {
-            client.revise(container, taskParam);
-        }
-        else if (publicStatus.equals("RELEASED")) {
-            client.release(container, taskParam);
-        }
-        else if (publicStatus.equals("WITHDRAWN")) {
-            client.withdraw(container, taskParam);
-        }
-    }
-
-    public void changeLockStatus(Container container, String lockStatus, String comment) throws EscidocException,
-        InternalClientException, TransportException {
-        final TaskParam taskParam = new TaskParam();
-        taskParam.setLastModificationDate(container.getLastModificationDate());
-        taskParam.setComment(comment);
-        if (lockStatus.equals("LOCKED")) {
-            client.lock(container.getObjid(), taskParam);
-        }
-        else {
-            client.unlock(container.getObjid(), taskParam);
-        }
     }
 
 }

@@ -32,6 +32,7 @@ import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.listeners.EditMetaDataFileContainerBehaviour;
 import org.escidoc.browser.ui.listeners.MetadataRecBehavour;
 import org.escidoc.browser.ui.listeners.RelationsClickListener;
 import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
@@ -57,6 +58,8 @@ public class MetadataRecs {
 
     private final Repositories repositories;
 
+    private Accordion metadataRecs;
+
     public MetadataRecs(final ResourceProxy resourceProxy, final int innerelementsHeight, final Window mainWindow,
         final EscidocServiceLocation escidocServiceLocation, final Repositories repositories) {
 
@@ -70,7 +73,7 @@ public class MetadataRecs {
     }
 
     public Accordion asAccord() {
-        final Accordion metadataRecs = new Accordion();
+        metadataRecs = new Accordion();
         metadataRecs.setSizeFull();
 
         final Panel pnlmdRec = lblMetadaRecs();
@@ -115,9 +118,17 @@ public class MetadataRecs {
                     escidocServiceLocation));
             btnmdRec.setStyleName(BaseTheme.BUTTON_LINK);
             btnmdRec.setDescription("Show metadata information in a separate window");
+
+            final Button btnEditActualMetaData =
+                new Button("Edit by replacing these MetaData", new EditMetaDataFileContainerBehaviour(metadataRecord,
+                    mainWindow, escidocServiceLocation));
+            btnEditActualMetaData.setVisible(false);
+
             pnl.addComponent(btnmdRec);
+            pnl.addComponent(btnEditActualMetaData);
         }
 
         return pnl;
     }
+
 }
