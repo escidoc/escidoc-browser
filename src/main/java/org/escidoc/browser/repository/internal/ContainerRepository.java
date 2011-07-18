@@ -52,6 +52,7 @@ import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.client.exceptions.TransportException;
 import de.escidoc.core.client.interfaces.ContainerHandlerClientInterface;
 import de.escidoc.core.resources.Resource;
+import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.Relations;
 import de.escidoc.core.resources.common.TaskParam;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
@@ -215,4 +216,7 @@ public class ContainerRepository implements Repository {
         client.delete(model.getId());
     }
 
+    public void updateMetaData(MetadataRecord metaData, Container container) {
+        // TODO complete
+    }
 }

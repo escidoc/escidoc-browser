@@ -50,6 +50,8 @@ import de.escidoc.core.resources.om.container.Container;
 
 public class ContainerAddView {
 
+    private static final String SELECT_FILE = "Select file";
+
     private final static Logger LOG = LoggerFactory.getLogger(ContainerAddView.class);
 
     private final FormLayout addContainerForm = new FormLayout();
@@ -125,16 +127,13 @@ public class ContainerAddView {
     }
 
     private void addMetaData() {
-        // Slow down the upload
-        receiver.setSlow(true);
-
         addContainerForm.addComponent(status);
         addContainerForm.addComponent(upload);
         addContainerForm.addComponent(progressLayout);
 
         // Make uploading start immediately when file is selected
         upload.setImmediate(true);
-        upload.setButtonCaption("Select file");
+        upload.setButtonCaption(SELECT_FILE);
 
         progressLayout.setSpacing(true);
         progressLayout.setVisible(false);
@@ -239,7 +238,6 @@ public class ContainerAddView {
         catch (final ParserConfigurationException e) {
             return false;
         }
-
     }
 
     private void addButton() {

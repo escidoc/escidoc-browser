@@ -32,14 +32,17 @@ import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.listeners.AddMetaDataFileContainerBehaviour;
 import org.escidoc.browser.ui.listeners.EditMetaDataFileContainerBehaviour;
 import org.escidoc.browser.ui.listeners.MetadataRecBehavour;
 import org.escidoc.browser.ui.listeners.RelationsClickListener;
 import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
 
 import com.google.common.base.Preconditions;
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
@@ -111,6 +114,7 @@ public class MetadataRecs {
         final Panel pnl = new Panel();
         pnl.setHeight(height + "px");
 
+        HorizontalLayout hl = new HorizontalLayout();
         final MetadataRecords mdRecs = resourceProxy.getMedataRecords();
         for (final MetadataRecord metadataRecord : mdRecs) {
             final Button btnmdRec =
@@ -119,15 +123,22 @@ public class MetadataRecs {
             btnmdRec.setStyleName(BaseTheme.BUTTON_LINK);
             btnmdRec.setDescription("Show metadata information in a separate window");
 
-            final Button btnEditActualMetaData =
-                new Button("Edit by replacing these MetaData", new EditMetaDataFileContainerBehaviour(metadataRecord,
-                    mainWindow, escidocServiceLocation));
-            btnEditActualMetaData.setVisible(false);
+            Button btnEditActualMetaData =
+                new Button("Replace " + metadataRecord.getName(), new EditMetaDataFileContainerBehaviour(
+                    metadataRecord, mainWindow, escidocServiceLocation, repositories, resourceProxy));
+            btnEditActualMetaData.setStyleName(BaseTheme.BUTTON_LINK);
+            btnEditActualMetaData.setIcon(new ThemeResource("../myTheme/runo/icons/16/reload.png"));
 
-            pnl.addComponent(btnmdRec);
-            pnl.addComponent(btnEditActualMetaData);
+            hl.addComponent(btnmdRec);
+            hl.addComponent(btnEditActualMetaData);
         }
-
+        pnl.addComponent(hl);
+        Button btnAddNew =
+            new Button("Add New MetaData", new AddMetaDataFileContainerBehaviour(resourceProxy, mainWindow,
+                escidocServiceLocation));
+        btnAddNew.setStyleName(BaseTheme.BUTTON_LINK);
+        btnAddNew.setIcon(new ThemeResource("../myTheme/runo/icons/16/note.png"));
+        pnl.addComponent(btnAddNew);
         return pnl;
     }
 

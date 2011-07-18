@@ -77,6 +77,8 @@ public class ViewConstants {
 
     public static final String CREATE_CONTAINER = "Create Container";
 
+    public static final String EDIT_METADATA = "Edit MetaData";
+
     public static final String CONTAINER_NAME = "Container name";
 
     public static final String PLEASE_ENTER_A_CONTAINER_NAME = "Please enter a Container Name";

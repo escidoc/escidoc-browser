@@ -76,12 +76,6 @@ public class MetadataRecBehavour implements ClickListener {
         builder.append(NAME);
         builder.append(metadataRecord.getName());
         builder.append("<br />");
-        // builder.append(RECORD_TYPE);
-        // builder.append(metadataRecord.getMdType());
-        // builder.append("<br />");
-        // builder.append(RECORD_SCHEMA);
-        // builder.append(metadataRecord.getSchema());
-        // builder.append("<br />");
         builder.append(LINK);
         builder.append("<a href='");
         builder.append(escidocServiceLocation.getEscidocUri());
