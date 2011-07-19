@@ -33,6 +33,7 @@ import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
@@ -42,6 +43,8 @@ import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.internal.HasNoNameResource;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.helper.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 
@@ -53,6 +56,7 @@ import de.escidoc.core.client.exceptions.TransportException;
 import de.escidoc.core.client.interfaces.ContainerHandlerClientInterface;
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.MetadataRecord;
+import de.escidoc.core.resources.common.MetadataRecords;
 import de.escidoc.core.resources.common.Relations;
 import de.escidoc.core.resources.common.TaskParam;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
@@ -62,6 +66,8 @@ import de.escidoc.core.resources.sb.search.SearchResultRecord;
 public class ContainerRepository implements Repository {
 
     private final ContainerHandlerClientInterface client;
+
+    static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
 
     ContainerRepository(final EscidocServiceLocation escidocServiceLocation) {
         Preconditions
@@ -217,6 +223,27 @@ public class ContainerRepository implements Repository {
     }
 
     public void updateMetaData(MetadataRecord metaData, Container container) {
-        // TODO complete
+        MetadataRecords containerMetadataList = container.getMetadataRecords();
+        containerMetadataList.add(metaData);
+        try {
+            client.update(container);
+        }
+        catch (EscidocClientException e) {
+            LOG.debug(e.getLocalizedMessage());
+        }
+    }
+
+    public void addMetaData(MetadataRecord metadata, Container container) {
+        MetadataRecords containerMetadataList = container.getMetadataRecords();
+
+        containerMetadataList.del(metadata.getName());
+        containerMetadataList.add(metadata);
+        container.setMetadataRecords(containerMetadataList);
+        try {
+            client.update(container);
+        }
+        catch (EscidocClientException e) {
+            LOG.debug(e.getLocalizedMessage());
+        }
     }
 }

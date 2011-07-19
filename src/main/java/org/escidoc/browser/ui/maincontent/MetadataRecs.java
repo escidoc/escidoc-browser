@@ -114,15 +114,16 @@ public class MetadataRecs {
         final Panel pnl = new Panel();
         pnl.setHeight(height + "px");
 
-        HorizontalLayout hl = new HorizontalLayout();
         final MetadataRecords mdRecs = resourceProxy.getMedataRecords();
         for (final MetadataRecord metadataRecord : mdRecs) {
+            HorizontalLayout hl = new HorizontalLayout();
+            hl.setWidth("100%");
             final Button btnmdRec =
                 new Button(metadataRecord.getName(), new MetadataRecBehavour(metadataRecord, mainWindow,
                     escidocServiceLocation));
             btnmdRec.setStyleName(BaseTheme.BUTTON_LINK);
             btnmdRec.setDescription("Show metadata information in a separate window");
-
+            btnmdRec.setWidth("20%");
             Button btnEditActualMetaData =
                 new Button("Replace " + metadataRecord.getName(), new EditMetaDataFileContainerBehaviour(
                     metadataRecord, mainWindow, escidocServiceLocation, repositories, resourceProxy));
@@ -131,11 +132,12 @@ public class MetadataRecs {
 
             hl.addComponent(btnmdRec);
             hl.addComponent(btnEditActualMetaData);
+            pnl.addComponent(hl);
         }
-        pnl.addComponent(hl);
+
         Button btnAddNew =
-            new Button("Add New MetaData", new AddMetaDataFileContainerBehaviour(resourceProxy, mainWindow,
-                escidocServiceLocation));
+            new Button("Add New MetaData", new AddMetaDataFileContainerBehaviour(mainWindow, escidocServiceLocation,
+                repositories, resourceProxy));
         btnAddNew.setStyleName(BaseTheme.BUTTON_LINK);
         btnAddNew.setIcon(new ThemeResource("../myTheme/runo/icons/16/note.png"));
         pnl.addComponent(btnAddNew);

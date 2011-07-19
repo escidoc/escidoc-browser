@@ -7,12 +7,19 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.escidoc.browser.model.ContainerProxy;
+import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.ViewConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import com.vaadin.terminal.UserError;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -20,6 +27,7 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.ProgressIndicator;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.Upload.FailedEvent;
 import com.vaadin.ui.Upload.FinishedEvent;
@@ -27,9 +35,14 @@ import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Window;
 
-public class AddMetaDataFileContainerBehaviour implements ClickListener {
+import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.common.MetadataRecord;
+import de.escidoc.core.resources.om.container.Container;
 
-    private final ContainerProxy resourceProxy;
+public class AddMetaDataFileContainerBehaviour implements ClickListener {
+    static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
+
+    private final ResourceProxy resourceProxy;
 
     private final Window mainWindow;
 
@@ -45,11 +58,20 @@ public class AddMetaDataFileContainerBehaviour implements ClickListener {
 
     private final ProgressIndicator pi = new ProgressIndicator();
 
-    public AddMetaDataFileContainerBehaviour(ContainerProxy resourceProxy, Window mainWindow,
-        EscidocServiceLocation escidocServiceLocation) {
-        this.resourceProxy = resourceProxy;
+    private HorizontalLayout hl;
+
+    private final Repositories repositories;
+
+    private Element metadataContent;
+
+    private TextField mdName;
+
+    public AddMetaDataFileContainerBehaviour(Window mainWindow, EscidocServiceLocation escidocServiceLocation,
+        final Repositories repositories, ResourceProxy resourceProxy) {
         this.mainWindow = mainWindow;
         this.escidocServiceLocation = escidocServiceLocation;
+        this.repositories = repositories;
+        this.resourceProxy = resourceProxy;
     }
 
     @Override
@@ -88,12 +110,14 @@ public class AddMetaDataFileContainerBehaviour implements ClickListener {
         });
 
         upload.addListener(new Upload.SucceededListener() {
+
             @Override
             public void uploadSucceeded(final SucceededEvent event) {
                 // This method gets called when the upload finished successfully
                 status.setValue("Uploading file \"" + event.getFilename() + "\" succeeded");
                 if (isValidXml(receiver.getFileContent())) {
                     status.setValue("XML Looks correct");
+                    hl.setVisible(true);
                     upload.setEnabled(false);
                 }
                 else {
@@ -120,14 +144,48 @@ public class AddMetaDataFileContainerBehaviour implements ClickListener {
                 upload.setCaption("Select another file");
             }
         });
+        mdName = new TextField("MetaData name");
+        mdName.setValue("");
+        mdName.setImmediate(true);
+        mdName.setValidationVisible(false);
 
-        HorizontalLayout hl = new HorizontalLayout();
-        Button btnAdd = new Button("Add New Metadata");
-        Button cnclAdd = new Button("Cancel");
+        hl = new HorizontalLayout();
+        hl.setMargin(true);
+        Button btnAdd = new Button("Add New Metadata", new Button.ClickListener() {
+            Container container;
+
+            @Override
+            public void buttonClick(ClickEvent event) {
+
+                if (mdName.getValue().equals("")) {
+                    mdName.setComponentError(new UserError("You have to add a name for your MetaData"));
+                }
+                else {
+                    try {
+                        MetadataRecord metadataRecord = new MetadataRecord(mdName.getValue().toString());
+
+                        container = repositories.container().findContainerById(resourceProxy.getId());
+                        metadataRecord.setContent(metadataContent);
+                        repositories.container().addMetaData(metadataRecord, container);
+                        (subwindow.getParent()).removeWindow(subwindow);
+                    }
+                    catch (EscidocClientException e) {
+                        LOG.debug(e.getLocalizedMessage());
+                    }
+                }
+            }
+        });
+
+        Button cnclAdd = new Button("Cancel", new Button.ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                (subwindow.getParent()).removeWindow(subwindow);
+            }
+        });
 
         hl.addComponent(btnAdd);
         hl.addComponent(cnclAdd);
-
+        subwindow.addComponent(mdName);
         subwindow.addComponent(status);
         subwindow.addComponent(upload);
         subwindow.addComponent(progressLayout);
@@ -149,8 +207,10 @@ public class AddMetaDataFileContainerBehaviour implements ClickListener {
         try {
             builder = factory.newDocumentBuilder();
             final InputSource is = new InputSource(new StringReader(xml));
+            Document d;
             try {
-                builder.parse(is);
+                d = builder.parse(is);
+                metadataContent = d.getDocumentElement();
                 return true;
             }
             catch (final SAXException e) {
