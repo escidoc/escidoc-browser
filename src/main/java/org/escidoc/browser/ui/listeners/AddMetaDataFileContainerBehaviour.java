@@ -12,6 +12,7 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.maincontent.MetadataRecs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -66,12 +67,15 @@ public class AddMetaDataFileContainerBehaviour implements ClickListener {
 
     private TextField mdName;
 
+    private final MetadataRecs metadataRecs;
+
     public AddMetaDataFileContainerBehaviour(Window mainWindow, EscidocServiceLocation escidocServiceLocation,
-        final Repositories repositories, ResourceProxy resourceProxy) {
+        final Repositories repositories, ResourceProxy resourceProxy, MetadataRecs metadataRecs) {
         this.mainWindow = mainWindow;
         this.escidocServiceLocation = escidocServiceLocation;
         this.repositories = repositories;
         this.resourceProxy = resourceProxy;
+        this.metadataRecs = metadataRecs;
     }
 
     @Override
@@ -163,13 +167,17 @@ public class AddMetaDataFileContainerBehaviour implements ClickListener {
                 else {
                     try {
                         MetadataRecord metadataRecord = new MetadataRecord(mdName.getValue().toString());
-
                         container = repositories.container().findContainerById(resourceProxy.getId());
                         metadataRecord.setContent(metadataContent);
                         repositories.container().addMetaData(metadataRecord, container);
+
+                        metadataRecs.addButtons(metadataRecord);
+                        upload.setEnabled(true);
                         (subwindow.getParent()).removeWindow(subwindow);
                     }
                     catch (EscidocClientException e) {
+                        mdName.setComponentError(new UserError("Failed to add the new Metadata record"
+                            + e.getLocalizedMessage()));
                         LOG.debug(e.getLocalizedMessage());
                     }
                 }

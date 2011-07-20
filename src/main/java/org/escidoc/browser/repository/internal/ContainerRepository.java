@@ -222,28 +222,21 @@ public class ContainerRepository implements Repository {
         client.delete(model.getId());
     }
 
-    public void updateMetaData(MetadataRecord metaData, Container container) {
-        MetadataRecords containerMetadataList = container.getMetadataRecords();
-        containerMetadataList.add(metaData);
-        try {
-            client.update(container);
-        }
-        catch (EscidocClientException e) {
-            LOG.debug(e.getLocalizedMessage());
-        }
-    }
-
-    public void addMetaData(MetadataRecord metadata, Container container) {
+    public void updateMetaData(MetadataRecord metadata, Container container) throws EscidocClientException {
         MetadataRecords containerMetadataList = container.getMetadataRecords();
 
         containerMetadataList.del(metadata.getName());
         containerMetadataList.add(metadata);
         container.setMetadataRecords(containerMetadataList);
-        try {
-            client.update(container);
-        }
-        catch (EscidocClientException e) {
-            LOG.debug(e.getLocalizedMessage());
-        }
+
+        client.update(container);
+    }
+
+    public void addMetaData(MetadataRecord metadata, Container container) throws EscidocClientException {
+
+        MetadataRecords containerMetadataList = container.getMetadataRecords();
+        containerMetadataList.add(metadata);
+
+        client.update(container);
     }
 }

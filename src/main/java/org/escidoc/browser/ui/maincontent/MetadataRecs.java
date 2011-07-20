@@ -44,6 +44,7 @@ import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 
@@ -63,6 +64,12 @@ public class MetadataRecs {
 
     private Accordion metadataRecs;
 
+    private Panel pnlmdRec;
+
+    final Panel pnl = new Panel();
+
+    VerticalLayout btnaddContainer = new VerticalLayout();
+
     public MetadataRecs(final ResourceProxy resourceProxy, final int innerelementsHeight, final Window mainWindow,
         final EscidocServiceLocation escidocServiceLocation, final Repositories repositories) {
 
@@ -79,7 +86,7 @@ public class MetadataRecs {
         metadataRecs = new Accordion();
         metadataRecs.setSizeFull();
 
-        final Panel pnlmdRec = lblMetadaRecs();
+        pnlmdRec = lblMetadaRecs();
         final Panel additionalResourcesPanel = lblAddtionalResources();
 
         // Add the components as tabs in the Accordion.
@@ -111,37 +118,51 @@ public class MetadataRecs {
     }
 
     private Panel lblMetadaRecs() {
-        final Panel pnl = new Panel();
         pnl.setHeight(height + "px");
 
         final MetadataRecords mdRecs = resourceProxy.getMedataRecords();
         for (final MetadataRecord metadataRecord : mdRecs) {
-            HorizontalLayout hl = new HorizontalLayout();
-            hl.setWidth("100%");
-            final Button btnmdRec =
-                new Button(metadataRecord.getName(), new MetadataRecBehavour(metadataRecord, mainWindow,
-                    escidocServiceLocation));
-            btnmdRec.setStyleName(BaseTheme.BUTTON_LINK);
-            btnmdRec.setDescription("Show metadata information in a separate window");
-            btnmdRec.setWidth("20%");
-            Button btnEditActualMetaData =
-                new Button("Replace " + metadataRecord.getName(), new EditMetaDataFileContainerBehaviour(
-                    metadataRecord, mainWindow, escidocServiceLocation, repositories, resourceProxy));
-            btnEditActualMetaData.setStyleName(BaseTheme.BUTTON_LINK);
-            btnEditActualMetaData.setIcon(new ThemeResource("../myTheme/runo/icons/16/reload.png"));
-
-            hl.addComponent(btnmdRec);
-            hl.addComponent(btnEditActualMetaData);
-            pnl.addComponent(hl);
+            buildMDButtons(btnaddContainer, metadataRecord);
         }
 
+        pnl.addComponent(btnaddContainer);
         Button btnAddNew =
             new Button("Add New MetaData", new AddMetaDataFileContainerBehaviour(mainWindow, escidocServiceLocation,
-                repositories, resourceProxy));
+                repositories, resourceProxy, this));
         btnAddNew.setStyleName(BaseTheme.BUTTON_LINK);
         btnAddNew.setIcon(new ThemeResource("../myTheme/runo/icons/16/note.png"));
         pnl.addComponent(btnAddNew);
         return pnl;
     }
 
+    /**
+     * Create the buttons to be shown on the MetaDataRecords Accordion
+     * 
+     * @param pnl
+     * @param metadataRecord
+     */
+    public void buildMDButtons(final VerticalLayout btnaddContainer, final MetadataRecord metadataRecord) {
+        HorizontalLayout hl = new HorizontalLayout();
+        final Button btnmdRec =
+            new Button(metadataRecord.getName(), new MetadataRecBehavour(metadataRecord, mainWindow,
+                escidocServiceLocation));
+        btnmdRec.setStyleName(BaseTheme.BUTTON_LINK);
+        btnmdRec.setDescription("Show metadata information in a separate window");
+
+        Button btnEditActualMetaData =
+            new Button("", new EditMetaDataFileContainerBehaviour(metadataRecord, mainWindow, escidocServiceLocation,
+                repositories, resourceProxy));
+        btnEditActualMetaData.setStyleName(BaseTheme.BUTTON_LINK);
+        btnEditActualMetaData.setDescription("Replace the metadata with a new content file");
+        btnEditActualMetaData.setIcon(new ThemeResource("../myTheme/runo/icons/16/reload.png"));
+
+        hl.addComponent(btnEditActualMetaData);
+        hl.addComponent(btnmdRec);
+        btnaddContainer.addComponent(hl);
+    }
+
+    public void addButtons(MetadataRecord metadataRecord) {
+        buildMDButtons(btnaddContainer, metadataRecord);
+
+    }
 }

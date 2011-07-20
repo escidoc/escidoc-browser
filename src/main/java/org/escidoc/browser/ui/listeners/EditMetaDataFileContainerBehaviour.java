@@ -71,6 +71,7 @@ public class EditMetaDataFileContainerBehaviour implements ClickListener {
         this.escidocServiceLocation = escidocServiceLocation;
         this.repositories = repositories;
         this.resourceProxy = resourceProxy;
+
     }
 
     @Override
@@ -152,6 +153,7 @@ public class EditMetaDataFileContainerBehaviour implements ClickListener {
                     container = repositories.container().findContainerById(resourceProxy.getId());
                     metadataRecord.setContent(metadataContent);
                     repositories.container().updateMetaData(metadataRecord, container);
+
                 }
                 catch (EscidocClientException e) {
                     LOG.debug(e.getLocalizedMessage());
