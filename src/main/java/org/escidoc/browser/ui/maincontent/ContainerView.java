@@ -93,7 +93,7 @@ public class ContainerView extends VerticalLayout {
 
     private static final String RESOURCE_NAME = "Container: ";
 
-    protected static final String STATUS = "Status is ";
+    protected static final String STATUS = "Container is ";
 
     private String status;
 
@@ -108,8 +108,6 @@ public class ContainerView extends VerticalLayout {
     private final CurrentUser currentUser;
 
     private final Repositories repositories;
-
-    private Button btnEdit = null;
 
     private Component oldComponent = null;
 
@@ -147,7 +145,6 @@ public class ContainerView extends VerticalLayout {
         handleLayoutListeners();
         createBreadCrumb();
         bindNameToHeader();
-        createEditBtn();
         bindDescription();
         addHorizontalRuler();
         bindProperties();
@@ -158,7 +155,7 @@ public class ContainerView extends VerticalLayout {
 
     private void addMetadataRecords() {
         final MetadataRecs metaData =
-            new MetadataRecs(resourceProxy, accordionHeight, mainWindow, serviceLocation, repositories);
+            new MetadataRecs(resourceProxy, accordionHeight, mainWindow, serviceLocation, repositories, currentUser);
         rightCell(metaData.asAccord());
     }
 
@@ -288,99 +285,6 @@ public class ContainerView extends VerticalLayout {
         cssLayout.addComponent(headerContext);
     }
 
-    private void createEditBtn() {
-        btnEdit = new Button("Save Changes", new Button.ClickListener() {
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                this.addCommentWindow();
-            }
-
-            private void updateContainer(String comment) {
-                btnEdit.setVisible(false);
-                Container container;
-                try {
-                    container = repositories.container().findContainerById(resourceProxy.getId());
-                    if (resourceProxy.getLockStatus().equals("unlocked")) {
-                        updatePublicStatus(container, comment);
-                        // retrive the container to get the last modifiaction date.
-                        container = repositories.container().findContainerById(resourceProxy.getId());
-                        updateLockStatus(container, comment);
-                    }
-                    else {
-                        updateLockStatus(container, comment);
-                        updatePublicStatus(container, comment);
-                    }
-
-                    btnEdit.detach();
-                }
-                catch (final EscidocClientException e) {
-                    LOG.debug(e.getLocalizedMessage());
-                }
-            }
-
-            public void addCommentWindow() {
-                subwindow = new Window("Add Comment to the Edit operation");
-                subwindow.setModal(true);
-                // Configure the windws layout; by default a VerticalLayout
-                VerticalLayout layout = (VerticalLayout) subwindow.getContent();
-                layout.setMargin(true);
-                layout.setSpacing(true);
-                layout.setSizeUndefined();
-
-                final TextField editor = new TextField("Your Comment");
-                editor.setRequired(true);
-                editor.setRequiredError("The Field may not be empty.");
-
-                HorizontalLayout hl = new HorizontalLayout();
-
-                Button close = new Button("Update", new Button.ClickListener() {
-                    // inline click-listener
-                    @Override
-                    public void buttonClick(ClickEvent event) {
-                        // close the window by removing it from the parent window
-                        updateContainer(editor.getValue().toString());
-                        (subwindow.getParent()).removeWindow(subwindow);
-                    }
-                });
-                Button cancel = new Button("Cancel", new Button.ClickListener() {
-                    @Override
-                    public void buttonClick(ClickEvent event) {
-                        (subwindow.getParent()).removeWindow(subwindow);
-                    }
-                });
-
-                hl.addComponent(close);
-                hl.addComponent(cancel);
-
-                subwindow.addComponent(editor);
-                subwindow.addComponent(hl);
-                mainWindow.addWindow(subwindow);
-            }
-
-            private void updatePublicStatus(Container container, String comment) throws EscidocClientException {
-
-                // Update PublicStatus if there is a change
-                if (!resourceProxy.getStatus().equals(lblStatus.getValue().toString().replace(status, ""))) {
-                    repositories.container().changePublicStatus(container,
-                        lblStatus.getValue().toString().replace(STATUS, "").toUpperCase(), comment);
-                }
-            }
-
-            private void updateLockStatus(Container container, String comment) throws EscidocClientException {
-
-                // Update LockStatus if there is a change
-                if (!resourceProxy.getLockStatus().equals(lblLockstatus.getValue().toString().replace(status, ""))) {
-                    repositories.container().changeLockStatus(container,
-                        lblLockstatus.getValue().toString().replace(STATUS, "").toUpperCase(), comment);
-                }
-            }
-        });
-        btnEdit.setStyleName("floatright");
-        btnEdit.setVisible(false);
-        cssLayout.addComponent(btnEdit);
-
-    }
-
     private void configureLayout() {
         setMargin(true, true, false, true);
         this.setHeight("100%");
@@ -441,7 +345,6 @@ public class ContainerView extends VerticalLayout {
                                         System.out.print(element + " ");
 
                                     }
-                                    System.out.println("GOOD TO GO!");
                                 }
                             }
 
@@ -457,7 +360,7 @@ public class ContainerView extends VerticalLayout {
                     }
 
                     /**
-                     * Switch the component back to the origjinal component (Label) after inline editing
+                     * Switch the component back to the original component (Label) after inline editing
                      */
                     private void reSwapComponents() {
                         if (swapComponent != null) {
@@ -466,7 +369,7 @@ public class ContainerView extends VerticalLayout {
                             }
                             else if ((swapComponent instanceof ComboBox)) {
                                 ((Label) oldComponent).setValue(status + ((ComboBox) swapComponent).getValue());
-                                btnEdit.setVisible(true);
+                                this.addCommentWindow();
                             }
                             cssLayout.replaceComponent(swapComponent, oldComponent);
                             swapComponent = null;
@@ -526,13 +429,84 @@ public class ContainerView extends VerticalLayout {
                         return cmbStatus;
                     }
 
-                    // Not used since we agreed to remove the possii
-                    // private Component editHeader(final String lblHeaderValue) {
-                    // final TextField txtHeader = new TextField();
-                    // txtHeader.setValue(lblHeaderValue.replaceAll(RESOURCE_NAME, ""));
-                    // resourceProxy.setName(lblHeaderValue.replaceAll(RESOURCE_NAME, ""));
-                    // return txtHeader;
-                    // }
+                    public void addCommentWindow() {
+                        subwindow = new Window("Add Comment to the Edit operation");
+                        subwindow.setModal(true);
+                        // Configure the windws layout; by default a VerticalLayout
+                        VerticalLayout layout = (VerticalLayout) subwindow.getContent();
+                        layout.setMargin(true);
+                        layout.setSpacing(true);
+                        layout.setSizeUndefined();
+
+                        final TextField editor = new TextField("Your Comment");
+                        editor.setRequired(true);
+                        editor.setRequiredError("The Field may not be empty.");
+
+                        HorizontalLayout hl = new HorizontalLayout();
+
+                        Button close = new Button("Update", new Button.ClickListener() {
+                            // inline click-listener
+                            @Override
+                            public void buttonClick(ClickEvent event) {
+                                // close the window by removing it from the parent window
+                                updateContainer(editor.getValue().toString());
+                                (subwindow.getParent()).removeWindow(subwindow);
+                            }
+                        });
+                        Button cancel = new Button("Cancel", new Button.ClickListener() {
+                            @Override
+                            public void buttonClick(ClickEvent event) {
+                                (subwindow.getParent()).removeWindow(subwindow);
+                            }
+                        });
+
+                        hl.addComponent(close);
+                        hl.addComponent(cancel);
+
+                        subwindow.addComponent(editor);
+                        subwindow.addComponent(hl);
+                        mainWindow.addWindow(subwindow);
+                    }
+
+                    private void updatePublicStatus(Container container, String comment) throws EscidocClientException {
+
+                        // Update PublicStatus if there is a change
+                        if (!resourceProxy.getStatus().equals(lblStatus.getValue().toString().replace(status, ""))) {
+                            repositories.container().changePublicStatus(container,
+                                lblStatus.getValue().toString().replace(STATUS, "").toUpperCase(), comment);
+                        }
+                    }
+
+                    private void updateLockStatus(Container container, String comment) throws EscidocClientException {
+
+                        // Update LockStatus if there is a change
+                        if (!resourceProxy.getLockStatus().equals(
+                            lblLockstatus.getValue().toString().replace(status, ""))) {
+                            repositories.container().changeLockStatus(container,
+                                lblLockstatus.getValue().toString().replace(STATUS, "").toUpperCase(), comment);
+                        }
+                    }
+
+                    private void updateContainer(String comment) {
+                        this.addCommentWindow();
+                        Container container;
+                        try {
+                            container = repositories.container().findContainerById(resourceProxy.getId());
+                            if (resourceProxy.getLockStatus().equals("unlocked")) {
+                                updatePublicStatus(container, comment);
+                                // retrive the container to get the last modifiaction date.
+                                container = repositories.container().findContainerById(resourceProxy.getId());
+                                updateLockStatus(container, comment);
+                            }
+                            else {
+                                updateLockStatus(container, comment);
+                                updatePublicStatus(container, comment);
+                            }
+                        }
+                        catch (final EscidocClientException e) {
+                            LOG.debug(e.getLocalizedMessage());
+                        }
+                    }
 
                 });
             }

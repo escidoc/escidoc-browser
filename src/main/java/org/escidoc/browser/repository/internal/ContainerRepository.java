@@ -188,6 +188,7 @@ public class ContainerRepository implements Repository {
         final TaskParam taskParam = new TaskParam();
         taskParam.setLastModificationDate(container.getLastModificationDate());
         taskParam.setComment(comment);
+        System.out.println("Statusi eshte" + publicStatus);
         if (publicStatus.equals("SUBMITTED")) {
             client.submit(container, taskParam);
         }
