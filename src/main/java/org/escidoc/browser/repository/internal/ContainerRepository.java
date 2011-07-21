@@ -234,7 +234,9 @@ public class ContainerRepository implements Repository {
     }
 
     public void addMetaData(MetadataRecord metadata, Container container) throws EscidocClientException {
-
+        final TaskParam taskParam = new TaskParam();
+        taskParam.setLastModificationDate(container.getLastModificationDate());
+        taskParam.setComment("Adding a new MetaData");
         MetadataRecords containerMetadataList = container.getMetadataRecords();
         containerMetadataList.add(metadata);
 

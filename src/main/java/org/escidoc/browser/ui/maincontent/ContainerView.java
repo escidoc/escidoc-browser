@@ -29,7 +29,6 @@
 package org.escidoc.browser.ui.maincontent;
 
 import java.net.URISyntaxException;
-import java.util.Iterator;
 
 import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.ContainerProxy;
@@ -47,7 +46,6 @@ import com.google.common.base.Preconditions;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComboBox;
@@ -56,7 +54,7 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.TextField;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
@@ -71,6 +69,14 @@ import de.escidoc.core.resources.om.container.Container;
  */
 @SuppressWarnings("serial")
 public class ContainerView extends VerticalLayout {
+    private static final String DESC_LOCKSTATUS = "lockstatus";
+
+    private static final String DESC_STATUS2 = "status";
+
+    private static final String DESC_HEADER = "header";
+
+    private static final String SUBWINDOW_EDIT = "Add Comment to the Edit operation";
+
     private static final String RIGHT_PANEL = "Right Panel";
 
     static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
@@ -225,10 +231,10 @@ public class ContainerView extends VerticalLayout {
         descMetadata1.setWidth("35%");
 
         lblStatus.setStyleName("floatleft");
-        lblStatus.setDescription("status");
+        lblStatus.setDescription(DESC_STATUS2);
         lblStatus.setWidth("35%");
         lblLockstatus.setStyleName("floatleft");
-        lblLockstatus.setDescription("lockstatus");
+        lblLockstatus.setDescription(DESC_LOCKSTATUS);
         lblLockstatus.setWidth("35%");
 
         final Label descMetadata2 =
@@ -281,7 +287,7 @@ public class ContainerView extends VerticalLayout {
         final Label headerContext = new Label(RESOURCE_NAME + resourceProxy.getName());
         headerContext.setStyleName("h1 fullwidth floatleft");
         headerContext.setWidth("80%");
-        headerContext.setDescription("header");
+        headerContext.setDescription(DESC_HEADER);
         cssLayout.addComponent(headerContext);
     }
 
@@ -311,43 +317,33 @@ public class ContainerView extends VerticalLayout {
                     @Override
                     public void layoutClick(final LayoutClickEvent event) {
                         // Get the child component which was clicked
+
                         if (event.getChildComponent() != null) {
+                            System.out.println("Something was clicked"
+                                + event.getChildComponent().getClass().getCanonicalName());
                             // Is Label?
                             if (event.getChildComponent().getClass().getCanonicalName() == "com.vaadin.ui.Label") {
                                 final Label child = (Label) event.getChildComponent();
-                                if ((child).getDescription() == "header") {
+                                if ((child).getDescription() == DESC_HEADER) {
                                     // We are not editing header anymore
                                     // oldComponent = event.getClickedComponent();
                                     // swapComponent = editHeader(child.getValue().toString());
                                     // cssLayout.replaceComponent(oldComponent, swapComponent);
                                     // btnEdit.setVisible(true);
                                 }
-                                else if (child.getDescription() == "status") {
+                                else if (child.getDescription() == DESC_STATUS2) {
                                     reSwapComponents();
                                     oldComponent = event.getClickedComponent();
                                     swapComponent = editStatus(child.getValue().toString().replace(status, ""));
                                     cssLayout.replaceComponent(oldComponent, swapComponent);
                                 }
-                                else if (child.getDescription() == "lockstatus") {
+                                else if (child.getDescription() == DESC_LOCKSTATUS) {
                                     reSwapComponents();
                                     oldComponent = event.getClickedComponent();
                                     swapComponent = editLockStatus(child.getValue().toString().replace(status, ""));
                                     cssLayout.replaceComponent(oldComponent, swapComponent);
                                 }
                             }
-                            else if (event.getChildComponent().getClass().getCanonicalName() == "com.vaadin.ui.Panel") {
-                                final Panel child = (Panel) event.getChildComponent();
-                                if (child.getDescription() == RIGHT_PANEL) {
-                                    Iterator itr = child.getComponentIterator();
-                                    while (itr.hasNext()) {
-                                        final Accordion element = (Accordion) itr.next();
-
-                                        System.out.print(element + " ");
-
-                                    }
-                                }
-                            }
-
                             else {
                                 getWindow().showNotification(
                                     "The click was over a " + event.getChildComponent().getClass().getCanonicalName()
@@ -363,11 +359,13 @@ public class ContainerView extends VerticalLayout {
                      * Switch the component back to the original component (Label) after inline editing
                      */
                     private void reSwapComponents() {
+                        System.out.println("A call for reSwap");
                         if (swapComponent != null) {
                             if (swapComponent instanceof Label) {
-                                ((Label) oldComponent).setValue(((TextField) swapComponent).getValue());
+                                ((Label) oldComponent).setValue(((TextArea) swapComponent).getValue());
                             }
-                            else if ((swapComponent instanceof ComboBox)) {
+                            else if ((swapComponent instanceof ComboBox)
+                                && ((ComboBox) swapComponent).getValue() != null) {
                                 ((Label) oldComponent).setValue(status + ((ComboBox) swapComponent).getValue());
                                 this.addCommentWindow();
                             }
@@ -430,7 +428,7 @@ public class ContainerView extends VerticalLayout {
                     }
 
                     public void addCommentWindow() {
-                        subwindow = new Window("Add Comment to the Edit operation");
+                        subwindow = new Window(SUBWINDOW_EDIT);
                         subwindow.setModal(true);
                         // Configure the windws layout; by default a VerticalLayout
                         VerticalLayout layout = (VerticalLayout) subwindow.getContent();
@@ -438,7 +436,7 @@ public class ContainerView extends VerticalLayout {
                         layout.setSpacing(true);
                         layout.setSizeUndefined();
 
-                        final TextField editor = new TextField("Your Comment");
+                        final TextArea editor = new TextArea("Your Comment");
                         editor.setRequired(true);
                         editor.setRequiredError("The Field may not be empty.");
 
@@ -488,7 +486,6 @@ public class ContainerView extends VerticalLayout {
                     }
 
                     private void updateContainer(String comment) {
-                        this.addCommentWindow();
                         Container container;
                         try {
                             container = repositories.container().findContainerById(resourceProxy.getId());
