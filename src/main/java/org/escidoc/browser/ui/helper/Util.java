@@ -118,8 +118,7 @@ public final class Util {
     }
 
     public static URI parseEscidocUriFrom(final Map<String, String[]> parameters) throws URISyntaxException {
-        final URI escidocUri = new URI(parameters.get(AppConstants.ESCIDOC_URL)[0]);
-        return escidocUri;
+        return new URI(parameters.get(AppConstants.ESCIDOC_URL)[0]);
     }
 
     public static SearchRetrieveRequestType createQueryForTopLevelItems(final String id) {

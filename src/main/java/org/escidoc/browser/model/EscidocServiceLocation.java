@@ -46,4 +46,6 @@ public interface EscidocServiceLocation {
 
     URL getEscidocUrl() throws MalformedURLException;
 
+    URI getAppUri();
+
 }
