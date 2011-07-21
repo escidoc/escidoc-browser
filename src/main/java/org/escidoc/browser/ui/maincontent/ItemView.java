@@ -219,8 +219,8 @@ public class ItemView extends VerticalLayout {
         bindProperties();
 
         buildLeftCell(new ItemContent(repositories, resourceProxy, serviceLocation, mainWindow, currentUser));
-        buildRightCell(new MetadataRecsItem(resourceProxy, accordionHeight, mainWindow, serviceLocation, repositories)
-            .asAccord());
+        buildRightCell(new MetadataRecsItem(resourceProxy, accordionHeight, mainWindow, serviceLocation, repositories,
+            currentUser).asAccord());
 
         addComponent(cssLayout);
     }

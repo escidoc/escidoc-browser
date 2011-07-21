@@ -28,27 +28,42 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
+import java.net.URISyntaxException;
 import java.util.Iterator;
 
+import org.escidoc.browser.BrowserApplication;
+import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.internal.ActionIdConstants;
+import org.escidoc.browser.ui.listeners.AddMetaDataFileItemBehaviour;
+import org.escidoc.browser.ui.listeners.EditMetaDataFileItemBehaviour;
 import org.escidoc.browser.ui.listeners.MetadataRecBehavour;
 import org.escidoc.browser.ui.listeners.RelationsClickListener;
 import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 
+import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.MetadataRecords;
 
 public class MetadataRecsItem {
+
+    static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
+
     private int height;
 
     private final ItemProxy resourceProxy;
@@ -59,16 +74,18 @@ public class MetadataRecsItem {
 
     private final Repositories repositories;
 
+    private final VerticalLayout btnaddContainer = new VerticalLayout();
+
+    private final CurrentUser currentUser;
+
     public MetadataRecsItem(final ItemProxy resourceProxy, final int innerelementsHeight, final Window mainWindow,
-        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories) {
+        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories, CurrentUser currentUser) {
         Preconditions.checkNotNull(mainWindow, "resource is null.");
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions
             .checkNotNull(escidocServiceLocation, "escidocServiceLocation is null: %s", escidocServiceLocation);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
 
-        // TODO: what the value of height?
-        // TODO: User Camel Case for variable, method and class name
         height = innerelementsHeight;
 
         if (height < 1) {
@@ -79,6 +96,7 @@ public class MetadataRecsItem {
         this.mainWindow = mainWindow;
         this.escidocServiceLocation = escidocServiceLocation;
         this.repositories = repositories;
+        this.currentUser = currentUser;
     }
 
     public Accordion asAccord() {
@@ -86,13 +104,13 @@ public class MetadataRecsItem {
         metadataRecs.setSizeFull();
 
         // TODO use meaningful variable, class, method name
-        final Panel l1 = lblMetadaRecs();
-        final Panel pnl = lblAddtionalResources();
+        final Panel pnlMetadataRecs = lblMetadaRecs();
+        final Panel pnlAdditionalResources = lblAddtionalResources();
 
         // Add the components as tabs in the Accordion.
-        metadataRecs.addTab(l1, "Metadata Records", null);
+        metadataRecs.addTab(pnlMetadataRecs, "Metadata Records", null);
         // metadataRecs.addTab(l2, "Relations", null);
-        metadataRecs.addTab(pnl, "Additional Resources", null);
+        metadataRecs.addTab(pnlAdditionalResources, "Additional Resources", null);
         return metadataRecs;
     }
 
@@ -136,14 +154,71 @@ public class MetadataRecsItem {
 
         final MetadataRecords mdRecs = resourceProxy.getMedataRecords();
         for (final MetadataRecord metadataRecord : mdRecs) {
-            final Button btnmdRec =
-                new Button(metadataRecord.getName(), new MetadataRecBehavour(metadataRecord, mainWindow,
-                    escidocServiceLocation));
-            btnmdRec.setStyleName(BaseTheme.BUTTON_LINK);
-            btnmdRec.setDescription("Show metadata information in a separate window");
-            pnl.addComponent(btnmdRec);
+            buildMDButtons(btnaddContainer, metadataRecord);
         }
 
+        pnl.addComponent(btnaddContainer);
+        if (hasAccess()) {
+            Button btnAddNew =
+                new Button("Add New MetaData", new AddMetaDataFileItemBehaviour(mainWindow, escidocServiceLocation,
+                    repositories, resourceProxy, this));
+            btnAddNew.setStyleName(BaseTheme.BUTTON_LINK);
+            btnAddNew.setIcon(new ThemeResource("../myTheme/runo/icons/16/note.png"));
+            pnl.addComponent(btnAddNew);
+        }
         return pnl;
+    }
+
+    /**
+     * Create the buttons to be shown on the MetaDataRecords Accordion
+     * 
+     * @param pnl
+     * @param metadataRecord
+     */
+    public void buildMDButtons(final VerticalLayout btnaddContainer, final MetadataRecord metadataRecord) {
+        HorizontalLayout hl = new HorizontalLayout();
+        if (hasAccess()) {
+            Button btnEditActualMetaData =
+                new Button("", new EditMetaDataFileItemBehaviour(metadataRecord, mainWindow, escidocServiceLocation,
+                    repositories, resourceProxy));
+            btnEditActualMetaData.setStyleName(BaseTheme.BUTTON_LINK);
+            btnEditActualMetaData.setDescription("Replace the metadata with a new content file");
+            btnEditActualMetaData.setIcon(new ThemeResource("../myTheme/runo/icons/16/reload.png"));
+            hl.addComponent(btnEditActualMetaData);
+        }
+
+        final Button btnmdRec =
+            new Button(metadataRecord.getName(), new MetadataRecBehavour(metadataRecord, mainWindow,
+                escidocServiceLocation));
+        btnmdRec.setStyleName(BaseTheme.BUTTON_LINK);
+        btnmdRec.setDescription("Show metadata information in a separate window");
+        hl.addComponent(btnmdRec);
+
+        btnaddContainer.addComponent(hl);
+    }
+
+    /**
+     * Used to bind new buttons on the view Usually when adding a new record
+     * 
+     * @param metadataRecord
+     */
+    public void addButtons(MetadataRecord metadataRecord) {
+        buildMDButtons(btnaddContainer, metadataRecord);
+    }
+
+    private boolean hasAccess() {
+        try {
+            return repositories
+                .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.UPDATE_ITEM)
+                .forResource(resourceProxy.getId()).permitted();
+        }
+        catch (EscidocClientException e) {
+            LOG.debug(e.getLocalizedMessage());
+            return false;
+        }
+        catch (URISyntaxException e) {
+            LOG.debug(e.getLocalizedMessage());
+            return false;
+        }
     }
 }

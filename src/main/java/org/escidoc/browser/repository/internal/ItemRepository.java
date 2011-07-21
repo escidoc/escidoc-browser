@@ -51,6 +51,8 @@ import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.client.exceptions.TransportException;
 import de.escidoc.core.client.interfaces.ContainerHandlerClientInterface;
 import de.escidoc.core.client.interfaces.ItemHandlerClientInterface;
+import de.escidoc.core.resources.common.MetadataRecord;
+import de.escidoc.core.resources.common.MetadataRecords;
 import de.escidoc.core.resources.common.Relations;
 import de.escidoc.core.resources.common.TaskParam;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
@@ -172,5 +174,23 @@ public class ItemRepository implements Repository {
     @Override
     public void delete(final ResourceModel model) throws EscidocClientException {
         client.delete(model.getId());
+    }
+
+    public void addMetaData(MetadataRecord metadataRecord, Item item) throws EscidocClientException {
+        MetadataRecords itemMetadataList = item.getMetadataRecords();
+        itemMetadataList.add(metadataRecord);
+
+        client.update(item);
+    }
+
+    public void updateMetaData(MetadataRecord metadataRecord, Item item) throws EscidocClientException {
+        MetadataRecords containerMetadataList = item.getMetadataRecords();
+
+        containerMetadataList.del(metadataRecord.getName());
+        containerMetadataList.add(metadataRecord);
+        item.setMetadataRecords(containerMetadataList);
+
+        client.update(item);
+
     }
 }
