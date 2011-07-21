@@ -43,8 +43,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.Button;
@@ -55,7 +53,7 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.TextField;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
@@ -68,92 +66,21 @@ import de.escidoc.core.resources.om.item.Item;
 @SuppressWarnings("serial")
 public class ItemView extends VerticalLayout {
 
-    protected final class ItemLayoutClickListener implements LayoutClickListener {
+    private static final String DESC_LOCKSTATUS = "lockstatus";
 
-        private Component lockComboBox;
+    private static final String DESC_STATUS2 = "status";
 
-        private Component publicStatusComboBox;
+    private static final String DESC_HEADER = "header";
 
-        @Override
-        public void layoutClick(final LayoutClickEvent event) {
-            if (event.getChildComponent() != null) {
-                if (event.getChildComponent().equals(publicStatusLabel)) {
-                    clickedPublicStatusLabel = (Label) event.getClickedComponent();
-                    publicStatusComboBox =
-                        editPublicStatus((clickedPublicStatusLabel).getValue().toString().replace(resourceIs, ""));
-                    cssLayout.replaceComponent(clickedPublicStatusLabel, publicStatusComboBox);
-                }
-                else if (event.getChildComponent().equals(lockStatusLabel)) {
-                    clickedLockLabel = (Label) event.getClickedComponent();
-                    lockComboBox = editLockStatus((clickedLockLabel).getValue().toString().replace(resourceIs, ""));
-                    cssLayout.replaceComponent(clickedLockLabel, lockComboBox);
-                }
-            }
-        }
+    private static final String SUBWINDOW_EDIT = "Add Comment to the Edit operation";
 
-        private Component editLockStatus(final String lockStatus) {
-            final ComboBox lockStatusComboBox = new ComboBox();
-            lockStatusComboBox.setImmediate(true);
-            lockStatusComboBox.setNullSelectionAllowed(false);
-            lockStatusComboBox.setNullSelectionItemId(lockStatus);
-            lockStatusComboBox.addListener(new ValueChangeListener() {
+    protected static final String STATUS = "Item is ";
 
-                @Override
-                public void valueChange(final ValueChangeEvent event) {
-                    (clickedLockLabel).setValue(resourceIs + (lockStatusComboBox).getValue());
-                    cssLayout.replaceComponent(lockStatusComboBox, clickedLockLabel);
-                    btnEdit.setVisible(true);
+    private Component lockComboBox;
 
-                }
-            });
-            if (lockStatus.equals("unlocked")) {
-                lockStatusComboBox.addItem(LockStatus.LOCKED.toString().toLowerCase());
-            }
-            else {
-                lockStatusComboBox.addItem(LockStatus.UNLOCKED.toString().toLowerCase());
-            }
-            return lockStatusComboBox;
-        }
+    private Component publicStatusComboBox;
 
-        private Component editPublicStatus(final String publicStatus) {
-            final ComboBox publicStatusComboBox = new ComboBox();
-            publicStatusComboBox.setImmediate(true);
-            publicStatusComboBox.setNullSelectionAllowed(false);
-            publicStatusComboBox.setNullSelectionItemId(publicStatus);
-            publicStatusComboBox.addListener(new ValueChangeListener() {
-
-                @Override
-                public void valueChange(final ValueChangeEvent event) {
-                    (clickedPublicStatusLabel).setValue(resourceIs + (publicStatusComboBox).getValue());
-                    cssLayout.replaceComponent(publicStatusComboBox, clickedPublicStatusLabel);
-                    btnEdit.setVisible(true);
-                }
-            });
-
-            if (publicStatus.equals("pending")) {
-                publicStatusComboBox.addItem(PublicStatus.PENDING.toString().toLowerCase());
-                publicStatusComboBox.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
-            }
-            else if (publicStatus.equals("submitted")) {
-                publicStatusComboBox.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
-                publicStatusComboBox.addItem(PublicStatus.IN_REVISION.toString().toLowerCase());
-                publicStatusComboBox.addItem(PublicStatus.RELEASED.toString().toLowerCase());
-            }
-            else if (publicStatus.equals("in_revision")) {
-                publicStatusComboBox.addItem(PublicStatus.IN_REVISION.toString().toLowerCase());
-                publicStatusComboBox.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
-            }
-            else if (publicStatus.equals("released")) {
-                publicStatusComboBox.addItem(PublicStatus.RELEASED.toString().toLowerCase());
-                publicStatusComboBox.addItem(PublicStatus.WITHDRAWN.toString().toLowerCase());
-            }
-            else if (publicStatus.equals("withdrawn")) {
-                publicStatusComboBox.addItem(PublicStatus.WITHDRAWN.toString().toLowerCase());
-                publicStatusComboBox.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
-            }
-            return publicStatusComboBox;
-        }
-    }
+    private String status;
 
     private static final Logger LOG = LoggerFactory.getLogger(ItemView.class);
 
@@ -177,17 +104,19 @@ public class ItemView extends VerticalLayout {
 
     private int innerelementsHeight;
 
-    private Button btnEdit;
-
-    private Label clickedLockLabel;
-
-    private Label clickedPublicStatusLabel;
-
     private Label publicStatusLabel;
 
     private Label lockStatusLabel;
 
-    protected Window subwindow;
+    private Component oldComponent = null;
+
+    private Component swapComponent = null;
+
+    private Label lblStatus;
+
+    private Label lblLockstatus;
+
+    private Window subwindow;
 
     public ItemView(final EscidocServiceLocation serviceLocation, final Repositories repositories,
         final MainSite mainSite, final ResourceProxy resourceProxy, final Window mainWindow,
@@ -213,7 +142,6 @@ public class ItemView extends VerticalLayout {
         buildLayout();
         handleLayoutListeners();
         createBreadcrumbp();
-        createEditBtn();
         bindNametoHeader();
         bindHrRuler();
         bindProperties();
@@ -251,10 +179,10 @@ public class ItemView extends VerticalLayout {
 
     private void bindProperties() {
         final Label descMetadata1 = new Label("ID: " + resourceProxy.getId());
-        resourceIs = resourceProxy.getType().asLabel() + " is ";
 
-        publicStatusLabel = new Label(resourceIs + resourceProxy.getStatus(), Label.CONTENT_RAW);
-        lockStatusLabel = new Label(resourceIs + resourceProxy.getLockStatus(), Label.CONTENT_RAW);
+        status = resourceProxy.getType().asLabel() + " is ";
+        publicStatusLabel = new Label(status + resourceProxy.getStatus(), Label.CONTENT_RAW);
+        lockStatusLabel = new Label(status + resourceProxy.getLockStatus(), Label.CONTENT_RAW);
 
         descMetadata1.setStyleName("floatleft");
         descMetadata1.setWidth("35%");
@@ -311,104 +239,6 @@ public class ItemView extends VerticalLayout {
         cssLayout.addComponent(headerContext);
     }
 
-    private void createEditBtn() {
-        btnEdit = new Button("Save Changes", new Button.ClickListener() {
-
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                btnEdit.setVisible(false);
-                this.addCommentWindow();
-            }
-
-            private void updateItem(String comment) {
-                Item item;
-                try {
-                    item = repositories.item().findItemById(resourceProxy.getId());
-                    if (resourceProxy.getLockStatus().equals("unlocked")) {
-                        updatePublicStatus(item, comment);
-                        // retrive the container to get the last modifiaction date.
-                        item = repositories.item().findItemById(resourceProxy.getId());
-                        updateLockStatus(item, comment);
-                    }
-                    else {
-                        updateLockStatus(item, comment);
-                        updatePublicStatus(item, comment);
-                    }
-
-                    repositories.item().changePublicStatus(item,
-                        publicStatusLabel.getValue().toString().replace(resourceIs, "").toUpperCase(), comment);
-                    btnEdit.detach();
-                }
-                catch (final EscidocClientException e) {
-                    LOG.debug(e.getLocalizedMessage());
-                }
-            }
-
-            private void addCommentWindow() {
-                subwindow = new Window("Add Comment to the Edit Operation");
-                subwindow.setModal(true);
-
-                // Configure the windws layout; by default a VerticalLayout
-                VerticalLayout layout = (VerticalLayout) subwindow.getContent();
-                layout.setMargin(true);
-                layout.setSpacing(true);
-                layout.setSizeUndefined();
-
-                final TextField editor = new TextField("Your Comment");
-
-                editor.setRequired(true);
-                editor.setRequiredError("The Field may not be empty.");
-
-                HorizontalLayout hl = new HorizontalLayout();
-
-                Button close = new Button("Update", new Button.ClickListener() {
-                    // inline click-listener
-                    @Override
-                    public void buttonClick(ClickEvent event) {
-                        // close the window by removing it from the parent window
-                        updateItem(editor.getValue().toString());
-                        (subwindow.getParent()).removeWindow(subwindow);
-                    }
-                });
-                Button cancel = new Button("Cancel", new Button.ClickListener() {
-                    @Override
-                    public void buttonClick(ClickEvent event) {
-                        (subwindow.getParent()).removeWindow(subwindow);
-                    }
-                });
-
-                hl.addComponent(close);
-                hl.addComponent(cancel);
-
-                subwindow.addComponent(editor);
-                subwindow.addComponent(hl);
-                mainWindow.addWindow(subwindow);
-
-            }
-
-            private void updatePublicStatus(final Item item, final String comment) throws EscidocClientException {
-                // Update PublicStatus if there is a change
-                if (!resourceProxy.getStatus().equals(publicStatusLabel.getValue().toString().replace(resourceIs, ""))) {
-                    repositories.item().changePublicStatus(item,
-                        publicStatusLabel.getValue().toString().replace(resourceIs, "").toUpperCase(), comment);
-                }
-            }
-
-            private void updateLockStatus(final Item item, final String comment) throws EscidocClientException {
-                // Update LockStatus if there is a change
-                if (!resourceProxy
-                    .getLockStatus().equals(lockStatusLabel.getValue().toString().replace(resourceIs, ""))) {
-                    repositories.item().changeLockStatus(item,
-                        lockStatusLabel.getValue().toString().replace(resourceIs, "").toUpperCase(), comment);
-                }
-            }
-        });
-        btnEdit.setStyleName("floatright");
-        btnEdit.setVisible(false);
-        cssLayout.addComponent(btnEdit);
-
-    }
-
     @SuppressWarnings("unused")
     private void createBreadcrumbp() {
         new BreadCrumbMenu(cssLayout, resourceProxy, mainWindow, serviceLocation, repositories);
@@ -426,10 +256,204 @@ public class ItemView extends VerticalLayout {
     private void handleLayoutListeners() {
         try {
             if (repositories
-                .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.UPDATE_ITEM)
+                .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.UPDATE_CONTAINER)
                 .forResource(resourceProxy.getId()).permitted()) {
 
-                cssLayout.addListener(new ItemLayoutClickListener());
+                cssLayout.addListener(new LayoutClickListener() {
+                    private static final long serialVersionUID = 1L;
+
+                    @Override
+                    public void layoutClick(final LayoutClickEvent event) {
+                        // Get the child component which was clicked
+
+                        if (event.getChildComponent() != null) {
+                            System.out.println("Something was clicked"
+                                + event.getChildComponent().getClass().getCanonicalName());
+                            // Is Label?
+                            if (event.getChildComponent().getClass().getCanonicalName() == "com.vaadin.ui.Label") {
+                                final Label child = (Label) event.getChildComponent();
+                                if ((child).getDescription() == DESC_HEADER) {
+                                    // We are not editing header anymore
+                                    // oldComponent = event.getClickedComponent();
+                                    // swapComponent = editHeader(child.getValue().toString());
+                                    // cssLayout.replaceComponent(oldComponent, swapComponent);
+                                    // btnEdit.setVisible(true);
+                                }
+                                else if (child.getDescription() == DESC_STATUS2) {
+                                    reSwapComponents();
+                                    oldComponent = event.getClickedComponent();
+                                    swapComponent = editStatus(child.getValue().toString().replace(status, ""));
+                                    cssLayout.replaceComponent(oldComponent, swapComponent);
+                                }
+                                else if (child.getDescription() == DESC_LOCKSTATUS) {
+                                    reSwapComponents();
+                                    oldComponent = event.getClickedComponent();
+                                    swapComponent = editLockStatus(child.getValue().toString().replace(status, ""));
+                                    cssLayout.replaceComponent(oldComponent, swapComponent);
+                                }
+                            }
+                            else {
+                                getWindow().showNotification(
+                                    "The click was over a " + event.getChildComponent().getClass().getCanonicalName()
+                                        + event.getChildComponent().getStyleName());
+                            }
+                        }
+                        else {
+                            reSwapComponents();
+                        }
+                    }
+
+                    /**
+                     * Switch the component back to the original component (Label) after inline editing
+                     */
+                    private void reSwapComponents() {
+                        System.out.println("A call for reSwap");
+                        if (swapComponent != null) {
+                            if (swapComponent instanceof Label) {
+                                ((Label) oldComponent).setValue(((TextArea) swapComponent).getValue());
+                            }
+                            else if ((swapComponent instanceof ComboBox)
+                                && ((ComboBox) swapComponent).getValue() != null) {
+                                ((Label) oldComponent).setValue(status + ((ComboBox) swapComponent).getValue());
+                                this.addCommentWindow();
+                            }
+                            cssLayout.replaceComponent(swapComponent, oldComponent);
+                            swapComponent = null;
+                        }
+                    }
+
+                    private Component editLockStatus(final String lockStatus) {
+                        final ComboBox cmbLockStatus = new ComboBox();
+                        cmbLockStatus.setNullSelectionAllowed(false);
+                        if (lockStatus.equals("unlocked")) {
+                            cmbLockStatus.addItem(LockStatus.LOCKED.toString().toLowerCase());
+                        }
+                        else {
+                            cmbLockStatus.addItem(LockStatus.UNLOCKED.toString().toLowerCase());
+                        }
+                        cmbLockStatus.select(1);
+                        return cmbLockStatus;
+
+                    }
+
+                    private Component editStatus(final String publicStatus) {
+                        final ComboBox cmbStatus = new ComboBox();
+                        cmbStatus.setInvalidAllowed(false);
+                        cmbStatus.setNullSelectionAllowed(false);
+                        final String pubStatus = publicStatus.toUpperCase();
+                        if (publicStatus.equals("pending")) {
+                            cmbStatus.addItem(PublicStatus.PENDING.toString().toLowerCase());
+                            cmbStatus.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
+                            cmbStatus.setNullSelectionItemId(PublicStatus.PENDING.toString().toLowerCase());
+                        }
+                        else if (publicStatus.equals("submitted")) {
+                            cmbStatus.setNullSelectionItemId(PublicStatus.SUBMITTED.toString().toLowerCase());
+                            cmbStatus.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
+                            cmbStatus.addItem(PublicStatus.IN_REVISION.toString().toLowerCase());
+                            cmbStatus.addItem(PublicStatus.RELEASED.toString().toLowerCase());
+                        }
+                        else if (publicStatus.equals("in_revision")) {
+                            cmbStatus.setNullSelectionItemId(PublicStatus.IN_REVISION.toString().toLowerCase());
+                            cmbStatus.addItem(PublicStatus.IN_REVISION.toString().toLowerCase());
+                            cmbStatus.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
+                        }
+                        else if (publicStatus.equals("released")) {
+                            cmbStatus.setNullSelectionItemId(PublicStatus.RELEASED.toString().toLowerCase());
+                            cmbStatus.addItem(PublicStatus.RELEASED.toString().toLowerCase());
+                            cmbStatus.addItem(PublicStatus.WITHDRAWN.toString().toLowerCase());
+                        }
+                        else if (publicStatus.equals("withdrawn")) {
+                            cmbStatus.setNullSelectionItemId(PublicStatus.WITHDRAWN.toString().toLowerCase());
+                            cmbStatus.addItem(PublicStatus.WITHDRAWN.toString().toLowerCase());
+                            cmbStatus.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
+                        }
+                        else {
+                            cmbStatus.addItem(PublicStatus.valueOf(pubStatus));
+                        }
+                        cmbStatus.select(1);
+
+                        return cmbStatus;
+                    }
+
+                    public void addCommentWindow() {
+                        subwindow = new Window(SUBWINDOW_EDIT);
+                        subwindow.setModal(true);
+                        // Configure the windws layout; by default a VerticalLayout
+                        VerticalLayout layout = (VerticalLayout) subwindow.getContent();
+                        layout.setMargin(true);
+                        layout.setSpacing(true);
+                        layout.setSizeUndefined();
+
+                        final TextArea editor = new TextArea("Your Comment");
+                        editor.setRequired(true);
+                        editor.setRequiredError("The Field may not be empty.");
+
+                        HorizontalLayout hl = new HorizontalLayout();
+
+                        Button close = new Button("Update", new Button.ClickListener() {
+                            // inline click-listener
+                            @Override
+                            public void buttonClick(ClickEvent event) {
+                                // close the window by removing it from the parent window
+                                updateContainer(editor.getValue().toString());
+                                (subwindow.getParent()).removeWindow(subwindow);
+                            }
+                        });
+                        Button cancel = new Button("Cancel", new Button.ClickListener() {
+                            @Override
+                            public void buttonClick(ClickEvent event) {
+                                (subwindow.getParent()).removeWindow(subwindow);
+                            }
+                        });
+
+                        hl.addComponent(close);
+                        hl.addComponent(cancel);
+
+                        subwindow.addComponent(editor);
+                        subwindow.addComponent(hl);
+                        mainWindow.addWindow(subwindow);
+                    }
+
+                    private void updatePublicStatus(Item item, String comment) throws EscidocClientException {
+
+                        // Update PublicStatus if there is a change
+                        if (!resourceProxy.getStatus().equals(lblStatus.getValue().toString().replace(status, ""))) {
+                            repositories.item().changePublicStatus(item,
+                                lblStatus.getValue().toString().replace(STATUS, "").toUpperCase(), comment);
+                        }
+                    }
+
+                    private void updateLockStatus(Item item, String comment) throws EscidocClientException {
+
+                        // Update LockStatus if there is a change
+                        if (!resourceProxy.getLockStatus().equals(
+                            lblLockstatus.getValue().toString().replace(status, ""))) {
+                            repositories.item().changeLockStatus(item,
+                                lblLockstatus.getValue().toString().replace(STATUS, "").toUpperCase(), comment);
+                        }
+                    }
+
+                    private void updateContainer(String comment) {
+                        Item item;
+                        try {
+                            item = repositories.item().findItemById(resourceProxy.getId());
+                            if (resourceProxy.getLockStatus().equals("unlocked")) {
+                                updatePublicStatus(item, comment);
+                                // retrive the container to get the last modifiaction date.
+                                item = repositories.item().findItemById(resourceProxy.getId());
+                                updateLockStatus(item, comment);
+                            }
+                            else {
+                                updateLockStatus(item, comment);
+                                updatePublicStatus(item, comment);
+                            }
+                        }
+                        catch (final EscidocClientException e) {
+                            LOG.debug(e.getLocalizedMessage());
+                        }
+                    }
+
+                });
             }
         }
         catch (final EscidocClientException e) {
