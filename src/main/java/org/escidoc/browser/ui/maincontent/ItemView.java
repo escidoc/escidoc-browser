@@ -267,8 +267,7 @@ public class ItemView extends VerticalLayout {
                         // Get the child component which was clicked
 
                         if (event.getChildComponent() != null) {
-                            System.out.println("Something was clicked"
-                                + event.getChildComponent().getClass().getCanonicalName());
+
                             // Is Label?
                             if (event.getChildComponent().getClass().getCanonicalName() == "com.vaadin.ui.Label") {
                                 final Label child = (Label) event.getChildComponent();
@@ -307,7 +306,7 @@ public class ItemView extends VerticalLayout {
                      * Switch the component back to the original component (Label) after inline editing
                      */
                     private void reSwapComponents() {
-                        System.out.println("A call for reSwap");
+
                         if (swapComponent != null) {
                             if (swapComponent instanceof Label) {
                                 ((Label) oldComponent).setValue(((TextArea) swapComponent).getValue());
