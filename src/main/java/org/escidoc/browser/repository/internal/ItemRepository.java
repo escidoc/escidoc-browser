@@ -136,6 +136,7 @@ public class ItemRepository implements Repository {
 
     public void changePublicStatus(final Item item, final String publicStatus, final String comment)
         throws EscidocClientException {
+        System.out.println("#######################" + publicStatus + comment);
         final TaskParam taskParam = new TaskParam();
         taskParam.setLastModificationDate(item.getLastModificationDate());
         taskParam.setComment(comment);
@@ -184,11 +185,11 @@ public class ItemRepository implements Repository {
     }
 
     public void updateMetaData(MetadataRecord metadataRecord, Item item) throws EscidocClientException {
-        MetadataRecords containerMetadataList = item.getMetadataRecords();
+        MetadataRecords itemMetadataList = item.getMetadataRecords();
 
-        containerMetadataList.del(metadataRecord.getName());
-        containerMetadataList.add(metadataRecord);
-        item.setMetadataRecords(containerMetadataList);
+        itemMetadataList.del(metadataRecord.getName());
+        itemMetadataList.add(metadataRecord);
+        item.setMetadataRecords(itemMetadataList);
 
         client.update(item);
 

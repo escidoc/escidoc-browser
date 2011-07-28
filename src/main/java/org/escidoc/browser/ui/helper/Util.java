@@ -84,22 +84,22 @@ public final class Util {
         return new SearchRetrieveRequestType();
     }
 
-    public final static SearchRetrieveRequestType createQueryForTopLevelContainers(final String id) {
-        Preconditions.checkNotNull(id, "id is null: %s", id);
-        Preconditions.checkArgument(!id.isEmpty(), "id is empty: %s", id);
-        final SearchRetrieveRequestType filter = new SearchRetrieveRequestType();
-        filter.setQuery(topLevelContainers(id));
-        return filter;
-    }
+    // public final static SearchRetrieveRequestType createQueryForTopLevelContainers(final String id) {
+    // Preconditions.checkNotNull(id, "id is null: %s", id);
+    // Preconditions.checkArgument(!id.isEmpty(), "id is empty: %s", id);
+    // final SearchRetrieveRequestType filter = new SearchRetrieveRequestType();
+    // filter.setQuery(topLevelContainers(id));
+    // return filter;
+    // }
 
-    private final static String topLevelContainers(final String id) {
-        final StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("top-level-containers=true OR \"/properties/context/id=");
-        stringBuilder.append(id);
-        stringBuilder.append("\"");
-        final String topLevelContainerQuery = stringBuilder.toString();
-        return topLevelContainerQuery;
-    }
+    // private final static String topLevelContainers(final String id) {
+    // final StringBuilder stringBuilder = new StringBuilder();
+    // stringBuilder.append("top-level-containers=true OR \"/properties/context/id=");
+    // stringBuilder.append(id);
+    // stringBuilder.append("\"");
+    // final String topLevelContainerQuery = stringBuilder.toString();
+    // return topLevelContainerQuery;
+    // }
 
     public static final void addToResults(final List<ResourceModel> results, final SearchResult searchResult) {
         Preconditions.checkNotNull(results, "results is null: %s", results);
@@ -121,21 +121,21 @@ public final class Util {
         return new URI(parameters.get(AppConstants.ESCIDOC_URL)[0]);
     }
 
-    public static SearchRetrieveRequestType createQueryForTopLevelItems(final String id) {
-        Preconditions.checkNotNull(id, "id is null: %s", id);
-        Preconditions.checkArgument(!id.isEmpty(), "id is empty: %s", id);
-        final SearchRetrieveRequestType filter = new SearchRetrieveRequestType();
-        filter.setQuery(topLevelItems(id));
-        return filter;
-    }
+    // public static SearchRetrieveRequestType createQueryForTopLevelItems(final String id) {
+    // Preconditions.checkNotNull(id, "id is null: %s", id);
+    // Preconditions.checkArgument(!id.isEmpty(), "id is empty: %s", id);
+    // final SearchRetrieveRequestType filter = new SearchRetrieveRequestType();
+    // filter.setQuery(topLevelItems(id));
+    // return filter;
+    // }
 
-    private static String topLevelItems(final String id) {
-        final StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("\"top-level-items\"=true OR \"/properties/context/id\"=");
-        stringBuilder.append(id);
-        final String topLevelContainerQuery = stringBuilder.toString();
-        return topLevelContainerQuery;
-    }
+    // private static String topLevelItems(final String id) {
+    // final StringBuilder stringBuilder = new StringBuilder();
+    // stringBuilder.append("\"top-level-items\"=true OR \"/properties/context/id\"=");
+    // stringBuilder.append(id);
+    // final String topLevelContainerQuery = stringBuilder.toString();
+    // return topLevelContainerQuery;
+    // }
 
     public static SearchRetrieveRequestType createQueryForTopLevelContainersAndItems(final String id) {
         Preconditions.checkNotNull(id, "id is null: %s", id);

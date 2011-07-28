@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jboss-web>
+  <loader-repository>
+   de.escidoc.browser:loader=browserClassLoaderRepository
+   <loader-repository-config>java2ParentDelegation=false</loader-repository-config>
+  </loader-repository>
+</jboss-web>

@@ -104,17 +104,13 @@ public class ItemView extends VerticalLayout {
 
     private int innerelementsHeight;
 
-    private Label publicStatusLabel;
-
-    private Label lockStatusLabel;
+    private Label lblLockstatus;
 
     private Component oldComponent = null;
 
     private Component swapComponent = null;
 
-    private Label lblStatus;
-
-    private Label lblLockstatus;
+    private Label publicLblStatus;
 
     private Window subwindow;
 
@@ -181,8 +177,8 @@ public class ItemView extends VerticalLayout {
         final Label descMetadata1 = new Label("ID: " + resourceProxy.getId());
 
         status = resourceProxy.getType().asLabel() + " is ";
-        publicStatusLabel = new Label(status + resourceProxy.getStatus(), Label.CONTENT_RAW);
-        lockStatusLabel = new Label(status + resourceProxy.getLockStatus(), Label.CONTENT_RAW);
+        publicLblStatus = new Label(status + resourceProxy.getStatus(), Label.CONTENT_RAW);
+        lblLockstatus = new Label(status + resourceProxy.getLockStatus(), Label.CONTENT_RAW);
 
         descMetadata1.setStyleName("floatleft");
         descMetadata1.setWidth("35%");
@@ -208,22 +204,22 @@ public class ItemView extends VerticalLayout {
 
         cssLayout.addComponent(descMetadata1);
         cssLayout.addComponent(descMetadata2);
-        cssLayout.addComponent(publicStatusLabel);
-        cssLayout.addComponent(lockStatusLabel);
+        cssLayout.addComponent(publicLblStatus);
+        cssLayout.addComponent(lblLockstatus);
         cssLayout.addComponent(test);
 
     }
 
     private void buildPublicStatus() {
-        publicStatusLabel.setStyleName("floatleft");
-        publicStatusLabel.setDescription("status");
-        publicStatusLabel.setWidth("35%");
+        publicLblStatus.setStyleName("floatleft");
+        publicLblStatus.setDescription("status");
+        publicLblStatus.setWidth("35%");
     }
 
     private void buildLockStatus() {
-        lockStatusLabel.setStyleName("floatleft");
-        lockStatusLabel.setDescription("lockstatus");
-        lockStatusLabel.setWidth("35%");
+        lblLockstatus.setStyleName("floatleft");
+        lblLockstatus.setDescription("lockstatus");
+        lblLockstatus.setWidth("35%");
     }
 
     private void bindHrRuler() {
@@ -394,7 +390,7 @@ public class ItemView extends VerticalLayout {
                             @Override
                             public void buttonClick(ClickEvent event) {
                                 // close the window by removing it from the parent window
-                                updateContainer(editor.getValue().toString());
+                                updateItem(editor.getValue().toString());
                                 (subwindow.getParent()).removeWindow(subwindow);
                             }
                         });
@@ -414,11 +410,13 @@ public class ItemView extends VerticalLayout {
                     }
 
                     private void updatePublicStatus(Item item, String comment) throws EscidocClientException {
-
+                        Preconditions.checkNotNull(item, "Item is null");
+                        Preconditions.checkNotNull(comment, "Comment is null");
                         // Update PublicStatus if there is a change
-                        if (!resourceProxy.getStatus().equals(lblStatus.getValue().toString().replace(status, ""))) {
+                        if (!resourceProxy
+                            .getStatus().equals(publicLblStatus.getValue().toString().replace(status, ""))) {
                             repositories.item().changePublicStatus(item,
-                                lblStatus.getValue().toString().replace(STATUS, "").toUpperCase(), comment);
+                                publicLblStatus.getValue().toString().replace(STATUS, "").toUpperCase(), comment);
                         }
                     }
 
@@ -432,7 +430,7 @@ public class ItemView extends VerticalLayout {
                         }
                     }
 
-                    private void updateContainer(String comment) {
+                    private void updateItem(String comment) {
                         Item item;
                         try {
                             item = repositories.item().findItemById(resourceProxy.getId());
