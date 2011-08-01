@@ -28,6 +28,7 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
+import java.io.File;
 import java.net.URISyntaxException;
 
 import org.escidoc.browser.AppConstants;
@@ -59,6 +60,8 @@ import de.escidoc.core.resources.om.item.component.Component;
 
 @SuppressWarnings("serial")
 public class ItemContent extends Panel {
+
+    private static final String SRC_MAIN_WEBAPP_VAADIN_THEMES_MY_THEME_IMAGES_FILETYPES = "src/main/webapp/VAADIN/themes/myTheme/images/filetypes/";
 
     private static final Logger LOG = LoggerFactory.getLogger(ItemContent.class);
 
@@ -163,7 +166,15 @@ public class ItemContent extends Panel {
     }
 
     private Embedded createEmbeddedImage(final Component comp) {
-        return new Embedded("", new ThemeResource("images/filetypes/" + getFileType(comp) + ".png"));
+        String currentDir = new File(".").getAbsolutePath();
+        File file =
+            new File(currentDir.substring(0, currentDir.length() - 1)
+                + SRC_MAIN_WEBAPP_VAADIN_THEMES_MY_THEME_IMAGES_FILETYPES + getFileType(comp) + ".png");
+        boolean exists = file.exists();
+        if (exists) {
+            return new Embedded("", new ThemeResource("images/filetypes/" + getFileType(comp) + ".png"));
+        }
+        return new Embedded("", new ThemeResource("images/filetypes/article.png"));
     }
 
     private String getFileType(final Component itemProperties) {
@@ -173,7 +184,6 @@ public class ItemContent extends Panel {
         }
         final String[] last = mimeType.split("/");
         final String lastOne = last[last.length - 1];
-
         return lastOne;
     }
 
