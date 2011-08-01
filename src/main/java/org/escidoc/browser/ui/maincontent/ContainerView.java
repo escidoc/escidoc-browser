@@ -345,9 +345,9 @@ public class ContainerView extends VerticalLayout {
                                 }
                             }
                             else {
-                                getWindow().showNotification(
-                                    "The click was over a " + event.getChildComponent().getClass().getCanonicalName()
-                                        + event.getChildComponent().getStyleName());
+                                // getWindow().showNotification(
+                                // "The click was over a " + event.getChildComponent().getClass().getCanonicalName()
+                                // + event.getChildComponent().getStyleName());
                             }
                         }
                         else {

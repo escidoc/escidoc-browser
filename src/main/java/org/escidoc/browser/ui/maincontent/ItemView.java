@@ -283,9 +283,9 @@ public class ItemView extends VerticalLayout {
                                 }
                             }
                             else {
-                                getWindow().showNotification(
-                                    "The click was over a " + event.getChildComponent().getClass().getCanonicalName()
-                                        + event.getChildComponent().getStyleName());
+                                // getWindow().showNotification(
+                                // "The click was over a " + event.getChildComponent().getClass().getCanonicalName()
+                                // + event.getChildComponent().getStyleName());
                             }
                         }
                         else {
@@ -334,6 +334,7 @@ public class ItemView extends VerticalLayout {
                         if (publicStatus.equals("pending")) {
                             cmbStatus.addItem(PublicStatus.PENDING.toString().toLowerCase());
                             cmbStatus.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
+                            deleteResource(cmbStatus);
                             cmbStatus.setNullSelectionItemId(PublicStatus.PENDING.toString().toLowerCase());
                         }
                         else if (publicStatus.equals("submitted")) {
@@ -361,6 +362,33 @@ public class ItemView extends VerticalLayout {
                         cmbStatus.select(Integer.valueOf(1));
 
                         return cmbStatus;
+                    }
+
+                    /**
+                     * Inserts a delete on Pending Status
+                     * 
+                     * @param cmbStatus
+                     */
+                    private void deleteResource(final ComboBox cmbStatus) {
+                        try {
+                            if (repositories
+                                .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_ITEM)
+                                .forResource(resourceProxy.getId()).permitted()) {
+                                cmbStatus.addItem("Delete");
+                            }
+                        }
+                        catch (UnsupportedOperationException e) {
+                            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+                            e.printStackTrace();
+                        }
+                        catch (EscidocClientException e) {
+                            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+                            e.printStackTrace();
+                        }
+                        catch (URISyntaxException e) {
+                            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+                            e.printStackTrace();
+                        }
                     }
 
                     public void addCommentWindow() {

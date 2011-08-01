@@ -152,6 +152,9 @@ public class ItemRepository implements Repository {
         else if (publicStatus.equals("WITHDRAWN")) {
             client.withdraw(item, taskParam);
         }
+        else if (publicStatus.equals("DELETE")) {
+            this.delete(item);
+        }
     }
 
     public void changeLockStatus(final Item item, final String lockStatus, final String comment)
@@ -175,6 +178,12 @@ public class ItemRepository implements Repository {
     @Override
     public void delete(final ResourceModel model) throws EscidocClientException {
         client.delete(model.getId());
+    }
+
+    private void delete(Item item) throws EscidocClientException {
+        System.out.println(item.getClass().toString());
+        client.delete(item.getObjid());
+
     }
 
     public void addMetaData(MetadataRecord metadataRecord, Item item) throws EscidocClientException {
