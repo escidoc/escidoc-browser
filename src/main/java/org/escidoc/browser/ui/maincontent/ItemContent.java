@@ -135,8 +135,10 @@ public class ItemContent extends Panel {
     }
 
     private Link createDownloadLink(final Component comp) {
-        final Link link =
-            new Link("", new ExternalResource(serviceLocation.getEscidocUri() + comp.getContent().getXLinkHref()));
+        final ExternalResource externalResource =
+            new ExternalResource(serviceLocation.getEscidocUri() + comp.getContent().getXLinkHref(), comp
+                .getProperties().getMimeType());
+        final Link link = new Link("", externalResource);
         link.setIcon(new ThemeResource("images/download.png"));
         return link;
     }
