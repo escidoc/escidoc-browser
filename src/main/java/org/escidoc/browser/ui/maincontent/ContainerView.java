@@ -330,7 +330,8 @@ public class ContainerView extends VerticalLayout {
                                     // cssLayout.replaceComponent(oldComponent, swapComponent);
                                     // btnEdit.setVisible(true);
                                 }
-                                else if (child.getDescription() == DESC_STATUS2) {
+                                else if ((child.getDescription() == DESC_STATUS2)
+                                    && (!lblStatus.getValue().equals(status + "withdrawn"))) {
                                     reSwapComponents();
                                     oldComponent = event.getClickedComponent();
                                     swapComponent = editStatus(child.getValue().toString().replace(status, ""));
@@ -414,9 +415,7 @@ public class ContainerView extends VerticalLayout {
                             cmbStatus.addItem(PublicStatus.WITHDRAWN.toString().toLowerCase());
                         }
                         else if (publicStatus.equals("withdrawn")) {
-                            cmbStatus.setNullSelectionItemId(PublicStatus.WITHDRAWN.toString().toLowerCase());
-                            cmbStatus.addItem(PublicStatus.WITHDRAWN.toString().toLowerCase());
-                            cmbStatus.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
+                            // do nothing
                         }
                         else {
                             cmbStatus.addItem(PublicStatus.valueOf(pubStatus));
