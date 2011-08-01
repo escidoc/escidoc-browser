@@ -36,6 +36,7 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.repository.internal.ItemProxyImpl;
+import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.dnd.DragAndDropFileUpload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,8 +57,6 @@ import de.escidoc.core.resources.om.item.component.Component;
 
 @SuppressWarnings("serial")
 public class ItemContent extends Panel {
-
-    private static final String CREATED_ON = "Created on ";
 
     private static final Logger LOG = LoggerFactory.getLogger(ItemContent.class);
 
@@ -144,7 +143,7 @@ public class ItemContent extends Panel {
 
     private Label createLabelForMetadata(final Component comp) {
         final Label labelMetadata =
-            new Label(comp.getContent().getXLinkTitle() + "<br />" + CREATED_ON
+            new Label(comp.getContent().getXLinkTitle() + "<br />" + ViewConstants.CREATED_ON
                 + comp.getProperties().getCreationDate().toString("d.M.y, H:mm") + "<br /> by "
                 + comp.getProperties().getCreatedBy().getXLinkTitle() + "<br /> Mime Type: "
                 + comp.getProperties().getMimeType() + "<br />", Label.CONTENT_RAW);
