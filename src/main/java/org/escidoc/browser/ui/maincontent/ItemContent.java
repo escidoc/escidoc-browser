@@ -44,13 +44,15 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Preconditions;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Link;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.BaseTheme;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.om.item.component.Component;
@@ -134,12 +136,18 @@ public class ItemContent extends Panel {
         return itemProxy.hasComponents().booleanValue();
     }
 
-    private Link createDownloadLink(final Component comp) {
-        final ExternalResource externalResource =
-            new ExternalResource(serviceLocation.getEscidocUri() + comp.getContent().getXLinkHref(), comp
-                .getProperties().getMimeType());
-        final Link link = new Link("", externalResource);
+    private Button createDownloadLink(final Component comp) {
+        final Button link = new Button();
+        link.setStyleName(BaseTheme.BUTTON_LINK);
         link.setIcon(new ThemeResource("images/download.png"));
+        link.addListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(final ClickEvent event) {
+                mainWindow.open(new ExternalResource(serviceLocation.getEscidocUri() + comp.getContent().getXLinkHref(), comp
+                    .getProperties().getMimeType()));
+            }
+        });
         return link;
     }
 
@@ -173,7 +181,7 @@ public class ItemContent extends Panel {
         table.setWidth("100%");
         table.addContainerProperty("Type", Embedded.class, null);
         table.addContainerProperty("Meta", Label.class, null);
-        table.addContainerProperty("Link", Link.class, null);
+        table.addContainerProperty("Link", Button.class, null);
         int rowIndex = 0;
         for (final Component comp : itemProxy.getElements()) {
             table.addItem(new Object[] { createEmbeddedImage(comp), createLabelForMetadata(comp),
