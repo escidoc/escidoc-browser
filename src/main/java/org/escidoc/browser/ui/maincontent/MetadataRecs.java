@@ -121,7 +121,7 @@ public class MetadataRecs {
         final Panel additionalResourcesPanel = lblAddtionalResources();
 
         // Add the components as tabs in the Accordion.
-        metadataRecs.addTab(pnlmdRec, "Metadata Records", null);
+        metadataRecs.addTab(pnlmdRec, "eSciDoc Metadata", null);
         // metadataRecs.addTab(l2, "Relations", null);
         metadataRecs.addTab(additionalResourcesPanel, "Additional Resources", null);
         return metadataRecs;
