@@ -72,7 +72,10 @@ public class VersionHistoryClickListener implements ClickListener {
      */
     public VersionHistoryClickListener(final ItemProxy resourceProxy, final Window mainWindow,
         final EscidocServiceLocation escidocServiceLocation, final Repositories repositories) {
+        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
+        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(escidocServiceLocation, "escidocServiceLocation is null.");
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
 
         itemProxy = resourceProxy;
         this.mainWindow = mainWindow;
@@ -123,7 +126,7 @@ public class VersionHistoryClickListener implements ClickListener {
                 versionHistory += "Event Type: " + event.getEventType() + "<br />";
                 versionHistory += "Event DateTime: " + event.getEventDateTime() + "<br />";
                 versionHistory += "Event Detail: " + event.getEventDetail() + "<br /><hr />";
-                versionHistory += "Linking Agent Identifier: " + event.getLinkingAgentIdentifier() + "<br />";
+                versionHistory += "Linking Agent Identifier: " + "<br />";
                 versionHistory +=
                     "Linking Agent Identifier Type: "
                         + event.getLinkingAgentIdentifier().getLinkingAgentIdentifierType() + "<br />";
@@ -131,7 +134,7 @@ public class VersionHistoryClickListener implements ClickListener {
                     "Linking Agent Identifier Value: "
                         + event.getLinkingAgentIdentifier().getLinkingAgentIdentifierValue() + "<br /><hr />";
 
-                versionHistory += "Linking Object Identifier: " + event.getLinkingObjectIdentifier() + "<br />";
+                versionHistory += "Linking Object Identifier: " + "<br />";
                 versionHistory +=
                     "Linking Object Identifier Type: "
                         + event.getLinkingObjectIdentifier().getLinkingObjectIdentifierType() + "<br />";

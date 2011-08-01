@@ -76,17 +76,11 @@ public class ItemView extends VerticalLayout {
 
     protected static final String STATUS = "Item is ";
 
-    private Component lockComboBox;
-
-    private Component publicStatusComboBox;
-
     private String status;
 
     private static final Logger LOG = LoggerFactory.getLogger(ItemView.class);
 
     private final CssLayout cssLayout = new CssLayout();
-
-    private String resourceIs;
 
     private final int appHeight;
 
@@ -311,7 +305,7 @@ public class ItemView extends VerticalLayout {
                             else if ((swapComponent instanceof ComboBox)
                                 && ((ComboBox) swapComponent).getValue() != null) {
                                 ((Label) oldComponent).setValue(status + ((ComboBox) swapComponent).getValue());
-                                this.addCommentWindow();
+                                addCommentWindow();
                             }
                             cssLayout.replaceComponent(swapComponent, oldComponent);
                             swapComponent = null;
@@ -327,7 +321,7 @@ public class ItemView extends VerticalLayout {
                         else {
                             cmbLockStatus.addItem(LockStatus.UNLOCKED.toString().toLowerCase());
                         }
-                        cmbLockStatus.select(1);
+                        cmbLockStatus.select(Integer.valueOf(1));
                         return cmbLockStatus;
 
                     }
@@ -364,7 +358,7 @@ public class ItemView extends VerticalLayout {
                         else {
                             cmbStatus.addItem(PublicStatus.valueOf(pubStatus));
                         }
-                        cmbStatus.select(1);
+                        cmbStatus.select(Integer.valueOf(1));
 
                         return cmbStatus;
                     }
@@ -373,7 +367,7 @@ public class ItemView extends VerticalLayout {
                         subwindow = new Window(SUBWINDOW_EDIT);
                         subwindow.setModal(true);
                         // Configure the windws layout; by default a VerticalLayout
-                        VerticalLayout layout = (VerticalLayout) subwindow.getContent();
+                        final VerticalLayout layout = (VerticalLayout) subwindow.getContent();
                         layout.setMargin(true);
                         layout.setSpacing(true);
                         layout.setSizeUndefined();
@@ -382,20 +376,20 @@ public class ItemView extends VerticalLayout {
                         editor.setRequired(true);
                         editor.setRequiredError("The Field may not be empty.");
 
-                        HorizontalLayout hl = new HorizontalLayout();
+                        final HorizontalLayout hl = new HorizontalLayout();
 
-                        Button close = new Button("Update", new Button.ClickListener() {
+                        final Button close = new Button("Update", new Button.ClickListener() {
                             // inline click-listener
                             @Override
-                            public void buttonClick(ClickEvent event) {
+                            public void buttonClick(final ClickEvent event) {
                                 // close the window by removing it from the parent window
                                 updateItem(editor.getValue().toString());
                                 (subwindow.getParent()).removeWindow(subwindow);
                             }
                         });
-                        Button cancel = new Button("Cancel", new Button.ClickListener() {
+                        final Button cancel = new Button("Cancel", new Button.ClickListener() {
                             @Override
-                            public void buttonClick(ClickEvent event) {
+                            public void buttonClick(final ClickEvent event) {
                                 (subwindow.getParent()).removeWindow(subwindow);
                             }
                         });
@@ -408,7 +402,8 @@ public class ItemView extends VerticalLayout {
                         mainWindow.addWindow(subwindow);
                     }
 
-                    private void updatePublicStatus(Item item, String comment) throws EscidocClientException {
+                    private void updatePublicStatus(final Item item, final String comment)
+                        throws EscidocClientException {
                         Preconditions.checkNotNull(item, "Item is null");
                         Preconditions.checkNotNull(comment, "Comment is null");
                         // Update PublicStatus if there is a change
@@ -419,7 +414,7 @@ public class ItemView extends VerticalLayout {
                         }
                     }
 
-                    private void updateLockStatus(Item item, String comment) throws EscidocClientException {
+                    private void updateLockStatus(final Item item, final String comment) throws EscidocClientException {
 
                         // Update LockStatus if there is a change
                         if (!resourceProxy.getLockStatus().equals(
@@ -429,7 +424,7 @@ public class ItemView extends VerticalLayout {
                         }
                     }
 
-                    private void updateItem(String comment) {
+                    private void updateItem(final String comment) {
                         Item item;
                         try {
                             item = repositories.item().findItemById(resourceProxy.getId());
