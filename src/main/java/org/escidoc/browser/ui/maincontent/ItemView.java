@@ -231,7 +231,7 @@ public class ItemView extends VerticalLayout {
     private void bindNametoHeader() {
         final Label headerContext = new Label(ViewConstants.RESOURCE_NAME + resourceProxy.getName());
         headerContext.setDescription("header");
-        headerContext.setStyleName("h1 fullwidth");
+        headerContext.setStyleName("h2 fullwidth");
         cssLayout.addComponent(headerContext);
     }
 

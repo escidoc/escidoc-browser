@@ -285,7 +285,7 @@ public class ContainerView extends VerticalLayout {
      */
     private void bindNameToHeader() {
         final Label headerContext = new Label(RESOURCE_NAME + resourceProxy.getName());
-        headerContext.setStyleName("h1 fullwidth floatleft");
+        headerContext.setStyleName("h2 fullwidth floatleft");
         headerContext.setWidth("80%");
         headerContext.setDescription(DESC_HEADER);
         cssLayout.addComponent(headerContext);

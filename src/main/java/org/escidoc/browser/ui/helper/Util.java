@@ -150,6 +150,7 @@ public final class Util {
         final StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("(top-level-containers=true or top-level-items=true) and \"/properties/context/id\"=");
         stringBuilder.append(id);
+        System.out.println("#+#######################" + stringBuilder);
         return stringBuilder.toString();
     }
 }
