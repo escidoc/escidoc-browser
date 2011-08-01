@@ -144,8 +144,9 @@ public class ItemContent extends Panel {
 
             @Override
             public void buttonClick(final ClickEvent event) {
-                mainWindow.open(new ExternalResource(serviceLocation.getEscidocUri() + comp.getContent().getXLinkHref(), comp
-                    .getProperties().getMimeType()));
+                mainWindow.open(new ExternalResource(
+                    serviceLocation.getEscidocUri() + comp.getContent().getXLinkHref(), comp
+                        .getProperties().getMimeType()));
             }
         });
         return link;
@@ -172,6 +173,7 @@ public class ItemContent extends Panel {
         }
         final String[] last = mimeType.split("/");
         final String lastOne = last[last.length - 1];
+
         return lastOne;
     }
 

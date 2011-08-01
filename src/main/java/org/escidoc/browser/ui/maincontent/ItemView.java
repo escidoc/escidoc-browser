@@ -334,8 +334,9 @@ public class ItemView extends VerticalLayout {
                         if (publicStatus.equals("pending")) {
                             cmbStatus.addItem(PublicStatus.PENDING.toString().toLowerCase());
                             cmbStatus.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
-                            deleteResource(cmbStatus);
                             cmbStatus.setNullSelectionItemId(PublicStatus.PENDING.toString().toLowerCase());
+
+                            deleteResource(cmbStatus);
                         }
                         else if (publicStatus.equals("submitted")) {
                             cmbStatus.setNullSelectionItemId(PublicStatus.SUBMITTED.toString().toLowerCase());

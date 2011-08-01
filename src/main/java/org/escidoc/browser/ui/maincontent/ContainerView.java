@@ -397,6 +397,8 @@ public class ContainerView extends VerticalLayout {
                             cmbStatus.addItem(PublicStatus.PENDING.toString().toLowerCase());
                             cmbStatus.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
                             cmbStatus.setNullSelectionItemId(PublicStatus.PENDING.toString().toLowerCase());
+
+                            deleteResource(cmbStatus);
                         }
                         else if (publicStatus.equals("submitted")) {
                             cmbStatus.setNullSelectionItemId(PublicStatus.SUBMITTED.toString().toLowerCase());
@@ -423,6 +425,34 @@ public class ContainerView extends VerticalLayout {
                         cmbStatus.select(1);
 
                         return cmbStatus;
+                    }
+
+                    /**
+                     * Inserts a delete on Pending Status
+                     * 
+                     * @param cmbStatus
+                     */
+                    private void deleteResource(ComboBox cmbStatus) {
+                        try {
+                            if (repositories
+                                .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_CONTAINER)
+                                .forResource(resourceProxy.getId()).permitted()) {
+                                cmbStatus.addItem("Delete");
+                            }
+                        }
+                        catch (UnsupportedOperationException e) {
+                            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+                            e.printStackTrace();
+                        }
+                        catch (EscidocClientException e) {
+                            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+                            e.printStackTrace();
+                        }
+                        catch (URISyntaxException e) {
+                            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+                            e.printStackTrace();
+                        }
+
                     }
 
                     public void addCommentWindow() {

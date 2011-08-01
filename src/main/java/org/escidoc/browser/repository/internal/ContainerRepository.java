@@ -201,6 +201,9 @@ public class ContainerRepository implements Repository {
         else if (publicStatus.equals("WITHDRAWN")) {
             client.withdraw(container, taskParam);
         }
+        else if (publicStatus.equals("DELETE")) {
+            this.delete(container);
+        }
     }
 
     public void changeLockStatus(final Container container, final String lockStatus, final String comment)
@@ -221,6 +224,12 @@ public class ContainerRepository implements Repository {
     @Override
     public void delete(final ResourceModel model) throws EscidocClientException {
         client.delete(model.getId());
+    }
+
+    private void delete(Container container) throws EscidocClientException {
+        System.out.println(container.getClass().toString() + container.getObjid());
+        client.delete(container.getObjid());
+
     }
 
     public void updateMetaData(MetadataRecord metadata, Container container) throws EscidocClientException {
