@@ -107,10 +107,4 @@ public class EscidocServiceLocationImpl implements EscidocServiceLocation {
         return new URL(escidocUri);
     }
 
-    @Override
-    public URI getAppUri() {
-        return appUri;
-
-    }
-
 }
