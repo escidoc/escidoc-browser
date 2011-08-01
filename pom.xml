@@ -256,8 +256,8 @@
 	<developers>
 		<developer>
 			<id>frs</id>
-			<name>Frank S.</name>
-			<email>frank.s@fiz-karlsruhe.de</email>
+			<name>Frank Schwichtenberg</name>
+			<email>frank.schwichtenberg@fiz-karlsruhe.de</email>
 			<organization>FIZ Karlsruhe</organization>
 			<organizationUrl>http://www.fiz-karlsruhe.de</organizationUrl>
 			<roles>
