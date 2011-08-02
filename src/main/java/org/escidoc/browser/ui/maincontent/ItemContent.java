@@ -61,7 +61,8 @@ import de.escidoc.core.resources.om.item.component.Component;
 @SuppressWarnings("serial")
 public class ItemContent extends Panel {
 
-    private static final String SRC_MAIN_WEBAPP_VAADIN_THEMES_MY_THEME_IMAGES_FILETYPES = "src/main/webapp/VAADIN/themes/myTheme/images/filetypes/";
+    private static final String SRC_MAIN_WEBAPP_VAADIN_THEMES_MY_THEME_IMAGES_FILETYPES =
+        "src/main/webapp/VAADIN/themes/myTheme/images/filetypes/";
 
     private static final Logger LOG = LoggerFactory.getLogger(ItemContent.class);
 
@@ -102,12 +103,20 @@ public class ItemContent extends Panel {
         if (hasComponents()) {
             verticalLayout.addComponent(buildTable());
         }
+        else {
+            Label lblNoComponents =
+                new Label(
+                    "No components in this Item. You can drag n'drop some file from your computer to this box to add new components!");
+            lblNoComponents.setWidth("90%");
+            lblNoComponents.setStyleName("skybluetext");
+            verticalLayout.addComponent(lblNoComponents);
+        }
     }
 
     private void wrap(final VerticalLayout verticalLayout) {
         try {
             if (userIsPermittedToUpdate()) {
-                verticalLayout.setHeight("750px");
+                verticalLayout.setHeight(mainWindow.getHeight() * 60 / 100 + "px");
                 verticalLayout.setWidth("100%");
                 final DragAndDropFileUpload dragAndDropFileUpload =
                     new DragAndDropFileUpload(repositories, itemProxy, this, verticalLayout);
