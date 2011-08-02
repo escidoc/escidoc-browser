@@ -186,7 +186,7 @@ public class SearchResultsView extends VerticalLayout {
 
             final Item item = container.addItem(variablesForTheTab);
             item.getItemProperty("Type").setValue(
-                new Label("<img src= \"/browser/VAADIN/themes/myTheme/images/" + "Container.png\" />",
+                new Label("<img src= \"/browser/VAADIN/themes/myTheme/images/" + strResourceType + ".png\" />",
                     Label.CONTENT_RAW));
             item.getItemProperty("Name").setValue(resourceProxy.getName());
 
