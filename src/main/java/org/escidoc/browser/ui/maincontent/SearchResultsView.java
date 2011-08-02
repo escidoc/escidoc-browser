@@ -237,15 +237,19 @@ public class SearchResultsView extends VerticalLayout {
 
             @Override
             public void valueChange(final ValueChangeEvent event) {
-                final ResourceModelFactory rmf = new ResourceModelFactory(repositories);
-                ResourceProxy resourceProxy = null;
                 final Object[] variablesForTheTab = (Object[]) tblPagedResults.getValue();
+                if (variablesForTheTab == null) {
+                    return;
+                }
 
-                if (variablesForTheTab[0].equals("Container")) {
+                final ResourceModelFactory resourceModelFactory = new ResourceModelFactory(repositories);
+                ResourceProxy resourceProxy = null;
 
+                if (variablesForTheTab[0].equals(ResourceType.CONTAINER.asLabel())) {
                     try {
                         resourceProxy =
-                            (ContainerProxyImpl) rmf.find((String) variablesForTheTab[1], ResourceType.CONTAINER);
+                            (ContainerProxyImpl) resourceModelFactory.find((String) variablesForTheTab[1],
+                                ResourceType.CONTAINER);
                         cmp =
                             new ContainerView(serviceLocation, mainSite, resourceProxy, mainSite.getWindow(), mainSite
                                 .getCurrentUser(), repositories);
@@ -254,9 +258,11 @@ public class SearchResultsView extends VerticalLayout {
                         showerror();
                     }
                 }
-                else if (variablesForTheTab[0].equals("Item")) {
+                else if (variablesForTheTab[0].equals(ResourceType.ITEM.asLabel())) {
                     try {
-                        resourceProxy = (ItemProxyImpl) rmf.find((String) variablesForTheTab[1], ResourceType.ITEM);
+                        resourceProxy =
+                            (ItemProxyImpl) resourceModelFactory
+                                .find((String) variablesForTheTab[1], ResourceType.ITEM);
                         cmp =
                             new ItemView(serviceLocation, repositories, mainSite, resourceProxy, mainSite.getWindow(),
                                 currentUser);
@@ -265,10 +271,11 @@ public class SearchResultsView extends VerticalLayout {
                         showerror();
                     }
                 }
-                else if (variablesForTheTab[0].equals("Context")) {
+                else if (variablesForTheTab[0].equals(ResourceType.CONTEXT.asLabel())) {
                     try {
                         resourceProxy =
-                            (ContextProxyImpl) rmf.find((String) variablesForTheTab[1], ResourceType.CONTEXT);
+                            (ContextProxyImpl) resourceModelFactory.find((String) variablesForTheTab[1],
+                                ResourceType.CONTEXT);
                         cmp =
                             new ContextView(serviceLocation, mainSite, resourceProxy, mainSite.getWindow(), mainSite
                                 .getCurrentUser(), repositories);
