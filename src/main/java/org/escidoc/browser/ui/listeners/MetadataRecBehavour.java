@@ -77,12 +77,7 @@ public class MetadataRecBehavour implements ClickListener {
         builder.append(metadataRecord.getName());
         builder.append("<br />");
         builder.append(LINK);
-        builder.append("<a href='");
-        builder.append(escidocServiceLocation.getEscidocUri());
-        builder.append(metadataRecord.getXLinkHref());
-        builder.append("' target='_blank'>");
         builder.append(metadataRecord.getXLinkTitle());
-        builder.append("</a><br />" + CONTENT);
         String mtRecinfo = builder.toString();
 
         final Label msgWindow = new Label(mtRecinfo, Label.CONTENT_RAW);

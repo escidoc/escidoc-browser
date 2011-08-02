@@ -110,15 +110,12 @@ public class VersionHistoryClickListener implements ClickListener {
         final Collection<Version> versions = vH.getVersions();
         String versionHistory = "";
         for (final Version version : versions) {
-            versionHistory +=
-                "<strong>Version: <a href=\"" + escidocServiceLocation.getEscidocUri() + version.getXLinkHref()
-                    + "\" target=\"_blank\">" + version.getVersionNumber() + "</a></strong><br />";
+            versionHistory += "<strong>Version: " + version.getVersionNumber() + "</strong><br />";
             versionHistory += "TimeStamp: " + version.getTimestamp() + "<br />";
             versionHistory += "Version Status: " + version.getVersionStatus() + "<br />";
             versionHistory += "Comment: " + version.getComment() + "<br /><hr/>";
             final Collection<Event> events = version.getEvents();
             for (final Event event : events) {
-                versionHistory += "event :  @xmlID=" + event.getXmlID() + "<br />";
                 versionHistory +=
                     "Event Identifier Type: " + event.getEventIdentifier().getEventIdentifierType() + "<br />";
                 versionHistory +=

@@ -148,6 +148,7 @@ public final class Util {
     }
 
     private static String topLevelContainersAndItems(final String id) {
+        System.out.println("*******************+ID " + id);
         final StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("(top-level-containers=true or top-level-items=true) and \"/properties/context/id\"=");
         stringBuilder.append(id);

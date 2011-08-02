@@ -117,3 +117,6 @@ font-size:x-small;
 .skybluetext{
 	color:#blue;
 }
+.i-tree-node-caption span {
+    white-space: normal;
+}
