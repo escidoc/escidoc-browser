@@ -80,10 +80,9 @@ public class SearchResultsView extends VerticalLayout {
 
     private final SearchRetrieveResponse results;
 
-    // this is used for the view (ItemView)
-    private Component cmp;
-
     private CurrentUser currentUser;
+
+    private ResourceModelFactory resourceModelFactory;
 
     /**
      * The constructor should first build the main layout, set the composition root and then do any custom
@@ -106,6 +105,8 @@ public class SearchResultsView extends VerticalLayout {
         this.serviceLocation = serviceLocation;
         this.repositories = repositories;
         this.currentUser = currentUser;
+
+        resourceModelFactory = new ResourceModelFactory(repositories);
         final CssLayout cssLayout = configureLayout();
         final SearchRepositoryImpl srRep = new SearchRepositoryImpl(serviceLocation);
         results = srRep.simpleSearch(searchString.trim());
@@ -241,18 +242,22 @@ public class SearchResultsView extends VerticalLayout {
                 if (variablesForTheTab == null) {
                     return;
                 }
+                openSelectedSearchResult(variablesForTheTab);
+            }
 
-                final ResourceModelFactory resourceModelFactory = new ResourceModelFactory(repositories);
-                ResourceProxy resourceProxy = null;
+            private void openSelectedSearchResult(final Object[] variablesForTheTab) {
+                mainSite.openTab(buildResourceView(variablesForTheTab), getTabName(variablesForTheTab));
+            }
 
+            private String getTabName(final Object[] variablesForTheTab) {
+                return (String) variablesForTheTab[2];
+            }
+
+            private Component buildResourceView(final Object[] variablesForTheTab) {
                 if (variablesForTheTab[0].equals(ResourceType.CONTAINER.asLabel())) {
                     try {
-                        resourceProxy =
-                            (ContainerProxyImpl) resourceModelFactory.find((String) variablesForTheTab[1],
-                                ResourceType.CONTAINER);
-                        cmp =
-                            new ContainerView(serviceLocation, mainSite, resourceProxy, mainSite.getWindow(), mainSite
-                                .getCurrentUser(), repositories);
+                        return new ContainerView(serviceLocation, mainSite, find(variablesForTheTab,
+                            ResourceType.CONTAINER), mainSite.getWindow(), mainSite.getCurrentUser(), repositories);
                     }
                     catch (final EscidocClientException e) {
                         showerror();
@@ -260,12 +265,8 @@ public class SearchResultsView extends VerticalLayout {
                 }
                 else if (variablesForTheTab[0].equals(ResourceType.ITEM.asLabel())) {
                     try {
-                        resourceProxy =
-                            (ItemProxyImpl) resourceModelFactory
-                                .find((String) variablesForTheTab[1], ResourceType.ITEM);
-                        cmp =
-                            new ItemView(serviceLocation, repositories, mainSite, resourceProxy, mainSite.getWindow(),
-                                currentUser);
+                        return new ItemView(serviceLocation, repositories, mainSite, find(variablesForTheTab,
+                            ResourceType.ITEM), mainSite.getWindow(), currentUser);
                     }
                     catch (final EscidocClientException e) {
                         showerror();
@@ -273,18 +274,20 @@ public class SearchResultsView extends VerticalLayout {
                 }
                 else if (variablesForTheTab[0].equals(ResourceType.CONTEXT.asLabel())) {
                     try {
-                        resourceProxy =
-                            (ContextProxyImpl) resourceModelFactory.find((String) variablesForTheTab[1],
-                                ResourceType.CONTEXT);
-                        cmp =
-                            new ContextView(serviceLocation, mainSite, resourceProxy, mainSite.getWindow(), mainSite
+                        return new ContextView(serviceLocation, mainSite,
+                            find(variablesForTheTab, ResourceType.CONTEXT), mainSite.getWindow(), mainSite
                                 .getCurrentUser(), repositories);
                     }
                     catch (final EscidocClientException e) {
                         showerror();
                     }
                 }
-                mainSite.openTab(cmp, (String) variablesForTheTab[2]);
+                return new VerticalLayout();
+            }
+
+            private ResourceProxy find(final Object[] variablesForTheTab, final ResourceType resourceType)
+                throws EscidocClientException {
+                return (ResourceProxy) resourceModelFactory.find((String) variablesForTheTab[1], resourceType);
             }
         });
         return tblPagedResults;
