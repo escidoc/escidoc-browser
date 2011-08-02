@@ -188,7 +188,7 @@ public class SearchResultsView extends VerticalLayout {
             item.getItemProperty("Type").setValue(
                 new Label("<img src= \"/browser/VAADIN/themes/myTheme/images/" + "Container.png\" />",
                     Label.CONTENT_RAW));
-            item.getItemProperty("Name").setValue(resourceProxy.getId());
+            item.getItemProperty("Name").setValue(resourceProxy.getName());
 
             item.getItemProperty(DATE_CREATED).setValue(resourceProxy.getCreatedOn());
         }
