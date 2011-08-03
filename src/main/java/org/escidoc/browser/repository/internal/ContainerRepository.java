@@ -42,11 +42,14 @@ import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.internal.HasNoNameResource;
 import org.escidoc.browser.repository.Repository;
+import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.helper.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.ContainerHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -67,12 +70,15 @@ public class ContainerRepository implements Repository {
 
     private final ContainerHandlerClientInterface client;
 
+    private final Window mainWindow;
+
     static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
 
-    ContainerRepository(final EscidocServiceLocation escidocServiceLocation) {
+    ContainerRepository(final EscidocServiceLocation escidocServiceLocation, Window mainWindow) {
         Preconditions
             .checkNotNull(escidocServiceLocation, "escidocServiceLocation is null: %s", escidocServiceLocation);
         client = new ContainerHandlerClient(escidocServiceLocation.getEscidocUri());
+        this.mainWindow = mainWindow;
     }
 
     @Override
@@ -226,9 +232,16 @@ public class ContainerRepository implements Repository {
         client.delete(model.getId());
     }
 
-    private void delete(Container container) throws EscidocClientException {
+    private void delete(Container container) {
         System.out.println(container.getClass().toString() + container.getObjid());
-        client.delete(container.getObjid());
+        try {
+            client.delete(container.getObjid());
+        }
+        catch (EscidocClientException e) {
+            mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
+                Notification.TYPE_ERROR_MESSAGE));
+            e.printStackTrace();
+        }
 
     }
 

@@ -49,7 +49,8 @@ import de.escidoc.core.resources.sb.search.SearchRetrieveResponse;
 public class SearchRepositoryImpl {
     private static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
 
-    private static final String ESCIDOCALL = "escidoc_all";
+    // private static final String SRCH_INDEX = "escidoc_all";
+    private static final String SRCH_INDEX = "item_container_admin";
 
     private final SearchHandlerClientInterface client;
 
@@ -96,17 +97,21 @@ public class SearchRepositoryImpl {
         }
 
         // escidoc.fulltext, escidoc.metadata escidoc.context.name escidoc.creator.name.
-        final String queryString = "1=1 ";
+        // final String queryString = "1=1 ";
+        // final StringBuffer buf = new StringBuffer();
+        // for (final String string : allMatches) {
+        // buf.append(" or escidoc.any-title=\"" + string + "\" or escidoc.fulltext=\"" + string
+        // + "\" or escidoc.metadata=\"" + string + "\" or escidoc.context.name=\"" + string
+        // + "\" or escidoc.creator.name=\"" + string + "\"");
+        // }
+        final String queryString = "";
         final StringBuffer buf = new StringBuffer();
         for (final String string : allMatches) {
-            buf.append(" or escidoc.any-title=\"" + string + "\" or escidoc.fulltext=\"" + string
-                + "\" or escidoc.metadata=\"" + string + "\" or escidoc.context.name=\"" + string
-                + "\" or escidoc.creator.name=\"" + string + "\"");
+            buf.append(" \"/properties/name\"=\"" + string + "\" or \"/fulltext\"=\"" + string + "\"");
         }
-        // queryString += queryString + "&maximumRecords=100";
         try {
             // "escidoc.any-title"=b*
-            return client.search(queryString + buf.toString(), 0, 1000, "sort.escidoc.pid", ESCIDOCALL);
+            return client.search(queryString + buf.toString(), 0, 1000, "sort.escidoc.pid", SRCH_INDEX);
         }
         catch (final EscidocClientException e) {
             LOG.debug("EscidocClientException" + e.getMessage());
@@ -154,7 +159,7 @@ public class SearchRepositoryImpl {
         }
         try {
             return client.search(query + buf.toString(), Integer.valueOf(0), Integer.valueOf(1000), "sort.escidoc.pid",
-                ESCIDOCALL);
+                SRCH_INDEX);
         }
         catch (final EscidocClientException e) {
             LOG.debug("EscidocClientException");

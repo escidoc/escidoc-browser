@@ -40,8 +40,11 @@ import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.internal.HasNoNameResource;
 import org.escidoc.browser.repository.Repository;
+import org.escidoc.browser.ui.ViewConstants;
 
 import com.google.common.base.Preconditions;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.ContainerHandlerClient;
 import de.escidoc.core.client.ItemHandlerClient;
@@ -65,10 +68,13 @@ public class ItemRepository implements Repository {
 
     private final ContainerHandlerClientInterface clientContainer;
 
-    public ItemRepository(final EscidocServiceLocation serviceLocation) {
+    private final Window mainWindow;
+
+    public ItemRepository(final EscidocServiceLocation serviceLocation, Window mainWindow) {
         Preconditions.checkNotNull(serviceLocation, "escidocServiceLocation is null: %s", serviceLocation);
         client = new ItemHandlerClient(serviceLocation.getEscidocUri());
         clientContainer = new ContainerHandlerClient(serviceLocation.getEscidocUri());
+        this.mainWindow = mainWindow;
     }
 
     @Override
@@ -180,9 +186,15 @@ public class ItemRepository implements Repository {
         client.delete(model.getId());
     }
 
-    private void delete(Item item) throws EscidocClientException {
+    private void delete(Item item) {
         System.out.println(item.getClass().toString());
-        client.delete(item.getObjid());
+        try {
+            client.delete(item.getObjid());
+        }
+        catch (EscidocClientException e) {
+            mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
+                Notification.TYPE_ERROR_MESSAGE));
+        }
 
     }
 

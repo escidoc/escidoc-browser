@@ -141,7 +141,7 @@ public class BrowserApplication extends Application {
         final EscidocServiceLocation serviceLocation, final Window mainWindow, final WindowResizeObserver observer)
         throws EscidocClientException, MalformedURLException {
 
-        final Repositories repositories = new RepositoriesImpl(serviceLocation).createAllRepositories();
+        final Repositories repositories = new RepositoriesImpl(serviceLocation, mainWindow).createAllRepositories();
         repositories.loginWith(getCurrentUser().getToken());
         final MainSite mainSite = new MainSite(mainWindow, serviceLocation, this, getCurrentUser(), repositories);
         mainSite.setHeight(getApplicationHeight() + "px");
