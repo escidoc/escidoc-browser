@@ -40,8 +40,6 @@ import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.navigation.menubar.ShowAddViewCommand;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.event.Action;
@@ -51,8 +49,6 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
 final class ActionHandlerImpl implements Action.Handler {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ActionHandlerImpl.class);
 
     private final Window mainWindow;
 
@@ -81,9 +77,15 @@ final class ActionHandlerImpl implements Action.Handler {
                 return new Action[] { ActionList.ACTION_ADD_CONTAINER, ActionList.ACTION_ADD_ITEM,
                     ActionList.ACTION_DELETE_CONTAINER };
             }
+
             if (isContext(target) && allowedToCreateContainer()) {
                 return new Action[] { ActionList.ACTION_ADD_CONTAINER, ActionList.ACTION_ADD_ITEM };
             }
+
+            if (isItem(target) && allowedToDeleteItem(((ItemModel) target).getId())) {
+                return new Action[] { ActionList.ACTION_DELETE_ITEM };
+            }
+
             return new Action[] {};
         }
         catch (final EscidocClientException e) {
@@ -93,6 +95,11 @@ final class ActionHandlerImpl implements Action.Handler {
             getWindow().showNotification(e.getMessage());
         }
         return new Action[] {};
+    }
+
+    private boolean allowedToDeleteItem(final String id) throws EscidocClientException, URISyntaxException {
+        return repositories
+            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_ITEM).forResource(id).permitted();
     }
 
     private boolean isContext(final Object target) {
