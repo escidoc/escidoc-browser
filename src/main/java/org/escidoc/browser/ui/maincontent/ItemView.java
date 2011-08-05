@@ -108,6 +108,8 @@ public class ItemView extends VerticalLayout {
 
     private Window subwindow;
 
+	private MainSite mainSite;
+
     public ItemView(final EscidocServiceLocation serviceLocation, final Repositories repositories,
         final MainSite mainSite, final ResourceProxy resourceProxy, final Window mainWindow,
         final CurrentUser currentUser) {
@@ -121,6 +123,7 @@ public class ItemView extends VerticalLayout {
         this.resourceProxy = (ItemProxyImpl) resourceProxy;
         this.repositories = repositories;
         this.mainWindow = mainWindow;
+        this.mainSite = mainSite;
         this.serviceLocation = serviceLocation;
         appHeight = mainSite.getApplicationHeight();
         this.currentUser = currentUser;
@@ -138,7 +141,7 @@ public class ItemView extends VerticalLayout {
 
         buildLeftCell(new ItemContent(repositories, resourceProxy, serviceLocation, mainWindow, currentUser));
         buildRightCell(new MetadataRecsItem(resourceProxy, accordionHeight, mainWindow, serviceLocation, repositories,
-            currentUser).asAccord());
+            currentUser, mainSite).asAccord());
 
         addComponent(cssLayout);
     }

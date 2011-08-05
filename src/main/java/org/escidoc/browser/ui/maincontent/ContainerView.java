@@ -161,7 +161,7 @@ public class ContainerView extends VerticalLayout {
 
     private void addMetadataRecords() {
         final MetadataRecs metaData =
-            new MetadataRecs(resourceProxy, accordionHeight, mainWindow, serviceLocation, repositories, currentUser);
+            new MetadataRecs(resourceProxy, accordionHeight, mainWindow, serviceLocation, repositories, currentUser,mainSite);
         rightCell(metaData.asAccord());
     }
 

@@ -30,119 +30,199 @@ package org.escidoc.browser.ui.listeners;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ContainerProxy;
+import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.Repository;
+import org.escidoc.browser.ui.MainSite;
+import org.escidoc.browser.ui.maincontent.ContainerView;
+import org.escidoc.browser.ui.maincontent.ItemView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Layout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.themes.BaseTheme;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.ResourceType;
 import de.escidoc.core.resources.common.Relation;
 import de.escidoc.core.resources.common.Relations;
 
 @SuppressWarnings("serial")
 public class RelationsClickListener implements ClickListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RelationsClickListener.class);
+	private static final Logger LOG = LoggerFactory
+			.getLogger(RelationsClickListener.class);
 
-    private ItemProxy itemProxy;
+	private ItemProxy itemProxy;
 
-    private final Window mainWindow;
+	private final Window mainWindow;
 
-    private ContainerProxy containerProxy;
+	private ContainerProxy containerProxy;
 
-    private String content = "No information available";
+	private Layout content;
 
-    final private Repository itemOrContainerRepository;
+	final private Repository itemOrContainerRepository;
 
-    /**
-     * Container for the ItemProxy case
-     * 
-     * @param resourceProxy
-     * @param mainWindow
-     * @param repositories
-     * @param escidocServiceLocation
-     */
-    public RelationsClickListener(final ItemProxy resourceProxy, final Window mainWindow,
-        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories) {
-        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
-        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
-        Preconditions
-            .checkNotNull(escidocServiceLocation, "escidocServiceLocation is null: %s", escidocServiceLocation);
-        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
-        itemProxy = resourceProxy;
-        this.mainWindow = mainWindow;
-        itemOrContainerRepository = repositories.item();
-    }
+	private ResourceType type;
 
-    /**
-     * Constructor for the ContainerProxy
-     * 
-     * @param resourceProxy
-     * @param mainWindow
-     * @param escidocServiceLocation
-     * @param repositories
-     */
-    public RelationsClickListener(final ContainerProxy resourceProxy, final Window mainWindow,
-        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories) {
-        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
-        containerProxy = resourceProxy;
-        this.mainWindow = mainWindow;
-        itemOrContainerRepository = repositories.container();
-    }
+	private EscidocServiceLocation escidocServiceLocation;
 
-    public String getRelations(final Repository cr, final String id) throws EscidocClientException {
+	private Repositories repositories;
 
-        final Relations relations = cr.getRelations(id);
+	private CurrentUser currentUser;
 
-        for (final Relation relation : relations) {
-            LOG.debug("relation title: " + relation.getXLinkTitle());
-        }
+	private MainSite mainSite;
 
-        return AppConstants.EMPTY_STRING;
+	protected Component cmpView;
 
-    }
+	/**
+	 * Container for the ItemProxy case
+	 * 
+	 * @param resourceProxy
+	 * @param mainWindow
+	 * @param repositories
+	 * @param escidocServiceLocation
+	 */
+	public RelationsClickListener(final ItemProxy resourceProxy,
+			final Window mainWindow,
+			final EscidocServiceLocation escidocServiceLocation,
+			final Repositories repositories, final MainSite mainSite, final CurrentUser currentUser) {
+		Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s",
+				resourceProxy);
+		Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s",
+				mainWindow);
+		Preconditions.checkNotNull(escidocServiceLocation,
+				"escidocServiceLocation is null: %s", escidocServiceLocation);
+		
+		Preconditions.checkNotNull(repositories, "repositories is null: %s",
+				repositories);
+		Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
+		itemProxy = resourceProxy;
+		Preconditions.checkNotNull(itemProxy, "resourceProxy is null: %s",
+				itemProxy);
+		this.mainWindow = mainWindow;
+		this.currentUser=currentUser;
+		this.mainSite=mainSite;
+		this.escidocServiceLocation = escidocServiceLocation;
+		itemOrContainerRepository = repositories.item();
+	}
 
-    @Override
-    public void buttonClick(final ClickEvent event) {
-        final Window subwindow = new Window("Relations");
-        subwindow.setWidth("600px");
-        subwindow.setModal(true);
+	/**
+	 * Constructor for the ContainerProxy
+	 * 
+	 * @param resourceProxy
+	 * @param mainWindow
+	 * @param escidocServiceLocation
+	 * @param repositories
+	 * @param currentUser 
+	 * @param mainSite 
+	 */
+	public RelationsClickListener(final ContainerProxy resourceProxy,
+			final Window mainWindow,
+			final EscidocServiceLocation escidocServiceLocation,
+			final Repositories repositories, CurrentUser currentUser, MainSite mainSite) {
+		Preconditions.checkNotNull(repositories, "repositories is null: %s",
+				repositories);
+        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null.");
 
-        String id = "";
-        if (event.getButton().getCaption().equals("Container Content Relations")) {
-            id = containerProxy.getId();
-        }
-        else if (event.getButton().getCaption().equals("Item Content Relations")) {
-            id = itemProxy.getId();
-        }
-        else {
-            throw new RuntimeException("Bug: unexpected event button: " + event.getButton());
-        }
+		containerProxy = resourceProxy;
+		this.mainWindow = mainWindow;
+		this.repositories=repositories;
+		this.currentUser=currentUser;
+		this.mainSite=mainSite;
+		itemOrContainerRepository = repositories.container();
+	}
 
-        try {
-            content = getRelations(itemOrContainerRepository, id);
-        }
-        catch (final EscidocClientException e) {
-            content = "No information";
-        }
+	public Layout getRelations(final Repository cr, final String id)
+			throws EscidocClientException {
 
-        final Label msgWindow = new Label(content, Label.CONTENT_RAW);
+		final Relations relations = cr.getRelations(id);
+		HorizontalLayout hl = new HorizontalLayout();
+		
+		for (final Relation relation : relations) {
+			String predicate;
+			if(relation.getPredicate().indexOf("#")!=-1){
+				predicate = relation.getPredicate().substring(relation.getPredicate().lastIndexOf('#'),relation.getPredicate().length());
+			}else{
+				predicate = relation.getPredicate();
+			}
+			
+			String prefixPath = relation.getXLinkHref().substring(0, relation.getXLinkHref().lastIndexOf('/'));
+			type = ResourceType.getValue(prefixPath);
+            
+			Button btnRelation = new Button(itemProxy.getName()
+					+ " relation as " + predicate + " of "
+					+ relation.getXLinkTitle());
+			btnRelation.setStyleName(BaseTheme.BUTTON_LINK);
+			btnRelation.addListener(new ClickListener() {
+				
+				@Override
+				public void buttonClick(ClickEvent event) {
+					if (type.name().equals("CONTAINER")){
+						try {
+						 cmpView = new ContainerView(escidocServiceLocation, mainSite, containerProxy, mainWindow, currentUser, repositories);
+						} catch (EscidocClientException e) {
+							mainWindow.showNotification(e.getLocalizedMessage());
+							e.printStackTrace();
+						}
+					}else if (type.name().equals("ITEM")){
+						cmpView = new ItemView(escidocServiceLocation, repositories, mainSite, itemProxy, mainWindow, currentUser);
+					}
+					mainSite.openTab(cmpView, relation.getXLinkTitle());
 
-        subwindow.addComponent(msgWindow);
-        if (subwindow.getParent() != null) {
-            mainWindow.showNotification("Window is already open");
-        }
-        else {
-            mainWindow.addWindow(subwindow);
-        }
-    }
+				}
+			});
+			hl.addComponent(btnRelation);
+			LOG.debug("relation title: " + relation.getXLinkTitle());
+		}
+
+		return hl;
+
+	}
+
+	@Override
+	public void buttonClick(final ClickEvent event) {
+		final Window subwindow = new Window("Relations");
+		subwindow.setWidth("600px");
+		subwindow.setModal(true);
+
+		String id = "";
+		if (event.getButton().getCaption()
+				.equals("Container Content Relations")) {
+			id = containerProxy.getId();
+		} else if (event.getButton().getCaption()
+				.equals("Item Content Relations")) {
+			id = itemProxy.getId();
+		} else {
+			throw new RuntimeException("Bug: unexpected event button: "
+					+ event.getButton());
+		}
+
+		try {
+			content = getRelations(itemOrContainerRepository, id);
+		} catch (final EscidocClientException e) {
+			content = new HorizontalLayout();
+			content.addComponent(new Label("No information available"));
+
+		}
+
+		subwindow.addComponent(content);
+		if (subwindow.getParent() != null) {
+			mainWindow.showNotification("Window is already open");
+		} else {
+			mainWindow.addWindow(subwindow);
+		}
+	}
 
 }

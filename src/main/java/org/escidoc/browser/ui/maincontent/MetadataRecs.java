@@ -37,6 +37,7 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
+import org.escidoc.browser.ui.MainSite;
 import org.escidoc.browser.ui.listeners.AddMetaDataFileContainerBehaviour;
 import org.escidoc.browser.ui.listeners.EditMetaDataFileContainerBehaviour;
 import org.escidoc.browser.ui.listeners.MetadataRecBehavour;
@@ -83,11 +84,16 @@ public class MetadataRecs {
 
     private final CurrentUser currentUser;
 
+	private MainSite mainSite;
+
     public MetadataRecs(final ResourceProxy resourceProxy, final int innerelementsHeight, final Window mainWindow,
-        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories, CurrentUser currentUser) {
+        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories, CurrentUser currentUser, MainSite mainSite) {
 
         Preconditions.checkNotNull(mainWindow, "resource is null.");
         Preconditions.checkNotNull(escidocServiceLocation, "escidocServiceLocation is null.");
+        Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
+        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null.");
+
         height = innerelementsHeight;
         this.resourceProxy = (ContainerProxy) resourceProxy;
         this.mainWindow = mainWindow;
@@ -95,6 +101,7 @@ public class MetadataRecs {
         this.repositories = repositories;
         this.currentUser = currentUser;
         this.repositories = repositories;
+        this.mainSite=mainSite;
     }
 
     private boolean hasAccess() {
@@ -137,7 +144,7 @@ public class MetadataRecs {
 
         final Button btnContentRelation =
             new Button("Container Content Relations", new RelationsClickListener(resourceProxy, mainWindow,
-                escidocServiceLocation, repositories));
+                escidocServiceLocation, repositories,currentUser,mainSite));
         btnContentRelation.setStyleName(BaseTheme.BUTTON_LINK);
         btnContentRelation.setDescription("Show Version history in a Pop-up");
 

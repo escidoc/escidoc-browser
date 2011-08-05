@@ -37,6 +37,7 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
+import org.escidoc.browser.ui.MainSite;
 import org.escidoc.browser.ui.listeners.AddMetaDataFileItemBehaviour;
 import org.escidoc.browser.ui.listeners.EditMetaDataFileItemBehaviour;
 import org.escidoc.browser.ui.listeners.MetadataRecBehavour;
@@ -78,8 +79,10 @@ public class MetadataRecsItem {
 
     private final CurrentUser currentUser;
 
+	private MainSite mainSite;
+
     public MetadataRecsItem(final ItemProxy resourceProxy, final int innerelementsHeight, final Window mainWindow,
-        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories, CurrentUser currentUser) {
+        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories, CurrentUser currentUser, MainSite mainSite) {
         Preconditions.checkNotNull(mainWindow, "resource is null.");
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions
@@ -97,6 +100,7 @@ public class MetadataRecsItem {
         this.escidocServiceLocation = escidocServiceLocation;
         this.repositories = repositories;
         this.currentUser = currentUser;
+        this.mainSite = mainSite;
     }
 
     public Accordion asAccord() {
@@ -124,7 +128,7 @@ public class MetadataRecsItem {
 
         final Button btnContentRelation =
             new Button("Item Content Relations", new RelationsClickListener(resourceProxy, mainWindow,
-                escidocServiceLocation, repositories));
+                escidocServiceLocation, repositories,mainSite,currentUser));
         btnContentRelation.setStyleName(BaseTheme.BUTTON_LINK);
         btnContentRelation.setDescription("Show Version history in a Pop-up");
 
