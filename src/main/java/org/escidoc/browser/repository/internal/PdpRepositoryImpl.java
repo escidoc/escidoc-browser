@@ -36,6 +36,7 @@ import com.sun.xacml.ctx.RequestCtx;
 import com.sun.xacml.ctx.Subject;
 
 import org.escidoc.browser.AppConstants;
+import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.repository.PdpRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,9 +105,8 @@ public class PdpRepositoryImpl implements PdpRepository {
 
     @Override
     public boolean permitted() throws EscidocClientException {
-        Preconditions.checkArgument(subjects.size() <= 1, "more than one subjects are not allowed");
-        Preconditions.checkArgument(resourceAttrs.size() <= 1, "more than one subjects are not allowed");
-        Preconditions.checkArgument(actionAttrs.size() == 1, "more than one subjects are not allowed");
+        Preconditions.checkArgument(subjects.size() <= 1, "more than one subjects are not yet implemented");
+        Preconditions.checkArgument(actionAttrs.size() == 1, "more than one actions are not yet implemented");
         final Requests requests = new Requests();
         checkForResource();
         requests.add(new RequestCtx(subjects, resourceAttrs, actionAttrs, Requests.DEFAULT_ENVIRONMENT));
@@ -137,5 +137,17 @@ public class PdpRepositoryImpl implements PdpRepository {
     @Override
     public void loginWith(final String token) {
         client.setHandle(token);
+    }
+
+    @Override
+    public PdpRepository withTypeAndInContext(ResourceType type, String contextId) throws URISyntaxException {
+        if (resourceAttrs == null) {
+            resourceAttrs = new HashSet<Attribute>();
+        }
+        resourceAttrs.add(new Attribute(new URI("info:escidoc/names:aa:1.0:resource:object-type-new"), null, null,
+            new StringAttribute(type.toString().toLowerCase())));
+        resourceAttrs.add(new Attribute(new URI("info:escidoc/names:aa:1.0:resource:" + type.toString().toLowerCase()
+            + ":context-new"), null, null, new StringAttribute(contextId)));
+        return this;
     }
 }

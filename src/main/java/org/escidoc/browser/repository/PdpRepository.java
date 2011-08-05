@@ -28,6 +28,8 @@
  */
 package org.escidoc.browser.repository;
 
+import org.escidoc.browser.model.ResourceType;
+
 import java.net.URISyntaxException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -45,5 +47,7 @@ public interface PdpRepository {
     boolean permitted() throws EscidocClientException;
 
     boolean denied() throws EscidocClientException;
+
+    PdpRepository withTypeAndInContext(ResourceType type, String contextId) throws URISyntaxException;
 
 }

@@ -28,27 +28,33 @@
  */
 package org.escidoc.browser.ui.navigation;
 
-import java.net.URISyntaxException;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.event.Action;
+import com.vaadin.ui.Window;
 
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.navigation.menubar.ShowAddViewCommand;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.event.Action;
-import com.vaadin.ui.Window;
+import java.net.URISyntaxException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
 final class ActionHandlerImpl implements Action.Handler {
+
+    private final static Logger LOG = LoggerFactory.getLogger(ActionHandlerImpl.class);
 
     private final Window mainWindow;
 
@@ -72,28 +78,19 @@ final class ActionHandlerImpl implements Action.Handler {
 
     @Override
     public Action[] getActions(final Object target, final Object sender) {
-        try {
-            if (isContainer(target) && allowedToCreateContainer()) {
-                return new Action[] { ActionList.ACTION_ADD_CONTAINER, ActionList.ACTION_ADD_ITEM,
-                    ActionList.ACTION_DELETE_CONTAINER };
-            }
-
-            if (isContext(target) && allowedToCreateContainer()) {
-                return new Action[] { ActionList.ACTION_ADD_CONTAINER, ActionList.ACTION_ADD_ITEM };
-            }
-
-            if (isItem(target) && allowedToDeleteItem(((ItemModel) target).getId())) {
-                return new Action[] { ActionList.ACTION_DELETE_ITEM };
-            }
-
-            return new Action[] {};
+        if (isContext(target)) {
+            return new Action[] { ActionList.ACTION_ADD_CONTAINER, ActionList.ACTION_ADD_ITEM };
         }
-        catch (final EscidocClientException e) {
-            getWindow().showNotification(e.getMessage());
+
+        if (isContainer(target)) {
+            return new Action[] { ActionList.ACTION_ADD_CONTAINER, ActionList.ACTION_ADD_ITEM,
+                ActionList.ACTION_DELETE_CONTAINER };
         }
-        catch (final URISyntaxException e) {
-            getWindow().showNotification(e.getMessage());
+
+        if (isItem(target)) {
+            return new Action[] { ActionList.ACTION_DELETE_ITEM };
         }
+
         return new Action[] {};
     }
 
@@ -114,12 +111,6 @@ final class ActionHandlerImpl implements Action.Handler {
         return target instanceof ItemModel;
     }
 
-    private boolean allowedToCreateContainer() throws EscidocClientException, URISyntaxException {
-        return repositories
-            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.CREATE_CONTAINER).forResource("")
-            .permitted();
-    }
-
     private Window getWindow() {
         return mainWindow;
     }
@@ -127,22 +118,105 @@ final class ActionHandlerImpl implements Action.Handler {
     @Override
     public void handleAction(final Action action, final Object sender, final Object target) {
         final String contextId = findContextId(target);
+        try {
+            doActionIfAllowed(action, target, contextId);
+        }
+        catch (final EscidocClientException e) {
+            LOG.error(e.getMessage(), e);
+            mainWindow.showNotification(new Window.Notification("Application Error", e.getMessage(),
+                Window.Notification.TYPE_ERROR_MESSAGE));
+        }
+        catch (final URISyntaxException e) {
+            LOG.error(e.getMessage(), e);
+            mainWindow.showNotification(new Window.Notification("Application Error", e.getMessage(),
+                Window.Notification.TYPE_ERROR_MESSAGE));
+        }
+    }
+
+    private void doActionIfAllowed(final Action action, final Object selectedResource, final String contextId)
+        throws EscidocClientException, URISyntaxException {
+
         if (action.equals(ActionList.ACTION_ADD_CONTAINER)) {
-            showCreateContainerView(target, contextId);
+            tryShowCreateContainerView(selectedResource, contextId);
         }
         else if (action.equals(ActionList.ACTION_ADD_ITEM)) {
-            showCreateItemView(target, contextId);
-        }
-        else if (action.equals(ActionList.ACTION_DELETE_ITEM)) {
-            deleteItem((ItemModel) target);
+            tryShowCreateItemView(selectedResource, contextId);
         }
         else if (action.equals(ActionList.ACTION_DELETE_CONTAINER)) {
-            deleteContainer((ContainerModel) target);
+            tryDeleteContainer(selectedResource);
+        }
+        else if (action.equals(ActionList.ACTION_DELETE_ITEM)) {
+            tryDeleteItem(selectedResource);
         }
         else {
             mainWindow.showNotification("Unknown Action: " + action.getCaption(),
                 Window.Notification.TYPE_ERROR_MESSAGE);
         }
+    }
+
+    private void tryDeleteItem(final Object target) throws EscidocClientException, URISyntaxException {
+        final String itemId = ((ItemModel) target).getId();
+        if (allowedToDeleteItem(itemId)) {
+            deleteItem((ItemModel) target);
+        }
+        else {
+            mainWindow.showNotification(new Window.Notification("Not Authorized",
+                "You do not have the right to delete the item: " + itemId, Window.Notification.TYPE_WARNING_MESSAGE));
+        }
+    }
+
+    private void tryDeleteContainer(final Object target) throws EscidocClientException, URISyntaxException {
+        final String containerId = ((ContainerModel) target).getId();
+        if (allowedToDeleteContainer(containerId)) {
+            deleteContainer((ContainerModel) target);
+        }
+        else {
+            mainWindow.showNotification(new Window.Notification("Not Authorized",
+                "You do not have the right to delete a container: " + containerId,
+                Window.Notification.TYPE_WARNING_MESSAGE));
+        }
+    }
+
+    private void tryShowCreateItemView(final Object target, final String contextId) throws EscidocClientException,
+        URISyntaxException {
+        if (allowedToCreateItem(contextId)) {
+            showCreateItemView(target, contextId);
+        }
+        else {
+            mainWindow.showNotification(new Window.Notification("Not Authorized",
+                "You do not have the right to create an item in context: " + contextId,
+                Window.Notification.TYPE_WARNING_MESSAGE));
+        }
+    }
+
+    private void tryShowCreateContainerView(final Object target, final String contextId) throws EscidocClientException,
+        URISyntaxException {
+        if (allowedToCreateContainer(contextId)) {
+            showCreateContainerView(target, contextId);
+        }
+        else {
+            mainWindow.showNotification(new Window.Notification("Not Authorized",
+                "You do not have the right to create a container in context: " + contextId,
+                Window.Notification.TYPE_WARNING_MESSAGE));
+        }
+    }
+
+    private boolean allowedToDeleteContainer(String containerId) throws EscidocClientException, URISyntaxException {
+        return repositories
+            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_CONTAINER)
+            .forResource(containerId).permitted();
+    }
+
+    private boolean allowedToCreateItem(String contextId) throws EscidocClientException, URISyntaxException {
+        return repositories
+            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.CREATE_ITEM).forResource("")
+            .withTypeAndInContext(ResourceType.ITEM, contextId).permitted();
+    }
+
+    private boolean allowedToCreateContainer(String contextId) throws EscidocClientException, URISyntaxException {
+        return repositories
+            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.CREATE_CONTAINER).forResource("")
+            .withTypeAndInContext(ResourceType.CONTAINER, contextId).permitted();
     }
 
     private void deleteContainer(final ContainerModel selected) {
