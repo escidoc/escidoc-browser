@@ -115,6 +115,7 @@ public class RelationsClickListener implements ClickListener {
 		this.currentUser=currentUser;
 		this.mainSite=mainSite;
 		this.escidocServiceLocation = escidocServiceLocation;
+		this.repositories=repositories;
 		itemOrContainerRepository = repositories.item();
 	}
 
@@ -144,7 +145,7 @@ public class RelationsClickListener implements ClickListener {
 		itemOrContainerRepository = repositories.container();
 	}
 
-	public Layout getRelations(final Repository cr, final String id)
+	public Layout getRelations(final Repository cr, final String id, final Window subwindow)
 			throws EscidocClientException {
 
 		final Relations relations = cr.getRelations(id);
@@ -163,14 +164,13 @@ public class RelationsClickListener implements ClickListener {
             
 			Button btnRelation = new Button(itemProxy.getName()
 					+ " relation as " + predicate + " of "
-					+ relation.getXLinkTitle()+relation.getObjid());
+					+ relation.getXLinkTitle());
 			btnRelation.setStyleName(BaseTheme.BUTTON_LINK);
 			btnRelation.addListener(new ClickListener() {
 				
 				@Override
 				public void buttonClick(ClickEvent event) {
 					if (type.name().equals("CONTAINER")){
-						System.out.println("'###################"+relation.getObjid());
 						try {
 						 cmpView = new ContainerView(escidocServiceLocation, mainSite, (ContainerProxy) repositories.container().findById(relation.getObjid()), mainWindow, currentUser, repositories);
 						} catch (EscidocClientException e) {
@@ -182,10 +182,9 @@ public class RelationsClickListener implements ClickListener {
 							cmpView = new ItemView(escidocServiceLocation, repositories, mainSite, (ItemProxy) repositories.item().findById(relation.getObjid()), mainWindow, currentUser);
 						} catch (EscidocClientException e) {
 							mainWindow.showNotification(e.getLocalizedMessage());
-						}
-
-						
+						}					
 					}
+					(subwindow.getParent()).removeWindow(subwindow);
 					mainSite.openTab(cmpView, relation.getXLinkTitle());
 
 				}
@@ -217,11 +216,10 @@ public class RelationsClickListener implements ClickListener {
 		}
 
 		try {
-			content = getRelations(itemOrContainerRepository, id);
+			content = getRelations(itemOrContainerRepository, id, subwindow);
 		} catch (final EscidocClientException e) {
 			content = new HorizontalLayout();
 			content.addComponent(new Label("No information available"));
-
 		}
 
 		subwindow.addComponent(content);
