@@ -163,21 +163,28 @@ public class RelationsClickListener implements ClickListener {
             
 			Button btnRelation = new Button(itemProxy.getName()
 					+ " relation as " + predicate + " of "
-					+ relation.getXLinkTitle());
+					+ relation.getXLinkTitle()+relation.getObjid());
 			btnRelation.setStyleName(BaseTheme.BUTTON_LINK);
 			btnRelation.addListener(new ClickListener() {
 				
 				@Override
 				public void buttonClick(ClickEvent event) {
 					if (type.name().equals("CONTAINER")){
+						System.out.println("'###################"+relation.getObjid());
 						try {
-						 cmpView = new ContainerView(escidocServiceLocation, mainSite, containerProxy, mainWindow, currentUser, repositories);
+						 cmpView = new ContainerView(escidocServiceLocation, mainSite, (ContainerProxy) repositories.container().findById(relation.getObjid()), mainWindow, currentUser, repositories);
 						} catch (EscidocClientException e) {
 							mainWindow.showNotification(e.getLocalizedMessage());
 							e.printStackTrace();
 						}
 					}else if (type.name().equals("ITEM")){
-						cmpView = new ItemView(escidocServiceLocation, repositories, mainSite, itemProxy, mainWindow, currentUser);
+						try {
+							cmpView = new ItemView(escidocServiceLocation, repositories, mainSite, (ItemProxy) repositories.item().findById(relation.getObjid()), mainWindow, currentUser);
+						} catch (EscidocClientException e) {
+							mainWindow.showNotification(e.getLocalizedMessage());
+						}
+
+						
 					}
 					mainSite.openTab(cmpView, relation.getXLinkTitle());
 
