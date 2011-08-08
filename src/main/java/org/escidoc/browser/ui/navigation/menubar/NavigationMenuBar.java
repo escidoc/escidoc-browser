@@ -54,12 +54,6 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 @SuppressWarnings("serial")
 public class NavigationMenuBar extends CustomComponent {
 
-    private static final String UNLOCK = "unlock";
-
-    private static final String IN_REVISION = "in-revision";
-
-    private static final String PENDING = "pending";
-
     private static final Logger LOG = LoggerFactory.getLogger(NavigationMenuBar.class);
 
     private final MenuBar menuBar = new MenuBar();
@@ -99,6 +93,21 @@ public class NavigationMenuBar extends CustomComponent {
         bindRole();
     }
 
+    private void init() {
+        menuBar.setSizeFull();
+        addCreateMenu();
+        addDeleteMenu();
+        try {
+            updateMenuBar(null);
+        }
+        catch (final EscidocClientException e) {
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        }
+        catch (final URISyntaxException e) {
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        }
+    }
+
     private void bindRole() {
         try {
             menuBar.setEnabled(isCreateContextAllowed());
@@ -121,21 +130,6 @@ public class NavigationMenuBar extends CustomComponent {
             .permitted();
     }
 
-    private void init() {
-        menuBar.setSizeFull();
-        addCreateMenu();
-        addDeleteMenu();
-        try {
-            updateMenuBar(null);
-        }
-        catch (final EscidocClientException e) {
-            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-        }
-        catch (final URISyntaxException e) {
-            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-        }
-    }
-
     private void addCreateMenu() {
         add = menuBar.addItem(ViewConstants.ADD, null);
         contextMenuItem = add.addItem(ResourceType.CONTEXT.asLabel(), showAddViewCommand);
@@ -149,7 +143,7 @@ public class NavigationMenuBar extends CustomComponent {
             return;
         }
         deleteMenuItem = menuBar.addItem(ViewConstants.DELETE, null);
-        deleteMenuItem.setEnabled(false);
+        deleteMenuItem.setEnabled(true);
     }
 
     public void updateMenuBar(final ResourceModel resourceModel) throws EscidocClientException, URISyntaxException {
@@ -175,19 +169,7 @@ public class NavigationMenuBar extends CustomComponent {
     }
 
     private void updateDeleteMenu(final ResourceModel resourceModel) throws EscidocClientException, URISyntaxException {
-        if (resourceCanBeDeleted(resourceModel)) {
-            showDelete(resourceModel);
-        }
-        else {
-            hideDelete(resourceModel);
-        }
-    }
-
-    private void hideDelete(final ResourceModel resourceModel) {
-        if (deleteMenuItem == null) {
-            return;
-        }
-        deleteMenuItem.setEnabled(false);
+        showDelete(resourceModel);
     }
 
     private boolean resourceCanBeDeleted(final ResourceModel resourceModel) throws EscidocClientException,
@@ -196,7 +178,7 @@ public class NavigationMenuBar extends CustomComponent {
             case CONTAINER:
                 return canUserDeleteContainer(resourceModel) && isDeletable(retrieveContainer(resourceModel));
             case ITEM:
-                return canUserDeleteItem(resourceModel) && isDeletable(retrieveItem(resourceModel));
+                return isDeletable(retrieveItem(resourceModel));
             default:
                 return false;
         }
@@ -211,19 +193,13 @@ public class NavigationMenuBar extends CustomComponent {
     }
 
     private boolean isDeletable(final ResourceProxy container) {
-        return container.getStatus().equals(PENDING) || container.getStatus().equals(IN_REVISION)
-            || container.getLockStatus().equals(UNLOCK);
+        return container.getStatus().equals(AppConstants.PENDING)
+            || container.getStatus().equals(AppConstants.IN_REVISION)
+            || container.getLockStatus().equals(AppConstants.UNLOCK);
 
     }
 
     private boolean canUserDeleteContainer(final ResourceModel resourceModel) throws EscidocClientException,
-        URISyntaxException {
-        return repositories
-            .pdp().isAction(ActionIdConstants.DELETE_CONTAINER).forUser(currentUser.getUserId())
-            .forResource(resourceModel.getId()).permitted();
-    }
-
-    private boolean canUserDeleteItem(final ResourceModel resourceModel) throws EscidocClientException,
         URISyntaxException {
         return repositories
             .pdp().isAction(ActionIdConstants.DELETE_CONTAINER).forUser(currentUser.getUserId())
@@ -235,12 +211,12 @@ public class NavigationMenuBar extends CustomComponent {
             addDeleteMenu();
         }
         deleteMenuItem.setCommand(new DeleteContainerOrItemMenuCommand(mainWindow, repositories, resourceModel,
-            treeDataSource));
+            treeDataSource, currentUser));
         deleteMenuItem.setEnabled(true);
     }
 
     private void buildCommand(final ResourceModel resourceModel, final String contextId) {
-        showAddViewCommand = new ShowAddViewCommand(repositories, mainWindow, contextId, treeDataSource);
+        showAddViewCommand = new ShowAddViewCommand(repositories, mainWindow, contextId, treeDataSource, currentUser);
         showAddViewCommand.withParent(resourceModel);
         containerMenuItem.setCommand(showAddViewCommand);
         itemMenuItem.setCommand(showAddViewCommand);
@@ -265,23 +241,10 @@ public class NavigationMenuBar extends CustomComponent {
     }
 
     private void showAddContainerAndItem() throws EscidocClientException, URISyntaxException {
-        final boolean createItemAllowed = isCreateItemAllowed();
-        final boolean createContainerAllowed = isCreateContainerAllowed();
-        menuBar.setEnabled(createItemAllowed || createContainerAllowed);
-        add.setEnabled(createItemAllowed || createContainerAllowed);
+        menuBar.setEnabled(true);
+        add.setEnabled(true);
         contextMenuItem.setVisible(false);
-        containerMenuItem.setVisible(createContainerAllowed);
-        itemMenuItem.setVisible(createItemAllowed);
-    }
-
-    private boolean isCreateContainerAllowed() throws EscidocClientException, URISyntaxException {
-        return repositories
-            .pdp().isAction(ActionIdConstants.CREATE_CONTAINER).forUser(currentUser.getUserId()).forResource("")
-            .permitted();
-    }
-
-    private boolean isCreateItemAllowed() throws EscidocClientException, URISyntaxException {
-        return repositories
-            .pdp().isAction(ActionIdConstants.CREATE_ITEM).forUser(currentUser.getUserId()).forResource("").permitted();
+        containerMenuItem.setVisible(true);
+        itemMenuItem.setVisible(true);
     }
 }

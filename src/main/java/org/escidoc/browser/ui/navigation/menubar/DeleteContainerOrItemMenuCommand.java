@@ -28,9 +28,16 @@
  */
 package org.escidoc.browser.ui.navigation.menubar;
 
+import java.net.URISyntaxException;
+
+import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.internal.ActionIdConstants;
+import org.escidoc.browser.ui.ViewConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.MenuBar.Command;
@@ -42,6 +49,8 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 @SuppressWarnings("serial")
 final class DeleteContainerOrItemMenuCommand implements Command {
 
+    private static final Logger LOG = LoggerFactory.getLogger(DeleteContainerOrItemMenuCommand.class);
+
     private final ResourceModel resourceModel;
 
     private final TreeDataSource treeDataSource;
@@ -50,21 +59,67 @@ final class DeleteContainerOrItemMenuCommand implements Command {
 
     private final Window mainWindow;
 
-    public DeleteContainerOrItemMenuCommand(final Window maWindow, final Repositories repositories,
-        final ResourceModel resourceModel, final TreeDataSource treeDataSource) {
-        Preconditions.checkNotNull(maWindow, "maWindow is null: %s", maWindow);
+    private final CurrentUser currentUser;
+
+    public DeleteContainerOrItemMenuCommand(final Window mainWindow, final Repositories repositories,
+        final ResourceModel resourceModel, final TreeDataSource treeDataSource, final CurrentUser currentUser) {
+        Preconditions.checkNotNull(mainWindow, "maWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(resourceModel, "resourceModel is null: %s", resourceModel);
         Preconditions.checkNotNull(treeDataSource, "treeDataSource is null: %s", treeDataSource);
-        mainWindow = maWindow;
+        Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
+        this.mainWindow = mainWindow;
         this.repositories = repositories;
         this.resourceModel = resourceModel;
         this.treeDataSource = treeDataSource;
+        this.currentUser = currentUser;
     }
 
     @Override
     public void menuSelected(final MenuItem selectedItem) {
-        deleteResource();
+        try {
+            switch (resourceModel.getType()) {
+                case CONTAINER:
+                    if (isUserAllowedToDeleteContainer()) {
+                        deleteResource();
+                    }
+                    else {
+                        showWarning();
+                    }
+                    break;
+                case ITEM:
+                    if (isUserAllowedToDeleteContainer()) {
+                        deleteResource();
+                    }
+                    else {
+                        showWarning();
+                    }
+                    break;
+                default:
+                    mainWindow.showNotification("Deleting " + resourceModel.getType() + " is not yet implemented",
+                        Window.Notification.TYPE_ERROR_MESSAGE);
+            }
+        }
+        catch (final EscidocClientException e) {
+            LOG.error(e.getMessage());
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+
+        }
+        catch (final URISyntaxException e) {
+            LOG.error(e.getMessage());
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        }
+    }
+
+    private void showWarning() {
+        mainWindow.showNotification(ViewConstants.NOT_AUTHORIZED, "You do not have the right to delete resource: "
+            + resourceModel.getName(), Window.Notification.TYPE_WARNING_MESSAGE);
+    }
+
+    private boolean isUserAllowedToDeleteContainer() throws EscidocClientException, URISyntaxException {
+        return repositories
+            .pdp().isAction(ActionIdConstants.DELETE_CONTAINER).forUser(currentUser.getUserId())
+            .forResource(resourceModel.getId()).permitted();
     }
 
     private void deleteResource() {

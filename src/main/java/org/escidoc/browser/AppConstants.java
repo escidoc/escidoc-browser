@@ -30,11 +30,15 @@ package org.escidoc.browser;
 
 public final class AppConstants {
 
-    public static final String PENDING = "pending";
-
     private AppConstants() {
         // not to be initialized
     }
+
+    public static final String PENDING = "pending";
+
+    public static final String UNLOCK = "unlock";
+
+    public static final String IN_REVISION = "in-revision";
 
     public static final String ESCIDOC_LOGIN_PATH_AND_PARAMETER = "/aa/login?target=";
 

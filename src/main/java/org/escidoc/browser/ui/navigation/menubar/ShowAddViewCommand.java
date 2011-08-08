@@ -29,11 +29,18 @@
 package org.escidoc.browser.ui.navigation.menubar;
 
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 
+import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.internal.ActionIdConstants;
+import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.ContainerAddView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.MenuBar.Command;
@@ -45,26 +52,32 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 @SuppressWarnings("serial")
 public final class ShowAddViewCommand implements Command {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ShowAddViewCommand.class);
+
     private final Repositories repositories;
 
     private final Window mainWindow;
-
-    private ResourceModel parent;
 
     private final String contextId;
 
     private final TreeDataSource treeDataSource;
 
+    private final CurrentUser currentUser;
+
+    private ResourceModel parent;
+
     public ShowAddViewCommand(final Repositories repositories, final Window mainWindow, final String contextId,
-        final TreeDataSource treeDataSource) {
+        final TreeDataSource treeDataSource, final CurrentUser currentUser) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(contextId, "contextId is null: %s", contextId);
         Preconditions.checkNotNull(treeDataSource, "treeDataSource is null: %s", treeDataSource);
+        Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
         this.repositories = repositories;
         this.mainWindow = mainWindow;
         this.contextId = contextId;
         this.treeDataSource = treeDataSource;
+        this.currentUser = currentUser;
     }
 
     public void withParent(final ResourceModel parent) {
@@ -73,15 +86,55 @@ public final class ShowAddViewCommand implements Command {
 
     @Override
     public void menuSelected(final MenuItem selectedItem) {
-        if (isContainerSelected(selectedItem)) {
-            showContainerAddView();
+        try {
+            if (isContainerSelected(selectedItem)) {
+                if (isUserAllowedToCreateContainer()) {
+                    showContainerAddView();
+                }
+                else {
+                    showWarning();
+                }
+
+            }
+            else if (isItemSelected(selectedItem)) {
+                if (isUserAllowedToCreateItem()) {
+                    showItemAddView();
+                }
+                else {
+                    showWarning();
+                }
+            }
+
+            else {
+                mainWindow.showNotification("Action " + selectedItem.getText());
+            }
         }
-        else if (isItemSelected(selectedItem)) {
-            showItemAddView();
+        catch (final EscidocClientException e) {
+            LOG.error(e.getMessage());
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
         }
-        else {
-            mainWindow.showNotification("Action " + selectedItem.getText());
+        catch (final URISyntaxException e) {
+            LOG.error(e.getMessage());
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
         }
+    }
+
+    private boolean isUserAllowedToCreateItem() throws EscidocClientException, URISyntaxException {
+        return repositories
+            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.CREATE_ITEM).forResource("")
+            .withTypeAndInContext(ResourceType.ITEM, contextId).permitted();
+    }
+
+    private void showWarning() {
+        mainWindow.showNotification(ViewConstants.NOT_AUTHORIZED,
+            "You do not have the right to create resource in context: " + contextId,
+            Window.Notification.TYPE_WARNING_MESSAGE);
+    }
+
+    private boolean isUserAllowedToCreateContainer() throws EscidocClientException, URISyntaxException {
+        return repositories
+            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.CREATE_CONTAINER).forResource("")
+            .withTypeAndInContext(ResourceType.CONTAINER, contextId).permitted();
     }
 
     public void showItemAddView() {

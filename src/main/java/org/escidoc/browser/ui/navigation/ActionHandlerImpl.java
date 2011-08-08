@@ -28,10 +28,7 @@
  */
 package org.escidoc.browser.ui.navigation;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.event.Action;
-import com.vaadin.ui.Window;
+import java.net.URISyntaxException;
 
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
@@ -47,7 +44,9 @@ import org.escidoc.browser.ui.navigation.menubar.ShowAddViewCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URISyntaxException;
+import com.google.common.base.Preconditions;
+import com.vaadin.event.Action;
+import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -160,7 +159,7 @@ final class ActionHandlerImpl implements Action.Handler {
             deleteItem((ItemModel) target);
         }
         else {
-            mainWindow.showNotification(new Window.Notification("Not Authorized",
+            mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
                 "You do not have the right to delete the item: " + itemId, Window.Notification.TYPE_WARNING_MESSAGE));
         }
     }
@@ -171,7 +170,7 @@ final class ActionHandlerImpl implements Action.Handler {
             deleteContainer((ContainerModel) target);
         }
         else {
-            mainWindow.showNotification(new Window.Notification("Not Authorized",
+            mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
                 "You do not have the right to delete a container: " + containerId,
                 Window.Notification.TYPE_WARNING_MESSAGE));
         }
@@ -183,7 +182,7 @@ final class ActionHandlerImpl implements Action.Handler {
             showCreateItemView(target, contextId);
         }
         else {
-            mainWindow.showNotification(new Window.Notification("Not Authorized",
+            mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
                 "You do not have the right to create an item in context: " + contextId,
                 Window.Notification.TYPE_WARNING_MESSAGE));
         }
@@ -195,25 +194,26 @@ final class ActionHandlerImpl implements Action.Handler {
             showCreateContainerView(target, contextId);
         }
         else {
-            mainWindow.showNotification(new Window.Notification("Not Authorized",
+            mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
                 "You do not have the right to create a container in context: " + contextId,
                 Window.Notification.TYPE_WARNING_MESSAGE));
         }
     }
 
-    private boolean allowedToDeleteContainer(String containerId) throws EscidocClientException, URISyntaxException {
+    private boolean allowedToDeleteContainer(final String containerId) throws EscidocClientException,
+        URISyntaxException {
         return repositories
             .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_CONTAINER)
             .forResource(containerId).permitted();
     }
 
-    private boolean allowedToCreateItem(String contextId) throws EscidocClientException, URISyntaxException {
+    private boolean allowedToCreateItem(final String contextId) throws EscidocClientException, URISyntaxException {
         return repositories
             .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.CREATE_ITEM).forResource("")
             .withTypeAndInContext(ResourceType.ITEM, contextId).permitted();
     }
 
-    private boolean allowedToCreateContainer(String contextId) throws EscidocClientException, URISyntaxException {
+    private boolean allowedToCreateContainer(final String contextId) throws EscidocClientException, URISyntaxException {
         return repositories
             .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.CREATE_CONTAINER).forResource("")
             .withTypeAndInContext(ResourceType.CONTAINER, contextId).permitted();
@@ -267,7 +267,7 @@ final class ActionHandlerImpl implements Action.Handler {
 
     private ShowAddViewCommand buildCommand(final Object target, final String contextId) {
         final ShowAddViewCommand showAddViewCommand =
-            new ShowAddViewCommand(repositories, getWindow(), contextId, treeDataSource);
+            new ShowAddViewCommand(repositories, getWindow(), contextId, treeDataSource, currentUser);
         showAddViewCommand.withParent((ResourceModel) target);
         return showAddViewCommand;
     }

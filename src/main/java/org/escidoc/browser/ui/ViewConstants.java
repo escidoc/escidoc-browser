@@ -112,4 +112,6 @@ public class ViewConstants {
     public static final String RESOURCE_NAME = "Item: ";
 
     public static final String CREATED_ON = "Created on ";
+
+    public static final String NOT_AUTHORIZED = "Not Authorized";
 }
