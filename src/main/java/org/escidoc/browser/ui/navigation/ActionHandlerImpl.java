@@ -30,6 +30,7 @@ package org.escidoc.browser.ui.navigation;
 
 import java.net.URISyntaxException;
 
+import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.CurrentUser;
@@ -93,20 +94,21 @@ final class ActionHandlerImpl implements Action.Handler {
         return new Action[] {};
     }
 
-    private boolean allowedToDeleteItem(final String id) throws EscidocClientException, URISyntaxException {
+    private boolean allowedToDeleteItem(final String resourceId) throws EscidocClientException, URISyntaxException {
         return repositories
-            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_ITEM).forResource(id).permitted();
+            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_ITEM).forResource(resourceId)
+            .permitted();
     }
 
-    private boolean isContext(final Object target) {
+    private static boolean isContext(final Object target) {
         return target instanceof ContextModel;
     }
 
-    private boolean isContainer(final Object target) {
+    private static boolean isContainer(final Object target) {
         return target instanceof ContainerModel;
     }
 
-    private boolean isItem(final Object target) {
+    private static boolean isItem(final Object target) {
         return target instanceof ItemModel;
     }
 
@@ -179,12 +181,12 @@ final class ActionHandlerImpl implements Action.Handler {
     private void tryShowCreateItemView(final Object target, final String contextId) throws EscidocClientException,
         URISyntaxException {
         if (allowedToCreateItem(contextId)) {
-            if (target instanceof ContainerModel && addToAddMember((ResourceModel) target)) {
+            if (target instanceof ContainerModel && allowedToAddMember((ResourceModel) target)) {
                 showCreateItemView(target, contextId);
             }
             else {
                 mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
-                    "You do not have the right to add an item to " + ((ContainerModel) target).getName(),
+                    "You do not have the right to add an item to " + ((ResourceModel) target).getName(),
                     Window.Notification.TYPE_WARNING_MESSAGE));
             }
         }
@@ -198,12 +200,12 @@ final class ActionHandlerImpl implements Action.Handler {
     private void tryShowCreateContainerView(final Object target, final String contextId) throws EscidocClientException,
         URISyntaxException {
         if (allowedToCreateContainer(contextId)) {
-            if ((target instanceof ContainerModel) && addToAddMember((ResourceModel) target)) {
+            if ((target instanceof ContainerModel) && allowedToAddMember((ResourceModel) target)) {
                 showCreateContainerView(target, contextId);
             }
             else {
                 mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
-                    "You do not have the right to add a container to " + ((ContainerModel) target).getName(),
+                    "You do not have the right to add a container to " + ((ResourceModel) target).getName(),
                     Window.Notification.TYPE_WARNING_MESSAGE));
             }
         }
@@ -214,7 +216,7 @@ final class ActionHandlerImpl implements Action.Handler {
         }
     }
 
-    private boolean addToAddMember(final ResourceModel target) throws EscidocClientException, URISyntaxException {
+    private boolean allowedToAddMember(final ResourceModel target) throws EscidocClientException, URISyntaxException {
         return repositories
             .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.ADD_MEMBERS_TO_CONTAINER)
             .forResource(target.getId()).permitted();
@@ -252,7 +254,7 @@ final class ActionHandlerImpl implements Action.Handler {
 
     private String findContextId(final Object target) {
         if (isContext(target)) {
-            return (((ContextModel) target).getId());
+            return ((ContextModel) target).getId();
         }
         else if (isContainer(target)) {
             final ContainerModel containerModel = (ContainerModel) target;
@@ -272,17 +274,15 @@ final class ActionHandlerImpl implements Action.Handler {
                 getWindow().showNotification(ViewConstants.NOT_ABLE_TO_RETRIEVE_A_CONTEXT);
             }
         }
-        throw new RuntimeException("Can not find context id for: " + target);
+        return AppConstants.EMPTY_STRING;
     }
 
     private void showCreateContainerView(final Object target, final String contextId) {
-        final ShowAddViewCommand showAddViewCommand = buildCommand(target, contextId);
-        showAddViewCommand.showContainerAddView();
+        buildCommand(target, contextId).showContainerAddView();
     }
 
     private void showCreateItemView(final Object target, final String contextId) {
-        final ShowAddViewCommand showAddViewCommand = buildCommand(target, contextId);
-        showAddViewCommand.showItemAddView();
+        buildCommand(target, contextId).showItemAddView();
     }
 
     private ShowAddViewCommand buildCommand(final Object target, final String contextId) {

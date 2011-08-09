@@ -47,7 +47,6 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -90,38 +89,12 @@ public class NavigationMenuBar extends CustomComponent {
         this.treeDataSource = treeDataSource;
         setCompositionRoot(menuBar);
         init();
-        bindRole();
     }
 
     private void init() {
         menuBar.setSizeFull();
         addCreateMenu();
         addDeleteMenu();
-        try {
-            updateMenuBar(null);
-        }
-        catch (final EscidocClientException e) {
-            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-        }
-        catch (final URISyntaxException e) {
-            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-        }
-    }
-
-    private void bindRole() {
-        try {
-            menuBar.setEnabled(isCreateContextAllowed());
-        }
-        catch (final EscidocClientException e) {
-            LOG.error(e.getMessage());
-            mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
-                Notification.TYPE_ERROR_MESSAGE));
-        }
-        catch (final URISyntaxException e) {
-            LOG.error(e.getMessage());
-            mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
-                Notification.TYPE_ERROR_MESSAGE));
-        }
     }
 
     private boolean isCreateContextAllowed() throws EscidocClientException, URISyntaxException {
@@ -146,7 +119,8 @@ public class NavigationMenuBar extends CustomComponent {
         deleteMenuItem.setEnabled(true);
     }
 
-    public void updateMenuBar(final ResourceModel resourceModel) throws EscidocClientException, URISyntaxException {
+    public final void updateMenuBar(final ResourceModel resourceModel) throws EscidocClientException,
+        URISyntaxException {
         if (resourceModel == null) {
             showAddContext();
         }
@@ -164,6 +138,7 @@ public class NavigationMenuBar extends CustomComponent {
                 case ITEM:
                     updateDeleteMenu(resourceModel);
                     add.setEnabled(false);
+                    break;
             }
         }
     }
@@ -240,7 +215,7 @@ public class NavigationMenuBar extends CustomComponent {
         itemMenuItem.setVisible(false);
     }
 
-    private void showAddContainerAndItem() throws EscidocClientException, URISyntaxException {
+    private void showAddContainerAndItem() {
         menuBar.setEnabled(true);
         add.setEnabled(true);
         contextMenuItem.setVisible(false);
