@@ -179,7 +179,14 @@ final class ActionHandlerImpl implements Action.Handler {
     private void tryShowCreateItemView(final Object target, final String contextId) throws EscidocClientException,
         URISyntaxException {
         if (allowedToCreateItem(contextId)) {
-            showCreateItemView(target, contextId);
+            if (target instanceof ContainerModel && addToAddMember((ResourceModel) target)) {
+                showCreateItemView(target, contextId);
+            }
+            else {
+                mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
+                    "You do not have the right to add an item to " + ((ContainerModel) target).getName(),
+                    Window.Notification.TYPE_WARNING_MESSAGE));
+            }
         }
         else {
             mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
@@ -191,13 +198,26 @@ final class ActionHandlerImpl implements Action.Handler {
     private void tryShowCreateContainerView(final Object target, final String contextId) throws EscidocClientException,
         URISyntaxException {
         if (allowedToCreateContainer(contextId)) {
-            showCreateContainerView(target, contextId);
+            if ((target instanceof ContainerModel) && addToAddMember((ResourceModel) target)) {
+                showCreateContainerView(target, contextId);
+            }
+            else {
+                mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
+                    "You do not have the right to add a container to " + ((ContainerModel) target).getName(),
+                    Window.Notification.TYPE_WARNING_MESSAGE));
+            }
         }
         else {
             mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
                 "You do not have the right to create a container in context: " + contextId,
                 Window.Notification.TYPE_WARNING_MESSAGE));
         }
+    }
+
+    private boolean addToAddMember(final ResourceModel target) throws EscidocClientException, URISyntaxException {
+        return repositories
+            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.ADD_MEMBERS_TO_CONTAINER)
+            .forResource(target.getId()).permitted();
     }
 
     private boolean allowedToDeleteContainer(final String containerId) throws EscidocClientException,

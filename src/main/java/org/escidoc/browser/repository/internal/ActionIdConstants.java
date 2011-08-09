@@ -39,7 +39,6 @@ public class ActionIdConstants {
 
     public final static String GET_PURGE_STATUS_ACTION = "info:escidoc/names:aa:1.0:action:get-purge-status";
 
-    // "info:escidoc/names:aa:1.0:action:add-members-to-container"
     // "info:escidoc/names:aa:1.0:action:container-move-to-context"
 
     // "info:escidoc/names:aa:1.0:action:activate-user-account"
@@ -231,4 +230,6 @@ public class ActionIdConstants {
     public static final String DELETE_ITEM = "info:escidoc/names:aa:1.0:action:delete-item";
 
     public static final String DELETE_CONTAINER = "info:escidoc/names:aa:1.0:action:delete-container";
+
+    public static final String ADD_MEMBERS_TO_CONTAINER = "info:escidoc/names:aa:1.0:action:add-members-to-container";
 }
