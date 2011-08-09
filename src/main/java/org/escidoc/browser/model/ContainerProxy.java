@@ -72,4 +72,6 @@ public interface ContainerProxy extends ResourceProxy {
 
     String getLatestVersionId();
 
+    String getReleasedBy();
+
 }

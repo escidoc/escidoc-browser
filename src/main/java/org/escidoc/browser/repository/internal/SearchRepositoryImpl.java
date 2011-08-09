@@ -115,7 +115,6 @@ public class SearchRepositoryImpl {
             buf.append("(\"/properties/name\"=\"" + string + "\" OR \"/fulltext\"=\"" + string + "\")");
         }
         try {
-            System.out.println("################" + buf);
             return client.search(queryString + buf.toString(), 0, 1000, "sort.escidoc.pid", SRCH_INDEX);
         }
         catch (final EscidocClientException e) {

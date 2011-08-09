@@ -194,21 +194,31 @@ public class ContainerRepository implements Repository {
         final TaskParam taskParam = new TaskParam();
         taskParam.setLastModificationDate(container.getLastModificationDate());
         taskParam.setComment(comment);
-        LOG.debug("Statusi eshte" + publicStatus);
+        LOG.debug("here is the request" + container.getObjid() + publicStatus + comment);
         if (publicStatus.equals("SUBMITTED")) {
             client.submit(container, taskParam);
+            mainWindow.showNotification(new Window.Notification(ViewConstants.SUBMITTED,
+                Notification.TYPE_TRAY_NOTIFICATION));
         }
         else if (publicStatus.equals("IN_REVISION")) {
             client.revise(container, taskParam);
+            mainWindow.showNotification(new Window.Notification(ViewConstants.IN_REVISION,
+                Notification.TYPE_TRAY_NOTIFICATION));
         }
         else if (publicStatus.equals("RELEASED")) {
             client.release(container, taskParam);
+            mainWindow.showNotification(new Window.Notification(ViewConstants.RELEASED,
+                Notification.TYPE_TRAY_NOTIFICATION));
         }
         else if (publicStatus.equals("WITHDRAWN")) {
             client.withdraw(container, taskParam);
+            mainWindow.showNotification(new Window.Notification(ViewConstants.WITHDRAWN,
+                Notification.TYPE_TRAY_NOTIFICATION));
         }
         else if (publicStatus.equals("DELETE")) {
             this.delete(container);
+            mainWindow.showNotification(new Window.Notification(ViewConstants.DELETED,
+                Notification.TYPE_TRAY_NOTIFICATION));
         }
     }
 
@@ -220,10 +230,13 @@ public class ContainerRepository implements Repository {
 
         if (lockStatus.equals("LOCKED")) {
             client.lock(container.getObjid(), taskParam);
-
+            mainWindow.showNotification(new Window.Notification(ViewConstants.LOCKED,
+                Notification.TYPE_TRAY_NOTIFICATION));
         }
         else {
             client.unlock(container.getObjid(), taskParam);
+            mainWindow.showNotification(new Window.Notification(ViewConstants.UNLOCKED,
+                Notification.TYPE_TRAY_NOTIFICATION));
         }
     }
 
@@ -236,6 +249,8 @@ public class ContainerRepository implements Repository {
         LOG.debug(container.getClass().toString() + container.getObjid());
         try {
             client.delete(container.getObjid());
+            mainWindow.showNotification(new Window.Notification(ViewConstants.DELETED,
+                Notification.TYPE_TRAY_NOTIFICATION));
         }
         catch (EscidocClientException e) {
             mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),

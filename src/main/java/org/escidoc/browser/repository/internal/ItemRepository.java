@@ -146,24 +146,33 @@ public class ItemRepository implements Repository {
 
     public void changePublicStatus(final Item item, final String publicStatus, final String comment)
         throws EscidocClientException {
-        LOG.debug("#######################" + publicStatus + comment);
         final TaskParam taskParam = new TaskParam();
         taskParam.setLastModificationDate(item.getLastModificationDate());
         taskParam.setComment(comment);
         if (publicStatus.equals("SUBMITTED")) {
             client.submit(item, taskParam);
+            mainWindow.showNotification(new Window.Notification(ViewConstants.SUBMITTED,
+                Notification.TYPE_TRAY_NOTIFICATION));
         }
         else if (publicStatus.equals("IN_REVISION")) {
             client.revise(item, taskParam);
+            mainWindow.showNotification(new Window.Notification(ViewConstants.IN_REVISION,
+                Notification.TYPE_TRAY_NOTIFICATION));
         }
         else if (publicStatus.equals("RELEASED")) {
             client.release(item, taskParam);
+            mainWindow.showNotification(new Window.Notification(ViewConstants.RELEASED,
+                Notification.TYPE_TRAY_NOTIFICATION));
         }
         else if (publicStatus.equals("WITHDRAWN")) {
             client.withdraw(item, taskParam);
+            mainWindow.showNotification(new Window.Notification(ViewConstants.WITHDRAWN,
+                Notification.TYPE_TRAY_NOTIFICATION));
         }
         else if (publicStatus.equals("DELETE")) {
             this.delete(item);
+            mainWindow.showNotification(new Window.Notification(ViewConstants.DELETED,
+                Notification.TYPE_TRAY_NOTIFICATION));
         }
     }
 
@@ -174,9 +183,13 @@ public class ItemRepository implements Repository {
         taskParam.setComment(comment);
         if (lockStatus.equals("LOCKED")) {
             client.lock(item.getObjid(), taskParam);
+            mainWindow.showNotification(new Window.Notification(ViewConstants.LOCKED,
+                Notification.TYPE_TRAY_NOTIFICATION));
         }
         else {
             client.unlock(item.getObjid(), taskParam);
+            mainWindow.showNotification(new Window.Notification(ViewConstants.UNLOCKED,
+                Notification.TYPE_TRAY_NOTIFICATION));
         }
     }
 
@@ -194,6 +207,8 @@ public class ItemRepository implements Repository {
         LOG.debug(item.getClass().toString());
         try {
             client.delete(item.getObjid());
+            mainWindow.showNotification(new Window.Notification(ViewConstants.DELETED,
+                Notification.TYPE_TRAY_NOTIFICATION));
         }
         catch (final EscidocClientException e) {
             mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),

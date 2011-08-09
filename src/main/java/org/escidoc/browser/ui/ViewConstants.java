@@ -73,6 +73,8 @@ public class ViewConstants {
 
     public static final String DELETE = "Delete";
 
+    public static final String DELETED = "Resource was deleted succesfully!";
+
     public static final String ADD = "Create";
 
     public static final String CREATE_CONTAINER = "Create Container";
@@ -114,4 +116,16 @@ public class ViewConstants {
     public static final String CREATED_ON = "Created on ";
 
     public static final String NOT_AUTHORIZED = "Not Authorized";
+
+    public static final String LOCKED = "Resource was successfully locked";
+
+    public static final String UNLOCKED = "Resource was successfully unlocked";
+
+    public static final String SUBMITTED = "Public Status for the resource was changed to Submitted";
+
+    public static final String IN_REVISION = "Public Status for the resource was changed to In-Revision";
+
+    public static final String RELEASED = "Public Status for the resource was changed to Released";
+
+    public static final String WITHDRAWN = "Public Status for the resource was changed to Withdrawn";
 }

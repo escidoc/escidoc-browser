@@ -57,6 +57,8 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.BaseTheme;
+import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.properties.LockStatus;
@@ -126,6 +128,10 @@ public class ContainerView extends VerticalLayout {
     private Window subwindow;
 
     private Label lblLatestVersionStatus;
+
+    private final VerticalLayout vlPropertiesLeft = new VerticalLayout();
+
+    private String lockStatus;
 
     public ContainerView(final EscidocServiceLocation serviceLocation, final MainSite mainSite,
         final ResourceProxy resourceProxy, final Window mainWindow, final CurrentUser currentUser,
@@ -225,60 +231,83 @@ public class ContainerView extends VerticalLayout {
      * Binding Context Properties 2 sets of labels in 2 rows
      */
     private void bindProperties() {
-        // LEFT SIde
+        Panel pnlPropertiesLeft = buildLeftPropertiesPnl();
+        Panel pnlPropertiesRight = buildRightPnlProperties();
+
         final Label descMetadata1 = new Label("ID: " + resourceProxy.getId());
+
         status = resourceProxy.getType().asLabel() + " is ";
-
+        lockStatus = status;
         lblStatus = new Label(status + resourceProxy.getStatus(), Label.CONTENT_RAW);
-        lblLockstatus = new Label(status + resourceProxy.getLockStatus(), Label.CONTENT_RAW);
-        descMetadata1.setStyleName("floatleft");
-        descMetadata1.setWidth("35%");
-
-        lblStatus.setStyleName("floatleft");
         lblStatus.setDescription(DESC_STATUS2);
-        lblStatus.setWidth("35%");
-        lblLockstatus.setStyleName("floatleft");
+
+        lblLockstatus = new Label(status + resourceProxy.getLockStatus(), Label.CONTENT_RAW);
         lblLockstatus.setDescription(DESC_LOCKSTATUS);
-        lblLockstatus.setWidth("35%");
 
         final Label descMetadata2 =
             new Label(CREATED_BY + " " + resourceProxy.getCreator() + " on " + resourceProxy.getCreatedOn() + "<br/>"
                 + LAST_MODIFIED_BY + " " + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(),
                 Label.CONTENT_XHTML);
 
-        descMetadata2.setStyleName("floatright");
-        descMetadata2.setWidth("65%");
-
-        final Label padder = new Label("&nbsp;");
-        padder.setStyleName("floatright");
-        padder.setWidth("5%");
-
+        HorizontalLayout hl = new HorizontalLayout();
         final Component versionHistory = getHistory();
-        versionHistory.setStyleName("floatright");
-        versionHistory.setWidth("60%");
+        hl.addComponent(versionHistory);
 
-        final Label test = new Label("History should come here");
-        test.setStyleName("floatright");
-        test.setWidth("65%");
-
-        cssLayout.addComponent(descMetadata1);
-        cssLayout.addComponent(descMetadata2);
+        vlPropertiesLeft.addComponent(descMetadata1);
         if (hasAccess()) {
             setLatestStatus();
-            cssLayout.addComponent(lblLatestVersionStatus);
+            vlPropertiesLeft.addComponent(lblLatestVersionStatus);
+            hl.addComponent(buildReleasedByBtn());
         }
-        cssLayout.addComponent(lblStatus);
-        cssLayout.addComponent(lblLockstatus);
-        cssLayout.addComponent(test);
+        else {
+            vlPropertiesLeft.addComponent(lblStatus);
+        }
+
+        vlPropertiesLeft.addComponent(lblLockstatus);
+        pnlPropertiesLeft.addComponent(vlPropertiesLeft);
+        cssLayout.addComponent(pnlPropertiesLeft);
+
+        pnlPropertiesRight.addComponent(descMetadata2);
+        pnlPropertiesRight.addComponent(hl);
+        cssLayout.addComponent(pnlPropertiesRight);
+
+    }
+
+    private Button buildReleasedByBtn() {
+        Button releasedBy = new Button("Released by " + resourceProxy.getReleasedBy());
+        releasedBy.setStyleName(BaseTheme.BUTTON_LINK);
+        return releasedBy;
+    }
+
+    private Panel buildLeftPropertiesPnl() {
+        Panel pnlPropertiesLeft = new Panel();
+        pnlPropertiesLeft.setWidth("40%");
+        pnlPropertiesLeft.setHeight("60px");
+        pnlPropertiesLeft.setStyleName("floatleft");
+        pnlPropertiesLeft.addStyleName(Runo.PANEL_LIGHT);
+        pnlPropertiesLeft.getLayout().setMargin(false);
+        return pnlPropertiesLeft;
+    }
+
+    private Panel buildRightPnlProperties() {
+        Panel pnlPropertiesRight = new Panel();
+        pnlPropertiesRight.setWidth("60%");
+        pnlPropertiesRight.setHeight("60px");
+        pnlPropertiesRight.setStyleName("floatright");
+        pnlPropertiesRight.addStyleName(Runo.PANEL_LIGHT);
+        pnlPropertiesRight.getLayout().setMargin(false);
+        return pnlPropertiesRight;
     }
 
     private void setLatestStatus() {
         ContainerProxy findById;
         try {
             findById = (ContainerProxy) repositories.container().findById(resourceProxy.getId());
+            status = "Latest status is ";
             lblLatestVersionStatus =
-                new Label("Latest Status "
+                new Label(status
                     + getStatusOfLatestVersion(repositories.container().findById(findById.getLatestVersionId())));
+            lblLatestVersionStatus.setDescription(DESC_STATUS2);
         }
         catch (EscidocClientException e) {
             LOG.error(e.getMessage());
@@ -333,7 +362,7 @@ public class ContainerView extends VerticalLayout {
 
     private void handleLayoutListeners() {
         if (hasAccess()) {
-            cssLayout.addListener(new LayoutClickListener() {
+            vlPropertiesLeft.addListener(new LayoutClickListener() {
                 private static final long serialVersionUID = 1L;
 
                 @Override
@@ -345,25 +374,19 @@ public class ContainerView extends VerticalLayout {
                         // Is Label?
                         if (event.getChildComponent().getClass().getCanonicalName() == "com.vaadin.ui.Label") {
                             final Label child = (Label) event.getChildComponent();
-                            if ((child).getDescription() == DESC_HEADER) {
-                                // We are not editing header anymore
-                                // oldComponent = event.getClickedComponent();
-                                // swapComponent = editHeader(child.getValue().toString());
-                                // cssLayout.replaceComponent(oldComponent, swapComponent);
-                                // btnEdit.setVisible(true);
-                            }
-                            else if ((child.getDescription() == DESC_STATUS2)
+                            if ((child.getDescription() == DESC_STATUS2)
                                 && (!lblStatus.getValue().equals(status + "withdrawn"))) {
+                                System.out.println("*******************Here it comes on the Status");
                                 reSwapComponents();
                                 oldComponent = event.getClickedComponent();
                                 swapComponent = editStatus(child.getValue().toString().replace(status, ""));
-                                cssLayout.replaceComponent(oldComponent, swapComponent);
+                                vlPropertiesLeft.replaceComponent(oldComponent, swapComponent);
                             }
                             else if (child.getDescription() == DESC_LOCKSTATUS) {
                                 reSwapComponents();
                                 oldComponent = event.getClickedComponent();
                                 swapComponent = editLockStatus(child.getValue().toString().replace(status, ""));
-                                cssLayout.replaceComponent(oldComponent, swapComponent);
+                                vlPropertiesLeft.replaceComponent(oldComponent, swapComponent);
                             }
                         }
                         else {
@@ -390,7 +413,7 @@ public class ContainerView extends VerticalLayout {
                             ((Label) oldComponent).setValue(status + ((ComboBox) swapComponent).getValue());
                             this.addCommentWindow();
                         }
-                        cssLayout.replaceComponent(swapComponent, oldComponent);
+                        vlPropertiesLeft.replaceComponent(swapComponent, oldComponent);
                         swapComponent = null;
                     }
                 }
@@ -516,7 +539,6 @@ public class ContainerView extends VerticalLayout {
                 }
 
                 private void updatePublicStatus(Container container, String comment) throws EscidocClientException {
-
                     // Update PublicStatus if there is a change
                     if (!resourceProxy.getStatus().equals(lblStatus.getValue().toString().replace(status, ""))) {
                         repositories.container().changePublicStatus(container,
@@ -525,9 +547,9 @@ public class ContainerView extends VerticalLayout {
                 }
 
                 private void updateLockStatus(Container container, String comment) throws EscidocClientException {
-
                     // Update LockStatus if there is a change
-                    if (!resourceProxy.getLockStatus().equals(lblLockstatus.getValue().toString().replace(status, ""))) {
+                    if (!resourceProxy.getLockStatus().equals(
+                        lblLockstatus.getValue().toString().replace(lockStatus, ""))) {
                         repositories.container().changeLockStatus(container,
                             lblLockstatus.getValue().toString().replace(STATUS, "").toUpperCase(), comment);
                     }
@@ -569,7 +591,8 @@ public class ContainerView extends VerticalLayout {
             final Button versionHistory =
                 new Button(" Has previous version", new VersionHistoryClickListener(resourceProxy, mainWindow,
                     serviceLocation, repositories));
-            // versionHistory.setStyleName(BaseTheme.BUTTON_LINK);
+            versionHistory.setStyleName(BaseTheme.BUTTON_LINK);
+
             return versionHistory;
         }
         else {

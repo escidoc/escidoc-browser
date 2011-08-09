@@ -94,7 +94,7 @@ public class ContainerProxyImpl implements ContainerProxy {
             }
         }
         catch (final ParserConfigurationException e) {
-            // TODO Auto-generated catch block
+
             e.printStackTrace();
         }
 
@@ -276,6 +276,10 @@ public class ContainerProxyImpl implements ContainerProxy {
     @Override
     public String getVersionStatus() {
         return containerFromCore.getProperties().getVersion().getStatus();
+    }
+
+    public String getReleasedBy() {
+        return containerFromCore.getProperties().getVersion().getModifiedBy().getXLinkTitle();
     }
 
 }
