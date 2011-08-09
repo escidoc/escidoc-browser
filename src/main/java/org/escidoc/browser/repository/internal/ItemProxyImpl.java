@@ -172,14 +172,16 @@ public class ItemProxyImpl implements ItemProxy {
     }
 
     @Override
-    public void setStatus(String status) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public String getLockStatus() {
         return itemFromCore.getProperties().getLockStatus().toString().toLowerCase();
     }
 
+    @Override
+    public String getLatestVersionId() {
+        return itemFromCore.getProperties().getLatestVersion().getObjid();
+    }
+
+    public String getVersionStatus() {
+        return itemFromCore.getProperties().getVersion().getStatus();
+    }
 }

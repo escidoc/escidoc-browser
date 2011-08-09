@@ -66,4 +66,6 @@ public interface ItemProxy extends ResourceProxy {
     Resource getContext();
 
     Object hasComponents();
+
+    String getLatestVersionId();
 }

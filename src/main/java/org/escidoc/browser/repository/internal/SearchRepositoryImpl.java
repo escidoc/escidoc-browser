@@ -106,11 +106,16 @@ public class SearchRepositoryImpl {
         // }
         final String queryString = "";
         final StringBuffer buf = new StringBuffer();
+        int i = 0;
         for (final String string : allMatches) {
-            buf.append(" \"/properties/name\"=\"" + string + "\" or \"/fulltext\"=\"" + string + "\"");
+            if (i != 0) {
+                buf.append(" AND ");
+            }
+            i++;
+            buf.append("(\"/properties/name\"=\"" + string + "\" OR \"/fulltext\"=\"" + string + "\")");
         }
         try {
-            // "escidoc.any-title"=b*
+            System.out.println("################" + buf);
             return client.search(queryString + buf.toString(), 0, 1000, "sort.escidoc.pid", SRCH_INDEX);
         }
         catch (final EscidocClientException e) {

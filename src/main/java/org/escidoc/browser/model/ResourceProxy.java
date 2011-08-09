@@ -40,8 +40,6 @@ public interface ResourceProxy extends ResourceModel {
     // TODO implement status as enumeration
     String getStatus();
 
-    void setStatus(String status);
-
     String getCreator();
 
     String getCreatedOn();
@@ -55,5 +53,7 @@ public interface ResourceProxy extends ResourceModel {
     Resource getContext();
 
     String getLockStatus();
+
+    String getVersionStatus();
 
 }
