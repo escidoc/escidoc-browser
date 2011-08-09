@@ -35,6 +35,8 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.Repository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Button.ClickEvent;
@@ -49,6 +51,8 @@ import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 
 @SuppressWarnings("serial")
 public class VersionHistoryClickListener implements ClickListener {
+
+    private static final Logger LOG = LoggerFactory.getLogger(VersionHistoryClickListener.class);
 
     private ItemProxy itemProxy;
 
@@ -81,7 +85,7 @@ public class VersionHistoryClickListener implements ClickListener {
         this.mainWindow = mainWindow;
         repository = repositories.item();
         this.escidocServiceLocation = escidocServiceLocation;
-        System.out.println("The service " + escidocServiceLocation);
+        LOG.debug("The service " + escidocServiceLocation);
     }
 
     /**

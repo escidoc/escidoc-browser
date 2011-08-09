@@ -40,6 +40,8 @@ import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ResourceModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 
@@ -48,6 +50,8 @@ import de.escidoc.core.resources.om.item.Item;
 import de.escidoc.core.resources.sb.search.SearchResult;
 
 public final class Util {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Util.class);
 
     /**
      * No instance allowed for utility classes.
@@ -84,23 +88,6 @@ public final class Util {
         return new SearchRetrieveRequestType();
     }
 
-    // public final static SearchRetrieveRequestType createQueryForTopLevelContainers(final String id) {
-    // Preconditions.checkNotNull(id, "id is null: %s", id);
-    // Preconditions.checkArgument(!id.isEmpty(), "id is empty: %s", id);
-    // final SearchRetrieveRequestType filter = new SearchRetrieveRequestType();
-    // filter.setQuery(topLevelContainers(id));
-    // return filter;
-    // }
-
-    // private final static String topLevelContainers(final String id) {
-    // final StringBuilder stringBuilder = new StringBuilder();
-    // stringBuilder.append("top-level-containers=true OR \"/properties/context/id=");
-    // stringBuilder.append(id);
-    // stringBuilder.append("\"");
-    // final String topLevelContainerQuery = stringBuilder.toString();
-    // return topLevelContainerQuery;
-    // }
-
     public static final void addToResults(final List<ResourceModel> results, final SearchResult searchResult) {
         Preconditions.checkNotNull(results, "results is null: %s", results);
         Preconditions.checkNotNull(searchResult, "record is null: %s", searchResult);
@@ -122,22 +109,6 @@ public final class Util {
         return escidocUri;
     }
 
-    // public static SearchRetrieveRequestType createQueryForTopLevelItems(final String id) {
-    // Preconditions.checkNotNull(id, "id is null: %s", id);
-    // Preconditions.checkArgument(!id.isEmpty(), "id is empty: %s", id);
-    // final SearchRetrieveRequestType filter = new SearchRetrieveRequestType();
-    // filter.setQuery(topLevelItems(id));
-    // return filter;
-    // }
-
-    // private static String topLevelItems(final String id) {
-    // final StringBuilder stringBuilder = new StringBuilder();
-    // stringBuilder.append("\"top-level-items\"=true OR \"/properties/context/id\"=");
-    // stringBuilder.append(id);
-    // final String topLevelContainerQuery = stringBuilder.toString();
-    // return topLevelContainerQuery;
-    // }
-
     public static SearchRetrieveRequestType createQueryForTopLevelContainersAndItems(final String id) {
         Preconditions.checkNotNull(id, "id is null: %s", id);
         Preconditions.checkArgument(!id.isEmpty(), "id is empty: %s", id);
@@ -148,11 +119,12 @@ public final class Util {
     }
 
     private static String topLevelContainersAndItems(final String id) {
-        System.out.println("*******************+ID " + id);
+        LOG.debug("*******************+ID " + id);
         final StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("(top-level-containers=true or top-level-items=true) and \"/properties/context/id\"=");
         stringBuilder.append(id);
-        System.out.println(stringBuilder);
-        return stringBuilder.toString();
+        final String query = stringBuilder.toString();
+        LOG.debug(query);
+        return query;
     }
 }

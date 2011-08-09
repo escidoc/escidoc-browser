@@ -194,7 +194,7 @@ public class ContainerRepository implements Repository {
         final TaskParam taskParam = new TaskParam();
         taskParam.setLastModificationDate(container.getLastModificationDate());
         taskParam.setComment(comment);
-        System.out.println("Statusi eshte" + publicStatus);
+        LOG.debug("Statusi eshte" + publicStatus);
         if (publicStatus.equals("SUBMITTED")) {
             client.submit(container, taskParam);
         }
@@ -233,7 +233,7 @@ public class ContainerRepository implements Repository {
     }
 
     private void delete(Container container) {
-        System.out.println(container.getClass().toString() + container.getObjid());
+        LOG.debug(container.getClass().toString() + container.getObjid());
         try {
             client.delete(container.getObjid());
         }
