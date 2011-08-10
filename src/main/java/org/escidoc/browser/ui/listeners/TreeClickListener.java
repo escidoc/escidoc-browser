@@ -74,6 +74,8 @@ public class TreeClickListener implements ItemClickListener {
 
     private NavigationMenuBar navigationMenuBar;
 
+    private Object previousSelected;
+
     public TreeClickListener(final EscidocServiceLocation serviceLocation, final Repositories repositories,
         final Window mainWindow, final MainSite mainSite, final CurrentUser currentUser) {
 
@@ -96,6 +98,11 @@ public class TreeClickListener implements ItemClickListener {
 
     @Override
     public void itemClick(final ItemClickEvent event) {
+        if (event.getItemId().equals(previousSelected)) {
+            return;
+        }
+        previousSelected = event.getItemId();
+
         try {
             updateMenuBar((ResourceModel) event.getItemId());
             openClickedResourceInNewTab((ResourceModel) event.getItemId());
