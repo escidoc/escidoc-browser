@@ -84,10 +84,11 @@ public class MetadataRecs {
 
     private final CurrentUser currentUser;
 
-	private MainSite mainSite;
+    private MainSite mainSite;
 
     public MetadataRecs(final ResourceProxy resourceProxy, final int innerelementsHeight, final Window mainWindow,
-        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories, CurrentUser currentUser, MainSite mainSite) {
+        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories, CurrentUser currentUser,
+        MainSite mainSite) {
 
         Preconditions.checkNotNull(mainWindow, "resource is null.");
         Preconditions.checkNotNull(escidocServiceLocation, "escidocServiceLocation is null.");
@@ -101,7 +102,7 @@ public class MetadataRecs {
         this.repositories = repositories;
         this.currentUser = currentUser;
         this.repositories = repositories;
-        this.mainSite=mainSite;
+        this.mainSite = mainSite;
     }
 
     private boolean hasAccess() {
@@ -144,7 +145,7 @@ public class MetadataRecs {
 
         final Button btnContentRelation =
             new Button("Container Content Relations", new RelationsClickListener(resourceProxy, mainWindow,
-                escidocServiceLocation, repositories,currentUser,mainSite));
+                escidocServiceLocation, repositories, currentUser, mainSite));
         btnContentRelation.setStyleName(BaseTheme.BUTTON_LINK);
         btnContentRelation.setDescription("Show Version history in a Pop-up");
 

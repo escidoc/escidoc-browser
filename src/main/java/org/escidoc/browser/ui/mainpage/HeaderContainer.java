@@ -44,6 +44,7 @@ import com.google.common.base.Preconditions;
 import com.vaadin.Application;
 import com.vaadin.Application.UserChangeEvent;
 import com.vaadin.Application.UserChangeListener;
+import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.UserError;
 import com.vaadin.ui.Button;
@@ -152,6 +153,8 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
         custom.addComponent(form, "form");
 
         final Button btnSearch = new Button("Go", this, "onClickSearch");
+        btnSearch.setClickShortcut(KeyCode.ENTER);
+        btnSearch.addStyleName("primary");
         btnSearch.removeStyleName("v-button");
         custom.addComponent(btnSearch, "btnSearch");
 

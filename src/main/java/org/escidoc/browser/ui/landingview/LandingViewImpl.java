@@ -33,6 +33,7 @@ import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.StartButtonListener;
 
 import com.google.common.base.Preconditions;
+import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
@@ -41,6 +42,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.Runo;
 
 @SuppressWarnings("serial")
 public class LandingViewImpl extends CustomComponent implements LandingView {
@@ -88,6 +90,8 @@ public class LandingViewImpl extends CustomComponent implements LandingView {
     @Override
     public void addStartButton(final Button button) {
         Preconditions.checkNotNull(button, "button is null: %s", button);
+        button.setClickShortcut(KeyCode.ENTER);
+        button.setStyleName(Runo.BUTTON_SMALL);
         formLayout.addComponent(button);
     }
 
@@ -124,6 +128,8 @@ public class LandingViewImpl extends CustomComponent implements LandingView {
     private void addStartButton() {
         startButtonListener.setInputField(escidocServiceUrl);
         startButton.addListener(startButtonListener);
+        startButton.setClickShortcut(KeyCode.ENTER);
+        startButton.addStyleName("primary");
         horizontalLayout.addComponent(startButton);
         horizontalLayout.setComponentAlignment(startButton, Alignment.MIDDLE_RIGHT);
     }
