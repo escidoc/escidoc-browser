@@ -258,7 +258,7 @@ public class MainSite extends VerticalLayout {
     }
 
     private void addRootNode() {
-        mainNavigation.addComponent(new RootNode(serviceLocation, this));
+        mainNavigation.addComponent(new RootNode(serviceLocation));
     }
 
     public boolean isUserAllowedToCreateContext() {

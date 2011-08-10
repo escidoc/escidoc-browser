@@ -29,43 +29,38 @@
 package org.escidoc.browser.ui.navigation;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.ui.MainSite;
-import org.escidoc.browser.ui.ViewConstants;
 
-import com.vaadin.event.Action;
-import com.vaadin.event.Action.Handler;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.Tree;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Layout.MarginInfo;
+import com.vaadin.ui.themes.Reindeer;
 
 @SuppressWarnings("serial")
 public class RootNode extends CustomComponent {
 
-    private final class RootNodeActionHandler implements Handler {
-        @Override
-        public void handleAction(final Action action, final Object sender, final Object target) {
-            getApplication().getMainWindow().showNotification("Adding a new context is not yet implemented");
-        }
+    private static final String CHANGE = "Change";
 
-        @Override
-        public Action[] getActions(final Object target, final Object sender) {
-            return new Action[] { new Action(ViewConstants.ADD_CONTEXT) };
-        }
-    }
+    private final HorizontalLayout horizontalLayout = new HorizontalLayout();
 
-    private final Tree tree = new Tree();
+    @SuppressWarnings("static-access")
+    public RootNode(final EscidocServiceLocation serviceLocation) {
+        setCompositionRoot(horizontalLayout);
+        horizontalLayout.setMargin(true);
+        horizontalLayout.setSpacing(true);
+        horizontalLayout.setMargin(new MarginInfo(false, false, false, true));
+        final Label label = new Label("<b>" + serviceLocation.getEscidocUri() + "</b>", Label.CONTENT_XHTML);
+        final Button button = new Button(CHANGE, new Button.ClickListener() {
 
-    public RootNode(final EscidocServiceLocation serviceLocation, final MainSite mainSite) {
-        setCompositionRoot(tree);
-        tree.setSelectable(false);
-        tree.addItem(serviceLocation.getEscidocUri());
-        tree.setChildrenAllowed(serviceLocation.getEscidocUri(), false);
-        if (mainSite.isUserAllowedToCreateContext()) {
-            addContextMenu();
-        }
-    }
-
-    private void addContextMenu() {
-        final Handler actionHandler = new RootNodeActionHandler();
-        tree.addActionHandler(actionHandler);
+            @Override
+            public void buttonClick(final ClickEvent event) {
+                getApplication().close();
+            }
+        });
+        button.setStyleName(Reindeer.BUTTON_LINK);
+        horizontalLayout.addComponent(label);
+        horizontalLayout.addComponent(button);
     }
 }

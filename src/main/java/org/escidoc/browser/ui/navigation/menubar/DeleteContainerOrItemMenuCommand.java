@@ -88,7 +88,7 @@ final class DeleteContainerOrItemMenuCommand implements Command {
                     }
                     break;
                 case ITEM:
-                    if (isUserAllowedToDeleteContainer()) {
+                    if (isUserAllowedToDeleteItem()) {
                         deleteResource();
                     }
                     else {
@@ -109,6 +109,12 @@ final class DeleteContainerOrItemMenuCommand implements Command {
             LOG.error(e.getMessage());
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
         }
+    }
+
+    private boolean isUserAllowedToDeleteItem() throws EscidocClientException, URISyntaxException {
+        return repositories
+            .pdp().isAction(ActionIdConstants.DELETE_ITEM).forUser(currentUser.getUserId())
+            .forResource(resourceModel.getId()).permitted();
     }
 
     private void showWarning() {
