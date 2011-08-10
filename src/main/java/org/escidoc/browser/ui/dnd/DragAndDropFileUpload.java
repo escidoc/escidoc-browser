@@ -1,8 +1,8 @@
 package org.escidoc.browser.ui.dnd;
 
 import org.escidoc.browser.AppConstants;
+import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.escidoc.browser.ui.maincontent.ItemContent;
 
 import com.google.common.base.Preconditions;
@@ -22,13 +22,13 @@ public class DragAndDropFileUpload extends VerticalLayout {
 
     private final Repositories repositories;
 
-    private final ItemProxyImpl itemProxy;
+    private final ItemProxy itemProxy;
 
     private final ItemContent componentListView;
 
     private final Component verticalLayout;
 
-    public DragAndDropFileUpload(final Repositories repositories, final ItemProxyImpl itemProxy,
+    public DragAndDropFileUpload(final Repositories repositories, final ItemProxy itemProxy,
         final ItemContent componentListView, final VerticalLayout verticalLayout) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(itemProxy, "itemProxy is null: %s", itemProxy);

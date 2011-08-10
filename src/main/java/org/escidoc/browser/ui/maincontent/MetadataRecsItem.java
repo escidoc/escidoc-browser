@@ -79,10 +79,11 @@ public class MetadataRecsItem {
 
     private final CurrentUser currentUser;
 
-	private MainSite mainSite;
+    private final MainSite mainSite;
 
     public MetadataRecsItem(final ItemProxy resourceProxy, final int innerelementsHeight, final Window mainWindow,
-        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories, CurrentUser currentUser, MainSite mainSite) {
+        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories,
+        final CurrentUser currentUser, final MainSite mainSite) {
         Preconditions.checkNotNull(mainWindow, "resource is null.");
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions
@@ -128,7 +129,7 @@ public class MetadataRecsItem {
 
         final Button btnContentRelation =
             new Button("Item Content Relations", new RelationsClickListener(resourceProxy, mainWindow,
-                escidocServiceLocation, repositories,mainSite,currentUser));
+                escidocServiceLocation, repositories, mainSite, currentUser));
         btnContentRelation.setStyleName(BaseTheme.BUTTON_LINK);
         btnContentRelation.setDescription("Show Version history in a Pop-up");
 
@@ -163,7 +164,7 @@ public class MetadataRecsItem {
 
         pnl.addComponent(btnaddContainer);
         if (hasAccess()) {
-            Button btnAddNew =
+            final Button btnAddNew =
                 new Button("Add New MetaData", new AddMetaDataFileItemBehaviour(mainWindow, escidocServiceLocation,
                     repositories, resourceProxy, this));
             btnAddNew.setStyleName(BaseTheme.BUTTON_LINK);
@@ -180,9 +181,9 @@ public class MetadataRecsItem {
      * @param metadataRecord
      */
     public void buildMDButtons(final VerticalLayout btnaddContainer, final MetadataRecord metadataRecord) {
-        HorizontalLayout hl = new HorizontalLayout();
+        final HorizontalLayout hl = new HorizontalLayout();
         if (hasAccess()) {
-            Button btnEditActualMetaData =
+            final Button btnEditActualMetaData =
                 new Button("", new EditMetaDataFileItemBehaviour(metadataRecord, mainWindow, escidocServiceLocation,
                     repositories, resourceProxy));
             btnEditActualMetaData.setStyleName(BaseTheme.BUTTON_LINK);
@@ -206,7 +207,7 @@ public class MetadataRecsItem {
      * 
      * @param metadataRecord
      */
-    public void addButtons(MetadataRecord metadataRecord) {
+    public void addButtons(final MetadataRecord metadataRecord) {
         buildMDButtons(btnaddContainer, metadataRecord);
     }
 
@@ -216,11 +217,11 @@ public class MetadataRecsItem {
                 .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.UPDATE_ITEM)
                 .forResource(resourceProxy.getId()).permitted();
         }
-        catch (EscidocClientException e) {
+        catch (final EscidocClientException e) {
             LOG.debug(e.getLocalizedMessage());
             return false;
         }
-        catch (URISyntaxException e) {
+        catch (final URISyntaxException e) {
             LOG.debug(e.getLocalizedMessage());
             return false;
         }

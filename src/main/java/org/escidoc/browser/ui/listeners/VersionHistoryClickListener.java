@@ -106,7 +106,6 @@ public class VersionHistoryClickListener implements ClickListener {
         this.mainWindow = mainWindow;
         repository = repositories.container();
         this.escidocServiceLocation = escidocServiceLocation;
-
     }
 
     public String getVersionHistory(final Repository cr, final String id) throws EscidocClientException {

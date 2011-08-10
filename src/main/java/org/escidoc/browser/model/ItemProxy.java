@@ -32,6 +32,7 @@ import java.util.List;
 
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.MetadataRecords;
+import de.escidoc.core.resources.om.item.component.Components;
 
 public interface ItemProxy extends ResourceProxy {
 
@@ -65,7 +66,9 @@ public interface ItemProxy extends ResourceProxy {
     @Override
     Resource getContext();
 
-    Object hasComponents();
+    Boolean hasComponents();
 
     String getLatestVersionId();
+
+    Components getElements();
 }

@@ -34,6 +34,7 @@ import java.net.URISyntaxException;
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.repository.internal.ItemProxyImpl;
@@ -61,10 +62,9 @@ import de.escidoc.core.resources.om.item.component.Component;
 @SuppressWarnings("serial")
 public class ItemContent extends Panel {
 
-    private static final String SRC_MAIN_WEBAPP_VAADIN_THEMES_MY_THEME_IMAGES_FILETYPES =
-        "src/main/webapp/VAADIN/themes/myTheme/images/filetypes/";
-
     private static final Logger LOG = LoggerFactory.getLogger(ItemContent.class);
+
+    private final VerticalLayout verticalLayout = new VerticalLayout();
 
     private final EscidocServiceLocation serviceLocation;
 
@@ -74,7 +74,7 @@ public class ItemContent extends Panel {
 
     private final Window mainWindow;
 
-    private ItemProxyImpl itemProxy;
+    private ItemProxy itemProxy;
 
     private Table table;
 
@@ -93,8 +93,6 @@ public class ItemContent extends Panel {
         initView();
     }
 
-    private final VerticalLayout verticalLayout = new VerticalLayout();
-
     private void initView() {
         getLayout().setMargin(false);
         setScrollable(false);
@@ -104,7 +102,7 @@ public class ItemContent extends Panel {
             verticalLayout.addComponent(buildTable());
         }
         else {
-            Label lblNoComponents =
+            final Label lblNoComponents =
                 new Label(
                     "No components in this Item. You can drag n'drop some file from your computer to this box to add new components!");
             lblNoComponents.setWidth("90%");
@@ -175,11 +173,11 @@ public class ItemContent extends Panel {
     }
 
     private Embedded createEmbeddedImage(final Component comp) {
-        String currentDir = new File(".").getAbsolutePath();
-        File file =
-            new File(currentDir.substring(0, currentDir.length() - 1)
-                + SRC_MAIN_WEBAPP_VAADIN_THEMES_MY_THEME_IMAGES_FILETYPES + getFileType(comp) + ".png");
-        boolean exists = file.exists();
+        final String currentDir = new File(".").getAbsolutePath();
+        final File file =
+            new File(currentDir.substring(0, currentDir.length() - 1) + AppConstants.MIMETYPE_ICON_LOCATION
+                + getFileType(comp) + ".png");
+        final boolean exists = file.exists();
         if (exists) {
             return new Embedded("", new ThemeResource("images/filetypes/" + getFileType(comp) + ".png"));
         }

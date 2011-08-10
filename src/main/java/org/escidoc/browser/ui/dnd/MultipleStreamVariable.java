@@ -35,6 +35,7 @@ import java.net.URL;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.internal.ComponentBuilder;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ItemProxyImpl;
@@ -75,13 +76,13 @@ class MultipleStreamVariable implements StreamVariable {
 
     private final Repositories repositories;
 
-    private final ItemProxyImpl itemProxy;
+    private final ItemProxy itemProxy;
 
     private final ItemContent componentListView;
 
     MultipleStreamVariable(final ProgressIndicator progressView, final Window mainWindow, final Html5File html5File,
         final Components componentList, final FilesDropBox itemDropBox, final Repositories repositories,
-        final ItemProxyImpl itemProxy, final ItemContent componentListView) {
+        final ItemProxy itemProxy, final ItemContent componentListView) {
 
         Preconditions.checkNotNull(progressView, "progressView is null: %s", progressView);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);

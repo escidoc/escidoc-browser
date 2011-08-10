@@ -226,13 +226,13 @@ public class ItemView extends VerticalLayout {
                 new Label("Latest Status "
                     + getStatusOfLatestVersion(repositories.item().findById(findById.getLatestVersionId())));
         }
-        catch (EscidocClientException e) {
+        catch (final EscidocClientException e) {
             LOG.error(e.getMessage());
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
         }
     }
 
-    private String getStatusOfLatestVersion(ResourceProxy latestVersionItem) {
+    private String getStatusOfLatestVersion(final ResourceProxy latestVersionItem) {
         return latestVersionItem.getVersionStatus();
     }
 
@@ -411,15 +411,15 @@ public class ItemView extends VerticalLayout {
                             cmbStatus.addItem("Delete");
                         }
                     }
-                    catch (UnsupportedOperationException e) {
+                    catch (final UnsupportedOperationException e) {
                         mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
                         e.printStackTrace();
                     }
-                    catch (EscidocClientException e) {
+                    catch (final EscidocClientException e) {
                         mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
                         e.printStackTrace();
                     }
-                    catch (URISyntaxException e) {
+                    catch (final URISyntaxException e) {
                         mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
                         e.printStackTrace();
                     }
@@ -514,11 +514,11 @@ public class ItemView extends VerticalLayout {
                 .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.UPDATE_CONTAINER)
                 .forResource(resourceProxy.getId()).permitted();
         }
-        catch (EscidocClientException e) {
+        catch (final EscidocClientException e) {
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
             return false;
         }
-        catch (URISyntaxException e) {
+        catch (final URISyntaxException e) {
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
             return false;
         }
@@ -538,10 +538,7 @@ public class ItemView extends VerticalLayout {
             versionHistory.setStyleName(BaseTheme.BUTTON_LINK);
             return versionHistory;
         }
-        else {
-            final Label strHistory = new Label("Has no previous history");
-            return strHistory;
-        }
+        return new Label("Has no previous history");
     }
 
     @Override

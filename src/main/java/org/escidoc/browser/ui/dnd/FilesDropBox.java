@@ -28,8 +28,8 @@ package org.escidoc.browser.ui.dnd;
 
 import java.util.Collection;
 
+import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.escidoc.browser.ui.maincontent.ItemContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,13 +63,13 @@ class FilesDropBox extends DragAndDropWrapper implements DropHandler {
 
     private final Repositories repositories;
 
-    private final ItemProxyImpl itemProxy;
+    private final ItemProxy itemProxy;
 
     private final ItemContent componentListView;
 
     private int numberOfFiles;
 
-    FilesDropBox(final Repositories repositories, final ItemProxyImpl itemProxy, final Component root,
+    FilesDropBox(final Repositories repositories, final ItemProxy itemProxy, final Component root,
         final ProgressIndicator progressView, final ItemContent componentListView) {
         super(root);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);

@@ -124,7 +124,7 @@ public class MainSite extends VerticalLayout {
         addMenuBar();
         addNavigationPanel();
         addMainContentTabs();
-        permanentURLelement();
+        // permanentURLelement();
         addFooter();
         addComponent(mainLayout);
     }
