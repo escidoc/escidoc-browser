@@ -101,8 +101,6 @@ public class ContainerView extends VerticalLayout {
 
     private static final String RESOURCE_NAME = "Container: ";
 
-    protected static final String STATUS = "Container is ";
-
     private String status;
 
     private int accordionHeight;
@@ -127,7 +125,7 @@ public class ContainerView extends VerticalLayout {
 
     private Window subwindow;
 
-    private Label lblLatestVersionStatus;
+    private Label lblCurrentVersionStatus;
 
     private final VerticalLayout vlPropertiesLeft = new VerticalLayout();
 
@@ -255,8 +253,10 @@ public class ContainerView extends VerticalLayout {
 
         vlPropertiesLeft.addComponent(descMetadata1);
         if (hasAccess()) {
-            setLatestStatus();
-            vlPropertiesLeft.addComponent(lblLatestVersionStatus);
+            status = "Latest status is ";
+            lblCurrentVersionStatus = new Label(status + resourceProxy.getVersionStatus());
+            lblCurrentVersionStatus.setDescription(DESC_STATUS2);
+            vlPropertiesLeft.addComponent(lblCurrentVersionStatus);
             hl.addComponent(buildReleasedByBtn());
         }
         else {
@@ -297,26 +297,6 @@ public class ContainerView extends VerticalLayout {
         pnlPropertiesRight.addStyleName(Runo.PANEL_LIGHT);
         pnlPropertiesRight.getLayout().setMargin(false);
         return pnlPropertiesRight;
-    }
-
-    private void setLatestStatus() {
-        ContainerProxy findById;
-        try {
-            findById = (ContainerProxy) repositories.container().findById(resourceProxy.getId());
-            status = "Latest status is ";
-            lblLatestVersionStatus =
-                new Label(status
-                    + getStatusOfLatestVersion(repositories.container().findById(findById.getLatestVersionId())));
-            lblLatestVersionStatus.setDescription(DESC_STATUS2);
-        }
-        catch (EscidocClientException e) {
-            LOG.error(e.getMessage());
-            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-        }
-    }
-
-    private String getStatusOfLatestVersion(ResourceProxy latestVersionItem) {
-        return latestVersionItem.getStatus();
     }
 
     private void addHorizontalRuler() {
@@ -376,7 +356,6 @@ public class ContainerView extends VerticalLayout {
                             final Label child = (Label) event.getChildComponent();
                             if ((child.getDescription() == DESC_STATUS2)
                                 && (!lblStatus.getValue().equals(status + "withdrawn"))) {
-                                System.out.println("*******************Here it comes on the Status");
                                 reSwapComponents();
                                 oldComponent = event.getClickedComponent();
                                 swapComponent = editStatus(child.getValue().toString().replace(status, ""));
@@ -481,7 +460,7 @@ public class ContainerView extends VerticalLayout {
                         if (repositories
                             .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_CONTAINER)
                             .forResource(resourceProxy.getId()).permitted()) {
-                            cmbStatus.addItem("Delete");
+                            cmbStatus.addItem("delete");
                         }
                     }
                     catch (UnsupportedOperationException e) {
@@ -540,9 +519,10 @@ public class ContainerView extends VerticalLayout {
 
                 private void updatePublicStatus(Container container, String comment) throws EscidocClientException {
                     // Update PublicStatus if there is a change
-                    if (!resourceProxy.getStatus().equals(lblStatus.getValue().toString().replace(status, ""))) {
+                    if (!resourceProxy.getVersionStatus().equals(
+                        lblCurrentVersionStatus.getValue().toString().replace(status, ""))) {
                         repositories.container().changePublicStatus(container,
-                            lblStatus.getValue().toString().replace(STATUS, "").toUpperCase(), comment);
+                            lblCurrentVersionStatus.getValue().toString().replace(status, "").toUpperCase(), comment);
                     }
                 }
 
@@ -551,7 +531,7 @@ public class ContainerView extends VerticalLayout {
                     if (!resourceProxy.getLockStatus().equals(
                         lblLockstatus.getValue().toString().replace(lockStatus, ""))) {
                         repositories.container().changeLockStatus(container,
-                            lblLockstatus.getValue().toString().replace(STATUS, "").toUpperCase(), comment);
+                            lblLockstatus.getValue().toString().replace(lockStatus, "").toUpperCase(), comment);
                     }
                 }
 

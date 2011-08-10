@@ -126,6 +126,7 @@ public class ItemProxyImpl implements ItemProxy {
         return itemFromCore.getComponents().getFirst();
     }
 
+    @Override
     public Components getElements() {
         return itemFromCore.getComponents();
     }
@@ -181,7 +182,12 @@ public class ItemProxyImpl implements ItemProxy {
         return itemFromCore.getProperties().getLatestVersion().getObjid();
     }
 
+    @Override
     public String getVersionStatus() {
         return itemFromCore.getProperties().getVersion().getStatus();
+    }
+
+    public String getReleasedBy() {
+        return itemFromCore.getProperties().getVersion().getModifiedBy().getXLinkTitle();
     }
 }

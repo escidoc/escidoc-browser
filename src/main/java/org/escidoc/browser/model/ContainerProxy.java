@@ -70,7 +70,7 @@ public interface ContainerProxy extends ResourceProxy {
     @Override
     String getLockStatus();
 
-    String getLatestVersionId();
+    String getCurrentVersionId();
 
     String getReleasedBy();
 

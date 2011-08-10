@@ -119,12 +119,12 @@ public final class Util {
     }
 
     private static String topLevelContainersAndItems(final String id) {
-        LOG.debug("*******************+ID " + id);
+
         final StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("(top-level-containers=true or top-level-items=true) and \"/properties/context/id\"=");
         stringBuilder.append(id);
         final String query = stringBuilder.toString();
-        LOG.debug(query);
+
         return query;
     }
 }

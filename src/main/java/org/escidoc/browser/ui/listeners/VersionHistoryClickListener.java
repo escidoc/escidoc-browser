@@ -85,7 +85,6 @@ public class VersionHistoryClickListener implements ClickListener {
         this.mainWindow = mainWindow;
         repository = repositories.item();
         this.escidocServiceLocation = escidocServiceLocation;
-        LOG.debug("The service " + escidocServiceLocation);
     }
 
     /**

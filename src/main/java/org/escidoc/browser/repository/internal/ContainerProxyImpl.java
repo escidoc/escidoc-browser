@@ -268,9 +268,8 @@ public class ContainerProxyImpl implements ContainerProxy {
     }
 
     @Override
-    public String getLatestVersionId() {
-
-        return containerFromCore.getProperties().getLatestVersion().getObjid();
+    public String getCurrentVersionId() {
+        return containerFromCore.getProperties().getVersion().getObjid();
     }
 
     @Override
@@ -278,6 +277,7 @@ public class ContainerProxyImpl implements ContainerProxy {
         return containerFromCore.getProperties().getVersion().getStatus();
     }
 
+    @Override
     public String getReleasedBy() {
         return containerFromCore.getProperties().getVersion().getModifiedBy().getXLinkTitle();
     }
