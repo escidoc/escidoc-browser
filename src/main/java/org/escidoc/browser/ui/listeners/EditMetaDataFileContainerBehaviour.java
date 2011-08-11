@@ -1,24 +1,5 @@
 package org.escidoc.browser.ui.listeners;
 
-import java.io.IOException;
-import java.io.StringReader;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.escidoc.browser.BrowserApplication;
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.ViewConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -32,6 +13,25 @@ import com.vaadin.ui.Upload.FinishedEvent;
 import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Window;
+
+import org.escidoc.browser.BrowserApplication;
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.ViewConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
+import java.io.StringReader;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
@@ -64,8 +64,9 @@ public class EditMetaDataFileContainerBehaviour implements ClickListener {
 
     private Element metadataContent;
 
-    public EditMetaDataFileContainerBehaviour(MetadataRecord metadataRecord, Window mainWindow,
-        EscidocServiceLocation escidocServiceLocation, final Repositories repositories, ResourceProxy resourceProxy) {
+    public EditMetaDataFileContainerBehaviour(final MetadataRecord metadataRecord, final Window mainWindow,
+        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories,
+        final ResourceProxy resourceProxy) {
         this.metadataRecord = metadataRecord;
         this.mainWindow = mainWindow;
         this.escidocServiceLocation = escidocServiceLocation;
@@ -75,7 +76,7 @@ public class EditMetaDataFileContainerBehaviour implements ClickListener {
     }
 
     @Override
-    public void buttonClick(ClickEvent event) {
+    public void buttonClick(final ClickEvent event) {
         showWindow();
 
     }
@@ -144,27 +145,27 @@ public class EditMetaDataFileContainerBehaviour implements ClickListener {
             }
         });
 
-        Button btnAdd = new Button("Add New Metadata", new Button.ClickListener() {
+        final Button btnAdd = new Button("Add New Metadata", new Button.ClickListener() {
             Container container;
 
             @Override
-            public void buttonClick(ClickEvent event) {
+            public void buttonClick(final ClickEvent event) {
                 try {
                     container = repositories.container().findContainerById(resourceProxy.getId());
                     metadataRecord.setContent(metadataContent);
                     repositories.container().updateMetaData(metadataRecord, container);
 
                 }
-                catch (EscidocClientException e) {
+                catch (final EscidocClientException e) {
                     LOG.debug(e.getLocalizedMessage());
                 }
                 (subwindow.getParent()).removeWindow(subwindow);
             }
         });
 
-        Button cnclAdd = new Button("Cancel", new Button.ClickListener() {
+        final Button cnclAdd = new Button("Cancel", new Button.ClickListener() {
             @Override
-            public void buttonClick(ClickEvent event) {
+            public void buttonClick(final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
             }
         });

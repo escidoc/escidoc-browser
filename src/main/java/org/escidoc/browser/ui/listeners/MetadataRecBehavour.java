@@ -26,6 +26,16 @@
  */
 package org.escidoc.browser.ui.listeners;
 
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Window;
+
+import org.escidoc.browser.AppConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Element;
+
 import java.io.StringWriter;
 
 import javax.xml.transform.OutputKeys;
@@ -35,35 +45,24 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.w3c.dom.Element;
-
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Window;
-
 import de.escidoc.core.resources.common.MetadataRecord;
 
+@SuppressWarnings("serial")
 public class MetadataRecBehavour implements ClickListener {
+
+    private final static Logger LOG = LoggerFactory.getLogger(MetadataRecBehavour.class);
 
     private static final String NAME = "Name :";
 
     private static final String LINK = "Link ";
 
-    private static final String CONTENT = "Content ";
-
     private final Window mainWindow;
 
-    MetadataRecord metadataRecord;
+    private final MetadataRecord metadataRecord;
 
-    private final EscidocServiceLocation escidocServiceLocation;
-
-    public MetadataRecBehavour(final MetadataRecord metadataRecord, final Window mainWindow,
-        final EscidocServiceLocation escidocServiceLocation) {
+    public MetadataRecBehavour(final MetadataRecord metadataRecord, final Window mainWindow) {
         this.mainWindow = mainWindow;
         this.metadataRecord = metadataRecord;
-        this.escidocServiceLocation = escidocServiceLocation;
     }
 
     @Override
@@ -78,7 +77,7 @@ public class MetadataRecBehavour implements ClickListener {
         builder.append("<br />");
         builder.append(LINK);
         builder.append(metadataRecord.getXLinkTitle());
-        String mtRecinfo = builder.toString();
+        final String mtRecinfo = builder.toString();
 
         final Label msgWindow = new Label(mtRecinfo, Label.CONTENT_RAW);
         final Label msgMetaDataXml =
@@ -94,22 +93,19 @@ public class MetadataRecBehavour implements ClickListener {
         }
     }
 
-    private String getContentAsString(Element el) {
-
-        TransformerFactory transFactory = TransformerFactory.newInstance();
+    private String getContentAsString(final Element el) {
+        final TransformerFactory transFactory = TransformerFactory.newInstance();
         Transformer transformer;
         try {
             transformer = transFactory.newTransformer();
-            StringWriter buffer = new StringWriter();
+            final StringWriter buffer = new StringWriter();
             transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
             transformer.transform(new DOMSource(el), new StreamResult(buffer));
             return buffer.toString();
         }
-        catch (TransformerException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        catch (final TransformerException e) {
+            LOG.error(e.getMessage());
         }
-        return null;
-
+        return AppConstants.EMPTY_STRING;
     }
 }

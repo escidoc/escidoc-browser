@@ -28,14 +28,14 @@
  */
 package org.escidoc.browser;
 
+import org.w3c.dom.Document;
+
 import java.text.DecimalFormat;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.w3c.dom.Document;
-
-public class Utils {
+public final class Utils {
 
     private Utils() {
         // Utility class

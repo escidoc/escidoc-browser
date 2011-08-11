@@ -28,7 +28,16 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import java.net.URISyntaxException;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.BaseTheme;
 
 import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.CurrentUser;
@@ -45,15 +54,7 @@ import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.Accordion;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.BaseTheme;
+import java.net.URISyntaxException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
@@ -150,8 +151,8 @@ public class MetadataRecsItem {
         pnl.addComponent(btnaddContainer);
         if (hasAccess()) {
             final Button btnAddNew =
-                new Button("Add New MetaData", new AddMetaDataFileItemBehaviour(mainWindow, escidocServiceLocation,
-                    repositories, resourceProxy, this));
+                new Button("Add New MetaData", new AddMetaDataFileItemBehaviour(mainWindow, repositories,
+                    resourceProxy, this));
             btnAddNew.setStyleName(BaseTheme.BUTTON_LINK);
             btnAddNew.setIcon(new ThemeResource("../myTheme/runo/icons/16/note.png"));
             pnl.addComponent(btnAddNew);
@@ -178,8 +179,7 @@ public class MetadataRecsItem {
         }
 
         final Button btnmdRec =
-            new Button(metadataRecord.getName(), new MetadataRecBehavour(metadataRecord, mainWindow,
-                escidocServiceLocation));
+            new Button(metadataRecord.getName(), new MetadataRecBehavour(metadataRecord, mainWindow));
         btnmdRec.setStyleName(BaseTheme.BUTTON_LINK);
         btnmdRec.setDescription("Show metadata information in a separate window");
         hl.addComponent(btnmdRec);

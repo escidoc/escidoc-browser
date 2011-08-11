@@ -1,25 +1,5 @@
 package org.escidoc.browser.ui.listeners;
 
-import java.io.IOException;
-import java.io.StringReader;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.escidoc.browser.BrowserApplication;
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.MetadataRecs;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
 import com.vaadin.terminal.UserError;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -36,18 +16,38 @@ import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Window;
 
+import org.escidoc.browser.BrowserApplication;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.maincontent.MetadataRecs;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.om.container.Container;
 
+@SuppressWarnings("serial")
 public class AddMetaDataFileContainerBehaviour implements ClickListener {
     static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
 
     private final ResourceProxy resourceProxy;
 
     private final Window mainWindow;
-
-    private final EscidocServiceLocation escidocServiceLocation;
 
     private final MetadataFileReceiver receiver = new MetadataFileReceiver();
 
@@ -69,17 +69,16 @@ public class AddMetaDataFileContainerBehaviour implements ClickListener {
 
     private final MetadataRecs metadataRecs;
 
-    public AddMetaDataFileContainerBehaviour(Window mainWindow, EscidocServiceLocation escidocServiceLocation,
-        final Repositories repositories, ResourceProxy resourceProxy, MetadataRecs metadataRecs) {
+    public AddMetaDataFileContainerBehaviour(final Window mainWindow, final Repositories repositories,
+        final ResourceProxy resourceProxy, final MetadataRecs metadataRecs) {
         this.mainWindow = mainWindow;
-        this.escidocServiceLocation = escidocServiceLocation;
         this.repositories = repositories;
         this.resourceProxy = resourceProxy;
         this.metadataRecs = metadataRecs;
     }
 
     @Override
-    public void buttonClick(ClickEvent event) {
+    public void buttonClick(final ClickEvent event) {
         showAddWindow();
 
     }
@@ -155,18 +154,27 @@ public class AddMetaDataFileContainerBehaviour implements ClickListener {
 
         hl = new HorizontalLayout();
         hl.setMargin(true);
-        Button btnAdd = new Button("Add New Metadata", new Button.ClickListener() {
+        final Button btnAdd = new Button("Add New Metadata", new Button.ClickListener() {
             Container container;
 
+            private boolean containSpace(final String text) {
+                final Pattern pattern = Pattern.compile("\\s");
+                final Matcher matcher = pattern.matcher(text);
+                return matcher.find();
+            }
+
             @Override
-            public void buttonClick(ClickEvent event) {
+            public void buttonClick(final ClickEvent event) {
 
                 if (mdName.getValue().equals("")) {
                     mdName.setComponentError(new UserError("You have to add a name for your MetaData"));
                 }
+                else if (containSpace(((String) mdName.getValue()))) {
+                    mdName.setComponentError(new UserError("The name of MetaData can not contain space"));
+                }
                 else {
                     try {
-                        MetadataRecord metadataRecord = new MetadataRecord(mdName.getValue().toString());
+                        final MetadataRecord metadataRecord = new MetadataRecord(mdName.getValue().toString());
                         container = repositories.container().findContainerById(resourceProxy.getId());
                         metadataRecord.setContent(metadataContent);
                         repositories.container().addMetaData(metadataRecord, container);
@@ -175,7 +183,7 @@ public class AddMetaDataFileContainerBehaviour implements ClickListener {
                         upload.setEnabled(true);
                         (subwindow.getParent()).removeWindow(subwindow);
                     }
-                    catch (EscidocClientException e) {
+                    catch (final EscidocClientException e) {
                         mdName.setComponentError(new UserError("Failed to add the new Metadata record"
                             + e.getLocalizedMessage()));
                         LOG.debug(e.getLocalizedMessage());
@@ -184,9 +192,9 @@ public class AddMetaDataFileContainerBehaviour implements ClickListener {
             }
         });
 
-        Button cnclAdd = new Button("Cancel", new Button.ClickListener() {
+        final Button cnclAdd = new Button("Cancel", new Button.ClickListener() {
             @Override
-            public void buttonClick(ClickEvent event) {
+            public void buttonClick(final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
             }
         });

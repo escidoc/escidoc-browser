@@ -28,13 +28,13 @@
  */
 package org.escidoc.browser.model;
 
-public class PropertyId {
-
-    public static final String TYPE = "type";
+public final class PropertyId {
 
     private PropertyId() {
         // Constant class
     }
+
+    public static final String TYPE = "type";
 
     public static final String OBJECT_ID = "objectId";
 

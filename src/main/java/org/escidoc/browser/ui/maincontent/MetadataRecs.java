@@ -28,7 +28,16 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import java.net.URISyntaxException;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.BaseTheme;
 
 import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.ContainerProxy;
@@ -46,15 +55,7 @@ import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.Accordion;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.BaseTheme;
+import java.net.URISyntaxException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
@@ -84,16 +85,17 @@ public class MetadataRecs {
 
     private final CurrentUser currentUser;
 
-    private MainSite mainSite;
+    private final MainSite mainSite;
 
     public MetadataRecs(final ResourceProxy resourceProxy, final int innerelementsHeight, final Window mainWindow,
-        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories, CurrentUser currentUser,
-        MainSite mainSite) {
-
-        Preconditions.checkNotNull(mainWindow, "resource is null.");
+        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories,
+        final CurrentUser currentUser, final MainSite mainSite) {
+        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
+        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
         Preconditions.checkNotNull(escidocServiceLocation, "escidocServiceLocation is null.");
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
-        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null.");
 
         height = innerelementsHeight;
         this.resourceProxy = (ContainerProxy) resourceProxy;
@@ -111,11 +113,11 @@ public class MetadataRecs {
                 .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.UPDATE_CONTAINER)
                 .forResource(resourceProxy.getId()).permitted();
         }
-        catch (EscidocClientException e) {
+        catch (final EscidocClientException e) {
             LOG.debug(e.getLocalizedMessage());
             return false;
         }
-        catch (URISyntaxException e) {
+        catch (final URISyntaxException e) {
             LOG.debug(e.getLocalizedMessage());
             return false;
         }
@@ -166,9 +168,9 @@ public class MetadataRecs {
 
         pnl.addComponent(btnaddContainer);
         if (hasAccess()) {
-            Button btnAddNew =
-                new Button("Add New MetaData", new AddMetaDataFileContainerBehaviour(mainWindow,
-                    escidocServiceLocation, repositories, resourceProxy, this));
+            final Button btnAddNew =
+                new Button("Add New MetaData", new AddMetaDataFileContainerBehaviour(mainWindow, repositories,
+                    resourceProxy, this));
             btnAddNew.setStyleName(BaseTheme.BUTTON_LINK);
             btnAddNew.setIcon(new ThemeResource("../myTheme/runo/icons/16/note.png"));
             pnl.addComponent(btnAddNew);
@@ -183,9 +185,9 @@ public class MetadataRecs {
      * @param metadataRecord
      */
     public void buildMDButtons(final VerticalLayout btnaddContainer, final MetadataRecord metadataRecord) {
-        HorizontalLayout hl = new HorizontalLayout();
+        final HorizontalLayout hl = new HorizontalLayout();
         if (hasAccess()) {
-            Button btnEditActualMetaData =
+            final Button btnEditActualMetaData =
                 new Button("", new EditMetaDataFileContainerBehaviour(metadataRecord, mainWindow,
                     escidocServiceLocation, repositories, resourceProxy));
             btnEditActualMetaData.setStyleName(BaseTheme.BUTTON_LINK);
@@ -195,8 +197,7 @@ public class MetadataRecs {
         }
 
         final Button btnmdRec =
-            new Button(metadataRecord.getName(), new MetadataRecBehavour(metadataRecord, mainWindow,
-                escidocServiceLocation));
+            new Button(metadataRecord.getName(), new MetadataRecBehavour(metadataRecord, mainWindow));
         btnmdRec.setStyleName(BaseTheme.BUTTON_LINK);
         btnmdRec.setDescription("Show metadata information in a separate window");
         hl.addComponent(btnmdRec);
@@ -209,7 +210,7 @@ public class MetadataRecs {
      * 
      * @param metadataRecord
      */
-    public void addButtons(MetadataRecord metadataRecord) {
+    public void addButtons(final MetadataRecord metadataRecord) {
         buildMDButtons(btnaddContainer, metadataRecord);
     }
 }

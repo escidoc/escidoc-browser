@@ -166,10 +166,8 @@ public class ContainerView extends VerticalLayout {
     }
 
     private void addMetadataRecords() {
-        final MetadataRecs metaData =
-            new MetadataRecs(resourceProxy, accordionHeight, mainWindow, serviceLocation, repositories, currentUser,
-                mainSite);
-        rightCell(metaData.asAccord());
+        rightCell(new MetadataRecs(resourceProxy, accordionHeight, mainWindow, serviceLocation, repositories, currentUser,
+            mainSite).asAccord());
     }
 
     private void addDirectMembers() throws EscidocClientException {
