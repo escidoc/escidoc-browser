@@ -1,13 +1,6 @@
 package org.escidoc.browser.ui.maincontent;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.net.MalformedURLException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
+import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.TreeDataSource;
@@ -18,8 +11,6 @@ import org.escidoc.browser.ui.listeners.AddContainerListener;
 import org.escidoc.browser.ui.listeners.MetadataFileReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.data.validator.StringLengthValidator;
@@ -50,8 +41,6 @@ import de.escidoc.core.resources.om.container.Container;
 
 public class ContainerAddView {
 
-    private static final String SELECT_FILE = "Select file";
-
     private final static Logger LOG = LoggerFactory.getLogger(ContainerAddView.class);
 
     private final FormLayout addContainerForm = new FormLayout();
@@ -62,6 +51,16 @@ public class ContainerAddView {
 
     private final Window subwindow = new Window(ViewConstants.CREATE_CONTAINER);
 
+    private final Label status = new Label("Upload a wellformed XML file to create metadata!");
+
+    private final ProgressIndicator progressIndicator = new ProgressIndicator();
+
+    private final MetadataFileReceiver receiver = new MetadataFileReceiver();
+
+    private final HorizontalLayout progressLayout = new HorizontalLayout();
+
+    private final Upload upload = new Upload("", receiver);
+
     private final Repositories repositories;
 
     private final Window mainWindow;
@@ -70,19 +69,7 @@ public class ContainerAddView {
 
     private final TreeDataSource treeDataSource;
 
-    private Button addButton;
-
     private final String contextId;
-
-    private final Label status = new Label("Upload a wellformed XML file to create metadata!");
-
-    private final ProgressIndicator pi = new ProgressIndicator();
-
-    private final MetadataFileReceiver receiver = new MetadataFileReceiver();
-
-    private final HorizontalLayout progressLayout = new HorizontalLayout();
-
-    private final Upload upload = new Upload("", receiver);
 
     public ContainerAddView(final Repositories repositories, final Window mainWindow, final ResourceModel parent,
         final TreeDataSource treeDataSource, final String contextId) {
@@ -98,7 +85,7 @@ public class ContainerAddView {
         this.contextId = contextId;
     }
 
-    public void buildContainerForm() throws MalformedURLException, EscidocClientException {
+    private void buildContainerForm() throws EscidocClientException {
         addContainerForm.setImmediate(true);
         addNameField();
         addContentModelSelect();
@@ -115,8 +102,7 @@ public class ContainerAddView {
         addContainerForm.addComponent(nameField);
     }
 
-    private void addContentModelSelect() throws MalformedURLException, EscidocException, InternalClientException,
-        TransportException {
+    private void addContentModelSelect() throws EscidocException, InternalClientException, TransportException {
         Preconditions.checkNotNull(repositories.contentModel(), "ContentModelRepository is null: %s",
             repositories.contentModel());
         contentModelSelect.setRequired(true);
@@ -126,6 +112,7 @@ public class ContainerAddView {
         addContainerForm.addComponent(contentModelSelect);
     }
 
+    @SuppressWarnings("serial")
     private void addMetaData() {
         addContainerForm.addComponent(status);
         addContainerForm.addComponent(upload);
@@ -133,12 +120,12 @@ public class ContainerAddView {
 
         // Make uploading start immediately when file is selected
         upload.setImmediate(true);
-        upload.setButtonCaption(SELECT_FILE);
+        upload.setButtonCaption(ViewConstants.SELECT_FILE);
 
         progressLayout.setSpacing(true);
         progressLayout.setVisible(false);
-        progressLayout.addComponent(pi);
-        progressLayout.setComponentAlignment(pi, Alignment.MIDDLE_LEFT);
+        progressLayout.addComponent(progressIndicator);
+        progressLayout.setComponentAlignment(progressIndicator, Alignment.MIDDLE_LEFT);
 
         final Button cancelProcessing = new Button("Cancel");
         cancelProcessing.addListener(new Button.ClickListener() {
@@ -157,11 +144,11 @@ public class ContainerAddView {
         upload.addListener(new Upload.StartedListener() {
             @Override
             public void uploadStarted(final StartedEvent event) {
-                // This method gets called immediatedly after upload is started
+                // This method gets called immediately after upload is started
                 upload.setVisible(false);
                 progressLayout.setVisible(true);
-                pi.setValue(0f);
-                pi.setPollingInterval(500);
+                progressIndicator.setValue(Float.valueOf(0f));
+                progressIndicator.setPollingInterval(500);
                 status.setValue("Uploading file \"" + event.getFilename() + "\"");
             }
         });
@@ -170,7 +157,7 @@ public class ContainerAddView {
             @Override
             public void updateProgress(final long readBytes, final long contentLength) {
                 // This method gets called several times during the update
-                pi.setValue(new Float(readBytes / (float) contentLength));
+                progressIndicator.setValue(new Float(readBytes / (float) contentLength));
             }
 
         });
@@ -180,12 +167,14 @@ public class ContainerAddView {
             public void uploadSucceeded(final SucceededEvent event) {
                 // This method gets called when the upload finished successfully
                 status.setValue("Uploading file \"" + event.getFilename() + "\" succeeded");
-                if (isValidXml(receiver.getFileContent())) {
-                    status.setValue("XML Looks correct");
+                final boolean isWellFormed = XmlUtil.isWellFormed(receiver.getFileContent());
+                receiver.setWellFormed(isWellFormed);
+                if (isWellFormed) {
+                    status.setValue(ViewConstants.XML_IS_WELL_FORMED);
                     upload.setEnabled(false);
                 }
                 else {
-                    status.setValue("Not valid");
+                    status.setValue(ViewConstants.XML_IS_NOT_WELL_FORMED);
                 }
             }
         });
@@ -208,41 +197,10 @@ public class ContainerAddView {
                 upload.setCaption("Select another file");
             }
         });
-
-    }
-
-    /**
-     * checking if the uploaded file contains a valid XML string
-     * 
-     * @param xml
-     * @return boolean
-     */
-    private boolean isValidXml(final String xml) {
-        final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder;
-
-        try {
-            builder = factory.newDocumentBuilder();
-            final InputSource is = new InputSource(new StringReader(xml));
-            try {
-                builder.parse(is);
-                return true;
-            }
-            catch (final SAXException e) {
-                return false;
-            }
-            catch (final IOException e) {
-                return false;
-            }
-        }
-        catch (final ParserConfigurationException e) {
-            return false;
-        }
     }
 
     private void addButton() {
-        addButton = new Button(ViewConstants.ADD, new AddContainerListener(this));
-        addContainerForm.addComponent(addButton);
+        addContainerForm.addComponent(new Button(ViewConstants.ADD, new AddContainerListener(this)));
     }
 
     private void buildSubWindowUsingContainerForm() {
@@ -251,7 +209,7 @@ public class ContainerAddView {
         subwindow.addComponent(addContainerForm);
     }
 
-    public void openSubWindow() throws MalformedURLException, EscidocClientException {
+    public void openSubWindow() throws EscidocClientException {
         buildContainerForm();
         buildSubWindowUsingContainerForm();
         mainWindow.addWindow(subwindow);
@@ -274,21 +232,19 @@ public class ContainerAddView {
     }
 
     private String getMetadata() {
-        return receiver.getFileContent();
+        if (receiver.isWellFormed()) {
+            return receiver.getFileContent();
+        }
+        return AppConstants.EMPTY_STRING;
     }
 
     public void create() {
-        createNewContainer(getContainerName(), getContentModelId(), getContextId(), getMetadata());
+        createNewContainer(getContainerName(), getContentModelId(), getContextId());
     }
 
-    private void createNewContainer(
-        final String containerName, final String contentModelId, final String contextId, final String metaData) {
-        final ContainerBuilder cntBuild =
-            new ContainerBuilder(new ContextRef(contextId), new ContentModelRef(contentModelId), metaData);
-        final Container newContainer = cntBuild.build(containerName);
+    private void createNewContainer(final String containerName, final String contentModelId, final String contextId) {
         try {
-            final Container createdContainer = createContainerInRepository(newContainer);
-            updateDataSource(createdContainer);
+            updateDataSource(createContainerInRepository(buildContainer(containerName, contentModelId, contextId)));
             closeSubWindow();
         }
         catch (final EscidocClientException e) {
@@ -297,9 +253,15 @@ public class ContainerAddView {
         }
     }
 
+    private Container buildContainer(final String containerName, final String contentModelId, final String contextId) {
+        final Container tobeCreated =
+            new ContainerBuilder(new ContextRef(contextId), new ContentModelRef(contentModelId), getMetadata())
+                .build(containerName);
+        return tobeCreated;
+    }
+
     private Container createContainerInRepository(final Container newContainer) throws EscidocClientException {
-        final Container createdContainer = repositories.container().createWithParent(newContainer, parent);
-        return createdContainer;
+        return repositories.container().createWithParent(newContainer, parent);
     }
 
     private void updateDataSource(final Container createdContainer) {

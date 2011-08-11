@@ -128,4 +128,10 @@ public class ViewConstants {
     public static final String RELEASED = "Public Status for the resource was changed to Released";
 
     public static final String WITHDRAWN = "Public Status for the resource was changed to Withdrawn";
+
+    public static final String SELECT_FILE = "Select file";
+
+    public static final String XML_IS_NOT_WELL_FORMED = "XML is NOT well formed.";
+
+    public static final String XML_IS_WELL_FORMED = "XML is well formed.";
 }

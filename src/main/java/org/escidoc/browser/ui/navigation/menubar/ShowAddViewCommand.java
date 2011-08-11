@@ -28,7 +28,6 @@
  */
 package org.escidoc.browser.ui.navigation.menubar;
 
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 
 import org.escidoc.browser.model.CurrentUser;
@@ -154,14 +153,9 @@ public final class ShowAddViewCommand implements Command {
     public void showItemAddView() {
         Preconditions.checkNotNull(parent, "parent is null: %s", parent);
         try {
-            final ItemAddView addView = new ItemAddView(repositories, mainWindow, parent, treeDataSource, contextId);
-            addView.openSubWindow();
-
+            new ItemAddView(repositories, mainWindow, parent, treeDataSource, contextId).openSubWindow();
         }
         catch (final EscidocClientException e) {
-            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-        }
-        catch (final MalformedURLException e) {
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
         }
     }
@@ -169,14 +163,9 @@ public final class ShowAddViewCommand implements Command {
     public void showContainerAddView() {
         Preconditions.checkNotNull(parent, "parent is null: %s", parent);
         try {
-            final ContainerAddView addView =
-                new ContainerAddView(repositories, mainWindow, parent, treeDataSource, contextId);
-            addView.openSubWindow();
+            new ContainerAddView(repositories, mainWindow, parent, treeDataSource, contextId).openSubWindow();
         }
         catch (final EscidocClientException e) {
-            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-        }
-        catch (final MalformedURLException e) {
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
         }
     }

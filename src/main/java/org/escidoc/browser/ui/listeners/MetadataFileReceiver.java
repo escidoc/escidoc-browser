@@ -23,6 +23,8 @@ public class MetadataFileReceiver implements Receiver {
 
     private final StringBuffer filecontent = new StringBuffer();
 
+    private boolean isWellFormed;
+
     @Override
     public OutputStream receiveUpload(final String fileName, final String mimeType) {
         this.fileName = fileName;
@@ -59,5 +61,13 @@ public class MetadataFileReceiver implements Receiver {
 
     public void setSlow(final boolean value) {
         sleep = value;
+    }
+
+    public void setWellFormed(final boolean isWellFormed) {
+        this.isWellFormed = isWellFormed;
+    }
+
+    public boolean isWellFormed() {
+        return isWellFormed;
     }
 }

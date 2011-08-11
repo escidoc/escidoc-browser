@@ -28,14 +28,7 @@
  */
 package org.escidoc.browser.ui.navigation.menubar;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.net.MalformedURLException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
+import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.TreeDataSource;
@@ -43,10 +36,7 @@ import org.escidoc.browser.model.internal.ItemBuilder;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.MetadataFileReceiver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
+import org.escidoc.browser.ui.maincontent.XmlUtil;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.data.validator.StringLengthValidator;
@@ -75,9 +65,7 @@ import de.escidoc.core.resources.common.reference.ContentModelRef;
 import de.escidoc.core.resources.common.reference.ContextRef;
 import de.escidoc.core.resources.om.item.Item;
 
-public class ItemAddView {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ItemAddView.class);
+class ItemAddView {
 
     private final FormLayout addForm = new FormLayout();
 
@@ -97,11 +85,9 @@ public class ItemAddView {
 
     private final String contextId;
 
-    private Button addButton;
-
     private final Label status = new Label("Upload a wellformed XML file to create metadata!");
 
-    private final ProgressIndicator pi = new ProgressIndicator();
+    private final ProgressIndicator progressIndicator = new ProgressIndicator();
 
     private final MetadataFileReceiver receiver = new MetadataFileReceiver();
 
@@ -109,9 +95,7 @@ public class ItemAddView {
 
     private final Upload upload = new Upload("", receiver);
 
-    private Object metaData;
-
-    public ItemAddView(final Repositories repositories, final Window mainWindow, final ResourceModel parent,
+    ItemAddView(final Repositories repositories, final Window mainWindow, final ResourceModel parent,
         final TreeDataSource treeDataSource, final String contextId) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
@@ -125,7 +109,7 @@ public class ItemAddView {
         this.contextId = contextId;
     }
 
-    public void buildForm() throws MalformedURLException, EscidocClientException {
+    private void buildForm() throws EscidocClientException {
         addForm.setImmediate(true);
         addNameField();
         addContentModelSelect();
@@ -142,8 +126,7 @@ public class ItemAddView {
         addForm.addComponent(nameField);
     }
 
-    private void addContentModelSelect() throws MalformedURLException, EscidocException, InternalClientException,
-        TransportException {
+    private void addContentModelSelect() throws EscidocException, InternalClientException, TransportException {
         Preconditions.checkNotNull(repositories.contentModel(), "ContentModelRepository is null: %s",
             repositories.contentModel());
         contentModelSelect.setRequired(true);
@@ -154,10 +137,10 @@ public class ItemAddView {
     }
 
     private void addButton() {
-        addButton = new Button(ViewConstants.ADD, new AddItemListener(this));
-        addForm.addComponent(addButton);
+        addForm.addComponent(new Button(ViewConstants.ADD, new AddItemListener(this)));
     }
 
+    @SuppressWarnings("serial")
     private void addMetaData() {
         // Slow down the upload
         receiver.setSlow(true);
@@ -172,8 +155,8 @@ public class ItemAddView {
 
         progressLayout.setSpacing(true);
         progressLayout.setVisible(false);
-        progressLayout.addComponent(pi);
-        progressLayout.setComponentAlignment(pi, Alignment.MIDDLE_LEFT);
+        progressLayout.addComponent(progressIndicator);
+        progressLayout.setComponentAlignment(progressIndicator, Alignment.MIDDLE_LEFT);
 
         final Button cancelProcessing = new Button("Cancel");
         cancelProcessing.addListener(new Button.ClickListener() {
@@ -192,11 +175,11 @@ public class ItemAddView {
         upload.addListener(new Upload.StartedListener() {
             @Override
             public void uploadStarted(final StartedEvent event) {
-                // This method gets called immediatedly after upload is started
+                // This method gets called immediately after upload is started
                 upload.setVisible(false);
                 progressLayout.setVisible(true);
-                pi.setValue(0f);
-                pi.setPollingInterval(500);
+                progressIndicator.setValue(Float.valueOf(0f));
+                progressIndicator.setPollingInterval(500);
                 status.setValue("Uploading file \"" + event.getFilename() + "\"");
             }
         });
@@ -205,7 +188,7 @@ public class ItemAddView {
             @Override
             public void updateProgress(final long readBytes, final long contentLength) {
                 // This method gets called several times during the update
-                pi.setValue(new Float(readBytes / (float) contentLength));
+                progressIndicator.setValue(new Float(readBytes / (float) contentLength));
             }
 
         });
@@ -215,11 +198,13 @@ public class ItemAddView {
             public void uploadSucceeded(final SucceededEvent event) {
                 // This method gets called when the upload finished successfully
                 status.setValue("Uploading file \"" + event.getFilename() + "\" succeeded");
-                if (isValidXml(receiver.getFileContent())) {
-                    status.setValue("XML Looks correct");
+                final boolean isWellFormed = XmlUtil.isWellFormed(receiver.getFileContent());
+                receiver.setWellFormed(isWellFormed);
+                if (isWellFormed) {
+                    status.setValue(ViewConstants.XML_IS_WELL_FORMED);
                 }
                 else {
-                    status.setValue("Not valid");
+                    status.setValue(ViewConstants.XML_IS_NOT_WELL_FORMED);
                 }
             }
         });
@@ -245,65 +230,35 @@ public class ItemAddView {
 
     }
 
-    /**
-     * checking if the uploaded file contains a valid XML string
-     * 
-     * @param xml
-     * @return boolean
-     */
-    private boolean isValidXml(final String xml) {
-        final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder;
-
-        try {
-            builder = factory.newDocumentBuilder();
-            final InputSource is = new InputSource(new StringReader(xml));
-            try {
-                builder.parse(is);
-                return true;
-            }
-            catch (final SAXException e) {
-                return false;
-            }
-            catch (final IOException e) {
-                return false;
-            }
-        }
-        catch (final ParserConfigurationException e) {
-            return false;
-        }
-
-    }
-
     private void buildSubWindowUsingForm() {
         subwindow.setWidth("600px");
         subwindow.setModal(true);
         subwindow.addComponent(addForm);
     }
 
-    public void openSubWindow() throws MalformedURLException, EscidocClientException {
+    protected void openSubWindow() throws EscidocClientException {
         buildForm();
         buildSubWindowUsingForm();
         mainWindow.addWindow(subwindow);
     }
 
-    public boolean allValid() {
+    protected boolean allValid() {
         return nameField.isValid() && contentModelSelect.isValid();
     }
 
-    public String getContentModelId() {
+    private String getContentModelId() {
         return (String) contentModelSelect.getValue();
     }
 
-    public String getName() {
+    private String getName() {
         return nameField.getValue().toString();
     }
 
-    public void showRequiredMessage() {
+    protected void showRequiredMessage() {
         mainWindow.showNotification("Please fill in all the required elements", 1);
     }
 
-    public void create() {
+    protected void create() {
         createNewResource();
     }
 
@@ -319,7 +274,10 @@ public class ItemAddView {
     }
 
     private String getMetadata() {
-        return receiver.getFileContent();
+        if (receiver.isWellFormed()) {
+            return receiver.getFileContent();
+        }
+        return AppConstants.EMPTY_STRING;
     }
 
     private Item buildItem() {
