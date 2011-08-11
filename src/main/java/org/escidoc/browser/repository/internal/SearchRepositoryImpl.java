@@ -28,7 +28,9 @@
  */
 package org.escidoc.browser.repository.internal;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -124,10 +126,10 @@ public class SearchRepositoryImpl {
     }
 
     public SearchRetrieveResponse advancedSearch(
-        final String titleTxt, final String creatorTxt, final String descriptionTxt, final String creationDateTxt,
+        final String titleTxt, final String creatorTxt, final String descriptionTxt, Object creationDateTxt,
         final String mimesTxt, final String resourceTxt, final String fulltxtTxt) {
-        final String query = "1=1 ";
         final StringBuffer buf = new StringBuffer();
+        buf.append("1=1 ");
 
         /*
          * Do I have a resource defined? If I have a resource defined, then I need to search in the correct context.name
@@ -150,7 +152,8 @@ public class SearchRepositoryImpl {
         if (!creatorTxt.isEmpty()) {
             buf.append(" AND escidoc.created-by.name=\"" + creatorTxt + "\"");
         }
-        if (!creationDateTxt.isEmpty()) {
+        if ((creationDateTxt != null) && (!creationDateTxt.toString().isEmpty())) {
+            creationDateTxt = convertDateToTime((Date) creationDateTxt);
             buf.append(" AND (escidoc.creation-date=\"" + creationDateTxt
                 + "*\" OR (escidoc.component.creation-date=\"" + creationDateTxt + "*\"))");
         }
@@ -162,14 +165,17 @@ public class SearchRepositoryImpl {
             buf.append(" AND escidoc.fulltext=\"" + fulltxtTxt + "\"");
         }
         try {
-            return client.search(query + buf.toString(), Integer.valueOf(0), Integer.valueOf(1000), "sort.escidoc.pid",
+            LOG.debug(buf.toString());
+            return client.search(buf.toString(), Integer.valueOf(0), Integer.valueOf(1000), "sort.escidoc.pid",
                 SRCH_INDEX);
         }
         catch (final EscidocClientException e) {
-            LOG.debug("EscidocClientException");
             e.printStackTrace();
         }
         return null;
+    }
 
+    private String convertDateToTime(final Date date) {
+        return new SimpleDateFormat("yyyy-MM-dd").format(date);
     }
 }

@@ -87,7 +87,7 @@ public class ViewConstants {
 
     public static final String PLEASE_SELECT_CONTENT_MODEL = "Please select Content Model";
 
-    public static final String CONTAINER_NAME_MUST_BE_3_25_CHARACTERS = "Container Name must be 3-25 characters";
+    public static final String CONTAINER_LENGTH = "Container Name must be 3-25 characters";
 
     public static final String ITEM_NAME = "Item name";
 

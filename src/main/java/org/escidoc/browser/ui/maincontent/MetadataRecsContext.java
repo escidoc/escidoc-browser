@@ -77,7 +77,6 @@ public class MetadataRecsContext {
         final Accordion metadataRecs = new Accordion();
         metadataRecs.setSizeFull();
         int elementHeight = height / 4;
-        LOG.debug("element height: " + elementHeight);
         elementHeight = 410;
         addComponentAsTabs(metadataRecs, elementHeight);
         return metadataRecs;

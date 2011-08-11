@@ -120,7 +120,7 @@ public class SearchResultsView extends VerticalLayout {
     }
 
     public SearchResultsView(final MainSite mainSite, final EscidocServiceLocation serviceLocation,
-        final String titleTxt, final String creatorTxt, final String descriptionTxt, final String creationDateTxt,
+        final String titleTxt, final String creatorTxt, final String descriptionTxt, final Object creationDateTxt,
         final String mimesTxt, final String resourceTxt, final String fulltxtTxt) {
         this.mainSite = mainSite;
         this.serviceLocation = serviceLocation;

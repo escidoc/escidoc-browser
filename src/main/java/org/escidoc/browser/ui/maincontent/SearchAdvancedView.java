@@ -28,8 +28,6 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -183,7 +181,7 @@ public class SearchAdvancedView extends VerticalLayout {
         final String titleTxt = (String) txtTitle.getValue();
         final String creatorTxt = (String) txtCreator.getValue();
         final String descriptionTxt = (String) txtDescription.getValue();
-        final String creationDateTxt = convertDateToTime((Date) creationDate.getValue());
+        final Object creationDateTxt = creationDate.getValue();
         final String mimesTxt = (String) mimes.getValue();
         final String resourceTxt = (String) resource.getValue();
         final String fulltxtTxt = (String) txtFullText.getValue();
@@ -213,12 +211,12 @@ public class SearchAdvancedView extends VerticalLayout {
      * @return
      */
     public boolean validateInputs(
-        final String titleTxt, final String creatorTxt, final String descriptionTxt, final String creationDateTxt,
+        final String titleTxt, final String creatorTxt, final String descriptionTxt, final Object creationDateTxt,
         final String mimesTxt, final String resourceTxt, final String fulltxtTxt) {
 
         if ((!titleTxt.isEmpty() && validateValidInputs(titleTxt))
             || (!creatorTxt.isEmpty() && validateValidInputs(creatorTxt))
-            || (!descriptionTxt.isEmpty() && validateValidInputs(descriptionTxt)) || creationDateTxt != null
+            || (!descriptionTxt.isEmpty() && validateValidInputs(descriptionTxt)) || creationDateTxt.toString() != null
             || mimesTxt != null && ((resourceTxt != null) && validateValidInputs(creatorTxt))
             || (!fulltxtTxt.isEmpty() && validateValidInputs(fulltxtTxt))) {
             return true;
@@ -238,7 +236,4 @@ public class SearchAdvancedView extends VerticalLayout {
         return m.matches();
     }
 
-    private String convertDateToTime(final Date date) {
-        return new SimpleDateFormat("yyyy-MM-dd").format(date);
-    }
 }

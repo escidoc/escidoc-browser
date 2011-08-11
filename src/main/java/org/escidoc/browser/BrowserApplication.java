@@ -101,7 +101,6 @@ public class BrowserApplication extends Application {
 
     public void buildMainView() {
         if (observer.getDimension().getHeight() > 0) {
-            LOG.debug("Dimension is: " + observer.getDimension());
             buildMainWindow(serviceLocation);
         }
         else {
