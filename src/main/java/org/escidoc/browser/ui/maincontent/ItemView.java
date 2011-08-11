@@ -32,7 +32,6 @@ import java.net.URISyntaxException;
 
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
@@ -66,31 +65,29 @@ import de.escidoc.core.resources.common.properties.PublicStatus;
 import de.escidoc.core.resources.om.item.Item;
 
 @SuppressWarnings("serial")
-public class ItemView extends VerticalLayout {
+public final class ItemView extends VerticalLayout {
+
+    private static final String FLOAT_LEFT = "floatleft";
+
+    private static final String FLOAT_RIGHT = "floatright";
 
     private static final String DESC_LOCKSTATUS = "lockstatus";
 
     private static final String DESC_STATUS2 = "status";
 
-    private static final String DESC_HEADER = "header";
-
     private static final String SUBWINDOW_EDIT = "Add Comment to the Edit operation";
 
     private static final String CREATED_BY = "Created by ";
 
-    private static final String FULLWIDHT_STYLE_NAME = "fullwidth";
-
     private static final String LAST_MODIFIED_BY = "Last modification by ";
-
-    private static final String DIRECT_MEMBERS = "Direct Members";
-
-    private static final String RESOURCE_NAME = "Container: ";
-
-    private String status;
 
     private static final Logger LOG = LoggerFactory.getLogger(ItemView.class);
 
     private final CssLayout cssLayout = new CssLayout();
+
+    private final VerticalLayout vlPropertiesLeft = new VerticalLayout();
+
+    private final MainSite mainSite;
 
     private final int appHeight;
 
@@ -104,9 +101,9 @@ public class ItemView extends VerticalLayout {
 
     private final CurrentUser currentUser;
 
-    private int accordionHeight;
+    private String status;
 
-    private int innerelementsHeight;
+    private int accordionHeight;
 
     private Label lblLockstatus;
 
@@ -118,13 +115,9 @@ public class ItemView extends VerticalLayout {
 
     private Window subwindow;
 
-    private final MainSite mainSite;
-
     private Label lblLatestVersionStatus;
 
     private String lockStatus;
-
-    private final VerticalLayout vlPropertiesLeft = new VerticalLayout();
 
     private Label lblCurrentVersionStatus;
 
@@ -149,7 +142,7 @@ public class ItemView extends VerticalLayout {
         init();
     }
 
-    private void init() {
+    private final void init() {
         buildLayout();
         handleLayoutListeners();
         createBreadcrumbp();
@@ -169,7 +162,7 @@ public class ItemView extends VerticalLayout {
      */
     private void buildRightCell(final Component metadataRecs) {
         final Panel rightPanel = new Panel();
-        rightPanel.setStyleName("floatright");
+        rightPanel.setStyleName(FLOAT_RIGHT);
         rightPanel.setWidth("70%");
         rightPanel.setHeight("82%");
         rightPanel.addComponent(metadataRecs);
@@ -180,7 +173,7 @@ public class ItemView extends VerticalLayout {
     private void buildLeftCell(final Component itCnt) {
         final Panel leftPanel = new Panel();
         leftPanel.getLayout().setMargin(false);
-        leftPanel.setStyleName("floatleft");
+        leftPanel.setStyleName(FLOAT_LEFT);
         leftPanel.setScrollable(false);
         leftPanel.setWidth("30%");
         leftPanel.setHeight("82%");
@@ -190,8 +183,8 @@ public class ItemView extends VerticalLayout {
 
     private void bindProperties() {
 
-        Panel pnlPropertiesLeft = buildLeftPropertiesPnl();
-        Panel pnlPropertiesRight = buildRightPnlProperties();
+        final Panel pnlPropertiesLeft = buildLeftPropertiesPnl();
+        final Panel pnlPropertiesRight = buildRightPnlProperties();
 
         final Label descMetadata1 = new Label("ID: " + resourceProxy.getId());
 
@@ -208,9 +201,9 @@ public class ItemView extends VerticalLayout {
                 + LAST_MODIFIED_BY + " " + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(),
                 Label.CONTENT_XHTML);
 
-        HorizontalLayout hl = new HorizontalLayout();
+        final HorizontalLayout horizontalLayout = new HorizontalLayout();
         final Component versionHistory = getHistory();
-        hl.addComponent(versionHistory);
+        horizontalLayout.addComponent(versionHistory);
 
         vlPropertiesLeft.addComponent(descMetadata1);
         if (hasAccess()) {
@@ -218,7 +211,7 @@ public class ItemView extends VerticalLayout {
             lblCurrentVersionStatus = new Label(status + resourceProxy.getVersionStatus());
             lblCurrentVersionStatus.setDescription(DESC_STATUS2);
             vlPropertiesLeft.addComponent(lblCurrentVersionStatus);
-            hl.addComponent(buildReleasedByBtn());
+            horizontalLayout.addComponent(buildReleasedByBtn());
         }
         else {
             vlPropertiesLeft.addComponent(lblStatus);
@@ -229,71 +222,35 @@ public class ItemView extends VerticalLayout {
         cssLayout.addComponent(pnlPropertiesLeft);
 
         pnlPropertiesRight.addComponent(descMetadata2);
-        pnlPropertiesRight.addComponent(hl);
+        pnlPropertiesRight.addComponent(horizontalLayout);
         cssLayout.addComponent(pnlPropertiesRight);
 
     }
 
     private Panel buildLeftPropertiesPnl() {
-        Panel pnlPropertiesLeft = new Panel();
+        final Panel pnlPropertiesLeft = new Panel();
         pnlPropertiesLeft.setWidth("40%");
         pnlPropertiesLeft.setHeight("60px");
-        pnlPropertiesLeft.setStyleName("floatleft");
+        pnlPropertiesLeft.setStyleName(FLOAT_LEFT);
         pnlPropertiesLeft.addStyleName(Runo.PANEL_LIGHT);
         pnlPropertiesLeft.getLayout().setMargin(false);
         return pnlPropertiesLeft;
     }
 
     private Panel buildRightPnlProperties() {
-        Panel pnlPropertiesRight = new Panel();
+        final Panel pnlPropertiesRight = new Panel();
         pnlPropertiesRight.setWidth("60%");
         pnlPropertiesRight.setHeight("60px");
-        pnlPropertiesRight.setStyleName("floatright");
+        pnlPropertiesRight.setStyleName(FLOAT_RIGHT);
         pnlPropertiesRight.addStyleName(Runo.PANEL_LIGHT);
         pnlPropertiesRight.getLayout().setMargin(false);
         return pnlPropertiesRight;
     }
 
     private Button buildReleasedByBtn() {
-        Button releasedBy = new Button("Released by " + resourceProxy.getReleasedBy());
+        final Button releasedBy = new Button("Released by " + resourceProxy.getReleasedBy());
         releasedBy.setStyleName(BaseTheme.BUTTON_LINK);
         return releasedBy;
-    }
-
-    private void setLatestStatus() {
-        ItemProxy findById;
-        try {
-            findById = (ItemProxy) repositories.item().findById(resourceProxy.getId());
-            lblLatestVersionStatus =
-                new Label("Latest Status "
-                    + getStatusOfLatestVersion(repositories.item().findById(findById.getLatestVersionId())));
-        }
-        catch (final EscidocClientException e) {
-            LOG.error(e.getMessage());
-            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-        }
-    }
-
-    private String getStatusOfLatestVersion(final ResourceProxy latestVersionItem) {
-        return latestVersionItem.getVersionStatus();
-    }
-
-    private void buildLatestVersionStatus() {
-        lblLatestVersionStatus.setStyleName("floatleft");
-        lblLatestVersionStatus.setDescription("latestversionstatus");
-        lblLatestVersionStatus.setWidth("35%");
-    }
-
-    private void buildPublicStatus() {
-        lblStatus.setStyleName("floatleft");
-        lblStatus.setDescription("status");
-        lblStatus.setWidth("35%");
-    }
-
-    private void buildLockStatus() {
-        lblLockstatus.setStyleName("floatleft");
-        lblLockstatus.setDescription("lockstatus");
-        lblLockstatus.setWidth("35%");
     }
 
     private void bindHrRuler() {
@@ -319,14 +276,14 @@ public class ItemView extends VerticalLayout {
         setHeight("100%");
         cssLayout.setWidth("100%");
         cssLayout.setHeight("100%");
-        innerelementsHeight = appHeight - 420;
+
+        final int innerelementsHeight = appHeight - 420;
         accordionHeight = innerelementsHeight - 20;
     }
 
     private void handleLayoutListeners() {
         if (hasAccess()) {
             vlPropertiesLeft.addListener(new LayoutClickListener() {
-                private static final long serialVersionUID = 1L;
 
                 @Override
                 public void layoutClick(final LayoutClickEvent event) {
@@ -335,7 +292,7 @@ public class ItemView extends VerticalLayout {
                     if (event.getChildComponent() != null) {
 
                         // Is Label?
-                        if (event.getChildComponent().getClass().getCanonicalName() == "com.vaadin.ui.Label") {
+                        if (event.getChildComponent().getClass().getCanonicalName().equals("com.vaadin.ui.Label")) {
                             final Label child = (Label) event.getChildComponent();
                             if ((child.getDescription() == DESC_STATUS2)
                                 && (!lblStatus.getValue().equals(status + "withdrawn"))) {
@@ -350,11 +307,6 @@ public class ItemView extends VerticalLayout {
                                 swapComponent = editLockStatus(child.getValue().toString().replace(status, ""));
                                 vlPropertiesLeft.replaceComponent(oldComponent, swapComponent);
                             }
-                        }
-                        else {
-                            // getWindow().showNotification(
-                            // "The click was over a " + event.getChildComponent().getClass().getCanonicalName()
-                            // + event.getChildComponent().getStyleName());
                         }
                     }
                     else {
@@ -447,16 +399,16 @@ public class ItemView extends VerticalLayout {
                         }
                     }
                     catch (final UnsupportedOperationException e) {
+                        LOG.error(e.getMessage());
                         mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-                        e.printStackTrace();
                     }
                     catch (final EscidocClientException e) {
+                        LOG.error(e.getMessage());
                         mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-                        e.printStackTrace();
                     }
                     catch (final URISyntaxException e) {
+                        LOG.error(e.getMessage());
                         mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-                        e.printStackTrace();
                     }
                 }
 

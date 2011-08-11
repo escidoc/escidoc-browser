@@ -29,7 +29,6 @@
 package org.escidoc.browser.ui.maincontent;
 
 import java.net.URISyntaxException;
-import java.util.Iterator;
 
 import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.CurrentUser;
@@ -51,7 +50,6 @@ import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -63,7 +61,7 @@ import de.escidoc.core.resources.common.MetadataRecords;
 
 public class MetadataRecsItem {
 
-    static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
 
     private int height;
 
@@ -81,7 +79,7 @@ public class MetadataRecsItem {
 
     private final MainSite mainSite;
 
-    public MetadataRecsItem(final ItemProxy resourceProxy, final int innerelementsHeight, final Window mainWindow,
+    MetadataRecsItem(final ItemProxy resourceProxy, final int innerelementsHeight, final Window mainWindow,
         final EscidocServiceLocation escidocServiceLocation, final Repositories repositories,
         final CurrentUser currentUser, final MainSite mainSite) {
         Preconditions.checkNotNull(mainWindow, "resource is null.");
@@ -104,7 +102,7 @@ public class MetadataRecsItem {
         this.mainSite = mainSite;
     }
 
-    public Accordion asAccord() {
+    protected Accordion asAccord() {
         final Accordion metadataRecs = new Accordion();
         metadataRecs.setSizeFull();
 
@@ -140,19 +138,6 @@ public class MetadataRecsItem {
         return pnl;
     }
 
-    private Label lblRelations() {
-        final Iterator itr = resourceProxy.getRelations().iterator();
-        String relRecords = "";
-        final StringBuffer buf = new StringBuffer();
-        while (itr.hasNext()) {
-            buf.append("<a href='#'>" + itr.next() + "</a><br />");
-        }
-        relRecords = buf.toString();
-        final Label l2 = new Label(relRecords, Label.CONTENT_RAW);
-        l2.setHeight(height + "px");
-        return l2;
-    }
-
     private Panel lblMetadaRecs() {
         final Panel pnl = new Panel();
         pnl.setHeight(height + "px");
@@ -180,12 +165,12 @@ public class MetadataRecsItem {
      * @param pnl
      * @param metadataRecord
      */
-    public void buildMDButtons(final VerticalLayout btnaddContainer, final MetadataRecord metadataRecord) {
+    private void buildMDButtons(final VerticalLayout btnaddContainer, final MetadataRecord metadataRecord) {
         final HorizontalLayout hl = new HorizontalLayout();
         if (hasAccess()) {
             final Button btnEditActualMetaData =
-                new Button("", new EditMetaDataFileItemBehaviour(metadataRecord, mainWindow, escidocServiceLocation,
-                    repositories, resourceProxy));
+                new Button("", new EditMetaDataFileItemBehaviour(metadataRecord, mainWindow, repositories,
+                    resourceProxy));
             btnEditActualMetaData.setStyleName(BaseTheme.BUTTON_LINK);
             btnEditActualMetaData.setDescription("Replace the metadata with a new content file");
             btnEditActualMetaData.setIcon(new ThemeResource("../myTheme/runo/icons/16/reload.png"));

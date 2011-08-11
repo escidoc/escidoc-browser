@@ -1,24 +1,14 @@
 package org.escidoc.browser.ui.listeners;
 
-import java.io.IOException;
-import java.io.StringReader;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.escidoc.browser.BrowserApplication;
-import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.maincontent.XmlUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -37,8 +27,10 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.om.item.Item;
 
+@SuppressWarnings("serial")
 public class EditMetaDataFileItemBehaviour implements ClickListener {
-    static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
+
+    private static final Logger LOG = LoggerFactory.getLogger(EditMetaDataFileItemBehaviour.class);
 
     private final MetadataFileReceiver receiver = new MetadataFileReceiver();
 
@@ -54,8 +46,6 @@ public class EditMetaDataFileItemBehaviour implements ClickListener {
 
     private final Window mainWindow;
 
-    private final EscidocServiceLocation escidocServiceLocation;
-
     private final Repositories repositories;
 
     private HorizontalLayout hl;
@@ -64,22 +54,24 @@ public class EditMetaDataFileItemBehaviour implements ClickListener {
 
     private Element metadataContent;
 
-    public EditMetaDataFileItemBehaviour(MetadataRecord metadataRecord, Window mainWindow,
-        EscidocServiceLocation escidocServiceLocation, final Repositories repositories, ResourceProxy resourceProxy) {
+    public EditMetaDataFileItemBehaviour(final MetadataRecord metadataRecord, final Window mainWindow,
+        final Repositories repositories, final ResourceProxy resourceProxy) {
+        Preconditions.checkNotNull(metadataRecord, "metadataRecord is null: %s", metadataRecord);
+        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         this.metadataRecord = metadataRecord;
         this.mainWindow = mainWindow;
-        this.escidocServiceLocation = escidocServiceLocation;
         this.repositories = repositories;
         this.resourceProxy = resourceProxy;
-
     }
 
     @Override
-    public void buttonClick(ClickEvent event) {
+    public void buttonClick(final ClickEvent event) {
         showWindow();
-
     }
 
+    @SuppressWarnings("serial")
     private void showWindow() {
         final Window subwindow = new Window(ViewConstants.EDIT_METADATA);
         subwindow.setWidth("600px");
@@ -103,7 +95,7 @@ public class EditMetaDataFileItemBehaviour implements ClickListener {
             public void uploadStarted(final StartedEvent event) {
                 upload.setVisible(false);
                 progressLayout.setVisible(true);
-                pi.setValue(0f);
+                pi.setValue(Float.valueOf(0.5f));
                 pi.setPollingInterval(500);
                 status.setValue("Uploading file \"" + event.getFilename() + "\"");
             }
@@ -114,13 +106,14 @@ public class EditMetaDataFileItemBehaviour implements ClickListener {
             public void uploadSucceeded(final SucceededEvent event) {
                 // This method gets called when the upload finished successfully
                 status.setValue("Uploading file \"" + event.getFilename() + "\" succeeded");
-                if (isValidXml(receiver.getFileContent())) {
-                    status.setValue("XML Looks correct");
+                final boolean isWellFormed = XmlUtil.isWellFormed(receiver.getFileContent());
+                if (isWellFormed) {
+                    status.setValue(ViewConstants.XML_IS_WELL_FORMED);
                     hl.setVisible(true);
                     upload.setEnabled(false);
                 }
                 else {
-                    status.setValue("Not valid");
+                    status.setValue(ViewConstants.XML_IS_NOT_WELL_FORMED);
                 }
             }
         });
@@ -144,27 +137,26 @@ public class EditMetaDataFileItemBehaviour implements ClickListener {
             }
         });
 
-        Button btnAdd = new Button("Add New Metadata", new Button.ClickListener() {
+        final Button btnAdd = new Button("Add New Metadata", new Button.ClickListener() {
             Item item;
 
             @Override
-            public void buttonClick(ClickEvent event) {
+            public void buttonClick(final ClickEvent event) {
                 try {
                     item = repositories.item().findItemById(resourceProxy.getId());
                     metadataRecord.setContent(metadataContent);
                     repositories.item().updateMetaData(metadataRecord, item);
-
                 }
-                catch (EscidocClientException e) {
+                catch (final EscidocClientException e) {
                     LOG.debug(e.getLocalizedMessage());
                 }
-                (subwindow.getParent()).removeWindow(subwindow);
+                subwindow.getParent().removeWindow(subwindow);
             }
         });
 
-        Button cnclAdd = new Button("Cancel", new Button.ClickListener() {
+        final Button cnclAdd = new Button("Cancel", new Button.ClickListener() {
             @Override
-            public void buttonClick(ClickEvent event) {
+            public void buttonClick(final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
             }
         });
@@ -179,36 +171,4 @@ public class EditMetaDataFileItemBehaviour implements ClickListener {
         subwindow.addComponent(hl);
         mainWindow.addWindow(subwindow);
     }
-
-    /**
-     * checking if the uploaded file contains a valid XML string
-     * 
-     * @param xml
-     * @return boolean
-     */
-    private boolean isValidXml(final String xml) {
-        final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder;
-
-        try {
-            builder = factory.newDocumentBuilder();
-            final InputSource is = new InputSource(new StringReader(xml));
-            Document d;
-            try {
-                d = builder.parse(is);
-                metadataContent = d.getDocumentElement();
-                return true;
-            }
-            catch (final SAXException e) {
-                return false;
-            }
-            catch (final IOException e) {
-                return false;
-            }
-        }
-        catch (final ParserConfigurationException e) {
-            return false;
-        }
-    }
-
 }
