@@ -81,16 +81,6 @@ public class ContainerView extends VerticalLayout {
 
     private static final String RIGHT_PANEL = "Right Panel";
 
-    static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
-
-    private final int appHeight;
-
-    private final MainSite mainSite;
-
-    private final ContainerProxy resourceProxy;
-
-    private final CssLayout cssLayout = new CssLayout();
-
     private static final String CREATED_BY = "Created by ";
 
     private static final String FULLWIDHT_STYLE_NAME = "fullwidth";
@@ -100,6 +90,16 @@ public class ContainerView extends VerticalLayout {
     private static final String DIRECT_MEMBERS = "Direct Members";
 
     private static final String RESOURCE_NAME = "Container: ";
+
+    static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
+
+    private final int appHeight;
+
+    private final MainSite mainSite;
+
+    private final ContainerProxy resourceProxy;
+
+    private final CssLayout cssLayout = new CssLayout();
 
     private String status;
 
@@ -390,7 +390,13 @@ public class ContainerView extends VerticalLayout {
                         }
                         else if ((swapComponent instanceof ComboBox) && ((ComboBox) swapComponent).getValue() != null) {
                             ((Label) oldComponent).setValue(status + ((ComboBox) swapComponent).getValue());
-                            this.addCommentWindow();
+                            // Because there should be no comment-window on Delete Operation
+                            if (!(((ComboBox) swapComponent).getValue().equals("delete"))) {
+                                this.addCommentWindow();
+                            }
+                            else {
+                                updateContainer("");
+                            }
                         }
                         vlPropertiesLeft.replaceComponent(swapComponent, oldComponent);
                         swapComponent = null;
