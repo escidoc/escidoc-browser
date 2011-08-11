@@ -148,7 +148,7 @@ public class MainSite extends VerticalLayout {
     }
 
     private void addFooter() {
-        mainLayout.addComponent(new Footer());
+        mainLayout.addComponent(new Footer(serviceLocation));
     }
 
     private void addMainContentTabs() {

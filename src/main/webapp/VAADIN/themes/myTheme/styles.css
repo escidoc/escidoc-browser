@@ -50,7 +50,7 @@
 .footer a:link {color:#999;}    
 .footer a:visited {color:#FF0000;} 
 .footer a:hover {color:#FF0000;}   
-.footer a:active {color:#FF0000;}  
+.footer a:active {color:#999;}  
 .whitebackground {	
 	background: #fff; 
 	white-space: normal;
@@ -120,3 +120,38 @@ font-size:x-small;
 .i-tree-node-caption span {
     white-space: normal;
 }
+.footer .v-button.v-button-link,
+.v-button.v-button-link:focus,
+.v-button.v-button-link:active,
+.v-button-link.v-pressed,
+.v-disabled.v-button.v-button-link,
+.v-button.v-button-link .v-button-wrap,
+.v-button.v-button-link:focus .v-button-wrap,
+.v-button.v-button-link:active .v-button-wrap,
+.v-button-link.v-pressed .v-button-wrap,
+.v-disabled.v-button.v-button-link .v-button-wrap {
+	background: transparent;
+	height: auto;
+	padding: 0;
+	cursor: pointer;
+	line-height: inherit;
+	}
+
+.footer .v-button.v-button-link.v-disabled,
+.v-button.v-button-link.v-disabled .v-button-wrap {
+	cursor: default;
+	}
+	
+.footer .v-button-link .v-button-caption,
+.v-nativebutton-link .v-nativebutton-caption {
+	line-height: inherit;
+	font-weight: normal;
+	color: #999;
+	font-size: 10px;
+	text-shadow: none;
+	}
+	
+.footer .v-button-link:focus .v-button-caption,
+.v-nativebutton-link:focus .v-nativebutton-caption {
+	outline: 1px dotted #1b699f;
+	}

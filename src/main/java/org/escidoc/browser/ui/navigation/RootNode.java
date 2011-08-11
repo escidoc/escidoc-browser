@@ -30,18 +30,13 @@ package org.escidoc.browser.ui.navigation;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout.MarginInfo;
-import com.vaadin.ui.themes.Reindeer;
 
 @SuppressWarnings("serial")
 public class RootNode extends CustomComponent {
-
-    private static final String CHANGE = "Change";
 
     private final HorizontalLayout horizontalLayout = new HorizontalLayout();
 
@@ -52,15 +47,6 @@ public class RootNode extends CustomComponent {
         horizontalLayout.setSpacing(true);
         horizontalLayout.setMargin(new MarginInfo(false, false, false, true));
         final Label label = new Label("<b>" + serviceLocation.getEscidocUri() + "</b>", Label.CONTENT_XHTML);
-        final Button button = new Button(CHANGE, new Button.ClickListener() {
-
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                getApplication().close();
-            }
-        });
-        button.setStyleName(Reindeer.BUTTON_LINK);
         horizontalLayout.addComponent(label);
-        horizontalLayout.addComponent(button);
     }
 }
