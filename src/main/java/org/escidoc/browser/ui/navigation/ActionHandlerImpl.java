@@ -181,7 +181,10 @@ final class ActionHandlerImpl implements Action.Handler {
     private void tryShowCreateItemView(final Object target, final String contextId) throws EscidocClientException,
         URISyntaxException {
         if (allowedToCreateItem(contextId)) {
-            if (target instanceof ContainerModel && allowedToAddMember((ResourceModel) target)) {
+            if (target instanceof ContextModel) {
+                showCreateItemView(target, contextId);
+            }
+            else if (target instanceof ContainerModel && allowedToAddMember((ResourceModel) target)) {
                 showCreateItemView(target, contextId);
             }
             else {
@@ -200,7 +203,10 @@ final class ActionHandlerImpl implements Action.Handler {
     private void tryShowCreateContainerView(final Object target, final String contextId) throws EscidocClientException,
         URISyntaxException {
         if (allowedToCreateContainer(contextId)) {
-            if ((target instanceof ContainerModel) && allowedToAddMember((ResourceModel) target)) {
+            if (target instanceof ContextModel) {
+                showCreateContainerView(target, contextId);
+            }
+            else if ((target instanceof ContainerModel) && allowedToAddMember((ResourceModel) target)) {
                 showCreateContainerView(target, contextId);
             }
             else {
