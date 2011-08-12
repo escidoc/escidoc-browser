@@ -35,7 +35,7 @@
 }
 
 .header {
-	height: 70px; 
+	height: 55px; 
 	background: #fff; 
 	white-space: normal;
 	border: 1px solid #dcdcdc;
@@ -56,7 +56,7 @@
 	white-space: normal;
 	border: 1px solid #dcdcdc;
 }
-.logo {display:block;padding:20px;margin:0;}
+.logo {display:block;margin:0;}
 ul{
     margin: 0 auto;
     padding: 0;
@@ -65,8 +65,7 @@ ul.horizontal_list li{
     text-align: left;
     float: left;
     list-style: none;
-    padding: 3px 3px 3px 3px;
-    margin: 5px;
+
 }
 .columnheight50{
 	height: 55px;

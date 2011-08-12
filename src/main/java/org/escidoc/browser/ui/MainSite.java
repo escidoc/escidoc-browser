@@ -135,7 +135,7 @@ public class MainSite extends VerticalLayout {
     }
 
     private void configureLayout() {
-        setMargin(true);
+        setMargin(false, true, false, true);
         mainLayout.setStyleName("maincontainer");
         mainLayout.setSizeFull();
     }
