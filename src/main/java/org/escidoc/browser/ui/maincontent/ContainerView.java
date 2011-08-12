@@ -213,13 +213,7 @@ public class ContainerView extends VerticalLayout {
         final AbsoluteLayout absL = new AbsoluteLayout();
         absL.setWidth("100%");
         absL.setHeight(innerelementsHeight + "px");
-        final HorizontalLayout horizontal = new HorizontalLayout();
-        horizontal.addComponent(new Button("Add"));
-        horizontal.addComponent(new Button("Delete"));
-        horizontal.addComponent(new Button("Edit"));
-        leftpnl.addComponent(horizontal);
 
-        absL.addComponent(horizontal, "left: 0px; top: 380px;");
         cssLayout.addComponent(leftpnl);
     }
 
@@ -521,7 +515,7 @@ public class ContainerView extends VerticalLayout {
                     mainWindow.addWindow(subwindow);
                 }
 
-                private void updatePublicStatus(Container container, String comment) throws EscidocClientException {
+                private void updatePublicStatus(Container container, String comment)  {
                     // Update PublicStatus if there is a change
                     if (!resourceProxy.getVersionStatus().equals(
                         lblCurrentVersionStatus.getValue().toString().replace(status, ""))) {
