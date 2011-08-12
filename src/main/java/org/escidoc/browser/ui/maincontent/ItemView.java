@@ -195,7 +195,9 @@ public final class ItemView extends VerticalLayout {
 
         lblLockstatus = new Label(status + resourceProxy.getLockStatus(), Label.CONTENT_RAW);
         lblLockstatus.setDescription(DESC_LOCKSTATUS);
-
+    	if (hasAccess()){
+    		lblLockstatus.setStyleName("inset");
+    	}
         final Label descMetadata2 =
             new Label(CREATED_BY + " " + resourceProxy.getCreator() + " on " + resourceProxy.getCreatedOn() + "<br/>"
                 + LAST_MODIFIED_BY + " " + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(),
@@ -204,12 +206,14 @@ public final class ItemView extends VerticalLayout {
         final HorizontalLayout horizontalLayout = new HorizontalLayout();
         final Component versionHistory = getHistory();
         horizontalLayout.addComponent(versionHistory);
+        horizontalLayout.addComponent(new Label (", "));
 
         vlPropertiesLeft.addComponent(descMetadata1);
         if (hasAccess()) {
             status = "Latest status is ";
             lblCurrentVersionStatus = new Label(status + resourceProxy.getVersionStatus());
             lblCurrentVersionStatus.setDescription(DESC_STATUS2);
+            lblCurrentVersionStatus.setStyleName("inset");
             vlPropertiesLeft.addComponent(lblCurrentVersionStatus);
             horizontalLayout.addComponent(buildReleasedByBtn());
         }
@@ -526,7 +530,7 @@ public final class ItemView extends VerticalLayout {
             final Button versionHistory =
                 new Button(" Has previous versions", new VersionHistoryClickListener(resourceProxy, mainWindow,
                     serviceLocation, repositories));
-            versionHistory.setStyleName(BaseTheme.BUTTON_LINK);
+            versionHistory.setStyleName(BaseTheme.BUTTON_LINK);            
             return versionHistory;
         }
         return new Label("Has no previous history");

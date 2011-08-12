@@ -233,7 +233,9 @@ public class ContainerView extends VerticalLayout {
 
         lblLockstatus = new Label(status + resourceProxy.getLockStatus(), Label.CONTENT_RAW);
         lblLockstatus.setDescription(DESC_LOCKSTATUS);
-
+    	if (hasAccess()){
+    		lblLockstatus.setStyleName("inset");
+    	}
         final Label descMetadata2 =
             new Label(CREATED_BY + " " + resourceProxy.getCreator() + " on " + resourceProxy.getCreatedOn() + "<br/>"
                 + LAST_MODIFIED_BY + " " + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(),
@@ -242,12 +244,14 @@ public class ContainerView extends VerticalLayout {
         HorizontalLayout hl = new HorizontalLayout();
         final Component versionHistory = getHistory();
         hl.addComponent(versionHistory);
+        hl.addComponent(new Label (", "));
 
         vlPropertiesLeft.addComponent(descMetadata1);
         if (hasAccess()) {
             status = "Latest status is ";
             lblCurrentVersionStatus = new Label(status + resourceProxy.getVersionStatus());
             lblCurrentVersionStatus.setDescription(DESC_STATUS2);
+            lblCurrentVersionStatus.setStyleName("inset");
             vlPropertiesLeft.addComponent(lblCurrentVersionStatus);
             hl.addComponent(buildReleasedByBtn());
         }
@@ -334,6 +338,7 @@ public class ContainerView extends VerticalLayout {
 
     private void handleLayoutListeners() {
         if (hasAccess()) {
+
             vlPropertiesLeft.addListener(new LayoutClickListener() {
                 private static final long serialVersionUID = 1L;
 
@@ -342,7 +347,6 @@ public class ContainerView extends VerticalLayout {
                     // Get the child component which was clicked
 
                     if (event.getChildComponent() != null) {
-
                         // Is Label?
                         if (event.getChildComponent().getClass().getCanonicalName() == "com.vaadin.ui.Label") {
                             final Label child = (Label) event.getChildComponent();
