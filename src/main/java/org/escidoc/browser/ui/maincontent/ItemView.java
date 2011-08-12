@@ -341,7 +341,7 @@ public final class ItemView extends VerticalLayout {
                 private Component editLockStatus(final String lockStatus) {
                     final ComboBox cmbLockStatus = new ComboBox();
                     cmbLockStatus.setNullSelectionAllowed(false);
-                    if (lockStatus.equals("unlocked")) {
+                    if (lockStatus.contains("unlocked")) {
                         cmbLockStatus.addItem(LockStatus.LOCKED.toString().toLowerCase());
                     }
                     else {
@@ -362,7 +362,9 @@ public final class ItemView extends VerticalLayout {
                         cmbStatus.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
                         cmbStatus.setNullSelectionItemId(PublicStatus.PENDING.toString().toLowerCase());
 
-                        deleteResource(cmbStatus);
+                        if (hasAccessDelResource()) {
+                            cmbStatus.addItem("delete");
+                        }
                     }
                     else if (publicStatus.equals("submitted")) {
                         cmbStatus.setNullSelectionItemId(PublicStatus.SUBMITTED.toString().toLowerCase());
@@ -391,32 +393,28 @@ public final class ItemView extends VerticalLayout {
                     return cmbStatus;
                 }
 
-                /**
-                 * Inserts a delete on Pending Status
-                 * 
-                 * @param cmbStatus
-                 */
-                private void deleteResource(final ComboBox cmbStatus) {
-                    try {
-                        if (repositories
-                            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_ITEM)
-                            .forResource(resourceProxy.getId()).permitted()) {
-                            cmbStatus.addItem("delete");
-                        }
-                    }
-                    catch (final UnsupportedOperationException e) {
-                        LOG.error(e.getMessage());
-                        mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-                    }
-                    catch (final EscidocClientException e) {
-                        LOG.error(e.getMessage());
-                        mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-                    }
-                    catch (final URISyntaxException e) {
-                        LOG.error(e.getMessage());
-                        mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-                    }
-                }
+                private boolean hasAccessDelResource(){
+					try {
+						return repositories
+						    .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_CONTAINER)
+						    .forResource(resourceProxy.getId()).permitted();
+					} 
+	                catch (UnsupportedOperationException e) {
+	                    mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+	                    e.printStackTrace();
+	                    return false;
+	                }
+	                catch (EscidocClientException e) {
+	                    mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+	                    e.printStackTrace();
+	                    return false;
+	                }
+	                catch (URISyntaxException e) {
+	                    mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+	                    e.printStackTrace();
+	                    return false;
+	                }
+				}
 
                 public void addCommentWindow() {
                     subwindow = new Window(SUBWINDOW_EDIT);

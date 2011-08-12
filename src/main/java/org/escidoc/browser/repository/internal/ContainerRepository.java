@@ -255,20 +255,29 @@ public class ContainerRepository implements Repository {
     }
 
     public void changeLockStatus(final Container container, final String lockStatus, final String comment)
-        throws EscidocClientException {
+        {
         final TaskParam taskParam = new TaskParam();
         taskParam.setLastModificationDate(container.getLastModificationDate());
         taskParam.setComment(comment);
-
-        if (lockStatus.equals("LOCKED")) {
-            client.lock(container.getObjid(), taskParam);
-            mainWindow.showNotification(new Window.Notification(ViewConstants.LOCKED,
-                Notification.TYPE_TRAY_NOTIFICATION));
+        if (lockStatus.contains("LOCKED")) {
+            try {
+				client.lock(container.getObjid(), taskParam);
+				mainWindow.showNotification(new Window.Notification(ViewConstants.LOCKED,
+		                Notification.TYPE_TRAY_NOTIFICATION));
+			} catch (EscidocClientException e) {
+				mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
+		                Notification.TYPE_ERROR_MESSAGE));
+			}             
         }
         else {
-            client.unlock(container.getObjid(), taskParam);
-            mainWindow.showNotification(new Window.Notification(ViewConstants.UNLOCKED,
-                Notification.TYPE_TRAY_NOTIFICATION));
+            try {
+				client.unlock(container.getObjid(), taskParam);
+				 mainWindow.showNotification(new Window.Notification(ViewConstants.UNLOCKED,
+			                Notification.TYPE_TRAY_NOTIFICATION));
+			} catch (EscidocClientException e) {
+				mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
+		                Notification.TYPE_ERROR_MESSAGE));
+			}            
         }
     }
 

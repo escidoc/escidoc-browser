@@ -398,7 +398,8 @@ public class ContainerView extends VerticalLayout {
                 private Component editLockStatus(final String lockStatus) {
                     final ComboBox cmbLockStatus = new ComboBox();
                     cmbLockStatus.setNullSelectionAllowed(false);
-                    if (lockStatus.equals("unlocked")) {
+                    System.out.println(lockStatus);
+                    if (lockStatus.contains("unlocked")) {
                         cmbLockStatus.addItem(LockStatus.LOCKED.toString().toLowerCase());
                     }
                     else {
@@ -418,8 +419,10 @@ public class ContainerView extends VerticalLayout {
                         cmbStatus.addItem(PublicStatus.PENDING.toString().toLowerCase());
                         cmbStatus.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
                         cmbStatus.setNullSelectionItemId(PublicStatus.PENDING.toString().toLowerCase());
+                        if (hasAccessDelResource()) {
+                            cmbStatus.addItem("delete");
+                        }
 
-                        deleteResource(cmbStatus);
                     }
                     else if (publicStatus.equals("submitted")) {
                         cmbStatus.setNullSelectionItemId(PublicStatus.SUBMITTED.toString().toLowerCase());
@@ -448,33 +451,29 @@ public class ContainerView extends VerticalLayout {
                     return cmbStatus;
                 }
 
-                /**
-                 * Inserts a delete on Pending Status
-                 * 
-                 * @param cmbStatus
-                 */
-                private void deleteResource(ComboBox cmbStatus) {
-                    try {
-                        if (repositories
-                            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_CONTAINER)
-                            .forResource(resourceProxy.getId()).permitted()) {
-                            cmbStatus.addItem("delete");
-                        }
-                    }
-                    catch (UnsupportedOperationException e) {
-                        mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-                        e.printStackTrace();
-                    }
-                    catch (EscidocClientException e) {
-                        mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-                        e.printStackTrace();
-                    }
-                    catch (URISyntaxException e) {
-                        mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-                        e.printStackTrace();
-                    }
 
-                }
+				private boolean hasAccessDelResource(){
+					try {
+						return repositories
+						    .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_CONTAINER)
+						    .forResource(resourceProxy.getId()).permitted();
+					} 
+	                catch (UnsupportedOperationException e) {
+	                    mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+	                    e.printStackTrace();
+	                    return false;
+	                }
+	                catch (EscidocClientException e) {
+	                    mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+	                    e.printStackTrace();
+	                    return false;
+	                }
+	                catch (URISyntaxException e) {
+	                    mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+	                    e.printStackTrace();
+	                    return false;
+	                }
+				}
 
                 public void addCommentWindow() {
                     subwindow = new Window(SUBWINDOW_EDIT);
@@ -524,7 +523,7 @@ public class ContainerView extends VerticalLayout {
                     }
                 }
 
-                private void updateLockStatus(Container container, String comment) throws EscidocClientException {
+                private void updateLockStatus(Container container, String comment) {
                     // Update LockStatus if there is a change
                     if (!resourceProxy.getLockStatus().equals(
                         lblLockstatus.getValue().toString().replace(lockStatus, ""))) {
@@ -537,7 +536,7 @@ public class ContainerView extends VerticalLayout {
                     Container container;
                     try {
                         container = repositories.container().findContainerById(resourceProxy.getId());
-                        if (resourceProxy.getLockStatus().equals("unlocked")) {
+                        if (resourceProxy.getLockStatus().contains("unlocked")) {
                             updatePublicStatus(container, comment);
                             // retrive the container to get the last modifiaction date.
                             container = repositories.container().findContainerById(resourceProxy.getId());
