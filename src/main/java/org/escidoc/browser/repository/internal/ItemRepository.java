@@ -66,7 +66,9 @@ import de.escidoc.core.resources.om.item.Item;
 
 public class ItemRepository implements Repository {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ItemRepository.class);
+    private static final String ERR_BELONGS_TO_NONDELETABLE_PARENT = "Cannot remove the resource as it belongs to a resource which is not deletable";
+
+	private static final Logger LOG = LoggerFactory.getLogger(ItemRepository.class);
 
     private final ItemHandlerClientInterface client;
 
@@ -145,34 +147,64 @@ public class ItemRepository implements Repository {
     }
 
     public void changePublicStatus(final Item item, final String publicStatus, final String comment)
-        throws EscidocClientException {
+        {
         final TaskParam taskParam = new TaskParam();
         taskParam.setLastModificationDate(item.getLastModificationDate());
         taskParam.setComment(comment);
         if (publicStatus.equals("SUBMITTED")) {
-            client.submit(item, taskParam);
-            mainWindow.showNotification(new Window.Notification(ViewConstants.SUBMITTED,
-                Notification.TYPE_TRAY_NOTIFICATION));
+            try {
+				client.submit(item, taskParam);
+	            mainWindow.showNotification(new Window.Notification(ViewConstants.SUBMITTED,
+	                    Notification.TYPE_TRAY_NOTIFICATION));
+			} catch (EscidocClientException e) {
+				 mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
+	                        Notification.TYPE_ERROR_MESSAGE));
+			}
         }
         else if (publicStatus.equals("IN_REVISION")) {
-            client.revise(item, taskParam);
-            mainWindow.showNotification(new Window.Notification(ViewConstants.IN_REVISION,
-                Notification.TYPE_TRAY_NOTIFICATION));
+            try {
+				client.revise(item, taskParam);
+	            mainWindow.showNotification(new Window.Notification(ViewConstants.IN_REVISION,
+	                    Notification.TYPE_TRAY_NOTIFICATION));
+			} catch (EscidocClientException e) {
+				 mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
+	                        Notification.TYPE_ERROR_MESSAGE));
+			} 
         }
         else if (publicStatus.equals("RELEASED")) {
-            client.release(item, taskParam);
-            mainWindow.showNotification(new Window.Notification(ViewConstants.RELEASED,
-                Notification.TYPE_TRAY_NOTIFICATION));
+            try {
+				client.release(item, taskParam);
+	            mainWindow.showNotification(new Window.Notification(ViewConstants.RELEASED,
+	                Notification.TYPE_TRAY_NOTIFICATION));
+			} catch (EscidocClientException e) {
+				 mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
+	                        Notification.TYPE_ERROR_MESSAGE));
+			} 
         }
         else if (publicStatus.equals("WITHDRAWN")) {
-            client.withdraw(item, taskParam);
-            mainWindow.showNotification(new Window.Notification(ViewConstants.WITHDRAWN,
-                Notification.TYPE_TRAY_NOTIFICATION));
+            try {
+				client.withdraw(item, taskParam);
+				mainWindow.showNotification(new Window.Notification(ViewConstants.WITHDRAWN,
+		                Notification.TYPE_TRAY_NOTIFICATION));
+			} catch (EscidocClientException e) {
+				 mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
+	                        Notification.TYPE_ERROR_MESSAGE));
+			}            
         }
         else if (publicStatus.equals("DELETE")) {
-            this.delete(item);
-            mainWindow.showNotification(new Window.Notification(ViewConstants.DELETED,
-                Notification.TYPE_TRAY_NOTIFICATION));
+            try {
+				this.delete(item);
+	            mainWindow.showNotification(new Window.Notification(ViewConstants.DELETED,
+	                    Notification.TYPE_TRAY_NOTIFICATION));
+			} catch (EscidocClientException e) {
+				if (e.getMessage().toString().contains("An error occured removing member entries for container")){
+					mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, ERR_BELONGS_TO_NONDELETABLE_PARENT,
+			                Notification.TYPE_ERROR_MESSAGE));
+				}else{
+				mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
+		                Notification.TYPE_ERROR_MESSAGE));
+				}
+			}
         }
     }
 
@@ -203,19 +235,9 @@ public class ItemRepository implements Repository {
         client.delete(model.getId());
     }
 
-    private void delete(final Item item) {
-        LOG.debug(item.getClass().toString());
-        try {
+    private void delete(final Item item)throws EscidocClientException {
             client.delete(item.getObjid());
-            mainWindow.showNotification(new Window.Notification(ViewConstants.DELETED,
-                Notification.TYPE_TRAY_NOTIFICATION));
-        }
-        catch (final EscidocClientException e) {
-            mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
-                Notification.TYPE_ERROR_MESSAGE));
-        }
-
-    }
+   }
 
     public void addMetaData(final MetadataRecord metadataRecord, final Item item) throws EscidocClientException {
         final MetadataRecords itemMetadataList = item.getMetadataRecords();

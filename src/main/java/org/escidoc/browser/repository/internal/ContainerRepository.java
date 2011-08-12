@@ -278,12 +278,9 @@ public class ContainerRepository implements Repository {
     }
 
     private void delete(Container container) throws EscidocClientException {
-
             client.delete(container.getObjid());
             mainWindow.showNotification(new Window.Notification(ViewConstants.DELETED,
                 Notification.TYPE_TRAY_NOTIFICATION));
-
-
     }
 
     public void updateMetaData(MetadataRecord metadata, Container container) throws EscidocClientException {

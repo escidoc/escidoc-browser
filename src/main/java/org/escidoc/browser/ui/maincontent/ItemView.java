@@ -325,7 +325,13 @@ public final class ItemView extends VerticalLayout {
                         }
                         else if ((swapComponent instanceof ComboBox) && ((ComboBox) swapComponent).getValue() != null) {
                             ((Label) oldComponent).setValue(status + ((ComboBox) swapComponent).getValue());
-                            addCommentWindow();
+                         // Because there should be no comment-window on Delete Operation
+                            if (!(((ComboBox) swapComponent).getValue().equals("delete"))) {
+                                this.addCommentWindow();
+                            }
+                            else {
+                                updateItem("");
+                            }
                         }
                         vlPropertiesLeft.replaceComponent(swapComponent, oldComponent);
                         swapComponent = null;
@@ -395,7 +401,7 @@ public final class ItemView extends VerticalLayout {
                         if (repositories
                             .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_ITEM)
                             .forResource(resourceProxy.getId()).permitted()) {
-                            cmbStatus.addItem("Delete");
+                            cmbStatus.addItem("delete");
                         }
                     }
                     catch (final UnsupportedOperationException e) {
