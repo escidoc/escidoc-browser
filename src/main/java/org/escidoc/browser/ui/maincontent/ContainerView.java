@@ -166,8 +166,8 @@ public class ContainerView extends VerticalLayout {
     }
 
     private void addMetadataRecords() {
-        rightCell(new MetadataRecs(resourceProxy, accordionHeight, mainWindow, serviceLocation, repositories, currentUser,
-            mainSite).asAccord());
+        rightCell(new MetadataRecs(resourceProxy, accordionHeight, mainWindow, serviceLocation, repositories,
+            currentUser, mainSite).asAccord());
     }
 
     private void addDirectMembers() throws EscidocClientException {
@@ -233,9 +233,9 @@ public class ContainerView extends VerticalLayout {
 
         lblLockstatus = new Label(status + resourceProxy.getLockStatus(), Label.CONTENT_RAW);
         lblLockstatus.setDescription(DESC_LOCKSTATUS);
-    	if (hasAccess()){
-    		lblLockstatus.setStyleName("inset");
-    	}
+        if (hasAccess()) {
+            lblLockstatus.setStyleName("inset");
+        }
         final Label descMetadata2 =
             new Label(CREATED_BY + " " + resourceProxy.getCreator() + " on " + resourceProxy.getCreatedOn() + "<br/>"
                 + LAST_MODIFIED_BY + " " + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(),
@@ -244,7 +244,7 @@ public class ContainerView extends VerticalLayout {
         HorizontalLayout hl = new HorizontalLayout();
         final Component versionHistory = getHistory();
         hl.addComponent(versionHistory);
-        hl.addComponent(new Label (", "));
+        hl.addComponent(new Label(", "));
 
         vlPropertiesLeft.addComponent(descMetadata1);
         if (hasAccess()) {
@@ -455,29 +455,28 @@ public class ContainerView extends VerticalLayout {
                     return cmbStatus;
                 }
 
-
-				private boolean hasAccessDelResource(){
-					try {
-						return repositories
-						    .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_CONTAINER)
-						    .forResource(resourceProxy.getId()).permitted();
-					} 
-	                catch (UnsupportedOperationException e) {
-	                    mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-	                    e.printStackTrace();
-	                    return false;
-	                }
-	                catch (EscidocClientException e) {
-	                    mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-	                    e.printStackTrace();
-	                    return false;
-	                }
-	                catch (URISyntaxException e) {
-	                    mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-	                    e.printStackTrace();
-	                    return false;
-	                }
-				}
+                private boolean hasAccessDelResource() {
+                    try {
+                        return repositories
+                            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_CONTAINER)
+                            .forResource(resourceProxy.getId()).permitted();
+                    }
+                    catch (UnsupportedOperationException e) {
+                        mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+                        e.printStackTrace();
+                        return false;
+                    }
+                    catch (EscidocClientException e) {
+                        mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+                        e.printStackTrace();
+                        return false;
+                    }
+                    catch (URISyntaxException e) {
+                        mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+                        e.printStackTrace();
+                        return false;
+                    }
+                }
 
                 public void addCommentWindow() {
                     subwindow = new Window(SUBWINDOW_EDIT);
@@ -518,7 +517,7 @@ public class ContainerView extends VerticalLayout {
                     mainWindow.addWindow(subwindow);
                 }
 
-                private void updatePublicStatus(Container container, String comment)  {
+                private void updatePublicStatus(Container container, String comment) {
                     // Update PublicStatus if there is a change
                     if (!resourceProxy.getVersionStatus().equals(
                         lblCurrentVersionStatus.getValue().toString().replace(status, ""))) {
@@ -537,6 +536,7 @@ public class ContainerView extends VerticalLayout {
                 }
 
                 private void updateContainer(String comment) {
+                    LOG.debug("Called the updateContainer");
                     Container container;
                     try {
                         container = repositories.container().findContainerById(resourceProxy.getId());

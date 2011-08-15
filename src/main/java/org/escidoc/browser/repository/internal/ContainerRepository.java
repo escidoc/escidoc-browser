@@ -189,95 +189,102 @@ public class ContainerRepository implements Repository {
         client.addMembers(parent, taskParam);
     }
 
-    public void changePublicStatus(final Container container, final String publicStatus, final String comment)
-        {
+    public void changePublicStatus(final Container container, final String publicStatus, final String comment) {
         final TaskParam taskParam = new TaskParam();
         taskParam.setLastModificationDate(container.getLastModificationDate());
         taskParam.setComment(comment);
         if (publicStatus.equals("SUBMITTED")) {
             try {
-				client.submit(container, taskParam);
-				mainWindow.showNotification(new Window.Notification(ViewConstants.SUBMITTED,
-		                Notification.TYPE_TRAY_NOTIFICATION));
-			} catch (EscidocClientException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}            
+                client.submit(container, taskParam);
+                mainWindow.showNotification(new Window.Notification(ViewConstants.SUBMITTED,
+                    Notification.TYPE_TRAY_NOTIFICATION));
+            }
+            catch (EscidocClientException e) {
+                mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
+                    Notification.TYPE_ERROR_MESSAGE));
+            }
         }
         else if (publicStatus.equals("IN_REVISION")) {
             try {
-				client.revise(container, taskParam);
-				mainWindow.showNotification(new Window.Notification(ViewConstants.IN_REVISION,
-		                Notification.TYPE_TRAY_NOTIFICATION));
-			} catch (EscidocClientException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}           
+                client.revise(container, taskParam);
+                mainWindow.showNotification(new Window.Notification(ViewConstants.IN_REVISION,
+                    Notification.TYPE_TRAY_NOTIFICATION));
+            }
+            catch (EscidocClientException e) {
+                mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
+                    Notification.TYPE_ERROR_MESSAGE));
+            }
         }
         else if (publicStatus.equals("RELEASED")) {
             try {
-				client.release(container, taskParam);
-				mainWindow.showNotification(new Window.Notification(ViewConstants.RELEASED,
-		                Notification.TYPE_TRAY_NOTIFICATION));
-			} catch (EscidocClientException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} 
-            
+                client.release(container, taskParam);
+                mainWindow.showNotification(new Window.Notification(ViewConstants.RELEASED,
+                    Notification.TYPE_TRAY_NOTIFICATION));
+            }
+            catch (EscidocClientException e) {
+                mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
+                    Notification.TYPE_ERROR_MESSAGE));
+            }
+
         }
         else if (publicStatus.equals("WITHDRAWN")) {
             try {
-				client.withdraw(container, taskParam);
-				 mainWindow.showNotification(new Window.Notification(ViewConstants.WITHDRAWN,
-			                Notification.TYPE_TRAY_NOTIFICATION));
-			} catch (EscidocClientException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}           
+                client.withdraw(container, taskParam);
+                mainWindow.showNotification(new Window.Notification(ViewConstants.WITHDRAWN,
+                    Notification.TYPE_TRAY_NOTIFICATION));
+            }
+            catch (EscidocClientException e) {
+                mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
+                    Notification.TYPE_ERROR_MESSAGE));
+            }
         }
         else if (publicStatus.equals("DELETE")) {
             try {
-				this.delete(container);
-	            mainWindow.showNotification(new Window.Notification(ViewConstants.DELETED,
-	                    Notification.TYPE_TRAY_NOTIFICATION));
-			} catch (EscidocClientException e) {
-				System.out.println(e.getMessage());
-				if (e.getMessage().toString().contains("An error occured removing member entries for container")){
-					mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, "Cannot remove the resource as it belongs to a resource which is not deletable",
-			                Notification.TYPE_ERROR_MESSAGE));
-				}else{
-				mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
-		                Notification.TYPE_ERROR_MESSAGE));
-				}
-			}
+                this.delete(container);
+                mainWindow.showNotification(new Window.Notification(ViewConstants.DELETED,
+                    Notification.TYPE_TRAY_NOTIFICATION));
+            }
+            catch (EscidocClientException e) {
+                System.out.println(e.getMessage());
+                if (e.getMessage().toString().contains("An error occured removing member entries for container")) {
+                    mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR,
+                        "Cannot remove the resource as it belongs to a resource which is not deletable",
+                        Notification.TYPE_ERROR_MESSAGE));
+                }
+                else {
+                    mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
+                        Notification.TYPE_ERROR_MESSAGE));
+                }
+            }
 
         }
     }
 
-    public void changeLockStatus(final Container container, final String lockStatus, final String comment)
-        {
+    public void changeLockStatus(final Container container, final String lockStatus, final String comment) {
         final TaskParam taskParam = new TaskParam();
         taskParam.setLastModificationDate(container.getLastModificationDate());
         taskParam.setComment(comment);
         if (lockStatus.contains("LOCKED")) {
             try {
-				client.lock(container.getObjid(), taskParam);
-				mainWindow.showNotification(new Window.Notification(ViewConstants.LOCKED,
-		                Notification.TYPE_TRAY_NOTIFICATION));
-			} catch (EscidocClientException e) {
-				mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
-		                Notification.TYPE_ERROR_MESSAGE));
-			}             
+                client.lock(container.getObjid(), taskParam);
+                mainWindow.showNotification(new Window.Notification(ViewConstants.LOCKED,
+                    Notification.TYPE_TRAY_NOTIFICATION));
+            }
+            catch (EscidocClientException e) {
+                mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
+                    Notification.TYPE_ERROR_MESSAGE));
+            }
         }
         else {
             try {
-				client.unlock(container.getObjid(), taskParam);
-				 mainWindow.showNotification(new Window.Notification(ViewConstants.UNLOCKED,
-			                Notification.TYPE_TRAY_NOTIFICATION));
-			} catch (EscidocClientException e) {
-				mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
-		                Notification.TYPE_ERROR_MESSAGE));
-			}            
+                client.unlock(container.getObjid(), taskParam);
+                mainWindow.showNotification(new Window.Notification(ViewConstants.UNLOCKED,
+                    Notification.TYPE_TRAY_NOTIFICATION));
+            }
+            catch (EscidocClientException e) {
+                mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
+                    Notification.TYPE_ERROR_MESSAGE));
+            }
         }
     }
 
@@ -287,9 +294,9 @@ public class ContainerRepository implements Repository {
     }
 
     private void delete(Container container) throws EscidocClientException {
-            client.delete(container.getObjid());
-            mainWindow.showNotification(new Window.Notification(ViewConstants.DELETED,
-                Notification.TYPE_TRAY_NOTIFICATION));
+        client.delete(container.getObjid());
+        mainWindow
+            .showNotification(new Window.Notification(ViewConstants.DELETED, Notification.TYPE_TRAY_NOTIFICATION));
     }
 
     public void updateMetaData(MetadataRecord metadata, Container container) throws EscidocClientException {
