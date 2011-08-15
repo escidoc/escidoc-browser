@@ -1,5 +1,26 @@
 package org.escidoc.browser.ui.listeners;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.escidoc.browser.BrowserApplication;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.maincontent.MetadataRecsItem;
+import org.escidoc.browser.ui.maincontent.XmlUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
 import com.vaadin.terminal.UserError;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -16,27 +37,6 @@ import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Window;
 
-import org.escidoc.browser.BrowserApplication;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.MetadataRecsItem;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.om.item.Item;
@@ -49,11 +49,11 @@ public class AddMetaDataFileItemBehaviour implements ClickListener {
 
     private final Window mainWindow;
 
-    private final MetadataFileReceiver receiver = new MetadataFileReceiver();
+    private MetadataFileReceiver receiver;
 
     private final HorizontalLayout progressLayout = new HorizontalLayout();
 
-    private final Upload upload = new Upload("", receiver);
+    private Upload upload;
 
     private final Label status = new Label("Upload a wellformed XML file to create metadata!");
 
@@ -62,8 +62,6 @@ public class AddMetaDataFileItemBehaviour implements ClickListener {
     private HorizontalLayout hl;
 
     private final Repositories repositories;
-
-    private Element metadataContent;
 
     private TextField mdName;
 
@@ -80,15 +78,15 @@ public class AddMetaDataFileItemBehaviour implements ClickListener {
     @Override
     public void buttonClick(final ClickEvent event) {
         showAddWindow();
-
     }
 
     private void showAddWindow() {
-        final Window subwindow = new Window(ViewConstants.EDIT_METADATA);
+        final Window subwindow = new Window(ViewConstants.ADD_ITEM_S_METADATA);
         subwindow.setWidth("600px");
         subwindow.setModal(true);
-
+        receiver = new MetadataFileReceiver();
         // Make uploading start immediately when file is selected
+        upload = new Upload("", receiver);
         upload.setImmediate(true);
         upload.setButtonCaption("Select file");
 
@@ -106,7 +104,7 @@ public class AddMetaDataFileItemBehaviour implements ClickListener {
             public void uploadStarted(final StartedEvent event) {
                 upload.setVisible(false);
                 progressLayout.setVisible(true);
-                pi.setValue(0f);
+                pi.setValue(Float.valueOf(0f));
                 pi.setPollingInterval(500);
                 status.setValue("Uploading file \"" + event.getFilename() + "\"");
             }
@@ -118,13 +116,16 @@ public class AddMetaDataFileItemBehaviour implements ClickListener {
             public void uploadSucceeded(final SucceededEvent event) {
                 // This method gets called when the upload finished successfully
                 status.setValue("Uploading file \"" + event.getFilename() + "\" succeeded");
-                if (isValidXml(receiver.getFileContent())) {
-                    status.setValue("XML Looks correct");
+                final String fileContent = receiver.getFileContent();
+                final boolean isWellFormed = XmlUtil.isWellFormed(fileContent);
+                receiver.setWellFormed(isWellFormed);
+                if (isWellFormed) {
+                    status.setValue(ViewConstants.XML_IS_WELL_FORMED);
                     hl.setVisible(true);
                     upload.setEnabled(false);
                 }
                 else {
-                    status.setValue("Not valid");
+                    status.setValue(ViewConstants.XML_IS_NOT_WELL_FORMED);
                 }
             }
         });
@@ -147,14 +148,14 @@ public class AddMetaDataFileItemBehaviour implements ClickListener {
                 upload.setCaption("Select another file");
             }
         });
-        mdName = new TextField("MetaData name");
+        mdName = new TextField("Metadata name");
         mdName.setValue("");
         mdName.setImmediate(true);
         mdName.setValidationVisible(false);
 
         hl = new HorizontalLayout();
         hl.setMargin(true);
-        final Button btnAdd = new Button("Add New Metadata", new Button.ClickListener() {
+        final Button btnAdd = new Button("Save", new Button.ClickListener() {
             Item item;
 
             private boolean containSpace(final String text) {
@@ -165,7 +166,6 @@ public class AddMetaDataFileItemBehaviour implements ClickListener {
 
             @Override
             public void buttonClick(final ClickEvent event) {
-
                 if (mdName.getValue().equals("")) {
                     mdName.setComponentError(new UserError("You have to add a name for your MetaData"));
                 }
@@ -173,23 +173,48 @@ public class AddMetaDataFileItemBehaviour implements ClickListener {
                     mdName.setComponentError(new UserError("The name of MetaData can not contain space"));
                 }
                 else {
-                    try {
-                        final MetadataRecord metadataRecord = new MetadataRecord(mdName.getValue().toString());
-                        item = repositories.item().findItemById(resourceProxy.getId());
-                        metadataRecord.setContent(metadataContent);
-                        repositories.item().addMetaData(metadataRecord, item);
+                    mdName.setComponentError(null);
 
-                        metadataRecs.addButtons(metadataRecord);
-                        upload.setEnabled(true);
-                        (subwindow.getParent()).removeWindow(subwindow);
+                    if (receiver.getFileContent().isEmpty()) {
+                        upload.setComponentError(new UserError("Please select a well formed XML file as metadata."));
                     }
-                    catch (final EscidocClientException e) {
-                        mdName.setComponentError(new UserError("Failed to add the new Metadata record"
-                            + e.getLocalizedMessage()));
-                        LOG.debug(e.getLocalizedMessage());
+                    else if (!receiver.isWellFormed()) {
+                        upload.setComponentError(new UserError(ViewConstants.XML_IS_NOT_WELL_FORMED));
+                    }
+                    else {
+                        final MetadataRecord metadataRecord = new MetadataRecord(mdName.getValue().toString());
+                        try {
+                            item = repositories.item().findItemById(resourceProxy.getId());
+                            metadataRecord.setContent(getMetadataContent());
+                            repositories.item().addMetaData(metadataRecord, item);
+                            metadataRecs.addButtons(metadataRecord);
+                            upload.setEnabled(true);
+                            subwindow.getParent().removeWindow(subwindow);
+                        }
+                        catch (final EscidocClientException e) {
+                            LOG.error(e.getLocalizedMessage());
+                            mdName.setComponentError(new UserError("Failed to add the new Metadata record"
+                                + e.getLocalizedMessage()));
+                        }
+                        catch (final SAXException e) {
+                            LOG.error(e.getLocalizedMessage());
+                            mdName.setComponentError(new UserError("Failed to add the new Metadata record"
+                                + e.getLocalizedMessage()));
+                        }
+                        catch (final IOException e) {
+                            LOG.error(e.getLocalizedMessage());
+                            mdName.setComponentError(new UserError("Failed to add the new Metadata record"
+                                + e.getLocalizedMessage()));
+                        }
+                        catch (final ParserConfigurationException e) {
+                            LOG.error(e.getLocalizedMessage());
+                            mdName.setComponentError(new UserError("Failed to add the new Metadata record"
+                                + e.getLocalizedMessage()));
+                        }
                     }
                 }
             }
+
         });
 
         final Button cnclAdd = new Button("Cancel", new Button.ClickListener() {
@@ -210,35 +235,15 @@ public class AddMetaDataFileItemBehaviour implements ClickListener {
 
     }
 
-    /**
-     * checking if the uploaded file contains a valid XML string
-     * 
-     * @param xml
-     * @return boolean
-     */
-    private boolean isValidXml(final String xml) {
-        final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder;
-
-        try {
-            builder = factory.newDocumentBuilder();
-            final InputSource is = new InputSource(new StringReader(xml));
-            Document d;
-            try {
-                d = builder.parse(is);
-                metadataContent = d.getDocumentElement();
-                return true;
-            }
-            catch (final SAXException e) {
-                return false;
-            }
-            catch (final IOException e) {
-                return false;
-            }
-        }
-        catch (final ParserConfigurationException e) {
-            return false;
-        }
+    private Element getMetadataContent() throws SAXException, IOException, ParserConfigurationException {
+        final String fileContent = receiver.getFileContent();
+        return string2Dom(fileContent).getDocumentElement();
     }
 
+    private Document string2Dom(final String fileContent) throws SAXException, IOException,
+        ParserConfigurationException {
+        return DocumentBuilderFactory
+            .newInstance().newDocumentBuilder().parse(new InputSource(new StringReader(fileContent)));
+
+    }
 }

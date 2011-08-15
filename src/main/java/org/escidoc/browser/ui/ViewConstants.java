@@ -134,4 +134,8 @@ public class ViewConstants {
     public static final String XML_IS_NOT_WELL_FORMED = "XML is NOT well formed.";
 
     public static final String XML_IS_WELL_FORMED = "XML is well formed.";
+
+    public static final String ADD_ITEM_S_METADATA = "Add Item's Metadata";
+
+    public static final String ADD_CONTAINER_S_METADATA = "Add Container's Metadata";
 }

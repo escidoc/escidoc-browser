@@ -81,7 +81,6 @@ public class EditMetaDataFileItemBehaviour implements ClickListener {
         showWindow();
     }
 
-    @SuppressWarnings("serial")
     private void showWindow() {
         final Window subwindow = new Window(ViewConstants.EDIT_METADATA);
         subwindow.setWidth("600px");

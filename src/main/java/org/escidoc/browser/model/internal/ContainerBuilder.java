@@ -70,7 +70,7 @@ public class ContainerBuilder {
         Preconditions.checkNotNull(contentModelRef, "contentModelRef is null: %s", contentModelRef);
         this.contextRef = contextRef;
         this.contentModelRef = contentModelRef;
-        this.strMedataData = strMetadata;
+        strMedataData = strMetadata;
     }
 
     public Container build(final String containerName) {
@@ -117,29 +117,28 @@ public class ContainerBuilder {
         else {
             containerMetadata.setContent(buildContentForContainerMetadataFromUploadedFile());
         }
-
     }
 
     private Element buildContentForContainerMetadataFromUploadedFile() {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
 
         try {
             builder = factory.newDocumentBuilder();
-            InputSource is = new InputSource(new StringReader(strMedataData));
+            final InputSource is = new InputSource(new StringReader(strMedataData));
             Document d;
             try {
                 d = builder.parse(is);
                 return d.getDocumentElement();
             }
-            catch (SAXException e) {
+            catch (final SAXException e) {
                 return null;
             }
-            catch (IOException e) {
+            catch (final IOException e) {
                 return null;
             }
         }
-        catch (ParserConfigurationException e) {
+        catch (final ParserConfigurationException e) {
             return null;
         }
     }

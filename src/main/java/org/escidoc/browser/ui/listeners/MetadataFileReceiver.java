@@ -21,14 +21,15 @@ public class MetadataFileReceiver implements Receiver {
 
     private int total = 0;
 
-    private final StringBuffer filecontent = new StringBuffer();
-
     private boolean isWellFormed;
+
+    private StringBuffer filecontent = new StringBuffer();
 
     @Override
     public OutputStream receiveUpload(final String fileName, final String mimeType) {
         this.fileName = fileName;
         this.mimeType = mimeType;
+        filecontent = new StringBuffer();
         return new OutputStream() {
             @Override
             public void write(final int b) throws IOException {
