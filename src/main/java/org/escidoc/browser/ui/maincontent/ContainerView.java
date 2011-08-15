@@ -45,7 +45,6 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Preconditions;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
-import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComboBox;
@@ -197,22 +196,45 @@ public class ContainerView extends VerticalLayout {
     @SuppressWarnings("deprecation")
     private void leftCell(final String string, final Component comptoBind) {
         final Panel leftpnl = new Panel();
-
         leftpnl.setStyleName("directmembers floatleft");
         leftpnl.setScrollable(false);
         leftpnl.getLayout().setMargin(false);
-
         leftpnl.setWidth("30%");
         leftpnl.setHeight("82%");
 
         final Label nameofPanel = new Label("<strong>" + DIRECT_MEMBERS + "</string>", Label.CONTENT_RAW);
         leftpnl.addComponent(nameofPanel);
-        leftpnl.addComponent(comptoBind);
 
-        // Adding some buttons
-        final AbsoluteLayout absL = new AbsoluteLayout();
-        absL.setWidth("100%");
-        absL.setHeight(innerelementsHeight + "px");
+        // leftpnl.addListener(new ClickListener() {
+        // @Override
+        // public void click(com.vaadin.event.MouseEvents.ClickEvent event) {
+        // if (event.getButton() == ItemClickEvent.BUTTON_RIGHT) {
+        // mainWindow.showNotification("We have a righty");
+        // ContextMenu menu = new ContextMenu();
+        // getApplication().getMainWindow().addComponent(menu);
+        // menu.show(event.getClientX(), event.getClientY());
+        //
+        // // Generate main level items
+        // ContextMenuItem photos = menu.addItem("Photos");
+        // ContextMenuItem albums = menu.addItem("Albums");
+        // ContextMenuItem report = menu.addItem("Report");
+        // // Show notification when menu items are clicked
+        // menu.addListener(new ContextMenu.ClickListener() {
+        // @Override
+        // public void contextItemClick(org.vaadin.peter.contextmenu.ContextMenu.ClickEvent event) {
+        // // Get reference to clicked item
+        // ContextMenuItem clickedItem = event.getClickedItem();
+        // // Do something with the reference
+        // getApplication().getMainWindow().showNotification(clickedItem.getName());
+        // }
+        // });
+        //
+        // }
+        //
+        // }
+        // });
+
+        leftpnl.addComponent(comptoBind);
 
         cssLayout.addComponent(leftpnl);
     }
@@ -238,13 +260,9 @@ public class ContainerView extends VerticalLayout {
         }
         final Label descMetadata2 =
             new Label(CREATED_BY + " " + resourceProxy.getCreator() + " on " + resourceProxy.getCreatedOn() + "<br/>"
-                + LAST_MODIFIED_BY + " " + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(),
-                Label.CONTENT_XHTML);
-
-        HorizontalLayout hl = new HorizontalLayout();
-        final Component versionHistory = getHistory();
-        hl.addComponent(versionHistory);
-        hl.addComponent(new Label(", "));
+                + LAST_MODIFIED_BY + " " + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn()
+                + "<br />" + "Released by " + resourceProxy.getReleasedBy() + " on "
+                + resourceProxy.getLatestVersionModifiedOn(), Label.CONTENT_XHTML);
 
         vlPropertiesLeft.addComponent(descMetadata1);
         if (hasAccess()) {
@@ -253,7 +271,7 @@ public class ContainerView extends VerticalLayout {
             lblCurrentVersionStatus.setDescription(DESC_STATUS2);
             lblCurrentVersionStatus.setStyleName("inset");
             vlPropertiesLeft.addComponent(lblCurrentVersionStatus);
-            hl.addComponent(buildReleasedByBtn());
+
         }
         else {
             vlPropertiesLeft.addComponent(lblStatus);
@@ -264,15 +282,9 @@ public class ContainerView extends VerticalLayout {
         cssLayout.addComponent(pnlPropertiesLeft);
 
         pnlPropertiesRight.addComponent(descMetadata2);
-        pnlPropertiesRight.addComponent(hl);
+
         cssLayout.addComponent(pnlPropertiesRight);
 
-    }
-
-    private Button buildReleasedByBtn() {
-        Button releasedBy = new Button("Released by " + resourceProxy.getReleasedBy());
-        releasedBy.setStyleName(BaseTheme.BUTTON_LINK);
-        return releasedBy;
     }
 
     private Panel buildLeftPropertiesPnl() {

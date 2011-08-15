@@ -47,10 +47,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
-import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -113,7 +113,7 @@ public class MetadataRecs {
         final Panel additionalResourcesPanel = lblAddtionalResources();
 
         // Add the components as tabs in the Accordion.
-        metadataRecs.addTab(pnlmdRec, "eSciDoc Metadata", null);
+        metadataRecs.addTab(pnlmdRec, "Metadata", null);
         // metadataRecs.addTab(l2, "Relations", null);
         metadataRecs.addTab(additionalResourcesPanel, "Additional Resources", null);
         return metadataRecs;
@@ -142,21 +142,21 @@ public class MetadataRecs {
 
     private Panel lblMetadaRecs() {
         pnl.setHeight(height + "px");
-
-        final MetadataRecords mdRecs = resourceProxy.getMedataRecords();
-        for (final MetadataRecord metadataRecord : mdRecs) {
-            buildMDButtons(btnaddContainer, metadataRecord);
-        }
-
-        pnl.addComponent(btnaddContainer);
         if (hasAccess()) {
             final Button btnAddNew =
                 new Button("Add New MetaData", new AddMetaDataFileContainerBehaviour(mainWindow, repositories,
                     resourceProxy, this));
             btnAddNew.setStyleName(BaseTheme.BUTTON_LINK);
-            btnAddNew.setIcon(new ThemeResource("../myTheme/runo/icons/16/note.png"));
+            // btnAddNew.setIcon(new ThemeResource("../myTheme/runo/icons/16/note.png"));
             pnl.addComponent(btnAddNew);
         }
+        final MetadataRecords mdRecs = resourceProxy.getMedataRecords();
+        for (final MetadataRecord metadataRecord : mdRecs) {
+            buildMDButtons(btnaddContainer, metadataRecord);
+        }
+        pnl.addComponent(new Label("&nbsp;", Label.CONTENT_RAW));
+        pnl.addComponent(btnaddContainer);
+
         return pnl;
     }
 
@@ -168,21 +168,23 @@ public class MetadataRecs {
      */
     public void buildMDButtons(final VerticalLayout btnaddContainer, final MetadataRecord metadataRecord) {
         final HorizontalLayout hl = new HorizontalLayout();
-        if (hasAccess()) {
-            final Button btnEditActualMetaData =
-                new Button("", new EditMetaDataFileContainerBehaviour(metadataRecord, mainWindow, repositories,
-                    resourceProxy));
-            btnEditActualMetaData.setStyleName(BaseTheme.BUTTON_LINK);
-            btnEditActualMetaData.setDescription("Replace the metadata with a new content file");
-            btnEditActualMetaData.setIcon(new ThemeResource("../myTheme/runo/icons/16/reload.png"));
-            hl.addComponent(btnEditActualMetaData);
-        }
-
         final Button btnmdRec =
             new Button(metadataRecord.getName(), new MetadataRecBehavour(metadataRecord, mainWindow));
         btnmdRec.setStyleName(BaseTheme.BUTTON_LINK);
         btnmdRec.setDescription("Show metadata information in a separate window");
         hl.addComponent(btnmdRec);
+
+        hl.addComponent(new Label("&nbsp; | &nbsp;", Label.CONTENT_RAW));
+
+        if (hasAccess()) {
+            final Button btnEditActualMetaData =
+                new Button("edit", new EditMetaDataFileContainerBehaviour(metadataRecord, mainWindow, repositories,
+                    resourceProxy));
+            btnEditActualMetaData.setStyleName(BaseTheme.BUTTON_LINK);
+            btnEditActualMetaData.setDescription("Replace the metadata with a new content file");
+            // btnEditActualMetaData.setIcon(new ThemeResource("../myTheme/runo/icons/16/reload.png"));
+            hl.addComponent(btnEditActualMetaData);
+        }
 
         btnaddContainer.addComponent(hl);
     }

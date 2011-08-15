@@ -282,4 +282,9 @@ public class ContainerProxyImpl implements ContainerProxy {
         return containerFromCore.getProperties().getVersion().getModifiedBy().getXLinkTitle();
     }
 
+    @Override
+    public String getLatestVersionModifiedOn() {
+        return containerFromCore.getProperties().getVersion().getDate().toString("d.M.y, HH:mm");
+    }
+
 }

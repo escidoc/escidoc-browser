@@ -195,18 +195,14 @@ public final class ItemView extends VerticalLayout {
 
         lblLockstatus = new Label(status + resourceProxy.getLockStatus(), Label.CONTENT_RAW);
         lblLockstatus.setDescription(DESC_LOCKSTATUS);
-    	if (hasAccess()){
-    		lblLockstatus.setStyleName("inset");
-    	}
+        if (hasAccess()) {
+            lblLockstatus.setStyleName("inset");
+        }
         final Label descMetadata2 =
             new Label(CREATED_BY + " " + resourceProxy.getCreator() + " on " + resourceProxy.getCreatedOn() + "<br/>"
-                + LAST_MODIFIED_BY + " " + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(),
-                Label.CONTENT_XHTML);
-
-        final HorizontalLayout horizontalLayout = new HorizontalLayout();
-        final Component versionHistory = getHistory();
-        horizontalLayout.addComponent(versionHistory);
-        horizontalLayout.addComponent(new Label (", "));
+                + LAST_MODIFIED_BY + " " + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn()
+                + "<br/>" + "Released by " + resourceProxy.getReleasedBy() + " on "
+                + resourceProxy.getLatestVersionModifiedOn(), Label.CONTENT_XHTML);
 
         vlPropertiesLeft.addComponent(descMetadata1);
         if (hasAccess()) {
@@ -215,7 +211,7 @@ public final class ItemView extends VerticalLayout {
             lblCurrentVersionStatus.setDescription(DESC_STATUS2);
             lblCurrentVersionStatus.setStyleName("inset");
             vlPropertiesLeft.addComponent(lblCurrentVersionStatus);
-            horizontalLayout.addComponent(buildReleasedByBtn());
+
         }
         else {
             vlPropertiesLeft.addComponent(lblStatus);
@@ -226,7 +222,6 @@ public final class ItemView extends VerticalLayout {
         cssLayout.addComponent(pnlPropertiesLeft);
 
         pnlPropertiesRight.addComponent(descMetadata2);
-        pnlPropertiesRight.addComponent(horizontalLayout);
         cssLayout.addComponent(pnlPropertiesRight);
 
     }
@@ -329,7 +324,7 @@ public final class ItemView extends VerticalLayout {
                         }
                         else if ((swapComponent instanceof ComboBox) && ((ComboBox) swapComponent).getValue() != null) {
                             ((Label) oldComponent).setValue(status + ((ComboBox) swapComponent).getValue());
-                         // Because there should be no comment-window on Delete Operation
+                            // Because there should be no comment-window on Delete Operation
                             if (!(((ComboBox) swapComponent).getValue().equals("delete"))) {
                                 this.addCommentWindow();
                             }
@@ -397,28 +392,28 @@ public final class ItemView extends VerticalLayout {
                     return cmbStatus;
                 }
 
-                private boolean hasAccessDelResource(){
-					try {
-						return repositories
-						    .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_CONTAINER)
-						    .forResource(resourceProxy.getId()).permitted();
-					} 
-	                catch (UnsupportedOperationException e) {
-	                    mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-	                    e.printStackTrace();
-	                    return false;
-	                }
-	                catch (EscidocClientException e) {
-	                    mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-	                    e.printStackTrace();
-	                    return false;
-	                }
-	                catch (URISyntaxException e) {
-	                    mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-	                    e.printStackTrace();
-	                    return false;
-	                }
-				}
+                private boolean hasAccessDelResource() {
+                    try {
+                        return repositories
+                            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_CONTAINER)
+                            .forResource(resourceProxy.getId()).permitted();
+                    }
+                    catch (UnsupportedOperationException e) {
+                        mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+                        e.printStackTrace();
+                        return false;
+                    }
+                    catch (EscidocClientException e) {
+                        mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+                        e.printStackTrace();
+                        return false;
+                    }
+                    catch (URISyntaxException e) {
+                        mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+                        e.printStackTrace();
+                        return false;
+                    }
+                }
 
                 public void addCommentWindow() {
                     subwindow = new Window(SUBWINDOW_EDIT);
@@ -530,7 +525,7 @@ public final class ItemView extends VerticalLayout {
             final Button versionHistory =
                 new Button(" Has previous versions", new VersionHistoryClickListener(resourceProxy, mainWindow,
                     serviceLocation, repositories));
-            versionHistory.setStyleName(BaseTheme.BUTTON_LINK);            
+            versionHistory.setStyleName(BaseTheme.BUTTON_LINK);
             return versionHistory;
         }
         return new Label("Has no previous history");

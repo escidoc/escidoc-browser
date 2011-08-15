@@ -190,4 +190,8 @@ public class ItemProxyImpl implements ItemProxy {
     public String getReleasedBy() {
         return itemFromCore.getProperties().getVersion().getModifiedBy().getXLinkTitle();
     }
+
+    public String getLatestVersionModifiedOn() {
+        return itemFromCore.getProperties().getVersion().getDate().toString("d.M.y, HH:mm");
+    }
 }

@@ -85,7 +85,7 @@ public class MetadataRecsContext {
     private void addComponentAsTabs(final Accordion metadataRecs, final int elementHeight) {
         metadataRecs.addTab(buildOrganizationUnit(elementHeight), "Organizational Unit", null);
         metadataRecs.addTab(buildAdminDescription(elementHeight), "Admin Description", null);
-        metadataRecs.addTab(buildRelations(elementHeight), "Relations", null);
+        metadataRecs.addTab(buildRelations(elementHeight), "Additional Resources", null);
         metadataRecs.addTab(buildResources(elementHeight), "Resources", null);
     }
 
