@@ -156,7 +156,8 @@ public class EditMetaDataFileContainerBehaviour implements ClickListener {
                     container = repositories.container().findContainerById(resourceProxy.getId());
                     metadataRecord.setContent(metadataContent);
                     repositories.container().updateMetaData(metadataRecord, container);
-
+                    status.setValue("");
+                    upload.setEnabled(true);
                 }
                 catch (final EscidocClientException e) {
                     LOG.debug(e.getLocalizedMessage());

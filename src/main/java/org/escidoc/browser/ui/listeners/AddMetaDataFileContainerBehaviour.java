@@ -133,7 +133,6 @@ public class AddMetaDataFileContainerBehaviour implements ClickListener {
                     status.setValue(ViewConstants.XML_IS_NOT_WELL_FORMED);
                     hl.setVisible(false);
                     metadataContent = null;
-
                 }
             }
         });

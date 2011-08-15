@@ -156,6 +156,8 @@ public class EditMetaDataFileItemBehaviour implements ClickListener {
                     item = repositories.item().findItemById(resourceProxy.getId());
                     metadataRecord.setContent(metadataContent);
                     repositories.item().updateMetaData(metadataRecord, item);
+                    status.setValue("");
+                    upload.setEnabled(true);
                 }
                 catch (final EscidocClientException e) {
                     LOG.debug(e.getLocalizedMessage());
