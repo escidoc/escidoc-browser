@@ -161,7 +161,7 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
         // Create the content for the popup
         final Label content =
             new Label(
-                "<ul><li>&raquo; The default search operator is OR</li><li>&raquo; To search for a phrase place the text in double quotes</li></ul>",
+                "<ul><li>&raquo; The default search operator is AND</li><li>&raquo; To search for a phrase place the text in double quotes</li></ul>",
                 Label.CONTENT_RAW);
         // The PopupView popup will be as large as needed by the content
         content.setWidth("300px");
