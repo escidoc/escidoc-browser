@@ -1,23 +1,7 @@
 package org.escidoc.browser.ui.listeners;
 
-import java.io.IOException;
-import java.io.StringReader;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.ViewConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -31,6 +15,23 @@ import com.vaadin.ui.Upload.FinishedEvent;
 import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Window;
+
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.ViewConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
+import java.io.StringReader;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
@@ -85,7 +86,7 @@ public class EditMetaDataFileItemBehaviour implements ClickListener {
         final Window subwindow = new Window(ViewConstants.EDIT_METADATA);
         subwindow.setWidth("600px");
         subwindow.setModal(true);
-        status = new Label("Upload a wellformed XML file to create metadata!");
+        status = new Label(ViewConstants.UPLOAD_A_WELLFORMED_XML_FILE_TO_REPLACE_METADATA);
 
         // Make uploading start immediately when file is selected
         receiver = new MetadataFileReceiver();

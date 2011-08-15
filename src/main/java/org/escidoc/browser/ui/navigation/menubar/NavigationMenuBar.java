@@ -28,7 +28,12 @@
  */
 package org.escidoc.browser.ui.navigation.menubar;
 
-import java.net.URISyntaxException;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.Window;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.CurrentUser;
@@ -40,11 +45,7 @@ import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.ViewConstants;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.Window;
+import java.net.URISyntaxException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -101,7 +102,7 @@ public class NavigationMenuBar extends CustomComponent {
 
     private void addCreateMenu() {
         add = menuBar.addItem(ViewConstants.ADD, null);
-        contextMenuItem = add.addItem(ResourceType.CONTEXT.asLabel(), showAddViewCommand);
+        add.setVisible(false);
         containerMenuItem = add.addItem(ResourceType.CONTAINER.asLabel(), null);
         itemMenuItem = add.addItem(ResourceType.ITEM.asLabel(), null);
     }
@@ -173,10 +174,10 @@ public class NavigationMenuBar extends CustomComponent {
         return AppConstants.EMPTY_STRING;
     }
 
-    private void showAddContext() throws EscidocClientException, URISyntaxException {
-        final boolean isCreateContextAllowed = isCreateContextAllowed();
-        menuBar.setEnabled(isCreateContextAllowed);
-        contextMenuItem.setVisible(isCreateContextAllowed);
+    private void showAddContext() {
+        menuBar.setEnabled(false);
+        add.setVisible(false);
+        contextMenuItem.setVisible(false);
         containerMenuItem.setVisible(false);
         itemMenuItem.setVisible(false);
     }
@@ -184,6 +185,7 @@ public class NavigationMenuBar extends CustomComponent {
     private void showAddContainerAndItem() {
         menuBar.setEnabled(true);
         add.setEnabled(true);
+        add.setVisible(true);
         contextMenuItem.setVisible(false);
         containerMenuItem.setVisible(true);
         itemMenuItem.setVisible(true);
