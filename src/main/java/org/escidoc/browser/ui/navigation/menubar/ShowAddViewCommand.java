@@ -87,30 +87,43 @@ public final class ShowAddViewCommand implements Command {
     public void menuSelected(final MenuItem selectedItem) {
         try {
             if (isContainerSelected(selectedItem)) {
-                if (isUserAllowedToCreateContainer()) {
-                    if (parent.getType().equals(ResourceType.CONTAINER) && isUserAllowedToAddMembers(parent)) {
+                if (allowedToCreateContainer(contextId)) {
+                    if (parent.getType().equals(ResourceType.CONTEXT)) {
+                        showContainerAddView();
+                    }
+                    else if (parent.getType().equals(ResourceType.CONTAINER) && isUserAllowedToAddMembers(parent)) {
                         showContainerAddView();
                     }
                     else {
-                        showWarning("You do not have the right to add a container to " + parent.getName());
+                        mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
+                            "You do not have the right to add a container to " + parent.getName(),
+                            Window.Notification.TYPE_WARNING_MESSAGE));
                     }
                 }
                 else {
-                    showWarning("You do not have the right to create resource in context: " + contextId);
+                    mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
+                        "You do not have the right to create a container in context: " + contextId,
+                        Window.Notification.TYPE_WARNING_MESSAGE));
                 }
-
             }
             else if (isItemSelected(selectedItem)) {
-                if (isUserAllowedToCreateItem()) {
-                    if (parent.getType().equals(ResourceType.CONTAINER) && isUserAllowedToAddMembers(parent)) {
+                if (allowedToCreateITem(contextId)) {
+                    if (parent.getType().equals(ResourceType.CONTEXT)) {
+                        showItemAddView();
+                    }
+                    else if (parent.getType().equals(ResourceType.CONTAINER) && isUserAllowedToAddMembers(parent)) {
                         showItemAddView();
                     }
                     else {
-                        showWarning("You do not have the right to add an item to " + parent.getName());
+                        mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
+                            "You do not have the right to add an item to " + parent.getName(),
+                            Window.Notification.TYPE_WARNING_MESSAGE));
                     }
                 }
                 else {
-                    showWarning("You do not have the right to create resource in context: " + contextId);
+                    mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
+                        "You do not have the right to create an item in context: " + contextId,
+                        Window.Notification.TYPE_WARNING_MESSAGE));
                 }
             }
             else {
@@ -127,6 +140,18 @@ public final class ShowAddViewCommand implements Command {
         }
     }
 
+    private boolean allowedToCreateContainer(final String contextId) throws EscidocClientException, URISyntaxException {
+        return repositories
+            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.CREATE_CONTAINER).forResource("")
+            .withTypeAndInContext(ResourceType.CONTAINER, contextId).permitted();
+    }
+
+    private boolean allowedToCreateITem(final String contextId) throws EscidocClientException, URISyntaxException {
+        return repositories
+            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.CREATE_ITEM).forResource("")
+            .withTypeAndInContext(ResourceType.ITEM, contextId).permitted();
+    }
+
     private boolean isUserAllowedToAddMembers(final ResourceModel selectedItem) throws EscidocClientException,
         URISyntaxException {
         return repositories
@@ -136,12 +161,6 @@ public final class ShowAddViewCommand implements Command {
 
     private void showWarning(final String message) {
         mainWindow.showNotification(ViewConstants.NOT_AUTHORIZED, message, Window.Notification.TYPE_WARNING_MESSAGE);
-    }
-
-    private boolean isUserAllowedToCreateItem() throws EscidocClientException, URISyntaxException {
-        return repositories
-            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.CREATE_ITEM).forResource("")
-            .withTypeAndInContext(ResourceType.ITEM, contextId).permitted();
     }
 
     private boolean isUserAllowedToCreateContainer() throws EscidocClientException, URISyntaxException {
