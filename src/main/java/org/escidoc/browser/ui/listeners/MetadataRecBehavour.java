@@ -32,6 +32,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
 
 import org.escidoc.browser.AppConstants;
+import org.escidoc.browser.ui.ViewConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -67,7 +68,7 @@ public class MetadataRecBehavour implements ClickListener {
 
     @Override
     public void buttonClick(final ClickEvent event) {
-        final Window subwindow = new Window("eSciDoc Metadata");
+        final Window subwindow = new Window(ViewConstants.METADATA);
         subwindow.setWidth("600px");
         subwindow.setModal(true);
 

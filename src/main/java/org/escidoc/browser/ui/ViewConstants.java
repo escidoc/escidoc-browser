@@ -138,4 +138,6 @@ public class ViewConstants {
     public static final String ADD_ITEM_S_METADATA = "Add Item's Metadata";
 
     public static final String ADD_CONTAINER_S_METADATA = "Add Container's Metadata";
+
+    public static final String METADATA = "Metadata";
 }
