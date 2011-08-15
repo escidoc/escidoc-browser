@@ -8,5 +8,5 @@ How to Install/Deploy and Run eSciDoc Browser
 
 3. In a web browser, write http://[escidoc-jboss-host-name]:[port-number]/browser?escidocurl=http://[escidoc-hostname]:[portnumber]
     for example: 
-        http://localhost:8081/browser?escidocurl=http://escidoc.fiz-karlsruhe.de:8080
+        http://localhost:8084/browser?escidocurl=http://escidoc.fiz-karlsruhe.de:8080
 
