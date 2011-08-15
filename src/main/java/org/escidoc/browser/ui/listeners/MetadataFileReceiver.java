@@ -51,6 +51,10 @@ public class MetadataFileReceiver implements Receiver {
         return filecontent.toString();
     }
 
+    public void clearBuffer() {
+        filecontent.delete(0, filecontent.length());
+    }
+
     public String getFileName() {
         return fileName;
     }

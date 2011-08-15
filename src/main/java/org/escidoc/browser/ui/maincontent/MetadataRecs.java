@@ -28,16 +28,7 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.Accordion;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.BaseTheme;
+import java.net.URISyntaxException;
 
 import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.ContainerProxy;
@@ -55,7 +46,15 @@ import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URISyntaxException;
+import com.google.common.base.Preconditions;
+import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.BaseTheme;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
@@ -73,7 +72,7 @@ public class MetadataRecs {
 
     private final EscidocServiceLocation escidocServiceLocation;
 
-    private Repositories repositories;
+    private final Repositories repositories;
 
     private Accordion metadataRecs;
 
@@ -103,24 +102,7 @@ public class MetadataRecs {
         this.escidocServiceLocation = escidocServiceLocation;
         this.repositories = repositories;
         this.currentUser = currentUser;
-        this.repositories = repositories;
         this.mainSite = mainSite;
-    }
-
-    private boolean hasAccess() {
-        try {
-            return repositories
-                .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.UPDATE_CONTAINER)
-                .forResource(resourceProxy.getId()).permitted();
-        }
-        catch (final EscidocClientException e) {
-            LOG.debug(e.getLocalizedMessage());
-            return false;
-        }
-        catch (final URISyntaxException e) {
-            LOG.debug(e.getLocalizedMessage());
-            return false;
-        }
     }
 
     public Accordion asAccord() {
@@ -212,5 +194,21 @@ public class MetadataRecs {
      */
     public void addButtons(final MetadataRecord metadataRecord) {
         buildMDButtons(btnaddContainer, metadataRecord);
+    }
+
+    private boolean hasAccess() {
+        try {
+            return repositories
+                .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.UPDATE_CONTAINER)
+                .forResource(resourceProxy.getId()).permitted();
+        }
+        catch (final EscidocClientException e) {
+            LOG.debug(e.getLocalizedMessage());
+            return false;
+        }
+        catch (final URISyntaxException e) {
+            LOG.debug(e.getLocalizedMessage());
+            return false;
+        }
     }
 }

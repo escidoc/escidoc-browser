@@ -1,12 +1,21 @@
 package org.escidoc.browser.ui.listeners;
 
+import java.io.IOException;
+import java.io.StringReader;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.XmlUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Alignment;
@@ -64,6 +73,7 @@ public class EditMetaDataFileItemBehaviour implements ClickListener {
         this.mainWindow = mainWindow;
         this.repositories = repositories;
         this.resourceProxy = resourceProxy;
+
     }
 
     @Override
@@ -78,9 +88,10 @@ public class EditMetaDataFileItemBehaviour implements ClickListener {
         subwindow.setModal(true);
 
         // Make uploading start immediately when file is selected
+        receiver.clearBuffer();
         upload.setImmediate(true);
         upload.setButtonCaption("Select file");
-
+        upload.setEnabled(true);
         progressLayout.setSpacing(true);
         progressLayout.setVisible(false);
         progressLayout.addComponent(pi);
@@ -106,14 +117,14 @@ public class EditMetaDataFileItemBehaviour implements ClickListener {
             public void uploadSucceeded(final SucceededEvent event) {
                 // This method gets called when the upload finished successfully
                 status.setValue("Uploading file \"" + event.getFilename() + "\" succeeded");
-                final boolean isWellFormed = XmlUtil.isWellFormed(receiver.getFileContent());
-                if (isWellFormed) {
-                    status.setValue(ViewConstants.XML_IS_WELL_FORMED);
+                if (isValidXml(receiver.getFileContent())) {
+                    status.setValue("XML Looks correct");
                     hl.setVisible(true);
                     upload.setEnabled(false);
                 }
                 else {
-                    status.setValue(ViewConstants.XML_IS_NOT_WELL_FORMED);
+                    status.setValue("Not valid");
+                    receiver.clearBuffer();
                 }
             }
         });
@@ -171,4 +182,39 @@ public class EditMetaDataFileItemBehaviour implements ClickListener {
         subwindow.addComponent(hl);
         mainWindow.addWindow(subwindow);
     }
+
+    /**
+     * checking if the uploaded file contains a valid XML string
+     * 
+     * @param xml
+     * @return boolean
+     */
+    private boolean isValidXml(final String xml) {
+        final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+
+        try {
+            builder = factory.newDocumentBuilder();
+            final InputSource is = new InputSource(new StringReader(xml));
+            Document d;
+            try {
+                d = builder.parse(is);
+                metadataContent = d.getDocumentElement();
+                return true;
+            }
+            catch (final SAXException e) {
+                metadataContent = null;
+                return false;
+            }
+            catch (final IOException e) {
+                metadataContent = null;
+                return false;
+            }
+        }
+        catch (final ParserConfigurationException e) {
+            metadataContent = null;
+            return false;
+        }
+    }
+
 }

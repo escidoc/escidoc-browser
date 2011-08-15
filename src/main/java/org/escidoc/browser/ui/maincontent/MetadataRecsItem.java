@@ -28,16 +28,7 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.Accordion;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.BaseTheme;
+import java.net.URISyntaxException;
 
 import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.CurrentUser;
@@ -54,7 +45,15 @@ import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URISyntaxException;
+import com.google.common.base.Preconditions;
+import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.BaseTheme;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
@@ -64,7 +63,7 @@ public class MetadataRecsItem {
 
     private static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
 
-    private int height;
+    private final int height;
 
     private final ItemProxy resourceProxy;
 
@@ -74,7 +73,13 @@ public class MetadataRecsItem {
 
     private final Repositories repositories;
 
-    private final VerticalLayout btnaddContainer = new VerticalLayout();
+    private Accordion metadataRecs;
+
+    private Panel pnlmdRec;
+
+    final Panel pnl = new Panel();
+
+    VerticalLayout btnaddContainer = new VerticalLayout();
 
     private final CurrentUser currentUser;
 
@@ -90,11 +95,6 @@ public class MetadataRecsItem {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
 
         height = innerelementsHeight;
-
-        if (height < 1) {
-            height = 400;
-        }
-
         this.resourceProxy = resourceProxy;
         this.mainWindow = mainWindow;
         this.escidocServiceLocation = escidocServiceLocation;
@@ -140,7 +140,6 @@ public class MetadataRecsItem {
     }
 
     private Panel lblMetadaRecs() {
-        final Panel pnl = new Panel();
         pnl.setHeight(height + "px");
 
         final MetadataRecords mdRecs = resourceProxy.getMedataRecords();
