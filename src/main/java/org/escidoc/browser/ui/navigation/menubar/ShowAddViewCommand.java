@@ -95,15 +95,11 @@ public final class ShowAddViewCommand implements Command {
                         showContainerAddView();
                     }
                     else {
-                        mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
-                            "You do not have the right to add a container to " + parent.getName(),
-                            Window.Notification.TYPE_WARNING_MESSAGE));
+                        showWarning("You do not have the right to add a container to " + parent.getName());
                     }
                 }
                 else {
-                    mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
-                        "You do not have the right to create a container in context: " + contextId,
-                        Window.Notification.TYPE_WARNING_MESSAGE));
+                    showWarning("You do not have the right to create a container in context: " + contextId);
                 }
             }
             else if (isItemSelected(selectedItem)) {
@@ -115,15 +111,11 @@ public final class ShowAddViewCommand implements Command {
                         showItemAddView();
                     }
                     else {
-                        mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
-                            "You do not have the right to add an item to " + parent.getName(),
-                            Window.Notification.TYPE_WARNING_MESSAGE));
+                        showWarning("You do not have the right to add an item to " + parent.getName());
                     }
                 }
                 else {
-                    mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
-                        "You do not have the right to create an item in context: " + contextId,
-                        Window.Notification.TYPE_WARNING_MESSAGE));
+                    showWarning("You do not have the right to create an item in context: " + contextId);
                 }
             }
             else {
