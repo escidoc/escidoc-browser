@@ -39,8 +39,6 @@ import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.ViewConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.CustomComponent;
@@ -52,8 +50,6 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
 public class NavigationMenuBar extends CustomComponent {
-
-    private static final Logger LOG = LoggerFactory.getLogger(NavigationMenuBar.class);
 
     private final MenuBar menuBar = new MenuBar();
 
@@ -143,42 +139,12 @@ public class NavigationMenuBar extends CustomComponent {
         }
     }
 
-    private void updateDeleteMenu(final ResourceModel resourceModel) throws EscidocClientException, URISyntaxException {
+    private void updateDeleteMenu(final ResourceModel resourceModel) {
         showDelete(resourceModel);
-    }
-
-    private boolean resourceCanBeDeleted(final ResourceModel resourceModel) throws EscidocClientException,
-        URISyntaxException {
-        switch (resourceModel.getType()) {
-            case CONTAINER:
-                return canUserDeleteContainer(resourceModel) && isDeletable(retrieveContainer(resourceModel));
-            case ITEM:
-                return isDeletable(retrieveItem(resourceModel));
-            default:
-                return false;
-        }
-    }
-
-    private ResourceProxy retrieveItem(final ResourceModel resourceModel) throws EscidocClientException {
-        return repositories.item().findById(resourceModel.getId());
     }
 
     private ResourceProxy retrieveContainer(final ResourceModel resourceModel) throws EscidocClientException {
         return repositories.container().findById(resourceModel.getId());
-    }
-
-    private boolean isDeletable(final ResourceProxy container) {
-        return container.getStatus().equals(AppConstants.PENDING)
-            || container.getStatus().equals(AppConstants.IN_REVISION)
-            || container.getLockStatus().equals(AppConstants.UNLOCK);
-
-    }
-
-    private boolean canUserDeleteContainer(final ResourceModel resourceModel) throws EscidocClientException,
-        URISyntaxException {
-        return repositories
-            .pdp().isAction(ActionIdConstants.DELETE_CONTAINER).forUser(currentUser.getUserId())
-            .forResource(resourceModel.getId()).permitted();
     }
 
     private void showDelete(final ResourceModel resourceModel) {
