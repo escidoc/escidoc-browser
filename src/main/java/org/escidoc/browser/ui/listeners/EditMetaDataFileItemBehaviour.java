@@ -49,7 +49,7 @@ public class EditMetaDataFileItemBehaviour implements ClickListener {
 
     private final Label status = new Label("Upload a wellformed XML file to create metadata!");
 
-    private final ProgressIndicator pi = new ProgressIndicator();
+    private final ProgressIndicator progressIndicator = new ProgressIndicator();
 
     private final MetadataRecord metadataRecord;
 
@@ -57,7 +57,7 @@ public class EditMetaDataFileItemBehaviour implements ClickListener {
 
     private final Repositories repositories;
 
-    private HorizontalLayout hl;
+    private HorizontalLayout horizontalLayout;
 
     private final ResourceProxy resourceProxy;
 
@@ -93,8 +93,8 @@ public class EditMetaDataFileItemBehaviour implements ClickListener {
         upload.setEnabled(true);
         progressLayout.setSpacing(true);
         progressLayout.setVisible(false);
-        progressLayout.addComponent(pi);
-        progressLayout.setComponentAlignment(pi, Alignment.MIDDLE_LEFT);
+        progressLayout.addComponent(progressIndicator);
+        progressLayout.setComponentAlignment(progressIndicator, Alignment.MIDDLE_LEFT);
 
         /**
          * =========== Add needed listener for the upload component: start, progress, finish, success, fail ===========
@@ -105,8 +105,8 @@ public class EditMetaDataFileItemBehaviour implements ClickListener {
             public void uploadStarted(final StartedEvent event) {
                 upload.setVisible(false);
                 progressLayout.setVisible(true);
-                pi.setValue(Float.valueOf(0.5f));
-                pi.setPollingInterval(500);
+                progressIndicator.setValue(Float.valueOf(0.5f));
+                progressIndicator.setPollingInterval(500);
                 status.setValue("Uploading file \"" + event.getFilename() + "\"");
             }
         });
@@ -117,12 +117,12 @@ public class EditMetaDataFileItemBehaviour implements ClickListener {
                 // This method gets called when the upload finished successfully
                 status.setValue("Uploading file \"" + event.getFilename() + "\" succeeded");
                 if (isValidXml(receiver.getFileContent())) {
-                    status.setValue("XML Looks correct");
-                    hl.setVisible(true);
+                    status.setValue(ViewConstants.XML_IS_WELL_FORMED);
+                    horizontalLayout.setVisible(true);
                     upload.setEnabled(false);
                 }
                 else {
-                    status.setValue("Not valid");
+                    status.setValue(ViewConstants.XML_IS_NOT_WELL_FORMED);
                     receiver.clearBuffer();
                 }
             }
@@ -147,7 +147,7 @@ public class EditMetaDataFileItemBehaviour implements ClickListener {
             }
         });
 
-        final Button btnAdd = new Button("Add New Metadata", new Button.ClickListener() {
+        final Button btnAdd = new Button("Save", new Button.ClickListener() {
             Item item;
 
             @Override
@@ -172,15 +172,15 @@ public class EditMetaDataFileItemBehaviour implements ClickListener {
                 (subwindow.getParent()).removeWindow(subwindow);
             }
         });
-        hl = new HorizontalLayout();
-        hl.setVisible(false);
-        hl.addComponent(btnAdd);
-        hl.addComponent(cnclAdd);
+        horizontalLayout = new HorizontalLayout();
+        horizontalLayout.setVisible(false);
+        horizontalLayout.addComponent(btnAdd);
+        horizontalLayout.addComponent(cnclAdd);
 
         subwindow.addComponent(status);
         subwindow.addComponent(upload);
         subwindow.addComponent(progressLayout);
-        subwindow.addComponent(hl);
+        subwindow.addComponent(horizontalLayout);
         mainWindow.addWindow(subwindow);
     }
 

@@ -7,8 +7,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.escidoc.browser.BrowserApplication;
-import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.ViewConstants;
@@ -37,8 +35,10 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.om.container.Container;
 
+@SuppressWarnings("serial")
 public class EditMetaDataFileContainerBehaviour implements ClickListener {
-    static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
+
+    private static final Logger LOG = LoggerFactory.getLogger(EditMetaDataFileContainerBehaviour.class);
 
     private final MetadataFileReceiver receiver = new MetadataFileReceiver();
 
@@ -54,8 +54,6 @@ public class EditMetaDataFileContainerBehaviour implements ClickListener {
 
     private final Window mainWindow;
 
-    private final EscidocServiceLocation escidocServiceLocation;
-
     private final Repositories repositories;
 
     private HorizontalLayout hl;
@@ -65,11 +63,9 @@ public class EditMetaDataFileContainerBehaviour implements ClickListener {
     private Element metadataContent;
 
     public EditMetaDataFileContainerBehaviour(final MetadataRecord metadataRecord, final Window mainWindow,
-        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories,
-        final ResourceProxy resourceProxy) {
+        final Repositories repositories, final ResourceProxy resourceProxy) {
         this.metadataRecord = metadataRecord;
         this.mainWindow = mainWindow;
-        this.escidocServiceLocation = escidocServiceLocation;
         this.repositories = repositories;
         this.resourceProxy = resourceProxy;
 
@@ -105,7 +101,7 @@ public class EditMetaDataFileContainerBehaviour implements ClickListener {
             public void uploadStarted(final StartedEvent event) {
                 upload.setVisible(false);
                 progressLayout.setVisible(true);
-                pi.setValue(0f);
+                pi.setValue(Float.valueOf(0f));
                 pi.setPollingInterval(500);
                 status.setValue("Uploading file \"" + event.getFilename() + "\"");
             }
@@ -116,13 +112,13 @@ public class EditMetaDataFileContainerBehaviour implements ClickListener {
             public void uploadSucceeded(final SucceededEvent event) {
                 // This method gets called when the upload finished successfully
                 status.setValue("Uploading file \"" + event.getFilename() + "\" succeeded");
-                if (isValidXml(receiver.getFileContent())) {
-                    status.setValue("XML Looks correct");
+                if (isWellFormed(receiver.getFileContent())) {
+                    status.setValue(ViewConstants.XML_IS_WELL_FORMED);
                     hl.setVisible(true);
                     upload.setEnabled(false);
                 }
                 else {
-                    status.setValue("Not valid");
+                    status.setValue(ViewConstants.XML_IS_NOT_WELL_FORMED);
                     receiver.clearBuffer();
                 }
             }
@@ -147,7 +143,7 @@ public class EditMetaDataFileContainerBehaviour implements ClickListener {
             }
         });
 
-        final Button btnAdd = new Button("Add New Metadata", new Button.ClickListener() {
+        final Button btnAdd = new Button("Save", new Button.ClickListener() {
             Container container;
 
             @Override
@@ -169,7 +165,7 @@ public class EditMetaDataFileContainerBehaviour implements ClickListener {
         final Button cnclAdd = new Button("Cancel", new Button.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
-                (subwindow.getParent()).removeWindow(subwindow);
+                subwindow.getParent().removeWindow(subwindow);
             }
         });
         hl = new HorizontalLayout();
@@ -190,7 +186,7 @@ public class EditMetaDataFileContainerBehaviour implements ClickListener {
      * @param xml
      * @return boolean
      */
-    private boolean isValidXml(final String xml) {
+    private boolean isWellFormed(final String xml) {
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
 
@@ -214,5 +210,4 @@ public class EditMetaDataFileContainerBehaviour implements ClickListener {
             return false;
         }
     }
-
 }

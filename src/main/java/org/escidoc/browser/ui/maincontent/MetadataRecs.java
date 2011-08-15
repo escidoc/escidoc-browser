@@ -170,8 +170,8 @@ public class MetadataRecs {
         final HorizontalLayout hl = new HorizontalLayout();
         if (hasAccess()) {
             final Button btnEditActualMetaData =
-                new Button("", new EditMetaDataFileContainerBehaviour(metadataRecord, mainWindow,
-                    escidocServiceLocation, repositories, resourceProxy));
+                new Button("", new EditMetaDataFileContainerBehaviour(metadataRecord, mainWindow, repositories,
+                    resourceProxy));
             btnEditActualMetaData.setStyleName(BaseTheme.BUTTON_LINK);
             btnEditActualMetaData.setDescription("Replace the metadata with a new content file");
             btnEditActualMetaData.setIcon(new ThemeResource("../myTheme/runo/icons/16/reload.png"));
