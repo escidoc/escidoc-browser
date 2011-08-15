@@ -40,13 +40,13 @@ public class EditMetaDataFileContainerBehaviour implements ClickListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(EditMetaDataFileContainerBehaviour.class);
 
-    private final MetadataFileReceiver receiver = new MetadataFileReceiver();
+    private MetadataFileReceiver receiver;
 
     private final HorizontalLayout progressLayout = new HorizontalLayout();
 
-    private final Upload upload = new Upload("", receiver);
+    private Upload upload;
 
-    private final Label status = new Label("Upload a wellformed XML file to create metadata!");
+    private Label status;
 
     private final ProgressIndicator pi = new ProgressIndicator();
 
@@ -68,13 +68,11 @@ public class EditMetaDataFileContainerBehaviour implements ClickListener {
         this.mainWindow = mainWindow;
         this.repositories = repositories;
         this.resourceProxy = resourceProxy;
-
     }
 
     @Override
     public void buttonClick(final ClickEvent event) {
         showWindow();
-
     }
 
     private void showWindow() {
@@ -82,8 +80,11 @@ public class EditMetaDataFileContainerBehaviour implements ClickListener {
         subwindow.setWidth("600px");
         subwindow.setModal(true);
 
+        status = new Label("Upload a wellformed XML file to create metadata!");
         // Make uploading start immediately when file is selected
+        receiver = new MetadataFileReceiver();
         receiver.clearBuffer();
+        upload = new Upload("", receiver);
         upload.setImmediate(true);
         upload.setButtonCaption("Select file");
 
@@ -158,7 +159,7 @@ public class EditMetaDataFileContainerBehaviour implements ClickListener {
                 catch (final EscidocClientException e) {
                     LOG.debug(e.getLocalizedMessage());
                 }
-                (subwindow.getParent()).removeWindow(subwindow);
+                subwindow.getParent().removeWindow(subwindow);
             }
         });
 
