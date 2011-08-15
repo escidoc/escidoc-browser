@@ -163,12 +163,6 @@ public final class ShowAddViewCommand implements Command {
         mainWindow.showNotification(ViewConstants.NOT_AUTHORIZED, message, Window.Notification.TYPE_WARNING_MESSAGE);
     }
 
-    private boolean isUserAllowedToCreateContainer() throws EscidocClientException, URISyntaxException {
-        return repositories
-            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.CREATE_CONTAINER).forResource("")
-            .withTypeAndInContext(ResourceType.CONTAINER, contextId).permitted();
-    }
-
     public void showItemAddView() {
         Preconditions.checkNotNull(parent, "parent is null: %s", parent);
         try {
