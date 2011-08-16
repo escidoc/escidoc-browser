@@ -34,8 +34,6 @@ import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.MainSite;
-import org.escidoc.browser.ui.listeners.TreeClickListener;
-import org.escidoc.browser.ui.navigation.menubar.NavigationMenuBar;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.event.Action.Handler;
@@ -80,12 +78,6 @@ public class NavigationTreeViewImpl extends CustomComponent implements Navigatio
         tree.setItemCaptionPropertyId(PropertyId.NAME);
         tree.setItemIconPropertyId(PropertyId.ICON);
         tree.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
-    }
-
-    @Override
-    public void withNavigationMenuBar(final NavigationMenuBar navigationMenuBar) {
-        Preconditions.checkNotNull(navigationMenuBar, "navigationMenuBar is null: %s", navigationMenuBar);
-        ((TreeClickListener) itemClickListener).withNavigationMenuBar(navigationMenuBar);
     }
 
     @Override

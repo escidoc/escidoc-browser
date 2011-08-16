@@ -28,8 +28,6 @@
  */
 package org.escidoc.browser.ui.listeners;
 
-import java.net.URISyntaxException;
-
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.CurrentUser;
@@ -44,7 +42,6 @@ import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.ContainerView;
 import org.escidoc.browser.ui.maincontent.ContextView;
 import org.escidoc.browser.ui.maincontent.ItemView;
-import org.escidoc.browser.ui.navigation.menubar.NavigationMenuBar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,8 +69,6 @@ public class TreeClickListener implements ItemClickListener {
 
     private final Repositories repositories;
 
-    private NavigationMenuBar navigationMenuBar;
-
     public TreeClickListener(final EscidocServiceLocation serviceLocation, final Repositories repositories,
         final Window mainWindow, final MainSite mainSite, final CurrentUser currentUser) {
 
@@ -90,32 +85,9 @@ public class TreeClickListener implements ItemClickListener {
         this.currentUser = currentUser;
     }
 
-    public void withNavigationMenuBar(final NavigationMenuBar navigationMenuBar) {
-        this.navigationMenuBar = navigationMenuBar;
-    }
-
     @Override
     public void itemClick(final ItemClickEvent event) {
-        try {
-            updateMenuBar((ResourceModel) event.getItemId());
-            openClickedResourceInNewTab((ResourceModel) event.getItemId());
-        }
-        catch (final EscidocClientException e) {
-            LOG.error(e.getMessage());
-            mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
-                Notification.TYPE_ERROR_MESSAGE));
-        }
-        catch (final URISyntaxException e) {
-            LOG.error(e.getMessage());
-            mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
-                Notification.TYPE_ERROR_MESSAGE));
-        }
-    }
-
-    private void updateMenuBar(final ResourceModel resourceModel) throws EscidocClientException, URISyntaxException {
-        if (navigationMenuBar != null) {
-            navigationMenuBar.updateMenuBar(resourceModel);
-        }
+        openClickedResourceInNewTab((ResourceModel) event.getItemId());
     }
 
     private void openClickedResourceInNewTab(final ResourceModel clickedResource) {

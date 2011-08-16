@@ -55,7 +55,6 @@ import org.escidoc.browser.ui.mainpage.HeaderContainer;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.navigation.NavigationTreeView;
 import org.escidoc.browser.ui.navigation.RootNode;
-import org.escidoc.browser.ui.navigation.menubar.NavigationMenuBar;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -91,8 +90,6 @@ public class MainSite extends VerticalLayout {
 
     private NavigationTreeView mainNavigationTree;
 
-    private NavigationMenuBar navigationMenuBar;
-
     private TreeDataSource treeDataSource;
 
     /**
@@ -121,17 +118,10 @@ public class MainSite extends VerticalLayout {
         initTreeDataSource();
         configureLayout();
         addHeader();
-        addMenuBar();
         addNavigationPanel();
         addMainContentTabs();
-        // permanentURLelement();
         addFooter();
         addComponent(mainLayout);
-    }
-
-    private void addMenuBar() {
-        navigationMenuBar = new NavigationMenuBar(currentUser, repositories, mainWindow, treeDataSource);
-        mainNavigation.addComponent(navigationMenuBar);
     }
 
     private void configureLayout() {
@@ -240,7 +230,6 @@ public class MainSite extends VerticalLayout {
 
         addRootNode();
         addNavigationTree();
-        mainNavigationTree.withNavigationMenuBar(navigationMenuBar);
         return mainNavigation;
     }
 
