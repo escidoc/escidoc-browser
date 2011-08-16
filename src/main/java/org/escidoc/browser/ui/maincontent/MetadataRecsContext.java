@@ -84,10 +84,6 @@ class MetadataRecsContext {
         metadataRecs.addTab(buildResources(elementHeight), ViewConstants.ADDITIONAL_RESOURCES, null);
     }
 
-    /**
-     * @param elementHeight
-     * @return
-     */
     private Panel buildResources(final int elementHeight) {
         final Panel resources = new Panel();
         resources.setWidth(_100_PERCENT);
@@ -97,10 +93,6 @@ class MetadataRecsContext {
         return resources;
     }
 
-    /**
-     * @param elementHeight
-     * @return
-     */
     private Panel buildRelations(final int elementHeight) {
         final Panel relations = new Panel();
         relations.setWidth(_100_PERCENT);
@@ -110,10 +102,6 @@ class MetadataRecsContext {
         return relations;
     }
 
-    /**
-     * @param elementHeight
-     * @return
-     */
     private Panel buildAdminDescription(final int elementHeight) {
         final Panel admDescriptors = new Panel();
         admDescriptors.setWidth(_100_PERCENT);
@@ -129,10 +117,6 @@ class MetadataRecsContext {
         return admDescriptors;
     }
 
-    /**
-     * @param elementHeight
-     * @return
-     */
     private Panel buildOrganizationUnit(final int elementHeight) {
         final Panel orgUnit = new Panel();
         orgUnit.setWidth(_100_PERCENT);
