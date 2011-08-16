@@ -173,7 +173,7 @@ public final class ItemView extends VerticalLayout {
     private void buildLeftCell(final Component itCnt) {
         final Panel leftPanel = new Panel();
         leftPanel.getLayout().setMargin(false);
-        leftPanel.setStyleName(FLOAT_LEFT);
+        leftPanel.setStyleName("floatleft");
         leftPanel.setScrollable(false);
         leftPanel.setWidth("30%");
         leftPanel.setHeight("82%");
@@ -244,12 +244,6 @@ public final class ItemView extends VerticalLayout {
         pnlPropertiesRight.addStyleName(Runo.PANEL_LIGHT);
         pnlPropertiesRight.getLayout().setMargin(false);
         return pnlPropertiesRight;
-    }
-
-    private Button buildReleasedByBtn() {
-        final Button releasedBy = new Button("Released by " + resourceProxy.getReleasedBy());
-        releasedBy.setStyleName(BaseTheme.BUTTON_LINK);
-        return releasedBy;
     }
 
     private void bindHrRuler() {

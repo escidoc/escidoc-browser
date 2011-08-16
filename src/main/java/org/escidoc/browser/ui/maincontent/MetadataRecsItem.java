@@ -169,6 +169,7 @@ public class MetadataRecsItem {
      */
     private void buildMDButtons(final VerticalLayout btnaddContainer, final MetadataRecord metadataRecord) {
         final HorizontalLayout hl = new HorizontalLayout();
+        hl.setStyleName("metadata");
         final Button btnmdRec =
             new Button(metadataRecord.getName(), new MetadataRecBehavour(metadataRecord, mainWindow));
         btnmdRec.setStyleName(BaseTheme.BUTTON_LINK);

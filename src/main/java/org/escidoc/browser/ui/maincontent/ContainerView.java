@@ -205,35 +205,6 @@ public class ContainerView extends VerticalLayout {
         final Label nameofPanel = new Label("<strong>" + DIRECT_MEMBERS + "</string>", Label.CONTENT_RAW);
         leftpnl.addComponent(nameofPanel);
 
-        // leftpnl.addListener(new ClickListener() {
-        // @Override
-        // public void click(com.vaadin.event.MouseEvents.ClickEvent event) {
-        // if (event.getButton() == ItemClickEvent.BUTTON_RIGHT) {
-        // mainWindow.showNotification("We have a righty");
-        // ContextMenu menu = new ContextMenu();
-        // getApplication().getMainWindow().addComponent(menu);
-        // menu.show(event.getClientX(), event.getClientY());
-        //
-        // // Generate main level items
-        // ContextMenuItem photos = menu.addItem("Photos");
-        // ContextMenuItem albums = menu.addItem("Albums");
-        // ContextMenuItem report = menu.addItem("Report");
-        // // Show notification when menu items are clicked
-        // menu.addListener(new ContextMenu.ClickListener() {
-        // @Override
-        // public void contextItemClick(org.vaadin.peter.contextmenu.ContextMenu.ClickEvent event) {
-        // // Get reference to clicked item
-        // ContextMenuItem clickedItem = event.getClickedItem();
-        // // Do something with the reference
-        // getApplication().getMainWindow().showNotification(clickedItem.getName());
-        // }
-        // });
-        //
-        // }
-        //
-        // }
-        // });
-
         leftpnl.addComponent(comptoBind);
 
         cssLayout.addComponent(leftpnl);

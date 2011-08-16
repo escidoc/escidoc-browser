@@ -107,6 +107,14 @@ ul.horizontal_list li{
 	background: #ffffff;
 	padding: 0 0;
 }
+/*
+.v-table v-table-drophere{
+	background: red repeat-x;
+	background-image: url(/browser/VAADIN/themes/myTheme/images/assets/background-drophere.jpg); 
+}
+.v-table-drophere > div {
+   background: transparent;
+}*/
 .v-table-body{
       overflow: hidden !important;
 }

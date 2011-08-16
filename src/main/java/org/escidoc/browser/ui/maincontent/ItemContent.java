@@ -198,6 +198,7 @@ public class ItemContent extends Panel {
         table = new Table();
         table.setPageLength(0);
         table.setWidth("100%");
+        table.setStyleName("drophere");
         table.addContainerProperty("Type", Embedded.class, null);
         table.addContainerProperty("Meta", Label.class, null);
         table.addContainerProperty("Link", Button.class, null);
