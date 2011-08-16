@@ -28,12 +28,7 @@
  */
 package org.escidoc.browser.ui.navigation.menubar;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.Window;
+import java.net.URISyntaxException;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.CurrentUser;
@@ -45,7 +40,11 @@ import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.ViewConstants;
 
-import java.net.URISyntaxException;
+import com.google.common.base.Preconditions;
+import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -186,7 +185,7 @@ public class NavigationMenuBar extends CustomComponent {
         menuBar.setEnabled(true);
         add.setEnabled(true);
         add.setVisible(true);
-        contextMenuItem.setVisible(false);
+        // contextMenuItem.setVisible(false);
         containerMenuItem.setVisible(true);
         itemMenuItem.setVisible(true);
     }
