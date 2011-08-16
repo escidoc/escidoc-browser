@@ -109,9 +109,7 @@ public class ContextView extends VerticalLayout {
     }
 
     private void addContextDetailsView() {
-        final MetadataRecsContext cnxAddinfo =
-            new MetadataRecsContext(resourceProxy, accordionHeight, mainWindow, serviceLocation);
-        rightCell(cnxAddinfo.asAccord());
+        rightCell(new MetadataRecsContext(resourceProxy, accordionHeight, mainWindow).asAccord());
     }
 
     private void addDirectMembersView() throws EscidocClientException {

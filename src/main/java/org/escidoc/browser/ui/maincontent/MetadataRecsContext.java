@@ -28,12 +28,9 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.ui.listeners.ContextAdminDescriptorsClickListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Accordion;
@@ -50,18 +47,14 @@ import de.escidoc.core.resources.om.context.OrganizationalUnitRefs;
 
 public class MetadataRecsContext {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MetadataRecsContext.class);
-
     private int height;
 
     private final ContextProxyImpl resourceProxy;
 
     private final Window mainWindow;
 
-    private final EscidocServiceLocation escidocServiceLocation;
-
-    public MetadataRecsContext(final ResourceProxy resourceProxy, final int innerelementsHeight,
-        final Window mainWindow, final EscidocServiceLocation escidocServiceLocation) {
+    public MetadataRecsContext(final ResourceProxy resourceProxy, final int innerelementsHeight, final Window mainWindow) {
+        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         Preconditions.checkNotNull(mainWindow, "resource is null.");
         height = innerelementsHeight;
         if (height < 1) {
@@ -70,7 +63,6 @@ public class MetadataRecsContext {
         height = innerelementsHeight;
         this.resourceProxy = (ContextProxyImpl) resourceProxy;
         this.mainWindow = mainWindow;
-        this.escidocServiceLocation = escidocServiceLocation;
     }
 
     public Accordion asAccord() {
@@ -85,8 +77,8 @@ public class MetadataRecsContext {
     private void addComponentAsTabs(final Accordion metadataRecs, final int elementHeight) {
         metadataRecs.addTab(buildOrganizationUnit(elementHeight), "Organizational Unit", null);
         metadataRecs.addTab(buildAdminDescription(elementHeight), "Admin Description", null);
-        metadataRecs.addTab(buildRelations(elementHeight), "Additional Resources", null);
-        metadataRecs.addTab(buildResources(elementHeight), "Resources", null);
+        metadataRecs.addTab(buildRelations(elementHeight), "Relations", null);
+        metadataRecs.addTab(buildResources(elementHeight), "Additional Resources", null);
     }
 
     /**
