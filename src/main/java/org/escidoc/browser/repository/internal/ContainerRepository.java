@@ -48,6 +48,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
@@ -68,9 +72,15 @@ import de.escidoc.core.resources.sb.search.SearchResultRecord;
 
 public class ContainerRepository implements Repository {
 
+    private static final String DELETE_RESOURCE_WND_NAME = "Do you really want to delete this item!?";
+
+    private static final String DELETE_RESOURCE = "Are you confident to delete this resource!?";
+
     private final ContainerHandlerClientInterface client;
 
     private final Window mainWindow;
+
+    private boolean delete;
 
     static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
 
@@ -241,8 +251,6 @@ public class ContainerRepository implements Repository {
         else if (publicStatus.equals("DELETE")) {
             try {
                 this.delete(container);
-                mainWindow.showNotification(new Window.Notification(ViewConstants.DELETED,
-                    Notification.TYPE_TRAY_NOTIFICATION));
             }
             catch (EscidocClientException e) {
                 System.out.println(e.getMessage());
@@ -290,10 +298,82 @@ public class ContainerRepository implements Repository {
 
     @Override
     public void delete(final ResourceModel model) throws EscidocClientException {
-        client.delete(model.getId());
+        final Window subwindow = new Window(DELETE_RESOURCE_WND_NAME);
+        subwindow.setModal(true);
+        Label message = new Label(DELETE_RESOURCE);
+        subwindow.addComponent(message);
+
+        @SuppressWarnings("serial")
+        Button okConfirmed = new Button("Yes", new Button.ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                (subwindow.getParent()).removeWindow(subwindow);
+                try {
+                    finalDelete(model);
+                }
+                catch (EscidocClientException e) {
+                    mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
+                        Notification.TYPE_ERROR_MESSAGE));
+                }
+            }
+
+        });
+        @SuppressWarnings("serial")
+        Button cancel = new Button("Cancel", new Button.ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                (subwindow.getParent()).removeWindow(subwindow);
+            }
+        });
+        HorizontalLayout hl = new HorizontalLayout();
+        hl.addComponent(okConfirmed);
+        hl.addComponent(cancel);
+        subwindow.addComponent(hl);
+        mainWindow.addWindow(subwindow);
     }
 
-    private void delete(Container container) throws EscidocClientException {
+    public void finalDelete(final ResourceModel model) throws EscidocClientException {
+        client.delete(model.getId());
+        mainWindow
+            .showNotification(new Window.Notification(ViewConstants.DELETED, Notification.TYPE_TRAY_NOTIFICATION));
+    }
+
+    private void delete(final Container container) throws EscidocClientException {
+        final Window subwindow = new Window(DELETE_RESOURCE_WND_NAME);
+        subwindow.setModal(true);
+        Label message = new Label(DELETE_RESOURCE);
+        subwindow.addComponent(message);
+
+        @SuppressWarnings("serial")
+        Button okConfirmed = new Button("Yes", new Button.ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                (subwindow.getParent()).removeWindow(subwindow);
+                try {
+                    finalDelete(container);
+                }
+                catch (EscidocClientException e) {
+                    mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
+                        Notification.TYPE_ERROR_MESSAGE));
+                }
+            }
+
+        });
+        @SuppressWarnings("serial")
+        Button cancel = new Button("Cancel", new Button.ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                (subwindow.getParent()).removeWindow(subwindow);
+            }
+        });
+        HorizontalLayout hl = new HorizontalLayout();
+        hl.addComponent(okConfirmed);
+        hl.addComponent(cancel);
+        subwindow.addComponent(hl);
+        mainWindow.addWindow(subwindow);
+    }
+
+    private void finalDelete(Container container) throws EscidocClientException {
         client.delete(container.getObjid());
         mainWindow
             .showNotification(new Window.Notification(ViewConstants.DELETED, Notification.TYPE_TRAY_NOTIFICATION));
@@ -318,4 +398,5 @@ public class ContainerRepository implements Repository {
 
         client.update(container);
     }
+
 }
