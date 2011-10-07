@@ -33,6 +33,8 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.MainSite;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.terminal.Sizeable;
@@ -76,9 +78,10 @@ public class ContextView extends VerticalLayout {
 
     private final Repositories repositories;
 
-    public ContextView(final EscidocServiceLocation serviceLocation, final MainSite mainSite,
-        final ResourceProxy resourceProxy, final Window mainWindow, final CurrentUser currentUser,
-        final Repositories repositories) throws EscidocClientException {
+    private static final Logger LOG = LoggerFactory.getLogger(ContextView.class);
+
+    public ContextView(final EscidocServiceLocation serviceLocation, final MainSite mainSite, final ResourceProxy resourceProxy,
+        final Window mainWindow, final CurrentUser currentUser, final Repositories repositories) throws EscidocClientException {
 
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
@@ -113,13 +116,13 @@ public class ContextView extends VerticalLayout {
     }
 
     private void addDirectMembersView() throws EscidocClientException {
-        leftCell(DIRECT_MEMBERS, new DirectMember(serviceLocation, mainSite, resourceProxy.getId(), mainWindow,
-            currentUser, repositories).contextAsTree());
+        leftCell(DIRECT_MEMBERS,
+            new DirectMember(serviceLocation, mainSite, resourceProxy.getId(), mainWindow, currentUser, repositories).contextAsTree());
     }
 
     /**
-     * This is the inner Right Cell within a Context By default a set of Organizational Unit / Admin Description /
-     * RelatedItem / Resources are bound
+     * This is the inner Right Cell within a Context By default a set of Organizational Unit / Admin Description / RelatedItem / Resources
+     * are bound
      * 
      * @param comptoBind
      */
@@ -163,17 +166,16 @@ public class ContextView extends VerticalLayout {
      */
     private void bindProperties() {
         final Label descMetadata1 =
-            new Label("ID: " + resourceProxy.getId() + " <br /> " + resourceProxy.getType().asLabel() + " is "
-                + resourceProxy.getStatus(), Label.CONTENT_RAW);
+            new Label("ID: " + resourceProxy.getId() + " <br /> " + resourceProxy.getType().asLabel() + " is " + resourceProxy.getStatus(),
+                Label.CONTENT_RAW);
         descMetadata1.setWidth("35%");
         descMetadata1.setStyleName("floatleft columnheight50");
         cssLayout.addComponent(descMetadata1);
 
         // RIGHT SIDE
         final Label descMetadata2 =
-            new Label(CREATED_BY + " " + resourceProxy.getCreator() + " on " + resourceProxy.getCreatedOn() + "<br/>"
-                + LAST_MODIFIED_BY + " " + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(),
-                Label.CONTENT_XHTML);
+            new Label(CREATED_BY + " " + resourceProxy.getCreator() + " on " + resourceProxy.getCreatedOn() + "<br/>" + LAST_MODIFIED_BY
+                + " " + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(), Label.CONTENT_XHTML);
 
         descMetadata2.setStyleName("floatright columnheight50");
         descMetadata2.setWidth("65%");

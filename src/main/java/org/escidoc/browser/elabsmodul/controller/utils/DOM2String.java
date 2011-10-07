@@ -26,36 +26,41 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.model;
+package org.escidoc.browser.elabsmodul.controller.utils;
 
-import java.util.List;
+import java.io.StringWriter;
 
-import de.escidoc.core.resources.Resource;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
-public interface ResourceProxy extends ResourceModel {
+import org.w3c.dom.Element;
 
-    String getDescription();
+/**
+ * 
+ * @author ASP
+ * 
+ */
+public class DOM2String {
 
-    // Status: Pending, Release,...
-    // TODO implement status as enumeration
-    String getStatus();
+    /**
+     * Converts a DOM to a String
+     * 
+     * @param e
+     *            the DOM to convert.
+     * @return the result of the transformation.
+     * @throws TransformerException
+     */
+    public static synchronized String convertDom2String(Element e) throws TransformerException {
 
-    String getCreator();
+        StringWriter stringWriter = new StringWriter();
+        TransformerFactory factory = TransformerFactory.newInstance();
+        Transformer transformer = factory.newTransformer();
+        transformer.transform(new DOMSource(e), new StreamResult(stringWriter));
+        return stringWriter.getBuffer().toString();
 
-    String getCreatedOn();
-
-    String getModifier();
-
-    String getModifiedOn();
-
-    List<String> getRelations();
-
-    Resource getContext();
-
-    String getLockStatus();
-
-    String getVersionStatus();
-
-    Resource getContentModel();
+    }
 
 }

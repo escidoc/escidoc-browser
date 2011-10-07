@@ -26,36 +26,22 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.model;
+package org.escidoc.browser.elabsmodul.view.subcontent;
 
-import java.util.List;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.Window;
 
-import de.escidoc.core.resources.Resource;
+public interface ILabsPanel {
 
-public interface ResourceProxy extends ResourceModel {
+    public Component getModifiedComponent();
 
-    String getDescription();
+    public void setModifiedComponent(Component modifiedComponent);
 
-    // Status: Pending, Release,...
-    // TODO implement status as enumeration
-    String getStatus();
+    public Window getMainWindow();
 
-    String getCreator();
+    public Panel getReference();
 
-    String getCreatedOn();
-
-    String getModifier();
-
-    String getModifiedOn();
-
-    List<String> getRelations();
-
-    Resource getContext();
-
-    String getLockStatus();
-
-    String getVersionStatus();
-
-    Resource getContentModel();
+    public void saveAction();
 
 }

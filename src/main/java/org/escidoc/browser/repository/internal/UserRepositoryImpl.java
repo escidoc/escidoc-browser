@@ -59,12 +59,17 @@ public class UserRepositoryImpl implements UserRepository {
         client.setHandle(token);
     }
 
+    @Override
     public CurrentUser findCurrentUser() {
         try {
             return new LoggedInUser(client.retrieveCurrentUser(), token);
         }
         catch (final EscidocClientException e) {
             LOG.info("The user is not logged in");
+            return new GuestUser();
+        }
+        catch (Throwable t) {
+            LOG.info("The user has to log in first.");
             return new GuestUser();
         }
     }

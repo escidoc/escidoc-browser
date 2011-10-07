@@ -287,4 +287,9 @@ public class ContainerProxyImpl implements ContainerProxy {
         return containerFromCore.getProperties().getVersion().getDate().toString("d.M.y, HH:mm");
     }
 
+    @Override
+    public Resource getContentModel() {
+        return containerFromCore.getProperties().getContentModel();
+    }
+
 }

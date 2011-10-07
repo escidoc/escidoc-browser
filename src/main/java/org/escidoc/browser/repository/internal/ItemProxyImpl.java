@@ -156,19 +156,24 @@ public class ItemProxyImpl implements ItemProxy {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         ItemProxyImpl other = (ItemProxyImpl) obj;
         if (itemFromCore == null) {
-            if (other.getId() != null)
+            if (other.getId() != null) {
                 return false;
+            }
         }
-        else if (!getId().equals(other.getId()))
+        else if (!getId().equals(other.getId())) {
             return false;
+        }
         return true;
     }
 
@@ -193,5 +198,10 @@ public class ItemProxyImpl implements ItemProxy {
 
     public String getLatestVersionModifiedOn() {
         return itemFromCore.getProperties().getVersion().getDate().toString("d.M.y, HH:mm");
+    }
+
+    @Override
+    public Resource getContentModel() {
+        return itemFromCore.getProperties().getContentModel();
     }
 }

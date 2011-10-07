@@ -119,19 +119,24 @@ public class ContextProxyImpl implements ResourceProxy {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         ContextProxyImpl other = (ContextProxyImpl) obj;
         if (contextFromCore == null) {
-            if (other.getId() != null)
+            if (other.getId() != null) {
                 return false;
+            }
         }
-        else if (!getId().equals(other.getId()))
+        else if (!getId().equals(other.getId())) {
             return false;
+        }
         return true;
     }
 
@@ -144,6 +149,11 @@ public class ContextProxyImpl implements ResourceProxy {
     public String getVersionStatus() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public Resource getContentModel() {
+        throw new UnsupportedOperationException();
     }
 
 }

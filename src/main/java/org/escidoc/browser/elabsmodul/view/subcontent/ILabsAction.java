@@ -26,36 +26,11 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.model;
+package org.escidoc.browser.elabsmodul.view.subcontent;
 
-import java.util.List;
+public interface ILabsAction {
 
-import de.escidoc.core.resources.Resource;
+    public void showButtonLayout();
 
-public interface ResourceProxy extends ResourceModel {
-
-    String getDescription();
-
-    // Status: Pending, Release,...
-    // TODO implement status as enumeration
-    String getStatus();
-
-    String getCreator();
-
-    String getCreatedOn();
-
-    String getModifier();
-
-    String getModifiedOn();
-
-    List<String> getRelations();
-
-    Resource getContext();
-
-    String getLockStatus();
-
-    String getVersionStatus();
-
-    Resource getContentModel();
-
+    public void hideButtonLayout();
 }
