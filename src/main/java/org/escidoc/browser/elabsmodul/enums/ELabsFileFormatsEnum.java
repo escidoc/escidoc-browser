@@ -32,7 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public enum ELabsFileFormatsEnum {
-    BLANK("Choose one format, please."), GALAXY_SPC("GALAXY_SPC"), FMF("FMF"), ZIP("ZIP Archive"), TEXT("Text Data"), BYTE("Byte Data");
+    BLANK("Choose one format, please."), GALAXY_SPC("GALAXY_SPC"), FMF("FMF"), ZIP("ZIP Archive"), TEXT("Text Data"), BYTE(
+        "Byte Data");
 
     private static final int NUMBER_OF_TYPES = 6;
 

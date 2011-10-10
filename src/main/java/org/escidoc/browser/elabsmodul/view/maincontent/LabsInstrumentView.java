@@ -81,8 +81,9 @@ public final class LabsInstrumentView extends VerticalLayout {
 
     private LabsInstrumentPanel instrumentPanel = null;
 
-    public LabsInstrumentView(final EscidocServiceLocation serviceLocation, final Repositories repositories, final MainSite mainSite,
-        final ResourceProxy resourceProxy, final Window mainWindow, final CurrentUser currentUser) {
+    public LabsInstrumentView(final EscidocServiceLocation serviceLocation, final Repositories repositories,
+        final MainSite mainSite, final ResourceProxy resourceProxy, final Window mainWindow,
+        final CurrentUser currentUser) {
 
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null.");
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
@@ -149,7 +150,8 @@ public final class LabsInstrumentView extends VerticalLayout {
 
         final Label descMetadata1 = new Label("ID: " + resourceProxy.getId());
         final Label descMetadata2 =
-            new Label(LAST_MODIFIED_BY + " " + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(), Label.CONTENT_XHTML);
+            new Label(LAST_MODIFIED_BY + " " + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(),
+                Label.CONTENT_XHTML);
         pnlPropertiesLeft.addComponent(descMetadata1);
         pnlPropertiesRight.addComponent(descMetadata2);
         cssLayout.addComponent(pnlPropertiesLeft);

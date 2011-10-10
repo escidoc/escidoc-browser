@@ -66,7 +66,8 @@ final class ActionHandlerImpl implements Action.Handler {
 
     private final TreeDataSource treeDataSource;
 
-    public ActionHandlerImpl(final Window mainWindow, final Repositories repositories, final CurrentUser currentUser, final TreeDataSource treeDataSource) {
+    public ActionHandlerImpl(final Window mainWindow, final Repositories repositories, final CurrentUser currentUser,
+        final TreeDataSource treeDataSource) {
 
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
@@ -89,14 +90,17 @@ final class ActionHandlerImpl implements Action.Handler {
             Preconditions.checkNotNull(contentModelId, "Content Model ID is null");
 
             if (isContext(target) && contentModelId.equals(AppConstants.EMPTY_STRING)) {
-                return new Action[] { ActionList.ACTION_ADD_STUDY, ActionList.ACTION_ADD_RIG, ActionList.ACTION_ADD_INSTRUMENT };
+                return new Action[] { ActionList.ACTION_ADD_STUDY, ActionList.ACTION_ADD_RIG,
+                    ActionList.ACTION_ADD_INSTRUMENT };
             }
             else if (isContainer(target)) {
                 if (contentModelId.equals(ELabsConstants.ELABS_DEFAULT_STUDY_CMODEL_ID)) {
-                    return new Action[] { ActionList.ACTION_ADD_INVESTIGATION, ActionList.ACTION_MODIFY_STUDY, ActionList.ACTION_DELETE_STUDY };
+                    return new Action[] { ActionList.ACTION_ADD_INVESTIGATION, ActionList.ACTION_MODIFY_STUDY,
+                        ActionList.ACTION_DELETE_STUDY };
                 }
                 else if (contentModelId.equals(ELabsConstants.ELABS_DEFAULT_INVESTIGATION_CMODEL_ID)) {
-                    return new Action[] { ActionList.ACTION_MODIFY_INVESTIGATION, ActionList.ACTION_DELETE_INVESTIGATION };
+                    return new Action[] { ActionList.ACTION_MODIFY_INVESTIGATION,
+                        ActionList.ACTION_DELETE_INVESTIGATION };
                 }
                 else {
                     LOG.error("Unsupported BW eLabs ContentModel in the context menu of the object tree!");
@@ -130,7 +134,8 @@ final class ActionHandlerImpl implements Action.Handler {
             }
 
             if (isContainer(target)) {
-                return new Action[] { ActionList.ACTION_ADD_CONTAINER, ActionList.ACTION_ADD_ITEM, ActionList.ACTION_DELETE_CONTAINER };
+                return new Action[] { ActionList.ACTION_ADD_CONTAINER, ActionList.ACTION_ADD_ITEM,
+                    ActionList.ACTION_DELETE_CONTAINER };
             }
 
             if (isItem(target)) {
@@ -143,7 +148,9 @@ final class ActionHandlerImpl implements Action.Handler {
     }
 
     private boolean allowedToDeleteItem(final String resourceId) throws EscidocClientException, URISyntaxException {
-        return repositories.pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_ITEM).forResource(resourceId).permitted();
+        return repositories
+            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_ITEM).forResource(resourceId)
+            .permitted();
     }
 
     private static boolean isContext(final Object target) {
@@ -170,16 +177,18 @@ final class ActionHandlerImpl implements Action.Handler {
         }
         catch (final EscidocClientException e) {
             LOG.error(e.getMessage(), e);
-            mainWindow.showNotification(new Window.Notification("Application Error", e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE));
+            mainWindow.showNotification(new Window.Notification("Application Error", e.getMessage(),
+                Window.Notification.TYPE_ERROR_MESSAGE));
         }
         catch (final URISyntaxException e) {
             LOG.error(e.getMessage(), e);
-            mainWindow.showNotification(new Window.Notification("Application Error", e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE));
+            mainWindow.showNotification(new Window.Notification("Application Error", e.getMessage(),
+                Window.Notification.TYPE_ERROR_MESSAGE));
         }
     }
 
-    private void doActionIfAllowed(final Action action, final Object selectedResource, final String contextId) throws EscidocClientException,
-        URISyntaxException {
+    private void doActionIfAllowed(final Action action, final Object selectedResource, final String contextId)
+        throws EscidocClientException, URISyntaxException {
 
         // original doActions
         if (action.equals(ActionList.ACTION_ADD_CONTAINER)) {
@@ -220,7 +229,8 @@ final class ActionHandlerImpl implements Action.Handler {
         else if (action.equals(ActionList.ACTION_DELETE_INSTRUMENT)) {
         }
         else {
-            mainWindow.showNotification("Unknown Action: " + action.getCaption(), Window.Notification.TYPE_ERROR_MESSAGE);
+            mainWindow.showNotification("Unknown Action: " + action.getCaption(),
+                Window.Notification.TYPE_ERROR_MESSAGE);
         }
     }
 
@@ -230,8 +240,8 @@ final class ActionHandlerImpl implements Action.Handler {
             deleteItem((ItemModel) target);
         }
         else {
-            mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED, "You do not have the right to delete the item: " + itemId,
-                Window.Notification.TYPE_WARNING_MESSAGE));
+            mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
+                "You do not have the right to delete the item: " + itemId, Window.Notification.TYPE_WARNING_MESSAGE));
         }
     }
 
@@ -242,11 +252,13 @@ final class ActionHandlerImpl implements Action.Handler {
         }
         else {
             mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
-                "You do not have the right to delete a container: " + containerId, Window.Notification.TYPE_WARNING_MESSAGE));
+                "You do not have the right to delete a container: " + containerId,
+                Window.Notification.TYPE_WARNING_MESSAGE));
         }
     }
 
-    private void tryShowCreateItemView(final Object target, final String contextId) throws EscidocClientException, URISyntaxException {
+    private void tryShowCreateItemView(final Object target, final String contextId) throws EscidocClientException,
+        URISyntaxException {
         if (allowedToCreateItem(contextId)) {
             if (target instanceof ContextModel) {
                 showCreateItemView(target, contextId);
@@ -255,17 +267,20 @@ final class ActionHandlerImpl implements Action.Handler {
                 showCreateItemView(target, contextId);
             }
             else {
-                mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED, "You do not have the right to add an item to "
-                    + ((ResourceModel) target).getName(), Window.Notification.TYPE_WARNING_MESSAGE));
+                mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
+                    "You do not have the right to add an item to " + ((ResourceModel) target).getName(),
+                    Window.Notification.TYPE_WARNING_MESSAGE));
             }
         }
         else {
-            mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED, "You do not have the right to create an item in context: "
-                + contextId, Window.Notification.TYPE_WARNING_MESSAGE));
+            mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
+                "You do not have the right to create an item in context: " + contextId,
+                Window.Notification.TYPE_WARNING_MESSAGE));
         }
     }
 
-    private void tryShowCreateContainerView(final Object target, final String contextId) throws EscidocClientException, URISyntaxException {
+    private void tryShowCreateContainerView(final Object target, final String contextId) throws EscidocClientException,
+        URISyntaxException {
         if (allowedToCreateContainer(contextId)) {
             if (target instanceof ContextModel) {
                 showCreateContainerView(target, contextId);
@@ -274,31 +289,40 @@ final class ActionHandlerImpl implements Action.Handler {
                 showCreateContainerView(target, contextId);
             }
             else {
-                mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED, "You do not have the right to add a container to "
-                    + ((ResourceModel) target).getName(), Window.Notification.TYPE_WARNING_MESSAGE));
+                mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
+                    "You do not have the right to add a container to " + ((ResourceModel) target).getName(),
+                    Window.Notification.TYPE_WARNING_MESSAGE));
             }
         }
         else {
-            mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED, "You do not have the right to create a container in context: "
-                + contextId, Window.Notification.TYPE_WARNING_MESSAGE));
+            mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
+                "You do not have the right to create a container in context: " + contextId,
+                Window.Notification.TYPE_WARNING_MESSAGE));
         }
     }
 
     private boolean allowedToAddMember(final ResourceModel target) throws EscidocClientException, URISyntaxException {
-        return repositories.pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.ADD_MEMBERS_TO_CONTAINER).forResource(target.getId()).permitted();
+        return repositories
+            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.ADD_MEMBERS_TO_CONTAINER)
+            .forResource(target.getId()).permitted();
     }
 
-    private boolean allowedToDeleteContainer(final String containerId) throws EscidocClientException, URISyntaxException {
-        return repositories.pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_CONTAINER).forResource(containerId).permitted();
+    private boolean allowedToDeleteContainer(final String containerId) throws EscidocClientException,
+        URISyntaxException {
+        return repositories
+            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_CONTAINER)
+            .forResource(containerId).permitted();
     }
 
     private boolean allowedToCreateItem(final String contextId) throws EscidocClientException, URISyntaxException {
-        return repositories.pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.CREATE_ITEM).forResource("")
+        return repositories
+            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.CREATE_ITEM).forResource("")
             .withTypeAndInContext(ResourceType.ITEM, contextId).permitted();
     }
 
     private boolean allowedToCreateContainer(final String contextId) throws EscidocClientException, URISyntaxException {
-        return repositories.pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.CREATE_CONTAINER).forResource("")
+        return repositories
+            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.CREATE_CONTAINER).forResource("")
             .withTypeAndInContext(ResourceType.CONTAINER, contextId).permitted();
     }
 
@@ -308,7 +332,8 @@ final class ActionHandlerImpl implements Action.Handler {
             treeDataSource.remove(selected);
         }
         catch (final EscidocClientException e) {
-            getWindow().showNotification("Can not delete " + selected.getName(), e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            getWindow().showNotification("Can not delete " + selected.getName(), e.getMessage(),
+                Window.Notification.TYPE_ERROR_MESSAGE);
         }
     }
 
@@ -346,7 +371,8 @@ final class ActionHandlerImpl implements Action.Handler {
     }
 
     private ShowAddViewCommand buildCommand(final Object target, final String contextId) {
-        final ShowAddViewCommand showAddViewCommand = new ShowAddViewCommand(repositories, getWindow(), contextId, treeDataSource, currentUser);
+        final ShowAddViewCommand showAddViewCommand =
+            new ShowAddViewCommand(repositories, getWindow(), contextId, treeDataSource, currentUser);
         showAddViewCommand.withParent((ResourceModel) target);
         return showAddViewCommand;
     }

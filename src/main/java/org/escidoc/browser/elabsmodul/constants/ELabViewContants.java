@@ -129,7 +129,8 @@ public class ELabViewContants {
 
     public static final String L_INSTRUMENT_ESYNC_DAEMON_INPUTDATA = "http://hostname:port";
 
-    public static final String L_INSTRUMENT_FOLDER_HELP = "The folder to which the instrument writes data. This folder will be monitored by the eSynch-Daemon.";
+    public static final String L_INSTRUMENT_FOLDER_HELP =
+        "The folder to which the instrument writes data. This folder will be monitored by the eSynch-Daemon.";
 
     // INSRUMENT_PROPERTIES PROPERTIES
     public static final String P_INSTRUMENT_TITLE = "name";
@@ -160,8 +161,9 @@ public class ELabViewContants {
 
     public static final String P_INSTRUMENT_INSTITUTE = "institute";
 
-    public static final String[] INSTRUMENT_PROPERTIES = { P_INSTRUMENT_TITLE, P_INSTRUMENT_DESC, P_INSTRUMENT_CREATEON, P_INSTRUMENT_CREATEDBY,
-        P_INSTRUMENT_MODIFIEDON, P_INSTRUMENT_CONFIGURATION, P_INSTRUMENT_CALIBRATION, P_INSTRUMENT_ESYNCDAEMON, P_INSTRUMENT_FOLDER, P_INSTRUMENT_FILEFORMAT,
+    public static final String[] INSTRUMENT_PROPERTIES = { P_INSTRUMENT_TITLE, P_INSTRUMENT_DESC,
+        P_INSTRUMENT_CREATEON, P_INSTRUMENT_CREATEDBY, P_INSTRUMENT_MODIFIEDON, P_INSTRUMENT_CONFIGURATION,
+        P_INSTRUMENT_CALIBRATION, P_INSTRUMENT_ESYNCDAEMON, P_INSTRUMENT_FOLDER, P_INSTRUMENT_FILEFORMAT,
         P_INSTRUMENT_CONTEXT, P_INSTRUMENT_CONTENTMODEL, P_INSTRUMENT_DEVICESUPERVISOR, P_INSTRUMENT_INSTITUTE };
 
     // eLabs Header Labels
@@ -220,7 +222,8 @@ public class ELabViewContants {
 
     public static final String USER_DESCR_ON_LABEL_TO_SAVE = "Please click on the label to save the value";
 
-    public static final String USER_DESCR_ON_TEXTFIELD_TO_SAVE_OR_CANCEL = "Please click ENTER to save the value or ESC to cancel the edit";
+    public static final String USER_DESCR_ON_TEXTFIELD_TO_SAVE_OR_CANCEL =
+        "Please click ENTER to save the value or ESC to cancel the edit";
 
     public static final String HOR_PANEL_HEIGHT = "30px";
 

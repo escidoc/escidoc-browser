@@ -28,7 +28,6 @@
  */
 package org.escidoc.browser.elabsmodul.model;
 
-
 import java.io.Serializable;
 import java.util.Date;
 

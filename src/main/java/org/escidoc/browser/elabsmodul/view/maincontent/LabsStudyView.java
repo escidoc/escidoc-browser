@@ -133,14 +133,17 @@ public class LabsStudyView extends VerticalLayout {
 
     private static final Logger LOG = LoggerFactory.getLogger(ContainerView.class);
 
-    public LabsStudyView(final EscidocServiceLocation serviceLocation, final MainSite mainSite, final ResourceProxy resourceProxy, final Window mainWindow,
-        final CurrentUser currentUser, final Repositories repositories) throws EscidocClientException {
+    public LabsStudyView(final EscidocServiceLocation serviceLocation, final MainSite mainSite,
+        final ResourceProxy resourceProxy, final Window mainWindow, final CurrentUser currentUser,
+        final Repositories repositories) throws EscidocClientException {
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
-        Preconditions.checkArgument(resourceProxy instanceof ContainerProxy, resourceProxy.getClass() + " is not an instance of ContainerProxy.class");
+        Preconditions.checkArgument(resourceProxy instanceof ContainerProxy, resourceProxy.getClass()
+            + " is not an instance of ContainerProxy.class");
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
-        Preconditions.checkArgument(resourceProxy instanceof ContainerProxy, resourceProxy.getClass() + " is not an instance of ContainerProxy.class");
+        Preconditions.checkArgument(resourceProxy instanceof ContainerProxy, resourceProxy.getClass()
+            + " is not an instance of ContainerProxy.class");
         this.serviceLocation = serviceLocation;
         this.mainSite = mainSite;
         appHeight = mainSite.getApplicationHeight();
@@ -165,17 +168,19 @@ public class LabsStudyView extends VerticalLayout {
     }
 
     private void addMetadataRecords() {
-        rightCell(new MetadataRecs(resourceProxy, accordionHeight, mainWindow, serviceLocation, repositories, currentUser, mainSite).asAccord());
+        rightCell(new MetadataRecs(resourceProxy, accordionHeight, mainWindow, serviceLocation, repositories,
+            currentUser, mainSite).asAccord());
     }
 
     private void addDirectMembers() throws EscidocClientException {
-        final DirectMember directMembers = new DirectMember(serviceLocation, mainSite, resourceProxy.getId(), mainWindow, currentUser, repositories);
+        final DirectMember directMembers =
+            new DirectMember(serviceLocation, mainSite, resourceProxy.getId(), mainWindow, currentUser, repositories);
         leftCell(DIRECT_MEMBERS, directMembers.containerAsTree());
     }
 
     /**
-     * This is the inner Right Cell within a Context By default a set of Organizational Unit / Admin Description / RelatedItem / Resources
-     * are bound
+     * This is the inner Right Cell within a Context By default a set of Organizational Unit / Admin Description /
+     * RelatedItem / Resources are bound
      * 
      * @param comptoBind
      */
@@ -228,8 +233,9 @@ public class LabsStudyView extends VerticalLayout {
             lblLockstatus.setStyleName("inset");
         }
         final Label descMetadata2 =
-            new Label(CREATED_BY + " " + resourceProxy.getCreator() + " on " + resourceProxy.getCreatedOn() + "<br/>" + LAST_MODIFIED_BY + " "
-                + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn() + "<br />" + "Released by " + resourceProxy.getReleasedBy() + " on "
+            new Label(CREATED_BY + " " + resourceProxy.getCreator() + " on " + resourceProxy.getCreatedOn() + "<br/>"
+                + LAST_MODIFIED_BY + " " + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn()
+                + "<br />" + "Released by " + resourceProxy.getReleasedBy() + " on "
                 + resourceProxy.getLatestVersionModifiedOn(), Label.CONTENT_XHTML);
 
         vlPropertiesLeft.addComponent(descMetadata1);
@@ -330,7 +336,8 @@ public class LabsStudyView extends VerticalLayout {
                         // Is Label?
                         if (event.getChildComponent().getClass().getCanonicalName() == "com.vaadin.ui.Label") {
                             final Label child = (Label) event.getChildComponent();
-                            if ((child.getDescription() == DESC_STATUS2) && (!lblStatus.getValue().equals(status + "withdrawn"))) {
+                            if ((child.getDescription() == DESC_STATUS2)
+                                && (!lblStatus.getValue().equals(status + "withdrawn"))) {
                                 reSwapComponents();
                                 oldComponent = event.getClickedComponent();
                                 swapComponent = editStatus(child.getValue().toString().replace(status, ""));
@@ -436,7 +443,8 @@ public class LabsStudyView extends VerticalLayout {
 
                 private boolean hasAccessDelResource() {
                     try {
-                        return repositories.pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_CONTAINER)
+                        return repositories
+                            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_CONTAINER)
                             .forResource(resourceProxy.getId()).permitted();
                     }
                     catch (UnsupportedOperationException e) {
@@ -497,17 +505,19 @@ public class LabsStudyView extends VerticalLayout {
 
                 private void updatePublicStatus(Container container, String comment) {
                     // Update PublicStatus if there is a change
-                    if (!resourceProxy.getVersionStatus().equals(lblCurrentVersionStatus.getValue().toString().replace(status, ""))) {
-                        repositories.container().changePublicStatus(container, lblCurrentVersionStatus.getValue().toString().replace(status, "").toUpperCase(),
-                            comment);
+                    if (!resourceProxy.getVersionStatus().equals(
+                        lblCurrentVersionStatus.getValue().toString().replace(status, ""))) {
+                        repositories.container().changePublicStatus(container,
+                            lblCurrentVersionStatus.getValue().toString().replace(status, "").toUpperCase(), comment);
                     }
                 }
 
                 private void updateLockStatus(Container container, String comment) {
                     // Update LockStatus if there is a change
-                    if (!resourceProxy.getLockStatus().equals(lblLockstatus.getValue().toString().replace(lockStatus, ""))) {
-                        repositories.container()
-                            .changeLockStatus(container, lblLockstatus.getValue().toString().replace(lockStatus, "").toUpperCase(), comment);
+                    if (!resourceProxy.getLockStatus().equals(
+                        lblLockstatus.getValue().toString().replace(lockStatus, ""))) {
+                        repositories.container().changeLockStatus(container,
+                            lblLockstatus.getValue().toString().replace(lockStatus, "").toUpperCase(), comment);
                     }
                 }
 
@@ -538,15 +548,16 @@ public class LabsStudyView extends VerticalLayout {
     }
 
     /**
-     * Checks if a resource has previous history and returns a string TODO in the future it should be a Link (Button Link) that holds a
-     * reference to the history of the resource
+     * Checks if a resource has previous history and returns a string TODO in the future it should be a Link (Button
+     * Link) that holds a reference to the history of the resource
      * 
      * @return String
      */
     private Component getHistory() {
         if (resourceProxy.getPreviousVersion()) {
             final Button versionHistory =
-                new Button(" Has previous version", new VersionHistoryClickListener(resourceProxy, mainWindow, serviceLocation, repositories));
+                new Button(" Has previous version", new VersionHistoryClickListener(resourceProxy, mainWindow,
+                    serviceLocation, repositories));
             versionHistory.setStyleName(BaseTheme.BUTTON_LINK);
 
             return versionHistory;
@@ -559,8 +570,9 @@ public class LabsStudyView extends VerticalLayout {
 
     private boolean hasAccess() {
         try {
-            return repositories.pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.UPDATE_CONTAINER).forResource(resourceProxy.getId())
-                .permitted();
+            return repositories
+                .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.UPDATE_CONTAINER)
+                .forResource(resourceProxy.getId()).permitted();
         }
         catch (EscidocClientException e) {
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);

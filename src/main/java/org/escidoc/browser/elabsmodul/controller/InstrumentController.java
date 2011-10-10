@@ -87,7 +87,8 @@ public class InstrumentController extends AbstractELabsController {
                 }
 
                 else if (nodeName.equals("dc:description")) {
-                    instrumentBean.setDescription((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
+                    instrumentBean
+                        .setDescription((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
                 }
 
                 else if (nodeName.equals("el:requires-configuration")) {
@@ -110,19 +111,24 @@ public class InstrumentController extends AbstractELabsController {
                     }
                 }
                 else if (nodeName.equals("el:esync-endpoint")) {
-                    instrumentBean.setESyncDaemon((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
+                    instrumentBean
+                        .setESyncDaemon((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
                 }
                 else if (nodeName.equals("el:monitored-folder")) {
-                    instrumentBean.setFolder((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
+                    instrumentBean
+                        .setFolder((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
                 }
                 else if (nodeName.equals("el:result-mime-type")) {
-                    instrumentBean.setFileFormat((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
+                    instrumentBean
+                        .setFileFormat((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
                 }
                 else if (nodeName.equals("el:responsible-person")) {
-                    instrumentBean.setDeviceSupervisor((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
+                    instrumentBean.setDeviceSupervisor((node.getFirstChild() != null) ? node
+                        .getFirstChild().getNodeValue() : null);
                 }
                 else if (nodeName.equals("el:institution")) {
-                    instrumentBean.setInstitute((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
+                    instrumentBean
+                        .setInstitute((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
                 }
             }
             LOG.debug(xml);

@@ -75,7 +75,8 @@ public class LabsLayoutHelper {
         return instance;
     }
 
-    public static synchronized HorizontalLayout createHorizontalLayoutWithELabsLabelAndLabelData(final String labelTxt, Property dataProperty) {
+    public static synchronized HorizontalLayout createHorizontalLayoutWithELabsLabelAndLabelData(
+        final String labelTxt, Property dataProperty) {
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSizeUndefined();
         horizontalLayout.setDescription(USER_DESCR_ON_HOR_LAYOUT_TO_EDIT);

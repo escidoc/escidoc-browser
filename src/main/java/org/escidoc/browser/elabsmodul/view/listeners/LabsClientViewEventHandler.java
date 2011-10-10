@@ -79,8 +79,8 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
 
     private final LabsClientTextFieldEventHandler clientTextFieldEventHandler;
 
-    public LabsClientViewEventHandler(final List<HorizontalLayout> registeredComponents, final VerticalLayout mainLayout, final ILabsPanel containerPanel,
-        final ILabsAction containerAction) {
+    public LabsClientViewEventHandler(final List<HorizontalLayout> registeredComponents,
+        final VerticalLayout mainLayout, final ILabsPanel containerPanel, final ILabsAction containerAction) {
         LOG.info("Constructor created.");
         this.mainWindow = containerPanel.getMainWindow();
         this.clientTextFieldEventHandler = new LabsClientTextFieldEventHandler();
@@ -96,7 +96,8 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
         final Component component = event.getComponent();
         final Component childComponent = event.getChildComponent();
         final Object source = event.getSource();
-        LOG.info("Layout Click Event happpened. \n" + "childComponent: " + childComponent + "\nComponent" + component + "\nsource: " + source);
+        LOG.info("Layout Click Event happpened. \n" + "childComponent: " + childComponent + "\nComponent" + component
+            + "\nsource: " + source);
 
         synchronized (component) {
             if (!(component instanceof VerticalLayout)) {
@@ -113,10 +114,12 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
                 }
                 this.mainComponent.setDescription(null);
                 LOG.info("Change TextField to Label");
-                Component newComponent = LabsLayoutHelper.createLabelFromTextField(((TextField) dataComponent).getPropertyDataSource());
+                Component newComponent =
+                    LabsLayoutHelper.createLabelFromTextField(((TextField) dataComponent).getPropertyDataSource());
                 ((HorizontalLayout) modifiedComponent).replaceComponent(dataComponent, newComponent);
                 ((HorizontalLayout) modifiedComponent).setComponentAlignment(newComponent, Alignment.MIDDLE_LEFT);
-                ((Label) ((HorizontalLayout) modifiedComponent).getComponent(0)).setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
+                ((Label) ((HorizontalLayout) modifiedComponent).getComponent(0))
+                    .setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
                 ((HorizontalLayout) modifiedComponent).setDescription(USER_DESCR_ON_HOR_LAYOUT_TO_EDIT);
                 this.containerPanel.setModifiedComponent(null);
             }
@@ -144,10 +147,12 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
                     }
                     this.containerPanel.setModifiedComponent(childComponent);
 
-                    Component newComponent = LabsLayoutHelper.createTextFieldFromLabel(((Label) dataComponent).getPropertyDataSource());
+                    Component newComponent =
+                        LabsLayoutHelper.createTextFieldFromLabel(((Label) dataComponent).getPropertyDataSource());
                     ((HorizontalLayout) childComponent).replaceComponent(dataComponent, newComponent);
                     ((HorizontalLayout) childComponent).setComponentAlignment(newComponent, Alignment.MIDDLE_LEFT);
-                    ((Label) ((HorizontalLayout) childComponent).getComponent(0)).setDescription(USER_DESCR_ON_LABEL_TO_SAVE);
+                    ((Label) ((HorizontalLayout) childComponent).getComponent(0))
+                        .setDescription(USER_DESCR_ON_LABEL_TO_SAVE);
                     ((HorizontalLayout) childComponent).setDescription(USER_DESCR_ON_HOR_LAYOUT_TO_SAVE);
                     this.mainComponent.setDescription(USER_DESCR_ON_FORM_LAYOUT_TO_SAVE);
                 }
@@ -159,10 +164,13 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
                     }
                     else {
                         LOG.info("Change TextField to Label");
-                        Component newComponent = LabsLayoutHelper.createLabelFromTextField(((TextField) dataComponent).getPropertyDataSource());
+                        Component newComponent =
+                            LabsLayoutHelper.createLabelFromTextField(((TextField) dataComponent)
+                                .getPropertyDataSource());
                         ((HorizontalLayout) childComponent).replaceComponent(dataComponent, newComponent);
                         ((HorizontalLayout) childComponent).setComponentAlignment(newComponent, Alignment.MIDDLE_LEFT);
-                        ((Label) ((HorizontalLayout) childComponent).getComponent(0)).setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
+                        ((Label) ((HorizontalLayout) childComponent).getComponent(0))
+                            .setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
                         ((HorizontalLayout) childComponent).setDescription(USER_DESCR_ON_HOR_LAYOUT_TO_EDIT);
                     }
                 }
@@ -222,7 +230,8 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
             }
             Component dataComponent = ((HorizontalLayout) modifiedComponent).getComponent(1);
             Component staticLabelComponent = ((HorizontalLayout) modifiedComponent).getComponent(0);
-            Component newComponent = LabsLayoutHelper.createLabelFromTextField(((TextField) target).getPropertyDataSource());
+            Component newComponent =
+                LabsLayoutHelper.createLabelFromTextField(((TextField) target).getPropertyDataSource());
 
             ((HorizontalLayout) modifiedComponent).replaceComponent(dataComponent, newComponent);
             ((HorizontalLayout) modifiedComponent).setComponentAlignment(newComponent, Alignment.MIDDLE_LEFT);

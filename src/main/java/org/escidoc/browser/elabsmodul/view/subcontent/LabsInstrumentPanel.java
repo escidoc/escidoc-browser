@@ -110,22 +110,27 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabViewContants.L_INSTRUMENT_DESC,
                 getPojoItem().getItemProperty(ELabViewContants.P_INSTRUMENT_DESC));
         HorizontalLayout h3 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndCheckBoxData(ELabViewContants.L_INSTRUMENT_CONFIGURATION_KEY,
-                ELabViewContants.L_INSTRUMENT_CONFIGURATION_VALUE, getPojoItem().getItemProperty(ELabViewContants.P_INSTRUMENT_CONFIGURATION));
+            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndCheckBoxData(
+                ELabViewContants.L_INSTRUMENT_CONFIGURATION_KEY, ELabViewContants.L_INSTRUMENT_CONFIGURATION_VALUE,
+                getPojoItem().getItemProperty(ELabViewContants.P_INSTRUMENT_CONFIGURATION));
         HorizontalLayout h4 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndCheckBoxData(ELabViewContants.L_INSTRUMENT_CALIBRATION_KEY,
-                ELabViewContants.L_INSTRUMENT_CALIBRATION_VALUE, getPojoItem().getItemProperty(ELabViewContants.P_INSTRUMENT_CALIBRATION));
+            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndCheckBoxData(
+                ELabViewContants.L_INSTRUMENT_CALIBRATION_KEY, ELabViewContants.L_INSTRUMENT_CALIBRATION_VALUE,
+                getPojoItem().getItemProperty(ELabViewContants.P_INSTRUMENT_CALIBRATION));
         HorizontalLayout h5 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabViewContants.L_INSTRUMENT_ESYNC_DAEMON,
+            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(
+                ELabViewContants.L_INSTRUMENT_ESYNC_DAEMON,
                 getPojoItem().getItemProperty(ELabViewContants.P_INSTRUMENT_ESYNCDAEMON));
         HorizontalLayout h6 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabViewContants.L_INSTRUMENT_FOLDER,
                 getPojoItem().getItemProperty(ELabViewContants.P_INSTRUMENT_FOLDER));
         HorizontalLayout h7 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabViewContants.L_INSTRUMENT_FILE_FORMAT,
+            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(
+                ELabViewContants.L_INSTRUMENT_FILE_FORMAT,
                 getPojoItem().getItemProperty(ELabViewContants.P_INSTRUMENT_FILEFORMAT));
         HorizontalLayout h8 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabViewContants.L_INSTRUMENT_DEVICE_SUPERVISOR,
+            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(
+                ELabViewContants.L_INSTRUMENT_DEVICE_SUPERVISOR,
                 getPojoItem().getItemProperty(ELabViewContants.P_INSTRUMENT_DEVICESUPERVISOR));
         HorizontalLayout h9 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabViewContants.L_INSTRUMENT_INSTITUTE,

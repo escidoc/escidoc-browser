@@ -124,8 +124,7 @@ public class ContainerAddView {
     private void addNameField() {
         nameField.setRequired(true);
         nameField.setRequiredError(ViewConstants.PLEASE_ENTER_A_CONTAINER_NAME);
-        nameField.addValidator(new StringLengthValidator(ViewConstants.CONTAINER_LENGTH, 3, 50,
-            false));
+        nameField.addValidator(new StringLengthValidator(ViewConstants.CONTAINER_LENGTH, 3, 50, false));
         nameField.setImmediate(true);
         addContainerForm.addComponent(nameField);
     }
