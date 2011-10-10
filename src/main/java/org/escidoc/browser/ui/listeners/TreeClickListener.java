@@ -28,7 +28,6 @@
  */
 package org.escidoc.browser.ui.listeners;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.elabsmodul.constants.ELabsConstants;
 import org.escidoc.browser.elabsmodul.view.maincontent.LabsInstrumentView;
@@ -76,8 +75,8 @@ public class TreeClickListener implements ItemClickListener {
 
     private final Repositories repositories;
 
-    public TreeClickListener(final EscidocServiceLocation serviceLocation, final Repositories repositories, final Window mainWindow, final MainSite mainSite,
-        final CurrentUser currentUser) {
+    public TreeClickListener(final EscidocServiceLocation serviceLocation, final Repositories repositories,
+        final Window mainWindow, final MainSite mainSite, final CurrentUser currentUser) {
 
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
@@ -99,7 +98,8 @@ public class TreeClickListener implements ItemClickListener {
 
     private void openClickedResourceInNewTab(final ResourceModel clickedResource) {
         try {
-            if (findContextId(clickedResource).equals(org.escidoc.browser.elabsmodul.constants.ELabsConstants.ELABS_DEFAULT_CONTEXT_ID)) {
+            if (findContextId(clickedResource).equals(
+                org.escidoc.browser.elabsmodul.constants.ELabsConstants.ELABS_DEFAULT_CONTEXT_ID)) {
                 openInNewTab(createBWeLabsView(clickedResource), clickedResource);
             }
             else {
@@ -116,20 +116,22 @@ public class TreeClickListener implements ItemClickListener {
         }
     }
 
-    private Component createBWeLabsView(ResourceModel clickedResource) throws EscidocClientException, ContentModelNotFoundException {
+    private Component createBWeLabsView(final ResourceModel clickedResource) throws EscidocClientException,
+        ContentModelNotFoundException {
         final String contentModelId = findContentModelId(clickedResource);
         Preconditions.checkNotNull(contentModelId, "ContentModel is null!");
         if (ContextModel.isContext(clickedResource)) {
-            return new ContextView(serviceLocation, mainSite, tryToFindResource(repositories.context(), clickedResource), mainWindow, currentUser, repositories);
+            return new ContextView(serviceLocation, mainSite,
+                tryToFindResource(repositories.context(), clickedResource), mainWindow, currentUser, repositories);
         }
         else if (ContainerModel.isContainer(clickedResource)) {
             if (contentModelId.equals(ELabsConstants.ELABS_DEFAULT_STUDY_CMODEL_ID)) {
-                return new ContainerView(serviceLocation, mainSite, tryToFindResource(repositories.container(), clickedResource), mainWindow, currentUser,
-                    repositories);
+                return new ContainerView(serviceLocation, mainSite, tryToFindResource(repositories.container(),
+                    clickedResource), mainWindow, currentUser, repositories);
             }
             else if (contentModelId.equals(ELabsConstants.ELABS_DEFAULT_INVESTIGATION_CMODEL_ID)) {
-                return new ContainerView(serviceLocation, mainSite, tryToFindResource(repositories.container(), clickedResource), mainWindow, currentUser,
-                    repositories);
+                return new ContainerView(serviceLocation, mainSite, tryToFindResource(repositories.container(),
+                    clickedResource), mainWindow, currentUser, repositories);
             }
             else {
                 throw new InvalidContentModelException();
@@ -137,42 +139,47 @@ public class TreeClickListener implements ItemClickListener {
         }
         else if (ItemModel.isItem(clickedResource)) {
             if (contentModelId.equals(ELabsConstants.ELABS_DEFAULT_RIG_CMODEL_ID)) {
-                return new ItemView(serviceLocation, repositories, mainSite, tryToFindResource(repositories.item(), clickedResource), mainWindow, currentUser);
+                return new ItemView(serviceLocation, repositories, mainSite, tryToFindResource(repositories.item(),
+                    clickedResource), mainWindow, currentUser);
             }
             else if (contentModelId.equals(ELabsConstants.ELABS_DEFAULT_INSTR_CMODEL_ID)) {
-                return new LabsInstrumentView(serviceLocation, repositories, mainSite, tryToFindResource(repositories.item(), clickedResource), mainWindow,
-                    currentUser);
+                return new LabsInstrumentView(serviceLocation, repositories, mainSite, tryToFindResource(
+                    repositories.item(), clickedResource), mainWindow, currentUser);
             }
             else if (contentModelId.equals(ELabsConstants.ELABS_DEFAULT_GENERATED_ITEM_CMODEL_ID)) {
-                return new ItemView(serviceLocation, repositories, mainSite, tryToFindResource(repositories.item(), clickedResource), mainWindow, currentUser);
+                return new ItemView(serviceLocation, repositories, mainSite, tryToFindResource(repositories.item(),
+                    clickedResource), mainWindow, currentUser);
             }
             else {
                 throw new InvalidContentModelException();
             }
         }
         else {
-            throw new NotImplementedException("Not yet implemented");
+            throw new UnsupportedOperationException("Not yet implemented");
         }
     }
 
     private Component createView(final ResourceModel clickedResource) throws EscidocClientException {
         if (ContextModel.isContext(clickedResource)) {
-            return new ContextView(serviceLocation, mainSite, tryToFindResource(repositories.context(), clickedResource), mainWindow, currentUser, repositories);
+            return new ContextView(serviceLocation, mainSite,
+                tryToFindResource(repositories.context(), clickedResource), mainWindow, currentUser, repositories);
         }
         else if (ContainerModel.isContainer(clickedResource)) {
-            return new ContainerView(serviceLocation, mainSite, tryToFindResource(repositories.container(), clickedResource), mainWindow, currentUser,
-                repositories);
+            return new ContainerView(serviceLocation, mainSite, tryToFindResource(repositories.container(),
+                clickedResource), mainWindow, currentUser, repositories);
 
         }
         else if (ItemModel.isItem(clickedResource)) {
-            return new ItemView(serviceLocation, repositories, mainSite, tryToFindResource(repositories.item(), clickedResource), mainWindow, currentUser);
+            return new ItemView(serviceLocation, repositories, mainSite, tryToFindResource(repositories.item(),
+                clickedResource), mainWindow, currentUser);
         }
         else {
-            throw new NotImplementedException("Not yet implemented");
+            throw new UnsupportedOperationException("Not yet implemented");
         }
     }
 
-    private ResourceProxy tryToFindResource(final Repository repository, final ResourceModel clickedResource) throws EscidocClientException {
+    private ResourceProxy tryToFindResource(final Repository repository, final ResourceModel clickedResource)
+        throws EscidocClientException {
         return repository.findById(clickedResource.getId());
     }
 
@@ -182,7 +189,8 @@ public class TreeClickListener implements ItemClickListener {
 
     private void showErrorMessageToUser(final ResourceModel hasChildrenResource, final EscidocClientException e) {
         LOG.error("Can not find member of: " + hasChildrenResource.getId(), e);
-        mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(), Notification.TYPE_ERROR_MESSAGE));
+        mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
+            Notification.TYPE_ERROR_MESSAGE));
     }
 
     private String findContextId(final ResourceModel clickedResource) {
@@ -229,7 +237,7 @@ public class TreeClickListener implements ItemClickListener {
                 contentModelId = null;
             }
         }
-        catch (EscidocClientException e) {
+        catch (final EscidocClientException e) {
             LOG.error("Unable to retreive ContentModel data from repository object", e);
             contentModelId = null;
             throw new ContentModelNotFoundException();
