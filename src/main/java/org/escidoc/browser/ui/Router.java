@@ -31,19 +31,28 @@ package org.escidoc.browser.ui;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.BrowserApplication;
+import org.escidoc.browser.controller.Controller;
 import org.escidoc.browser.layout.LayoutDesign;
 import org.escidoc.browser.layout.SimpleLayout;
+import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContainerProxy;
+import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ItemProxy;
+import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceModelFactory;
+import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.helper.Util;
 import org.escidoc.browser.ui.maincontent.ContainerView;
 import org.escidoc.browser.ui.maincontent.ContextView;
@@ -56,6 +65,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.cmm.ContentModel;
 
 public class Router extends VerticalLayout {
 
@@ -117,14 +127,16 @@ public class Router extends VerticalLayout {
         // used
         try {
             browserProperties = new Properties();
-            browserProperties.load(this.getClass().getResourceAsStream(
-                "browser.properties"));
+            browserProperties.load(this
+                .getClass().getClassLoader()
+                .getResourceAsStream("browser.properties"));
             String pluginString = browserProperties.getProperty("plugin");
             String[] plugins = pluginString.split(",");
 
             for (int i = 0; i < plugins.length; i++) {
-                browserProperties.load(this.getClass().getResourceAsStream(
-                    plugins[i]));
+                browserProperties.load(this
+                    .getClass().getClassLoader()
+                    .getResourceAsStream(plugins[i]));
             }
         }
         catch (IOException e) {
@@ -143,8 +155,9 @@ public class Router extends VerticalLayout {
         try {
             // Class cls = Class.forName(layoutClassName);
             // layout = cls.newInstance();
-            layout = new SimpleLayout(mainWindow, serviceLocation, app, currentUser,
-                repositories, this);
+            layout =
+                new SimpleLayout(mainWindow, serviceLocation, app, currentUser,
+                    repositories, this);
         }
         catch (EscidocClientException e) {
             showError(ERROR_NO_LAYOUT + e.getLocalizedMessage());
@@ -252,5 +265,82 @@ public class Router extends VerticalLayout {
 
     private void showError(final String msg) {
         getWindow().showNotification(msg, Notification.TYPE_HUMANIZED_MESSAGE);
+    }
+
+    // public void show(ResourceModel model){
+    //
+    // }
+
+    @Deprecated
+    public Component show(ResourceModel clickedResource)
+        throws EscidocClientException {
+        if (ContextModel.isContext(clickedResource)) {
+            return new ContextView(serviceLocation, this, tryToFindResource(
+                repositories.context(), clickedResource), mainWindow,
+                currentUser, repositories);
+        }
+        else if (ContainerModel.isContainer(clickedResource)) {
+            return new ContainerView(serviceLocation, this, tryToFindResource(
+                repositories.container(), clickedResource), mainWindow,
+                currentUser, repositories);
+
+        }
+        else if (ItemModel.isItem(clickedResource)) {
+
+            String controllerId = "org.escidoc.browser.Item";
+            final ItemProxy itemProxy =
+                (ItemProxy) tryToFindResource(repositories.item(),
+                    clickedResource);
+
+            final ContentModel contentModel =
+                (ContentModel) itemProxy.getContentModel();
+            final String description =
+                contentModel.getProperties().getDescription();
+            Pattern controllerIdPattern =
+                Pattern.compile("org.escidoc.browser.Controller=([^;])");
+            Matcher controllerIdMatcher =
+                controllerIdPattern.matcher(description);
+            if (controllerIdMatcher.find()) {
+                controllerId = controllerIdMatcher.group(1);
+            }
+
+            if (controllerId.equals("org.escidoc.browser.Item")) {
+                return new ItemView(serviceLocation, repositories, this,
+                    itemProxy, mainWindow, currentUser);
+            }
+
+            Controller controller = null;
+            try {
+                String controllerClassName =
+                    browserProperties.getProperty(controllerId);
+                Class controllerClass = Class.forName(controllerClassName);
+                controller = (Controller) controllerClass.newInstance();
+            }
+            catch (ClassNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            catch (InstantiationException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            catch (IllegalAccessException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            controller.init(itemProxy);
+            controller.showView(this.layout);
+            return null;
+        }
+        else {
+            throw new UnsupportedOperationException("Not yet implemented");
+        }
+
+    }
+
+    private ResourceProxy tryToFindResource(
+        final Repository repository, final ResourceModel clickedResource)
+        throws EscidocClientException {
+        return repository.findById(clickedResource.getId());
     }
 }

@@ -28,25 +28,16 @@
  */
 package org.escidoc.browser.ui.listeners;
 
-import java.util.Map;
-
 import org.escidoc.browser.AppConstants;
-import org.escidoc.browser.elabsmodul.constants.ELabsConstants;
-import org.escidoc.browser.elabsmodul.view.maincontent.LabsInstrumentView;
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.ContainerView;
-import org.escidoc.browser.ui.maincontent.ContextView;
-import org.escidoc.browser.ui.maincontent.ItemView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,10 +49,8 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
-import de.escidoc.core.client.exceptions.application.invalid.InvalidContentModelException;
 import de.escidoc.core.common.exceptions.remote.application.notfound.ContentModelNotFoundException;
 import de.escidoc.core.resources.Resource;
-import de.escidoc.core.resources.cmm.ContentModel;
 
 @SuppressWarnings("serial")
 public class TreeClickListener implements ItemClickListener {
@@ -113,132 +102,85 @@ public class TreeClickListener implements ItemClickListener {
             if (findContextId(clickedResource)
                 .equals(
                     org.escidoc.browser.elabsmodul.constants.ELabsConstants.ELABS_DEFAULT_CONTEXT_ID)) {
-                openInNewTab(createBWeLabsView(clickedResource),
-                    clickedResource);
+                // openInNewTab(createBWeLabsView(clickedResource),
+                // clickedResource);
             }
             else {
                 openInNewTab(createView(clickedResource), clickedResource);
             }
         }
-        catch (final ContentModelNotFoundException e) {
-            LOG.error(e.getMessage());
-            // showErrorMessageToUser(clickedResource, e);
-        }
+        // catch (final ContentModelNotFoundException e) {
+        // LOG.error(e.getMessage());
+        // // showErrorMessageToUser(clickedResource, e);
+        // }
         catch (final EscidocClientException e) {
             LOG.error(e.getMessage());
             showErrorMessageToUser(clickedResource, e);
         }
     }
 
-    private Component createBWeLabsView(final ResourceModel clickedResource)
-        throws EscidocClientException, ContentModelNotFoundException {
-        final String contentModelId = findContentModelId(clickedResource);
-        Preconditions.checkNotNull(contentModelId, "ContentModel is null!");
-        if (ContextModel.isContext(clickedResource)) {
-            return new ContextView(serviceLocation, mainSite,
-                tryToFindResource(repositories.context(), clickedResource),
-                mainWindow, currentUser, repositories);
-        }
-        else if (ContainerModel.isContainer(clickedResource)) {
-            if (contentModelId
-                .equals(ELabsConstants.ELABS_DEFAULT_STUDY_CMODEL_ID)) {
-                return new ContainerView(
-                    serviceLocation,
-                    mainSite,
-                    tryToFindResource(repositories.container(), clickedResource),
-                    mainWindow, currentUser, repositories);
-            }
-            else if (contentModelId
-                .equals(ELabsConstants.ELABS_DEFAULT_INVESTIGATION_CMODEL_ID)) {
-                return new ContainerView(
-                    serviceLocation,
-                    mainSite,
-                    tryToFindResource(repositories.container(), clickedResource),
-                    mainWindow, currentUser, repositories);
-            }
-            else {
-                throw new InvalidContentModelException();
-            }
-        }
-        else if (ItemModel.isItem(clickedResource)) {
-            if (contentModelId
-                .equals(ELabsConstants.ELABS_DEFAULT_RIG_CMODEL_ID)) {
-                return new ItemView(serviceLocation, repositories, mainSite,
-                    tryToFindResource(repositories.item(), clickedResource),
-                    mainWindow, currentUser);
-            }
-            else if (contentModelId
-                .equals(ELabsConstants.ELABS_DEFAULT_INSTR_CMODEL_ID)) {
-                return new LabsInstrumentView(serviceLocation, repositories,
-                    mainSite, tryToFindResource(repositories.item(),
-                        clickedResource), mainWindow, currentUser);
-            }
-            else if (contentModelId
-                .equals(ELabsConstants.ELABS_DEFAULT_GENERATED_ITEM_CMODEL_ID)) {
-                return new ItemView(serviceLocation, repositories, mainSite,
-                    tryToFindResource(repositories.item(), clickedResource),
-                    mainWindow, currentUser);
-            }
-            else {
-                throw new InvalidContentModelException();
-            }
-        }
-        else {
-            throw new UnsupportedOperationException("Not yet implemented");
-        }
-    }
-
-    Map<String, String> fooToClassName;
+    // private Component createBWeLabsView(final ResourceModel clickedResource)
+    // throws EscidocClientException, ContentModelNotFoundException {
+    // final String contentModelId = findContentModelId(clickedResource);
+    // Preconditions.checkNotNull(contentModelId, "ContentModel is null!");
+    // if (ContextModel.isContext(clickedResource)) {
+    // return new ContextView(serviceLocation, mainSite,
+    // tryToFindResource(repositories.context(), clickedResource),
+    // mainWindow, currentUser, repositories);
+    // }
+    // else if (ContainerModel.isContainer(clickedResource)) {
+    // if (contentModelId
+    // .equals(ELabsConstants.ELABS_DEFAULT_STUDY_CMODEL_ID)) {
+    // return new ContainerView(
+    // serviceLocation,
+    // mainSite,
+    // tryToFindResource(repositories.container(), clickedResource),
+    // mainWindow, currentUser, repositories);
+    // }
+    // else if (contentModelId
+    // .equals(ELabsConstants.ELABS_DEFAULT_INVESTIGATION_CMODEL_ID)) {
+    // return new ContainerView(
+    // serviceLocation,
+    // mainSite,
+    // tryToFindResource(repositories.container(), clickedResource),
+    // mainWindow, currentUser, repositories);
+    // }
+    // else {
+    // throw new InvalidContentModelException();
+    // }
+    // }
+    // else if (ItemModel.isItem(clickedResource)) {
+    // if (contentModelId
+    // .equals(ELabsConstants.ELABS_DEFAULT_RIG_CMODEL_ID)) {
+    // return new ItemView(serviceLocation, repositories, mainSite,
+    // tryToFindResource(repositories.item(), clickedResource),
+    // mainWindow, currentUser);
+    // }
+    // else if (contentModelId
+    // .equals(ELabsConstants.ELABS_DEFAULT_INSTR_CMODEL_ID)) {
+    // return new LabsInstrumentView(serviceLocation, repositories,
+    // mainSite, tryToFindResource(repositories.item(),
+    // clickedResource), mainWindow, currentUser);
+    // }
+    // else if (contentModelId
+    // .equals(ELabsConstants.ELABS_DEFAULT_GENERATED_ITEM_CMODEL_ID)) {
+    // return new ItemView(serviceLocation, repositories, mainSite,
+    // tryToFindResource(repositories.item(), clickedResource),
+    // mainWindow, currentUser);
+    // }
+    // else {
+    // throw new InvalidContentModelException();
+    // }
+    // }
+    // else {
+    // throw new UnsupportedOperationException("Not yet implemented");
+    // }
+    // }
 
     private Component createView(final ResourceModel clickedResource)
         throws EscidocClientException {
-        if (ContextModel.isContext(clickedResource)) {
-            return new ContextView(serviceLocation, mainSite,
-                tryToFindResource(repositories.context(), clickedResource),
-                mainWindow, currentUser, repositories);
-        }
-        else if (ContainerModel.isContainer(clickedResource)) {
-            return new ContainerView(serviceLocation, mainSite,
-                tryToFindResource(repositories.container(), clickedResource),
-                mainWindow, currentUser, repositories);
-
-        }
-        else if (ItemModel.isItem(clickedResource)) {
-            // + we have to load the concrete Container or Item from the eSciDoc
-            // Infrastructure.
-            final ResourceProxy resourceProxy =
-                tryToFindResource(repositories.item(), clickedResource);
-
-            // + Which Resource to initiate is written somewhere in Content
-            // Model attribute. For Example we store it in
-            // description. Description=foo.
-            final ContentModel contentModel =
-                (ContentModel) resourceProxy.getContentModel();
-            final String description =
-                contentModel.getProperties().getDescription();
-
-            // + Precondition: Mapping should loaded from properties file and
-            // store as a Map, i.e.
-            // Map fooToClassName<String,String>. The content of the property
-            // file is in the format foo=bar. Bar is a
-            // fully qualified class name to initiate via Reflection.
-            final String className = fooToClassName.get(description);
-
-            // + What is the responsibility of this class?
-            // a. Convert ResourceProxy to a Bean and then
-            // b. Create the View e.g ItemView Or InstrumentView
-            return new ItemView(serviceLocation, repositories, mainSite,
-                resourceProxy, mainWindow, currentUser);
-        }
-        else {
-            throw new UnsupportedOperationException("Not yet implemented");
-        }
-    }
-
-    private ResourceProxy tryToFindResource(
-        final Repository repository, final ResourceModel clickedResource)
-        throws EscidocClientException {
-        return repository.findById(clickedResource.getId());
+        Component view = mainSite.show(clickedResource);
+        return view;
     }
 
     private void openInNewTab(
