@@ -31,7 +31,7 @@ package org.escidoc.browser.ui.maincontent;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.MainSite;
+import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.navigation.NavigationTreeView;
 
@@ -44,13 +44,13 @@ public class DirectMember {
 
     private final String parentId;
 
-    private final MainSite mainSite;
+    private final Router mainSite;
 
     private final Window mainWindow;
 
     private final NavigationTreeBuilder navigationTreeBuilder;
 
-    public DirectMember(final EscidocServiceLocation serviceLocation, final MainSite mainSite, final String parentId,
+    public DirectMember(final EscidocServiceLocation serviceLocation, final Router mainSite, final String parentId,
         final Window mainWindow, final CurrentUser currentUser, final Repositories repositories) {
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);

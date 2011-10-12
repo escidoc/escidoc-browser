@@ -35,7 +35,7 @@ import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.MainSite;
+import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.LogoutListener;
 import org.escidoc.browser.ui.maincontent.SearchResultsView;
@@ -59,13 +59,15 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 
 /**
- * This is the Header of the page. Main Search comes here, also the login ability
+ * This is the Header of the page. Main Search comes here, also the login
+ * ability
  * 
  * @author ARB
  * 
  */
 @SuppressWarnings("serial")
-public class HeaderContainer extends VerticalLayout implements UserChangeListener, PopupVisibilityListener {
+public class HeaderContainer extends VerticalLayout
+    implements UserChangeListener, PopupVisibilityListener {
 
     // The HTML file can be found at myTheme/layouts/header.html
     private final CustomLayout custom = new CustomLayout(ViewConstants.HEADER);
@@ -82,22 +84,25 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
 
     private final CurrentUser user;
 
-    private final MainSite mainSite;
+    private final Router router;
 
     private final Repositories repositories;
 
-    public HeaderContainer(final MainSite mainSite, final BrowserApplication app,
-        final EscidocServiceLocation serviceLocation, final CurrentUser user, final Repositories repositories) {
+    public HeaderContainer(final Router mainSite, final BrowserApplication app,
+        final EscidocServiceLocation serviceLocation, final CurrentUser user,
+        final Repositories repositories) {
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
         Preconditions.checkNotNull(app, "app is null: %s", app);
-        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
+        Preconditions.checkNotNull(serviceLocation,
+            "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(user, "user is null: %s", user);
-        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        Preconditions.checkNotNull(repositories, "repositories is null: %s",
+            repositories);
 
         this.app = app;
         this.serviceLocation = serviceLocation;
         this.user = user;
-        this.mainSite = mainSite;
+        this.router = mainSite;
         this.repositories = repositories;
         this.setMargin(false);
 
@@ -113,8 +118,9 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
     }
 
     public void setUser(final CurrentUser user) {
-        custom.addComponent(new Label("<b>" + ViewConstants.CURRENT_USER + user.getLoginName() + "</b>",
-            Label.CONTENT_XHTML), "login-name");
+        custom.addComponent(
+            new Label("<b>" + ViewConstants.CURRENT_USER + user.getLoginName()
+                + "</b>", Label.CONTENT_XHTML), "login-name");
 
         if (user.isGuest()) {
             custom.removeComponent(logout);
@@ -176,8 +182,9 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
     }
 
     /**
-     * Handle the Login Event! At the moment a new window is opened to escidev6 for login TODO consider including the
-     * window of login from the remote server in a iframe within the MainContent Window
+     * Handle the Login Event! At the moment a new window is opened to escidev6
+     * for login TODO consider including the window of login from the remote
+     * server in a iframe within the MainContent Window
      * 
      * @param event
      */
@@ -189,16 +196,20 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
         final String searchString = (String) searchField.getValue();
         if (validate(searchString)) {
             final SearchResultsView srchRes =
-                new SearchResultsView(mainSite, searchString, serviceLocation, repositories, user);
-            mainSite.openTab(srchRes, "Search results for: " + (String) searchField.getValue());
+                new SearchResultsView(router, searchString, serviceLocation,
+                    repositories, user);
+            router.openTab(srchRes, "Search results for: "
+                + (String) searchField.getValue());
         }
         else {
-            searchField.setComponentError(new UserError("Must be letters and numbers"));
+            searchField.setComponentError(new UserError(
+                "Must be letters and numbers"));
         }
     }
 
     /**
-     * Handle Search Query Validation Check string length Any possible injections
+     * Handle Search Query Validation Check string length Any possible
+     * injections
      * 
      * @param searchString
      * @return boolean
@@ -220,8 +231,9 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
             return;
         }
         custom.removeAllComponents();
-        custom.addComponent(new Label("<b>" + ViewConstants.CURRENT_USER + user.getLoginName() + "</b>",
-            Label.CONTENT_XHTML), "login-name");
+        custom.addComponent(
+            new Label("<b>" + ViewConstants.CURRENT_USER + user.getLoginName()
+                + "</b>", Label.CONTENT_XHTML), "login-name");
         if (((CurrentUser) object).isGuest()) {
             custom.addComponent(login, "login");
         }

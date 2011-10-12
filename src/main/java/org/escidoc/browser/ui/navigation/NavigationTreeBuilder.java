@@ -33,7 +33,7 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.TreeDataSourceImpl;
 import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.MainSite;
+import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.listeners.TreeClickListener;
 import org.escidoc.browser.ui.listeners.TreeExpandListener;
 
@@ -61,7 +61,7 @@ public class NavigationTreeBuilder {
     }
 
     public NavigationTreeView buildNavigationTree(
-        final MainSite mainSite, final Window mainWindow, final TreeDataSource treeDataSource)
+        final Router mainSite, final Window mainWindow, final TreeDataSource treeDataSource)
         throws EscidocClientException {
 
         final NavigationTreeView navigationTreeView = createNavigationTreeView(mainSite, mainWindow, treeDataSource);
@@ -71,7 +71,7 @@ public class NavigationTreeBuilder {
     }
 
     public NavigationTreeView buildContainerDirectMemberTree(
-        final MainSite mainSite, final String parentID, final Window mainWindow) throws EscidocClientException {
+        final Router mainSite, final String parentID, final Window mainWindow) throws EscidocClientException {
 
         final TreeDataSource treeDataSource =
             new TreeDataSourceImpl(repositories.container().findTopLevelMembersById(parentID));
@@ -81,7 +81,7 @@ public class NavigationTreeBuilder {
     }
 
     public NavigationTreeView buildContextDirectMemberTree(
-        final MainSite mainSite, final String parentId, final Window mainWindow) throws EscidocClientException {
+        final Router mainSite, final String parentId, final Window mainWindow) throws EscidocClientException {
 
         final TreeDataSource treeDataSource =
             new TreeDataSourceImpl(repositories.context().findTopLevelMembersById(parentId));
@@ -91,7 +91,7 @@ public class NavigationTreeBuilder {
     }
 
     private NavigationTreeView createNavigationTreeView(
-        final MainSite mainSite, final Window mainWindow, final TreeDataSource treeDataSource) {
+        final Router mainSite, final Window mainWindow, final TreeDataSource treeDataSource) {
         final NavigationTreeView navigationTreeView = new NavigationTreeViewImpl(repositories, currentUser);
         navigationTreeView.setDataSource(treeDataSource, mainSite);
         navigationTreeView.addClickListener(new TreeClickListener(serviceLocation, repositories, mainWindow, mainSite,

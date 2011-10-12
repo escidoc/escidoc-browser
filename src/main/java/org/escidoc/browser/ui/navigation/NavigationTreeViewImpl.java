@@ -33,7 +33,7 @@ import org.escidoc.browser.model.PropertyId;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.MainSite;
+import org.escidoc.browser.ui.Router;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.event.Action.Handler;
@@ -72,7 +72,7 @@ public class NavigationTreeViewImpl extends CustomComponent implements Navigatio
     }
 
     @Override
-    public void setDataSource(final TreeDataSource dataSource, final MainSite mainSite) {
+    public void setDataSource(final TreeDataSource dataSource, final Router mainSite) {
         tree.setContainerDataSource(dataSource.getContainer());
         tree.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
         tree.setItemCaptionPropertyId(PropertyId.NAME);

@@ -32,7 +32,7 @@ import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.MainSite;
+import org.escidoc.browser.ui.Router;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +62,7 @@ public class ContextView extends VerticalLayout {
 
     private final CssLayout cssLayout = new CssLayout();
 
-    private final MainSite mainSite;
+    private final Router mainSite;
 
     private final ResourceProxy resourceProxy;
 
@@ -80,7 +80,7 @@ public class ContextView extends VerticalLayout {
 
     private static final Logger LOG = LoggerFactory.getLogger(ContextView.class);
 
-    public ContextView(final EscidocServiceLocation serviceLocation, final MainSite mainSite,
+    public ContextView(final EscidocServiceLocation serviceLocation, final Router mainSite,
         final ResourceProxy resourceProxy, final Window mainWindow, final CurrentUser currentUser,
         final Repositories repositories) throws EscidocClientException {
 

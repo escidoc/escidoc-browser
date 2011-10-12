@@ -36,7 +36,7 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
-import org.escidoc.browser.ui.MainSite;
+import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
 import org.escidoc.browser.ui.maincontent.BreadCrumbMenu;
 import org.escidoc.browser.ui.maincontent.ContainerView;
@@ -95,7 +95,7 @@ public class LabsStudyView extends VerticalLayout {
 
     private final int appHeight;
 
-    private final MainSite mainSite;
+    private final Router mainSite;
 
     private final ContainerProxy resourceProxy;
 
@@ -133,7 +133,7 @@ public class LabsStudyView extends VerticalLayout {
 
     private static final Logger LOG = LoggerFactory.getLogger(ContainerView.class);
 
-    public LabsStudyView(final EscidocServiceLocation serviceLocation, final MainSite mainSite,
+    public LabsStudyView(final EscidocServiceLocation serviceLocation, final Router mainSite,
         final ResourceProxy resourceProxy, final Window mainWindow, final CurrentUser currentUser,
         final Repositories repositories) throws EscidocClientException {
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);

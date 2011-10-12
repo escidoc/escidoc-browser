@@ -37,7 +37,7 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
-import org.escidoc.browser.ui.MainSite;
+import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.listeners.AddMetaDataFileContainerBehaviour;
 import org.escidoc.browser.ui.listeners.EditMetaDataFileContainerBehaviour;
 import org.escidoc.browser.ui.listeners.MetadataRecBehavour;
@@ -84,11 +84,11 @@ public class MetadataRecs {
 
     private final CurrentUser currentUser;
 
-    private final MainSite mainSite;
+    private final Router mainSite;
 
     public MetadataRecs(final ResourceProxy resourceProxy, final int innerelementsHeight, final Window mainWindow,
         final EscidocServiceLocation escidocServiceLocation, final Repositories repositories,
-        final CurrentUser currentUser, final MainSite mainSite) {
+        final CurrentUser currentUser, final Router mainSite) {
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);

@@ -37,7 +37,7 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ItemProxyImpl;
-import org.escidoc.browser.ui.MainSite;
+import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.BreadCrumbMenu;
 import org.slf4j.Logger;
@@ -67,7 +67,7 @@ public final class LabsInstrumentView extends VerticalLayout {
 
     private final CurrentUser currentUser;
 
-    private final MainSite mainSite;
+    private final Router mainSite;
 
     private final int appHeight;
 
@@ -82,7 +82,7 @@ public final class LabsInstrumentView extends VerticalLayout {
     private LabsInstrumentPanel instrumentPanel = null;
 
     public LabsInstrumentView(final EscidocServiceLocation serviceLocation, final Repositories repositories,
-        final MainSite mainSite, final ResourceProxy resourceProxy, final Window mainWindow,
+        final Router mainSite, final ResourceProxy resourceProxy, final Window mainWindow,
         final CurrentUser currentUser) {
 
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null.");

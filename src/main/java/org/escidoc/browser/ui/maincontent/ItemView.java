@@ -36,7 +36,7 @@ import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.repository.internal.ItemProxyImpl;
-import org.escidoc.browser.ui.MainSite;
+import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
 import org.slf4j.Logger;
@@ -87,7 +87,7 @@ public final class ItemView extends VerticalLayout {
 
     private final VerticalLayout vlPropertiesLeft = new VerticalLayout();
 
-    private final MainSite mainSite;
+    private final Router mainSite;
 
     private final int appHeight;
 
@@ -122,7 +122,7 @@ public final class ItemView extends VerticalLayout {
     private Label lblCurrentVersionStatus;
 
     public ItemView(final EscidocServiceLocation serviceLocation, final Repositories repositories,
-        final MainSite mainSite, final ResourceProxy resourceProxy, final Window mainWindow,
+        final Router mainSite, final ResourceProxy resourceProxy, final Window mainWindow,
         final CurrentUser currentUser) {
 
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null.");
