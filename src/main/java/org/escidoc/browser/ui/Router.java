@@ -186,7 +186,7 @@ public class Router extends VerticalLayout {
      */
     @Deprecated
     public void openTab(final Component cmp, String tabname) {
-        ((SimpleLayout) layout).contentView(cmp, tabname);
+        ((SimpleLayout) layout).openView(cmp, tabname);
 
     }
 

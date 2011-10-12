@@ -10,5 +10,5 @@ import com.vaadin.ui.Component;
  */
 public interface LayoutDesign {
 
-    void contentView(Component cmp, String title);;
+    void openView(Component cmp, String title);;
 }

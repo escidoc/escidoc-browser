@@ -183,7 +183,7 @@ public class SimpleLayout extends VerticalLayout implements LayoutDesign {
      * @param cmp
      * @param tabname
      */
-    public void contentView(final Component cmp, String tabname) {
+    public void openView(final Component cmp, String tabname) {
         final Tab tb = mainContentTabs.addTab(cmp);
         if (tabname.length() > 50) {
             tb.setDescription(tabname);
@@ -214,7 +214,7 @@ public class SimpleLayout extends VerticalLayout implements LayoutDesign {
     public void onClickSrchButton(final Button.ClickEvent event) {
         final SimpleSearch smpSearch =
             new SimpleSearch(router, serviceLocation, repositories, currentUser);
-        contentView(smpSearch, "Search Results");
+        openView(smpSearch, "Search Results");
     }
 
     public int getApplicationHeight() {

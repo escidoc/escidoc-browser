@@ -60,7 +60,7 @@ public class TreeClickListener implements ItemClickListener {
 
     private final EscidocServiceLocation serviceLocation;
 
-    private final Router mainSite;
+    private final Router router;
 
     private final Window mainWindow;
 
@@ -84,7 +84,7 @@ public class TreeClickListener implements ItemClickListener {
 
         this.repositories = repositories;
         this.mainWindow = mainWindow;
-        this.mainSite = mainSite;
+        this.router = mainSite;
         this.serviceLocation = serviceLocation;
         this.currentUser = currentUser;
     }
@@ -179,13 +179,13 @@ public class TreeClickListener implements ItemClickListener {
 
     private Component createView(final ResourceModel clickedResource)
         throws EscidocClientException {
-        Component view = mainSite.show(clickedResource);
+        Component view = router.show(clickedResource);
         return view;
     }
 
     private void openInNewTab(
         final Component component, final ResourceModel clickedResource) {
-        mainSite.openTab(component, clickedResource.getName());
+        router.openTab(component, clickedResource.getName());
     }
 
     private void showErrorMessageToUser(
@@ -209,7 +209,7 @@ public class TreeClickListener implements ItemClickListener {
                     .getObjid();
             }
             catch (final EscidocClientException e) {
-                mainSite.getWindow().showNotification(
+                router.getWindow().showNotification(
                     ViewConstants.NOT_ABLE_TO_RETRIEVE_A_CONTEXT);
             }
         }
@@ -220,7 +220,7 @@ public class TreeClickListener implements ItemClickListener {
                     .item().findById(itemModel.getId()).getContext().getObjid();
             }
             catch (final EscidocClientException e) {
-                mainSite.getWindow().showNotification(
+                router.getWindow().showNotification(
                     ViewConstants.NOT_ABLE_TO_RETRIEVE_A_CONTEXT);
             }
         }
