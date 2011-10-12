@@ -76,7 +76,6 @@ public class InstrumentBean implements Serializable {
     /**
      * @return the objectId
      */
-
     public final String getObjectId() {
 
         return objectId;
@@ -86,8 +85,7 @@ public class InstrumentBean implements Serializable {
      * @param objectId
      *            the objectId to set
      */
-
-    public final void setObjectId(String objectId) {
+    public final void setObjectId(final String objectId) {
 
         this.objectId = objectId;
     }
@@ -104,9 +102,9 @@ public class InstrumentBean implements Serializable {
      * @param id
      *            the id to set
      */
-    public final void setIdentifier(String id) {
+    public final void setIdentifier(final String id) {
 
-        this.identifier = id;
+        identifier = id;
     }
 
     /**
@@ -122,9 +120,9 @@ public class InstrumentBean implements Serializable {
      * @param title
      *            the title to set
      */
-    public final void setName(String title) {
+    public final void setName(final String title) {
 
-        this.name = title;
+        name = title;
     }
 
     /**
@@ -140,7 +138,7 @@ public class InstrumentBean implements Serializable {
      * @param description
      *            the description to set
      */
-    public final void setDescription(String description) {
+    public final void setDescription(final String description) {
 
         this.description = description;
     }
@@ -157,7 +155,7 @@ public class InstrumentBean implements Serializable {
      * @param configuration
      *            the configuration to set
      */
-    public final void setConfiguration(boolean configuration) {
+    public final void setConfiguration(final boolean configuration) {
 
         this.configuration = configuration;
     }
@@ -174,7 +172,7 @@ public class InstrumentBean implements Serializable {
      * @param calibration
      *            the calibrationProperty to set
      */
-    public final void setCalibration(boolean calibration) {
+    public final void setCalibration(final boolean calibration) {
 
         this.calibration = calibration;
     }
@@ -191,7 +189,7 @@ public class InstrumentBean implements Serializable {
      * @param eSyncDaemon
      *            the eSyncDaemon to set
      */
-    public final void setESyncDaemon(String eSyncDaemon) {
+    public final void setESyncDaemon(final String eSyncDaemon) {
 
         this.eSyncDaemon = eSyncDaemon;
     }
@@ -218,7 +216,7 @@ public class InstrumentBean implements Serializable {
      *            the createdOn to set
      */
 
-    public final void setCreatedOn(Date createdOn) {
+    public final void setCreatedOn(final Date createdOn) {
 
         this.createdOn = createdOn;
     }
@@ -237,7 +235,7 @@ public class InstrumentBean implements Serializable {
      *            the createdBy to set
      */
 
-    public final void setCreatedBy(String createdBy) {
+    public final void setCreatedBy(final String createdBy) {
 
         this.createdBy = createdBy;
     }
@@ -256,7 +254,7 @@ public class InstrumentBean implements Serializable {
      *            the modifiedOn to set
      */
 
-    public final void setModifiedOn(Date modifiedOn) {
+    public final void setModifiedOn(final Date modifiedOn) {
 
         this.modifiedOn = modifiedOn;
     }
@@ -275,7 +273,7 @@ public class InstrumentBean implements Serializable {
      *            the modifiedBy to set
      */
 
-    public final void setModifiedBy(String modifiedBy) {
+    public final void setModifiedBy(final String modifiedBy) {
 
         this.modifiedBy = modifiedBy;
     }
@@ -284,7 +282,7 @@ public class InstrumentBean implements Serializable {
      * @param folder
      *            the folder to set
      */
-    public final void setFolder(String folder) {
+    public final void setFolder(final String folder) {
 
         this.folder = folder;
     }
@@ -301,7 +299,7 @@ public class InstrumentBean implements Serializable {
      * @param fileFormat
      *            the fileFormat to set
      */
-    public final void setFileFormat(String fileFormat) {
+    public final void setFileFormat(final String fileFormat) {
 
         this.fileFormat = fileFormat;
     }
@@ -320,7 +318,7 @@ public class InstrumentBean implements Serializable {
      *            the contentModel to set
      */
 
-    public final void setContentModel(String contentModel) {
+    public final void setContentModel(final String contentModel) {
 
         this.contentModel = contentModel;
     }
@@ -337,7 +335,7 @@ public class InstrumentBean implements Serializable {
      * @param deviceSupervisor
      *            the deviceSupervisor to set
      */
-    public final void setDeviceSupervisor(String deviceSupervisor) {
+    public final void setDeviceSupervisor(final String deviceSupervisor) {
 
         this.deviceSupervisor = deviceSupervisor;
     }
@@ -354,7 +352,7 @@ public class InstrumentBean implements Serializable {
      * @param institute
      *            the institute to set
      */
-    public final void setInstitute(String institute) {
+    public final void setInstitute(final String institute) {
 
         this.institute = institute;
     }
@@ -371,7 +369,7 @@ public class InstrumentBean implements Serializable {
      * @param incarnationType
      *            the incarnationType to set
      */
-    public final void setIncarnationType(String incarnationType) {
+    public final void setIncarnationType(final String incarnationType) {
 
         this.incarnationType = incarnationType;
     }
@@ -398,7 +396,7 @@ public class InstrumentBean implements Serializable {
      *            the context to set
      */
 
-    public final void setContext(String context) {
+    public final void setContext(final String context) {
 
         this.context = context;
     }
@@ -407,7 +405,7 @@ public class InstrumentBean implements Serializable {
      * @param costCenter
      *            the costCenter to set
      */
-    public final void setCostCenter(String costCenter) {
+    public final void setCostCenter(final String costCenter) {
 
         this.costCenter = costCenter;
     }
@@ -429,7 +427,7 @@ public class InstrumentBean implements Serializable {
      * @param operator
      *            the operator to set
      */
-    public final void setOperator(boolean operator) {
+    public final void setOperator(final boolean operator) {
         this.operator = operator;
     }
 }

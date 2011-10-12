@@ -33,8 +33,6 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.terminal.Sizeable;
@@ -78,17 +76,20 @@ public class ContextView extends VerticalLayout {
 
     private final Repositories repositories;
 
-    private static final Logger LOG = LoggerFactory.getLogger(ContextView.class);
-
-    public ContextView(final EscidocServiceLocation serviceLocation, final Router mainSite,
-        final ResourceProxy resourceProxy, final Window mainWindow, final CurrentUser currentUser,
+    public ContextView(final EscidocServiceLocation serviceLocation,
+        final Router mainSite, final ResourceProxy resourceProxy,
+        final Window mainWindow, final CurrentUser currentUser,
         final Repositories repositories) throws EscidocClientException {
 
-        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
+        Preconditions.checkNotNull(serviceLocation,
+            "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
-        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
-        Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
-        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s",
+            resourceProxy);
+        Preconditions.checkNotNull(currentUser, "currentUser is null: %s",
+            currentUser);
+        Preconditions.checkNotNull(repositories, "repositories is null: %s",
+            repositories);
 
         this.serviceLocation = serviceLocation;
         this.mainSite = mainSite;
@@ -113,17 +114,20 @@ public class ContextView extends VerticalLayout {
     }
 
     private void addContextDetailsView() {
-        rightCell(new MetadataRecsContext(resourceProxy, accordionHeight, mainWindow).asAccord());
+        rightCell(new MetadataRecsContext(resourceProxy, accordionHeight,
+            mainWindow).asAccord());
     }
 
     private void addDirectMembersView() throws EscidocClientException {
-        leftCell(DIRECT_MEMBERS, new DirectMember(serviceLocation, mainSite, resourceProxy.getId(), mainWindow,
-            currentUser, repositories).contextAsTree());
+        leftCell(DIRECT_MEMBERS,
+            new DirectMember(serviceLocation, mainSite, resourceProxy.getId(),
+                mainWindow, currentUser, repositories).contextAsTree());
     }
 
     /**
-     * This is the inner Right Cell within a Context By default a set of Organizational Unit / Admin Description /
-     * RelatedItem / Resources are bound
+     * This is the inner Right Cell within a Context By default a set of
+     * Organizational Unit / Admin Description / RelatedItem / Resources are
+     * bound
      * 
      * @param comptoBind
      */
@@ -139,7 +143,8 @@ public class ContextView extends VerticalLayout {
     }
 
     /**
-     * This is the inner Left Cell within a Context By default the Direct Members are bound here
+     * This is the inner Left Cell within a Context By default the Direct
+     * Members are bound here
      * 
      * @param directMembers
      * 
@@ -155,7 +160,9 @@ public class ContextView extends VerticalLayout {
         leftpnl.setHeight("82%");
         leftpnl.getLayout().setMargin(false);
 
-        final Label nameofPanel = new Label("<strong>" + DIRECT_MEMBERS + "</string>", Label.CONTENT_RAW);
+        final Label nameofPanel =
+            new Label("<strong>" + DIRECT_MEMBERS + "</string>",
+                Label.CONTENT_RAW);
         leftpnl.addComponent(nameofPanel);
 
         leftpnl.addComponent(comptoBind);
@@ -167,7 +174,8 @@ public class ContextView extends VerticalLayout {
      */
     private void bindProperties() {
         final Label descMetadata1 =
-            new Label("ID: " + resourceProxy.getId() + " <br /> " + resourceProxy.getType().asLabel() + " is "
+            new Label("ID: " + resourceProxy.getId() + " <br /> "
+                + resourceProxy.getType().asLabel() + " is "
                 + resourceProxy.getStatus(), Label.CONTENT_RAW);
         descMetadata1.setWidth("35%");
         descMetadata1.setStyleName("floatleft columnheight50");
@@ -175,9 +183,10 @@ public class ContextView extends VerticalLayout {
 
         // RIGHT SIDE
         final Label descMetadata2 =
-            new Label(CREATED_BY + " " + resourceProxy.getCreator() + " on " + resourceProxy.getCreatedOn() + "<br/>"
-                + LAST_MODIFIED_BY + " " + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(),
-                Label.CONTENT_XHTML);
+            new Label(CREATED_BY + " " + resourceProxy.getCreator() + " on "
+                + resourceProxy.getCreatedOn() + "<br/>" + LAST_MODIFIED_BY
+                + " " + resourceProxy.getModifier() + " on "
+                + resourceProxy.getModifiedOn(), Label.CONTENT_XHTML);
 
         descMetadata2.setStyleName("floatright columnheight50");
         descMetadata2.setWidth("65%");
@@ -201,7 +210,8 @@ public class ContextView extends VerticalLayout {
     }
 
     private void bindNameToHeader() {
-        final Label headerContext = new Label(RESOURCE_NAME + resourceProxy.getName());
+        final Label headerContext =
+            new Label(RESOURCE_NAME + resourceProxy.getName());
         headerContext.setStyleName("h1 fullwidth");
         cssLayout.addComponent(headerContext);
     }
@@ -224,7 +234,9 @@ public class ContextView extends VerticalLayout {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((resourceProxy == null) ? 0 : resourceProxy.hashCode());
+        result =
+            prime * result
+                + ((resourceProxy == null) ? 0 : resourceProxy.hashCode());
         return result;
     }
 

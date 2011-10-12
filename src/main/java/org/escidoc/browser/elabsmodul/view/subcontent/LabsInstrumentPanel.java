@@ -49,9 +49,8 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
+@SuppressWarnings("serial")
 public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsAction {
-
-    private static final long serialVersionUID = -7601252311598579746L;
 
     private static Logger LOG = LoggerFactory.getLogger(LabsInstrumentPanel.class);
 
@@ -59,80 +58,80 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
 
     private final int COMPONENT_COUNT = 9;
 
-    private POJOItem<InstrumentBean> pojoItem = null;
+    private POJOItem<InstrumentBean> pojoItem;
 
-    private InstrumentBean instrumentBean = null;
+    private final InstrumentBean instrumentBean;
 
-    private VerticalLayout mainLayout = null;
+    private VerticalLayout mainLayout;
 
-    private LayoutClickListener clientViewEventHandler = null;
+    private LayoutClickListener clientViewEventHandler;
 
-    private ClickListener mouseClickListener = null;
+    private ClickListener mouseClickListener;
 
-    private List<HorizontalLayout> registeredComponents = null;
+    private List<HorizontalLayout> registeredComponents;
 
-    private HorizontalLayout modifiedComponent = null;
+    private HorizontalLayout modifiedComponent;
 
-    private Window mainWindow = null;
+    private final Window mainWindow;
 
-    private HorizontalLayout buttonLayout = null;
+    private HorizontalLayout buttonLayout;
 
-    public LabsInstrumentPanel(Window mainWindow, InstrumentBean sourceBean) {
+    public LabsInstrumentPanel(final Window mainWindow, final InstrumentBean sourceBean) {
         LOG.info("Constructor created.");
         this.mainWindow = mainWindow;
-        this.instrumentBean = (sourceBean != null) ? sourceBean : new InstrumentBean();
+        instrumentBean = (sourceBean != null) ? sourceBean : new InstrumentBean();
 
         initialisePanelComponents();
-        buildPanelGUI();
+        buildPanelGui();
         createPanelListener();
         createClickListener();
     }
 
     private void initialisePanelComponents() {
-        this.mainLayout = new VerticalLayout();
-        this.pojoItem = new POJOItem<InstrumentBean>(instrumentBean, PROPERTIES);
-        this.registeredComponents = new ArrayList<HorizontalLayout>(COMPONENT_COUNT);
+        mainLayout = new VerticalLayout();
+        pojoItem = new POJOItem<InstrumentBean>(instrumentBean, PROPERTIES);
+        registeredComponents = new ArrayList<HorizontalLayout>(COMPONENT_COUNT);
 
-        this.setContent(mainLayout);
-        this.setScrollable(true);
+        setContent(mainLayout);
+        setScrollable(true);
     }
 
-    private void buildPanelGUI() {
-        this.mainLayout.setStyleName(ELabViewContants.STYLE_ELABS_FORM);
-        this.mainLayout.setSpacing(true);
-        this.mainLayout.setMargin(true);
+    private void buildPanelGui() {
+        mainLayout.setStyleName(ELabViewContants.STYLE_ELABS_FORM);
+        mainLayout.setSpacing(true);
+        mainLayout.setMargin(true);
 
         buttonLayout = LabsLayoutHelper.createButtonLayout();
-        HorizontalLayout h1 =
+        final HorizontalLayout h1 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabViewContants.L_INSTRUMENT_TITLE,
                 pojoItem.getItemProperty(ELabViewContants.P_INSTRUMENT_TITLE));
-        HorizontalLayout h2 =
+        final HorizontalLayout h2 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabViewContants.L_INSTRUMENT_DESC,
                 getPojoItem().getItemProperty(ELabViewContants.P_INSTRUMENT_DESC));
-        HorizontalLayout h3 =
+        final HorizontalLayout h3 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndCheckBoxData(
                 ELabViewContants.L_INSTRUMENT_CONFIGURATION_KEY, ELabViewContants.L_INSTRUMENT_CONFIGURATION_VALUE,
                 getPojoItem().getItemProperty(ELabViewContants.P_INSTRUMENT_CONFIGURATION));
-        HorizontalLayout h4 =
+        final HorizontalLayout h4 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndCheckBoxData(
                 ELabViewContants.L_INSTRUMENT_CALIBRATION_KEY, ELabViewContants.L_INSTRUMENT_CALIBRATION_VALUE,
                 getPojoItem().getItemProperty(ELabViewContants.P_INSTRUMENT_CALIBRATION));
-        HorizontalLayout h5 =
+        final HorizontalLayout h5 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(
                 ELabViewContants.L_INSTRUMENT_ESYNC_DAEMON,
                 getPojoItem().getItemProperty(ELabViewContants.P_INSTRUMENT_ESYNCDAEMON));
-        HorizontalLayout h6 =
+        final HorizontalLayout h6 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabViewContants.L_INSTRUMENT_FOLDER,
                 getPojoItem().getItemProperty(ELabViewContants.P_INSTRUMENT_FOLDER));
-        HorizontalLayout h7 =
+        final HorizontalLayout h7 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(
                 ELabViewContants.L_INSTRUMENT_FILE_FORMAT,
                 getPojoItem().getItemProperty(ELabViewContants.P_INSTRUMENT_FILEFORMAT));
-        HorizontalLayout h8 =
+        final HorizontalLayout h8 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(
                 ELabViewContants.L_INSTRUMENT_DEVICE_SUPERVISOR,
                 getPojoItem().getItemProperty(ELabViewContants.P_INSTRUMENT_DEVICESUPERVISOR));
-        HorizontalLayout h9 =
+        final HorizontalLayout h9 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabViewContants.L_INSTRUMENT_INSTITUTE,
                 getPojoItem().getItemProperty(ELabViewContants.P_INSTRUMENT_INSTITUTE));
 
@@ -146,33 +145,33 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
         registeredComponents.add(h8);
         registeredComponents.add(h9);
 
-        this.mainLayout.addComponent(new VerticalLayout(), 0);
-        this.mainLayout.addComponent(h1, 1);
-        this.mainLayout.addComponent(h2, 2);
-        this.mainLayout.addComponent(h3, 3);
-        this.mainLayout.addComponent(h4, 4);
-        this.mainLayout.addComponent(h5, 5);
-        this.mainLayout.addComponent(h6, 6);
-        this.mainLayout.addComponent(h7, 7);
-        this.mainLayout.addComponent(h8, 8);
-        this.mainLayout.addComponent(h9, 9);
+        mainLayout.addComponent(new VerticalLayout(), 0);
+        mainLayout.addComponent(h1, 1);
+        mainLayout.addComponent(h2, 2);
+        mainLayout.addComponent(h3, 3);
+        mainLayout.addComponent(h4, 4);
+        mainLayout.addComponent(h5, 5);
+        mainLayout.addComponent(h6, 6);
+        mainLayout.addComponent(h7, 7);
+        mainLayout.addComponent(h8, 8);
+        mainLayout.addComponent(h9, 9);
 
-        this.mainLayout.attach();
-        this.mainLayout.requestRepaintAll();
+        mainLayout.attach();
+        mainLayout.requestRepaintAll();
     }
 
     private void createPanelListener() {
-        this.clientViewEventHandler = new LabsClientViewEventHandler(registeredComponents, mainLayout, this, this);
-        this.mainLayout.addListener(this.clientViewEventHandler);
+        clientViewEventHandler = new LabsClientViewEventHandler(registeredComponents, mainLayout, this, this);
+        mainLayout.addListener(clientViewEventHandler);
     }
 
     private void createClickListener() {
-        this.mouseClickListener = new Button.ClickListener() {
+        mouseClickListener = new Button.ClickListener() {
 
             private static final long serialVersionUID = -8330004043242560612L;
 
             @Override
-            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+            public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
                 if (event.getButton().getCaption().equals("Save")) {
                     LabsInstrumentPanel.this.saveAction();
                 }
@@ -184,14 +183,14 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
             }
         };
 
-        ((Button) this.buttonLayout.getComponent(0)).addListener(this.mouseClickListener);
-        ((Button) this.buttonLayout.getComponent(1)).addListener(this.mouseClickListener);
+        ((Button) buttonLayout.getComponent(0)).addListener(mouseClickListener);
+        ((Button) buttonLayout.getComponent(1)).addListener(mouseClickListener);
     }
 
     @Override
     public void hideButtonLayout() {
-        if (mainLayout != null && this.mainLayout.getComponent(0) != null) {
-            ((VerticalLayout) this.mainLayout.getComponent(0)).removeAllComponents();
+        if (mainLayout != null && mainLayout.getComponent(0) != null) {
+            ((VerticalLayout) mainLayout.getComponent(0)).removeAllComponents();
         }
     }
 
@@ -199,7 +198,7 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
     public void showButtonLayout() {
         VerticalLayout verticalLayout = null;
         if (mainLayout != null && buttonLayout != null) {
-            verticalLayout = (VerticalLayout) this.mainLayout.getComponent(0);
+            verticalLayout = (VerticalLayout) mainLayout.getComponent(0);
             if (verticalLayout != null) {
                 verticalLayout.removeAllComponents();
             }
@@ -209,17 +208,17 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
 
     @Override
     public Component getModifiedComponent() {
-        return this.modifiedComponent;
+        return modifiedComponent;
     }
 
     @Override
-    public void setModifiedComponent(Component modifiedComponent) {
+    public void setModifiedComponent(final Component modifiedComponent) {
         this.modifiedComponent = (HorizontalLayout) modifiedComponent;
     }
 
     @Override
     public Window getMainWindow() {
-        return this.mainWindow;
+        return mainWindow;
     }
 
     @Override
@@ -233,7 +232,7 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
 
     @Override
     public void saveAction() {
-        this.mainWindow.showNotification("Save", "View is saved", Notification.TYPE_HUMANIZED_MESSAGE);
+        mainWindow.showNotification("Save", "View is saved", Notification.TYPE_HUMANIZED_MESSAGE);
     }
 
 }

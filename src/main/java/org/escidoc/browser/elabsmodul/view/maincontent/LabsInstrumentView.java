@@ -99,17 +99,17 @@ public final class LabsInstrumentView extends VerticalLayout {
         appHeight = mainSite.getApplicationHeight();
         this.currentUser = currentUser;
 
-        // test
-
         InstrumentBean bean = null;
         try {
+            // The responsibility of the controller currently only convert ResourceProxy to Bean
+            // to add: a method to convert back Bean to ResourceProxy for storing it in eSciDoc Infrastructure
+            // Better name: BeanModelConverter
             bean = InstrumentController.getInstance().loadBeanData(this.resourceProxy);
         }
-        catch (EscidocBrowserException e) {
+        catch (final EscidocBrowserException e) {
             LOG.error(e.getLocalizedMessage());
-            bean = null;
         }
-        this.instrumentPanel = new LabsInstrumentPanel(this.mainWindow, bean);
+        instrumentPanel = new LabsInstrumentPanel(this.mainWindow, bean);
 
         init();
     }
@@ -120,7 +120,7 @@ public final class LabsInstrumentView extends VerticalLayout {
         bindNametoHeader();
         bindProperties();
         bindHrRuler();
-        buildContentCell(this.instrumentPanel);
+        buildContentCell(instrumentPanel);
         addComponent(cssLayout);
     }
 
@@ -197,7 +197,7 @@ public final class LabsInstrumentView extends VerticalLayout {
         cssLayout.setHeight("100%");
 
         final int innerelementsHeight = appHeight - 420;
-        int accordionHeight = innerelementsHeight - 20;
+        final int accordionHeight = innerelementsHeight - 20;
     }
 
     @Override
