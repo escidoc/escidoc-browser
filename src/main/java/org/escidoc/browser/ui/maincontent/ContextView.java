@@ -33,8 +33,6 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.MainSite;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.terminal.Sizeable;
@@ -77,8 +75,6 @@ public class ContextView extends VerticalLayout {
     private final CurrentUser currentUser;
 
     private final Repositories repositories;
-
-    private static final Logger LOG = LoggerFactory.getLogger(ContextView.class);
 
     public ContextView(final EscidocServiceLocation serviceLocation, final MainSite mainSite,
         final ResourceProxy resourceProxy, final Window mainWindow, final CurrentUser currentUser,

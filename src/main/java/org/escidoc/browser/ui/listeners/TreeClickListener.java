@@ -28,6 +28,8 @@
  */
 package org.escidoc.browser.ui.listeners;
 
+import java.util.Map;
+
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.elabsmodul.constants.ELabsConstants;
 import org.escidoc.browser.elabsmodul.view.maincontent.LabsInstrumentView;
@@ -59,6 +61,7 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.application.invalid.InvalidContentModelException;
 import de.escidoc.core.common.exceptions.remote.application.notfound.ContentModelNotFoundException;
 import de.escidoc.core.resources.Resource;
+import de.escidoc.core.resources.cmm.ContentModel;
 
 @SuppressWarnings("serial")
 public class TreeClickListener implements ItemClickListener {
@@ -98,6 +101,8 @@ public class TreeClickListener implements ItemClickListener {
 
     private void openClickedResourceInNewTab(final ResourceModel clickedResource) {
         try {
+            // TODO in new architecture, we do not decide based on Context but based on Content Model linked by
+            // the Resource.
             if (findContextId(clickedResource).equals(
                 org.escidoc.browser.elabsmodul.constants.ELabsConstants.ELABS_DEFAULT_CONTEXT_ID)) {
                 openInNewTab(createBWeLabsView(clickedResource), clickedResource);
@@ -159,19 +164,34 @@ public class TreeClickListener implements ItemClickListener {
         }
     }
 
+    Map<String, String> fooToClassName;
+
     private Component createView(final ResourceModel clickedResource) throws EscidocClientException {
         if (ContextModel.isContext(clickedResource)) {
             return new ContextView(serviceLocation, mainSite,
                 tryToFindResource(repositories.context(), clickedResource), mainWindow, currentUser, repositories);
         }
         else if (ContainerModel.isContainer(clickedResource)) {
-            return new ContainerView(serviceLocation, mainSite, tryToFindResource(repositories.container(),
-                clickedResource), mainWindow, currentUser, repositories);
-
+            return new ContainerView(serviceLocation, mainSite, tryToFindResource(repositories.container(), clickedResource), mainWindow, currentUser, repositories);
         }
         else if (ItemModel.isItem(clickedResource)) {
-            return new ItemView(serviceLocation, repositories, mainSite, tryToFindResource(repositories.item(),
-                clickedResource), mainWindow, currentUser);
+            // + we have to load the concrete Container or Item from the eSciDoc Infrastructure.
+            final ResourceProxy resourceProxy = tryToFindResource(repositories.container(), clickedResource);
+
+            // + Which Resource to initiate is written somewhere in Content Model attribute. For Example we store it in
+            // description. Description=foo.
+            final ContentModel contentModel = (ContentModel) resourceProxy.getContentModel();
+            final String description = contentModel.getProperties().getDescription();
+
+            // + Precondition: Mapping should loaded from properties file and store as a Map, i.e.
+            // Map fooToClassName<String,String>. The content of the property file is in the format foo=bar. Bar is a
+            // fully qualified class name to initiate via Reflection.
+            final String className = fooToClassName.get(description);
+
+            // + What is the responsibility of this class?
+            // a. Convert ResourceProxy to a Bean and then
+            // b. Create the View e.g ItemView Or InstrumentView
+            return new ItemView(serviceLocation, repositories, mainSite, resourceProxy, mainWindow, currentUser);
         }
         else {
             throw new UnsupportedOperationException("Not yet implemented");

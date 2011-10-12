@@ -272,18 +272,17 @@ public class MainSite extends VerticalLayout {
      * @param cmp
      * @param tabname
      */
-    public void openTab(final Component cmp, String tabname) {
-        final Tab tb = mainContentTabs.addTab(cmp);
+    public void openTab(final Component cmp, final String tabname) {
+        final Tab tab = mainContentTabs.addTab(cmp);
+        String temp = tabname;
         if (tabname.length() > 50) {
-            tb.setDescription(tabname);
-            tabname = tabname.substring(0, 50) + "...";
+            tab.setDescription(temp);
+            temp = tabname.substring(0, 50) + "...";
         }
-        tb.setCaption(tabname);
-
-        tb.setDescription(tabname);
-
+        tab.setCaption(temp);
+        tab.setDescription(temp);
         mainContentTabs.setSelectedTab(cmp);
-        tb.setClosable(true);
+        tab.setClosable(true);
     }
 
     /**

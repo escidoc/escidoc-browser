@@ -61,38 +61,35 @@ public class InstrumentController extends AbstractELabsController {
     }
 
     private InstrumentController() {
-        this.controlledBeanClass = InstrumentBean.class;
+        controlledBeanClass = InstrumentBean.class;
     }
 
-    public synchronized InstrumentBean loadBeanData(ResourceProxy resourceProxy) throws EscidocBrowserException {
-
+    public synchronized InstrumentBean loadBeanData(final ResourceProxy resourceProxy) throws EscidocBrowserException {
         if (resourceProxy == null || !(resourceProxy instanceof ItemProxy)) {
             throw new EscidocBrowserException("NOT an ItemProxy", null);
         }
 
-        ItemProxy itemProxy = (ItemProxy) resourceProxy;
-        InstrumentBean instrumentBean = new InstrumentBean();
+        final ItemProxy itemProxy = (ItemProxy) resourceProxy;
+        final InstrumentBean instrumentBean = new InstrumentBean();
 
         try {
-            Element e = itemProxy.getMedataRecords().get("escidoc").getContent();
+            final Element e = itemProxy.getMedataRecords().get("escidoc").getContent();
             final String xml = DOM2String.convertDom2String(e);
 
-            NodeList nodeList = e.getChildNodes();
+            final NodeList nodeList = e.getChildNodes();
             for (int i = 0; i < nodeList.getLength(); i++) {
-                Node node = nodeList.item(i);
-                String nodeName = node.getNodeName();
+                final Node node = nodeList.item(i);
+                final String nodeName = node.getNodeName();
 
                 if (nodeName.equals("dc:title")) {
                     instrumentBean.setName((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
                 }
-
                 else if (nodeName.equals("dc:description")) {
                     instrumentBean
                         .setDescription((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
                 }
-
                 else if (nodeName.equals("el:requires-configuration")) {
-                    String value = node.getFirstChild().getNodeValue();
+                    final String value = node.getFirstChild().getNodeValue();
                     if (value.equals("no")) {
                         instrumentBean.setConfiguration(false);
                     }
@@ -102,7 +99,7 @@ public class InstrumentController extends AbstractELabsController {
 
                 }
                 else if (nodeName.equals("el:requires-calibration")) {
-                    String value = node.getFirstChild().getNodeValue();
+                    final String value = node.getFirstChild().getNodeValue();
                     if (value.equals("no")) {
                         instrumentBean.setCalibration(false);
                     }
@@ -133,7 +130,7 @@ public class InstrumentController extends AbstractELabsController {
             }
             LOG.debug(xml);
         }
-        catch (TransformerException e) {
+        catch (final TransformerException e) {
             LOG.error(e.getLocalizedMessage());
         }
 

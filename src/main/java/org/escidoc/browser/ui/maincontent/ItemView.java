@@ -178,7 +178,10 @@ public final class ItemView extends VerticalLayout {
         leftPanel.setWidth("30%");
         leftPanel.setHeight("82%");
         leftPanel.addComponent(itCnt);
+
+        leftPanel.addComponent(new Label("foo"));
         cssLayout.addComponent(leftPanel);
+        cssLayout.addComponent(new Label("bar"));
     }
 
     private void bindProperties() {
@@ -320,7 +323,7 @@ public final class ItemView extends VerticalLayout {
                             ((Label) oldComponent).setValue(status + ((ComboBox) swapComponent).getValue());
                             // Because there should be no comment-window on Delete Operation
                             if (!(((ComboBox) swapComponent).getValue().equals("delete"))) {
-                                this.addCommentWindow();
+                                addCommentWindow();
                             }
                             else {
                                 updateItem("");
@@ -392,17 +395,17 @@ public final class ItemView extends VerticalLayout {
                             .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_CONTAINER)
                             .forResource(resourceProxy.getId()).permitted();
                     }
-                    catch (UnsupportedOperationException e) {
+                    catch (final UnsupportedOperationException e) {
                         mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
                         e.printStackTrace();
                         return false;
                     }
-                    catch (EscidocClientException e) {
+                    catch (final EscidocClientException e) {
                         mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
                         e.printStackTrace();
                         return false;
                     }
-                    catch (URISyntaxException e) {
+                    catch (final URISyntaxException e) {
                         mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
                         e.printStackTrace();
                         return false;
