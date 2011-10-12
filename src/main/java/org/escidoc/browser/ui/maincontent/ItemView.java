@@ -179,9 +179,7 @@ public final class ItemView extends VerticalLayout {
         leftPanel.setHeight("82%");
         leftPanel.addComponent(itCnt);
 
-        leftPanel.addComponent(new Label("foo"));
         cssLayout.addComponent(leftPanel);
-        cssLayout.addComponent(new Label("bar"));
     }
 
     private void bindProperties() {
