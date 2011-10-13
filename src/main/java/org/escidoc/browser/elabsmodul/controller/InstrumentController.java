@@ -282,6 +282,7 @@ public final class InstrumentController extends Controller {
     @Override
     public void init(ResourceProxy resourceProxy) {
         this.view = createView(resourceProxy);
+        this.view.setCaption("Default Caption");
 
     }
 
