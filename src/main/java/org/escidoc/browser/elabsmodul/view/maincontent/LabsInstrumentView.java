@@ -49,8 +49,7 @@ public final class LabsInstrumentView extends VerticalLayout {
 
     private static final String LAST_MODIFIED_BY = "Last modification by ";
 
-    private static final Logger LOG = LoggerFactory
-        .getLogger(LabsInstrumentView.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LabsInstrumentView.class);
 
     private final CssLayout cssLayout = new CssLayout();
 
@@ -89,22 +88,17 @@ public final class LabsInstrumentView extends VerticalLayout {
     }
 
     /*
-     * private void bindNametoHeader() { final Label headerContext = new
-     * Label(ViewConstants.RESOURCE_NAME + resourceProxy.getName());
-     * headerContext.setDescription("header");
-     * headerContext.setStyleName("h2 fullwidth");
+     * private void bindNametoHeader() { final Label headerContext = new Label(ViewConstants.RESOURCE_NAME +
+     * resourceProxy.getName()); headerContext.setDescription("header"); headerContext.setStyleName("h2 fullwidth");
      * cssLayout.addComponent(headerContext); }
      * 
-     * private void bindProperties() { final Panel pnlPropertiesLeft =
-     * buildLeftPropertiesPnl(); final Panel pnlPropertiesRight =
-     * buildRightPnlProperties();
+     * private void bindProperties() { final Panel pnlPropertiesLeft = buildLeftPropertiesPnl(); final Panel
+     * pnlPropertiesRight = buildRightPnlProperties();
      * 
-     * final Label descMetadata1 = new Label("ID: " + resourceProxy.getId());
-     * final Label descMetadata2 = new Label(LAST_MODIFIED_BY + " " +
-     * resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(),
+     * final Label descMetadata1 = new Label("ID: " + resourceProxy.getId()); final Label descMetadata2 = new
+     * Label(LAST_MODIFIED_BY + " " + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(),
      * Label.CONTENT_XHTML); pnlPropertiesLeft.addComponent(descMetadata1);
-     * pnlPropertiesRight.addComponent(descMetadata2);
-     * cssLayout.addComponent(pnlPropertiesLeft);
+     * pnlPropertiesRight.addComponent(descMetadata2); cssLayout.addComponent(pnlPropertiesLeft);
      * cssLayout.addComponent(pnlPropertiesRight); }
      */
     private Panel buildLeftPropertiesPnl() {
@@ -150,9 +144,7 @@ public final class LabsInstrumentView extends VerticalLayout {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result =
-            prime * result
-                + ((instrumentBean == null) ? 0 : instrumentBean.hashCode());
+        result = prime * result + ((instrumentBean == null) ? 0 : instrumentBean.hashCode());
         return result;
     }
 
