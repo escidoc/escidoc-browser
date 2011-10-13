@@ -237,50 +237,21 @@ public final class InstrumentController extends Controller {
                 createWithoutNamespace(doc, instrument, "result-mime-type",
                     instrumentBean.getFileFormat());
 
+     
             // <el:responsible-person
             // xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
             // rdf:resource="escidoc:42"></el:responsible-person>
-
-            /*
-             * final Element responsiblePerson = doc.createElementNS(
-             * "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-             * "responsible-person"); responsiblePerson.setPrefix("el");
-             * responsiblePerson.setAttributeNS(
-             * "http://www.w3.org/1999/02/22-rdf-syntax-ns#", "resource",
-             * instrumentBean.getDeviceSupervisor());
-             * instrument.appendChild(responsiblePerson);
-             */
+            final Element responsiblePerson = doc.createElement("el:responsible-person");
+            responsiblePerson.setAttributeNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdf:resource",
+                instrumentBean.getDeviceSupervisor());
+            instrument.appendChild(responsiblePerson);
 
             // <el:institution
             // xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
             // rdf:resource="escidoc:1001"></el:institution>
-            final Element institution =
-                doc
-                    .createElementNS(
-                        "http://escidoc.org/ontologies/bw-elabs/re#",
-                        "institution");
-
-            institution.setPrefix("el");
-
-            institution.setAttributeNS(
-                "http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdf:resource",
+            final Element institution = doc.createElement("el:institution");
+            institution.setAttributeNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdf:resource",
                 instrumentBean.getInstitute());
-
-            // Attr attr = institution.getAttributeNodeNS("ns1", "resource1");
-
-            // attr.setPrefix("rdf");
-            // attr.setTextContent("textContent1");
-            // attr.setValue("value1");
-
-            /*
-             * 
-             * institution.setAttribute("rdf:resource",
-             * instrumentBean.getInstitute());
-             * 
-             * institution.setAttributeNS(
-             * "http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdf",
-             * instrumentBean.getInstitute());
-             */
             instrument.appendChild(institution);
             return instrument;
 
