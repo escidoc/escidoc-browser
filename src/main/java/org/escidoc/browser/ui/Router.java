@@ -85,7 +85,7 @@ public class Router extends VerticalLayout {
 
     private LayoutDesign layout;
 
-    private String layoutname = "SimpleLayout.java";
+    private final String layoutname = "SimpleLayout.java";
 
     private Properties browserProperties;
 
@@ -128,14 +128,14 @@ public class Router extends VerticalLayout {
         try {
             browserProperties = new Properties();
             browserProperties.load(this.getClass().getClassLoader().getResourceAsStream("browser.properties"));
-            String pluginString = browserProperties.getProperty("plugin");
-            String[] plugins = pluginString.split(",");
+            final String pluginString = browserProperties.getProperty("plugin");
+            final String[] plugins = pluginString.split(",");
 
-            for (int i = 0; i < plugins.length; i++) {
-                browserProperties.load(this.getClass().getClassLoader().getResourceAsStream(plugins[i]));
+            for (final String plugin : plugins) {
+                browserProperties.load(this.getClass().getClassLoader().getResourceAsStream(plugin));
             }
         }
-        catch (IOException e) {
+        catch (final IOException e) {
             e.printStackTrace();
         }
 
@@ -147,13 +147,13 @@ public class Router extends VerticalLayout {
      * @return
      */
     private void createLayout() {
-        String layoutClassName = browserProperties.getProperty("design");
+        final String layoutClassName = browserProperties.getProperty("design");
         try {
             // Class cls = Class.forName(layoutClassName);
             // layout = cls.newInstance();
             layout = new SimpleLayout(mainWindow, serviceLocation, app, currentUser, repositories, this);
         }
-        catch (EscidocClientException e) {
+        catch (final EscidocClientException e) {
             showError(ERROR_NO_LAYOUT + e.getLocalizedMessage());
         }
         // catch (ClassNotFoundException e) {
@@ -178,7 +178,7 @@ public class Router extends VerticalLayout {
      * @param tabname
      */
     @Deprecated
-    public void openTab(final Component cmp, String tabname) {
+    public void openTab(final Component cmp, final String tabname) {
         ((SimpleLayout) layout).openView(cmp, tabname);
 
     }
@@ -255,7 +255,7 @@ public class Router extends VerticalLayout {
     // }
 
     @Deprecated
-    public void show(ResourceModel clickedResource) throws EscidocClientException {
+    public void show(final ResourceModel clickedResource) throws EscidocClientException {
         if (ContextModel.isContext(clickedResource)) {
             openTab(new ContextView(serviceLocation, this, tryToFindResource(repositories.context(), clickedResource),
                 mainWindow, currentUser, repositories), tryToFindResource(repositories.context(), clickedResource)
@@ -268,16 +268,16 @@ public class Router extends VerticalLayout {
 
         }
         else if (ItemModel.isItem(clickedResource)) {
-
             String controllerId = "org.escidoc.browser.Item";
             final ItemProxy itemProxy = (ItemProxy) tryToFindResource(repositories.item(), clickedResource);
-
-            ContentModel contentModel = repositories.contentModel().findById(itemProxy.getContentModel().getObjid());
+            final ContentModel contentModel =
+                repositories.contentModel().findById(itemProxy.getContentModel().getObjid());
             final String description = contentModel.getProperties().getDescription();
             LOG.debug("Description is" + description);
             if (description != null) {
-                Pattern controllerIdPattern = Pattern.compile("org.escidoc.browser.Controller=([^;])");
-                Matcher controllerIdMatcher = controllerIdPattern.matcher(description);
+                final Pattern controllerIdPattern = Pattern.compile("org.escidoc.browser.Controller=([^;])");
+                final Matcher controllerIdMatcher = controllerIdPattern.matcher(description);
+
                 if (controllerIdMatcher.find()) {
                     controllerId = controllerIdMatcher.group(1);
                 }
@@ -287,32 +287,30 @@ public class Router extends VerticalLayout {
                         itemProxy.getName());
                 }
 
-                Controller controller = null;
+                Controller controller;
                 try {
-                    String controllerClassName = browserProperties.getProperty(controllerId);
-                    Class controllerClass = Class.forName(controllerClassName);
+                    final Class<?> controllerClass = Class.forName(browserProperties.getProperty(controllerId));
                     controller = (Controller) controllerClass.newInstance();
+                    controller.init(itemProxy);
+                    controller.showView(layout);
                 }
-                catch (ClassNotFoundException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                catch (final ClassNotFoundException e) {
+                    // TODO tell the user what happens.
+                    LOG.error("" + e.getMessage());
                 }
-                catch (InstantiationException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                catch (final InstantiationException e) {
+                    // TODO tell the user what happens.
+                    LOG.error("" + e.getMessage());
                 }
-                catch (IllegalAccessException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                catch (final IllegalAccessException e) {
+                    // TODO tell the user what happens.
+                    LOG.error("" + e.getMessage());
                 }
-                controller.init(itemProxy);
-                controller.showView(this.layout);
             }
             else {
                 openTab(new ItemView(serviceLocation, repositories, this, itemProxy, mainWindow, currentUser),
                     itemProxy.getName());
             }
-
         }
         else {
             throw new UnsupportedOperationException("Not yet implemented");
