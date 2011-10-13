@@ -101,8 +101,8 @@ public class TreeClickListener implements ItemClickListener {
             if (findContextId(clickedResource)
                 .equals(
                     org.escidoc.browser.elabsmodul.constants.ELabsConstants.ELABS_DEFAULT_CONTEXT_ID)) {
-                // openInNewTab(createBWeLabsView(clickedResource),
-                // clickedResource);
+                openInNewTab(createBWeLabsView(clickedResource),
+                    clickedResource);
             }
             else {
                 createView(clickedResource);
@@ -116,65 +116,11 @@ public class TreeClickListener implements ItemClickListener {
             LOG.error(e.getMessage());
             showErrorMessageToUser(clickedResource, e);
         }
+        catch (ContentModelNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
-
-    // private Component createBWeLabsView(final ResourceModel clickedResource)
-    // throws EscidocClientException, ContentModelNotFoundException {
-    // final String contentModelId = findContentModelId(clickedResource);
-    // Preconditions.checkNotNull(contentModelId, "ContentModel is null!");
-    // if (ContextModel.isContext(clickedResource)) {
-    // return new ContextView(serviceLocation, mainSite,
-    // tryToFindResource(repositories.context(), clickedResource),
-    // mainWindow, currentUser, repositories);
-    // }
-    // else if (ContainerModel.isContainer(clickedResource)) {
-    // if (contentModelId
-    // .equals(ELabsConstants.ELABS_DEFAULT_STUDY_CMODEL_ID)) {
-    // return new ContainerView(
-    // serviceLocation,
-    // mainSite,
-    // tryToFindResource(repositories.container(), clickedResource),
-    // mainWindow, currentUser, repositories);
-    // }
-    // else if (contentModelId
-    // .equals(ELabsConstants.ELABS_DEFAULT_INVESTIGATION_CMODEL_ID)) {
-    // return new ContainerView(
-    // serviceLocation,
-    // mainSite,
-    // tryToFindResource(repositories.container(), clickedResource),
-    // mainWindow, currentUser, repositories);
-    // }
-    // else {
-    // throw new InvalidContentModelException();
-    // }
-    // }
-    // else if (ItemModel.isItem(clickedResource)) {
-    // if (contentModelId
-    // .equals(ELabsConstants.ELABS_DEFAULT_RIG_CMODEL_ID)) {
-    // return new ItemView(serviceLocation, repositories, mainSite,
-    // tryToFindResource(repositories.item(), clickedResource),
-    // mainWindow, currentUser);
-    // }
-    // else if (contentModelId
-    // .equals(ELabsConstants.ELABS_DEFAULT_INSTR_CMODEL_ID)) {
-    // return new LabsInstrumentView(serviceLocation, repositories,
-    // mainSite, tryToFindResource(repositories.item(),
-    // clickedResource), mainWindow, currentUser);
-    // }
-    // else if (contentModelId
-    // .equals(ELabsConstants.ELABS_DEFAULT_GENERATED_ITEM_CMODEL_ID)) {
-    // return new ItemView(serviceLocation, repositories, mainSite,
-    // tryToFindResource(repositories.item(), clickedResource),
-    // mainWindow, currentUser);
-    // }
-    // else {
-    // throw new InvalidContentModelException();
-    // }
-    // }
-    // else {
-    // throw new UnsupportedOperationException("Not yet implemented");
-    // }
-    // }
 
     private void createView(final ResourceModel clickedResource)
         throws EscidocClientException {

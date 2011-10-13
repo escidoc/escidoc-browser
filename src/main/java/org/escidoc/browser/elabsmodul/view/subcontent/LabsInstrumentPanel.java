@@ -31,15 +31,17 @@ package org.escidoc.browser.elabsmodul.view.subcontent;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.transform.TransformerException;
+
 import org.escidoc.browser.elabsmodul.constants.ELabViewContants;
 import org.escidoc.browser.elabsmodul.controller.InstrumentController;
+import org.escidoc.browser.elabsmodul.controller.utils.DOM2String;
 import org.escidoc.browser.elabsmodul.model.InstrumentBean;
 import org.escidoc.browser.elabsmodul.view.helper.LabsLayoutHelper;
 import org.escidoc.browser.elabsmodul.view.listeners.LabsClientViewEventHandler;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.repository.internal.ItemRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Element;
 
 import com.vaadin.data.util.POJOItem;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
@@ -49,11 +51,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
 
-import de.escidoc.core.client.exceptions.EscidocClientException;
-import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.om.item.Item;
 
 public class LabsInstrumentPanel extends Panel
@@ -82,23 +80,12 @@ public class LabsInstrumentPanel extends Panel
 
     private HorizontalLayout modifiedComponent = null;
 
-    private Window mainWindow = null;
-
     private HorizontalLayout buttonLayout = null;
 
-    private ResourceProxy resourceProxy;
+    public LabsInstrumentPanel(InstrumentBean sourceBean) {
 
-    private ItemRepository itemRepositories;
-
-    public LabsInstrumentPanel(Window mainWindow, InstrumentBean sourceBean,
-        ResourceProxy resourceProxy, ItemRepository itemRepositories) {
-
-        LOG.info("Constructor created.");
-        this.mainWindow = mainWindow;
         this.instrumentBean =
             (sourceBean != null) ? sourceBean : new InstrumentBean();
-        this.resourceProxy = resourceProxy;
-        this.itemRepositories = itemRepositories;
 
         initialisePanelComponents();
         buildPanelGUI();
@@ -256,11 +243,6 @@ public class LabsInstrumentPanel extends Panel
     }
 
     @Override
-    public Window getMainWindow() {
-        return this.mainWindow;
-    }
-
-    @Override
     public Panel getReference() {
         return this;
     }
@@ -271,22 +253,33 @@ public class LabsInstrumentPanel extends Panel
 
     @Override
     public void saveAction() {
-        // TODO
         Item item;
         try {
-            item = itemRepositories.findItemById(resourceProxy.getId());
-            MetadataRecord metadataRecord =
-                item.getMetadataRecords().get("escidoc");
-            metadataRecord.setContent(InstrumentController
-                .createDOMElementByBeanModel(instrumentBean));
-            itemRepositories.update(resourceProxy.getId(), item);
+            Element domElement =
+                InstrumentController
+                    .createDOMElementByBeanModel(instrumentBean);
+            try {
+                LOG.warn("DOM to SAVE...");
+                LOG.info(DOM2String.convertDom2String(domElement));
+            }
+            catch (TransformerException e) {
+                LOG.error(e.getMessage());
+            }
 
-            this.mainWindow.showNotification("Save", "View is saved",
-                Notification.TYPE_HUMANIZED_MESSAGE);
+            /*
+             * item = itemRepositories.findItemById(resourceProxy.getId());
+             * MetadataRecord metadataRecord =
+             * item.getMetadataRecords().get("escidoc");
+             * metadataRecord.setContent(InstrumentController
+             * .createDOMElementByBeanModel(instrumentBean));
+             * itemRepositories.update(resourceProxy.getId(), item);
+             * 
+             * this.mainWindow.showNotification("Save", "View is saved",
+             * Notification.TYPE_HUMANIZED_MESSAGE);
+             */
         }
-        catch (EscidocClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        catch (Throwable e) {
+            LOG.error(e.getMessage());
         }
     }
 

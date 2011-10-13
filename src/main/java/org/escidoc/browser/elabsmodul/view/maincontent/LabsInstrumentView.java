@@ -28,28 +28,16 @@
  */
 package org.escidoc.browser.elabsmodul.view.maincontent;
 
-import org.escidoc.browser.elabsmodul.controller.InstrumentController;
-import org.escidoc.browser.elabsmodul.exceptions.EscidocBrowserException;
 import org.escidoc.browser.elabsmodul.model.InstrumentBean;
 import org.escidoc.browser.elabsmodul.view.subcontent.LabsInstrumentPanel;
-import org.escidoc.browser.model.CurrentUser;
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.repository.internal.ItemProxyImpl;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.BreadCrumbMenu;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
 
 @SuppressWarnings("serial")
@@ -66,57 +54,14 @@ public final class LabsInstrumentView extends VerticalLayout {
 
     private final CssLayout cssLayout = new CssLayout();
 
-    private final CurrentUser currentUser;
-
-    private final Router router;
-
-    private final int appHeight;
-
-    private final ItemProxyImpl resourceProxy;
-
-    private final Window mainWindow;
-
-    private final EscidocServiceLocation serviceLocation;
-
-    private final Repositories repositories;
-
     private LabsInstrumentPanel instrumentPanel = null;
 
-    public LabsInstrumentView(final EscidocServiceLocation serviceLocation,
-        final Repositories repositories, final Router router,
-        final ResourceProxy resourceProxy, final Window mainWindow,
-        final CurrentUser currentUser) {
+    private InstrumentBean instrumentBean = null;
 
-        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null.");
-        Preconditions.checkNotNull(repositories, "repositories is null: %s",
-            repositories);
-        Preconditions.checkNotNull(router, "mainSite is null.");
-        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null.");
-        Preconditions.checkNotNull(mainWindow, "mainWindow is null.");
+    public LabsInstrumentView(final InstrumentBean instrumentBean) {
 
-        this.resourceProxy = (ItemProxyImpl) resourceProxy;
-        this.repositories = repositories;
-        this.mainWindow = mainWindow;
-        this.router = router;
-        this.serviceLocation = serviceLocation;
-        appHeight = router.getApplicationHeight();
-        this.currentUser = currentUser;
-
-        // test
-
-        InstrumentBean bean = null;
-        try {
-            bean =
-                InstrumentController.getInstance().loadBeanData(
-                    this.resourceProxy);
-        }
-        catch (EscidocBrowserException e) {
-            LOG.error(e.getLocalizedMessage());
-            bean = null;
-        }
-        this.instrumentPanel =
-            new LabsInstrumentPanel(this.mainWindow, bean, resourceProxy,
-                repositories.item());
+        this.instrumentBean = instrumentBean;
+        this.instrumentPanel = new LabsInstrumentPanel(instrumentBean);
 
         init();
     }
@@ -124,8 +69,8 @@ public final class LabsInstrumentView extends VerticalLayout {
     private final void init() {
         buildLayout();
         createBreadcrumbp();
-        bindNametoHeader();
-        bindProperties();
+        // bindNametoHeader();
+        // bindProperties();
         bindHrRuler();
         buildContentCell(this.instrumentPanel);
         addComponent(cssLayout);
@@ -143,28 +88,25 @@ public final class LabsInstrumentView extends VerticalLayout {
         cssLayout.addComponent(panel);
     }
 
-    private void bindNametoHeader() {
-        final Label headerContext =
-            new Label(ViewConstants.RESOURCE_NAME + resourceProxy.getName());
-        headerContext.setDescription("header");
-        headerContext.setStyleName("h2 fullwidth");
-        cssLayout.addComponent(headerContext);
-    }
-
-    private void bindProperties() {
-        final Panel pnlPropertiesLeft = buildLeftPropertiesPnl();
-        final Panel pnlPropertiesRight = buildRightPnlProperties();
-
-        final Label descMetadata1 = new Label("ID: " + resourceProxy.getId());
-        final Label descMetadata2 =
-            new Label(LAST_MODIFIED_BY + " " + resourceProxy.getModifier()
-                + " on " + resourceProxy.getModifiedOn(), Label.CONTENT_XHTML);
-        pnlPropertiesLeft.addComponent(descMetadata1);
-        pnlPropertiesRight.addComponent(descMetadata2);
-        cssLayout.addComponent(pnlPropertiesLeft);
-        cssLayout.addComponent(pnlPropertiesRight);
-    }
-
+    /*
+     * private void bindNametoHeader() { final Label headerContext = new
+     * Label(ViewConstants.RESOURCE_NAME + resourceProxy.getName());
+     * headerContext.setDescription("header");
+     * headerContext.setStyleName("h2 fullwidth");
+     * cssLayout.addComponent(headerContext); }
+     * 
+     * private void bindProperties() { final Panel pnlPropertiesLeft =
+     * buildLeftPropertiesPnl(); final Panel pnlPropertiesRight =
+     * buildRightPnlProperties();
+     * 
+     * final Label descMetadata1 = new Label("ID: " + resourceProxy.getId());
+     * final Label descMetadata2 = new Label(LAST_MODIFIED_BY + " " +
+     * resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(),
+     * Label.CONTENT_XHTML); pnlPropertiesLeft.addComponent(descMetadata1);
+     * pnlPropertiesRight.addComponent(descMetadata2);
+     * cssLayout.addComponent(pnlPropertiesLeft);
+     * cssLayout.addComponent(pnlPropertiesRight); }
+     */
     private Panel buildLeftPropertiesPnl() {
         final Panel pnlPropertiesLeft = new Panel();
         pnlPropertiesLeft.setWidth("40%");
@@ -193,8 +135,8 @@ public final class LabsInstrumentView extends VerticalLayout {
 
     @SuppressWarnings("unused")
     private void createBreadcrumbp() {
-        new BreadCrumbMenu(cssLayout, resourceProxy, mainWindow,
-            serviceLocation, repositories);
+        // new BreadCrumbMenu(cssLayout, resourceProxy, mainWindow,
+        // serviceLocation, repositories);
     }
 
     private void buildLayout() {
@@ -202,9 +144,6 @@ public final class LabsInstrumentView extends VerticalLayout {
         setHeight("100%");
         cssLayout.setWidth("100%");
         cssLayout.setHeight("100%");
-
-        final int innerelementsHeight = appHeight - 420;
-        int accordionHeight = innerelementsHeight - 20;
     }
 
     @Override
@@ -213,7 +152,7 @@ public final class LabsInstrumentView extends VerticalLayout {
         int result = 1;
         result =
             prime * result
-                + ((resourceProxy == null) ? 0 : resourceProxy.hashCode());
+                + ((instrumentBean == null) ? 0 : instrumentBean.hashCode());
         return result;
     }
 
@@ -229,12 +168,12 @@ public final class LabsInstrumentView extends VerticalLayout {
             return false;
         }
         final LabsInstrumentView other = (LabsInstrumentView) obj;
-        if (resourceProxy == null) {
-            if (other.resourceProxy != null) {
+        if (instrumentBean == null) {
+            if (other.instrumentBean != null) {
                 return false;
             }
         }
-        else if (!resourceProxy.equals(other.resourceProxy)) {
+        else if (!instrumentBean.equals(other.instrumentBean)) {
             return false;
         }
         return true;

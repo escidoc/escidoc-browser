@@ -30,15 +30,12 @@ package org.escidoc.browser.elabsmodul.view.subcontent;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.Window;
 
 public interface ILabsPanel {
 
     public Component getModifiedComponent();
 
     public void setModifiedComponent(Component modifiedComponent);
-
-    public Window getMainWindow();
 
     public Panel getReference();
 

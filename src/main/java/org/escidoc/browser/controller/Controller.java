@@ -6,7 +6,7 @@ import org.escidoc.browser.model.ResourceProxy;
 import com.vaadin.ui.Component;
 
 public abstract class Controller {
-    private Component view;
+    protected Component view;
 
     public abstract void init(ResourceProxy resourceProxy);
 

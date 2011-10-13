@@ -91,9 +91,10 @@ public final class ELabsConstants {
 
     public static final String OPERATOR = "operator";
 
-    public static final String[] INSTRUMENT_PROPERTIES = { IDENTIFIER, NAME, DESCRIPTION, CREATED_BY, CREATED_ON,
-        MODIFIED_BY, MODIFIED_ON, CONFIGURATION, CALIBRATION, ESYNCDAEMON, FOLDER, FILE_FORMAT, DEVICE_SUPERVISOR,
-        INSTITUTE, INCARNATION_TYPE, OPERATOR, COST_CENTER };
+    public static final String[] INSTRUMENT_PROPERTIES = { IDENTIFIER, NAME,
+        DESCRIPTION, CREATED_BY, CREATED_ON, MODIFIED_BY, MODIFIED_ON,
+        CONFIGURATION, CALIBRATION, ESYNCDAEMON, FOLDER, FILE_FORMAT,
+        DEVICE_SUPERVISOR, INSTITUTE, INCARNATION_TYPE, OPERATOR, COST_CENTER };
 
     public static final String APPROVED_BY = "approvedBy";
 
@@ -111,8 +112,9 @@ public final class ELabsConstants {
 
     public static final String INSTRUMENTS = "instruments";
 
-    public static String[] RIG_PROPERTIES = { OBJECT_ID, NAME, DESCRIPTION, CREATED_BY, CREATED_ON, MODIFIED_BY,
-        MODIFIED_ON, APPROVED_BY, APPROVED_ON, /* EXPECTED_RUNTIME, SETUP_TIME_DAYS, */
+    public static String[] RIG_PROPERTIES = { OBJECT_ID, NAME, DESCRIPTION,
+        CREATED_BY, CREATED_ON, MODIFIED_BY, MODIFIED_ON, APPROVED_BY,
+        APPROVED_ON, /* EXPECTED_RUNTIME, SETUP_TIME_DAYS, */
         SETUP_TIME_HOURS, SETUP_TIME_MINUTES, OPERATOR_PRESENT, INSTRUMENTS };
 
     public static final String LOCALE = "local";
@@ -127,15 +129,17 @@ public final class ELabsConstants {
 
     public static final String DURATION = "duration";
 
-    public static final String MOTIVATING_PUBLICATIONS = "motivatingPublications";
+    public static final String MOTIVATING_PUBLICATIONS =
+        "motivatingPublications";
 
     public static final String RESULTING_PUBLICATIONS = "resultingPublications";
 
     public static final String INVESTIGATOR = "investigator";
 
-    public static final String[] STUDIES_PROPERTIES = { OBJECT_ID, NAME, DESCRIPTION, CREATED_BY, CREATED_ON,
-        MODIFIED_BY, MODIFIED_ON,
-        /* STATUS, START_DATE, DURATION, */MOTIVATING_PUBLICATIONS, RESULTING_PUBLICATIONS,
+    public static final String[] STUDIES_PROPERTIES = { OBJECT_ID, NAME,
+        DESCRIPTION, CREATED_BY, CREATED_ON, MODIFIED_BY, MODIFIED_ON,
+        /* STATUS, START_DATE, DURATION, */MOTIVATING_PUBLICATIONS,
+        RESULTING_PUBLICATIONS,
     /* INVESTIGATORS, DEPOSIT_SERVICE */};
 
     public static final String EXECUTION_PLAN = "executionPlan";
@@ -148,11 +152,14 @@ public final class ELabsConstants {
 
     public static final String DURATION_MINUTES = "durationMinute";
 
-    public static final String[] INVESTIGATION_PROPERTIES = { OBJECT_ID, NAME, DESCRIPTION, DURATION_DAYS,
-        DURATION_HOURS, DURATION_MINUTES, CREATED_BY, CREATED_ON, MODIFIED_BY, MODIFIED_ON, /* STATUS, */
-        MOTIVATING_PUBLICATIONS, INVESTIGATOR, EXECUTION_PLAN, RIG_ID, DEPOSIT_SERVICE };
+    public static final String[] INVESTIGATION_PROPERTIES = { OBJECT_ID, NAME,
+        DESCRIPTION, DURATION_DAYS, DURATION_HOURS, DURATION_MINUTES,
+        CREATED_BY, CREATED_ON, MODIFIED_BY, MODIFIED_ON, /* STATUS, */
+        MOTIVATING_PUBLICATIONS, INVESTIGATOR, EXECUTION_PLAN, RIG_ID,
+        DEPOSIT_SERVICE };
 
-    public static final String[] INVESTIGATIONSERIES_PROPERTIES = { OBJECT_ID, NAME, DESCRIPTION, };
+    public static final String[] INVESTIGATIONSERIES_PROPERTIES = { OBJECT_ID,
+        NAME, DESCRIPTION, };
 
     // public static final Action INVESTIGATION_SERIES_ACTION = new Action(
     // "Add item to investigation series");
@@ -160,34 +167,40 @@ public final class ELabsConstants {
     // public static final Action[] INVESTIGATION_SERIES_ACTIONS =
     // new Action[] { INVESTIGATION_SERIES_ACTION };
 
-    public static final String ESCIDOC_SERVICE_ROOT_URI = "eSciDoc_Service_Root_URI";
+    public static final String ESCIDOC_SERVICE_ROOT_URI =
+        "eSciDoc_Service_Root_URI";
 
     public static final String SAMPLES = "Samples";
 
     // public static final String[] EXECUTION_PLAN_PROPERTIES = { SAMPLES };
-    public static final String[] EXECUTION_PLAN_PROPERTIES = { NAME, DESCRIPTION };
+    public static final String[] EXECUTION_PLAN_PROPERTIES = { NAME,
+        DESCRIPTION };
 
     public static final String DEFAULT_PROPERTIES = "default.properties";
 
-    public static final String CONTENT_MODEL_PROPERTIES = "ContentModel.properties";
+    public static final String CONTENT_MODEL_PROPERTIES =
+        "ContentModel.properties";
 
     public static final String ESCIDOC = "escidoc";
 
     // /////////////////
     // Content Model
-    public static final String ABSORPTION_SPECTRUM_CONTENT_MODEL = "Absorption Spectrum";
+    public static final String ABSORPTION_SPECTRUM_CONTENT_MODEL =
+        "Absorption Spectrum";
 
     public static final String CALIBRATION_CONTENT_MODEL = "Calibration";
 
     public static final String PL_SPECTRUM_CONTENT_MODEL = "PL-Spectrum";
 
-    public static final String ACTUAL_DEVELOPING_CONTENT_MODEL = "Actual Developing";
+    public static final String ACTUAL_DEVELOPING_CONTENT_MODEL =
+        "Actual Developing";
 
     public static final String CONFIGURATION_CONTENT_MODEL = "Configuration";
 
     public static final String INVESTIGATION_CONTENT_MODEL = "Investigation";
 
-    public static final String INVESTIGATIONSERIES_CONTENT_MODEL = "InvestigationSeries";
+    public static final String INVESTIGATIONSERIES_CONTENT_MODEL =
+        "InvestigationSeries";
 
     public static final String RECONSTRUCTION_CONTENT_MODEL = "Reconstruction";
 
@@ -199,7 +212,8 @@ public final class ELabsConstants {
 
     public static final String STUDY_CONTENT_MODEL = "Study";
 
-    public static final String HOLOGRAPHY_IMAGE_CONTENT_MODEL = "Holography Image";
+    public static final String HOLOGRAPHY_IMAGE_CONTENT_MODEL =
+        "Holography Image";
 
     public static final String EXECUTION_PLAN_CONTENT_MODEL = "Execution Plan";
 
@@ -217,31 +231,44 @@ public final class ELabsConstants {
 
     public static final String SAMPLE_CONTENT_MODEL = "Sample";
 
-    public static final Resource DEVICE_ICON = new ThemeResource("icons/32/Device.jpg");
+    public static final Resource DEVICE_ICON = new ThemeResource(
+        "icons/32/Device.jpg");
 
-    public static final Resource STUDY_ICON = new ThemeResource("icons/32/StudyIcon.png");
+    public static final Resource STUDY_ICON = new ThemeResource(
+        "icons/32/StudyIcon.png");
 
-    public static final Resource RIGS_ICON = new ThemeResource("icons/32/Rigs.png");
+    public static final Resource RIGS_ICON = new ThemeResource(
+        "icons/32/Rigs.png");
 
-    public static final Resource EXECUTE_ICON = new ThemeResource("icons/32/Execute.png");
+    public static final Resource EXECUTE_ICON = new ThemeResource(
+        "icons/32/Execute.png");
 
-    public static final Resource SEARCH_ICON = new ThemeResource("icons/32/maginfier.png");
+    public static final Resource SEARCH_ICON = new ThemeResource(
+        "icons/32/maginfier.png");
 
-    public static final Resource SEARCH_ICON_SMALL = new ThemeResource("icons/32/All_Search_LensStart_15_Hover.gif");
+    public static final Resource SEARCH_ICON_SMALL = new ThemeResource(
+        "icons/32/All_Search_LensStart_15_Hover.gif");
 
-    public static final Resource DEBUG_ICON = new ThemeResource("icons/32/debug.gif");
+    public static final Resource DEBUG_ICON = new ThemeResource(
+        "icons/32/debug.gif");
 
-    public static final Resource SETUP_ICON = new ThemeResource("icons/32/32x32-pege_setup.png");
+    public static final Resource SETUP_ICON = new ThemeResource(
+        "icons/32/32x32-pege_setup.png");
 
-    public static final Resource DETAILS_ICON = new ThemeResource("icons/32/maginfier.png");
+    public static final Resource DETAILS_ICON = new ThemeResource(
+        "icons/32/maginfier.png");
 
-    public static final Resource RIGHTS_ICON = new ThemeResource("icons/32/key.png");
+    public static final Resource RIGHTS_ICON = new ThemeResource(
+        "icons/32/key.png");
 
-    public static final Resource HISTORY_ICON = new ThemeResource("icons/32/history.png");
+    public static final Resource HISTORY_ICON = new ThemeResource(
+        "icons/32/history.png");
 
-    public static final ThemeResource RESULT_ICON = new ThemeResource("icons/32/result.jpg");
+    public static final ThemeResource RESULT_ICON = new ThemeResource(
+        "icons/32/result.jpg");
 
-    public static final ThemeResource LOGOUT_ICON = new ThemeResource("icons/32/Log-Out-icon.png");
+    public static final ThemeResource LOGOUT_ICON = new ThemeResource(
+        "icons/32/Log-Out-icon.png");
 
     public static final String DETAILS = "Details";
 
@@ -283,9 +310,11 @@ public final class ELabsConstants {
 
     public static final String USER_EMAIL_ADDRESS = "UserEMailAddress";
 
-    public static final String DEPOSIT_SERVER_ENDPOINT = "DepositServerEndpoint";
+    public static final String DEPOSIT_SERVER_ENDPOINT =
+        "DepositServerEndpoint";
 
-    public static final String INFRASTRUCTURE_ENDPOINT = "InfrastructureEndpoint";
+    public static final String INFRASTRUCTURE_ENDPOINT =
+        "InfrastructureEndpoint";
 
     public static final String E_SYNC_DAEMON_ENDPOINT = "eSyncDaemonEndpoint";
 
@@ -295,7 +324,8 @@ public final class ELabsConstants {
 
     public static final String MONITORING_DURATION = "MonitoringDuration";
 
-    public static final String UNEXPECTED_ERROR_OCCURRED = "An unexpected error occurred! See log for details.";
+    public static final String UNEXPECTED_ERROR_OCCURRED =
+        "An unexpected error occurred! See log for details.";
 
     public static final String AND = " and ";
 
@@ -327,9 +357,11 @@ public final class ELabsConstants {
 
     public static final String FAKE_EMAIL = "nobody.fool@example.org";
 
-    public static final Resource ADD_ICON = new ThemeResource("icons/32/All_Complete_PlusAdd_15_Active.gif");
+    public static final Resource ADD_ICON = new ThemeResource(
+        "icons/32/All_Complete_PlusAdd_15_Active.gif");
 
-    public static final Resource DELETE_ICON = new ThemeResource("icons/32/All_Complete_MinusRemove_15_Active.gif");
+    public static final Resource DELETE_ICON = new ThemeResource(
+        "icons/32/All_Complete_MinusRemove_15_Active.gif");
 
     public static final String ODD_LINE = "background: #FFFFFF";
 
@@ -339,21 +371,25 @@ public final class ELabsConstants {
 
     public static final String BREAD_CRUMB_STUDY = "Studies Overview";
 
-    public static final String BREAD_CRUMB_INVESTIGATION = "Investigation Overview";
+    public static final String BREAD_CRUMB_INVESTIGATION =
+        "Investigation Overview";
 
-    public static final String BREAD_CRUMB_INVESTIGATION_SERIES = "Investigation Series Overview";
+    public static final String BREAD_CRUMB_INVESTIGATION_SERIES =
+        "Investigation Series Overview";
 
     public static final String BREAD_CRUMB_INSTRUMENT = "Instrument Overview";
 
     public static final String BREAD_CRUMB_RIG = "Rig Overview";
 
-    public static final String BREAD_CRUMB_EXECUTION_PATH = "Execution Path Overview";
+    public static final String BREAD_CRUMB_EXECUTION_PATH =
+        "Execution Path Overview";
 
     public static final String BREAD_CRUMB_SETUP = "Setup Overview";
 
     public static final String BREAD_CRUMB_SEPERATOR = "|";
 
-    public static final String LAST_MODIFICATION_DATE = "Last Modification Date";
+    public static final String LAST_MODIFICATION_DATE =
+        "Last Modification Date";
 
     public static final String CREATED_DOCUMENT = "Created Document";
 
@@ -363,27 +399,32 @@ public final class ELabsConstants {
 
     public static final String EVENT_DATE = "Event Date";
 
-    public static final String COULD_NOT_UPDATE_ERROR = "Unfortunately we could not update the object in eSciDoc!";
+    public static final String COULD_NOT_UPDATE_ERROR =
+        "Unfortunately we could not update the object in eSciDoc!";
 
-    public static final String E_SCI_DOC_STORAGE_ERROR = "eSciDoc Storage Error!";
+    public static final String E_SCI_DOC_STORAGE_ERROR =
+        "eSciDoc Storage Error!";
 
-    public static final String COULD_NOT_SAVE_ERROR = "Unfortunately we could not save the object in eSciDoc!";
+    public static final String COULD_NOT_SAVE_ERROR =
+        "Unfortunately we could not save the object in eSciDoc!";
 
     public static final int SPLIT_POSITION = 270;
 
     // eLabs Constants
-    // TODO move this values to a properties file
+    // TODO will be deleted
     public static final String ELABS_DEFAULT_CONTEXT_ID = "escidoc:12004";
 
-    public static final String ELABS_DEFAULT_STUDY_CMODEL_ID = "escidoc:5001";
+    public static final String ELABS_DEFAULT_STUDY_CMODEL_ID = "escidoc:15001";
 
-    public static final String ELABS_DEFAULT_INVESTIGATION_CMODEL_ID = "escidoc:5002";
+    public static final String ELABS_DEFAULT_INVESTIGATION_CMODEL_ID =
+        "escidoc:15002";
 
-    public static final String ELABS_DEFAULT_RIG_CMODEL_ID = "escidoc:xxxx";
+    public static final String ELABS_DEFAULT_INSTR_CMODEL_ID = "escidoc:15003";
 
-    public static final String ELABS_DEFAULT_INSTR_CMODEL_ID = "escidoc:2001";
+    public static final String ELABS_DEFAULT_RIG_CMODEL_ID = "escidoc:15004";
 
-    public static final String ELABS_DEFAULT_GENERATED_ITEM_CMODEL_ID = "escidoc:xxxx";
+    public static final String ELABS_DEFAULT_GENERATED_ITEM_CMODEL_ID =
+        "escidoc:xxxx";
 
     // eLabs Item's classname
 

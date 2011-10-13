@@ -28,10 +28,27 @@
  */
 package org.escidoc.browser.elabsmodul.controller;
 
+/**
+ * Abstract class of the labsControllers.
+ */
 public abstract class AbstractELabsController {
 
-    protected Class controlledBeanClass;
+    private Class<?> controlledBeanClass;
 
+    /**
+     * Constructor.
+     * 
+     * @param controlledClass
+     *            Class object of the bean class
+     */
+    public AbstractELabsController(final Class<?> controlledClass) {
+        this.controlledBeanClass = controlledClass;
+    }
+
+    /**
+     * 
+     * @return controlledClass object
+     */
     protected Class<?> getControlledBeanClass() {
         return controlledBeanClass;
     }
