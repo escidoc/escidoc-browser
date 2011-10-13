@@ -40,31 +40,43 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import com.google.common.base.Preconditions;
 
 import de.escidoc.core.client.ContentModelHandlerClient;
+import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.EscidocException;
 import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.client.exceptions.TransportException;
 import de.escidoc.core.client.interfaces.ContentModelHandlerClientInterface;
 import de.escidoc.core.resources.Resource;
+import de.escidoc.core.resources.cmm.ContentModel;
 
 public class ContentModelRepository {
     private final ContentModelHandlerClientInterface client;
 
-    public ContentModelRepository(final EscidocServiceLocation escidocServiceLocation) throws MalformedURLException {
-        Preconditions
-            .checkNotNull(escidocServiceLocation, "escidocServiceLocation is null: %s", escidocServiceLocation);
-        client = new ContentModelHandlerClient(new URL(escidocServiceLocation.getEscidocUri()));
+    public ContentModelRepository(
+        final EscidocServiceLocation escidocServiceLocation)
+        throws MalformedURLException {
+        Preconditions.checkNotNull(escidocServiceLocation,
+            "escidocServiceLocation is null: %s", escidocServiceLocation);
+        client =
+            new ContentModelHandlerClient(new URL(
+                escidocServiceLocation.getEscidocUri()));
     }
 
-    public Collection<? extends Resource> findPublicOrReleasedResources() throws EscidocException,
-        InternalClientException, TransportException {
-        final SearchRetrieveRequestType request = new SearchRetrieveRequestType();
+    public Collection<? extends Resource> findPublicOrReleasedResources()
+        throws EscidocException, InternalClientException, TransportException {
+        final SearchRetrieveRequestType request =
+            new SearchRetrieveRequestType();
         request.setMaximumRecords(new NonNegativeInteger("1000"));
         return client.retrieveContentModelsAsList(request);
     }
 
     protected SearchRetrieveRequestType userInputToFilter(final String query) {
-        final SearchRetrieveRequestType filter = new SearchRetrieveRequestType();
+        final SearchRetrieveRequestType filter =
+            new SearchRetrieveRequestType();
         filter.setQuery(query);
         return filter;
+    }
+
+    public ContentModel findById(String id) throws EscidocClientException {
+        return client.retrieve(id);
     }
 }

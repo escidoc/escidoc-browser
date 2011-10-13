@@ -58,6 +58,8 @@ import org.escidoc.browser.ui.maincontent.ContainerView;
 import org.escidoc.browser.ui.maincontent.ContextView;
 import org.escidoc.browser.ui.maincontent.ItemView;
 import org.escidoc.browser.ui.maincontent.SearchAdvancedView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
@@ -87,6 +89,8 @@ public class Router extends VerticalLayout {
     private String layoutname = "SimpleLayout.java";
 
     private Properties browserProperties;
+
+    private static final Logger LOG = LoggerFactory.getLogger(ItemView.class);
 
     /**
      * The mainWindow should be revised whether we need it or not the appHeight
@@ -272,17 +276,21 @@ public class Router extends VerticalLayout {
     // }
 
     @Deprecated
-    public Component show(ResourceModel clickedResource)
+    public void show(ResourceModel clickedResource)
         throws EscidocClientException {
         if (ContextModel.isContext(clickedResource)) {
-            return new ContextView(serviceLocation, this, tryToFindResource(
-                repositories.context(), clickedResource), mainWindow,
-                currentUser, repositories);
+            openTab(
+                new ContextView(serviceLocation, this, tryToFindResource(
+                    repositories.context(), clickedResource), mainWindow,
+                    currentUser, repositories),
+                tryToFindResource(repositories.context(), clickedResource)
+                    .getName());
         }
         else if (ContainerModel.isContainer(clickedResource)) {
-            return new ContainerView(serviceLocation, this, tryToFindResource(
-                repositories.container(), clickedResource), mainWindow,
-                currentUser, repositories);
+            openTab(
+                new ContainerView(serviceLocation, this, tryToFindResource(
+                    repositories.container(), clickedResource), mainWindow,
+                    currentUser, repositories), "HardCodedName");
 
         }
         else if (ItemModel.isItem(clickedResource)) {
@@ -292,45 +300,54 @@ public class Router extends VerticalLayout {
                 (ItemProxy) tryToFindResource(repositories.item(),
                     clickedResource);
 
-            final ContentModel contentModel =
-                (ContentModel) itemProxy.getContentModel();
+            ContentModel contentModel =
+                repositories.contentModel().findById(
+                    itemProxy.getContentModel().getObjid());
             final String description =
                 contentModel.getProperties().getDescription();
-            Pattern controllerIdPattern =
-                Pattern.compile("org.escidoc.browser.Controller=([^;])");
-            Matcher controllerIdMatcher =
-                controllerIdPattern.matcher(description);
-            if (controllerIdMatcher.find()) {
-                controllerId = controllerIdMatcher.group(1);
+            LOG.debug("Description is" + description);
+            if (description != null) {
+                Pattern controllerIdPattern =
+                    Pattern.compile("org.escidoc.browser.Controller=([^;])");
+                Matcher controllerIdMatcher =
+                    controllerIdPattern.matcher(description);
+                if (controllerIdMatcher.find()) {
+                    controllerId = controllerIdMatcher.group(1);
+                }
+
+                if (controllerId.equals("org.escidoc.browser.Item")) {
+                    openTab(new ItemView(serviceLocation, repositories, this,
+                        itemProxy, mainWindow, currentUser),
+                        itemProxy.getName());
+                }
+
+                Controller controller = null;
+                try {
+                    String controllerClassName =
+                        browserProperties.getProperty(controllerId);
+                    Class controllerClass = Class.forName(controllerClassName);
+                    controller = (Controller) controllerClass.newInstance();
+                }
+                catch (ClassNotFoundException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                catch (InstantiationException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                catch (IllegalAccessException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                controller.init(itemProxy);
+                controller.showView(this.layout);
+            }
+            else {
+                openTab(new ItemView(serviceLocation, repositories, this,
+                    itemProxy, mainWindow, currentUser), itemProxy.getName());
             }
 
-            if (controllerId.equals("org.escidoc.browser.Item")) {
-                return new ItemView(serviceLocation, repositories, this,
-                    itemProxy, mainWindow, currentUser);
-            }
-
-            Controller controller = null;
-            try {
-                String controllerClassName =
-                    browserProperties.getProperty(controllerId);
-                Class controllerClass = Class.forName(controllerClassName);
-                controller = (Controller) controllerClass.newInstance();
-            }
-            catch (ClassNotFoundException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            catch (InstantiationException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            catch (IllegalAccessException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            controller.init(itemProxy);
-            controller.showView(this.layout);
-            return null;
         }
         else {
             throw new UnsupportedOperationException("Not yet implemented");

@@ -44,7 +44,6 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Preconditions;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
@@ -106,7 +105,7 @@ public class TreeClickListener implements ItemClickListener {
                 // clickedResource);
             }
             else {
-                openInNewTab(createView(clickedResource), clickedResource);
+                createView(clickedResource);
             }
         }
         // catch (final ContentModelNotFoundException e) {
@@ -177,16 +176,16 @@ public class TreeClickListener implements ItemClickListener {
     // }
     // }
 
-    private Component createView(final ResourceModel clickedResource)
+    private void createView(final ResourceModel clickedResource)
         throws EscidocClientException {
-        Component view = router.show(clickedResource);
-        return view;
+        router.show(clickedResource);
+        // return view;
     }
 
-    private void openInNewTab(
-        final Component component, final ResourceModel clickedResource) {
-        router.openTab(component, clickedResource.getName());
-    }
+    // private void openInNewTab(
+    // final Component component, final ResourceModel clickedResource) {
+    // router.openTab(component, clickedResource.getName());
+    // }
 
     private void showErrorMessageToUser(
         final ResourceModel hasChildrenResource, final EscidocClientException e) {
