@@ -28,6 +28,8 @@
  */
 package org.escidoc.browser.elabsmodul.controller;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.TransformerException;
 
 import org.escidoc.browser.elabsmodul.controller.utils.DOM2String;
@@ -37,17 +39,22 @@ import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.ResourceProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class InstrumentController extends AbstractELabsController {
+/**
+ * 
+ */
+public final class InstrumentController {
 
     private static Object syncObject = new Object();
 
     private static InstrumentController singleton = null;
 
-    private static Logger LOG = LoggerFactory.getLogger(InstrumentController.class);
+    private static Logger LOG = LoggerFactory
+        .getLogger(InstrumentController.class);
 
     public static InstrumentController getInstance() {
         if (singleton == null) {
@@ -60,36 +67,48 @@ public class InstrumentController extends AbstractELabsController {
         return singleton;
     }
 
-    private InstrumentController() {
-        controlledBeanClass = InstrumentBean.class;
-    }
+    /**
+     * 
+     * @param resourceProxy
+     *            resource ref
+     * @return controlled bean
+     * @throws EscidocBrowserException
+     *             exception
+     */
+    public synchronized InstrumentBean loadBeanData(
+        final ResourceProxy resourceProxy) throws EscidocBrowserException {
 
-    public synchronized InstrumentBean loadBeanData(final ResourceProxy resourceProxy) throws EscidocBrowserException {
         if (resourceProxy == null || !(resourceProxy instanceof ItemProxy)) {
             throw new EscidocBrowserException("NOT an ItemProxy", null);
         }
 
-        final ItemProxy itemProxy = (ItemProxy) resourceProxy;
-        final InstrumentBean instrumentBean = new InstrumentBean();
+        ItemProxy itemProxy = (ItemProxy) resourceProxy;
+        InstrumentBean instrumentBean = new InstrumentBean();
 
         try {
-            final Element e = itemProxy.getMedataRecords().get("escidoc").getContent();
+            Element e =
+                itemProxy.getMedataRecords().get("escidoc").getContent();
             final String xml = DOM2String.convertDom2String(e);
 
-            final NodeList nodeList = e.getChildNodes();
+            NodeList nodeList = e.getChildNodes();
             for (int i = 0; i < nodeList.getLength(); i++) {
-                final Node node = nodeList.item(i);
-                final String nodeName = node.getNodeName();
+                Node node = nodeList.item(i);
+                String nodeName = node.getNodeName();
 
                 if (nodeName.equals("dc:title")) {
-                    instrumentBean.setName((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
+                    instrumentBean
+                        .setName((node.getFirstChild() != null) ? node
+                            .getFirstChild().getNodeValue() : null);
                 }
+
                 else if (nodeName.equals("dc:description")) {
                     instrumentBean
-                        .setDescription((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
+                        .setDescription((node.getFirstChild() != null) ? node
+                            .getFirstChild().getNodeValue() : null);
                 }
+
                 else if (nodeName.equals("el:requires-configuration")) {
-                    final String value = node.getFirstChild().getNodeValue();
+                    String value = node.getFirstChild().getNodeValue();
                     if (value.equals("no")) {
                         instrumentBean.setConfiguration(false);
                     }
@@ -99,7 +118,7 @@ public class InstrumentController extends AbstractELabsController {
 
                 }
                 else if (nodeName.equals("el:requires-calibration")) {
-                    final String value = node.getFirstChild().getNodeValue();
+                    String value = node.getFirstChild().getNodeValue();
                     if (value.equals("no")) {
                         instrumentBean.setCalibration(false);
                     }
@@ -109,31 +128,155 @@ public class InstrumentController extends AbstractELabsController {
                 }
                 else if (nodeName.equals("el:esync-endpoint")) {
                     instrumentBean
-                        .setESyncDaemon((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
+                        .setESyncDaemon((node.getFirstChild() != null) ? node
+                            .getFirstChild().getNodeValue() : null);
                 }
                 else if (nodeName.equals("el:monitored-folder")) {
                     instrumentBean
-                        .setFolder((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
+                        .setFolder((node.getFirstChild() != null) ? node
+                            .getFirstChild().getNodeValue() : null);
                 }
                 else if (nodeName.equals("el:result-mime-type")) {
                     instrumentBean
-                        .setFileFormat((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
+                        .setFileFormat((node.getFirstChild() != null) ? node
+                            .getFirstChild().getNodeValue() : null);
                 }
-                else if (nodeName.equals("el:responsible-person")) {
-                    instrumentBean.setDeviceSupervisor((node.getFirstChild() != null) ? node
-                        .getFirstChild().getNodeValue() : null);
+                else if (nodeName.equals("el:responsible-person")
+                    && node.getAttributes().getNamedItem("rdf:resource") != null) {
+                    instrumentBean.setDeviceSupervisor(node
+                        .getAttributes().getNamedItem("rdf:resource")
+                        .getNodeValue());
                 }
-                else if (nodeName.equals("el:institution")) {
-                    instrumentBean
-                        .setInstitute((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
+                else if (nodeName.equals("el:institution")
+                    && node.getAttributes().getNamedItem("rdf:resource") != null) {
+                    instrumentBean.setInstitute(node
+                        .getAttributes().getNamedItem("rdf:resource")
+                        .getNodeValue());
                 }
+
             }
             LOG.debug(xml);
         }
-        catch (final TransformerException e) {
+        catch (TransformerException e) {
             LOG.error(e.getLocalizedMessage());
         }
 
         return instrumentBean;
+    }
+
+    public synchronized static Element createDOMElementByBeanModel(
+        InstrumentBean instrumentBean) {
+
+        final DocumentBuilderFactory factory =
+            DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        factory.setCoalescing(true);
+        factory.setValidating(true);
+        DocumentBuilder builder;
+        try {
+            builder = factory.newDocumentBuilder();
+            Document doc = builder.newDocument();
+
+            Element instrument =
+                doc.createElementNS(
+                    "http://escidoc.org/ontologies/bw-elabs/re#", "Instrument");
+            instrument.setPrefix("el");
+
+            // e.g. <dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">FRS
+            // Instrument 01</dc:title>
+            final Element title =
+                doc
+                    .createElementNS("http://purl.org/dc/elements/1.1/",
+                        "title");
+            title.setPrefix("dc");
+            title.setTextContent(instrumentBean.getName());
+            instrument.appendChild(title);
+
+            // e.g. <dc:description
+            // xmlns:dc="http://purl.org/dc/elements/1.1/">A
+            // description.</dc:description>
+            final Element description =
+                doc.createElementNS("http://purl.org/dc/elements/1.1/",
+                    "description");
+            description.setPrefix("dc");
+            description.setTextContent(instrumentBean.getDescription());
+            instrument.appendChild(description);
+
+            // <el:identity-number></el:identity-number>
+            instrument =
+                createWithoutNamespace(doc, instrument, "identity-number", "");
+
+            // <el:requires-configuration>no</el:requires-configuration>
+
+            instrument =
+                createWithoutNamespace(doc, instrument,
+                    "requires-configuration",
+                    booleanToHumanReadable(instrumentBean.getConfiguration()));
+
+            // <el:requires-calibration>no</el:requires-calibration>
+            instrument =
+                createWithoutNamespace(doc, instrument, "requires-calibration",
+                    booleanToHumanReadable(instrumentBean.getConfiguration()));
+
+            // <el:esync-endpoint>http://my.es/ync/endpoint</el:esync-endpoint>
+            instrument =
+                createWithoutNamespace(doc, instrument, "esync-endpoint",
+                    booleanToHumanReadable(instrumentBean.getCalibration()));
+
+            // <el:monitored-folder>C:\tmp</el:monitored-folder>
+            instrument =
+                createWithoutNamespace(doc, instrument, "monitored-folder",
+                    instrumentBean.getESyncDaemon());
+
+            // <el:result-mime-type>application/octet-stream</el:result-mime-type>
+            instrument =
+                createWithoutNamespace(doc, instrument, "result-mime-type",
+                    instrumentBean.getFileFormat());
+
+            // <el:responsible-person
+            // xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+            // rdf:resource="escidoc:42"></el:responsible-person>
+            final Element responsiblePerson =
+                doc.createElementNS(
+                    "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+                    "responsible-person");
+            responsiblePerson.setPrefix("el");
+            responsiblePerson.setAttribute("rdf:resource",
+                instrumentBean.getDeviceSupervisor());
+            instrument.appendChild(responsiblePerson);
+
+            // <el:institution
+            // xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+            // rdf:resource="escidoc:1001"></el:institution>
+            final Element institution =
+                doc.createElementNS(
+                    "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+                    "institution");
+            institution.setPrefix("el");
+            institution.setAttribute("rdf:resource",
+                instrumentBean.getInstitute());
+            instrument.appendChild(institution);
+
+            return instrument;
+
+        }
+        catch (Throwable e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    private static String booleanToHumanReadable(boolean value) {
+        return (value) ? "yes" : "no";
+    }
+
+    private static Element createWithoutNamespace(
+        Document doc, Element instrument, String attributeValue, String value) {
+        final Element element = doc.createElement("el:" + attributeValue);
+        element.setTextContent(value);
+        instrument.appendChild(element);
+        return instrument;
     }
 }

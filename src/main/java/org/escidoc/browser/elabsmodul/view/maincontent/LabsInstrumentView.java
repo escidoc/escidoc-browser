@@ -61,13 +61,14 @@ public final class LabsInstrumentView extends VerticalLayout {
 
     private static final String LAST_MODIFIED_BY = "Last modification by ";
 
-    private static final Logger LOG = LoggerFactory.getLogger(LabsInstrumentView.class);
+    private static final Logger LOG = LoggerFactory
+        .getLogger(LabsInstrumentView.class);
 
     private final CssLayout cssLayout = new CssLayout();
 
     private final CurrentUser currentUser;
 
-    private final Router mainSite;
+    private final Router router;
 
     private final int appHeight;
 
@@ -81,35 +82,41 @@ public final class LabsInstrumentView extends VerticalLayout {
 
     private LabsInstrumentPanel instrumentPanel = null;
 
-    public LabsInstrumentView(final EscidocServiceLocation serviceLocation, final Repositories repositories,
-        final Router mainSite, final ResourceProxy resourceProxy, final Window mainWindow,
+    public LabsInstrumentView(final EscidocServiceLocation serviceLocation,
+        final Repositories repositories, final Router router,
+        final ResourceProxy resourceProxy, final Window mainWindow,
         final CurrentUser currentUser) {
 
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null.");
-        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
-        Preconditions.checkNotNull(mainSite, "mainSite is null.");
+        Preconditions.checkNotNull(repositories, "repositories is null: %s",
+            repositories);
+        Preconditions.checkNotNull(router, "mainSite is null.");
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null.");
         Preconditions.checkNotNull(mainWindow, "mainWindow is null.");
 
         this.resourceProxy = (ItemProxyImpl) resourceProxy;
         this.repositories = repositories;
         this.mainWindow = mainWindow;
-        this.mainSite = mainSite;
+        this.router = router;
         this.serviceLocation = serviceLocation;
-        appHeight = mainSite.getApplicationHeight();
+        appHeight = router.getApplicationHeight();
         this.currentUser = currentUser;
+
+        // test
 
         InstrumentBean bean = null;
         try {
-            // The responsibility of the controller currently only convert ResourceProxy to Bean
-            // to add: a method to convert back Bean to ResourceProxy for storing it in eSciDoc Infrastructure
-            // Better name: BeanModelConverter
-            bean = InstrumentController.getInstance().loadBeanData(this.resourceProxy);
+            bean =
+                InstrumentController.getInstance().loadBeanData(
+                    this.resourceProxy);
         }
-        catch (final EscidocBrowserException e) {
+        catch (EscidocBrowserException e) {
             LOG.error(e.getLocalizedMessage());
+            bean = null;
         }
-        instrumentPanel = new LabsInstrumentPanel(this.mainWindow, bean);
+        this.instrumentPanel =
+            new LabsInstrumentPanel(this.mainWindow, bean, resourceProxy,
+                repositories.item());
 
         init();
     }
@@ -120,7 +127,7 @@ public final class LabsInstrumentView extends VerticalLayout {
         bindNametoHeader();
         bindProperties();
         bindHrRuler();
-        buildContentCell(instrumentPanel);
+        buildContentCell(this.instrumentPanel);
         addComponent(cssLayout);
     }
 
@@ -137,26 +144,25 @@ public final class LabsInstrumentView extends VerticalLayout {
     }
 
     private void bindNametoHeader() {
-        final Label headerContext = new Label(ViewConstants.RESOURCE_NAME + resourceProxy.getName());
+        final Label headerContext =
+            new Label(ViewConstants.RESOURCE_NAME + resourceProxy.getName());
         headerContext.setDescription("header");
         headerContext.setStyleName("h2 fullwidth");
         cssLayout.addComponent(headerContext);
     }
 
     private void bindProperties() {
-
         final Panel pnlPropertiesLeft = buildLeftPropertiesPnl();
         final Panel pnlPropertiesRight = buildRightPnlProperties();
 
         final Label descMetadata1 = new Label("ID: " + resourceProxy.getId());
         final Label descMetadata2 =
-            new Label(LAST_MODIFIED_BY + " " + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(),
-                Label.CONTENT_XHTML);
+            new Label(LAST_MODIFIED_BY + " " + resourceProxy.getModifier()
+                + " on " + resourceProxy.getModifiedOn(), Label.CONTENT_XHTML);
         pnlPropertiesLeft.addComponent(descMetadata1);
         pnlPropertiesRight.addComponent(descMetadata2);
         cssLayout.addComponent(pnlPropertiesLeft);
         cssLayout.addComponent(pnlPropertiesRight);
-
     }
 
     private Panel buildLeftPropertiesPnl() {
@@ -187,7 +193,8 @@ public final class LabsInstrumentView extends VerticalLayout {
 
     @SuppressWarnings("unused")
     private void createBreadcrumbp() {
-        new BreadCrumbMenu(cssLayout, resourceProxy, mainWindow, serviceLocation, repositories);
+        new BreadCrumbMenu(cssLayout, resourceProxy, mainWindow,
+            serviceLocation, repositories);
     }
 
     private void buildLayout() {
@@ -197,14 +204,16 @@ public final class LabsInstrumentView extends VerticalLayout {
         cssLayout.setHeight("100%");
 
         final int innerelementsHeight = appHeight - 420;
-        final int accordionHeight = innerelementsHeight - 20;
+        int accordionHeight = innerelementsHeight - 20;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((resourceProxy == null) ? 0 : resourceProxy.hashCode());
+        result =
+            prime * result
+                + ((resourceProxy == null) ? 0 : resourceProxy.hashCode());
         return result;
     }
 
