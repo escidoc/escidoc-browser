@@ -30,6 +30,11 @@
 			<artifactId>pagedtable</artifactId>
 			<version>0.6.2</version>
 		</dependency>
+		<dependency>
+			<groupId>org.vaadin.addons</groupId>
+			<artifactId>contextmenu</artifactId>
+			<version>3.1.0</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.vaadin.addons</groupId>
