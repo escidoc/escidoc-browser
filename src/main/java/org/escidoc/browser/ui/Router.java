@@ -258,14 +258,12 @@ public class Router extends VerticalLayout {
     public void show(final ResourceModel clickedResource) throws EscidocClientException {
         if (ContextModel.isContext(clickedResource)) {
             openTab(new ContextView(serviceLocation, this, tryToFindResource(repositories.context(), clickedResource),
-                mainWindow, currentUser, repositories), tryToFindResource(repositories.context(), clickedResource)
-                .getName());
+                mainWindow, currentUser, repositories), clickedResource.getName());
         }
         else if (ContainerModel.isContainer(clickedResource)) {
             openTab(
                 new ContainerView(serviceLocation, this, tryToFindResource(repositories.container(), clickedResource),
-                    mainWindow, currentUser, repositories), "HardCodedName");
-
+                    mainWindow, currentUser, repositories), clickedResource.getName());
         }
         else if (ItemModel.isItem(clickedResource)) {
             String controllerId = "org.escidoc.browser.Item";
