@@ -59,15 +59,13 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 
 /**
- * This is the Header of the page. Main Search comes here, also the login
- * ability
+ * This is the Header of the page. Main Search comes here, also the login ability
  * 
  * @author ARB
  * 
  */
 @SuppressWarnings("serial")
-public class HeaderContainer extends VerticalLayout
-    implements UserChangeListener, PopupVisibilityListener {
+public class HeaderContainer extends VerticalLayout implements UserChangeListener, PopupVisibilityListener {
 
     // The HTML file can be found at myTheme/layouts/header.html
     private final CustomLayout custom = new CustomLayout(ViewConstants.HEADER);
@@ -89,15 +87,12 @@ public class HeaderContainer extends VerticalLayout
     private final Repositories repositories;
 
     public HeaderContainer(final Router mainSite, final BrowserApplication app,
-        final EscidocServiceLocation serviceLocation, final CurrentUser user,
-        final Repositories repositories) {
+        final EscidocServiceLocation serviceLocation, final CurrentUser user, final Repositories repositories) {
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
         Preconditions.checkNotNull(app, "app is null: %s", app);
-        Preconditions.checkNotNull(serviceLocation,
-            "serviceLocation is null: %s", serviceLocation);
+        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(user, "user is null: %s", user);
-        Preconditions.checkNotNull(repositories, "repositories is null: %s",
-            repositories);
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
 
         this.app = app;
         this.serviceLocation = serviceLocation;
@@ -118,9 +113,8 @@ public class HeaderContainer extends VerticalLayout
     }
 
     public void setUser(final CurrentUser user) {
-        custom.addComponent(
-            new Label("<b>" + ViewConstants.CURRENT_USER + user.getLoginName()
-                + "</b>", Label.CONTENT_XHTML), "login-name");
+        custom.addComponent(new Label("<b>" + ViewConstants.CURRENT_USER + user.getLoginName() + "</b>",
+            Label.CONTENT_XHTML), "login-name");
 
         if (user.isGuest()) {
             custom.removeComponent(logout);
@@ -182,9 +176,8 @@ public class HeaderContainer extends VerticalLayout
     }
 
     /**
-     * Handle the Login Event! At the moment a new window is opened to escidev6
-     * for login TODO consider including the window of login from the remote
-     * server in a iframe within the MainContent Window
+     * Handle the Login Event! At the moment a new window is opened to escidev6 for login TODO consider including the
+     * window of login from the remote server in a iframe within the MainContent Window
      * 
      * @param event
      */
@@ -196,20 +189,16 @@ public class HeaderContainer extends VerticalLayout
         final String searchString = (String) searchField.getValue();
         if (validate(searchString)) {
             final SearchResultsView srchRes =
-                new SearchResultsView(router, searchString, serviceLocation,
-                    repositories, user);
-            router.openTab(srchRes, "Search results for: "
-                + (String) searchField.getValue());
+                new SearchResultsView(router, searchString, serviceLocation, repositories, user);
+            router.openTab(srchRes, "Search results for: " + (String) searchField.getValue());
         }
         else {
-            searchField.setComponentError(new UserError(
-                "Must be letters and numbers"));
+            searchField.setComponentError(new UserError("Must be letters and numbers"));
         }
     }
 
     /**
-     * Handle Search Query Validation Check string length Any possible
-     * injections
+     * Handle Search Query Validation Check string length Any possible injections
      * 
      * @param searchString
      * @return boolean
@@ -231,9 +220,8 @@ public class HeaderContainer extends VerticalLayout
             return;
         }
         custom.removeAllComponents();
-        custom.addComponent(
-            new Label("<b>" + ViewConstants.CURRENT_USER + user.getLoginName()
-                + "</b>", Label.CONTENT_XHTML), "login-name");
+        custom.addComponent(new Label("<b>" + ViewConstants.CURRENT_USER + user.getLoginName() + "</b>",
+            Label.CONTENT_XHTML), "login-name");
         if (((CurrentUser) object).isGuest()) {
             custom.addComponent(login, "login");
         }

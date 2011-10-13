@@ -61,16 +61,12 @@ public class SimpleSearch extends VerticalLayout {
 
     private final CurrentUser currentUser;
 
-    public SimpleSearch(final Router mainSite,
-        final EscidocServiceLocation serviceLocation,
+    public SimpleSearch(final Router mainSite, final EscidocServiceLocation serviceLocation,
         final Repositories repositories, final CurrentUser currentUser) {
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
-        Preconditions.checkNotNull(serviceLocation,
-            "serviceLocation is null: %s", serviceLocation);
-        Preconditions.checkNotNull(repositories, "repositories is null: %s",
-            repositories);
-        Preconditions.checkNotNull(currentUser, "currentUser is null: %s",
-            currentUser);
+        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
         this.mainSite = mainSite;
         this.serviceLocation = serviceLocation;
         this.repositories = repositories;
@@ -104,30 +100,26 @@ public class SimpleSearch extends VerticalLayout {
     }
 
     /**
-     * Handle the Search Event! At the moment a new window is opened to escidev6
-     * for login TODO consider including the window of login from the remote
-     * server in a iframe within the MainContent Window
+     * Handle the Search Event! At the moment a new window is opened to escidev6 for login TODO consider including the
+     * window of login from the remote server in a iframe within the MainContent Window
      * 
      * @param event
      */
     public void onClick(final Button.ClickEvent event) {
         final SearchResultsView smpSearch =
-            new SearchResultsView(mainSite, "null", serviceLocation,
-                repositories, currentUser);
+            new SearchResultsView(mainSite, "null", serviceLocation, repositories, currentUser);
         mainSite.openTab(smpSearch, "Search Results");
 
     }
 
     /**
-     * Handle the Advanced Search Event! At the moment a new window is opened to
-     * escidev6 for login TODO consider including the window of login from the
-     * remote server in a iframe within the MainContent Window
+     * Handle the Advanced Search Event! At the moment a new window is opened to escidev6 for login TODO consider
+     * including the window of login from the remote server in a iframe within the MainContent Window
      * 
      * @param event
      */
     public void onClickAdvSearch(final Button.ClickEvent event) {
-        final SearchAdvancedView advSearch =
-            new SearchAdvancedView(mainSite, serviceLocation);
+        final SearchAdvancedView advSearch = new SearchAdvancedView(mainSite, serviceLocation);
         mainSite.openTab(advSearch, "Search Results");
     }
 }

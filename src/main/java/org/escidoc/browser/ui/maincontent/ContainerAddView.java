@@ -28,11 +28,16 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.ContainerBuilder;
+import org.escidoc.browser.model.internal.ResourceDisplay;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.AddContainerListener;
@@ -41,6 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
+import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -133,10 +139,24 @@ public class ContainerAddView {
         Preconditions.checkNotNull(repositories.contentModel(), "ContentModelRepository is null: %s",
             repositories.contentModel());
         contentModelSelect.setRequired(true);
-        for (final Resource resource : repositories.contentModel().findPublicOrReleasedResources()) {
-            contentModelSelect.addItem(resource.getObjid());
-        }
+        bindData();
         addContainerForm.addComponent(contentModelSelect);
+    }
+
+    private void bindData() throws EscidocException, InternalClientException, TransportException {
+        final Collection<? extends Resource> contentModelList =
+            repositories.contentModel().findPublicOrReleasedResources();
+        final List<ResourceDisplay> resourceDisplayList = new ArrayList<ResourceDisplay>(contentModelList.size());
+        for (final Resource resource : contentModelList) {
+            resourceDisplayList.add(new ResourceDisplay(resource.getObjid(), resource.getXLinkTitle() + " ("
+                + resource.getObjid() + ")"));
+        }
+        final BeanItemContainer<ResourceDisplay> resourceDisplayContainer =
+            new BeanItemContainer<ResourceDisplay>(ResourceDisplay.class, resourceDisplayList);
+        resourceDisplayContainer.addNestedContainerProperty("objectId");
+        resourceDisplayContainer.addNestedContainerProperty("title");
+        contentModelSelect.setContainerDataSource(resourceDisplayContainer);
+        contentModelSelect.setItemCaptionPropertyId("title");
     }
 
     @SuppressWarnings("serial")
@@ -247,7 +267,11 @@ public class ContainerAddView {
     }
 
     public String getContentModelId() {
-        return (String) contentModelSelect.getValue();
+        final Object value = contentModelSelect.getValue();
+        if (value instanceof ResourceDisplay) {
+            return ((ResourceDisplay) value).getObjectId();
+        }
+        return AppConstants.EMPTY_STRING;
     }
 
     public String getContainerName() {

@@ -87,18 +87,18 @@ public final class InstrumentController extends Controller {
             throw new EscidocBrowserException("NOT an ItemProxy", null);
         }
 
-        ItemProxy itemProxy = (ItemProxy) resourceProxy;
-        InstrumentBean instrumentBean = new InstrumentBean();
+        final ItemProxy itemProxy = (ItemProxy) resourceProxy;
+        final InstrumentBean instrumentBean = new InstrumentBean();
 
         try {
-            Element e =
+            final Element e =
                 itemProxy.getMedataRecords().get("escidoc").getContent();
             final String xml = DOM2String.convertDom2String(e);
 
-            NodeList nodeList = e.getChildNodes();
+            final NodeList nodeList = e.getChildNodes();
             for (int i = 0; i < nodeList.getLength(); i++) {
-                Node node = nodeList.item(i);
-                String nodeName = node.getNodeName();
+                final Node node = nodeList.item(i);
+                final String nodeName = node.getNodeName();
 
                 if (nodeName.equals("dc:title")) {
                     instrumentBean
@@ -113,7 +113,7 @@ public final class InstrumentController extends Controller {
                 }
 
                 else if (nodeName.equals("el:requires-configuration")) {
-                    String value = node.getFirstChild().getNodeValue();
+                    final String value = node.getFirstChild().getNodeValue();
                     if (value.equals("no")) {
                         instrumentBean.setConfiguration(false);
                     }
@@ -123,7 +123,7 @@ public final class InstrumentController extends Controller {
 
                 }
                 else if (nodeName.equals("el:requires-calibration")) {
-                    String value = node.getFirstChild().getNodeValue();
+                    final String value = node.getFirstChild().getNodeValue();
                     if (value.equals("no")) {
                         instrumentBean.setCalibration(false);
                     }
@@ -148,7 +148,9 @@ public final class InstrumentController extends Controller {
                 }
                 else if (nodeName.equals("el:responsible-person")
                     && node.getAttributes().getNamedItem("rdf:resource") != null) {
-
+                    instrumentBean.setDeviceSupervisor(node
+                        .getAttributes().getNamedItem("rdf:resource")
+                        .getNodeValue());
                 }
                 else if (nodeName.equals("el:institution")
                     && node.getAttributes().getNamedItem("rdf:resource") != null) {
@@ -160,7 +162,7 @@ public final class InstrumentController extends Controller {
             }
             LOG.debug(xml);
         }
-        catch (TransformerException e) {
+        catch (final TransformerException e) {
             LOG.error(e.getLocalizedMessage());
         }
 
@@ -168,7 +170,7 @@ public final class InstrumentController extends Controller {
     }
 
     public synchronized static Element createDOMElementByBeanModel(
-        InstrumentBean instrumentBean) {
+        final InstrumentBean instrumentBean) {
 
         final DocumentBuilderFactory factory =
             DocumentBuilderFactory.newInstance();
@@ -178,7 +180,7 @@ public final class InstrumentController extends Controller {
         DocumentBuilder builder;
         try {
             builder = factory.newDocumentBuilder();
-            Document doc = builder.newDocument();
+            final Document doc = builder.newDocument();
 
             Element instrument =
                 doc.createElementNS(
@@ -206,12 +208,10 @@ public final class InstrumentController extends Controller {
             instrument.appendChild(description);
 
             // <el:identity-number></el:identity-number>
-
             instrument =
                 createWithoutNamespace(doc, instrument, "identity-number", "");
 
             // <el:requires-configuration>no</el:requires-configuration>
-
             instrument =
                 createWithoutNamespace(doc, instrument,
                     "requires-configuration",
@@ -285,7 +285,7 @@ public final class InstrumentController extends Controller {
             return instrument;
 
         }
-        catch (Throwable e) {
+        catch (final Throwable e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
@@ -293,7 +293,7 @@ public final class InstrumentController extends Controller {
         return null;
     }
 
-    private static String booleanToHumanReadable(boolean value) {
+    private static String booleanToHumanReadable(final boolean value) {
         return (value) ? "yes" : "no";
     }
 

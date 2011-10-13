@@ -83,7 +83,7 @@ public class TreeClickListener implements ItemClickListener {
 
         this.repositories = repositories;
         this.mainWindow = mainWindow;
-        this.router = mainSite;
+        router = mainSite;
         this.serviceLocation = serviceLocation;
         this.currentUser = currentUser;
     }
@@ -96,22 +96,17 @@ public class TreeClickListener implements ItemClickListener {
     private void openClickedResourceInNewTab(final ResourceModel clickedResource) {
         try {
             // TODO in new architecture, we do not decide based on Context but
-            // based on Content Model linked by
-            // the Resource.
-            if (findContextId(clickedResource)
-                .equals(
-                    org.escidoc.browser.elabsmodul.constants.ELabsConstants.ELABS_DEFAULT_CONTEXT_ID)) {
-                openInNewTab(createBWeLabsView(clickedResource),
-                    clickedResource);
-            }
-            else {
-                createView(clickedResource);
-            }
+            // based on Content Model linked by the Resource.
+            // if (findContextId(clickedResource).equals(
+            // org.escidoc.browser.elabsmodul.constants.ELabsConstants.ELABS_DEFAULT_CONTEXT_ID))
+            // {
+            // openInNewTab(createBWeLabsView(clickedResource),
+            // clickedResource);
+            // }
+            // else {
+            createView(clickedResource);
+            // }
         }
-        // catch (final ContentModelNotFoundException e) {
-        // LOG.error(e.getMessage());
-        // // showErrorMessageToUser(clickedResource, e);
-        // }
         catch (final EscidocClientException e) {
             LOG.error(e.getMessage());
             showErrorMessageToUser(clickedResource, e);
@@ -125,13 +120,7 @@ public class TreeClickListener implements ItemClickListener {
     private void createView(final ResourceModel clickedResource)
         throws EscidocClientException {
         router.show(clickedResource);
-        // return view;
     }
-
-    // private void openInNewTab(
-    // final Component component, final ResourceModel clickedResource) {
-    // router.openTab(component, clickedResource.getName());
-    // }
 
     private void showErrorMessageToUser(
         final ResourceModel hasChildrenResource, final EscidocClientException e) {

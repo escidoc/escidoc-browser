@@ -28,17 +28,23 @@
  */
 package org.escidoc.browser.ui.navigation.menubar;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.ItemBuilder;
+import org.escidoc.browser.model.internal.ResourceDisplay;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.MetadataFileReceiver;
 import org.escidoc.browser.ui.maincontent.XmlUtil;
 
 import com.google.common.base.Preconditions;
+import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -130,10 +136,24 @@ class ItemAddView {
         Preconditions.checkNotNull(repositories.contentModel(), "ContentModelRepository is null: %s",
             repositories.contentModel());
         contentModelSelect.setRequired(true);
-        for (final Resource resource : repositories.contentModel().findPublicOrReleasedResources()) {
-            contentModelSelect.addItem(resource.getObjid());
-        }
+        bindData();
         addForm.addComponent(contentModelSelect);
+    }
+
+    private void bindData() throws EscidocException, InternalClientException, TransportException {
+        final Collection<? extends Resource> contentModelList =
+            repositories.contentModel().findPublicOrReleasedResources();
+        final List<ResourceDisplay> resourceDisplayList = new ArrayList<ResourceDisplay>(contentModelList.size());
+        for (final Resource resource : contentModelList) {
+            resourceDisplayList.add(new ResourceDisplay(resource.getObjid(), resource.getXLinkTitle() + " ("
+                + resource.getObjid() + ")"));
+        }
+        final BeanItemContainer<ResourceDisplay> resourceDisplayContainer =
+            new BeanItemContainer<ResourceDisplay>(ResourceDisplay.class, resourceDisplayList);
+        resourceDisplayContainer.addNestedContainerProperty("objectId");
+        resourceDisplayContainer.addNestedContainerProperty("title");
+        contentModelSelect.setContainerDataSource(resourceDisplayContainer);
+        contentModelSelect.setItemCaptionPropertyId("title");
     }
 
     private void addButton() {
@@ -246,8 +266,12 @@ class ItemAddView {
         return nameField.isValid() && contentModelSelect.isValid();
     }
 
-    private String getContentModelId() {
-        return (String) contentModelSelect.getValue();
+    public String getContentModelId() {
+        final Object value = contentModelSelect.getValue();
+        if (value instanceof ResourceDisplay) {
+            return ((ResourceDisplay) value).getObjectId();
+        }
+        return AppConstants.EMPTY_STRING;
     }
 
     private String getName() {

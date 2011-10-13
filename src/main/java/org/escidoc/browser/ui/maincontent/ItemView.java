@@ -122,8 +122,7 @@ public final class ItemView extends VerticalLayout {
     private Label lblCurrentVersionStatus;
 
     public ItemView(final EscidocServiceLocation serviceLocation, final Repositories repositories,
-        final Router mainSite, final ResourceProxy resourceProxy, final Window mainWindow,
-        final CurrentUser currentUser) {
+        final Router mainSite, final ResourceProxy resourceProxy, final Window mainWindow, final CurrentUser currentUser) {
 
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null.");
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
@@ -179,9 +178,7 @@ public final class ItemView extends VerticalLayout {
         leftPanel.setHeight("82%");
         leftPanel.addComponent(itCnt);
 
-        leftPanel.addComponent(new Label("foo"));
         cssLayout.addComponent(leftPanel);
-        cssLayout.addComponent(new Label("bar"));
     }
 
     private void bindProperties() {
