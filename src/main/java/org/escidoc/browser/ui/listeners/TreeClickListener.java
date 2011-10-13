@@ -54,8 +54,7 @@ import de.escidoc.core.resources.Resource;
 @SuppressWarnings("serial")
 public class TreeClickListener implements ItemClickListener {
 
-    private static final Logger LOG = LoggerFactory
-        .getLogger(TreeClickListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TreeClickListener.class);
 
     private final EscidocServiceLocation serviceLocation;
 
@@ -67,23 +66,18 @@ public class TreeClickListener implements ItemClickListener {
 
     private final Repositories repositories;
 
-    public TreeClickListener(final EscidocServiceLocation serviceLocation,
-        final Repositories repositories, final Window mainWindow,
-        final Router mainSite, final CurrentUser currentUser) {
+    public TreeClickListener(final EscidocServiceLocation serviceLocation, final Repositories repositories,
+        final Window mainWindow, final Router mainSite, final CurrentUser currentUser) {
 
-        Preconditions.checkNotNull(serviceLocation,
-            "serviceLocation is null: %s", serviceLocation);
-        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s",
-            mainWindow);
+        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
+        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
-        Preconditions.checkNotNull(currentUser, "currentUser is null: %s",
-            currentUser);
-        Preconditions.checkNotNull(repositories, "repositories is null: %s",
-            repositories);
+        Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
 
         this.repositories = repositories;
         this.mainWindow = mainWindow;
-        this.router = mainSite;
+        router = mainSite;
         this.serviceLocation = serviceLocation;
         this.currentUser = currentUser;
     }
@@ -98,9 +92,8 @@ public class TreeClickListener implements ItemClickListener {
             // TODO in new architecture, we do not decide based on Context but
             // based on Content Model linked by
             // the Resource.
-            if (findContextId(clickedResource)
-                .equals(
-                    org.escidoc.browser.elabsmodul.constants.ELabsConstants.ELABS_DEFAULT_CONTEXT_ID)) {
+            if (findContextId(clickedResource).equals(
+                org.escidoc.browser.elabsmodul.constants.ELabsConstants.ELABS_DEFAULT_CONTEXT_ID)) {
                 // openInNewTab(createBWeLabsView(clickedResource),
                 // clickedResource);
             }
@@ -176,24 +169,13 @@ public class TreeClickListener implements ItemClickListener {
     // }
     // }
 
-    private void createView(final ResourceModel clickedResource)
-            final ContentModel contentModel =
-                repositories.contentModel().findById(resourceProxy.getContentModel().getObjid());
-        throws EscidocClientException {
+    private void createView(final ResourceModel clickedResource) throws EscidocClientException {
         router.show(clickedResource);
-        // return view;
     }
 
-    // private void openInNewTab(
-    // final Component component, final ResourceModel clickedResource) {
-    // router.openTab(component, clickedResource.getName());
-    // }
-
-    private void showErrorMessageToUser(
-        final ResourceModel hasChildrenResource, final EscidocClientException e) {
+    private void showErrorMessageToUser(final ResourceModel hasChildrenResource, final EscidocClientException e) {
         LOG.error("Can not find member of: " + hasChildrenResource.getId(), e);
-        mainWindow.showNotification(new Window.Notification(
-            ViewConstants.ERROR, e.getMessage(),
+        mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
             Notification.TYPE_ERROR_MESSAGE));
     }
 
@@ -202,34 +184,27 @@ public class TreeClickListener implements ItemClickListener {
             return ((ContextModel) clickedResource).getId();
         }
         else if (clickedResource instanceof ContainerModel) {
-            final ContainerModel containerModel =
-                (ContainerModel) clickedResource;
+            final ContainerModel containerModel = (ContainerModel) clickedResource;
             try {
-                return repositories
-                    .container().findById(containerModel.getId()).getContext()
-                    .getObjid();
+                return repositories.container().findById(containerModel.getId()).getContext().getObjid();
             }
             catch (final EscidocClientException e) {
-                router.getWindow().showNotification(
-                    ViewConstants.NOT_ABLE_TO_RETRIEVE_A_CONTEXT);
+                router.getWindow().showNotification(ViewConstants.NOT_ABLE_TO_RETRIEVE_A_CONTEXT);
             }
         }
         else if (clickedResource instanceof ItemModel) {
             final ItemModel itemModel = (ItemModel) clickedResource;
             try {
-                return repositories
-                    .item().findById(itemModel.getId()).getContext().getObjid();
+                return repositories.item().findById(itemModel.getId()).getContext().getObjid();
             }
             catch (final EscidocClientException e) {
-                router.getWindow().showNotification(
-                    ViewConstants.NOT_ABLE_TO_RETRIEVE_A_CONTEXT);
+                router.getWindow().showNotification(ViewConstants.NOT_ABLE_TO_RETRIEVE_A_CONTEXT);
             }
         }
         return AppConstants.EMPTY_STRING;
     }
 
-    private String findContentModelId(final ResourceModel clickedResource)
-        throws ContentModelNotFoundException {
+    private String findContentModelId(final ResourceModel clickedResource) throws ContentModelNotFoundException {
         String contentModelId = "escidoc:";
         Resource eSciDocResource = null;
         try {
@@ -237,29 +212,19 @@ public class TreeClickListener implements ItemClickListener {
                 contentModelId = AppConstants.EMPTY_STRING;
             }
             else if (clickedResource instanceof ContainerModel) {
-                eSciDocResource =
-                    repositories
-                        .container().findById(clickedResource.getId())
-                        .getContentModel();
-                contentModelId +=
-                    (eSciDocResource.getXLinkHref().split(":"))[1];
+                eSciDocResource = repositories.container().findById(clickedResource.getId()).getContentModel();
+                contentModelId += (eSciDocResource.getXLinkHref().split(":"))[1];
             }
             else if (clickedResource instanceof ItemModel) {
-                eSciDocResource =
-                    repositories
-                        .item().findById(clickedResource.getId())
-                        .getContentModel();
-                contentModelId +=
-                    (eSciDocResource.getXLinkHref().split(":"))[1];
+                eSciDocResource = repositories.item().findById(clickedResource.getId()).getContentModel();
+                contentModelId += (eSciDocResource.getXLinkHref().split(":"))[1];
             }
             else {
                 contentModelId = null;
             }
         }
         catch (final EscidocClientException e) {
-            LOG.error(
-                "Unable to retreive ContentModel data from repository object",
-                e);
+            LOG.error("Unable to retreive ContentModel data from repository object", e);
             contentModelId = null;
             throw new ContentModelNotFoundException();
         }
