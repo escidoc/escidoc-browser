@@ -91,14 +91,14 @@ public class TreeClickListener implements ItemClickListener {
         try {
             // TODO in new architecture, we do not decide based on Context but
             // based on Content Model linked by the Resource.
-            if (findContextId(clickedResource).equals(
-                org.escidoc.browser.elabsmodul.constants.ELabsConstants.ELABS_DEFAULT_CONTEXT_ID)) {
-                // openInNewTab(createBWeLabsView(clickedResource),
-                // clickedResource);
-            }
-            else {
-                createView(clickedResource);
-            }
+            // if (findContextId(clickedResource).equals(
+            // org.escidoc.browser.elabsmodul.constants.ELabsConstants.ELABS_DEFAULT_CONTEXT_ID)) {
+            // openInNewTab(createBWeLabsView(clickedResource),
+            // clickedResource);
+            // }
+            // else {
+            createView(clickedResource);
+            // }
         }
         catch (final EscidocClientException e) {
             LOG.error(e.getMessage());

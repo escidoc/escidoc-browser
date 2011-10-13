@@ -273,9 +273,10 @@ public class Router extends VerticalLayout {
             final ContentModel contentModel =
                 repositories.contentModel().findById(itemProxy.getContentModel().getObjid());
             final String description = contentModel.getProperties().getDescription();
+
             LOG.debug("Description is" + description);
             if (description != null) {
-                final Pattern controllerIdPattern = Pattern.compile("org.escidoc.browser.Controller=([^;])");
+                final Pattern controllerIdPattern = Pattern.compile("org.escidoc.browser.Controller=(.*);");
                 final Matcher controllerIdMatcher = controllerIdPattern.matcher(description);
 
                 if (controllerIdMatcher.find()) {
