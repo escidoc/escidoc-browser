@@ -177,6 +177,8 @@ public class TreeClickListener implements ItemClickListener {
     // }
 
     private void createView(final ResourceModel clickedResource)
+            final ContentModel contentModel =
+                repositories.contentModel().findById(resourceProxy.getContentModel().getObjid());
         throws EscidocClientException {
         router.show(clickedResource);
         // return view;

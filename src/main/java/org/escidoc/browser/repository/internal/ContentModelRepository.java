@@ -76,7 +76,7 @@ public class ContentModelRepository {
         return filter;
     }
 
-    public ContentModel findById(String id) throws EscidocClientException {
+    public ContentModel findById(final String id) throws EscidocClientException {
         return client.retrieve(id);
     }
 }
