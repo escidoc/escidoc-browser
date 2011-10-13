@@ -111,10 +111,6 @@ public class TreeClickListener implements ItemClickListener {
             LOG.error(e.getMessage());
             showErrorMessageToUser(clickedResource, e);
         }
-        catch (ContentModelNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
     }
 
     private void createView(final ResourceModel clickedResource)
