@@ -56,11 +56,9 @@ public class SimpleLayout extends VerticalLayout implements LayoutDesign {
 
     private TreeDataSource treeDataSource;
 
-    public SimpleLayout(final Window mainWindow,
-        final EscidocServiceLocation serviceLocation,
-        final BrowserApplication app, final CurrentUser currentUser,
-        final Repositories repositories, final Router router)
-        throws EscidocClientException {
+    public SimpleLayout(final Window mainWindow, final EscidocServiceLocation serviceLocation,
+        final BrowserApplication app, final CurrentUser currentUser, final Repositories repositories,
+        final Router router) throws EscidocClientException {
 
         this.serviceLocation = serviceLocation;
         this.app = app;
@@ -90,9 +88,7 @@ public class SimpleLayout extends VerticalLayout implements LayoutDesign {
     }
 
     private void addHeader() {
-        final HeaderContainer header =
-            new HeaderContainer(router, app, serviceLocation, currentUser,
-                repositories);
+        final HeaderContainer header = new HeaderContainer(router, app, serviceLocation, currentUser, repositories);
         header.init();
 
         mainLayout.addComponent(header);
@@ -123,8 +119,7 @@ public class SimpleLayout extends VerticalLayout implements LayoutDesign {
     }
 
     /**
-     * MainNavigation Panel This is the left-most (human side) panel on the page
-     * It contains a Main Navigation Tree
+     * MainNavigation Panel This is the left-most (human side) panel on the page It contains a Main Navigation Tree
      * 
      * @return Panel
      * @throws EscidocClientException
@@ -142,17 +137,14 @@ public class SimpleLayout extends VerticalLayout implements LayoutDesign {
 
     private void addNavigationTree() throws EscidocClientException {
         mainNavigationTree =
-            new NavigationTreeBuilder(serviceLocation, currentUser,
-                repositories).buildNavigationTree(router, mainWindow,
-                treeDataSource);
+            new NavigationTreeBuilder(serviceLocation, currentUser, repositories).buildNavigationTree(router,
+                mainWindow, treeDataSource);
         mainNavigation.addComponent(mainNavigationTree);
         ((Layout) mainNavigation.getContent()).setMargin(false);
     }
 
     private void initTreeDataSource() throws EscidocClientException {
-        treeDataSource =
-            new TreeDataSourceImpl(repositories
-                .context().findAllWithChildrenInfo());
+        treeDataSource = new TreeDataSourceImpl(repositories.context().findAllWithChildrenInfo());
         treeDataSource.init();
     }
 
@@ -163,8 +155,8 @@ public class SimpleLayout extends VerticalLayout implements LayoutDesign {
     public boolean isUserAllowedToCreateContext() {
         try {
             return repositories
-                .pdp().isAction(ActionIdConstants.CREATE_CONTEXT)
-                .forResource("").forUser(currentUser.getUserId()).permitted();
+                .pdp().isAction(ActionIdConstants.CREATE_CONTEXT).forResource("").forUser(currentUser.getUserId())
+                .permitted();
         }
         catch (final EscidocClientException e) {
             showError(e.getMessage());
@@ -176,9 +168,8 @@ public class SimpleLayout extends VerticalLayout implements LayoutDesign {
     }
 
     /**
-     * This method handles the open of a new tab on the right section of the
-     * mainWindow This is the perfect place to inject Views that represent
-     * objects
+     * This method handles the open of a new tab on the right section of the mainWindow This is the perfect place to
+     * inject Views that represent objects
      * 
      * @param cmp
      * @param tabname
@@ -212,8 +203,7 @@ public class SimpleLayout extends VerticalLayout implements LayoutDesign {
      * @param event
      */
     public void onClickSrchButton(final Button.ClickEvent event) {
-        final SimpleSearch smpSearch =
-            new SimpleSearch(router, serviceLocation, repositories, currentUser);
+        final SimpleSearch smpSearch = new SimpleSearch(router, serviceLocation, repositories, currentUser);
         openView(smpSearch, "Search Results");
     }
 

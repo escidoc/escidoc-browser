@@ -66,8 +66,7 @@ public class SearchAdvancedView extends VerticalLayout {
 
     private final EscidocServiceLocation serviceLocation;
 
-    public SearchAdvancedView(final Router mainSite,
-        final EscidocServiceLocation serviceLocation) {
+    public SearchAdvancedView(final Router mainSite, final EscidocServiceLocation serviceLocation) {
         this.router = mainSite;
         appHeight = mainSite.getApplicationHeight();
         this.serviceLocation = serviceLocation;
@@ -103,10 +102,9 @@ public class SearchAdvancedView extends VerticalLayout {
 
         // Dropdown for MimeType
         final String[] mimetypes =
-            new String[] { "application/octet-stream", "text/html",
-                "audio/aiff", "video/avi", "image/bmp", "application/book",
-                "text/plain", "image/gif", "image/jpeg", "audio/midi",
-                "video/quicktime", "audio/mpeg", "application/xml", "text/xml" };
+            new String[] { "application/octet-stream", "text/html", "audio/aiff", "video/avi", "image/bmp",
+                "application/book", "text/plain", "image/gif", "image/jpeg", "audio/midi", "video/quicktime",
+                "audio/mpeg", "application/xml", "text/xml" };
         mimes = new ComboBox();
 
         for (final String mimetype : mimetypes) {
@@ -117,8 +115,7 @@ public class SearchAdvancedView extends VerticalLayout {
         mimes.setImmediate(true);
 
         // Dropdown for Resource Type
-        final String[] resourcearr =
-            new String[] { "Context", "Container", "Item" };
+        final String[] resourcearr = new String[] { "Context", "Container", "Item" };
         resource = new ComboBox();
         for (final String element : resourcearr) {
             resource.addItem(element);
@@ -170,15 +167,13 @@ public class SearchAdvancedView extends VerticalLayout {
         cssLayout.addComponent(bSearch);
 
         addComponent(cssLayout);
-        this.setComponentAlignment(cssLayout,
-            VerticalLayout.ALIGNMENT_HORIZONTAL_CENTER,
+        this.setComponentAlignment(cssLayout, VerticalLayout.ALIGNMENT_HORIZONTAL_CENTER,
             VerticalLayout.ALIGNMENT_VERTICAL_CENTER);
     }
 
     /**
-     * Handle the Login Event! At the moment a new window is opened to escidev6
-     * for login TODO consider including the window of login from the remote
-     * server in a iframe within the MainContent Window
+     * Handle the Login Event! At the moment a new window is opened to escidev6 for login TODO consider including the
+     * window of login from the remote server in a iframe within the MainContent Window
      * 
      * @param event
      */
@@ -191,25 +186,20 @@ public class SearchAdvancedView extends VerticalLayout {
         final String resourceTxt = (String) resource.getValue();
         final String fulltxtTxt = (String) txtFullText.getValue();
 
-        if (validateInputs(titleTxt, creatorTxt, descriptionTxt,
-            creationDateTxt, mimesTxt, resourceTxt, fulltxtTxt)) {
+        if (validateInputs(titleTxt, creatorTxt, descriptionTxt, creationDateTxt, mimesTxt, resourceTxt, fulltxtTxt)) {
             final SearchResultsView srchRes =
-                new SearchResultsView(router, serviceLocation, titleTxt,
-                    creatorTxt, descriptionTxt, creationDateTxt, mimesTxt,
-                    resourceTxt, fulltxtTxt);
-            router.openTab(srchRes, "Advanced Search " + titleTxt + " "
-                + creationDateTxt + " " + mimesTxt);
+                new SearchResultsView(router, serviceLocation, titleTxt, creatorTxt, descriptionTxt, creationDateTxt,
+                    mimesTxt, resourceTxt, fulltxtTxt);
+            router.openTab(srchRes, "Advanced Search " + titleTxt + " " + creationDateTxt + " " + mimesTxt);
         }
         else {
-            txtTitle
-                .setComponentError(new UserError(
-                    "Please fill in one of the fields by enterin 3 or more alphabet characters"));
+            txtTitle.setComponentError(new UserError(
+                "Please fill in one of the fields by enterin 3 or more alphabet characters"));
         }
     }
 
     /**
-     * Checking if at least one element is filled in the form and it has a
-     * sensful value
+     * Checking if at least one element is filled in the form and it has a sensful value
      * 
      * @param titleTxt
      * @param creatorTxt
@@ -221,15 +211,13 @@ public class SearchAdvancedView extends VerticalLayout {
      * @return
      */
     public boolean validateInputs(
-        final String titleTxt, final String creatorTxt,
-        final String descriptionTxt, final Object creationDateTxt,
+        final String titleTxt, final String creatorTxt, final String descriptionTxt, final Object creationDateTxt,
         final String mimesTxt, final String resourceTxt, final String fulltxtTxt) {
 
         if ((!titleTxt.isEmpty() && validateValidInputs(titleTxt))
             || (!creatorTxt.isEmpty() && validateValidInputs(creatorTxt))
-            || (!descriptionTxt.isEmpty() && validateValidInputs(descriptionTxt))
-            || creationDateTxt.toString() != null || mimesTxt != null
-            && ((resourceTxt != null) && validateValidInputs(creatorTxt))
+            || (!descriptionTxt.isEmpty() && validateValidInputs(descriptionTxt)) || creationDateTxt.toString() != null
+            || mimesTxt != null && ((resourceTxt != null) && validateValidInputs(creatorTxt))
             || (!fulltxtTxt.isEmpty() && validateValidInputs(fulltxtTxt))) {
             return true;
         }
@@ -237,8 +225,7 @@ public class SearchAdvancedView extends VerticalLayout {
     }
 
     /**
-     * Handle Search Query Validation Check string length Any possible
-     * injections
+     * Handle Search Query Validation Check string length Any possible injections
      * 
      * @param searchString
      * @return boolean

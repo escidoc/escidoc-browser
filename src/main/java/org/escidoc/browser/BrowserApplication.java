@@ -62,8 +62,7 @@ public class BrowserApplication extends Application {
 
     final Window mainWindow = new Window(ViewConstants.MAIN_WINDOW_TITLE);
 
-    private EscidocServiceLocation serviceLocation =
-        new EscidocServiceLocationImpl();
+    private EscidocServiceLocation serviceLocation = new EscidocServiceLocationImpl();
 
     private EscidocParameterHandler paramaterHandler;
 
@@ -90,8 +89,7 @@ public class BrowserApplication extends Application {
     }
 
     private void addParameterHandler() {
-        paramaterHandler =
-            new EscidocParameterHandlerImpl(this, serviceLocation);
+        paramaterHandler = new EscidocParameterHandlerImpl(this, serviceLocation);
         mainWindow.addParameterHandler(paramaterHandler);
     }
 
@@ -112,51 +110,40 @@ public class BrowserApplication extends Application {
 
     private void showLandingView() {
         mainWindow.removeAllComponents();
-        mainWindow
-            .addComponent(new LandingViewImpl(serviceLocation,
-                new StartButtonListener(observer, mainWindow, serviceLocation,
-                    this)));
+        mainWindow.addComponent(new LandingViewImpl(serviceLocation, new StartButtonListener(observer, mainWindow,
+            serviceLocation, this)));
     }
 
     public void buildMainWindow(final EscidocServiceLocation serviceLocation) {
-        Preconditions.checkNotNull(serviceLocation,
-            "serviceLocation is null: %s", serviceLocation);
+        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         mainWindow.setImmediate(true);
         mainWindow.setScrollable(true);
         setMainWindowContent(serviceLocation);
         setMainWindowHeight();
     }
 
-    private void setMainWindowContent(
-        final EscidocServiceLocation serviceLocation) {
+    private void setMainWindowContent(final EscidocServiceLocation serviceLocation) {
         try {
             Router router = createRouter(serviceLocation, mainWindow, observer);
             mainWindow.setContent(router.getLayout());
         }
         catch (final EscidocClientException e) {
-            mainWindow.showNotification(new Window.Notification(
-                ViewConstants.ERROR, e.getMessage(),
+            mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
                 Notification.TYPE_ERROR_MESSAGE));
         }
         catch (final MalformedURLException e) {
-            mainWindow.showNotification(new Window.Notification(
-                ViewConstants.ERROR, e.getMessage(),
+            mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
                 Notification.TYPE_ERROR_MESSAGE));
         }
     }
 
     private Router createRouter(
-        final EscidocServiceLocation serviceLocation, final Window mainWindow,
-        final WindowResizeObserver observer) throws EscidocClientException,
-        MalformedURLException {
+        final EscidocServiceLocation serviceLocation, final Window mainWindow, final WindowResizeObserver observer)
+        throws EscidocClientException, MalformedURLException {
 
-        final Repositories repositories =
-            new RepositoriesImpl(serviceLocation, mainWindow)
-                .createAllRepositories();
+        final Repositories repositories = new RepositoriesImpl(serviceLocation, mainWindow).createAllRepositories();
         repositories.loginWith(getCurrentUser().getToken());
-        final Router router =
-            new Router(mainWindow, serviceLocation, this, getCurrentUser(),
-                repositories);
+        final Router router = new Router(mainWindow, serviceLocation, this, getCurrentUser(), repositories);
         router.setHeight(getApplicationHeight() + "px");
         router.setWidth("100%");
         return router;
@@ -167,20 +154,17 @@ public class BrowserApplication extends Application {
     }
 
     public int getApplicationHeight() {
-        Preconditions.checkArgument(observer.getDimension().getHeight() > 0,
-            "Can not get window size");
+        Preconditions.checkArgument(observer.getDimension().getHeight() > 0, "Can not get window size");
         return Math.round(observer.getDimension().getHeight());
     }
 
     public int getApplicationWidth() {
-        Preconditions.checkArgument(observer.getDimension().getWidth() > 0,
-            "Can not get window size");
+        Preconditions.checkArgument(observer.getDimension().getWidth() > 0, "Can not get window size");
         return Math.round(observer.getDimension().getWidth());
     }
 
     public void setServiceLocation(final EscidocServiceLocation serviceLocation) {
-        Preconditions.checkNotNull(serviceLocation,
-            "serviceLocation is null: %s", serviceLocation);
+        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         this.serviceLocation = serviceLocation;
     }
 

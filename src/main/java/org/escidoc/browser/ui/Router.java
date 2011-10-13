@@ -71,8 +71,7 @@ import de.escidoc.core.resources.cmm.ContentModel;
 
 public class Router extends VerticalLayout {
 
-    private static final String ERROR_NO_LAYOUT =
-        "Couldn't create a layout for you.";
+    private static final String ERROR_NO_LAYOUT = "Couldn't create a layout for you.";
 
     private final BrowserApplication app;
 
@@ -93,18 +92,15 @@ public class Router extends VerticalLayout {
     private static final Logger LOG = LoggerFactory.getLogger(ItemView.class);
 
     /**
-     * The mainWindow should be revised whether we need it or not the appHeight
-     * is the Height of the Application and I need it for calculations in the
-     * inner elements
+     * The mainWindow should be revised whether we need it or not the appHeight is the Height of the Application and I
+     * need it for calculations in the inner elements
      * 
      * @param mainWindow
      * @param repositories
      * @throws EscidocClientException
      */
-    public Router(final Window mainWindow,
-        final EscidocServiceLocation serviceLocation,
-        final BrowserApplication app, final CurrentUser currentUser,
-        final Repositories repositories) throws EscidocClientException {
+    public Router(final Window mainWindow, final EscidocServiceLocation serviceLocation, final BrowserApplication app,
+        final CurrentUser currentUser, final Repositories repositories) throws EscidocClientException {
 
         this.serviceLocation = serviceLocation;
         this.app = app;
@@ -131,16 +127,12 @@ public class Router extends VerticalLayout {
         // used
         try {
             browserProperties = new Properties();
-            browserProperties.load(this
-                .getClass().getClassLoader()
-                .getResourceAsStream("browser.properties"));
+            browserProperties.load(this.getClass().getClassLoader().getResourceAsStream("browser.properties"));
             String pluginString = browserProperties.getProperty("plugin");
             String[] plugins = pluginString.split(",");
 
             for (int i = 0; i < plugins.length; i++) {
-                browserProperties.load(this
-                    .getClass().getClassLoader()
-                    .getResourceAsStream(plugins[i]));
+                browserProperties.load(this.getClass().getClassLoader().getResourceAsStream(plugins[i]));
             }
         }
         catch (IOException e) {
@@ -159,9 +151,7 @@ public class Router extends VerticalLayout {
         try {
             // Class cls = Class.forName(layoutClassName);
             // layout = cls.newInstance();
-            layout =
-                new SimpleLayout(mainWindow, serviceLocation, app, currentUser,
-                    repositories, this);
+            layout = new SimpleLayout(mainWindow, serviceLocation, app, currentUser, repositories, this);
         }
         catch (EscidocClientException e) {
             showError(ERROR_NO_LAYOUT + e.getLocalizedMessage());
@@ -181,9 +171,8 @@ public class Router extends VerticalLayout {
     }
 
     /**
-     * This method handles the open of a new tab on the right section of the
-     * mainWindow This is the perfect place to inject Views that represent
-     * objects
+     * This method handles the open of a new tab on the right section of the mainWindow This is the perfect place to
+     * inject Views that represent objects
      * 
      * @param cmp
      * @param tabname
@@ -203,9 +192,8 @@ public class Router extends VerticalLayout {
     }
 
     /**
-     * This is the Permanent Link entry point Check if there is a tab variable
-     * set in the GET Method of the page and open a tab containing the object
-     * with that ID URL Example
+     * This is the Permanent Link entry point Check if there is a tab variable set in the GET Method of the page and
+     * open a tab containing the object with that ID URL Example
      * http://escidev4:8084/browser/mainWindow?tab=escidoc:16037
      * &type=Item&escidocurl=http://escidev4.fiz-karlsruhe.de:8080
      */
@@ -214,30 +202,24 @@ public class Router extends VerticalLayout {
         if (Util.hasTabArg(parameters) && Util.hasObjectType(parameters)) {
             final String escidocID = parameters.get(AppConstants.ARG_TAB)[0];
 
-            final ResourceModelFactory resourceFactory =
-                new ResourceModelFactory(repositories);
+            final ResourceModelFactory resourceFactory = new ResourceModelFactory(repositories);
 
             if (parameters.get(AppConstants.ARG_TYPE)[0].equals("CONTEXT")) {
                 try {
                     final ContextProxyImpl context =
-                        (ContextProxyImpl) resourceFactory.find(escidocID,
-                            ResourceType.CONTEXT);
-                    openTab(new ContextView(serviceLocation, this, context,
-                        mainWindow, currentUser, repositories),
+                        (ContextProxyImpl) resourceFactory.find(escidocID, ResourceType.CONTEXT);
+                    openTab(new ContextView(serviceLocation, this, context, mainWindow, currentUser, repositories),
                         context.getName());
                 }
                 catch (final EscidocClientException e) {
                     showError("Cannot retrieve Context");
                 }
             }
-            else if (parameters.get(AppConstants.ARG_TYPE)[0]
-                .equals("CONTAINER")) {
+            else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("CONTAINER")) {
                 try {
                     final ContainerProxy container =
-                        (ContainerProxy) resourceFactory.find(escidocID,
-                            ResourceType.CONTAINER);
-                    openTab(new ContainerView(serviceLocation, this, container,
-                        mainWindow, currentUser, repositories),
+                        (ContainerProxy) resourceFactory.find(escidocID, ResourceType.CONTAINER);
+                    openTab(new ContainerView(serviceLocation, this, container, mainWindow, currentUser, repositories),
                         container.getName());
                 }
                 catch (final EscidocClientException e) {
@@ -246,19 +228,16 @@ public class Router extends VerticalLayout {
             }
             else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("ITEM")) {
                 try {
-                    final ItemProxy item =
-                        (ItemProxy) resourceFactory.find(escidocID,
-                            ResourceType.ITEM);
-                    openTab(new ItemView(serviceLocation, repositories, this,
-                        item, mainWindow, currentUser), item.getName());
+                    final ItemProxy item = (ItemProxy) resourceFactory.find(escidocID, ResourceType.ITEM);
+                    openTab(new ItemView(serviceLocation, repositories, this, item, mainWindow, currentUser),
+                        item.getName());
                 }
                 catch (final EscidocClientException e) {
                     showError("Cannot retrieve Item");
                 }
             }
             else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("sa")) {
-                final SearchAdvancedView srch =
-                    new SearchAdvancedView(this, serviceLocation);
+                final SearchAdvancedView srch = new SearchAdvancedView(this, serviceLocation);
                 openTab(srch, "Advanced Search");
             }
             else {
@@ -276,55 +255,41 @@ public class Router extends VerticalLayout {
     // }
 
     @Deprecated
-    public void show(ResourceModel clickedResource)
-        throws EscidocClientException {
+    public void show(ResourceModel clickedResource) throws EscidocClientException {
         if (ContextModel.isContext(clickedResource)) {
-            openTab(
-                new ContextView(serviceLocation, this, tryToFindResource(
-                    repositories.context(), clickedResource), mainWindow,
-                    currentUser, repositories),
-                tryToFindResource(repositories.context(), clickedResource)
-                    .getName());
+            openTab(new ContextView(serviceLocation, this, tryToFindResource(repositories.context(), clickedResource),
+                mainWindow, currentUser, repositories), tryToFindResource(repositories.context(), clickedResource)
+                .getName());
         }
         else if (ContainerModel.isContainer(clickedResource)) {
             openTab(
-                new ContainerView(serviceLocation, this, tryToFindResource(
-                    repositories.container(), clickedResource), mainWindow,
-                    currentUser, repositories), "HardCodedName");
+                new ContainerView(serviceLocation, this, tryToFindResource(repositories.container(), clickedResource),
+                    mainWindow, currentUser, repositories), "HardCodedName");
 
         }
         else if (ItemModel.isItem(clickedResource)) {
 
             String controllerId = "org.escidoc.browser.Item";
-            final ItemProxy itemProxy =
-                (ItemProxy) tryToFindResource(repositories.item(),
-                    clickedResource);
+            final ItemProxy itemProxy = (ItemProxy) tryToFindResource(repositories.item(), clickedResource);
 
-            ContentModel contentModel =
-                repositories.contentModel().findById(
-                    itemProxy.getContentModel().getObjid());
-            final String description =
-                contentModel.getProperties().getDescription();
+            ContentModel contentModel = repositories.contentModel().findById(itemProxy.getContentModel().getObjid());
+            final String description = contentModel.getProperties().getDescription();
             LOG.debug("Description is" + description);
             if (description != null) {
-                Pattern controllerIdPattern =
-                    Pattern.compile("org.escidoc.browser.Controller=([^;])");
-                Matcher controllerIdMatcher =
-                    controllerIdPattern.matcher(description);
+                Pattern controllerIdPattern = Pattern.compile("org.escidoc.browser.Controller=([^;])");
+                Matcher controllerIdMatcher = controllerIdPattern.matcher(description);
                 if (controllerIdMatcher.find()) {
                     controllerId = controllerIdMatcher.group(1);
                 }
 
                 if (controllerId.equals("org.escidoc.browser.Item")) {
-                    openTab(new ItemView(serviceLocation, repositories, this,
-                        itemProxy, mainWindow, currentUser),
+                    openTab(new ItemView(serviceLocation, repositories, this, itemProxy, mainWindow, currentUser),
                         itemProxy.getName());
                 }
 
                 Controller controller = null;
                 try {
-                    String controllerClassName =
-                        browserProperties.getProperty(controllerId);
+                    String controllerClassName = browserProperties.getProperty(controllerId);
                     Class controllerClass = Class.forName(controllerClassName);
                     controller = (Controller) controllerClass.newInstance();
                 }
@@ -344,8 +309,8 @@ public class Router extends VerticalLayout {
                 controller.showView(this.layout);
             }
             else {
-                openTab(new ItemView(serviceLocation, repositories, this,
-                    itemProxy, mainWindow, currentUser), itemProxy.getName());
+                openTab(new ItemView(serviceLocation, repositories, this, itemProxy, mainWindow, currentUser),
+                    itemProxy.getName());
             }
 
         }
@@ -355,8 +320,7 @@ public class Router extends VerticalLayout {
 
     }
 
-    private ResourceProxy tryToFindResource(
-        final Repository repository, final ResourceModel clickedResource)
+    private ResourceProxy tryToFindResource(final Repository repository, final ResourceModel clickedResource)
         throws EscidocClientException {
         return repository.findById(clickedResource.getId());
     }

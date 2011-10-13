@@ -61,8 +61,7 @@ public final class LabsInstrumentView extends VerticalLayout {
 
     private static final String LAST_MODIFIED_BY = "Last modification by ";
 
-    private static final Logger LOG = LoggerFactory
-        .getLogger(LabsInstrumentView.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LabsInstrumentView.class);
 
     private final CssLayout cssLayout = new CssLayout();
 
@@ -82,14 +81,11 @@ public final class LabsInstrumentView extends VerticalLayout {
 
     private LabsInstrumentPanel instrumentPanel = null;
 
-    public LabsInstrumentView(final EscidocServiceLocation serviceLocation,
-        final Repositories repositories, final Router router,
-        final ResourceProxy resourceProxy, final Window mainWindow,
-        final CurrentUser currentUser) {
+    public LabsInstrumentView(final EscidocServiceLocation serviceLocation, final Repositories repositories,
+        final Router router, final ResourceProxy resourceProxy, final Window mainWindow, final CurrentUser currentUser) {
 
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null.");
-        Preconditions.checkNotNull(repositories, "repositories is null: %s",
-            repositories);
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(router, "mainSite is null.");
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null.");
         Preconditions.checkNotNull(mainWindow, "mainWindow is null.");
@@ -106,17 +102,13 @@ public final class LabsInstrumentView extends VerticalLayout {
 
         InstrumentBean bean = null;
         try {
-            bean =
-                InstrumentController.getInstance().loadBeanData(
-                    this.resourceProxy);
+            bean = InstrumentController.getInstance().loadBeanData(this.resourceProxy);
         }
         catch (EscidocBrowserException e) {
             LOG.error(e.getLocalizedMessage());
             bean = null;
         }
-        this.instrumentPanel =
-            new LabsInstrumentPanel(this.mainWindow, bean, resourceProxy,
-                repositories.item());
+        this.instrumentPanel = new LabsInstrumentPanel(this.mainWindow, bean, resourceProxy, repositories.item());
 
         init();
     }
@@ -144,8 +136,7 @@ public final class LabsInstrumentView extends VerticalLayout {
     }
 
     private void bindNametoHeader() {
-        final Label headerContext =
-            new Label(ViewConstants.RESOURCE_NAME + resourceProxy.getName());
+        final Label headerContext = new Label(ViewConstants.RESOURCE_NAME + resourceProxy.getName());
         headerContext.setDescription("header");
         headerContext.setStyleName("h2 fullwidth");
         cssLayout.addComponent(headerContext);
@@ -157,8 +148,8 @@ public final class LabsInstrumentView extends VerticalLayout {
 
         final Label descMetadata1 = new Label("ID: " + resourceProxy.getId());
         final Label descMetadata2 =
-            new Label(LAST_MODIFIED_BY + " " + resourceProxy.getModifier()
-                + " on " + resourceProxy.getModifiedOn(), Label.CONTENT_XHTML);
+            new Label(LAST_MODIFIED_BY + " " + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(),
+                Label.CONTENT_XHTML);
         pnlPropertiesLeft.addComponent(descMetadata1);
         pnlPropertiesRight.addComponent(descMetadata2);
         cssLayout.addComponent(pnlPropertiesLeft);
@@ -193,8 +184,7 @@ public final class LabsInstrumentView extends VerticalLayout {
 
     @SuppressWarnings("unused")
     private void createBreadcrumbp() {
-        new BreadCrumbMenu(cssLayout, resourceProxy, mainWindow,
-            serviceLocation, repositories);
+        new BreadCrumbMenu(cssLayout, resourceProxy, mainWindow, serviceLocation, repositories);
     }
 
     private void buildLayout() {
@@ -211,9 +201,7 @@ public final class LabsInstrumentView extends VerticalLayout {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result =
-            prime * result
-                + ((resourceProxy == null) ? 0 : resourceProxy.hashCode());
+        result = prime * result + ((resourceProxy == null) ? 0 : resourceProxy.hashCode());
         return result;
     }
 
