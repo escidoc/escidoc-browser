@@ -26,7 +26,7 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.elabsmodul.view.helper;
+package org.escidoc.browser.elabsmodul.views.helper;
 
 import static org.escidoc.browser.elabsmodul.constants.ELabViewContants.DIV_ALIGN_RIGHT;
 import static org.escidoc.browser.elabsmodul.constants.ELabViewContants.DIV_END;

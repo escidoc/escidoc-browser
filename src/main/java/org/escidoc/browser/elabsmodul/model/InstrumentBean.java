@@ -31,7 +31,11 @@ package org.escidoc.browser.elabsmodul.model;
 import java.io.Serializable;
 import java.util.Date;
 
-public class InstrumentBean implements Serializable {
+import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
+
+public class InstrumentBean implements Serializable, IBeanModel {
+
+    private static final long serialVersionUID = -7950795372352237485L;
 
     private String objectId;
 
