@@ -31,6 +31,7 @@ package org.escidoc.browser.ui.maincontent;
 import java.net.URISyntaxException;
 
 import org.escidoc.browser.BrowserApplication;
+import org.escidoc.browser.layout.LayoutDesign;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
@@ -85,9 +86,11 @@ public class MetadataRecsItem {
 
     private final Router mainSite;
 
+	private LayoutDesign layout;
+
     MetadataRecsItem(final ItemProxy resourceProxy, final int innerelementsHeight, final Window mainWindow,
         final EscidocServiceLocation escidocServiceLocation, final Repositories repositories,
-        final CurrentUser currentUser, final Router mainSite) {
+        final CurrentUser currentUser, final Router mainSite, LayoutDesign layout) {
         Preconditions.checkNotNull(mainWindow, "resource is null.");
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions
@@ -101,6 +104,7 @@ public class MetadataRecsItem {
         this.repositories = repositories;
         this.currentUser = currentUser;
         this.mainSite = mainSite;
+        this.layout=layout;
     }
 
     protected Accordion asAccord() {
@@ -128,7 +132,7 @@ public class MetadataRecsItem {
 
         final Button btnContentRelation =
             new Button("Item Content Relations", new RelationsClickListener(resourceProxy, mainWindow,
-                escidocServiceLocation, repositories, mainSite, currentUser));
+                escidocServiceLocation, repositories, mainSite, layout, currentUser));
         btnContentRelation.setStyleName(BaseTheme.BUTTON_LINK);
         btnContentRelation.setDescription("Show Version history in a Pop-up");
 

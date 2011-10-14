@@ -28,6 +28,7 @@
  */
 package org.escidoc.browser.ui.listeners;
 
+import org.escidoc.browser.layout.LayoutDesign;
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
@@ -83,6 +84,8 @@ public class RelationsClickListener implements ClickListener {
 
     protected Component cmpView;
 
+	protected LayoutDesign layout;
+
     /**
      * Container for the ItemProxy case
      * 
@@ -92,7 +95,7 @@ public class RelationsClickListener implements ClickListener {
      * @param escidocServiceLocation
      */
     public RelationsClickListener(final ItemProxy resourceProxy, final Window mainWindow,
-        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories, final Router mainSite,
+        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories, final Router mainSite, LayoutDesign layout,
         final CurrentUser currentUser) {
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
@@ -108,6 +111,7 @@ public class RelationsClickListener implements ClickListener {
         this.mainSite = mainSite;
         this.escidocServiceLocation = escidocServiceLocation;
         this.repositories = repositories;
+        this.layout=layout;
         itemOrContainerRepository = repositories.item();
     }
 
@@ -176,7 +180,7 @@ public class RelationsClickListener implements ClickListener {
                     else if (type.name().equals("ITEM")) {
                         try {
                             cmpView =
-                                new ItemView(escidocServiceLocation, repositories, mainSite, (ItemProxy) repositories
+                                new ItemView(escidocServiceLocation, repositories, mainSite, layout, (ItemProxy) repositories
                                     .item().findById(relation.getObjid()), mainWindow, currentUser);
                         }
                         catch (EscidocClientException e) {

@@ -88,7 +88,7 @@ public class SimpleLayout extends VerticalLayout implements LayoutDesign {
     }
 
     private void addHeader() {
-        final HeaderContainer header = new HeaderContainer(router, app, serviceLocation, currentUser, repositories);
+        final HeaderContainer header = new HeaderContainer(router, this,app, serviceLocation, currentUser, repositories);
         header.init();
 
         mainLayout.addComponent(header);
@@ -203,7 +203,7 @@ public class SimpleLayout extends VerticalLayout implements LayoutDesign {
      * @param event
      */
     public void onClickSrchButton(final Button.ClickEvent event) {
-        final SimpleSearch smpSearch = new SimpleSearch(router, serviceLocation, repositories, currentUser);
+        final SimpleSearch smpSearch = new SimpleSearch(router, this, serviceLocation, repositories, currentUser);
         openView(smpSearch, "Search Results");
     }
 

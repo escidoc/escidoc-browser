@@ -229,7 +229,7 @@ public class Router extends VerticalLayout {
             else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("ITEM")) {
                 try {
                     final ItemProxy item = (ItemProxy) resourceFactory.find(escidocID, ResourceType.ITEM);
-                    openTab(new ItemView(serviceLocation, repositories, this, item, mainWindow, currentUser),
+                    openTab(new ItemView(serviceLocation, repositories, this, layout, item, mainWindow, currentUser),
                         item.getName());
                 }
                 catch (final EscidocClientException e) {
@@ -277,7 +277,7 @@ public class Router extends VerticalLayout {
                 }
 
                 if (controllerId.equals("org.escidoc.browser.Item")) {
-                    openTab(new ItemView(serviceLocation, repositories, this, itemProxy, mainWindow, currentUser),
+                    openTab(new ItemView(serviceLocation, repositories, this, layout, itemProxy, mainWindow, currentUser),
                         itemProxy.getName());
                 }
 
@@ -302,7 +302,7 @@ public class Router extends VerticalLayout {
                 }
             }
             else {
-                openTab(new ItemView(serviceLocation, repositories, this, itemProxy, mainWindow, currentUser),
+                openTab(new ItemView(serviceLocation, repositories, this, layout, itemProxy, mainWindow, currentUser),
                     itemProxy.getName());
             }
         }
