@@ -26,19 +26,11 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.elabsmodul.view.subcontent;
+package org.escidoc.browser.elabsmodul.interfaces;
 
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Panel;
+public interface ILabsAction {
 
-public interface ILabsPanel {
+    public void showButtonLayout();
 
-    public Component getModifiedComponent();
-
-    public void setModifiedComponent(Component modifiedComponent);
-
-    public Panel getReference();
-
-    public void saveAction();
-
+    public void hideButtonLayout();
 }

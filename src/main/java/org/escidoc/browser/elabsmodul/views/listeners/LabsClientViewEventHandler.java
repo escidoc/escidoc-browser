@@ -26,7 +26,7 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.elabsmodul.view.listeners;
+package org.escidoc.browser.elabsmodul.views.listeners;
 
 import static org.escidoc.browser.elabsmodul.constants.ELabViewContants.USER_DESCR_ON_FORM_LAYOUT_TO_SAVE;
 import static org.escidoc.browser.elabsmodul.constants.ELabViewContants.USER_DESCR_ON_HOR_LAYOUT_TO_EDIT;
@@ -37,9 +37,9 @@ import static org.escidoc.browser.elabsmodul.constants.ELabViewContants.USER_DES
 
 import java.util.List;
 
-import org.escidoc.browser.elabsmodul.view.helper.LabsLayoutHelper;
-import org.escidoc.browser.elabsmodul.view.subcontent.ILabsAction;
-import org.escidoc.browser.elabsmodul.view.subcontent.ILabsPanel;
+import org.escidoc.browser.elabsmodul.interfaces.ILabsAction;
+import org.escidoc.browser.elabsmodul.interfaces.ILabsPanel;
+import org.escidoc.browser.elabsmodul.views.helper.LabsLayoutHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -248,9 +248,5 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
 
     public LabsClientTextFieldEventHandler getClientTextFieldEventHandler() {
         return clientTextFieldEventHandler;
-    }
-
-    private void saveComponent(Component component) {
-        this.containerPanel.saveAction();
     }
 }

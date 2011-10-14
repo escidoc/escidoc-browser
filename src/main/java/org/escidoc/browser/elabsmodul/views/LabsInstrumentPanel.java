@@ -26,22 +26,20 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.elabsmodul.view.subcontent;
+package org.escidoc.browser.elabsmodul.views;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.transform.TransformerException;
-
 import org.escidoc.browser.elabsmodul.constants.ELabViewContants;
-import org.escidoc.browser.elabsmodul.controller.InstrumentController;
-import org.escidoc.browser.elabsmodul.controller.utils.DOM2String;
+import org.escidoc.browser.elabsmodul.interfaces.ILabsAction;
+import org.escidoc.browser.elabsmodul.interfaces.ILabsPanel;
+import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
 import org.escidoc.browser.elabsmodul.model.InstrumentBean;
-import org.escidoc.browser.elabsmodul.view.helper.LabsLayoutHelper;
-import org.escidoc.browser.elabsmodul.view.listeners.LabsClientViewEventHandler;
+import org.escidoc.browser.elabsmodul.views.helper.LabsLayoutHelper;
+import org.escidoc.browser.elabsmodul.views.listeners.LabsClientViewEventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
 
 import com.vaadin.data.util.POJOItem;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
@@ -51,8 +49,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
-
-import de.escidoc.core.resources.om.item.Item;
 
 public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsAction {
 
@@ -80,9 +76,12 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
 
     private HorizontalLayout buttonLayout = null;
 
-    public LabsInstrumentPanel(InstrumentBean sourceBean) {
+    private final ISaveAction saveComponent;
+
+    public LabsInstrumentPanel(InstrumentBean sourceBean, ISaveAction saveComponent) {
 
         this.instrumentBean = (sourceBean != null) ? sourceBean : new InstrumentBean();
+        this.saveComponent = saveComponent;
 
         initialisePanelComponents();
         buildPanelGUI();
@@ -176,7 +175,7 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
             @Override
             public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
                 if (event.getButton().getCaption().equals("Save")) {
-                    LabsInstrumentPanel.this.saveAction();
+                    LabsInstrumentPanel.this.saveComponent.saveAction(LabsInstrumentPanel.this.instrumentBean);
                 }
                 else if (event.getButton().getCaption().equals("Cancel")) {
                     // TODO reset function
@@ -229,29 +228,34 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
     }
 
     @Override
-    public void saveAction() {
-        Item item;
-        try {
-            Element domElement = InstrumentController.createDOMElementByBeanModel(instrumentBean);
-            try {
-                LOG.warn("DOM to SAVE...");
-                LOG.info(DOM2String.convertDom2String(domElement));
-            }
-            catch (TransformerException e) {
-                LOG.error(e.getMessage());
-            }
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((instrumentBean == null) ? 0 : instrumentBean.hashCode());
+        return result;
+    }
 
-            /*
-             * item = itemRepositories.findItemById(resourceProxy.getId()); MetadataRecord metadataRecord =
-             * item.getMetadataRecords().get("escidoc"); metadataRecord.setContent(InstrumentController
-             * .createDOMElementByBeanModel(instrumentBean)); itemRepositories.update(resourceProxy.getId(), item);
-             * 
-             * this.mainWindow.showNotification("Save", "View is saved", Notification.TYPE_HUMANIZED_MESSAGE);
-             */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
         }
-        catch (Throwable e) {
-            LOG.error(e.getMessage());
+        if (obj == null) {
+            return false;
         }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final LabsInstrumentPanel other = (LabsInstrumentPanel) obj;
+        if (instrumentBean == null) {
+            if (other.instrumentBean != null) {
+                return false;
+            }
+        }
+        else if (!instrumentBean.equals(other.instrumentBean)) {
+            return false;
+        }
+        return true;
     }
 
 }

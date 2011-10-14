@@ -30,29 +30,45 @@ package org.escidoc.browser.elabsmodul.controller;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.escidoc.browser.controller.Controller;
 import org.escidoc.browser.elabsmodul.controller.utils.DOM2String;
 import org.escidoc.browser.elabsmodul.exceptions.EscidocBrowserException;
+import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
+import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
 import org.escidoc.browser.elabsmodul.model.InstrumentBean;
-import org.escidoc.browser.elabsmodul.view.maincontent.LabsInstrumentView;
+import org.escidoc.browser.elabsmodul.views.LabsInstrumentPanel;
 import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.internal.ItemProxyImpl;
+import org.escidoc.browser.repository.internal.ItemRepository;
+import org.escidoc.browser.ui.ViewConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.Runo;
+
+import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.common.MetadataRecord;
+import de.escidoc.core.resources.om.item.Item;
 
 /**
  * 
  */
-public final class InstrumentController extends Controller {
+public final class InstrumentController extends Controller implements ISaveAction {
 
     private static Logger LOG = LoggerFactory.getLogger(InstrumentController.class);
 
@@ -142,7 +158,7 @@ public final class InstrumentController extends Controller {
     }
 
     // TODO
-    public synchronized static Element createDOMElementByBeanModel(final InstrumentBean instrumentBean) {
+    public synchronized static Element createInstrumentDOMElementByBeanModel(final InstrumentBean instrumentBean) {
 
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
@@ -211,9 +227,11 @@ public final class InstrumentController extends Controller {
             return instrument;
 
         }
-        catch (final Throwable e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        catch (DOMException e) {
+            LOG.error(e.getLocalizedMessage());
+        }
+        catch (ParserConfigurationException e) {
+            LOG.error(e.getLocalizedMessage());
         }
 
         return null;
@@ -239,18 +257,106 @@ public final class InstrumentController extends Controller {
     }
 
     private Component createView(final ResourceProxy resourceProxy) {
+        Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
+        final String VIEWCAPTION = "Instument View";
+        final String LAST_MODIFIED_BY = "Last modification by ";
+        final String FLOAT_LEFT = "floatleft";
+        final String FLOAT_RIGHT = "floatright";
 
-        ItemProxyImpl itemProxyImpl = (ItemProxyImpl) resourceProxy;
-
+        ItemProxyImpl itemProxyImpl = null;
         InstrumentBean instumentBean = null;
+
+        final VerticalLayout rootCompoent = new VerticalLayout();
+        rootCompoent.setCaption(VIEWCAPTION);
+
+        if (resourceProxy instanceof ItemProxyImpl) {
+            itemProxyImpl = (ItemProxyImpl) resourceProxy;
+        }
+
         try {
             instumentBean = loadBeanData(itemProxyImpl);
         }
-        catch (EscidocBrowserException e) {
+        catch (final EscidocBrowserException e) {
             LOG.error(e.getLocalizedMessage());
             instumentBean = null;
         }
 
-        return new LabsInstrumentView(instumentBean);
+        /* Create all the subviews */
+
+        // BreadCrumbp View
+        VerticalLayout breadCrumbpView = new VerticalLayout();
+        breadCrumbpView.setCaption("BreadCrumbp View Caption");
+
+        // Item title
+        final Label titleLabel = new Label(ViewConstants.RESOURCE_NAME + resourceProxy.getName());
+        titleLabel.setDescription("header");
+        titleLabel.setStyleName("h2 fullwidth");
+
+        // HR Ruler
+        final Label descRuler = new Label("<hr/>", Label.CONTENT_RAW);
+        descRuler.setStyleName("hr");
+
+        // ItemProperties View
+        final HorizontalLayout propertiesView = new HorizontalLayout();
+        final Label descMetadata1 = new Label("ID: " + instumentBean.getObjectId());
+        final Label descMetadata2 =
+            new Label(LAST_MODIFIED_BY + " " + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(),
+                Label.CONTENT_XHTML);
+
+        final Panel pnlPropertiesLeft = new Panel();
+        pnlPropertiesLeft.setWidth("40%");
+        pnlPropertiesLeft.setHeight("60px");
+        pnlPropertiesLeft.setStyleName(FLOAT_LEFT);
+        pnlPropertiesLeft.addStyleName(Runo.PANEL_LIGHT);
+        pnlPropertiesLeft.addComponent(descMetadata1);
+
+        final Panel pnlPropertiesRight = new Panel();
+        pnlPropertiesRight.setWidth("60%");
+        pnlPropertiesRight.setHeight("60px");
+        pnlPropertiesRight.setStyleName(FLOAT_RIGHT);
+        pnlPropertiesRight.addStyleName(Runo.PANEL_LIGHT);
+        pnlPropertiesRight.addComponent(descMetadata2);
+        propertiesView.addComponent(pnlPropertiesLeft);
+        propertiesView.addComponent(pnlPropertiesRight);
+
+        // Instrument View
+        final Component instrumentView = new LabsInstrumentPanel(instumentBean, this); // Controller as saveComponent is
+                                                                                       // pushed into InstrumentView
+
+        /* Add subelements on to RootComponent */
+        rootCompoent.addComponent(breadCrumbpView);
+        rootCompoent.addComponent(titleLabel);
+        rootCompoent.addComponent(descRuler);
+        rootCompoent.addComponent(propertiesView);
+        rootCompoent.addComponent(instrumentView);
+
+        return rootCompoent;
+    }
+
+    @Override
+    public void saveAction(final IBeanModel dataBean) {
+        Preconditions.checkNotNull(dataBean, "DataBean to store is NULL");
+
+        ItemRepository itemRepositories = null; // TODO include repository ref into *controller
+        final String ESCIDOC = "escidoc";
+
+        InstrumentBean instrumentBean = null;
+        Item item = null;
+
+        if (dataBean instanceof InstrumentBean) {
+            instrumentBean = (InstrumentBean) dataBean;
+        }
+        final Element metaDataContent = InstrumentController.createInstrumentDOMElementByBeanModel(instrumentBean);
+
+        try {
+            item = itemRepositories.findItemById(instrumentBean.getObjectId());
+            MetadataRecord metadataRecord = item.getMetadataRecords().get(ESCIDOC);
+            metadataRecord.setContent(metaDataContent);
+            itemRepositories.update(item.getObjid(), item);
+        }
+        catch (EscidocClientException e) {
+            LOG.error(e.getLocalizedMessage());
+        }
+        LOG.info("Instument is successfully saved.");
     }
 }
