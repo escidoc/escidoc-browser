@@ -38,7 +38,9 @@ import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
 import org.escidoc.browser.elabsmodul.model.InstrumentBean;
 import org.escidoc.browser.elabsmodul.views.helper.LabsLayoutHelper;
 import org.escidoc.browser.elabsmodul.views.listeners.LabsClientViewEventHandler;
+import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.maincontent.BreadCrumbMenu;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,7 +91,9 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
 
     private final ISaveAction saveComponent;
 
-    public LabsInstrumentPanel(InstrumentBean sourceBean, ISaveAction saveComponent) {
+    private List<ResourceModel> breadCrumbModel;
+
+    public LabsInstrumentPanel(InstrumentBean sourceBean, ISaveAction saveComponent, List<ResourceModel> breadCrumbModel) {
 
         this.instrumentBean = (sourceBean != null) ? sourceBean : new InstrumentBean();
         this.saveComponent = saveComponent;
@@ -191,13 +195,13 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
         propertiesView.addComponent(pnlPropertiesLeft);
         propertiesView.addComponent(pnlPropertiesRight);
 
+        this.mainLayout.addComponent(new VerticalLayout(), 0);
         /* Add subelements on to RootComponent */
-        // this.mainLayout.addComponent(breadCrumbpView);
+        this.mainLayout.addComponent((Component) new BreadCrumbMenu(this.mainLayout, breadCrumbModel));
         this.mainLayout.addComponent(titleLabel);
         this.mainLayout.addComponent(descRuler);
         this.mainLayout.addComponent(propertiesView);
 
-        this.mainLayout.addComponent(new VerticalLayout(), 0);
         this.mainLayout.addComponent(h1, 1);
         this.mainLayout.addComponent(h2, 2);
         this.mainLayout.addComponent(h3, 3);

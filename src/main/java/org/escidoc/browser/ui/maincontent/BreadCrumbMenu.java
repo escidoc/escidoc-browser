@@ -39,6 +39,7 @@ import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.escidoc.browser.ui.helper.ResourceHierarchy;
 
+import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
@@ -122,5 +123,9 @@ public class BreadCrumbMenu {
             buf.append("<li><a href='#'>" + resourceProxy.getContext().getXLinkTitle() + "</a></li>");
         }
         cssLayout.addComponent(new Label(bCstring + buf.toString(), Label.CONTENT_RAW));
+    }
+
+    public BreadCrumbMenu(Component component, List<ResourceModel> breadCrumbModel) {
+        ((CssLayout) component).addComponent(new Label());
     }
 }

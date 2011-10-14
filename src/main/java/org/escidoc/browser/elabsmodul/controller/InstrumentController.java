@@ -323,7 +323,7 @@ public final class InstrumentController extends Controller implements ISaveActio
          * propertiesView.addComponent(pnlPropertiesLeft); propertiesView.addComponent(pnlPropertiesRight);
          */
         // Instrument View
-        final Component instrumentView = new LabsInstrumentPanel(instumentBean, this); // Controller as saveComponent is
+        Component instrumentView = new LabsInstrumentPanel(instumentBean, this, this.BreadCrumbModel());
 
         return instrumentView; // pushed into InstrumentView
 
@@ -336,9 +336,17 @@ public final class InstrumentController extends Controller implements ISaveActio
          */
     }
 
-    private List<ResourceModel> BreadCrumbModel() throws EscidocClientException {
+    private List<ResourceModel> BreadCrumbModel() {
         final ResourceHierarchy rs = new ResourceHierarchy(serviceLocation, repositories);
-        List<ResourceModel> hierarchy = rs.getHierarchy(resourceProxy);
+        List<ResourceModel> hierarchy = null;
+        try {
+            hierarchy = rs.getHierarchy(resourceProxy);
+        }
+        catch (EscidocClientException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            LOG.debug("Fatal error, could not load BreadCrumb " + e.getLocalizedMessage());
+        }
         Collections.reverse(hierarchy);
         hierarchy.add(resourceProxy);
         return hierarchy;
