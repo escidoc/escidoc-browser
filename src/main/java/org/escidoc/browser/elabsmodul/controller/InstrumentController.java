@@ -40,10 +40,14 @@ import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
 import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
 import org.escidoc.browser.elabsmodul.model.InstrumentBean;
 import org.escidoc.browser.elabsmodul.views.LabsInstrumentPanel;
+import org.escidoc.browser.model.CurrentUser;
+import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.internal.ItemRepository;
+import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +63,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -250,7 +255,9 @@ public final class InstrumentController extends Controller implements ISaveActio
     }
 
     @Override
-    public void init(ResourceProxy resourceProxy) {
+    public void init(
+        EscidocServiceLocation serviceLocation, Repositories repositories, Router mainSite,
+        ResourceProxy resourceProxy, Window mainWindow, CurrentUser currentUser) {
         this.view = createView(resourceProxy);
         this.view.setCaption("Default Caption");
 
@@ -359,4 +366,5 @@ public final class InstrumentController extends Controller implements ISaveActio
         }
         LOG.info("Instument is successfully saved.");
     }
+
 }

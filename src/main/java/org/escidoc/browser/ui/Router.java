@@ -229,7 +229,7 @@ public class Router extends VerticalLayout {
             else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("ITEM")) {
                 try {
                     final ItemProxy item = (ItemProxy) resourceFactory.find(escidocID, ResourceType.ITEM);
-                    openTab(new ItemView(serviceLocation, repositories, this, item, mainWindow, currentUser),
+                    openTab(new ItemView(serviceLocation, repositories, this, layout, item, mainWindow, currentUser),
                         item.getName());
                 }
                 catch (final EscidocClientException e) {
@@ -250,11 +250,6 @@ public class Router extends VerticalLayout {
         getWindow().showNotification(msg, Notification.TYPE_HUMANIZED_MESSAGE);
     }
 
-    // public void show(ResourceModel model){
-    //
-    // }
-
-    @Deprecated
     public void show(final ResourceModel clickedResource) throws EscidocClientException {
         if (ContextModel.isContext(clickedResource)) {
             openTab(new ContextView(serviceLocation, this, tryToFindResource(repositories.context(), clickedResource),
@@ -282,7 +277,7 @@ public class Router extends VerticalLayout {
                 }
 
                 if (controllerId.equals("org.escidoc.browser.Item")) {
-                    openTab(new ItemView(serviceLocation, repositories, this, itemProxy, mainWindow, currentUser),
+                    openTab(new ItemView(serviceLocation, repositories, this, layout, itemProxy, mainWindow, currentUser),
                         itemProxy.getName());
                 }
 
@@ -290,7 +285,7 @@ public class Router extends VerticalLayout {
                 try {
                     final Class<?> controllerClass = Class.forName(browserProperties.getProperty(controllerId));
                     controller = (Controller) controllerClass.newInstance();
-                    controller.init(itemProxy);
+                    controller.init(serviceLocation, repositories, this, itemProxy, mainWindow, currentUser);
                     controller.showView(layout);
                 }
                 catch (final ClassNotFoundException e) {
@@ -307,7 +302,7 @@ public class Router extends VerticalLayout {
                 }
             }
             else {
-                openTab(new ItemView(serviceLocation, repositories, this, itemProxy, mainWindow, currentUser),
+                openTab(new ItemView(serviceLocation, repositories, this, layout, itemProxy, mainWindow, currentUser),
                     itemProxy.getName());
             }
         }
