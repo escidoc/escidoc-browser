@@ -28,6 +28,9 @@
  */
 package org.escidoc.browser.elabsmodul.controller;
 
+import java.util.Collections;
+import java.util.List;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -43,12 +46,13 @@ import org.escidoc.browser.elabsmodul.views.LabsInstrumentPanel;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
+import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.internal.ItemRepository;
 import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.helper.ResourceHierarchy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMException;
@@ -59,12 +63,7 @@ import org.w3c.dom.NodeList;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
@@ -78,6 +77,10 @@ public final class InstrumentController extends Controller implements ISaveActio
     private static Logger LOG = LoggerFactory.getLogger(InstrumentController.class);
 
     private Repositories repositories;
+
+    private EscidocServiceLocation serviceLocation;
+
+    private ResourceProxy resourceProxy;
 
     /**
      * 
@@ -268,20 +271,21 @@ public final class InstrumentController extends Controller implements ISaveActio
         this.repositories = repositories;
         this.view = createView(resourceProxy);
         this.view.setCaption("Default Caption");
+        this.serviceLocation = serviceLocation;
+        this.resourceProxy = resourceProxy;
     }
 
     private Component createView(final ResourceProxy resourceProxy) {
         Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
-        final String VIEWCAPTION = "Instument View";
-        final String LAST_MODIFIED_BY = "Last modification by ";
-        final String FLOAT_LEFT = "floatleft";
-        final String FLOAT_RIGHT = "floatright";
-
+        /*
+         * final String VIEWCAPTION = "Instument View"; final String LAST_MODIFIED_BY = "Last modification by "; final
+         * String FLOAT_LEFT = "floatleft"; final String FLOAT_RIGHT = "floatright";
+         */
         ItemProxyImpl itemProxyImpl = null;
         InstrumentBean instumentBean = null;
 
-        final VerticalLayout rootCompoent = new VerticalLayout();
-        rootCompoent.setCaption(VIEWCAPTION);
+        // final VerticalLayout rootCompoent = new VerticalLayout();
+        // rootCompoent.setCaption(VIEWCAPTION);
 
         if (resourceProxy instanceof ItemProxyImpl) {
             itemProxyImpl = (ItemProxyImpl) resourceProxy;
@@ -295,55 +299,49 @@ public final class InstrumentController extends Controller implements ISaveActio
             instumentBean = null;
         }
 
-        /* Create all the subviews */
-        // BreadCrumbp View
-        VerticalLayout breadCrumbpView = new VerticalLayout();
-        breadCrumbpView.setCaption("BreadCrumbp View Caption");
-
-        // Item title
-        final Label titleLabel = new Label(ViewConstants.RESOURCE_NAME + resourceProxy.getName());
-        titleLabel.setDescription("header");
-        titleLabel.setStyleName("h2 fullwidth");
-
-        // HR Ruler
-        final Label descRuler = new Label("<hr/>", Label.CONTENT_RAW);
-        descRuler.setStyleName("hr");
-
-        // ItemProperties View
-        final HorizontalLayout propertiesView = new HorizontalLayout();
-        final Label descMetadata1 = new Label("ID: " + instumentBean.getObjectId());
-        final Label descMetadata2 =
-            new Label(LAST_MODIFIED_BY + " " + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(),
-                Label.CONTENT_XHTML);
-
-        final Panel pnlPropertiesLeft = new Panel();
-        pnlPropertiesLeft.setWidth("40%");
-        pnlPropertiesLeft.setHeight("60px");
-        pnlPropertiesLeft.setStyleName(FLOAT_LEFT);
-        pnlPropertiesLeft.addStyleName(Runo.PANEL_LIGHT);
-        pnlPropertiesLeft.addComponent(descMetadata1);
-
-        final Panel pnlPropertiesRight = new Panel();
-        pnlPropertiesRight.setWidth("60%");
-        pnlPropertiesRight.setHeight("60px");
-        pnlPropertiesRight.setStyleName(FLOAT_RIGHT);
-        pnlPropertiesRight.addStyleName(Runo.PANEL_LIGHT);
-        pnlPropertiesRight.addComponent(descMetadata2);
-        propertiesView.addComponent(pnlPropertiesLeft);
-        propertiesView.addComponent(pnlPropertiesRight);
-
+        /*
+         * Create all the subviews // BreadCrumbp View VerticalLayout breadCrumbpView = new VerticalLayout();
+         * breadCrumbpView.setCaption("BreadCrumbp View Caption");
+         * 
+         * // Item title final Label titleLabel = new Label(ViewConstants.RESOURCE_NAME + resourceProxy.getName());
+         * titleLabel.setDescription("header"); titleLabel.setStyleName("h2 fullwidth");
+         * 
+         * // HR Ruler final Label descRuler = new Label("<hr/>", Label.CONTENT_RAW); descRuler.setStyleName("hr");
+         * 
+         * // ItemProperties View final HorizontalLayout propertiesView = new HorizontalLayout(); final Label
+         * descMetadata1 = new Label("ID: " + instumentBean.getObjectId()); final Label descMetadata2 = new
+         * Label(LAST_MODIFIED_BY + " " + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(),
+         * Label.CONTENT_XHTML);
+         * 
+         * final Panel pnlPropertiesLeft = new Panel(); pnlPropertiesLeft.setWidth("40%");
+         * pnlPropertiesLeft.setHeight("60px"); pnlPropertiesLeft.setStyleName(FLOAT_LEFT);
+         * pnlPropertiesLeft.addStyleName(Runo.PANEL_LIGHT); pnlPropertiesLeft.addComponent(descMetadata1);
+         * 
+         * final Panel pnlPropertiesRight = new Panel(); pnlPropertiesRight.setWidth("60%");
+         * pnlPropertiesRight.setHeight("60px"); pnlPropertiesRight.setStyleName(FLOAT_RIGHT);
+         * pnlPropertiesRight.addStyleName(Runo.PANEL_LIGHT); pnlPropertiesRight.addComponent(descMetadata2);
+         * propertiesView.addComponent(pnlPropertiesLeft); propertiesView.addComponent(pnlPropertiesRight);
+         */
         // Instrument View
         final Component instrumentView = new LabsInstrumentPanel(instumentBean, this); // Controller as saveComponent is
-                                                                                       // pushed into InstrumentView
 
-        /* Add subelements on to RootComponent */
-        rootCompoent.addComponent(breadCrumbpView);
-        rootCompoent.addComponent(titleLabel);
-        rootCompoent.addComponent(descRuler);
-        rootCompoent.addComponent(propertiesView);
-        rootCompoent.addComponent(instrumentView);
+        return instrumentView; // pushed into InstrumentView
 
-        return rootCompoent;
+        /*
+         * Add subelements on to RootComponent rootCompoent.addComponent(breadCrumbpView);
+         * rootCompoent.addComponent(titleLabel); rootCompoent.addComponent(descRuler);
+         * rootCompoent.addComponent(propertiesView); rootCompoent.addComponent(instrumentView);
+         * 
+         * return rootCompoent;
+         */
+    }
+
+    private List<ResourceModel> BreadCrumbModel() throws EscidocClientException {
+        final ResourceHierarchy rs = new ResourceHierarchy(serviceLocation, repositories);
+        List<ResourceModel> hierarchy = rs.getHierarchy(resourceProxy);
+        Collections.reverse(hierarchy);
+        hierarchy.add(resourceProxy);
+        return hierarchy;
     }
 
     @Override

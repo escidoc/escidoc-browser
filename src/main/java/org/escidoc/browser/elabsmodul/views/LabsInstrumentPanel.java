@@ -38,6 +38,7 @@ import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
 import org.escidoc.browser.elabsmodul.model.InstrumentBean;
 import org.escidoc.browser.elabsmodul.views.helper.LabsLayoutHelper;
 import org.escidoc.browser.elabsmodul.views.listeners.LabsClientViewEventHandler;
+import org.escidoc.browser.ui.ViewConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,8 +48,10 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.Runo;
 
 public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsAction {
 
@@ -57,6 +60,14 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
     private static Logger LOG = LoggerFactory.getLogger(LabsInstrumentPanel.class);
 
     private final String[] PROPERTIES = ELabViewContants.INSTRUMENT_PROPERTIES;
+
+    final String VIEWCAPTION = "Instument View";
+
+    final String LAST_MODIFIED_BY = "Last modification by ";
+
+    final String FLOAT_LEFT = "floatleft";
+
+    final String FLOAT_RIGHT = "floatright";
 
     private final int COMPONENT_COUNT = 9;
 
@@ -146,6 +157,45 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
         registeredComponents.add(h7);
         registeredComponents.add(h8);
         registeredComponents.add(h9);
+
+        // Item title
+        final Label titleLabel = new Label(ViewConstants.RESOURCE_NAME + instrumentBean.getName());
+        titleLabel.setDescription("header");
+        titleLabel.setStyleName("h2 fullwidth");
+
+        // HR Ruler
+        final Label descRuler = new Label("<hr/>", Label.CONTENT_RAW);
+        descRuler.setStyleName("hr");
+
+        // ItemProperties View
+        final HorizontalLayout propertiesView = new HorizontalLayout();
+        final Label descMetadata1 = new Label("ID: " + instrumentBean.getObjectId());
+        final Label descMetadata2 =
+            new Label(
+                LAST_MODIFIED_BY + " " + instrumentBean.getModifiedBy() + " on " + instrumentBean.getModifiedOn(),
+                Label.CONTENT_XHTML);
+
+        final Panel pnlPropertiesLeft = new Panel();
+        pnlPropertiesLeft.setWidth("40%");
+        pnlPropertiesLeft.setHeight("60px");
+        pnlPropertiesLeft.setStyleName(FLOAT_LEFT);
+        pnlPropertiesLeft.addStyleName(Runo.PANEL_LIGHT);
+        pnlPropertiesLeft.addComponent(descMetadata1);
+
+        final Panel pnlPropertiesRight = new Panel();
+        pnlPropertiesRight.setWidth("60%");
+        pnlPropertiesRight.setHeight("60px");
+        pnlPropertiesRight.setStyleName(FLOAT_RIGHT);
+        pnlPropertiesRight.addStyleName(Runo.PANEL_LIGHT);
+        pnlPropertiesRight.addComponent(descMetadata2);
+        propertiesView.addComponent(pnlPropertiesLeft);
+        propertiesView.addComponent(pnlPropertiesRight);
+
+        /* Add subelements on to RootComponent */
+        // this.mainLayout.addComponent(breadCrumbpView);
+        this.mainLayout.addComponent(titleLabel);
+        this.mainLayout.addComponent(descRuler);
+        this.mainLayout.addComponent(propertiesView);
 
         this.mainLayout.addComponent(new VerticalLayout(), 0);
         this.mainLayout.addComponent(h1, 1);
