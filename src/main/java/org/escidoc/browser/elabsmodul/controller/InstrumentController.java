@@ -77,6 +77,8 @@ public final class InstrumentController extends Controller implements ISaveActio
 
     private static Logger LOG = LoggerFactory.getLogger(InstrumentController.class);
 
+    private Repositories repositories;
+
     /**
      * 
      * @param resourceProxy
@@ -258,9 +260,11 @@ public final class InstrumentController extends Controller implements ISaveActio
     public void init(
         EscidocServiceLocation serviceLocation, Repositories repositories, Router mainSite,
         ResourceProxy resourceProxy, Window mainWindow, CurrentUser currentUser) {
+        Preconditions.checkNotNull(repositories, "Repository ref is null");
+
+        this.repositories = repositories;
         this.view = createView(resourceProxy);
         this.view.setCaption("Default Caption");
-
     }
 
     private Component createView(final ResourceProxy resourceProxy) {
@@ -289,7 +293,6 @@ public final class InstrumentController extends Controller implements ISaveActio
         }
 
         /* Create all the subviews */
-
         // BreadCrumbp View
         VerticalLayout breadCrumbpView = new VerticalLayout();
         breadCrumbpView.setCaption("BreadCrumbp View Caption");
@@ -344,7 +347,7 @@ public final class InstrumentController extends Controller implements ISaveActio
     public void saveAction(final IBeanModel dataBean) {
         Preconditions.checkNotNull(dataBean, "DataBean to store is NULL");
 
-        ItemRepository itemRepositories = null; // TODO include repository ref into *controller
+        ItemRepository itemRepositories = repositories.item();
         final String ESCIDOC = "escidoc";
 
         InstrumentBean instrumentBean = null;
@@ -366,5 +369,4 @@ public final class InstrumentController extends Controller implements ISaveActio
         }
         LOG.info("Instument is successfully saved.");
     }
-
 }
