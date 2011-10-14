@@ -32,6 +32,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.escidoc.browser.BrowserApplication;
+import org.escidoc.browser.layout.LayoutDesign;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.repository.Repositories;
@@ -82,13 +83,15 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
 
     private final CurrentUser user;
 
-    private final Router router;
-
     private final Repositories repositories;
 
-    public HeaderContainer(final Router mainSite, final BrowserApplication app,
+	private LayoutDesign layout;
+
+	private Router router;
+
+    public HeaderContainer(final Router router, LayoutDesign layout, final BrowserApplication app,
         final EscidocServiceLocation serviceLocation, final CurrentUser user, final Repositories repositories) {
-        Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
+        Preconditions.checkNotNull(layout, "mainSite is null: %s", layout);
         Preconditions.checkNotNull(app, "app is null: %s", app);
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(user, "user is null: %s", user);
@@ -97,7 +100,7 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
         this.app = app;
         this.serviceLocation = serviceLocation;
         this.user = user;
-        this.router = mainSite;
+        this.layout = layout;
         this.repositories = repositories;
         this.setMargin(false);
 
@@ -189,7 +192,7 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
         final String searchString = (String) searchField.getValue();
         if (validate(searchString)) {
             final SearchResultsView srchRes =
-                new SearchResultsView(router, searchString, serviceLocation, repositories, user);
+                new SearchResultsView(router, layout, searchString, serviceLocation, repositories, user);
             router.openTab(srchRes, "Search results for: " + (String) searchField.getValue());
         }
         else {
