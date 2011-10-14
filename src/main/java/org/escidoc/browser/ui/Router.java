@@ -268,16 +268,19 @@ public class Router extends VerticalLayout {
             final String description = contentModel.getProperties().getDescription();
 
             LOG.debug("Description is " + description);
-            final Pattern controllerIdPattern = Pattern.compile("org.escidoc.browser.Controller=([^;]*);");
-            final Matcher controllerIdMatcher = controllerIdPattern.matcher(description);
+            if (description != null) {
+                final Pattern controllerIdPattern = Pattern.compile("org.escidoc.browser.Controller=([^;]*);");
+                final Matcher controllerIdMatcher = controllerIdPattern.matcher(description);
 
-            if (controllerIdMatcher.find()) {
-                controllerId = controllerIdMatcher.group(1);
+                if (controllerIdMatcher.find()) {
+                    controllerId = controllerIdMatcher.group(1);
+                }
             }
 
             if (controllerId.equals("org.escidoc.browser.Item")) {
                 openTab(new ItemView(serviceLocation, repositories, this, layout, itemProxy, mainWindow, currentUser),
                     itemProxy.getName());
+                return;
             }
 
             LOG.debug("ControllerID[" + controllerId + "]");
