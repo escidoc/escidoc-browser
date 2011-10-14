@@ -250,11 +250,6 @@ public class Router extends VerticalLayout {
         getWindow().showNotification(msg, Notification.TYPE_HUMANIZED_MESSAGE);
     }
 
-    // public void show(ResourceModel model){
-    //
-    // }
-
-    @Deprecated
     public void show(final ResourceModel clickedResource) throws EscidocClientException {
         if (ContextModel.isContext(clickedResource)) {
             openTab(new ContextView(serviceLocation, this, tryToFindResource(repositories.context(), clickedResource),
