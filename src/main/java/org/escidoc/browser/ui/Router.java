@@ -267,47 +267,42 @@ public class Router extends VerticalLayout {
                 repositories.contentModel().findById(itemProxy.getContentModel().getObjid());
             final String description = contentModel.getProperties().getDescription();
 
-            LOG.debug("Description is" + description);
-            if (description != null) {
-                final Pattern controllerIdPattern = Pattern.compile("org.escidoc.browser.Controller=(.*);");
-                final Matcher controllerIdMatcher = controllerIdPattern.matcher(description);
+            LOG.debug("Description is " + description);
+            final Pattern controllerIdPattern = Pattern.compile("org.escidoc.browser.Controller=([^;]*);");
+            final Matcher controllerIdMatcher = controllerIdPattern.matcher(description);
 
-                if (controllerIdMatcher.find()) {
-                    controllerId = controllerIdMatcher.group(1);
-                }
-
-                if (controllerId.equals("org.escidoc.browser.Item")) {
-                    openTab(new ItemView(serviceLocation, repositories, this, itemProxy, mainWindow, currentUser),
-                        itemProxy.getName());
-                }
-
-                Controller controller;
-                try {
-                    final Class<?> controllerClass = Class.forName(browserProperties.getProperty(controllerId));
-                    controller = (Controller) controllerClass.newInstance();
-                    controller.init(itemProxy);
-                    controller.showView(layout);
-                }
-                catch (final ClassNotFoundException e) {
-                    // TODO tell the user what happens.
-                    LOG.error("" + e.getMessage());
-                }
-                catch (final InstantiationException e) {
-                    // TODO tell the user what happens.
-                    LOG.error("" + e.getMessage());
-                }
-                catch (final IllegalAccessException e) {
-                    // TODO tell the user what happens.
-                    LOG.error("" + e.getMessage());
-                }
+            if (controllerIdMatcher.find()) {
+                controllerId = controllerIdMatcher.group(1);
             }
-            else {
+            LOG.debug("ControllerID[" + controllerId + "]");
+
+            if (controllerId.equals("org.escidoc.browser.Item")) {
                 openTab(new ItemView(serviceLocation, repositories, this, itemProxy, mainWindow, currentUser),
                     itemProxy.getName());
             }
+
+            Controller controller;
+            try {
+                final Class<?> controllerClass = Class.forName(browserProperties.getProperty(controllerId));
+                controller = (Controller) controllerClass.newInstance();
+                controller.init(itemProxy);
+                controller.showView(layout);
+            }
+            catch (final ClassNotFoundException e) {
+                // TODO tell the user what happens.
+                LOG.error("Controller class could not be found. " + e.getMessage());
+            }
+            catch (final InstantiationException e) {
+                // TODO tell the user what happens.
+                LOG.error("Controller class could not be created. " + e.getMessage());
+            }
+            catch (final IllegalAccessException e) {
+                // TODO tell the user what happens.
+                LOG.error("Access issues creating controller class. " + e.getMessage());
+            }
         }
         else {
-            throw new UnsupportedOperationException("Not yet implemented");
+            throw new UnsupportedOperationException("Unknown resource. Can not be shown.");
         }
 
     }
