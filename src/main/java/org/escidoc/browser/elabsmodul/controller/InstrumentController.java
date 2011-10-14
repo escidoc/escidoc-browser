@@ -37,9 +37,13 @@ import org.escidoc.browser.elabsmodul.controller.utils.DOM2String;
 import org.escidoc.browser.elabsmodul.exceptions.EscidocBrowserException;
 import org.escidoc.browser.elabsmodul.model.InstrumentBean;
 import org.escidoc.browser.elabsmodul.view.maincontent.LabsInstrumentView;
+import org.escidoc.browser.model.CurrentUser;
+import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ItemProxyImpl;
+import org.escidoc.browser.ui.Router;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -48,6 +52,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Window;
 
 /**
  * 
@@ -232,7 +237,9 @@ public final class InstrumentController extends Controller {
     }
 
     @Override
-    public void init(ResourceProxy resourceProxy) {
+    public void init(
+        EscidocServiceLocation serviceLocation, Repositories repositories, Router mainSite,
+        ResourceProxy resourceProxy, Window mainWindow, CurrentUser currentUser) {
         this.view = createView(resourceProxy);
         this.view.setCaption("Default Caption");
 
@@ -253,4 +260,5 @@ public final class InstrumentController extends Controller {
 
         return new LabsInstrumentView(instumentBean);
     }
+
 }

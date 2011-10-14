@@ -285,7 +285,7 @@ public class Router extends VerticalLayout {
                 try {
                     final Class<?> controllerClass = Class.forName(browserProperties.getProperty(controllerId));
                     controller = (Controller) controllerClass.newInstance();
-                    controller.init(itemProxy);
+                    controller.init(serviceLocation, repositories, this, itemProxy, mainWindow, currentUser);
                     controller.showView(layout);
                 }
                 catch (final ClassNotFoundException e) {
