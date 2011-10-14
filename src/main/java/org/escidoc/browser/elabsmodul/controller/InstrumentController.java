@@ -267,12 +267,13 @@ public final class InstrumentController extends Controller implements ISaveActio
         EscidocServiceLocation serviceLocation, Repositories repositories, Router mainSite,
         ResourceProxy resourceProxy, Window mainWindow, CurrentUser currentUser) {
         Preconditions.checkNotNull(repositories, "Repository ref is null");
-
+        Preconditions.checkNotNull(serviceLocation, "ServiceLocation ref is null");
+        this.serviceLocation = serviceLocation;
+        this.resourceProxy = resourceProxy;
         this.repositories = repositories;
         this.view = createView(resourceProxy);
         this.view.setCaption("Default Caption");
-        this.serviceLocation = serviceLocation;
-        this.resourceProxy = resourceProxy;
+
     }
 
     private Component createView(final ResourceProxy resourceProxy) {

@@ -197,7 +197,7 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
 
         this.mainLayout.addComponent(new VerticalLayout(), 0);
         /* Add subelements on to RootComponent */
-        this.mainLayout.addComponent((Component) new BreadCrumbMenu(this.mainLayout, breadCrumbModel));
+        new BreadCrumbMenu(this.mainLayout, breadCrumbModel);
         this.mainLayout.addComponent(titleLabel);
         this.mainLayout.addComponent(descRuler);
         this.mainLayout.addComponent(propertiesView);
