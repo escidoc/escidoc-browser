@@ -345,7 +345,7 @@ public final class InstrumentController extends Controller implements ISaveActio
         }
         catch (EscidocClientException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            //e.printStackTrace();
             LOG.debug("Fatal error, could not load BreadCrumb " + e.getLocalizedMessage());
         }
         Collections.reverse(hierarchy);

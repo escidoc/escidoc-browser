@@ -97,6 +97,7 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
 
         this.instrumentBean = (sourceBean != null) ? sourceBean : new InstrumentBean();
         this.saveComponent = saveComponent;
+        this.breadCrumbModel=breadCrumbModel;
 
         initialisePanelComponents();
         buildPanelGUI();
