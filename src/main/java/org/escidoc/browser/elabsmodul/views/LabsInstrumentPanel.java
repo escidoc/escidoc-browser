@@ -109,6 +109,7 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
         this.mainLayout = new VerticalLayout();
         this.pojoItem = new POJOItem<InstrumentBean>(instrumentBean, PROPERTIES);
         this.registeredComponents = new ArrayList<HorizontalLayout>(COMPONENT_COUNT);
+        
 
         this.setContent(mainLayout);
         this.setScrollable(true);
@@ -118,6 +119,8 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
         this.mainLayout.setStyleName(ELabViewContants.STYLE_ELABS_FORM);
         this.mainLayout.setSpacing(true);
         this.mainLayout.setMargin(true);
+        
+        
 
         buttonLayout = LabsLayoutHelper.createButtonLayout();
         HorizontalLayout h1 =
@@ -197,21 +200,25 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
         propertiesView.addComponent(pnlPropertiesRight);
 
         this.mainLayout.addComponent(new VerticalLayout(), 0);
+        Panel viewHandler = new Panel();
+        viewHandler.setStyleName(Panel.STYLE_LIGHT);
+        
         /* Add subelements on to RootComponent */
-        new BreadCrumbMenu(this.mainLayout, breadCrumbModel);
-        this.mainLayout.addComponent(titleLabel);
-        this.mainLayout.addComponent(descRuler);
-        this.mainLayout.addComponent(propertiesView);
-
-        this.mainLayout.addComponent(h1, 1);
-        this.mainLayout.addComponent(h2, 2);
-        this.mainLayout.addComponent(h3, 3);
-        this.mainLayout.addComponent(h4, 4);
-        this.mainLayout.addComponent(h5, 5);
-        this.mainLayout.addComponent(h6, 6);
-        this.mainLayout.addComponent(h7, 7);
-        this.mainLayout.addComponent(h8, 8);
-        this.mainLayout.addComponent(h9, 9);
+        new BreadCrumbMenu(viewHandler, breadCrumbModel);
+        viewHandler.addComponent(titleLabel);
+        viewHandler.addComponent(descRuler);
+        viewHandler.addComponent(propertiesView);
+        
+        this.mainLayout.addComponent(viewHandler,1);
+        this.mainLayout.addComponent(h1, 2);
+        this.mainLayout.addComponent(h2, 3);
+        this.mainLayout.addComponent(h3, 4);
+        this.mainLayout.addComponent(h4, 5);
+        this.mainLayout.addComponent(h5, 6);
+        this.mainLayout.addComponent(h6, 7);
+        this.mainLayout.addComponent(h7, 8);
+        this.mainLayout.addComponent(h8, 9);
+        this.mainLayout.addComponent(h9, 10);
 
         this.mainLayout.attach();
         this.mainLayout.requestRepaintAll();
