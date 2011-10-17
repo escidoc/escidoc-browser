@@ -248,4 +248,8 @@ public class ELabsViewContants {
     public static final String STYLE_ELABS_TEXT = "elabsTextField";
 
     public static final String STYLE_ELABS_TEXT_AS_LABEL = "elabsLabel";
+
+    public static final String DIALOG_SAVEINSTRUMENT_HEADER = "Saving Instrument";
+
+    public static final String DIALOG_SAVEINSTRUMENT_TEXT = "Are you sure to save this Instrument?";
 }

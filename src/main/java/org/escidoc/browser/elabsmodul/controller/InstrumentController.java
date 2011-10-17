@@ -37,6 +37,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.escidoc.browser.controller.Controller;
+import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.controller.utils.DOM2String;
 import org.escidoc.browser.elabsmodul.exceptions.EscidocBrowserException;
 import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
@@ -365,8 +366,8 @@ public final class InstrumentController extends Controller implements ISaveActio
         Preconditions.checkNotNull(beanModel, "DataBean to store is NULL");
         this.beanModel = beanModel;
 
-        this.mainWindow.addWindow(new YesNoDialog("Saving Instrument", "Are you sure to save this instrument element?",
-            new YesNoDialog.Callback() {
+        this.mainWindow.addWindow(new YesNoDialog(ELabsViewContants.DIALOG_SAVEINSTRUMENT_HEADER,
+            ELabsViewContants.DIALOG_SAVEINSTRUMENT_TEXT, new YesNoDialog.Callback() {
 
                 @Override
                 public void onDialogResult(boolean resultIsYes) {

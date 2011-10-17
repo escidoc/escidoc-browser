@@ -61,13 +61,15 @@ public class YesNoDialog extends Window implements Button.ClickListener {
 
         HorizontalLayout layout = new HorizontalLayout();
         layout.setSpacing(true);
-        layout.setMargin(true);
+        // layout.setMargin(true);
         layout.addComponent(no);
         layout.addComponent(yes);
         addComponent(layout);
         setWidth("300px");
-        setHeight("100px");
+        setHeight("160px");
         setClosable(false);
+        setResizable(false);
+        setScrollable(false);
     }
 
     @Override
