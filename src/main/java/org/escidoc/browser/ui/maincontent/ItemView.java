@@ -190,7 +190,7 @@ public final class ItemView extends VerticalLayout {
         HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setSpacing(true);
         buttonLayout.setMargin(true);
-        // buttonLayout.addComponent(new Label());
+
         buttonLayout.addComponent(addButton);
         buttonLayout.addComponent(removeButton);
 
