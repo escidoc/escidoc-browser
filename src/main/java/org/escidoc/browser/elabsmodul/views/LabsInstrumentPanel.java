@@ -163,7 +163,8 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
         propertiesView.addComponent(pnlPropertiesRight);
 
         Panel viewHandler = new Panel();
-        viewHandler.setStyleName(Panel.STYLE_LIGHT);
+        viewHandler.getLayout().setMargin(false);
+        // viewHandler.setStyleName("red");
 
         /* Add subelements on to RootComponent */
         new BreadCrumbMenu(viewHandler, breadCrumbModel);
@@ -171,7 +172,7 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
         viewHandler.addComponent(descRuler);
         viewHandler.addComponent(propertiesView);
 
-        this.mainLayout.addComponent(viewHandler);
+        this.addComponent(viewHandler);
     }
 
     /**

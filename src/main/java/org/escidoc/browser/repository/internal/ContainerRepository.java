@@ -121,7 +121,7 @@ public class ContainerRepository implements Repository {
 
     private List<SearchResultRecord> findAllDirectMembers(final String id) throws EscidocException,
         InternalClientException, TransportException {
-        return client.retrieveMembers(client.retrieve(id), new SearchRetrieveRequestType()).getRecords();
+        return client.retrieveMembers(id, new SearchRetrieveRequestType()).getRecords();
     }
 
     @Override
