@@ -40,8 +40,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
@@ -162,6 +165,24 @@ public final class ItemView extends VerticalLayout {
         leftPanel.setWidth("30%");
         leftPanel.setHeight("82%");
         leftPanel.addComponent(itCnt);
+
+        // the changes start here
+        VerticalLayout panelLayout = (VerticalLayout) leftPanel.getContent();
+        panelLayout.setExpandRatio(itCnt, 1.0f);
+        panelLayout.setHeight("100%");
+
+        Button addButton = new Button("+");
+        Button removeButton = new Button("-");
+
+        HorizontalLayout buttonLayout = new HorizontalLayout();
+        buttonLayout.setSpacing(true);
+        buttonLayout.setMargin(true);
+
+        buttonLayout.addComponent(addButton);
+        buttonLayout.addComponent(removeButton);
+
+        panelLayout.addComponent(buttonLayout);
+        panelLayout.setComponentAlignment(buttonLayout, Alignment.BOTTOM_LEFT);
 
         cssLayout.addComponent(leftPanel);
     }
