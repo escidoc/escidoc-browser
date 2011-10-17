@@ -67,6 +67,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.client.exceptions.system.SystemException;
 import de.escidoc.core.resources.cmm.ContentModel;
 
 public class Router extends VerticalLayout {
@@ -229,7 +230,7 @@ public class Router extends VerticalLayout {
             else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("ITEM")) {
                 try {
                     final ItemProxy item = (ItemProxy) resourceFactory.find(escidocID, ResourceType.ITEM);
-                    openTab(new ItemView(serviceLocation, repositories, this, item, mainWindow, currentUser),
+                    openTab(new ItemView(serviceLocation, repositories, this, layout, item, mainWindow, currentUser),
                         item.getName());
                 }
                 catch (final EscidocClientException e) {
@@ -250,75 +251,95 @@ public class Router extends VerticalLayout {
         getWindow().showNotification(msg, Notification.TYPE_HUMANIZED_MESSAGE);
     }
 
-    // public void show(ResourceModel model){
-    //
-    // }
-
-    @Deprecated
     public void show(final ResourceModel clickedResource) throws EscidocClientException {
+        String controllerId = null;
         if (ContextModel.isContext(clickedResource)) {
-            openTab(new ContextView(serviceLocation, this, tryToFindResource(repositories.context(), clickedResource),
-                mainWindow, currentUser, repositories), clickedResource.getName());
+            controllerId = "org.escidoc.browser.Context";
         }
-        else if (ContainerModel.isContainer(clickedResource)) {
-            openTab(
-                new ContainerView(serviceLocation, this, tryToFindResource(repositories.container(), clickedResource),
-                    mainWindow, currentUser, repositories), clickedResource.getName());
-        }
-        else if (ItemModel.isItem(clickedResource)) {
-            String controllerId = "org.escidoc.browser.Item";
-            final ItemProxy itemProxy = (ItemProxy) tryToFindResource(repositories.item(), clickedResource);
+        else if (ContainerModel.isContainer(clickedResource) || ItemModel.isItem(clickedResource)) {
+            if (ContainerModel.isContainer(clickedResource)) {
+                controllerId = "org.escidoc.browser.Container";
+            }
+            else if (ItemModel.isItem(clickedResource)) {
+                controllerId = "org.escidoc.browser.Item";
+            }
+
+            final ResourceProxy resourceProxy = tryToFindResource(clickedResource);
             final ContentModel contentModel =
-                repositories.contentModel().findById(itemProxy.getContentModel().getObjid());
+                repositories.contentModel().findById(resourceProxy.getContentModel().getObjid());
             final String description = contentModel.getProperties().getDescription();
 
-            LOG.debug("Description is" + description);
+            LOG.debug("Description is " + description);
             if (description != null) {
-                final Pattern controllerIdPattern = Pattern.compile("org.escidoc.browser.Controller=(.*);");
+                final Pattern controllerIdPattern = Pattern.compile("org.escidoc.browser.Controller=([^;]*);");
                 final Matcher controllerIdMatcher = controllerIdPattern.matcher(description);
 
                 if (controllerIdMatcher.find()) {
                     controllerId = controllerIdMatcher.group(1);
                 }
-
-                if (controllerId.equals("org.escidoc.browser.Item")) {
-                    openTab(new ItemView(serviceLocation, repositories, this, itemProxy, mainWindow, currentUser),
-                        itemProxy.getName());
-                }
-
-                Controller controller;
-                try {
-                    final Class<?> controllerClass = Class.forName(browserProperties.getProperty(controllerId));
-                    controller = (Controller) controllerClass.newInstance();
-                    controller.init(itemProxy);
-                    controller.showView(layout);
-                }
-                catch (final ClassNotFoundException e) {
-                    // TODO tell the user what happens.
-                    LOG.error("" + e.getMessage());
-                }
-                catch (final InstantiationException e) {
-                    // TODO tell the user what happens.
-                    LOG.error("" + e.getMessage());
-                }
-                catch (final IllegalAccessException e) {
-                    // TODO tell the user what happens.
-                    LOG.error("" + e.getMessage());
-                }
             }
-            else {
-                openTab(new ItemView(serviceLocation, repositories, this, itemProxy, mainWindow, currentUser),
-                    itemProxy.getName());
-            }
+
+        }
+        LOG.debug("ControllerID[" + controllerId + "]");
+        if (controllerId == null) {
+            throw new UnsupportedOperationException("Unknown resource. Can not be shown.");
+        }
+
+        // Controller by controller-id
+        Controller controller;
+        if (controllerId.equals("org.escidoc.browser.Item")) {
+            openTab(new ItemView(serviceLocation, repositories, this, layout, tryToFindResource(clickedResource),
+                mainWindow, currentUser), clickedResource.getName());
+        }
+        else if (controllerId.equals("org.escidoc.browser.Container")) {
+            openTab(new ContainerView(serviceLocation, this, tryToFindResource(clickedResource), mainWindow,
+                currentUser, repositories), clickedResource.getName());
+        }
+        else if (controllerId.equals("org.escidoc.browser.Context")) {
+            openTab(new ContextView(serviceLocation, this, tryToFindResource(clickedResource), mainWindow, currentUser,
+                repositories), clickedResource.getName());
         }
         else {
-            throw new UnsupportedOperationException("Not yet implemented");
+            try {
+                String controllerClassName = browserProperties.getProperty(controllerId);
+                // TODO find a better solution for "controller ID not configured"
+                if (controllerClassName == null) {
+                    LOG.error("Could not resolve controller ID. " + controllerId);
+                }
+                else {
+                    final Class<?> controllerClass = Class.forName(controllerClassName);
+                    controller = (Controller) controllerClass.newInstance();
+                    controller.init(serviceLocation, repositories, this, tryToFindResource(clickedResource),
+                        mainWindow, currentUser);
+                    controller.showView(layout);
+                }
+            }
+            catch (final ClassNotFoundException e) {
+                // TODO tell the user what happens.
+                LOG.error("Controller class could not be found. " + e.getMessage());
+            }
+            catch (final InstantiationException e) {
+                // TODO tell the user what happens.
+                LOG.error("Controller class could not be created. " + e.getMessage());
+            }
+            catch (final IllegalAccessException e) {
+                // TODO tell the user what happens.
+                LOG.error("Access issues creating controller class. " + e.getMessage());
+            }
         }
-
     }
 
-    private ResourceProxy tryToFindResource(final Repository repository, final ResourceModel clickedResource)
-        throws EscidocClientException {
+    private ResourceProxy tryToFindResource(final ResourceModel clickedResource) throws EscidocClientException {
+        Repository repository = null;
+        if (ContainerModel.isContainer(clickedResource)) {
+            repository = repositories.container();
+        }
+        else if (ItemModel.isItem(clickedResource)) {
+            repository = repositories.item();
+        }
+        else if (ContextModel.isContext(clickedResource)) {
+            repository = repositories.context();
+        }
         return repository.findById(clickedResource.getId());
     }
 }

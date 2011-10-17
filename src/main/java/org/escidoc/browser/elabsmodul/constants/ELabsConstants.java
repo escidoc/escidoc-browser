@@ -372,16 +372,16 @@ public final class ELabsConstants {
     public static final int SPLIT_POSITION = 270;
 
     // eLabs Constants
-    // TODO move this values to a properties file
+    // TODO will be deleted
     public static final String ELABS_DEFAULT_CONTEXT_ID = "escidoc:12004";
 
-    public static final String ELABS_DEFAULT_STUDY_CMODEL_ID = "escidoc:5001";
+    public static final String ELABS_DEFAULT_STUDY_CMODEL_ID = "escidoc:15001";
 
-    public static final String ELABS_DEFAULT_INVESTIGATION_CMODEL_ID = "escidoc:5002";
+    public static final String ELABS_DEFAULT_INVESTIGATION_CMODEL_ID = "escidoc:15002";
 
-    public static final String ELABS_DEFAULT_RIG_CMODEL_ID = "escidoc:xxxx";
+    public static final String ELABS_DEFAULT_INSTR_CMODEL_ID = "escidoc:15003";
 
-    public static final String ELABS_DEFAULT_INSTR_CMODEL_ID = "escidoc:2001";
+    public static final String ELABS_DEFAULT_RIG_CMODEL_ID = "escidoc:15004";
 
     public static final String ELABS_DEFAULT_GENERATED_ITEM_CMODEL_ID = "escidoc:xxxx";
 

@@ -30,6 +30,7 @@ package org.escidoc.browser.ui.maincontent;
 
 import java.util.List;
 
+import org.escidoc.browser.layout.LayoutDesign;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModelFactory;
@@ -83,6 +84,8 @@ public class SearchResultsView extends VerticalLayout {
     private CurrentUser currentUser;
 
     private ResourceModelFactory resourceModelFactory;
+    
+    private LayoutDesign layout;
 
     /**
      * The constructor should first build the main layout, set the composition root and then do any custom
@@ -93,7 +96,7 @@ public class SearchResultsView extends VerticalLayout {
      * @param repositories
      * @param currentUser
      */
-    public SearchResultsView(final Router mainSite, final String searchString,
+    public SearchResultsView(final Router mainSite, LayoutDesign layout, final String searchString,
         final EscidocServiceLocation serviceLocation, final Repositories repositories, final CurrentUser currentUser) {
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
         Preconditions.checkNotNull(searchString, "searchString is null: %s", searchString);
@@ -105,6 +108,7 @@ public class SearchResultsView extends VerticalLayout {
         this.serviceLocation = serviceLocation;
         this.repositories = repositories;
         this.currentUser = currentUser;
+        this.layout=layout;
 
         resourceModelFactory = new ResourceModelFactory(repositories);
         final CssLayout cssLayout = configureLayout();
@@ -238,7 +242,7 @@ public class SearchResultsView extends VerticalLayout {
 
         tblPagedResults.addListener(new Property.ValueChangeListener() {
 
-            @Override
+			@Override
             public void valueChange(final ValueChangeEvent event) {
                 final Object[] variablesForTheTab = (Object[]) tblPagedResults.getValue();
                 if (variablesForTheTab == null) {
@@ -267,7 +271,7 @@ public class SearchResultsView extends VerticalLayout {
                 }
                 else if (variablesForTheTab[0].equals(ResourceType.ITEM.asLabel())) {
                     try {
-                        return new ItemView(serviceLocation, repositories, router, find(variablesForTheTab,
+                        return new ItemView(serviceLocation, repositories, router, layout, find(variablesForTheTab,
                             ResourceType.ITEM), router.getWindow(), currentUser);
                     }
                     catch (final EscidocClientException e) {

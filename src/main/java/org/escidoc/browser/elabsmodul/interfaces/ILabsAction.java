@@ -26,7 +26,7 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.elabsmodul.view.subcontent;
+package org.escidoc.browser.elabsmodul.interfaces;
 
 public interface ILabsAction {
 

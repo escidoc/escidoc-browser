@@ -30,6 +30,7 @@ package org.escidoc.browser.ui.maincontent;
 
 import java.net.URISyntaxException;
 
+import org.escidoc.browser.layout.LayoutDesign;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
@@ -122,8 +123,10 @@ public final class ItemView extends VerticalLayout {
 
     private Label lblCurrentVersionStatus;
 
+	private LayoutDesign layout;
+
     public ItemView(final EscidocServiceLocation serviceLocation, final Repositories repositories,
-        final Router mainSite, final ResourceProxy resourceProxy, final Window mainWindow, final CurrentUser currentUser) {
+        final Router mainSite, final LayoutDesign layout, final ResourceProxy resourceProxy, final Window mainWindow, final CurrentUser currentUser) {
 
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null.");
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
@@ -135,6 +138,7 @@ public final class ItemView extends VerticalLayout {
         this.repositories = repositories;
         this.mainWindow = mainWindow;
         this.mainSite = mainSite;
+        this.layout=layout;
         this.serviceLocation = serviceLocation;
         appHeight = mainSite.getApplicationHeight();
         this.currentUser = currentUser;
@@ -152,7 +156,7 @@ public final class ItemView extends VerticalLayout {
 
         buildLeftCell(new ItemContent(repositories, resourceProxy, serviceLocation, mainWindow, currentUser));
         buildRightCell(new MetadataRecsItem(resourceProxy, accordionHeight, mainWindow, serviceLocation, repositories,
-            currentUser, mainSite).asAccord());
+            currentUser, mainSite, layout).asAccord());
 
         addComponent(cssLayout);
     }

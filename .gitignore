@@ -18,3 +18,4 @@ script/*
 *.sh
 .mymetadata
 pom.xml.versionsBackup
+/.checkstyle

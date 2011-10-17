@@ -84,66 +84,21 @@ final class ActionHandlerImpl implements Action.Handler {
         String contextID = findContextId(target);
         Preconditions.checkNotNull(contextID, "Context ID is null");
 
-        if (contextID.equals(ELabsConstants.ELABS_DEFAULT_CONTEXT_ID)) {
-            // Integrated eLabs Browser tree element
-            String contentModelId = findContentModelId(target);
-            Preconditions.checkNotNull(contentModelId, "Content Model ID is null");
-
-            if (isContext(target) && contentModelId.equals(AppConstants.EMPTY_STRING)) {
-                return new Action[] { ActionList.ACTION_ADD_STUDY, ActionList.ACTION_ADD_RIG,
-                    ActionList.ACTION_ADD_INSTRUMENT };
-            }
-            else if (isContainer(target)) {
-                if (contentModelId.equals(ELabsConstants.ELABS_DEFAULT_STUDY_CMODEL_ID)) {
-                    return new Action[] { ActionList.ACTION_ADD_INVESTIGATION, ActionList.ACTION_MODIFY_STUDY,
-                        ActionList.ACTION_DELETE_STUDY };
-                }
-                else if (contentModelId.equals(ELabsConstants.ELABS_DEFAULT_INVESTIGATION_CMODEL_ID)) {
-                    return new Action[] { ActionList.ACTION_MODIFY_INVESTIGATION,
-                        ActionList.ACTION_DELETE_INVESTIGATION };
-                }
-                else {
-                    LOG.error("Unsupported BW eLabs ContentModel in the context menu of the object tree!");
-                    return new Action[] {};
-                }
-            }
-            else if (isItem(target)) {
-                if (contentModelId.equals(ELabsConstants.ELABS_DEFAULT_RIG_CMODEL_ID)) {
-                    return new Action[] { ActionList.ACTION_MODIFY_RIG, ActionList.ACTION_DELETE_RIG };
-                }
-                else if (contentModelId.equals(ELabsConstants.ELABS_DEFAULT_INSTR_CMODEL_ID)) {
-                    return new Action[] { ActionList.ACTION_MODIFY_INSTRUMENT, ActionList.ACTION_DELETE_INSTRUMENT };
-                }
-                else if (contentModelId.equals(ELabsConstants.ELABS_DEFAULT_GENERATED_ITEM_CMODEL_ID)) {
-                    return new Action[] { ActionList.ACTION_DELETE_ITEM };
-                }
-                else {
-                    LOG.error("Unsupported BW eLabs ContentModel in the context menu of the object tree!");
-                    return new Action[] {};
-                }
-            }
-            else {
-                LOG.error("Unsupported BW eLabs ContentModel in the context menu of the object tree!");
-                return new Action[] {};
-            }
+        // Original Browser tree element
+        if (isContext(target)) {
+            return new Action[] { ActionList.ACTION_ADD_CONTAINER, ActionList.ACTION_ADD_ITEM };
         }
-        else {
-            // Original Browser tree element
-            if (isContext(target)) {
-                return new Action[] { ActionList.ACTION_ADD_CONTAINER, ActionList.ACTION_ADD_ITEM };
-            }
 
-            if (isContainer(target)) {
-                return new Action[] { ActionList.ACTION_ADD_CONTAINER, ActionList.ACTION_ADD_ITEM,
-                    ActionList.ACTION_DELETE_CONTAINER };
-            }
-
-            if (isItem(target)) {
-                return new Action[] { ActionList.ACTION_DELETE_ITEM };
-            }
-
-            return new Action[] {};
+        if (isContainer(target)) {
+            return new Action[] { ActionList.ACTION_ADD_CONTAINER, ActionList.ACTION_ADD_ITEM,
+                ActionList.ACTION_DELETE_CONTAINER };
         }
+
+        if (isItem(target)) {
+            return new Action[] { ActionList.ACTION_DELETE_ITEM };
+        }
+
+        return new Action[] {};
 
     }
 

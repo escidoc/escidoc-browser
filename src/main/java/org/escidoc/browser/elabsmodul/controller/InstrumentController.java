@@ -28,43 +28,59 @@
  */
 package org.escidoc.browser.elabsmodul.controller;
 
+import java.util.Collections;
+import java.util.List;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import org.escidoc.browser.controller.Controller;
 import org.escidoc.browser.elabsmodul.controller.utils.DOM2String;
 import org.escidoc.browser.elabsmodul.exceptions.EscidocBrowserException;
+import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
+import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
 import org.escidoc.browser.elabsmodul.model.InstrumentBean;
+import org.escidoc.browser.elabsmodul.views.LabsInstrumentPanel;
+import org.escidoc.browser.model.CurrentUser;
+import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
+import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.internal.ItemProxyImpl;
+import org.escidoc.browser.repository.internal.ItemRepository;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.helper.ResourceHierarchy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.google.common.base.Preconditions;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Window;
+
+import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.common.MetadataRecord;
+import de.escidoc.core.resources.om.item.Item;
+
 /**
  * 
  */
-public final class InstrumentController {
-
-    private static Object syncObject = new Object();
-
-    private static InstrumentController singleton = null;
+public final class InstrumentController extends Controller implements ISaveAction {
 
     private static Logger LOG = LoggerFactory.getLogger(InstrumentController.class);
 
-    public static InstrumentController getInstance() {
-        if (singleton == null) {
-            synchronized (syncObject) {
-                if (singleton == null) {
-                    singleton = new InstrumentController();
-                }
-            }
-        }
-        return singleton;
-    }
+    private Repositories repositories;
+
+    private EscidocServiceLocation serviceLocation;
+
+    private ResourceProxy resourceProxy;
 
     /**
      * 
@@ -74,7 +90,7 @@ public final class InstrumentController {
      * @throws EscidocBrowserException
      *             exception
      */
-    public synchronized InstrumentBean loadBeanData(final ResourceProxy resourceProxy) throws EscidocBrowserException {
+    private synchronized InstrumentBean loadBeanData(final ResourceProxy resourceProxy) throws EscidocBrowserException {
 
         if (resourceProxy == null || !(resourceProxy instanceof ItemProxy)) {
             throw new EscidocBrowserException("NOT an ItemProxy", null);
@@ -88,6 +104,9 @@ public final class InstrumentController {
             final String xml = DOM2String.convertDom2String(e);
 
             final NodeList nodeList = e.getChildNodes();
+
+            instrumentBean.setObjectId(itemProxy.getId());
+
             for (int i = 0; i < nodeList.getLength(); i++) {
                 final Node node = nodeList.item(i);
                 final String nodeName = node.getNodeName();
@@ -151,7 +170,8 @@ public final class InstrumentController {
         return instrumentBean;
     }
 
-    public synchronized static Element createDOMElementByBeanModel(final InstrumentBean instrumentBean) {
+    // TODO
+    public synchronized static Element createInstrumentDOMElementByBeanModel(final InstrumentBean instrumentBean) {
 
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
@@ -191,15 +211,13 @@ public final class InstrumentController {
             // <el:requires-calibration>no</el:requires-calibration>
             instrument =
                 createWithoutNamespace(doc, instrument, "requires-calibration",
-                    booleanToHumanReadable(instrumentBean.getConfiguration()));
-
-            // <el:esync-endpoint>http://my.es/ync/endpoint</el:esync-endpoint>
-            instrument =
-                createWithoutNamespace(doc, instrument, "esync-endpoint",
                     booleanToHumanReadable(instrumentBean.getCalibration()));
 
+            // <el:esync-endpoint>http://my.es/ync/endpoint</el:esync-endpoint>
+            instrument = createWithoutNamespace(doc, instrument, "esync-endpoint", instrumentBean.getESyncDaemon());
+
             // <el:monitored-folder>C:\tmp</el:monitored-folder>
-            instrument = createWithoutNamespace(doc, instrument, "monitored-folder", instrumentBean.getESyncDaemon());
+            instrument = createWithoutNamespace(doc, instrument, "monitored-folder", instrumentBean.getFolder());
 
             // <el:result-mime-type>application/octet-stream</el:result-mime-type>
             instrument = createWithoutNamespace(doc, instrument, "result-mime-type", instrumentBean.getFileFormat());
@@ -207,27 +225,26 @@ public final class InstrumentController {
             // <el:responsible-person
             // xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
             // rdf:resource="escidoc:42"></el:responsible-person>
-            final Element responsiblePerson =
-                doc.createElementNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "responsible-person");
-            responsiblePerson.setPrefix("el");
-            responsiblePerson.setAttribute("rdf:resource", instrumentBean.getDeviceSupervisor());
+            final Element responsiblePerson = doc.createElement("el:responsible-person");
+            responsiblePerson.setAttributeNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdf:resource",
+                instrumentBean.getDeviceSupervisor());
             instrument.appendChild(responsiblePerson);
 
             // <el:institution
             // xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
             // rdf:resource="escidoc:1001"></el:institution>
-            final Element institution =
-                doc.createElementNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "institution");
-            institution.setPrefix("el");
-            institution.setAttribute("rdf:resource", instrumentBean.getInstitute());
+            final Element institution = doc.createElement("el:institution");
+            institution.setAttributeNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdf:resource",
+                instrumentBean.getInstitute());
             instrument.appendChild(institution);
-
             return instrument;
 
         }
-        catch (final Throwable e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        catch (DOMException e) {
+            LOG.error(e.getLocalizedMessage());
+        }
+        catch (ParserConfigurationException e) {
+            LOG.error(e.getLocalizedMessage());
         }
 
         return null;
@@ -237,11 +254,129 @@ public final class InstrumentController {
         return (value) ? "yes" : "no";
     }
 
-    private static Element createWithoutNamespace(
-        final Document doc, final Element instrument, final String attributeValue, final String value) {
-        final Element element = doc.createElement("el:" + attributeValue);
+    private static Element createWithoutNamespace(Document doc, Element instrument, String attributeValue, String value) {
+        final Element element = doc.createElementNS("http://escidoc.org/ontologies/bw-elabs/re#", attributeValue);
         element.setTextContent(value);
+        element.setPrefix("el");
         instrument.appendChild(element);
         return instrument;
+    }
+
+    @Override
+    public void init(
+        EscidocServiceLocation serviceLocation, Repositories repositories, Router mainSite,
+        ResourceProxy resourceProxy, Window mainWindow, CurrentUser currentUser) {
+        Preconditions.checkNotNull(repositories, "Repository ref is null");
+        Preconditions.checkNotNull(serviceLocation, "ServiceLocation ref is null");
+        this.serviceLocation = serviceLocation;
+        this.resourceProxy = resourceProxy;
+        this.repositories = repositories;
+        this.view = createView(resourceProxy);
+        this.view.setCaption("Default Caption");
+
+    }
+
+    private Component createView(final ResourceProxy resourceProxy) {
+        Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
+        /*
+         * final String VIEWCAPTION = "Instument View"; final String LAST_MODIFIED_BY = "Last modification by "; final
+         * String FLOAT_LEFT = "floatleft"; final String FLOAT_RIGHT = "floatright";
+         */
+        ItemProxyImpl itemProxyImpl = null;
+        InstrumentBean instumentBean = null;
+
+        // final VerticalLayout rootCompoent = new VerticalLayout();
+        // rootCompoent.setCaption(VIEWCAPTION);
+
+        if (resourceProxy instanceof ItemProxyImpl) {
+            itemProxyImpl = (ItemProxyImpl) resourceProxy;
+        }
+
+        try {
+            instumentBean = loadBeanData(itemProxyImpl);
+        }
+        catch (final EscidocBrowserException e) {
+            LOG.error(e.getLocalizedMessage());
+            instumentBean = null;
+        }
+
+        /*
+         * Create all the subviews // BreadCrumbp View VerticalLayout breadCrumbpView = new VerticalLayout();
+         * breadCrumbpView.setCaption("BreadCrumbp View Caption");
+         * 
+         * // Item title final Label titleLabel = new Label(ViewConstants.RESOURCE_NAME + resourceProxy.getName());
+         * titleLabel.setDescription("header"); titleLabel.setStyleName("h2 fullwidth");
+         * 
+         * // HR Ruler final Label descRuler = new Label("<hr/>", Label.CONTENT_RAW); descRuler.setStyleName("hr");
+         * 
+         * // ItemProperties View final HorizontalLayout propertiesView = new HorizontalLayout(); final Label
+         * descMetadata1 = new Label("ID: " + instumentBean.getObjectId()); final Label descMetadata2 = new
+         * Label(LAST_MODIFIED_BY + " " + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(),
+         * Label.CONTENT_XHTML);
+         * 
+         * final Panel pnlPropertiesLeft = new Panel(); pnlPropertiesLeft.setWidth("40%");
+         * pnlPropertiesLeft.setHeight("60px"); pnlPropertiesLeft.setStyleName(FLOAT_LEFT);
+         * pnlPropertiesLeft.addStyleName(Runo.PANEL_LIGHT); pnlPropertiesLeft.addComponent(descMetadata1);
+         * 
+         * final Panel pnlPropertiesRight = new Panel(); pnlPropertiesRight.setWidth("60%");
+         * pnlPropertiesRight.setHeight("60px"); pnlPropertiesRight.setStyleName(FLOAT_RIGHT);
+         * pnlPropertiesRight.addStyleName(Runo.PANEL_LIGHT); pnlPropertiesRight.addComponent(descMetadata2);
+         * propertiesView.addComponent(pnlPropertiesLeft); propertiesView.addComponent(pnlPropertiesRight);
+         */
+        // Instrument View
+        Component instrumentView = new LabsInstrumentPanel(instumentBean, this, this.BreadCrumbModel());
+
+        return instrumentView; // pushed into InstrumentView
+
+        /*
+         * Add subelements on to RootComponent rootCompoent.addComponent(breadCrumbpView);
+         * rootCompoent.addComponent(titleLabel); rootCompoent.addComponent(descRuler);
+         * rootCompoent.addComponent(propertiesView); rootCompoent.addComponent(instrumentView);
+         * 
+         * return rootCompoent;
+         */
+    }
+
+    private List<ResourceModel> BreadCrumbModel() {
+        final ResourceHierarchy rs = new ResourceHierarchy(serviceLocation, repositories);
+        List<ResourceModel> hierarchy = null;
+        try {
+            hierarchy = rs.getHierarchy(resourceProxy);
+        }
+        catch (EscidocClientException e) {
+            // TODO Auto-generated catch block
+            //e.printStackTrace();
+            LOG.debug("Fatal error, could not load BreadCrumb " + e.getLocalizedMessage());
+        }
+        Collections.reverse(hierarchy);
+        hierarchy.add(resourceProxy);
+        return hierarchy;
+    }
+
+    @Override
+    public void saveAction(final IBeanModel dataBean) {
+        Preconditions.checkNotNull(dataBean, "DataBean to store is NULL");
+
+        ItemRepository itemRepositories = repositories.item();
+        final String ESCIDOC = "escidoc";
+
+        InstrumentBean instrumentBean = null;
+        Item item = null;
+
+        if (dataBean instanceof InstrumentBean) {
+            instrumentBean = (InstrumentBean) dataBean;
+        }
+        final Element metaDataContent = InstrumentController.createInstrumentDOMElementByBeanModel(instrumentBean);
+
+        try {
+            item = itemRepositories.findItemById(instrumentBean.getObjectId());
+            MetadataRecord metadataRecord = item.getMetadataRecords().get(ESCIDOC);
+            metadataRecord.setContent(metaDataContent);
+            itemRepositories.update(item.getObjid(), item);
+        }
+        catch (EscidocClientException e) {
+            LOG.error(e.getLocalizedMessage());
+        }
+        LOG.info("Instument is successfully saved.");
     }
 }
