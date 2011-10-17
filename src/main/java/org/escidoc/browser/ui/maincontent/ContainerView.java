@@ -49,7 +49,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -196,28 +195,36 @@ public class ContainerView extends VerticalLayout {
 
     @SuppressWarnings("deprecation")
     private void leftCell(final String string, final Component comptoBind) {
-        final Panel leftpnl = new Panel();
-        leftpnl.setStyleName("directmembers floatleft");
-        leftpnl.setScrollable(false);
-        leftpnl.getLayout().setMargin(false);
-        leftpnl.setWidth("30%");
-        leftpnl.setHeight("82%");
+        final Panel leftPanel = new Panel();
+        leftPanel.setStyleName("directmembers floatleft");
+        leftPanel.setScrollable(false);
+        leftPanel.getLayout().setMargin(false);
+        leftPanel.setWidth("30%");
+        leftPanel.setHeight("82%");
 
         final Label nameofPanel = new Label("<strong>" + DIRECT_MEMBERS + "</string>", Label.CONTENT_RAW);
-        leftpnl.addComponent(nameofPanel);
-        leftpnl.addComponent(comptoBind);
+        leftPanel.addComponent(nameofPanel);
+        leftPanel.addComponent(comptoBind);
 
         // the changes start here
-        ComponentContainer content = leftpnl.getContent();
-        VerticalLayout vl = (VerticalLayout) content;
-        vl.setExpandRatio(comptoBind, 1.0f);
-        vl.setHeight("100%");
+        VerticalLayout panelLayout = (VerticalLayout) leftPanel.getContent();
+        panelLayout.setExpandRatio(comptoBind, 1.0f);
+        panelLayout.setHeight("100%");
 
-        Button button = new Button("+");
-        vl.addComponent(button);
-        vl.setComponentAlignment(button, Alignment.BOTTOM_LEFT);
+        Button addButton = new Button("+");
+        Button removeButton = new Button("-");
 
-        cssLayout.addComponent(leftpnl);
+        HorizontalLayout buttonLayout = new HorizontalLayout();
+        buttonLayout.setSpacing(true);
+        buttonLayout.setMargin(true);
+        // buttonLayout.addComponent(new Label());
+        buttonLayout.addComponent(addButton);
+        buttonLayout.addComponent(removeButton);
+
+        panelLayout.addComponent(buttonLayout);
+        panelLayout.setComponentAlignment(buttonLayout, Alignment.BOTTOM_LEFT);
+
+        cssLayout.addComponent(leftPanel);
     }
 
     /**

@@ -36,8 +36,11 @@ import org.escidoc.browser.ui.Router;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.terminal.Sizeable;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
@@ -143,19 +146,38 @@ public class ContextView extends VerticalLayout {
      */
     @SuppressWarnings("deprecation")
     private void leftCell(final String directMembers, final Component comptoBind) {
-        final Panel leftpnl = new Panel();
+        final Panel leftPanel = new Panel();
 
-        leftpnl.setStyleName("directmembers floatleft");
-        leftpnl.setScrollable(false);
-        leftpnl.setWidth("30%");
-        leftpnl.setHeight("82%");
-        leftpnl.getLayout().setMargin(false);
+        leftPanel.setStyleName("directmembers floatleft");
+        leftPanel.setScrollable(false);
+        leftPanel.setWidth("30%");
+        leftPanel.setHeight("82%");
+        leftPanel.getLayout().setMargin(false);
 
         final Label nameofPanel = new Label("<strong>" + DIRECT_MEMBERS + "</string>", Label.CONTENT_RAW);
-        leftpnl.addComponent(nameofPanel);
+        leftPanel.addComponent(nameofPanel);
 
-        leftpnl.addComponent(comptoBind);
-        cssLayout.addComponent(leftpnl);
+        leftPanel.addComponent(comptoBind);
+
+        // the changes start here
+        VerticalLayout panelLayout = (VerticalLayout) leftPanel.getContent();
+        panelLayout.setExpandRatio(comptoBind, 1.0f);
+        panelLayout.setHeight("100%");
+
+        Button addButton = new Button("+");
+        Button removeButton = new Button("-");
+
+        HorizontalLayout buttonLayout = new HorizontalLayout();
+        buttonLayout.setSpacing(true);
+        buttonLayout.setMargin(true);
+        // buttonLayout.addComponent(new Label());
+        buttonLayout.addComponent(addButton);
+        buttonLayout.addComponent(removeButton);
+
+        panelLayout.addComponent(buttonLayout);
+        panelLayout.setComponentAlignment(buttonLayout, Alignment.BOTTOM_LEFT);
+
+        cssLayout.addComponent(leftPanel);
     }
 
     /**
