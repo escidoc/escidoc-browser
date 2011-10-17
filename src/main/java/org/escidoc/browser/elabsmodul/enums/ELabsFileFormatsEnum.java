@@ -50,7 +50,7 @@ public enum ELabsFileFormatsEnum {
         return format;
     }
 
-    public static List toList() {
+    public static List<String> toList() {
         if (list.isEmpty()) {
             list.add(ELabsFileFormatsEnum.BLANK.toString());
             list.add(ELabsFileFormatsEnum.FMF.toString());

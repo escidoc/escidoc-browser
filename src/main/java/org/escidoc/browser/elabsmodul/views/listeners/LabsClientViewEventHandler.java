@@ -77,11 +77,11 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
     private final LabsClientTextFieldEventHandler clientTextFieldEventHandler;
 
     public LabsClientViewEventHandler(final List<HorizontalLayout> registeredComponents,
-        final VerticalLayout mainLayout, final ILabsPanel containerPanel, final ILabsAction containerAction) {
+        final VerticalLayout mainComponent, final ILabsPanel containerPanel, final ILabsAction containerAction) {
         LOG.info("Constructor created.");
         this.clientTextFieldEventHandler = new LabsClientTextFieldEventHandler();
         this.registeredComponents = registeredComponents;
-        this.mainComponent = mainLayout;
+        this.mainComponent = mainComponent;
         this.containerPanel = containerPanel;
         this.containerAction = containerAction;
         this.containerPanel.getReference().addActionHandler(this.clientTextFieldEventHandler);
@@ -111,7 +111,7 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
                 this.mainComponent.setDescription(null);
                 LOG.info("Change TextField to Label");
                 Component newComponent =
-                    LabsLayoutHelper.createLabelFromTextField(((TextField) dataComponent).getPropertyDataSource());
+                    LabsLayoutHelper.createLabelFromEditedField(((TextField) dataComponent).getPropertyDataSource());
                 ((HorizontalLayout) modifiedComponent).replaceComponent(dataComponent, newComponent);
                 ((HorizontalLayout) modifiedComponent).setComponentAlignment(newComponent, Alignment.MIDDLE_LEFT);
                 ((Label) ((HorizontalLayout) modifiedComponent).getComponent(0))
@@ -144,7 +144,7 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
                     this.containerPanel.setModifiedComponent(childComponent);
 
                     Component newComponent =
-                        LabsLayoutHelper.createTextFieldFromLabel(((Label) dataComponent).getPropertyDataSource());
+                        LabsLayoutHelper.createEditableFieldFromLabel(((Label) dataComponent).getPropertyDataSource());
                     ((HorizontalLayout) childComponent).replaceComponent(dataComponent, newComponent);
                     ((HorizontalLayout) childComponent).setComponentAlignment(newComponent, Alignment.MIDDLE_LEFT);
                     ((Label) ((HorizontalLayout) childComponent).getComponent(0))
@@ -161,7 +161,7 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
                     else {
                         LOG.info("Change TextField to Label");
                         Component newComponent =
-                            LabsLayoutHelper.createLabelFromTextField(((TextField) dataComponent)
+                            LabsLayoutHelper.createLabelFromEditedField(((TextField) dataComponent)
                                 .getPropertyDataSource());
                         ((HorizontalLayout) childComponent).replaceComponent(dataComponent, newComponent);
                         ((HorizontalLayout) childComponent).setComponentAlignment(newComponent, Alignment.MIDDLE_LEFT);
@@ -224,10 +224,11 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
                 LOG.info("DO NOT Save Component...");
                 ((TextField) target).discard();
             }
+
             Component dataComponent = ((HorizontalLayout) modifiedComponent).getComponent(1);
             Component staticLabelComponent = ((HorizontalLayout) modifiedComponent).getComponent(0);
             Component newComponent =
-                LabsLayoutHelper.createLabelFromTextField(((TextField) target).getPropertyDataSource());
+                LabsLayoutHelper.createLabelFromEditedField(((TextField) target).getPropertyDataSource());
 
             ((HorizontalLayout) modifiedComponent).replaceComponent(dataComponent, newComponent);
             ((HorizontalLayout) modifiedComponent).setComponentAlignment(newComponent, Alignment.MIDDLE_LEFT);

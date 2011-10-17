@@ -40,43 +40,34 @@ import static org.escidoc.browser.elabsmodul.constants.ELabViewContants.USER_DES
 import static org.escidoc.browser.elabsmodul.constants.ELabViewContants.USER_DESCR_ON_LABEL_TO_EDIT;
 import static org.escidoc.browser.elabsmodul.constants.ELabViewContants.USER_DESCR_ON_TEXTFIELD_TO_SAVE_OR_CANCEL;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.data.Property;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 
 public class LabsLayoutHelper {
 
-    private static LabsLayoutHelper instance = null;
-
-    private static Object synchObject = new Object();
-
-    private static Logger LOG = LoggerFactory.getLogger(LabsLayoutHelper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LabsLayoutHelper.class);
 
     private LabsLayoutHelper() {
     }
 
-    // TODO delete because there is only static class methods
-    public static synchronized LabsLayoutHelper getInstance() {
-        if (instance == null) {
-            synchronized (synchObject) {
-                if (instance == null) {
-                    instance = new LabsLayoutHelper();
-                }
-            }
-        }
-        return instance;
-    }
-
     public static synchronized HorizontalLayout createHorizontalLayoutWithELabsLabelAndLabelData(
         final String labelTxt, Property dataProperty) {
+        Preconditions.checkNotNull(labelTxt, "Label is null");
+        Preconditions.checkNotNull(dataProperty, "DataSource is null");
+
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSizeUndefined();
         horizontalLayout.setDescription(USER_DESCR_ON_HOR_LAYOUT_TO_EDIT);
@@ -136,7 +127,51 @@ public class LabsLayoutHelper {
         return horizontalLayout;
     }
 
-    public static synchronized AbstractComponent createLabelFromTextField(Property property) {
+    public static synchronized HorizontalLayout createHorizontalLayoutWithELabsLabelAndDropDownBox(
+        final String labelTxt, final String dropDownDescription, Property dataProperty, final List<String> dataSource) {
+        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        horizontalLayout.setSizeUndefined();
+        horizontalLayout.setDescription(USER_DESCR_ON_HOR_LAYOUT_TO_EDIT);
+        horizontalLayout.setEnabled(true);
+        horizontalLayout.setSpacing(true);
+        horizontalLayout.setHeight(HOR_PANEL_HEIGHT);
+        horizontalLayout.setStyleName(STYLE_ELABS_HOR_PANEL);
+
+        final Label label = new Label();
+        label.setWidth(LABEL_WIDTH);
+        label.setValue(DIV_ALIGN_RIGHT + labelTxt + DIV_END);
+        label.setContentMode(Label.CONTENT_XHTML);
+        label.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
+
+        final ComboBox comboBox = new ComboBox("", dataSource);
+        comboBox.setEnabled(true);
+        comboBox.setVisible(true);
+        comboBox.setImmediate(true);
+        comboBox.setMultiSelect(false);
+        comboBox.setNullSelectionAllowed(false);
+        comboBox.setPropertyDataSource(dataProperty);
+        comboBox.setReadOnly(false);
+        comboBox.setWidth(TEXT_WIDTH);
+        comboBox.setStyleName(STYLE_ELABS_TEXT_AS_LABEL);
+        comboBox.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
+
+        horizontalLayout.addComponent(label, 0);
+        horizontalLayout.addComponent(comboBox, 1);
+        horizontalLayout.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
+        horizontalLayout.setComponentAlignment(comboBox, Alignment.MIDDLE_RIGHT);
+
+        return horizontalLayout;
+    }
+
+    /**
+     * Returns with a label based on the edited field.
+     * 
+     * @param property
+     * @return
+     */
+    public static synchronized AbstractComponent createLabelFromEditedField(Property property) {
+        Preconditions.checkNotNull(property, "Datasource is null");
+
         Label label = new Label(property);
         label.setWidth(TEXT_WIDTH);
         label.setStyleName(STYLE_ELABS_TEXT_AS_LABEL);
@@ -145,7 +180,15 @@ public class LabsLayoutHelper {
         return label;
     }
 
-    public static synchronized AbstractComponent createTextFieldFromLabel(Property property) {
+    /**
+     * It returns with textfield as default, but if the property arg is an combobox-property then returns with a Combox.
+     * 
+     * @param property
+     * @return
+     */
+    public static synchronized AbstractComponent createEditableFieldFromLabel(Property property) {
+        Preconditions.checkNotNull(property, "Datasource is null");
+
         TextField textField = new TextField(property);
         textField.setWidth(TEXT_WIDTH);
         textField.setStyleName(STYLE_ELABS_TEXT);

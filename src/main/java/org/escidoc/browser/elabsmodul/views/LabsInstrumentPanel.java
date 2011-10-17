@@ -55,6 +55,9 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
 
+/**
+ * Specific BWeLabsView for Instrument item-element.
+ */
 public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsAction {
 
     private static final long serialVersionUID = -7601252311598579746L;
@@ -75,9 +78,9 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
 
     private POJOItem<InstrumentBean> pojoItem = null;
 
-    private InstrumentBean instrumentBean = null;
+    private InstrumentBean instrumentBean = null, lastStateBean = null;
 
-    private VerticalLayout mainLayout = null;
+    private VerticalLayout mainLayout = null, dynamicLayout = null;
 
     private LayoutClickListener clientViewEventHandler = null;
 
@@ -96,33 +99,88 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
     public LabsInstrumentPanel(InstrumentBean sourceBean, ISaveAction saveComponent, List<ResourceModel> breadCrumbModel) {
 
         this.instrumentBean = (sourceBean != null) ? sourceBean : new InstrumentBean();
+        this.lastStateBean = instrumentBean;
         this.saveComponent = saveComponent;
-        this.breadCrumbModel=breadCrumbModel;
+        this.breadCrumbModel = breadCrumbModel;
 
         initialisePanelComponents();
-        buildPanelGUI();
+        buildStaticGUI();
+        buildDynamicGUI();
         createPanelListener();
         createClickListener();
     }
 
     private void initialisePanelComponents() {
         this.mainLayout = new VerticalLayout();
+        this.mainLayout.setSpacing(true);
+        this.mainLayout.setMargin(true);
+        this.dynamicLayout = new VerticalLayout();
+        this.dynamicLayout.setSpacing(true);
+        this.dynamicLayout.setMargin(true);
+
         this.pojoItem = new POJOItem<InstrumentBean>(instrumentBean, PROPERTIES);
         this.registeredComponents = new ArrayList<HorizontalLayout>(COMPONENT_COUNT);
-        
 
-        this.setContent(mainLayout);
+        this.setContent(this.mainLayout);
         this.setScrollable(true);
     }
 
-    private void buildPanelGUI() {
-        this.mainLayout.setStyleName(ELabViewContants.STYLE_ELABS_FORM);
-        this.mainLayout.setSpacing(true);
-        this.mainLayout.setMargin(true);
-        
-        
+    /**
+     * Build the read-only layout of the eLabsElement
+     */
+    private void buildStaticGUI() {
+        // Item title
+        final Label titleLabel = new Label(ViewConstants.RESOURCE_NAME + instrumentBean.getName());
+        titleLabel.setDescription("header");
+        titleLabel.setStyleName("h2 fullwidth");
 
-        buttonLayout = LabsLayoutHelper.createButtonLayout();
+        // HR Ruler
+        final Label descRuler = new Label("<hr/>", Label.CONTENT_RAW);
+        descRuler.setStyleName("hr");
+
+        // ItemProperties View
+        final HorizontalLayout propertiesView = new HorizontalLayout();
+        final Label descMetadata1 = new Label("ID: " + instrumentBean.getObjectId());
+        final Label descMetadata2 =
+            new Label(
+                LAST_MODIFIED_BY + " " + instrumentBean.getModifiedBy() + " on " + instrumentBean.getModifiedOn(),
+                Label.CONTENT_XHTML);
+
+        final Panel pnlPropertiesLeft = new Panel();
+        pnlPropertiesLeft.setWidth("40%");
+        pnlPropertiesLeft.setHeight("60px");
+        pnlPropertiesLeft.setStyleName(FLOAT_LEFT);
+        pnlPropertiesLeft.addStyleName(Runo.PANEL_LIGHT);
+        pnlPropertiesLeft.addComponent(descMetadata1);
+
+        final Panel pnlPropertiesRight = new Panel();
+        pnlPropertiesRight.setWidth("60%");
+        pnlPropertiesRight.setHeight("60px");
+        pnlPropertiesRight.setStyleName(FLOAT_RIGHT);
+        pnlPropertiesRight.addStyleName(Runo.PANEL_LIGHT);
+        pnlPropertiesRight.addComponent(descMetadata2);
+        propertiesView.addComponent(pnlPropertiesLeft);
+        propertiesView.addComponent(pnlPropertiesRight);
+
+        Panel viewHandler = new Panel();
+        viewHandler.setStyleName(Panel.STYLE_LIGHT);
+
+        /* Add subelements on to RootComponent */
+        new BreadCrumbMenu(viewHandler, breadCrumbModel);
+        viewHandler.addComponent(titleLabel);
+        viewHandler.addComponent(descRuler);
+        viewHandler.addComponent(propertiesView);
+
+        this.mainLayout.addComponent(viewHandler);
+    }
+
+    /**
+     * Build the specific editable layout of the eLabsElement
+     */
+    private void buildDynamicGUI() {
+        this.dynamicLayout.setStyleName(ELabViewContants.STYLE_ELABS_FORM);
+
+        this.buttonLayout = LabsLayoutHelper.createButtonLayout();
         HorizontalLayout h1 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabViewContants.L_INSTRUMENT_TITLE,
                 pojoItem.getItemProperty(ELabViewContants.P_INSTRUMENT_TITLE));
@@ -166,107 +224,97 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
         registeredComponents.add(h8);
         registeredComponents.add(h9);
 
-        // Item title
-        final Label titleLabel = new Label(ViewConstants.RESOURCE_NAME + instrumentBean.getName());
-        titleLabel.setDescription("header");
-        titleLabel.setStyleName("h2 fullwidth");
+        this.dynamicLayout.addComponent(new HorizontalLayout(), 0);
+        this.dynamicLayout.addComponent(h1, 1);
+        this.dynamicLayout.addComponent(h2, 2);
+        this.dynamicLayout.addComponent(h3, 3);
+        this.dynamicLayout.addComponent(h4, 4);
+        this.dynamicLayout.addComponent(h5, 5);
+        this.dynamicLayout.addComponent(h6, 6);
+        this.dynamicLayout.addComponent(h7, 7);
+        this.dynamicLayout.addComponent(h8, 8);
+        this.dynamicLayout.addComponent(h9, 9);
 
-        // HR Ruler
-        final Label descRuler = new Label("<hr/>", Label.CONTENT_RAW);
-        descRuler.setStyleName("hr");
-
-        // ItemProperties View
-        final HorizontalLayout propertiesView = new HorizontalLayout();
-        final Label descMetadata1 = new Label("ID: " + instrumentBean.getObjectId());
-        final Label descMetadata2 =
-            new Label(
-                LAST_MODIFIED_BY + " " + instrumentBean.getModifiedBy() + " on " + instrumentBean.getModifiedOn(),
-                Label.CONTENT_XHTML);
-
-        final Panel pnlPropertiesLeft = new Panel();
-        pnlPropertiesLeft.setWidth("40%");
-        pnlPropertiesLeft.setHeight("60px");
-        pnlPropertiesLeft.setStyleName(FLOAT_LEFT);
-        pnlPropertiesLeft.addStyleName(Runo.PANEL_LIGHT);
-        pnlPropertiesLeft.addComponent(descMetadata1);
-
-        final Panel pnlPropertiesRight = new Panel();
-        pnlPropertiesRight.setWidth("60%");
-        pnlPropertiesRight.setHeight("60px");
-        pnlPropertiesRight.setStyleName(FLOAT_RIGHT);
-        pnlPropertiesRight.addStyleName(Runo.PANEL_LIGHT);
-        pnlPropertiesRight.addComponent(descMetadata2);
-        propertiesView.addComponent(pnlPropertiesLeft);
-        propertiesView.addComponent(pnlPropertiesRight);
-
-        this.mainLayout.addComponent(new VerticalLayout(), 0);
-        Panel viewHandler = new Panel();
-        viewHandler.setStyleName(Panel.STYLE_LIGHT);
-        
-        /* Add subelements on to RootComponent */
-        new BreadCrumbMenu(viewHandler, breadCrumbModel);
-        viewHandler.addComponent(titleLabel);
-        viewHandler.addComponent(descRuler);
-        viewHandler.addComponent(propertiesView);
-        
-        this.mainLayout.addComponent(viewHandler,1);
-        this.mainLayout.addComponent(h1, 2);
-        this.mainLayout.addComponent(h2, 3);
-        this.mainLayout.addComponent(h3, 4);
-        this.mainLayout.addComponent(h4, 5);
-        this.mainLayout.addComponent(h5, 6);
-        this.mainLayout.addComponent(h6, 7);
-        this.mainLayout.addComponent(h7, 8);
-        this.mainLayout.addComponent(h8, 9);
-        this.mainLayout.addComponent(h9, 10);
-
+        this.mainLayout.addComponent(this.dynamicLayout);
         this.mainLayout.attach();
         this.mainLayout.requestRepaintAll();
     }
 
     private void createPanelListener() {
-        this.clientViewEventHandler = new LabsClientViewEventHandler(registeredComponents, mainLayout, this, this);
-        this.mainLayout.addListener(this.clientViewEventHandler);
+        this.clientViewEventHandler = new LabsClientViewEventHandler(registeredComponents, dynamicLayout, this, this);
+        this.dynamicLayout.addListener(this.clientViewEventHandler);
     }
 
     private void createClickListener() {
         this.mouseClickListener = new Button.ClickListener() {
-
             private static final long serialVersionUID = -8330004043242560612L;
 
             @Override
             public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
                 if (event.getButton().getCaption().equals("Save")) {
-                    LabsInstrumentPanel.this.saveComponent.saveAction(LabsInstrumentPanel.this.instrumentBean);
+                    // TODO LabsInstrumentPanel.this.saveComponent.saveAction(LabsInstrumentPanel.this.instrumentBean);
+                    LabsInstrumentPanel.this.resetLayout();
+                    LabsInstrumentPanel.this.storeBackupBean();
+
+                    LOG.info("SAVE Action is triggered");
                 }
                 else if (event.getButton().getCaption().equals("Cancel")) {
+                    LabsInstrumentPanel.this.resetLayout();
+                    LabsInstrumentPanel.this.resetBeanModel();
                     // TODO reset function
                 }
-
                 LabsInstrumentPanel.this.hideButtonLayout();
             }
         };
 
-        ((Button) this.buttonLayout.getComponent(0)).addListener(this.mouseClickListener);
-        ((Button) this.buttonLayout.getComponent(1)).addListener(this.mouseClickListener);
+        try {
+            ((Button) this.buttonLayout.getComponent(0)).addListener(this.mouseClickListener);
+            ((Button) this.buttonLayout.getComponent(1)).addListener(this.mouseClickListener);
+        }
+        catch (ClassCastException e) {
+            LOG.error(e.getMessage());
+        }
+    }
+
+    protected void storeBackupBean() {
+        this.lastStateBean = this.instrumentBean;
+    }
+
+    protected void resetBeanModel() {
+        this.instrumentBean = this.lastStateBean;
+
+    }
+
+    protected void resetLayout() {
+
     }
 
     @Override
     public void hideButtonLayout() {
-        if (mainLayout != null && this.mainLayout.getComponent(0) != null) {
-            ((VerticalLayout) this.mainLayout.getComponent(0)).removeAllComponents();
+        if (this.dynamicLayout != null && this.dynamicLayout.getComponent(0) != null) {
+            try {
+                ((HorizontalLayout) this.dynamicLayout.getComponent(0)).removeAllComponents();
+            }
+            catch (ClassCastException e) {
+                LOG.error(e.getMessage());
+            }
         }
     }
 
     @Override
     public void showButtonLayout() {
-        VerticalLayout verticalLayout = null;
-        if (mainLayout != null && buttonLayout != null) {
-            verticalLayout = (VerticalLayout) this.mainLayout.getComponent(0);
-            if (verticalLayout != null) {
-                verticalLayout.removeAllComponents();
+        HorizontalLayout horizontalLayout = null;
+        if (this.dynamicLayout != null && this.buttonLayout != null) {
+            try {
+                horizontalLayout = (HorizontalLayout) this.dynamicLayout.getComponent(0);
             }
-            verticalLayout.addComponent(buttonLayout, 0);
+            catch (ClassCastException e) {
+                LOG.error(e.getMessage());
+            }
+            if (horizontalLayout != null) {
+                horizontalLayout.removeAllComponents();
+            }
+            horizontalLayout.addComponent(this.buttonLayout, 0);
         }
     }
 
@@ -277,7 +325,12 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
 
     @Override
     public void setModifiedComponent(Component modifiedComponent) {
-        this.modifiedComponent = (HorizontalLayout) modifiedComponent;
+        try {
+            this.modifiedComponent = (HorizontalLayout) modifiedComponent;
+        }
+        catch (ClassCastException e) {
+            LOG.error(e.getMessage());
+        }
     }
 
     @Override
