@@ -228,9 +228,13 @@ public final class LabsLayoutHelper {
         horizontalLayout.setSpacing(true);
         Button saveButton = new Button("Save");
         Button cancelButton = new Button("Cancel");
-        horizontalLayout.addComponent(cancelButton, 0);
-        horizontalLayout.addComponent(saveButton, 1);
-
+        Label blank = new Label("");
+        blank.setWidth(LABEL_WIDTH);
+        horizontalLayout.addComponent(blank, 0);
+        horizontalLayout.addComponent(cancelButton, 1);
+        horizontalLayout.addComponent(saveButton, 2);
+        // horizontalLayout.setComponentAlignment(cancelButton, Alignment.MIDDLE_RIGHT);
+        // horizontalLayout.setComponentAlignment(saveButton, Alignment.MIDDLE_RIGHT);
         return horizontalLayout;
     }
 }

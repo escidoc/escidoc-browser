@@ -175,7 +175,7 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
     }
 
     /**
-     * Build the specific editable layout of the eLabsElement
+     * Build the specific editable layout of the eLabsElement.
      */
     private void buildDynamicGUI() {
         this.dynamicLayout.setStyleName(ELabsViewContants.STYLE_ELABS_FORM);
@@ -224,16 +224,16 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
         registeredComponents.add(h8);
         registeredComponents.add(h9);
 
-        this.dynamicLayout.addComponent(new HorizontalLayout(), 0);
-        this.dynamicLayout.addComponent(h1, 1);
-        this.dynamicLayout.addComponent(h2, 2);
-        this.dynamicLayout.addComponent(h3, 3);
-        this.dynamicLayout.addComponent(h4, 4);
-        this.dynamicLayout.addComponent(h5, 5);
-        this.dynamicLayout.addComponent(h6, 6);
-        this.dynamicLayout.addComponent(h7, 7);
-        this.dynamicLayout.addComponent(h8, 8);
-        this.dynamicLayout.addComponent(h9, 9);
+        this.dynamicLayout.addComponent(h1, 0);
+        this.dynamicLayout.addComponent(h2, 1);
+        this.dynamicLayout.addComponent(h3, 2);
+        this.dynamicLayout.addComponent(h4, 3);
+        this.dynamicLayout.addComponent(h5, 4);
+        this.dynamicLayout.addComponent(h6, 5);
+        this.dynamicLayout.addComponent(h7, 6);
+        this.dynamicLayout.addComponent(h8, 7);
+        this.dynamicLayout.addComponent(h9, 8);
+        this.dynamicLayout.addComponent(new HorizontalLayout(), 9);
 
         this.mainLayout.addComponent(this.dynamicLayout);
         this.mainLayout.attach();
@@ -268,8 +268,8 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
         };
 
         try {
-            ((Button) this.buttonLayout.getComponent(0)).addListener(this.mouseClickListener);
             ((Button) this.buttonLayout.getComponent(1)).addListener(this.mouseClickListener);
+            ((Button) this.buttonLayout.getComponent(2)).addListener(this.mouseClickListener);
         }
         catch (ClassCastException e) {
             LOG.error(e.getMessage());
@@ -291,9 +291,9 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
 
     @Override
     public void hideButtonLayout() {
-        if (this.dynamicLayout != null && this.dynamicLayout.getComponent(0) != null) {
+        if (this.dynamicLayout != null && this.dynamicLayout.getComponent(9) != null) {
             try {
-                ((HorizontalLayout) this.dynamicLayout.getComponent(0)).removeAllComponents();
+                ((HorizontalLayout) this.dynamicLayout.getComponent(9)).removeAllComponents();
             }
             catch (ClassCastException e) {
                 LOG.error(e.getMessage());
@@ -306,15 +306,15 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
         HorizontalLayout horizontalLayout = null;
         if (this.dynamicLayout != null && this.buttonLayout != null) {
             try {
-                horizontalLayout = (HorizontalLayout) this.dynamicLayout.getComponent(0);
+                horizontalLayout = (HorizontalLayout) this.dynamicLayout.getComponent(9);
             }
             catch (ClassCastException e) {
                 LOG.error(e.getMessage());
             }
             if (horizontalLayout != null) {
                 horizontalLayout.removeAllComponents();
+                horizontalLayout.addComponent(this.buttonLayout);
             }
-            horizontalLayout.addComponent(this.buttonLayout, 0);
         }
     }
 
