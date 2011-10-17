@@ -32,8 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public enum ELabsFileFormatsEnum {
-    BLANK("Choose one format, please."), GALAXY_SPC("GALAXY_SPC"), FMF("FMF"), ZIP("ZIP Archive"), TEXT("Text Data"), BYTE(
-        "Byte Data");
+    GALAXY_SPC("GALAXY_SPC"), FMF("FMF"), ZIP("ZIP Archive"), TEXT("Text Data"), BYTE("Byte Data");
 
     private static final int NUMBER_OF_TYPES = 6;
 
@@ -52,7 +51,6 @@ public enum ELabsFileFormatsEnum {
 
     public static List<String> toList() {
         if (list.isEmpty()) {
-            list.add(ELabsFileFormatsEnum.BLANK.toString());
             list.add(ELabsFileFormatsEnum.FMF.toString());
             list.add(ELabsFileFormatsEnum.GALAXY_SPC.toString());
             list.add(ELabsFileFormatsEnum.ZIP.toString());
@@ -61,5 +59,4 @@ public enum ELabsFileFormatsEnum {
         }
         return list;
     }
-
 }

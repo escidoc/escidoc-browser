@@ -28,8 +28,8 @@
  */
 package org.escidoc.browser.ui.navigation;
 
-import org.escidoc.browser.elabsmodul.constants.ELabViewContants;
 import org.escidoc.browser.elabsmodul.constants.ELabsIcons;
+import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.ui.ViewConstants;
 
 import com.vaadin.event.Action;
@@ -46,34 +46,36 @@ public class ActionList {
     static final Action ACTION_DELETE_CONTAINER = new Action(ViewConstants.DELETE_CONTAINER);
 
     // new eLabs Actions
-    static final Action ACTION_ADD_STUDY = new Action(ELabViewContants.ADD_STUDY, ELabsIcons.ADD_ELEMENT_ICON);
+    static final Action ACTION_ADD_STUDY = new Action(ELabsViewContants.ADD_STUDY, ELabsIcons.ADD_ELEMENT_ICON);
 
-    static final Action ACTION_MODIFY_STUDY = new Action(ELabViewContants.MODIFY_STUDY, ELabsIcons.MODIFY_ELEMENT_ICON);
+    static final Action ACTION_MODIFY_STUDY =
+        new Action(ELabsViewContants.MODIFY_STUDY, ELabsIcons.MODIFY_ELEMENT_ICON);
 
-    static final Action ACTION_DELETE_STUDY = new Action(ELabViewContants.DELETE_STUDY, ELabsIcons.DELETE_ELEMENT_ICON);
+    static final Action ACTION_DELETE_STUDY =
+        new Action(ELabsViewContants.DELETE_STUDY, ELabsIcons.DELETE_ELEMENT_ICON);
 
-    static final Action ACTION_ADD_INVESTIGATION = new Action(ELabViewContants.ADD_INVESTIGATION,
+    static final Action ACTION_ADD_INVESTIGATION = new Action(ELabsViewContants.ADD_INVESTIGATION,
         ELabsIcons.ADD_ELEMENT_ICON);
 
-    static final Action ACTION_MODIFY_INVESTIGATION = new Action(ELabViewContants.MODIFY_INVESTIGATION,
+    static final Action ACTION_MODIFY_INVESTIGATION = new Action(ELabsViewContants.MODIFY_INVESTIGATION,
         ELabsIcons.MODIFY_ELEMENT_ICON);
 
-    static final Action ACTION_DELETE_INVESTIGATION = new Action(ELabViewContants.DELETE_INVESTIGATION,
+    static final Action ACTION_DELETE_INVESTIGATION = new Action(ELabsViewContants.DELETE_INVESTIGATION,
         ELabsIcons.DELETE_ELEMENT_ICON);
 
-    static final Action ACTION_ADD_RIG = new Action(ELabViewContants.ADD_RIG, ELabsIcons.ADD_ELEMENT_ICON);
+    static final Action ACTION_ADD_RIG = new Action(ELabsViewContants.ADD_RIG, ELabsIcons.ADD_ELEMENT_ICON);
 
-    static final Action ACTION_MODIFY_RIG = new Action(ELabViewContants.MODIFY_RIG, ELabsIcons.MODIFY_ELEMENT_ICON);
+    static final Action ACTION_MODIFY_RIG = new Action(ELabsViewContants.MODIFY_RIG, ELabsIcons.MODIFY_ELEMENT_ICON);
 
-    static final Action ACTION_DELETE_RIG = new Action(ELabViewContants.DELETE_RIG, ELabsIcons.DELETE_ELEMENT_ICON);
+    static final Action ACTION_DELETE_RIG = new Action(ELabsViewContants.DELETE_RIG, ELabsIcons.DELETE_ELEMENT_ICON);
 
-    static final Action ACTION_ADD_INSTRUMENT =
-        new Action(ELabViewContants.ADD_INSTRUMENT, ELabsIcons.ADD_ELEMENT_ICON);
+    static final Action ACTION_ADD_INSTRUMENT = new Action(ELabsViewContants.ADD_INSTRUMENT,
+        ELabsIcons.ADD_ELEMENT_ICON);
 
-    static final Action ACTION_MODIFY_INSTRUMENT = new Action(ELabViewContants.MODIFY_INSTRUMENT,
+    static final Action ACTION_MODIFY_INSTRUMENT = new Action(ELabsViewContants.MODIFY_INSTRUMENT,
         ELabsIcons.MODIFY_ELEMENT_ICON);
 
-    static final Action ACTION_DELETE_INSTRUMENT = new Action(ELabViewContants.DELETE_INSTRUMENT,
+    static final Action ACTION_DELETE_INSTRUMENT = new Action(ELabsViewContants.DELETE_INSTRUMENT,
         ELabsIcons.DELETE_ELEMENT_ICON);
     //
 

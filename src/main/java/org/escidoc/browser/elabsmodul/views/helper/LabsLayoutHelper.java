@@ -28,20 +28,22 @@
  */
 package org.escidoc.browser.elabsmodul.views.helper;
 
-import static org.escidoc.browser.elabsmodul.constants.ELabViewContants.DIV_ALIGN_RIGHT;
-import static org.escidoc.browser.elabsmodul.constants.ELabViewContants.DIV_END;
-import static org.escidoc.browser.elabsmodul.constants.ELabViewContants.HOR_PANEL_HEIGHT;
-import static org.escidoc.browser.elabsmodul.constants.ELabViewContants.LABEL_WIDTH;
-import static org.escidoc.browser.elabsmodul.constants.ELabViewContants.STYLE_ELABS_HOR_PANEL;
-import static org.escidoc.browser.elabsmodul.constants.ELabViewContants.STYLE_ELABS_TEXT;
-import static org.escidoc.browser.elabsmodul.constants.ELabViewContants.STYLE_ELABS_TEXT_AS_LABEL;
-import static org.escidoc.browser.elabsmodul.constants.ELabViewContants.TEXT_WIDTH;
-import static org.escidoc.browser.elabsmodul.constants.ELabViewContants.USER_DESCR_ON_HOR_LAYOUT_TO_EDIT;
-import static org.escidoc.browser.elabsmodul.constants.ELabViewContants.USER_DESCR_ON_LABEL_TO_EDIT;
-import static org.escidoc.browser.elabsmodul.constants.ELabViewContants.USER_DESCR_ON_TEXTFIELD_TO_SAVE_OR_CANCEL;
+import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.COMBOBOX_WIDTH;
+import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.DIV_ALIGN_RIGHT;
+import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.DIV_END;
+import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.HOR_PANEL_HEIGHT;
+import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.LABEL_WIDTH;
+import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.STYLE_ELABS_HOR_PANEL;
+import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.STYLE_ELABS_TEXT;
+import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.STYLE_ELABS_TEXT_AS_LABEL;
+import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.TEXT_WIDTH;
+import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_HOR_LAYOUT_TO_EDIT;
+import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_LABEL_TO_EDIT;
+import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_TEXTFIELD_TO_SAVE_OR_CANCEL;
 
 import java.util.List;
 
+import org.escidoc.browser.elabsmodul.enums.ELabsFileFormatsEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +58,10 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 
-public class LabsLayoutHelper {
+/**
+ * Utility class.
+ */
+public final class LabsLayoutHelper {
 
     private static final Logger LOG = LoggerFactory.getLogger(LabsLayoutHelper.class);
 
@@ -127,6 +132,8 @@ public class LabsLayoutHelper {
         return horizontalLayout;
     }
 
+    @Deprecated
+    // TODO DELETE this method
     public static synchronized HorizontalLayout createHorizontalLayoutWithELabsLabelAndDropDownBox(
         final String labelTxt, final String dropDownDescription, Property dataProperty, final List<String> dataSource) {
         HorizontalLayout horizontalLayout = new HorizontalLayout();
@@ -186,17 +193,34 @@ public class LabsLayoutHelper {
      * @param property
      * @return
      */
-    public static synchronized AbstractComponent createEditableFieldFromLabel(Property property) {
+    public static synchronized AbstractComponent createEditableFieldFromLabel(Property property, boolean isComboItem) {
         Preconditions.checkNotNull(property, "Datasource is null");
 
-        TextField textField = new TextField(property);
-        textField.setWidth(TEXT_WIDTH);
-        textField.setStyleName(STYLE_ELABS_TEXT);
-        textField.setDescription(USER_DESCR_ON_TEXTFIELD_TO_SAVE_OR_CANCEL);
-        textField.commit();
-        textField.focus();
-
-        return textField;
+        if (isComboItem) {
+            // create ComboBox
+            final ComboBox comboBox = new ComboBox(null, ELabsFileFormatsEnum.toList());
+            comboBox.setEnabled(true);
+            comboBox.setVisible(true);
+            comboBox.setImmediate(true);
+            comboBox.setMultiSelect(false);
+            comboBox.setNullSelectionAllowed(false);
+            comboBox.setPropertyDataSource(property);
+            comboBox.setReadOnly(false);
+            comboBox.setWidth(COMBOBOX_WIDTH);
+            comboBox.setStyleName(STYLE_ELABS_TEXT_AS_LABEL);
+            comboBox.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
+            return comboBox;
+        }
+        else {
+            // create TextField
+            TextField textField = new TextField(property);
+            textField.setWidth(TEXT_WIDTH);
+            textField.setStyleName(STYLE_ELABS_TEXT);
+            textField.setDescription(USER_DESCR_ON_TEXTFIELD_TO_SAVE_OR_CANCEL);
+            textField.commit();
+            textField.focus();
+            return textField;
+        }
     }
 
     public static HorizontalLayout createButtonLayout() {

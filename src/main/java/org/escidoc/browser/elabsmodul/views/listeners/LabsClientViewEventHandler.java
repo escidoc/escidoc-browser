@@ -28,15 +28,16 @@
  */
 package org.escidoc.browser.elabsmodul.views.listeners;
 
-import static org.escidoc.browser.elabsmodul.constants.ELabViewContants.USER_DESCR_ON_FORM_LAYOUT_TO_SAVE;
-import static org.escidoc.browser.elabsmodul.constants.ELabViewContants.USER_DESCR_ON_HOR_LAYOUT_TO_EDIT;
-import static org.escidoc.browser.elabsmodul.constants.ELabViewContants.USER_DESCR_ON_HOR_LAYOUT_TO_SAVE;
-import static org.escidoc.browser.elabsmodul.constants.ELabViewContants.USER_DESCR_ON_LABEL_TO_EDIT;
-import static org.escidoc.browser.elabsmodul.constants.ELabViewContants.USER_DESCR_ON_LABEL_TO_SAVE;
-import static org.escidoc.browser.elabsmodul.constants.ELabViewContants.USER_DESCR_ON_TEXTFIELD_TO_SAVE_OR_CANCEL;
+import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_FORM_LAYOUT_TO_SAVE;
+import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_HOR_LAYOUT_TO_EDIT;
+import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_HOR_LAYOUT_TO_SAVE;
+import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_LABEL_TO_EDIT;
+import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_LABEL_TO_SAVE;
+import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_TEXTFIELD_TO_SAVE_OR_CANCEL;
 
 import java.util.List;
 
+import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsAction;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsPanel;
 import org.escidoc.browser.elabsmodul.views.helper.LabsLayoutHelper;
@@ -51,6 +52,7 @@ import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -104,14 +106,24 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
             if (modifiedComponent != null && (childComponent == null || !modifiedComponent.equals(childComponent))) {
                 Component dataComponent = ((HorizontalLayout) modifiedComponent).getComponent(1);
 
-                if (!(dataComponent instanceof TextField)) {
-                    LOG.error("ModifiedComponent's dataComponent is not a Textfield!");
+                if (!(dataComponent instanceof TextField) && !(dataComponent instanceof ComboBox)) {
+                    LOG.error("ModifiedComponent's dataComponent should be Text or Combo element!");
                     return;
                 }
                 this.mainComponent.setDescription(null);
                 LOG.info("Change TextField to Label");
-                Component newComponent =
-                    LabsLayoutHelper.createLabelFromEditedField(((TextField) dataComponent).getPropertyDataSource());
+
+                Component newComponent = null;
+                if (dataComponent instanceof TextField) {
+                    newComponent =
+                        LabsLayoutHelper
+                            .createLabelFromEditedField(((TextField) dataComponent).getPropertyDataSource());
+                }
+                else if (dataComponent instanceof ComboBox) {
+                    newComponent =
+                        LabsLayoutHelper.createLabelFromEditedField(((ComboBox) dataComponent).getPropertyDataSource());
+                }
+
                 ((HorizontalLayout) modifiedComponent).replaceComponent(dataComponent, newComponent);
                 ((HorizontalLayout) modifiedComponent).setComponentAlignment(newComponent, Alignment.MIDDLE_LEFT);
                 ((Label) ((HorizontalLayout) modifiedComponent).getComponent(0))
@@ -129,6 +141,7 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
                     LOG.error("Action of an UnRegistered Component!");
                     return;
                 }
+                Component labelComponent = ((HorizontalLayout) childComponent).getComponent(0);
                 Component dataComponent = ((HorizontalLayout) childComponent).getComponent(1);
 
                 if (dataComponent instanceof AbstractComponent) {
@@ -142,9 +155,23 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
                         return;
                     }
                     this.containerPanel.setModifiedComponent(childComponent);
+                    // TODO refactor this temporarily implementation about FileFormat condition.
+                    final String queryTextforFileFormat =
+                        ELabsViewContants.DIV_ALIGN_RIGHT + ELabsViewContants.L_INSTRUMENT_FILE_FORMAT
+                            + ELabsViewContants.DIV_END;
 
-                    Component newComponent =
-                        LabsLayoutHelper.createEditableFieldFromLabel(((Label) dataComponent).getPropertyDataSource());
+                    Component newComponent = null;
+                    if (queryTextforFileFormat.equals(((Label) labelComponent).getValue())) {
+                        newComponent =
+                            LabsLayoutHelper.createEditableFieldFromLabel(
+                                ((Label) dataComponent).getPropertyDataSource(), true);
+                    }
+                    else {
+                        newComponent =
+                            LabsLayoutHelper.createEditableFieldFromLabel(
+                                ((Label) dataComponent).getPropertyDataSource(), false);
+                    }
+
                     ((HorizontalLayout) childComponent).replaceComponent(dataComponent, newComponent);
                     ((HorizontalLayout) childComponent).setComponentAlignment(newComponent, Alignment.MIDDLE_LEFT);
                     ((Label) ((HorizontalLayout) childComponent).getComponent(0))

@@ -28,9 +28,9 @@
  */
 package org.escidoc.browser.elabsmodul.constants;
 
-public class ELabViewContants {
+public class ELabsViewContants {
 
-    private ELabViewContants() {
+    private ELabsViewContants() {
     }
 
     /*
@@ -232,6 +232,8 @@ public class ELabViewContants {
     public static final String LABEL_WIDTH = "200px";
 
     public static final String TEXT_WIDTH = "400px";
+
+    public static final String COMBOBOX_WIDTH = "200px";
 
     public static final String DIV_ALIGN_RIGHT = "<div align=\"right\">";
 
