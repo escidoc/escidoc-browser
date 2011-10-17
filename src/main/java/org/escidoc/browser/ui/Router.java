@@ -67,6 +67,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.client.exceptions.system.SystemException;
 import de.escidoc.core.resources.cmm.ContentModel;
 
 public class Router extends VerticalLayout {
@@ -300,11 +301,18 @@ public class Router extends VerticalLayout {
         }
         else {
             try {
-                final Class<?> controllerClass = Class.forName(browserProperties.getProperty(controllerId));
-                controller = (Controller) controllerClass.newInstance();
-                controller.init(serviceLocation, repositories, this, tryToFindResource(clickedResource), mainWindow,
-                    currentUser);
-                controller.showView(layout);
+                String controllerClassName = browserProperties.getProperty(controllerId);
+                // TODO find a better solution for "controller ID not configured"
+                if (controllerClassName == null) {
+                    LOG.error("Could not resolve controller ID. " + controllerId);
+                }
+                else {
+                    final Class<?> controllerClass = Class.forName(controllerClassName);
+                    controller = (Controller) controllerClass.newInstance();
+                    controller.init(serviceLocation, repositories, this, tryToFindResource(clickedResource),
+                        mainWindow, currentUser);
+                    controller.showView(layout);
+                }
             }
             catch (final ClassNotFoundException e) {
                 // TODO tell the user what happens.
