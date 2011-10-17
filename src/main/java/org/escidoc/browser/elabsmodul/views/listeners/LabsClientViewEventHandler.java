@@ -224,6 +224,7 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
                 LOG.info("DO NOT Save Component...");
                 ((TextField) target).discard();
             }
+
             Component dataComponent = ((HorizontalLayout) modifiedComponent).getComponent(1);
             Component staticLabelComponent = ((HorizontalLayout) modifiedComponent).getComponent(0);
             Component newComponent =

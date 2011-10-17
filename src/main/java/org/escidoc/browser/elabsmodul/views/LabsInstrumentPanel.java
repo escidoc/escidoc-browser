@@ -62,7 +62,7 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
 
     private POJOItem<InstrumentBean> pojoItem = null;
 
-    private InstrumentBean instrumentBean = null;
+    private InstrumentBean instrumentBean = null, lastStateBean = null;
 
     private VerticalLayout mainLayout = null;
 
@@ -81,6 +81,7 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
     public LabsInstrumentPanel(InstrumentBean sourceBean, ISaveAction saveComponent) {
 
         this.instrumentBean = (sourceBean != null) ? sourceBean : new InstrumentBean();
+        this.lastStateBean = instrumentBean;
         this.saveComponent = saveComponent;
 
         initialisePanelComponents();
@@ -175,9 +176,15 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
             @Override
             public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
                 if (event.getButton().getCaption().equals("Save")) {
-                    LabsInstrumentPanel.this.saveComponent.saveAction(LabsInstrumentPanel.this.instrumentBean);
+                    // TODO LabsInstrumentPanel.this.saveComponent.saveAction(LabsInstrumentPanel.this.instrumentBean);
+                    LabsInstrumentPanel.this.resetLayout();
+                    LabsInstrumentPanel.this.storeBackupBean();
+
+                    LOG.info("SAVE Action is triggered");
                 }
                 else if (event.getButton().getCaption().equals("Cancel")) {
+                    LabsInstrumentPanel.this.resetLayout();
+                    LabsInstrumentPanel.this.resetBeanModel();
                     // TODO reset function
                 }
 
@@ -187,6 +194,19 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
 
         ((Button) this.buttonLayout.getComponent(0)).addListener(this.mouseClickListener);
         ((Button) this.buttonLayout.getComponent(1)).addListener(this.mouseClickListener);
+    }
+
+    protected void storeBackupBean() {
+        this.lastStateBean = this.instrumentBean;
+    }
+
+    protected void resetBeanModel() {
+        this.instrumentBean = this.lastStateBean;
+
+    }
+
+    protected void resetLayout() {
+
     }
 
     @Override
