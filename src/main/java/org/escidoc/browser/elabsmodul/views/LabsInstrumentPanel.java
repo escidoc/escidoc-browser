@@ -252,11 +252,11 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
             @Override
             public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
                 if (event.getButton().getCaption().equals("Save")) {
-                    // TODO LabsInstrumentPanel.this.saveComponent.saveAction(LabsInstrumentPanel.this.instrumentBean);
+                    LabsInstrumentPanel.this.saveComponent.saveAction(LabsInstrumentPanel.this.instrumentBean);
+                    LOG.info("SAVE Action is triggered on the view panel");
                     LabsInstrumentPanel.this.resetLayout();
                     LabsInstrumentPanel.this.storeBackupBean();
 
-                    LOG.info("SAVE Action is triggered");
                 }
                 else if (event.getButton().getCaption().equals("Cancel")) {
                     LabsInstrumentPanel.this.resetLayout();

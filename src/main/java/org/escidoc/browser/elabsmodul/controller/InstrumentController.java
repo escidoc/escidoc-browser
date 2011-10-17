@@ -43,6 +43,7 @@ import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
 import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
 import org.escidoc.browser.elabsmodul.model.InstrumentBean;
 import org.escidoc.browser.elabsmodul.views.LabsInstrumentPanel;
+import org.escidoc.browser.elabsmodul.views.YesNoDialog;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
@@ -81,6 +82,11 @@ public final class InstrumentController extends Controller implements ISaveActio
     private EscidocServiceLocation serviceLocation;
 
     private ResourceProxy resourceProxy;
+
+    private Window mainWindow;
+
+    // the bean model to store
+    private IBeanModel beanModel = null;
 
     /**
      * 
@@ -271,6 +277,7 @@ public final class InstrumentController extends Controller implements ISaveActio
         this.serviceLocation = serviceLocation;
         this.resourceProxy = resourceProxy;
         this.repositories = repositories;
+        this.mainWindow = mainWindow;
         this.view = createView(resourceProxy);
         this.view.setCaption("Default Caption");
 
@@ -345,7 +352,7 @@ public final class InstrumentController extends Controller implements ISaveActio
         }
         catch (EscidocClientException e) {
             // TODO Auto-generated catch block
-            //e.printStackTrace();
+            // e.printStackTrace();
             LOG.debug("Fatal error, could not load BreadCrumb " + e.getLocalizedMessage());
         }
         Collections.reverse(hierarchy);
@@ -354,17 +361,33 @@ public final class InstrumentController extends Controller implements ISaveActio
     }
 
     @Override
-    public void saveAction(final IBeanModel dataBean) {
-        Preconditions.checkNotNull(dataBean, "DataBean to store is NULL");
+    public void saveAction(final IBeanModel beanModel) {
+        Preconditions.checkNotNull(beanModel, "DataBean to store is NULL");
+        this.beanModel = beanModel;
 
+        this.mainWindow.addWindow(new YesNoDialog("Saving Instrument", "Are you sure to save this instrument element?",
+            new YesNoDialog.Callback() {
+
+                @Override
+                public void onDialogResult(boolean resultIsYes) {
+                    if (resultIsYes) {
+                        InstrumentController.this.saveModel();
+                    }
+
+                }
+            }));
+    }
+
+    private synchronized void saveModel() {
+        Preconditions.checkNotNull(this.beanModel, "DataBean to store is NULL");
         ItemRepository itemRepositories = repositories.item();
         final String ESCIDOC = "escidoc";
 
         InstrumentBean instrumentBean = null;
         Item item = null;
 
-        if (dataBean instanceof InstrumentBean) {
-            instrumentBean = (InstrumentBean) dataBean;
+        if (this.beanModel instanceof InstrumentBean) {
+            instrumentBean = (InstrumentBean) this.beanModel;
         }
         final Element metaDataContent = InstrumentController.createInstrumentDOMElementByBeanModel(instrumentBean);
 
@@ -376,6 +399,9 @@ public final class InstrumentController extends Controller implements ISaveActio
         }
         catch (EscidocClientException e) {
             LOG.error(e.getLocalizedMessage());
+        }
+        finally {
+            this.beanModel = null;
         }
         LOG.info("Instument is successfully saved.");
     }
