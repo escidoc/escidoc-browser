@@ -44,10 +44,12 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Preconditions;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -203,8 +205,17 @@ public class ContainerView extends VerticalLayout {
 
         final Label nameofPanel = new Label("<strong>" + DIRECT_MEMBERS + "</string>", Label.CONTENT_RAW);
         leftpnl.addComponent(nameofPanel);
-
         leftpnl.addComponent(comptoBind);
+
+        // the changes start here
+        ComponentContainer content = leftpnl.getContent();
+        VerticalLayout vl = (VerticalLayout) content;
+        vl.setExpandRatio(comptoBind, 1.0f);
+        vl.setHeight("100%");
+
+        Button button = new Button("+");
+        vl.addComponent(button);
+        vl.setComponentAlignment(button, Alignment.BOTTOM_LEFT);
 
         cssLayout.addComponent(leftpnl);
     }
@@ -370,7 +381,7 @@ public class ContainerView extends VerticalLayout {
                             ((Label) oldComponent).setValue(status + ((ComboBox) swapComponent).getValue());
                             // Because there should be no comment-window on Delete Operation
                             if (!(((ComboBox) swapComponent).getValue().equals("delete"))) {
-                                this.addCommentWindow();
+                                addCommentWindow();
                             }
                             else {
                                 updateContainer("");
