@@ -99,14 +99,17 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
 
     private ItemProxy itemProxy;
 
+    private List<String> eSyncDaemonUrls;
+
     public InstrumentView(InstrumentBean sourceBean, ISaveAction saveComponent, List<ResourceModel> breadCrumbModel,
-        ResourceProxy resourceProxy) {
+        ResourceProxy resourceProxy, List<String> eSyncDaemonUrls) {
 
         this.instrumentBean = (sourceBean != null) ? sourceBean : new InstrumentBean();
         this.lastStateBean = instrumentBean;
         this.saveComponent = saveComponent;
         this.breadCrumbModel = breadCrumbModel;
         this.itemProxy = (ItemProxy) resourceProxy;
+        this.eSyncDaemonUrls = eSyncDaemonUrls;
 
         initialisePanelComponents();
         buildPropertiesGUI();
