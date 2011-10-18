@@ -286,15 +286,9 @@ public final class InstrumentController extends Controller implements ISaveActio
 
     private Component createView(final ResourceProxy resourceProxy) {
         Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
-        /*
-         * final String VIEWCAPTION = "Instument View"; final String LAST_MODIFIED_BY = "Last modification by "; final
-         * String FLOAT_LEFT = "floatleft"; final String FLOAT_RIGHT = "floatright";
-         */
+
         ItemProxyImpl itemProxyImpl = null;
         InstrumentBean instumentBean = null;
-
-        // final VerticalLayout rootCompoent = new VerticalLayout();
-        // rootCompoent.setCaption(VIEWCAPTION);
 
         if (resourceProxy instanceof ItemProxyImpl) {
             itemProxyImpl = (ItemProxyImpl) resourceProxy;
@@ -307,42 +301,9 @@ public final class InstrumentController extends Controller implements ISaveActio
             LOG.error(e.getLocalizedMessage());
             instumentBean = null;
         }
-
-        /*
-         * Create all the subviews // BreadCrumbp View VerticalLayout breadCrumbpView = new VerticalLayout();
-         * breadCrumbpView.setCaption("BreadCrumbp View Caption");
-         * 
-         * // Item title final Label titleLabel = new Label(ViewConstants.RESOURCE_NAME + resourceProxy.getName());
-         * titleLabel.setDescription("header"); titleLabel.setStyleName("h2 fullwidth");
-         * 
-         * // HR Ruler final Label descRuler = new Label("<hr/>", Label.CONTENT_RAW); descRuler.setStyleName("hr");
-         * 
-         * // ItemProperties View final HorizontalLayout propertiesView = new HorizontalLayout(); final Label
-         * descMetadata1 = new Label("ID: " + instumentBean.getObjectId()); final Label descMetadata2 = new
-         * Label(LAST_MODIFIED_BY + " " + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(),
-         * Label.CONTENT_XHTML);
-         * 
-         * final Panel pnlPropertiesLeft = new Panel(); pnlPropertiesLeft.setWidth("40%");
-         * pnlPropertiesLeft.setHeight("60px"); pnlPropertiesLeft.setStyleName(FLOAT_LEFT);
-         * pnlPropertiesLeft.addStyleName(Runo.PANEL_LIGHT); pnlPropertiesLeft.addComponent(descMetadata1);
-         * 
-         * final Panel pnlPropertiesRight = new Panel(); pnlPropertiesRight.setWidth("60%");
-         * pnlPropertiesRight.setHeight("60px"); pnlPropertiesRight.setStyleName(FLOAT_RIGHT);
-         * pnlPropertiesRight.addStyleName(Runo.PANEL_LIGHT); pnlPropertiesRight.addComponent(descMetadata2);
-         * propertiesView.addComponent(pnlPropertiesLeft); propertiesView.addComponent(pnlPropertiesRight);
-         */
         // Instrument View
-        Component instrumentView = new LabsInstrumentPanel(instumentBean, this, this.BreadCrumbModel());
-
+        Component instrumentView = new LabsInstrumentPanel(instumentBean, this, this.BreadCrumbModel(), resourceProxy);
         return instrumentView; // pushed into InstrumentView
-
-        /*
-         * Add subelements on to RootComponent rootCompoent.addComponent(breadCrumbpView);
-         * rootCompoent.addComponent(titleLabel); rootCompoent.addComponent(descRuler);
-         * rootCompoent.addComponent(propertiesView); rootCompoent.addComponent(instrumentView);
-         * 
-         * return rootCompoent;
-         */
     }
 
     private List<ResourceModel> BreadCrumbModel() {

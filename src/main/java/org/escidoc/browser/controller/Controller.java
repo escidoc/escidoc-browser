@@ -1,14 +1,14 @@
 package org.escidoc.browser.controller;
 
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Window;
-
 import org.escidoc.browser.layout.LayoutDesign;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
+
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Window;
 
 public abstract class Controller {
     protected Component view;

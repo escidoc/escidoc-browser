@@ -67,7 +67,6 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
-import de.escidoc.core.client.exceptions.system.SystemException;
 import de.escidoc.core.resources.cmm.ContentModel;
 
 public class Router extends VerticalLayout {

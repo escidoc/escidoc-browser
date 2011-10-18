@@ -45,7 +45,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -57,21 +56,9 @@ public final class ItemView extends VerticalLayout {
 
     private static final String FLOAT_RIGHT = "floatright";
 
-    private static final String DESC_LOCKSTATUS = "lockstatus";
-
-    private static final String DESC_STATUS2 = "status";
-
-    private static final String SUBWINDOW_EDIT = "Add Comment to the Edit operation";
-
-    private static final String CREATED_BY = "Created by ";
-
-    private static final String LAST_MODIFIED_BY = "Last modification by ";
-
     private static final Logger LOG = LoggerFactory.getLogger(ItemView.class);
 
     private final CssLayout cssLayout = new CssLayout();
-
-    private final VerticalLayout vlPropertiesLeft = new VerticalLayout();
 
     private final Router mainSite;
 
@@ -87,23 +74,7 @@ public final class ItemView extends VerticalLayout {
 
     private final CurrentUser currentUser;
 
-    private String status;
-
     private int accordionHeight;
-
-    private Label lblLockstatus;
-
-    private Component oldComponent = null;
-
-    private Component swapComponent = null;
-
-    private Label lblStatus;
-
-    private Window subwindow;
-
-    private String lockStatus;
-
-    private Label lblCurrentVersionStatus;
 
     private LayoutDesign layout;
 

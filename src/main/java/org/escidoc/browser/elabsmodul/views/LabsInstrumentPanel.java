@@ -37,10 +37,11 @@ import org.escidoc.browser.elabsmodul.interfaces.ILabsPanel;
 import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
 import org.escidoc.browser.elabsmodul.model.InstrumentBean;
 import org.escidoc.browser.elabsmodul.views.helper.LabsLayoutHelper;
+import org.escidoc.browser.elabsmodul.views.helpers.ItemPropertiesViewHelper;
 import org.escidoc.browser.elabsmodul.views.listeners.LabsClientViewEventHandler;
+import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.BreadCrumbMenu;
+import org.escidoc.browser.model.ResourceProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,10 +51,8 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.Runo;
 
 /**
  * Specific BWeLabsView for Instrument item-element.
@@ -96,21 +95,26 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
 
     private List<ResourceModel> breadCrumbModel;
 
-    public LabsInstrumentPanel(InstrumentBean sourceBean, ISaveAction saveComponent, List<ResourceModel> breadCrumbModel) {
+    private ItemProxy itemProxy;
+
+    public LabsInstrumentPanel(InstrumentBean sourceBean, ISaveAction saveComponent,
+        List<ResourceModel> breadCrumbModel, ResourceProxy resourceProxy) {
 
         this.instrumentBean = (sourceBean != null) ? sourceBean : new InstrumentBean();
         this.lastStateBean = instrumentBean;
         this.saveComponent = saveComponent;
         this.breadCrumbModel = breadCrumbModel;
+        this.itemProxy = (ItemProxy) resourceProxy;
 
         initialisePanelComponents();
-        buildStaticGUI();
+        buildPropertiesGUI();
         buildDynamicGUI();
         createPanelListener();
         createClickListener();
     }
 
     private void initialisePanelComponents() {
+
         this.mainLayout = new VerticalLayout();
         this.mainLayout.setSpacing(true);
         this.mainLayout.setMargin(true);
@@ -128,51 +132,8 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
     /**
      * Build the read-only layout of the eLabsElement
      */
-    private void buildStaticGUI() {
-        // Item title
-        final Label titleLabel = new Label(ViewConstants.RESOURCE_NAME + instrumentBean.getName());
-        titleLabel.setDescription("header");
-        titleLabel.setStyleName("h2 fullwidth");
-
-        // HR Ruler
-        final Label descRuler = new Label("<hr/>", Label.CONTENT_RAW);
-        descRuler.setStyleName("hr");
-
-        // ItemProperties View
-        final HorizontalLayout propertiesView = new HorizontalLayout();
-        final Label descMetadata1 = new Label("ID: " + instrumentBean.getObjectId());
-        final Label descMetadata2 =
-            new Label(
-                LAST_MODIFIED_BY + " " + instrumentBean.getModifiedBy() + " on " + instrumentBean.getModifiedOn(),
-                Label.CONTENT_XHTML);
-
-        final Panel pnlPropertiesLeft = new Panel();
-        pnlPropertiesLeft.setWidth("40%");
-        pnlPropertiesLeft.setHeight("60px");
-        pnlPropertiesLeft.setStyleName(FLOAT_LEFT);
-        pnlPropertiesLeft.addStyleName(Runo.PANEL_LIGHT);
-        pnlPropertiesLeft.addComponent(descMetadata1);
-
-        final Panel pnlPropertiesRight = new Panel();
-        pnlPropertiesRight.setWidth("60%");
-        pnlPropertiesRight.setHeight("60px");
-        pnlPropertiesRight.setStyleName(FLOAT_RIGHT);
-        pnlPropertiesRight.addStyleName(Runo.PANEL_LIGHT);
-        pnlPropertiesRight.addComponent(descMetadata2);
-        propertiesView.addComponent(pnlPropertiesLeft);
-        propertiesView.addComponent(pnlPropertiesRight);
-
-        Panel viewHandler = new Panel();
-        viewHandler.getLayout().setMargin(false);
-        // viewHandler.setStyleName("red");
-
-        /* Add subelements on to RootComponent */
-        new BreadCrumbMenu(viewHandler, breadCrumbModel);
-        viewHandler.addComponent(titleLabel);
-        viewHandler.addComponent(descRuler);
-        viewHandler.addComponent(propertiesView);
-
-        this.addComponent(viewHandler);
+    private void buildPropertiesGUI() {
+        this.addComponent(new ItemPropertiesViewHelper(itemProxy, breadCrumbModel).generatePropertiesView());
     }
 
     /**
@@ -347,7 +308,7 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((instrumentBean == null) ? 0 : instrumentBean.hashCode());
+        result = prime * result + ((itemProxy == null) ? 0 : itemProxy.hashCode());
         return result;
     }
 
@@ -363,12 +324,12 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
             return false;
         }
         final LabsInstrumentPanel other = (LabsInstrumentPanel) obj;
-        if (instrumentBean == null) {
-            if (other.instrumentBean != null) {
+        if (itemProxy == null) {
+            if (other.itemProxy != null) {
                 return false;
             }
         }
-        else if (!instrumentBean.equals(other.instrumentBean)) {
+        else if (!itemProxy.equals(other.itemProxy)) {
             return false;
         }
         return true;
