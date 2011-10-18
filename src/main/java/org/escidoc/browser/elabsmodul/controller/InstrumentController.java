@@ -279,8 +279,7 @@ public final class InstrumentController extends Controller implements ISaveActio
         this.repositories = repositories;
         this.mainWindow = mainWindow;
         this.view = createView(resourceProxy);
-        this.view.setCaption("Default Caption");
-
+        this.setName(resourceProxy.getName());
     }
 
     private Component createView(final ResourceProxy resourceProxy) {
