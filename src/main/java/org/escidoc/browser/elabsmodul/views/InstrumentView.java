@@ -29,6 +29,7 @@
 package org.escidoc.browser.elabsmodul.views;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
@@ -45,6 +46,7 @@ import org.escidoc.browser.model.ResourceProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.data.util.POJOItem;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.Button;
@@ -57,11 +59,11 @@ import com.vaadin.ui.VerticalLayout;
 /**
  * Specific BWeLabsView for Instrument item-element.
  */
-public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsAction {
+public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
 
     private static final long serialVersionUID = -7601252311598579746L;
 
-    private static Logger LOG = LoggerFactory.getLogger(LabsInstrumentPanel.class);
+    private static Logger LOG = LoggerFactory.getLogger(InstrumentView.class);
 
     private final String[] PROPERTIES = ELabsViewContants.INSTRUMENT_PROPERTIES;
 
@@ -97,18 +99,21 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
 
     private ItemProxy itemProxy;
 
-    public LabsInstrumentPanel(InstrumentBean sourceBean, ISaveAction saveComponent,
-        List<ResourceModel> breadCrumbModel, ResourceProxy resourceProxy) {
+    private List<String> eSyncDaemonUrls;
+
+    public InstrumentView(InstrumentBean sourceBean, ISaveAction saveComponent, List<ResourceModel> breadCrumbModel,
+        ResourceProxy resourceProxy, List<String> eSyncDaemonUrls) {
 
         this.instrumentBean = (sourceBean != null) ? sourceBean : new InstrumentBean();
         this.lastStateBean = instrumentBean;
         this.saveComponent = saveComponent;
         this.breadCrumbModel = breadCrumbModel;
         this.itemProxy = (ItemProxy) resourceProxy;
+        this.eSyncDaemonUrls = eSyncDaemonUrls;
 
         initialisePanelComponents();
         buildPropertiesGUI();
-        buildDynamicGUI();
+        buildPanelGUI();
         createPanelListener();
         createClickListener();
     }
@@ -139,7 +144,7 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
     /**
      * Build the specific editable layout of the eLabsElement.
      */
-    private void buildDynamicGUI() {
+    private void buildPanelGUI() {
         this.dynamicLayout.setStyleName(ELabsViewContants.STYLE_ELABS_FORM);
 
         this.buttonLayout = LabsLayoutHelper.createButtonLayout();
@@ -214,18 +219,18 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
             @Override
             public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
                 if (event.getButton().getCaption().equals("Save")) {
-                    LabsInstrumentPanel.this.saveComponent.saveAction(LabsInstrumentPanel.this.instrumentBean);
-                    LOG.info("SAVE Action is triggered on the view panel");
-                    LabsInstrumentPanel.this.resetLayout();
-                    LabsInstrumentPanel.this.storeBackupBean();
+                    InstrumentView.this.saveComponent.saveAction(InstrumentView.this.instrumentBean);
+                    InstrumentView.this.resetLayout();
+                    InstrumentView.this.storeBackupBean();
+                    InstrumentView.this.dynamicLayout.requestRepaintAll();
 
                 }
                 else if (event.getButton().getCaption().equals("Cancel")) {
-                    LabsInstrumentPanel.this.resetLayout();
-                    LabsInstrumentPanel.this.resetBeanModel();
-                    // TODO reset function
+                    InstrumentView.this.resetLayout();
+                    InstrumentView.this.resetBeanModel();
+                    InstrumentView.this.dynamicLayout.requestRepaintAll();
                 }
-                LabsInstrumentPanel.this.hideButtonLayout();
+                InstrumentView.this.hideButtonLayout();
             }
         };
 
@@ -248,14 +253,29 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
     }
 
     protected void resetLayout() {
+        Preconditions.checkNotNull(this.dynamicLayout, "View's dynamiclayout is null.");
 
+        HorizontalLayout tempParentLayout = null;
+        for (Iterator<Component> iterator = this.dynamicLayout.getComponentIterator(); iterator.hasNext();) {
+            Component component = iterator.next();
+            if (component instanceof HorizontalLayout) {
+                tempParentLayout = (HorizontalLayout) component;
+            }
+            else {
+                LOG.error("DynamicLayout can contain only HorizontalLayouts as direct child element.");
+                break;
+            }
+            if (LabsLayoutHelper.switchToLabelFromEditedField(tempParentLayout)) {
+                this.setModifiedComponent(null);
+            }
+        }
     }
 
     @Override
     public void hideButtonLayout() {
-        if (this.dynamicLayout != null && this.dynamicLayout.getComponent(9) != null) {
+        if (this.dynamicLayout != null && this.dynamicLayout.getComponent(COMPONENT_COUNT) != null) {
             try {
-                ((HorizontalLayout) this.dynamicLayout.getComponent(9)).removeAllComponents();
+                ((HorizontalLayout) this.dynamicLayout.getComponent(COMPONENT_COUNT)).removeAllComponents();
             }
             catch (ClassCastException e) {
                 LOG.error(e.getMessage());
@@ -268,7 +288,7 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
         HorizontalLayout horizontalLayout = null;
         if (this.dynamicLayout != null && this.buttonLayout != null) {
             try {
-                horizontalLayout = (HorizontalLayout) this.dynamicLayout.getComponent(9);
+                horizontalLayout = (HorizontalLayout) this.dynamicLayout.getComponent(COMPONENT_COUNT);
             }
             catch (ClassCastException e) {
                 LOG.error(e.getMessage());
@@ -323,7 +343,7 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final LabsInstrumentPanel other = (LabsInstrumentPanel) obj;
+        final InstrumentView other = (InstrumentView) obj;
         if (itemProxy == null) {
             if (other.itemProxy != null) {
                 return false;

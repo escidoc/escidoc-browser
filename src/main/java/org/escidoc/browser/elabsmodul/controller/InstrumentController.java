@@ -28,6 +28,7 @@
  */
 package org.escidoc.browser.elabsmodul.controller;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,18 +38,20 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.escidoc.browser.controller.Controller;
+import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.controller.utils.DOM2String;
 import org.escidoc.browser.elabsmodul.exceptions.EscidocBrowserException;
 import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
 import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
 import org.escidoc.browser.elabsmodul.model.InstrumentBean;
-import org.escidoc.browser.elabsmodul.views.LabsInstrumentPanel;
+import org.escidoc.browser.elabsmodul.views.InstrumentView;
 import org.escidoc.browser.elabsmodul.views.YesNoDialog;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.internal.ItemRepository;
@@ -68,6 +71,8 @@ import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
+import de.escidoc.core.resources.om.context.AdminDescriptor;
+import de.escidoc.core.resources.om.context.AdminDescriptors;
 import de.escidoc.core.resources.om.item.Item;
 
 /**
@@ -87,6 +92,25 @@ public final class InstrumentController extends Controller implements ISaveActio
 
     // the bean model to store
     private IBeanModel beanModel = null;
+
+    private List<String> eSyncDaemonUrls = new ArrayList<String>();
+
+    private List<String> depositEndPointUrl = new ArrayList<String>();
+
+    @Override
+    public void init(
+        EscidocServiceLocation serviceLocation, Repositories repositories, Router mainSite,
+        ResourceProxy resourceProxy, Window mainWindow, CurrentUser currentUser) {
+        Preconditions.checkNotNull(repositories, "Repository ref is null");
+        Preconditions.checkNotNull(serviceLocation, "ServiceLocation ref is null");
+        this.serviceLocation = serviceLocation;
+        this.resourceProxy = resourceProxy;
+        this.repositories = repositories;
+        this.mainWindow = mainWindow;
+        loadAdminDescriptorInfo();
+        this.view = createView(resourceProxy);
+        this.getResourceName(resourceProxy.getName());
+    }
 
     /**
      * 
@@ -268,18 +292,38 @@ public final class InstrumentController extends Controller implements ISaveActio
         return instrument;
     }
 
-    @Override
-    public void init(
-        EscidocServiceLocation serviceLocation, Repositories repositories, Router mainSite,
-        ResourceProxy resourceProxy, Window mainWindow, CurrentUser currentUser) {
-        Preconditions.checkNotNull(repositories, "Repository ref is null");
-        Preconditions.checkNotNull(serviceLocation, "ServiceLocation ref is null");
-        this.serviceLocation = serviceLocation;
-        this.resourceProxy = resourceProxy;
-        this.repositories = repositories;
-        this.mainWindow = mainWindow;
-        this.view = createView(resourceProxy);
-        this.view.setCaption("Default Caption");
+    /**
+     * Used to retrieve eSyncDaemonsUrls and depositEndPointUrl
+     * 
+     * @throws EscidocClientException
+     */
+    public void loadAdminDescriptorInfo() {
+        ContextProxyImpl context;
+        try {
+            context = (ContextProxyImpl) repositories.context().findById(resourceProxy.getContext().getObjid());
+            AdminDescriptors adminDescriptors = context.getAdminDescription();
+            for (AdminDescriptor adminDescriptor : adminDescriptors) {
+                if (adminDescriptor.getName().equals("elabs")) {
+                    Element content = adminDescriptor.getContent();
+                    NodeList nodeList = content.getChildNodes();
+                    for (int i = 0; i < nodeList.getLength(); i++) {
+                        final Node node = nodeList.item(i);
+                        final String nodeName = node.getNodeName();
+
+                        if (nodeName.equals("el:esync-endpoint")) {
+                            eSyncDaemonUrls.add(node.getNodeValue());
+                        }
+                        else if (nodeName.equals("el:deposit-endpoint")) {
+                            depositEndPointUrl.add(node.getNodeValue());
+                        }
+                    }
+                }
+            }
+        }
+        catch (EscidocClientException e) {
+            LOG.debug("Error occurred. Could not load Admin Descriptors" + e.getLocalizedMessage());
+            e.printStackTrace();
+        }
 
     }
 
@@ -301,7 +345,8 @@ public final class InstrumentController extends Controller implements ISaveActio
             instumentBean = null;
         }
         // Instrument View
-        Component instrumentView = new LabsInstrumentPanel(instumentBean, this, this.BreadCrumbModel(), resourceProxy);
+        Component instrumentView =
+            new InstrumentView(instumentBean, this, this.BreadCrumbModel(), resourceProxy, eSyncDaemonUrls);
         return instrumentView; // pushed into InstrumentView
     }
 
@@ -326,8 +371,8 @@ public final class InstrumentController extends Controller implements ISaveActio
         Preconditions.checkNotNull(beanModel, "DataBean to store is NULL");
         this.beanModel = beanModel;
 
-        this.mainWindow.addWindow(new YesNoDialog("Saving Instrument", "Are you sure to save this instrument element?",
-            new YesNoDialog.Callback() {
+        this.mainWindow.addWindow(new YesNoDialog(ELabsViewContants.DIALOG_SAVEINSTRUMENT_HEADER,
+            ELabsViewContants.DIALOG_SAVEINSTRUMENT_TEXT, new YesNoDialog.Callback() {
 
                 @Override
                 public void onDialogResult(boolean resultIsYes) {
@@ -366,4 +411,13 @@ public final class InstrumentController extends Controller implements ISaveActio
         }
         LOG.info("Instument is successfully saved.");
     }
+
+    public List<String> geteSyncDaemonUrls() {
+        return eSyncDaemonUrls;
+    }
+
+    public List<String> getDepositEndPointUrl() {
+        return depositEndPointUrl;
+    }
+
 }

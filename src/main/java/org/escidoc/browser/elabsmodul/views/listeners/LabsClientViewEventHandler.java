@@ -29,9 +29,7 @@
 package org.escidoc.browser.elabsmodul.views.listeners;
 
 import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_FORM_LAYOUT_TO_SAVE;
-import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_HOR_LAYOUT_TO_EDIT;
 import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_HOR_LAYOUT_TO_SAVE;
-import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_LABEL_TO_EDIT;
 import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_LABEL_TO_SAVE;
 import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_TEXTFIELD_TO_SAVE_OR_CANCEL;
 
@@ -110,25 +108,7 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
                     LOG.error("ModifiedComponent's dataComponent should be Text or Combo element!");
                     return;
                 }
-                this.mainComponent.setDescription(null);
-                LOG.info("Change TextField to Label");
-
-                Component newComponent = null;
-                if (dataComponent instanceof TextField) {
-                    newComponent =
-                        LabsLayoutHelper
-                            .createLabelFromEditedField(((TextField) dataComponent).getPropertyDataSource());
-                }
-                else if (dataComponent instanceof ComboBox) {
-                    newComponent =
-                        LabsLayoutHelper.createLabelFromEditedField(((ComboBox) dataComponent).getPropertyDataSource());
-                }
-
-                ((HorizontalLayout) modifiedComponent).replaceComponent(dataComponent, newComponent);
-                ((HorizontalLayout) modifiedComponent).setComponentAlignment(newComponent, Alignment.MIDDLE_LEFT);
-                ((Label) ((HorizontalLayout) modifiedComponent).getComponent(0))
-                    .setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
-                ((HorizontalLayout) modifiedComponent).setDescription(USER_DESCR_ON_HOR_LAYOUT_TO_EDIT);
+                LabsLayoutHelper.switchToLabelFromEditedField((HorizontalLayout) modifiedComponent);
                 this.containerPanel.setModifiedComponent(null);
             }
             else {
@@ -182,19 +162,10 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
                 else if (dataComponent instanceof TextField) {
 
                     if (((HorizontalLayout) childComponent).getComponent(1).equals(dataComponent)) {
-                        LOG.info("TextField is clicked , DO NOT any ACTIoN!");
                         ((TextField) dataComponent).setDescription(USER_DESCR_ON_TEXTFIELD_TO_SAVE_OR_CANCEL);
                     }
                     else {
-                        LOG.info("Change TextField to Label");
-                        Component newComponent =
-                            LabsLayoutHelper.createLabelFromEditedField(((TextField) dataComponent)
-                                .getPropertyDataSource());
-                        ((HorizontalLayout) childComponent).replaceComponent(dataComponent, newComponent);
-                        ((HorizontalLayout) childComponent).setComponentAlignment(newComponent, Alignment.MIDDLE_LEFT);
-                        ((Label) ((HorizontalLayout) childComponent).getComponent(0))
-                            .setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
-                        ((HorizontalLayout) childComponent).setDescription(USER_DESCR_ON_HOR_LAYOUT_TO_EDIT);
+                        LabsLayoutHelper.switchToLabelFromEditedField((HorizontalLayout) childComponent);
                     }
                 }
                 else if (dataComponent instanceof CheckBox) {
@@ -252,16 +223,7 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
                 ((TextField) target).discard();
             }
 
-            Component dataComponent = ((HorizontalLayout) modifiedComponent).getComponent(1);
-            Component staticLabelComponent = ((HorizontalLayout) modifiedComponent).getComponent(0);
-            Component newComponent =
-                LabsLayoutHelper.createLabelFromEditedField(((TextField) target).getPropertyDataSource());
-
-            ((HorizontalLayout) modifiedComponent).replaceComponent(dataComponent, newComponent);
-            ((HorizontalLayout) modifiedComponent).setComponentAlignment(newComponent, Alignment.MIDDLE_LEFT);
-            ((Label) staticLabelComponent).setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
-            ((HorizontalLayout) modifiedComponent).setDescription(USER_DESCR_ON_HOR_LAYOUT_TO_EDIT);
-
+            LabsLayoutHelper.switchToLabelFromEditedField((HorizontalLayout) modifiedComponent);
             LabsClientViewEventHandler.this.containerPanel.setModifiedComponent(null);
         }
     }
