@@ -13,22 +13,22 @@ import com.vaadin.ui.Window;
 public abstract class Controller {
     protected Component view;
 
-    String name;
+    String resouceName;
 
     public abstract void init(
         final EscidocServiceLocation serviceLocation, final Repositories repositories, final Router mainSite,
         final ResourceProxy resourceProxy, final Window mainWindow, final CurrentUser currentUser);
 
     public void showView(final LayoutDesign layout) {
-        layout.openView(this.view, this.getName());
+        layout.openView(this.view, this.getResourceName());
     }
 
-    public String getName() {
-        return name;
+    public String getResourceName() {
+        return resouceName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void getResourceName(String name) {
+        this.resouceName = name;
     }
 
 }
