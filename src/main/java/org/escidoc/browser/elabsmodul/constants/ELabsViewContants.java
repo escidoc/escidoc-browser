@@ -252,4 +252,16 @@ public class ELabsViewContants {
     public static final String DIALOG_SAVEINSTRUMENT_HEADER = "Saving Instrument";
 
     public static final String DIALOG_SAVEINSTRUMENT_TEXT = "Are you sure to save this Instrument?";
+
+    public static final String DIALOG_SAVERIG_HEADER = "Saving Rig";
+
+    public static final String DIALOG_SAVERIG_TEXT = "Are you sure to save this Rig?";
+
+    public static final String DIALOG_SAVESTUDY_HEADER = "Saving Study";
+
+    public static final String DIALOG_SAVESTUDY_TEXT = "Are you sure to save this Study?";
+
+    public static final String DIALOG_SAVEINVESTIGATION_HEADER = "Saving Investigation";
+
+    public static final String DIALOG_SAVEINVESTIGATION_TEXT = "Are you sure to save this Investigation?";
 }

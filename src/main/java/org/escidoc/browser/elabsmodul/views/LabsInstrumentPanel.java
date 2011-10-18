@@ -29,6 +29,7 @@
 package org.escidoc.browser.elabsmodul.views;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
@@ -45,6 +46,7 @@ import org.escidoc.browser.model.ResourceProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.data.util.POJOItem;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.Button;
@@ -218,12 +220,13 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
                     LOG.info("SAVE Action is triggered on the view panel");
                     LabsInstrumentPanel.this.resetLayout();
                     LabsInstrumentPanel.this.storeBackupBean();
+                    LabsInstrumentPanel.this.dynamicLayout.requestRepaintAll();
 
                 }
                 else if (event.getButton().getCaption().equals("Cancel")) {
                     LabsInstrumentPanel.this.resetLayout();
                     LabsInstrumentPanel.this.resetBeanModel();
-                    // TODO reset function
+                    LabsInstrumentPanel.this.dynamicLayout.requestRepaintAll();
                 }
                 LabsInstrumentPanel.this.hideButtonLayout();
             }
@@ -248,7 +251,20 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
     }
 
     protected void resetLayout() {
+        Preconditions.checkNotNull(this.dynamicLayout, "View's dynamiclayout is null.");
 
+        HorizontalLayout tempParentLayout = null;
+        for (Iterator<Component> iterator = this.getComponentIterator(); iterator.hasNext();) {
+            Component component = iterator.next();
+            if (component instanceof HorizontalLayout) {
+                tempParentLayout = (HorizontalLayout) component;
+            }
+            else {
+                LOG.error("DynamicLayout can contain only HorizontalLayouts as direct child element.");
+                break;
+            }
+            LabsLayoutHelper.switchToLabelFromEditedField(tempParentLayout);
+        }
     }
 
     @Override

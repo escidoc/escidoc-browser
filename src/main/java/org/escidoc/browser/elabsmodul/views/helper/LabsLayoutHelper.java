@@ -54,6 +54,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
@@ -176,15 +177,32 @@ public final class LabsLayoutHelper {
      * @param property
      * @return
      */
-    public static synchronized AbstractComponent createLabelFromEditedField(Property property) {
-        Preconditions.checkNotNull(property, "Datasource is null");
+    public static synchronized void switchToLabelFromEditedField(HorizontalLayout parentLayout) {
+        Preconditions.checkNotNull(parentLayout, "ParentLayout on DynamicLayout is null");
+        Component staticLabelComponent = parentLayout.getComponent(0);
+        Component dataComponent = parentLayout.getComponent(1);
+        Property dataProperty = null;
+        if (dataComponent instanceof TextField) {
+            dataProperty = ((TextField) dataComponent).getPropertyDataSource();
+        }
+        else if (dataComponent instanceof ComboBox) {
+            dataProperty = ((ComboBox) dataComponent).getPropertyDataSource();
+        }
 
-        Label label = new Label(property);
+        if (dataProperty == null) {
+            // return because dataComponent is already a Label or a CheckBox
+            return;
+        }
+
+        Label label = new Label(dataProperty);
         label.setWidth(TEXT_WIDTH);
         label.setStyleName(STYLE_ELABS_TEXT_AS_LABEL);
         label.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
 
-        return label;
+        parentLayout.replaceComponent(dataComponent, label);
+        parentLayout.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
+        ((Label) staticLabelComponent).setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
+        parentLayout.setDescription(USER_DESCR_ON_HOR_LAYOUT_TO_EDIT);
     }
 
     /**
