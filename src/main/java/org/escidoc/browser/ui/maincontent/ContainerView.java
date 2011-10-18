@@ -44,7 +44,6 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Preconditions;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComboBox;
@@ -57,6 +56,7 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
+import com.vaadin.ui.themes.Reindeer;
 import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -203,27 +203,34 @@ public class ContainerView extends VerticalLayout {
         leftPanel.setHeight("82%");
 
         final Label nameofPanel = new Label("<strong>" + DIRECT_MEMBERS + "</string>", Label.CONTENT_RAW);
+        nameofPanel.setStyleName("grey-label");
         leftPanel.addComponent(nameofPanel);
-        leftPanel.addComponent(comptoBind);
 
         // the changes start here
         VerticalLayout panelLayout = (VerticalLayout) leftPanel.getContent();
-        panelLayout.setExpandRatio(comptoBind, 1.0f);
         panelLayout.setHeight("100%");
 
         Button addButton = new Button("+");
+        addButton.setStyleName(Reindeer.BUTTON_SMALL);
+
         Button removeButton = new Button("-");
+        removeButton.setStyleName(Reindeer.BUTTON_SMALL);
+
+        HorizontalLayout hl = new HorizontalLayout();
+        hl.setStyleName("button-layout");
+        hl.setWidth("100%");
+        hl.setHeight("22px");
+
+        panelLayout.addComponent(hl);
 
         HorizontalLayout buttonLayout = new HorizontalLayout();
-        buttonLayout.setSpacing(true);
-        buttonLayout.setMargin(true);
+        hl.addComponent(buttonLayout);
 
         buttonLayout.addComponent(addButton);
         buttonLayout.addComponent(removeButton);
 
-        panelLayout.addComponent(buttonLayout);
-        panelLayout.setComponentAlignment(buttonLayout, Alignment.BOTTOM_LEFT);
-
+        panelLayout.addComponent(comptoBind);
+        panelLayout.setExpandRatio(comptoBind, 1.0f);
         cssLayout.addComponent(leftPanel);
     }
 
