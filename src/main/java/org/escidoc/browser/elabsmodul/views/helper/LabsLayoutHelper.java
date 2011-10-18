@@ -175,12 +175,18 @@ public final class LabsLayoutHelper {
      * Returns with a label based on the edited field.
      * 
      * @param property
-     * @return
+     * @return boolean an element switch happened or not
      */
-    public static synchronized void switchToLabelFromEditedField(HorizontalLayout parentLayout) {
+    public static synchronized boolean switchToLabelFromEditedField(HorizontalLayout parentLayout) {
         Preconditions.checkNotNull(parentLayout, "ParentLayout on DynamicLayout is null");
-        Component staticLabelComponent = parentLayout.getComponent(0);
-        Component dataComponent = parentLayout.getComponent(1);
+        Component staticLabelComponent = null, dataComponent = null;
+        try {
+            staticLabelComponent = parentLayout.getComponent(0);
+            dataComponent = parentLayout.getComponent(1);
+        }
+        catch (IndexOutOfBoundsException e) {
+            return false;
+        }
         Property dataProperty = null;
         if (dataComponent instanceof TextField) {
             dataProperty = ((TextField) dataComponent).getPropertyDataSource();
@@ -191,7 +197,7 @@ public final class LabsLayoutHelper {
 
         if (dataProperty == null) {
             // return because dataComponent is already a Label or a CheckBox
-            return;
+            return false;
         }
 
         Label label = new Label(dataProperty);
@@ -203,6 +209,7 @@ public final class LabsLayoutHelper {
         parentLayout.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
         ((Label) staticLabelComponent).setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
         parentLayout.setDescription(USER_DESCR_ON_HOR_LAYOUT_TO_EDIT);
+        return true;
     }
 
     /**

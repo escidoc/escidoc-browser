@@ -43,7 +43,7 @@ import org.escidoc.browser.elabsmodul.exceptions.EscidocBrowserException;
 import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
 import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
 import org.escidoc.browser.elabsmodul.model.InstrumentBean;
-import org.escidoc.browser.elabsmodul.views.LabsInstrumentPanel;
+import org.escidoc.browser.elabsmodul.views.InstrumentView;
 import org.escidoc.browser.elabsmodul.views.YesNoDialog;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
@@ -280,8 +280,7 @@ public final class InstrumentController extends Controller implements ISaveActio
         this.repositories = repositories;
         this.mainWindow = mainWindow;
         this.view = createView(resourceProxy);
-        this.view.setCaption("Default Caption");
-
+        this.getResourceName(resourceProxy.getName());
     }
 
     private Component createView(final ResourceProxy resourceProxy) {
@@ -302,7 +301,7 @@ public final class InstrumentController extends Controller implements ISaveActio
             instumentBean = null;
         }
         // Instrument View
-        Component instrumentView = new LabsInstrumentPanel(instumentBean, this, this.BreadCrumbModel(), resourceProxy);
+        Component instrumentView = new InstrumentView(instumentBean, this, this.BreadCrumbModel(), resourceProxy);
         return instrumentView; // pushed into InstrumentView
     }
 

@@ -85,8 +85,6 @@ public class Router extends VerticalLayout {
 
     private LayoutDesign layout;
 
-    private final String layoutname = "SimpleLayout.java";
-
     private Properties browserProperties;
 
     private static final Logger LOG = LoggerFactory.getLogger(ItemView.class);
@@ -113,10 +111,8 @@ public class Router extends VerticalLayout {
     }
 
     private void init() throws EscidocClientException {
-
         initiatePlugins();
         createLayout();
-
     }
 
     /**
