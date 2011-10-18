@@ -221,35 +221,18 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
                 if (event.getButton().getCaption().equals("Save")) {
                     InstrumentView.this.saveComponent.saveAction(InstrumentView.this.instrumentBean);
                     InstrumentView.this.resetLayout();
-                    InstrumentView.this.storeBackupBean();
                     InstrumentView.this.dynamicLayout.requestRepaintAll();
 
                 }
-                else if (event.getButton().getCaption().equals("Cancel")) {
-                    InstrumentView.this.resetLayout();
-                    InstrumentView.this.resetBeanModel();
-                    InstrumentView.this.dynamicLayout.requestRepaintAll();
-                }
-                InstrumentView.this.hideButtonLayout();
             }
         };
 
         try {
             ((Button) this.buttonLayout.getComponent(1)).addListener(this.mouseClickListener);
-            ((Button) this.buttonLayout.getComponent(2)).addListener(this.mouseClickListener);
         }
         catch (ClassCastException e) {
             LOG.error(e.getMessage());
         }
-    }
-
-    protected void storeBackupBean() {
-        this.lastStateBean = this.instrumentBean;
-    }
-
-    protected void resetBeanModel() {
-        this.instrumentBean = this.lastStateBean;
-
     }
 
     protected void resetLayout() {

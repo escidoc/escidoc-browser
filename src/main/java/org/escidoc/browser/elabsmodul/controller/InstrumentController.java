@@ -71,8 +71,6 @@ import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
-import de.escidoc.core.resources.om.context.AdminDescriptor;
-import de.escidoc.core.resources.om.context.AdminDescriptors;
 import de.escidoc.core.resources.om.item.Item;
 
 /**
@@ -93,9 +91,11 @@ public final class InstrumentController extends Controller implements ISaveActio
     // the bean model to store
     private IBeanModel beanModel = null;
 
+    // contains default eSychDaemon URLs
     private List<String> eSyncDaemonUrls = new ArrayList<String>();
 
-    private List<String> depositEndPointUrl = new ArrayList<String>();
+    // contains default deposit endpoint URLs
+    private List<String> depositEndPointUrls = new ArrayList<String>();
 
     @Override
     public void init(
@@ -107,7 +107,7 @@ public final class InstrumentController extends Controller implements ISaveActio
         this.resourceProxy = resourceProxy;
         this.repositories = repositories;
         this.mainWindow = mainWindow;
-        loadAdminDescriptorInfo();
+        this.loadAdminDescriptorInfo();
         this.view = createView(resourceProxy);
         this.getResourceName(resourceProxy.getName());
     }
@@ -231,26 +231,29 @@ public final class InstrumentController extends Controller implements ISaveActio
             instrument.appendChild(description);
 
             // <el:identity-number></el:identity-number>
-            instrument = createWithoutNamespace(doc, instrument, "identity-number", "");
+            instrument = createDOMElementWithoutNamespace(doc, instrument, "identity-number", "");
 
             // <el:requires-configuration>no</el:requires-configuration>
             instrument =
-                createWithoutNamespace(doc, instrument, "requires-configuration",
+                createDOMElementWithoutNamespace(doc, instrument, "requires-configuration",
                     booleanToHumanReadable(instrumentBean.getConfiguration()));
 
             // <el:requires-calibration>no</el:requires-calibration>
             instrument =
-                createWithoutNamespace(doc, instrument, "requires-calibration",
+                createDOMElementWithoutNamespace(doc, instrument, "requires-calibration",
                     booleanToHumanReadable(instrumentBean.getCalibration()));
 
             // <el:esync-endpoint>http://my.es/ync/endpoint</el:esync-endpoint>
-            instrument = createWithoutNamespace(doc, instrument, "esync-endpoint", instrumentBean.getESyncDaemon());
+            instrument =
+                createDOMElementWithoutNamespace(doc, instrument, "esync-endpoint", instrumentBean.getESyncDaemon());
 
             // <el:monitored-folder>C:\tmp</el:monitored-folder>
-            instrument = createWithoutNamespace(doc, instrument, "monitored-folder", instrumentBean.getFolder());
+            instrument =
+                createDOMElementWithoutNamespace(doc, instrument, "monitored-folder", instrumentBean.getFolder());
 
             // <el:result-mime-type>application/octet-stream</el:result-mime-type>
-            instrument = createWithoutNamespace(doc, instrument, "result-mime-type", instrumentBean.getFileFormat());
+            instrument =
+                createDOMElementWithoutNamespace(doc, instrument, "result-mime-type", instrumentBean.getFileFormat());
 
             // <el:responsible-person
             // xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -284,7 +287,8 @@ public final class InstrumentController extends Controller implements ISaveActio
         return (value) ? "yes" : "no";
     }
 
-    private static Element createWithoutNamespace(Document doc, Element instrument, String attributeValue, String value) {
+    private static Element createDOMElementWithoutNamespace(
+        Document doc, Element instrument, String attributeValue, String value) {
         final Element element = doc.createElementNS("http://escidoc.org/ontologies/bw-elabs/re#", attributeValue);
         element.setTextContent(value);
         element.setPrefix("el");
@@ -301,24 +305,13 @@ public final class InstrumentController extends Controller implements ISaveActio
         ContextProxyImpl context;
         try {
             context = (ContextProxyImpl) repositories.context().findById(resourceProxy.getContext().getObjid());
-            AdminDescriptors adminDescriptors = context.getAdminDescription();
-            for (AdminDescriptor adminDescriptor : adminDescriptors) {
-                if (adminDescriptor.getName().equals("elabs")) {
-                    Element content = adminDescriptor.getContent();
-                    NodeList nodeList = content.getChildNodes();
-                    for (int i = 0; i < nodeList.getLength(); i++) {
-                        final Node node = nodeList.item(i);
-                        final String nodeName = node.getNodeName();
-
-                        if (nodeName.equals("el:esync-endpoint")) {
-                            eSyncDaemonUrls.add(node.getNodeValue());
-                        }
-                        else if (nodeName.equals("el:deposit-endpoint")) {
-                            depositEndPointUrl.add(node.getNodeValue());
-                        }
-                    }
-                }
+            Element content = context.getAdminDescription().get("elabs").getContent();
+            NodeList nodeList = content.getElementsByTagName("el:esync-endpoint");
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                final Node node = nodeList.item(i);
+                eSyncDaemonUrls.add(node.getTextContent());
             }
+
         }
         catch (EscidocClientException e) {
             LOG.debug("Error occurred. Could not load Admin Descriptors" + e.getLocalizedMessage());
@@ -379,7 +372,9 @@ public final class InstrumentController extends Controller implements ISaveActio
                     if (resultIsYes) {
                         InstrumentController.this.saveModel();
                     }
-
+                    else {
+                        ((InstrumentView) InstrumentController.this.view).hideButtonLayout();
+                    }
                 }
             }));
     }
@@ -417,7 +412,7 @@ public final class InstrumentController extends Controller implements ISaveActio
     }
 
     public List<String> getDepositEndPointUrl() {
-        return depositEndPointUrl;
+        return depositEndPointUrls;
     }
 
 }

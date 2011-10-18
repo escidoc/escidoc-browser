@@ -27,6 +27,7 @@ public abstract class Controller {
         return resouceName;
     }
 
+    // FIX should be changed to: void setResourceName(String name)
     public void getResourceName(String name) {
         this.resouceName = name;
     }

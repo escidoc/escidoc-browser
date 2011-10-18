@@ -143,13 +143,12 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
                     Component newComponent = null;
                     if (queryTextforFileFormat.equals(((Label) labelComponent).getValue())) {
                         newComponent =
-                            LabsLayoutHelper.createEditableFieldFromLabel(
+                            LabsLayoutHelper.createComboBoxFieldFromLabel(
                                 ((Label) dataComponent).getPropertyDataSource(), true);
                     }
                     else {
                         newComponent =
-                            LabsLayoutHelper.createEditableFieldFromLabel(
-                                ((Label) dataComponent).getPropertyDataSource(), false);
+                            LabsLayoutHelper.createTextFieldFromLabel(((Label) dataComponent).getPropertyDataSource());
                     }
 
                     ((HorizontalLayout) childComponent).replaceComponent(dataComponent, newComponent);

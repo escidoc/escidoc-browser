@@ -41,8 +41,6 @@ import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DE
 import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_LABEL_TO_EDIT;
 import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_TEXTFIELD_TO_SAVE_OR_CANCEL;
 
-import java.util.List;
-
 import org.escidoc.browser.elabsmodul.enums.ELabsFileFormatsEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -133,44 +131,6 @@ public final class LabsLayoutHelper {
         return horizontalLayout;
     }
 
-    @Deprecated
-    // TODO DELETE this method
-    public static synchronized HorizontalLayout createHorizontalLayoutWithELabsLabelAndDropDownBox(
-        final String labelTxt, final String dropDownDescription, Property dataProperty, final List<String> dataSource) {
-        HorizontalLayout horizontalLayout = new HorizontalLayout();
-        horizontalLayout.setSizeUndefined();
-        horizontalLayout.setDescription(USER_DESCR_ON_HOR_LAYOUT_TO_EDIT);
-        horizontalLayout.setEnabled(true);
-        horizontalLayout.setSpacing(true);
-        horizontalLayout.setHeight(HOR_PANEL_HEIGHT);
-        horizontalLayout.setStyleName(STYLE_ELABS_HOR_PANEL);
-
-        final Label label = new Label();
-        label.setWidth(LABEL_WIDTH);
-        label.setValue(DIV_ALIGN_RIGHT + labelTxt + DIV_END);
-        label.setContentMode(Label.CONTENT_XHTML);
-        label.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
-
-        final ComboBox comboBox = new ComboBox("", dataSource);
-        comboBox.setEnabled(true);
-        comboBox.setVisible(true);
-        comboBox.setImmediate(true);
-        comboBox.setMultiSelect(false);
-        comboBox.setNullSelectionAllowed(false);
-        comboBox.setPropertyDataSource(dataProperty);
-        comboBox.setReadOnly(false);
-        comboBox.setWidth(TEXT_WIDTH);
-        comboBox.setStyleName(STYLE_ELABS_TEXT_AS_LABEL);
-        comboBox.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
-
-        horizontalLayout.addComponent(label, 0);
-        horizontalLayout.addComponent(comboBox, 1);
-        horizontalLayout.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
-        horizontalLayout.setComponentAlignment(comboBox, Alignment.MIDDLE_RIGHT);
-
-        return horizontalLayout;
-    }
-
     /**
      * Returns with a label based on the edited field.
      * 
@@ -213,12 +173,26 @@ public final class LabsLayoutHelper {
     }
 
     /**
-     * It returns with textfield as default, but if the property arg is an combobox-property then returns with a Combox.
-     * 
      * @param property
      * @return
      */
-    public static synchronized AbstractComponent createEditableFieldFromLabel(Property property, boolean isComboItem) {
+    public static synchronized AbstractComponent createTextFieldFromLabel(Property property) {
+        Preconditions.checkNotNull(property, "Datasource is null");
+
+        TextField textField = new TextField(property);
+        textField.setWidth(TEXT_WIDTH);
+        textField.setStyleName(STYLE_ELABS_TEXT);
+        textField.setDescription(USER_DESCR_ON_TEXTFIELD_TO_SAVE_OR_CANCEL);
+        textField.commit();
+        textField.focus();
+        return textField;
+    }
+
+    /**
+     * @param property
+     * @return
+     */
+    public static synchronized AbstractComponent createComboBoxFieldFromLabel(Property property, boolean isComboItem) {
         Preconditions.checkNotNull(property, "Datasource is null");
 
         if (isComboItem) {
@@ -252,14 +226,10 @@ public final class LabsLayoutHelper {
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSpacing(true);
         Button saveButton = new Button("Save");
-        Button cancelButton = new Button("Cancel");
         Label blank = new Label("");
         blank.setWidth(LABEL_WIDTH);
         horizontalLayout.addComponent(blank, 0);
-        horizontalLayout.addComponent(cancelButton, 1);
-        horizontalLayout.addComponent(saveButton, 2);
-        // horizontalLayout.setComponentAlignment(cancelButton, Alignment.MIDDLE_RIGHT);
-        // horizontalLayout.setComponentAlignment(saveButton, Alignment.MIDDLE_RIGHT);
+        horizontalLayout.addComponent(saveButton, 1);
         return horizontalLayout;
     }
 }
