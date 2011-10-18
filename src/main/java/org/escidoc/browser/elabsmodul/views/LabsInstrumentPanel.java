@@ -38,7 +38,9 @@ import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
 import org.escidoc.browser.elabsmodul.model.InstrumentBean;
 import org.escidoc.browser.elabsmodul.views.helper.LabsLayoutHelper;
 import org.escidoc.browser.elabsmodul.views.listeners.LabsClientViewEventHandler;
+import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.BreadCrumbMenu;
 import org.slf4j.Logger;
@@ -96,12 +98,16 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
 
     private List<ResourceModel> breadCrumbModel;
 
-    public LabsInstrumentPanel(InstrumentBean sourceBean, ISaveAction saveComponent, List<ResourceModel> breadCrumbModel) {
+    private ItemProxy resourceProxy;
+
+    public LabsInstrumentPanel(InstrumentBean sourceBean, ISaveAction saveComponent,
+        List<ResourceModel> breadCrumbModel, ResourceProxy resourceProxy) {
 
         this.instrumentBean = (sourceBean != null) ? sourceBean : new InstrumentBean();
         this.lastStateBean = instrumentBean;
         this.saveComponent = saveComponent;
         this.breadCrumbModel = breadCrumbModel;
+        this.resourceProxy = (ItemProxy) resourceProxy;
 
         initialisePanelComponents();
         buildStaticGUI();
@@ -111,6 +117,7 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
     }
 
     private void initialisePanelComponents() {
+
         this.mainLayout = new VerticalLayout();
         this.mainLayout.setSpacing(true);
         this.mainLayout.setMargin(true);
@@ -347,7 +354,7 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((instrumentBean == null) ? 0 : instrumentBean.hashCode());
+        result = prime * result + ((resourceProxy == null) ? 0 : resourceProxy.hashCode());
         return result;
     }
 
@@ -363,12 +370,12 @@ public class LabsInstrumentPanel extends Panel implements ILabsPanel, ILabsActio
             return false;
         }
         final LabsInstrumentPanel other = (LabsInstrumentPanel) obj;
-        if (instrumentBean == null) {
-            if (other.instrumentBean != null) {
+        if (resourceProxy == null) {
+            if (other.resourceProxy != null) {
                 return false;
             }
         }
-        else if (!instrumentBean.equals(other.instrumentBean)) {
+        else if (!resourceProxy.equals(other.resourceProxy)) {
             return false;
         }
         return true;
