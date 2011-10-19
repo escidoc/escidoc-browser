@@ -149,7 +149,7 @@ public class RigView extends Panel implements ILabsPanel, ILabsAction {
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_RIG_DESC,
                 getPojoItem().getItemProperty(ELabsViewContants.P_RIG_DESC));
         HorizontalLayout h3 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_RIG_CONTENT,
+            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndRelatedData(ELabsViewContants.L_RIG_CONTENT,
                 getPojoItem().getItemProperty(ELabsViewContants.P_RIG_CONTENT));
 
         registeredComponents.add(h1);

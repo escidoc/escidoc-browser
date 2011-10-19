@@ -34,14 +34,12 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 
 import org.escidoc.browser.controller.Controller;
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
-import org.escidoc.browser.elabsmodul.controller.utils.DOM2String;
-import org.escidoc.browser.elabsmodul.exceptions.EscidocBrowserException;
 import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
 import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
+import org.escidoc.browser.elabsmodul.model.InstrumentBean;
 import org.escidoc.browser.elabsmodul.model.RigBean;
 import org.escidoc.browser.elabsmodul.views.RigView;
 import org.escidoc.browser.elabsmodul.views.YesNoDialog;
@@ -66,7 +64,6 @@ import org.w3c.dom.NodeList;
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
@@ -108,65 +105,80 @@ public final class RigController extends Controller implements ISaveAction {
      * 
      * @param resourceProxy
      *            resource ref
-     * @return controlled bean
-     * @throws EscidocBrowserException
-     *             exception
+     * @return controlled bean exception
      */
-    private synchronized RigBean loadBeanData(final ResourceProxy resourceProxy) throws EscidocBrowserException {
+    private synchronized RigBean loadBeanData(final ItemProxy itemProxy) {
+        Preconditions.checkNotNull(itemProxy, "Resource is null");
 
-        if (resourceProxy == null || !(resourceProxy instanceof ItemProxy)) {
-            throw new EscidocBrowserException("NOT an ItemProxy", null);
-        }
+        RigBean rigBean = new RigBean();
+        final String URI_DC = "http://purl.org/dc/elements/1.1/";
+        final String URI_EL = "http://escidoc.org/ontologies/bw-elabs/re#";
+        final String URI_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
-        final ItemProxy itemProxy = (ItemProxy) resourceProxy;
-        final RigBean rigBean = new RigBean();
+        final NodeList nodeList = itemProxy.getMedataRecords().get("escidoc").getContent().getChildNodes();
 
-        try {
-            final Element e = itemProxy.getMedataRecords().get("escidoc").getContent();
-            final String xml = DOM2String.convertDom2String(e);
+        rigBean.setObjectId(itemProxy.getId());
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            final Node node = nodeList.item(i);
+            final String nodeName = node.getLocalName();
+            final String nsUri = node.getNamespaceURI();
 
-            final String URI_DC = "http://purl.org/dc/elements/1.1/";
-            final String URI_EL = "http://escidoc.org/ontologies/bw-elabs/re#";
-            final String URI_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+            if ("title".equals(nodeName) && URI_DC.equals(nsUri)) {
+                rigBean.setName((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
+            }
 
-            final NodeList nodeList = e.getChildNodes();
-            rigBean.setObjectId(itemProxy.getId());
+            else if ("description".equals(nodeName) && URI_DC.equals(nsUri)) {
+                rigBean.setDescription((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
+            }
+            else if ("instrument".equals(nodeName) && URI_EL.equals(nsUri)) {
+                if (node.getAttributes() != null && node.getAttributes().getNamedItemNS(URI_RDF, "resource") != null) {
+                    Node attributeNode = node.getAttributes().getNamedItemNS(URI_RDF, "resource");
+                    String instrumentID = attributeNode.getNodeValue();
 
-            for (int i = 0; i < nodeList.getLength(); i++) {
-                final Node node = nodeList.item(i);
-                final String nodeName = node.getLocalName();
-                final String nsUri = node.getNamespaceURI();
-
-                if ("title".equals(nodeName) && URI_DC.equals(nsUri)) {
-                    rigBean.setTitle((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
-                }
-
-                else if ("description".equals(nodeName) && URI_DC.equals(nsUri)) {
-                    rigBean.setDescription((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
-                }
-                else if ("instrument".equals(nodeName) && URI_EL.equals(nsUri)) {
-                    if (node.getAttributes() != null
-                        && node.getAttributes().getNamedItemNS(URI_RDF, "resource") != null) {
-                        Node attributeNode = node.getAttributes().getNamedItemNS(URI_RDF, "resource");
-                        String instrumentID = attributeNode.getNodeValue();
-
-                        // get the whole instrBean
-
+                    try {
+                        Item instrumentItem = repositories.item().findItemById(instrumentID);
+                        rigBean.getContentList().add(loadRelatedInstrumentBeanData(instrumentItem));
+                    }
+                    catch (EscidocClientException e) {
+                        LOG.error(e.getLocalizedMessage());
                     }
                 }
             }
-
-            LOG.debug(xml);
-        }
-        catch (final TransformerException e) {
-            LOG.error(e.getLocalizedMessage());
         }
 
         return rigBean;
     }
 
-    public synchronized static Element createRigDOMElementByBeanModel(final RigBean rigBean) {
+    /**
+     * 
+     * @param resourceProxy
+     * @return
+     */
+    private static synchronized InstrumentBean loadRelatedInstrumentBeanData(final Item instrumentItem) {
+        Preconditions.checkNotNull(instrumentItem, "Resource is null");
 
+        final InstrumentBean instrumentBean = new InstrumentBean();
+        final String URI_DC = "http://purl.org/dc/elements/1.1/";
+        final NodeList nodeList = instrumentItem.getMetadataRecords().get("escidoc").getContent().getChildNodes();
+
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            final Node node = nodeList.item(i);
+            final String nodeName = node.getLocalName();
+            final String nsUri = node.getNamespaceURI();
+
+            if ("title".equals(nodeName) && URI_DC.equals(nsUri)) {
+                instrumentBean.setName((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
+            }
+            else if ("description".equals(nodeName) && URI_DC.equals(nsUri)) {
+                instrumentBean
+                    .setDescription((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
+            }
+            instrumentBean.setObjectId(instrumentItem.getObjid());
+        }
+        return instrumentBean;
+    }
+
+    public synchronized static Element createRigDOMElementByBeanModel(final RigBean rigBean) {
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         factory.setCoalescing(true);
@@ -181,7 +193,7 @@ public final class RigController extends Controller implements ISaveAction {
 
             final Element title = doc.createElementNS("http://purl.org/dc/elements/1.1/", "title");
             title.setPrefix("dc");
-            title.setTextContent(rigBean.getTitle());
+            title.setTextContent(rigBean.getName());
             rig.appendChild(title);
 
             final Element description = doc.createElementNS("http://purl.org/dc/elements/1.1/", "description");
@@ -223,15 +235,9 @@ public final class RigController extends Controller implements ISaveAction {
 
         if (resourceProxy instanceof ItemProxyImpl) {
             itemProxyImpl = (ItemProxyImpl) resourceProxy;
-        }
-
-        try {
             rigBean = loadBeanData(itemProxyImpl);
         }
-        catch (final EscidocBrowserException e) {
-            mainWindow.showNotification(new Notification("Error", e.getMessage(), Notification.TYPE_ERROR_MESSAGE));
-            LOG.error(e.getLocalizedMessage());
-        }
+
         return new RigView(rigBean, this, createBeadCrumbModel(), resourceProxy);
     }
 
@@ -261,7 +267,7 @@ public final class RigController extends Controller implements ISaveAction {
                 @Override
                 public void onDialogResult(boolean resultIsYes) {
                     if (resultIsYes) {
-                        RigController.this.saveModel();
+                        // RigController.this.saveModel();
                     }
                     else {
                         ((RigView) RigController.this.view).hideButtonLayout();
