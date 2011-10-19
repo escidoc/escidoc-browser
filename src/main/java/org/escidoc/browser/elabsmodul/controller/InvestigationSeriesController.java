@@ -186,6 +186,7 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
 
         final NodeList nodeList = resourceProxy.getMedataRecords().get("escidoc").getContent().getChildNodes();
         for (int i = 0; i < nodeList.getLength(); i++) {
+
             final Node node = nodeList.item(i);
             final String nodeName = node.getNodeName();
 

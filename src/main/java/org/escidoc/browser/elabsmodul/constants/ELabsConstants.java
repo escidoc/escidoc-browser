@@ -40,6 +40,8 @@ public final class ELabsConstants {
 
     public static final String AA_LOGOUT_TARGET = "/aa/logout?target=";
 
+    public static final String DC_NAMESPACE = "http://purl.org/dc/elements/1.1/";
+
     private ELabsConstants() {
     }
 

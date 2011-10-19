@@ -58,7 +58,7 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 public class InvestigationSeriesView extends Panel implements ILabsPanel, ILabsAction {
 
-    private static final int COMPONENT_COUNT = 0;
+    private static final int COMPONENT_COUNT = 3;
 
     private final String[] PROPERTIES = ELabsViewContants.INVESTIGATION_SERIES_PROPERTIES;
 
