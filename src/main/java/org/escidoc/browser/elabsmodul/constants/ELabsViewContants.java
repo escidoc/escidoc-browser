@@ -195,7 +195,7 @@ public class ELabsViewContants {
 
     // Rig Properties
 
-    public static final String P_RIG_TITLE = "title";
+    public static final String P_RIG_TITLE = "name";
 
     public static final String P_RIG_DESC = "description";
 
