@@ -31,11 +31,17 @@ package org.escidoc.browser.elabsmodul.controller;
 import java.util.Collections;
 import java.util.List;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.escidoc.browser.controller.Controller;
+import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
 import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
 import org.escidoc.browser.elabsmodul.model.InvestigationSeriesBean;
 import org.escidoc.browser.elabsmodul.views.InvestigationSeriesView;
+import org.escidoc.browser.elabsmodul.views.YesNoDialog;
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
@@ -46,12 +52,20 @@ import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.helper.ResourceHierarchy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.common.MetadataRecord;
+import de.escidoc.core.resources.om.container.Container;
 
 public class InvestigationSeriesController extends Controller implements ISaveAction {
     private static final Logger LOG = LoggerFactory.getLogger(InvestigationSeriesController.class);
@@ -62,7 +76,7 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
 
     private Router router;
 
-    private ResourceProxy resourceProxy;
+    private ContainerProxy resourceProxy;
 
     private Window mainWindow;
 
@@ -71,8 +85,74 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
     private InvestigationSeriesBean isb;
 
     @Override
-    public void saveAction(IBeanModel dataBean) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    public void saveAction(IBeanModel beanModel) {
+        Preconditions.checkNotNull(beanModel, "DataBean to store is NULL");
+
+        mainWindow.addWindow(new YesNoDialog(ELabsViewContants.DIALOG_SAVEINSTRUMENT_HEADER,
+            ELabsViewContants.DIALOG_SAVEINSTRUMENT_TEXT, new YesNoDialog.Callback() {
+
+                @Override
+                public void onDialogResult(boolean resultIsYes) {
+                    if (resultIsYes) {
+                        try {
+                            saveModel();
+                        }
+                        catch (EscidocClientException e) {
+                            LOG.error(e.getMessage());
+                            mainWindow.showNotification("Error", e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+                        }
+                    }
+                    else {
+                        ((InvestigationSeriesView) InvestigationSeriesController.this.view).hideButtonLayout();
+                    }
+                }
+
+            }));
+
+    }
+
+    private void saveModel() throws EscidocClientException {
+        Container container = repositories.container().findContainerById(resourceProxy.getId());
+        MetadataRecord metadataRecord = container.getMetadataRecords().get("escidoc");
+        metadataRecord.setContent(beanToDom(isb));
+        repositories.container().update(container);
+    }
+
+    private Element beanToDom(InvestigationSeriesBean isb) {
+        final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        factory.setCoalescing(true);
+        factory.setValidating(true);
+        DocumentBuilder builder;
+        try {
+            builder = factory.newDocumentBuilder();
+            final Document doc = builder.newDocument();
+
+            Element instrument =
+                doc.createElementNS("http://escidoc.org/ontologies/bw-elabs/re#", "InvestigationSeries");
+            instrument.setPrefix("el");
+
+            final Element title = doc.createElementNS("http://purl.org/dc/elements/1.1/", "title");
+            title.setPrefix("dc");
+            title.setTextContent(isb.getName());
+            instrument.appendChild(title);
+
+            final Element description = doc.createElementNS("http://purl.org/dc/elements/1.1/", "description");
+            description.setPrefix("dc");
+            description.setTextContent(isb.getDescription());
+            instrument.appendChild(description);
+            return instrument;
+
+        }
+        catch (DOMException e) {
+            LOG.error(e.getLocalizedMessage());
+        }
+        catch (ParserConfigurationException e) {
+            LOG.error(e.getLocalizedMessage());
+        }
+
+        return null;
+
     }
 
     @Override
@@ -90,7 +170,7 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
         this.serviceLocation = serviceLocation;
         this.repositories = repositories;
         this.router = router;
-        this.resourceProxy = resourceProxy;
+        this.resourceProxy = (ContainerProxy) resourceProxy;
         this.mainWindow = mainWindow;
         this.currentUser = currentUser;
 
@@ -103,11 +183,26 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
 
     private InvestigationSeriesBean resourceToBean() {
         InvestigationSeriesBean isb = new InvestigationSeriesBean();
+
+        final NodeList nodeList = resourceProxy.getMedataRecords().get("escidoc").getContent().getChildNodes();
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            final Node node = nodeList.item(i);
+            final String nodeName = node.getNodeName();
+
+            if (nodeName.equals("dc:title")) {
+                isb.setName((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
+            }
+
+            else if (nodeName.equals("dc:description")) {
+                isb.setDescription((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
+            }
+        }
+
         return isb;
     }
 
     private Component createView() {
-        return new InvestigationSeriesView((ContainerProxy) resourceProxy, isb, createBreadCrumbModel());
+        return new InvestigationSeriesView(resourceProxy, isb, createBreadCrumbModel(), this);
     }
 
     private List<ResourceModel> createBreadCrumbModel() {

@@ -219,6 +219,7 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
             public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
                 if (event.getButton().getCaption().equals("Save")) {
                     saveComponent.saveAction(instrumentBean);
+                    // FIXME why do we these methods?
                     InstrumentView.this.resetLayout();
                     dynamicLayout.requestRepaintAll();
 

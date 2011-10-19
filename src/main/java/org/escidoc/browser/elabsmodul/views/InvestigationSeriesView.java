@@ -28,6 +28,8 @@
  */
 package org.escidoc.browser.elabsmodul.views;
 
+import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.LABEL_WIDTH;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,16 +37,21 @@ import java.util.List;
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsAction;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsPanel;
+import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
 import org.escidoc.browser.elabsmodul.model.InvestigationSeriesBean;
+import org.escidoc.browser.elabsmodul.views.helper.LabsLayoutHelper;
 import org.escidoc.browser.elabsmodul.views.helpers.ResourcePropertiesViewHelper;
+import org.escidoc.browser.elabsmodul.views.listeners.LabsClientViewEventHandler;
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.data.util.BeanItem;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 
@@ -53,7 +60,7 @@ public class InvestigationSeriesView extends Panel implements ILabsPanel, ILabsA
 
     private static final int COMPONENT_COUNT = 0;
 
-    private final String[] PROPERTIES = ELabsViewContants.INVESTIGATION_PROPERTIES;
+    private final String[] PROPERTIES = ELabsViewContants.INVESTIGATION_SERIES_PROPERTIES;
 
     private VerticalLayout mainLayout;
 
@@ -69,20 +76,90 @@ public class InvestigationSeriesView extends Panel implements ILabsPanel, ILabsA
 
     private List<ResourceModel> breadCrumb;
 
+    private Component modifiedComponent;
+
+    private ISaveAction saveAction;
+
+    private Component buttonLayout;
+
+    HorizontalLayout foo = new HorizontalLayout();
+
+    private Button saveButton = new Button("Save");
+
     public InvestigationSeriesView(ContainerProxy containerProxy, InvestigationSeriesBean investigationSeriesBean,
-        List<ResourceModel> breadCrumb) {
+        List<ResourceModel> breadCrumb, ISaveAction saveAction) {
 
         Preconditions.checkNotNull(containerProxy, "containerProxy is null: %s", containerProxy);
         Preconditions.checkNotNull(investigationSeriesBean, "investigationSeriesBean is null: %s",
             investigationSeriesBean);
         Preconditions.checkNotNull(breadCrumb, "breadCrumb is null: %s", breadCrumb);
+        Preconditions.checkNotNull(saveAction, "saveAction is null: %s", saveAction);
 
         this.containerProxy = containerProxy;
         this.investigationSeriesBean = investigationSeriesBean;
         this.breadCrumb = breadCrumb;
+        this.saveAction = saveAction;
 
         initPanelComponents();
         buildPropertiesView();
+        buildPanelView();
+        createPanelListener();
+        createClickListener();
+
+    }
+
+    private void createClickListener() {
+
+        saveButton.addListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+                if (event.getButton().equals(saveButton)) {
+                    saveAction.saveAction(investigationSeriesBean);
+                }
+            }
+        });
+
+    }
+
+    private void createPanelListener() {
+        dynamicLayout.addListener(new LabsClientViewEventHandler(registeredComponents, dynamicLayout, this, this));
+
+    }
+
+    private void buildPanelView() {
+        dynamicLayout.setStyleName(ELabsViewContants.STYLE_ELABS_FORM);
+
+        buttonLayout = createButtonLayout();
+
+        HorizontalLayout name =
+            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_INSTRUMENT_TITLE,
+                beanItem.getItemProperty("name"));
+        HorizontalLayout description =
+            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_INSTRUMENT_DESC,
+                beanItem.getItemProperty("description"));
+
+        registeredComponents.add(name);
+        registeredComponents.add(description);
+
+        dynamicLayout.addComponent(name, 0);
+        dynamicLayout.addComponent(description, 1);
+        dynamicLayout.addComponent(foo, 2);
+
+        mainLayout.addComponent(dynamicLayout);
+        mainLayout.attach();
+        mainLayout.requestRepaintAll();
+
+    }
+
+    private Component createButtonLayout() {
+        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        horizontalLayout.setSpacing(true);
+        Label blank = new Label("");
+        blank.setWidth(LABEL_WIDTH);
+        horizontalLayout.addComponent(blank, 0);
+        horizontalLayout.addComponent(saveButton, 1);
+        return horizontalLayout;
     }
 
     private void buildPropertiesView() {
@@ -107,29 +184,28 @@ public class InvestigationSeriesView extends Panel implements ILabsPanel, ILabsA
 
     @Override
     public void showButtonLayout() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        foo.removeAllComponents();
+        foo.addComponent(buttonLayout);
     }
 
     @Override
     public void hideButtonLayout() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        foo.removeAllComponents();
     }
 
     @Override
     public Component getModifiedComponent() {
-        throw new UnsupportedOperationException("Not yet implemented");
-
+        return modifiedComponent;
     }
 
     @Override
     public void setModifiedComponent(Component modifiedComponent) {
-        throw new UnsupportedOperationException("Not yet implemented");
-
+        this.modifiedComponent = modifiedComponent;
     }
 
     @Override
     public Panel getReference() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return this;
     }
 
 }
