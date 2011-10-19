@@ -196,7 +196,6 @@ public final class InstrumentController extends Controller implements ISaveActio
                 }
 
             }
-            LOG.debug(xml);
         }
         catch (final TransformerException e) {
             LOG.error(e.getLocalizedMessage());
