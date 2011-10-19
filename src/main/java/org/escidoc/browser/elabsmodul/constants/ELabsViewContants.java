@@ -166,6 +166,13 @@ public class ELabsViewContants {
         P_INSTRUMENT_CALIBRATION, P_INSTRUMENT_ESYNCDAEMON, P_INSTRUMENT_FOLDER, P_INSTRUMENT_FILEFORMAT,
         P_INSTRUMENT_CONTEXT, P_INSTRUMENT_CONTENTMODEL, P_INSTRUMENT_DEVICESUPERVISOR, P_INSTRUMENT_INSTITUTE };
 
+    // Investigation Properties
+    public static final String P_INVESTIGATION_TITLE = "name";
+
+    public static final String P_INVESTIGATION_DESC = "description";
+
+    public static final String[] INVESTIGATION_PROPERTIES = { P_INVESTIGATION_TITLE, P_INVESTIGATION_DESC };
+
     // Study Properties
     public static final String P_STUDY_TITLE = "name";
 
