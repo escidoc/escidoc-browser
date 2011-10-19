@@ -166,6 +166,17 @@ public class ELabsViewContants {
         P_INSTRUMENT_CALIBRATION, P_INSTRUMENT_ESYNCDAEMON, P_INSTRUMENT_FOLDER, P_INSTRUMENT_FILEFORMAT,
         P_INSTRUMENT_CONTEXT, P_INSTRUMENT_CONTENTMODEL, P_INSTRUMENT_DEVICESUPERVISOR, P_INSTRUMENT_INSTITUTE };
 
+    // Study Properties
+    public static final String P_STUDY_TITLE = "name";
+
+    public static final String P_STUDY_DESC = "description";
+
+    public static final String P_STUDY_MOT_PUB = "motivatingProperties";
+
+    public static final String P_STUDY_RES_PUB = "resultingPublication";
+
+    public static final String[] STUDY_PROPERTIES = { P_STUDY_TITLE, P_STUDY_TITLE, P_STUDY_MOT_PUB, P_STUDY_RES_PUB };
+
     // eLabs Header Labels
     public static final String RESOURCE_RIG_NAME = "Rig item: ";
 
