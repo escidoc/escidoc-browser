@@ -209,17 +209,18 @@ public class ContainerView extends VerticalLayout {
         // the changes start here
         VerticalLayout panelLayout = (VerticalLayout) leftPanel.getContent();
         panelLayout.setHeight("100%");
+        panelLayout.addStyleName("my-panel");
 
-        Button addButton = new Button("+");
+        Button addButton = new Button("Container");
         addButton.setStyleName(Reindeer.BUTTON_SMALL);
 
-        Button removeButton = new Button("-");
+        Button removeButton = new Button();
         removeButton.setStyleName(Reindeer.BUTTON_SMALL);
 
         HorizontalLayout hl = new HorizontalLayout();
         hl.setStyleName("button-layout");
-        hl.setWidth("100%");
-        hl.setHeight("22px");
+        hl.setWidth("200px");
+        hl.setHeight("20px");
 
         panelLayout.addComponent(hl);
 
