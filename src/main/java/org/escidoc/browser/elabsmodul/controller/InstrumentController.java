@@ -68,6 +68,7 @@ import org.w3c.dom.NodeList;
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
@@ -107,8 +108,8 @@ public final class InstrumentController extends Controller implements ISaveActio
         this.resourceProxy = resourceProxy;
         this.repositories = repositories;
         this.mainWindow = mainWindow;
-        this.loadAdminDescriptorInfo();
-        this.view = createView(resourceProxy);
+        loadAdminDescriptorInfo();
+        view = createView(resourceProxy);
         this.getResourceName(resourceProxy.getName());
     }
 
@@ -334,29 +335,25 @@ public final class InstrumentController extends Controller implements ISaveActio
             instumentBean = loadBeanData(itemProxyImpl);
         }
         catch (final EscidocBrowserException e) {
+            mainWindow.showNotification(new Notification("Error", e.getMessage(), Notification.TYPE_ERROR_MESSAGE));
             LOG.error(e.getLocalizedMessage());
-            instumentBean = null;
         }
-        // Instrument View
-        Component instrumentView =
-            new InstrumentView(instumentBean, this, this.BreadCrumbModel(), resourceProxy, eSyncDaemonUrls);
-        return instrumentView; // pushed into InstrumentView
+        return new InstrumentView(instumentBean, this, createBeadCrumbModel(), resourceProxy, eSyncDaemonUrls);
     }
 
-    private List<ResourceModel> BreadCrumbModel() {
+    private List<ResourceModel> createBeadCrumbModel() {
         final ResourceHierarchy rs = new ResourceHierarchy(serviceLocation, repositories);
         List<ResourceModel> hierarchy = null;
         try {
             hierarchy = rs.getHierarchy(resourceProxy);
+            Collections.reverse(hierarchy);
+            hierarchy.add(resourceProxy);
+            return hierarchy;
         }
         catch (EscidocClientException e) {
-            // TODO Auto-generated catch block
-            // e.printStackTrace();
-            LOG.debug("Fatal error, could not load BreadCrumb " + e.getLocalizedMessage());
+            LOG.error("Fatal error, could not load BreadCrumb " + e.getLocalizedMessage());
         }
-        Collections.reverse(hierarchy);
-        hierarchy.add(resourceProxy);
-        return hierarchy;
+        return Collections.emptyList();
     }
 
     @Override
@@ -364,7 +361,7 @@ public final class InstrumentController extends Controller implements ISaveActio
         Preconditions.checkNotNull(beanModel, "DataBean to store is NULL");
         this.beanModel = beanModel;
 
-        this.mainWindow.addWindow(new YesNoDialog(ELabsViewContants.DIALOG_SAVEINSTRUMENT_HEADER,
+        mainWindow.addWindow(new YesNoDialog(ELabsViewContants.DIALOG_SAVEINSTRUMENT_HEADER,
             ELabsViewContants.DIALOG_SAVEINSTRUMENT_TEXT, new YesNoDialog.Callback() {
 
                 @Override
@@ -380,15 +377,15 @@ public final class InstrumentController extends Controller implements ISaveActio
     }
 
     private synchronized void saveModel() {
-        Preconditions.checkNotNull(this.beanModel, "DataBean to store is NULL");
+        Preconditions.checkNotNull(beanModel, "DataBean to store is NULL");
         ItemRepository itemRepositories = repositories.item();
         final String ESCIDOC = "escidoc";
 
         InstrumentBean instrumentBean = null;
         Item item = null;
 
-        if (this.beanModel instanceof InstrumentBean) {
-            instrumentBean = (InstrumentBean) this.beanModel;
+        if (beanModel instanceof InstrumentBean) {
+            instrumentBean = (InstrumentBean) beanModel;
         }
         final Element metaDataContent = InstrumentController.createInstrumentDOMElementByBeanModel(instrumentBean);
 
@@ -402,7 +399,7 @@ public final class InstrumentController extends Controller implements ISaveActio
             LOG.error(e.getLocalizedMessage());
         }
         finally {
-            this.beanModel = null;
+            beanModel = null;
         }
         LOG.info("Instument is successfully saved.");
     }
