@@ -29,7 +29,6 @@
 package org.escidoc.browser.elabsmodul.model;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
 
@@ -45,37 +44,15 @@ public class StudyBean implements Serializable, IBeanModel {
 
     private String description;
 
-    private Date createdOn;
-
-    private String createdBy;
-
-    private Date modifiedOn;
-
-    private String modifiedBy;
-
     private boolean configuration;
-
-    private boolean calibration;
-
-    private String eSyncDaemon;
-
-    private String folder;
-
-    private String fileFormat;
 
     private String context;
 
     private String contentModel;
 
-    private String deviceSupervisor;
+    private String motivatingProperties;
 
-    private String institute;
-
-    private String incarnationType;
-
-    private String costCenter;
-
-    private boolean operator;
+    private String resultingPublication;
 
     /**
      * @return the objectId
@@ -165,150 +142,6 @@ public class StudyBean implements Serializable, IBeanModel {
     }
 
     /**
-     * @return the calibrationProperty
-     */
-    public final boolean getCalibration() {
-
-        return calibration;
-    }
-
-    /**
-     * @param calibration
-     *            the calibrationProperty to set
-     */
-    public final void setCalibration(final boolean calibration) {
-
-        this.calibration = calibration;
-    }
-
-    /**
-     * @return the eSyncDaemon
-     */
-    public final String getESyncDaemon() {
-
-        return eSyncDaemon;
-    }
-
-    /**
-     * @param eSyncDaemon
-     *            the eSyncDaemon to set
-     */
-    public final void setESyncDaemon(final String eSyncDaemon) {
-
-        this.eSyncDaemon = eSyncDaemon;
-    }
-
-    /**
-     * @return the folder
-     */
-    public final String getFolder() {
-
-        return folder;
-    }
-
-    /**
-     * @return the createdOn
-     */
-
-    public final Date getCreatedOn() {
-
-        return createdOn;
-    }
-
-    /**
-     * @param createdOn
-     *            the createdOn to set
-     */
-
-    public final void setCreatedOn(final Date createdOn) {
-
-        this.createdOn = createdOn;
-    }
-
-    /**
-     * @return the createdBy
-     */
-
-    public final String getCreatedBy() {
-
-        return createdBy;
-    }
-
-    /**
-     * @param createdBy
-     *            the createdBy to set
-     */
-
-    public final void setCreatedBy(final String createdBy) {
-
-        this.createdBy = createdBy;
-    }
-
-    /**
-     * @return the modifiedOn
-     */
-
-    public final Date getModifiedOn() {
-
-        return modifiedOn;
-    }
-
-    /**
-     * @param modifiedOn
-     *            the modifiedOn to set
-     */
-
-    public final void setModifiedOn(final Date modifiedOn) {
-
-        this.modifiedOn = modifiedOn;
-    }
-
-    /**
-     * @return the modifiedBy
-     */
-
-    public final String getModifiedBy() {
-
-        return modifiedBy;
-    }
-
-    /**
-     * @param modifiedBy
-     *            the modifiedBy to set
-     */
-
-    public final void setModifiedBy(final String modifiedBy) {
-
-        this.modifiedBy = modifiedBy;
-    }
-
-    /**
-     * @param folder
-     *            the folder to set
-     */
-    public final void setFolder(final String folder) {
-
-        this.folder = folder;
-    }
-
-    /**
-     * @return the fileFormat
-     */
-    public final String getFileFormat() {
-
-        return fileFormat;
-    }
-
-    /**
-     * @param fileFormat
-     *            the fileFormat to set
-     */
-    public final void setFileFormat(final String fileFormat) {
-
-        this.fileFormat = fileFormat;
-    }
-
-    /**
      * @return the contentModel
      */
 
@@ -328,65 +161,6 @@ public class StudyBean implements Serializable, IBeanModel {
     }
 
     /**
-     * @return the deviceSupervisor
-     */
-    public final String getDeviceSupervisor() {
-
-        return deviceSupervisor;
-    }
-
-    /**
-     * @param deviceSupervisor
-     *            the deviceSupervisor to set
-     */
-    public final void setDeviceSupervisor(final String deviceSupervisor) {
-
-        this.deviceSupervisor = deviceSupervisor;
-    }
-
-    /**
-     * @return the institute
-     */
-    public final String getInstitute() {
-
-        return institute;
-    }
-
-    /**
-     * @param institute
-     *            the institute to set
-     */
-    public final void setInstitute(final String institute) {
-
-        this.institute = institute;
-    }
-
-    /**
-     * @return the incarnationType
-     */
-    public final String getIncarnationType() {
-
-        return incarnationType;
-    }
-
-    /**
-     * @param incarnationType
-     *            the incarnationType to set
-     */
-    public final void setIncarnationType(final String incarnationType) {
-
-        this.incarnationType = incarnationType;
-    }
-
-    /**
-     * @return the costCenter
-     */
-    public final String getCostCenter() {
-
-        return costCenter;
-    }
-
-    /**
      * @return the context
      */
 
@@ -399,19 +173,9 @@ public class StudyBean implements Serializable, IBeanModel {
      * @param context
      *            the context to set
      */
-
     public final void setContext(final String context) {
 
         this.context = context;
-    }
-
-    /**
-     * @param costCenter
-     *            the costCenter to set
-     */
-    public final void setCostCenter(final String costCenter) {
-
-        this.costCenter = costCenter;
     }
 
     @Override
@@ -420,18 +184,21 @@ public class StudyBean implements Serializable, IBeanModel {
         return name;
     }
 
-    /**
-     * @return the operator
-     */
-    public final boolean isOperator() {
-        return operator;
+    public String getMotivatingProperties() {
+        return motivatingProperties;
     }
 
-    /**
-     * @param operator
-     *            the operator to set
-     */
-    public final void setOperator(final boolean operator) {
-        this.operator = operator;
+    public String getResultingPublication() {
+        return resultingPublication;
+    }
+
+    public void setMotivatingProperties(String motivatingProperties) {
+        this.motivatingProperties = motivatingProperties;
+
+    }
+
+    public void setResultingPublication(String resultingPublication) {
+        this.resultingPublication = resultingPublication;
+
     }
 }
