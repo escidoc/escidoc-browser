@@ -34,6 +34,8 @@ import java.util.List;
 import org.escidoc.browser.controller.Controller;
 import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
 import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
+import org.escidoc.browser.elabsmodul.model.InvestigationSeriesBean;
+import org.escidoc.browser.elabsmodul.views.InvestigationSeriesView;
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
