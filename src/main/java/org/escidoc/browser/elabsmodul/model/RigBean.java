@@ -29,6 +29,7 @@
 package org.escidoc.browser.elabsmodul.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -36,13 +37,11 @@ import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
 
 public class RigBean implements Serializable, IBeanModel {
 
-    private static final long serialVersionUID = -6265799264380132595L;
+    private static final long serialVersionUID = -3090246006887935097L;
 
     private String objectId;
 
-    private String identifier;
-
-    private String title;
+    private String name;
 
     private String description;
 
@@ -54,14 +53,10 @@ public class RigBean implements Serializable, IBeanModel {
 
     private String modifiedBy;
 
-    private List<InstrumentBean> contentList;
+    private List<InstrumentBean> contentList = new ArrayList<InstrumentBean>();
 
     public String getObjectId() {
         return objectId;
-    }
-
-    public String getIdentifier() {
-        return identifier;
     }
 
     public String getDescription() {
@@ -92,10 +87,6 @@ public class RigBean implements Serializable, IBeanModel {
         this.objectId = objectId;
     }
 
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
-    }
-
     public void setDescription(String description) {
         this.description = description;
     }
@@ -120,11 +111,11 @@ public class RigBean implements Serializable, IBeanModel {
         this.contentList = contentList;
     }
 
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return name;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setName(String name) {
+        this.name = name;
     }
 }

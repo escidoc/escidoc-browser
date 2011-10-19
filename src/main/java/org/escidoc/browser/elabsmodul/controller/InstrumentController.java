@@ -138,20 +138,23 @@ public final class InstrumentController extends Controller implements ISaveActio
 
             instrumentBean.setObjectId(itemProxy.getId());
 
+            final String URI_DC = "http://purl.org/dc/elements/1.1/";
+            final String URI_EL = "http://escidoc.org/ontologies/bw-elabs/re#";
             for (int i = 0; i < nodeList.getLength(); i++) {
                 final Node node = nodeList.item(i);
-                final String nodeName = node.getNodeName();
+                final String nodeName = node.getLocalName();
+                final String nsUri = node.getNamespaceURI();
 
-                if (nodeName.equals("dc:title")) {
+                if ("title".equals(nodeName) && URI_DC.equals(nsUri)) {
                     instrumentBean.setName((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
                 }
 
-                else if (nodeName.equals("dc:description")) {
+                else if ("description".equals(nodeName) && URI_DC.equals(nsUri)) {
                     instrumentBean
                         .setDescription((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
                 }
 
-                else if (nodeName.equals("el:requires-configuration")) {
+                else if ("requires-configuration".equals(nodeName) && URI_EL.equals(nsUri)) {
                     final String value = node.getFirstChild().getNodeValue();
                     if (value.equals("no")) {
                         instrumentBean.setConfiguration(false);
@@ -161,7 +164,7 @@ public final class InstrumentController extends Controller implements ISaveActio
                     }
 
                 }
-                else if (nodeName.equals("el:requires-calibration")) {
+                else if ("requires-calibration".equals(nodeName) && URI_EL.equals(nsUri)) {
                     final String value = node.getFirstChild().getNodeValue();
                     if (value.equals("no")) {
                         instrumentBean.setCalibration(false);
@@ -170,29 +173,29 @@ public final class InstrumentController extends Controller implements ISaveActio
                         instrumentBean.setCalibration(true);
                     }
                 }
-                else if (nodeName.equals("el:esync-endpoint")) {
+                else if ("esync-endpoint".equals(nodeName) && URI_EL.equals(nsUri)) {
                     instrumentBean
                         .setESyncDaemon((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
                 }
-                else if (nodeName.equals("el:monitored-folder")) {
+                else if ("monitored-folder".equals(nodeName) && URI_EL.equals(nsUri)) {
                     instrumentBean
                         .setFolder((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
                 }
-                else if (nodeName.equals("el:result-mime-type")) {
+                else if ("result-mime-type".equals(nodeName) && URI_EL.equals(nsUri)) {
                     instrumentBean
                         .setFileFormat((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
                 }
-                else if (nodeName.equals("el:responsible-person")
+                else if ("responsible-person".equals(nodeName) && URI_EL.equals(nsUri)
                     && node.getAttributes().getNamedItem("rdf:resource") != null) {
                     instrumentBean
                         .setDeviceSupervisor(node.getAttributes().getNamedItem("rdf:resource").getNodeValue());
                 }
-                else if (nodeName.equals("el:institution") && node.getAttributes().getNamedItem("rdf:resource") != null) {
+                else if ("institution".equals(nodeName) && URI_EL.equals(nsUri)
+                    && node.getAttributes().getNamedItem("rdf:resource") != null) {
                     instrumentBean.setInstitute(node.getAttributes().getNamedItem("rdf:resource").getNodeValue());
                 }
 
             }
-            LOG.debug(xml);
         }
         catch (final TransformerException e) {
             LOG.error(e.getLocalizedMessage());
