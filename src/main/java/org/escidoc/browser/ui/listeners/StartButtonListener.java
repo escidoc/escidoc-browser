@@ -116,11 +116,9 @@ public final class StartButtonListener implements Button.ClickListener {
         if (validateConnection(escidocUriField)) {
             return true;
         }
-        else {
-            mainWindow.showNotification(new Window.Notification("Can not connect to: " + escidocUriField.getValue()
-                + ", cause: " + responseMessage, Notification.TYPE_ERROR_MESSAGE));
-            return false;
-        }
+        mainWindow.showNotification(new Window.Notification("Can not connect to: " + escidocUriField.getValue()
+            + ", cause: " + responseMessage, Notification.TYPE_ERROR_MESSAGE));
+        return false;
     }
 
     private boolean validateConnection(final AbstractField escidocUriField) {
