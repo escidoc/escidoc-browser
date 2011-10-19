@@ -177,6 +177,16 @@ public class ELabsViewContants {
 
     public static final String[] STUDY_PROPERTIES = { P_STUDY_TITLE, P_STUDY_TITLE, P_STUDY_MOT_PUB, P_STUDY_RES_PUB };
 
+    // Rig Properties
+
+    public static final String P_RIG_TITLE = "title";
+
+    public static final String P_RIG_DESC = "description";
+
+    public static final String P_RIG_CONTENT = "contentList";
+
+    public static final String[] RIG_PROPERTIES = { P_RIG_TITLE, P_RIG_DESC, P_RIG_CONTENT };
+
     // eLabs Header Labels
     public static final String RESOURCE_RIG_NAME = "Rig item: ";
 
