@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.BreadCrumbMenu;
 
 import com.vaadin.ui.CssLayout;
@@ -31,7 +30,10 @@ public class ResourcePropertiesViewHelper {
 
     public Panel generatePropertiesView() {
         // Item title
-        final Label titleLabel = new Label(ViewConstants.RESOURCE_NAME + resourceProxy.getName());
+        String resourceType = resourceProxy.getType().toString();
+        final Label titleLabel =
+            new Label(resourceType.substring(0, 1).toUpperCase() + resourceType.substring(1).toLowerCase() + ": "
+                + resourceProxy.getName());
         titleLabel.setDescription("header");
         titleLabel.setStyleName("h2 fullwidth");
 
