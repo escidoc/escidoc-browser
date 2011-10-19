@@ -1,9 +1,12 @@
 package org.escidoc.browser.elabsmodul.views;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
+import org.escidoc.browser.elabsmodul.interfaces.ILabsAction;
+import org.escidoc.browser.elabsmodul.interfaces.ILabsPanel;
 import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
 import org.escidoc.browser.elabsmodul.model.StudyBean;
 import org.escidoc.browser.elabsmodul.views.helper.LabsLayoutHelper;
@@ -12,13 +15,19 @@ import org.escidoc.browser.elabsmodul.views.listeners.LabsClientViewEventHandler
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.data.util.POJOItem;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 
-public class StudyView extends Panel {
+public class StudyView extends Panel implements ILabsPanel, ILabsAction {
 
     private POJOItem<StudyBean> pojoItem = null;
 
@@ -42,13 +51,19 @@ public class StudyView extends Panel {
 
     final String FLOAT_RIGHT = "floatright";
 
-    private final int COMPONENT_COUNT = 9;
+    private final int COMPONENT_COUNT = 4;
 
     private HorizontalLayout buttonLayout = null;
 
     private List<HorizontalLayout> registeredComponents = null;
 
     private LabsClientViewEventHandler clientViewEventHandler;
+
+    private ClickListener mouseClickListener = null;
+
+    private static Logger LOG = LoggerFactory.getLogger(StudyView.class);
+
+    private HorizontalLayout modifiedComponent = null;
 
     public StudyView(StudyBean sourceBean, ISaveAction saveComponent, List<ResourceModel> breadCrumbModel,
         ResourceProxy resourceProxy) {
@@ -60,8 +75,52 @@ public class StudyView extends Panel {
         initialisePanelComponents();
         buildPropertiesGUI();
         buildPanelGUI();
-        // createPanelListener();
-        // createClickListener();
+        createPanelListener();
+        createClickListener();
+    }
+
+    private void createClickListener() {
+        mouseClickListener = new Button.ClickListener() {
+            private static final long serialVersionUID = -8330004043242560612L;
+
+            @Override
+            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+                if (event.getButton().getCaption().equals("Save")) {
+                    saveComponent.saveAction(studyBean);
+                    StudyView.this.resetLayout();
+                    dynamicLayout.requestRepaintAll();
+
+                }
+            }
+        };
+
+        try {
+            ((Button) buttonLayout.getComponent(1)).addListener(mouseClickListener);
+        }
+        catch (ClassCastException e) {
+            LOG.error(e.getMessage());
+        }
+
+    }
+
+    protected void resetLayout() {
+        Preconditions.checkNotNull(dynamicLayout, "View's dynamiclayout is null.");
+
+        HorizontalLayout tempParentLayout = null;
+        for (Iterator<Component> iterator = dynamicLayout.getComponentIterator(); iterator.hasNext();) {
+            Component component = iterator.next();
+            if (component instanceof HorizontalLayout) {
+                tempParentLayout = (HorizontalLayout) component;
+            }
+            else {
+                LOG.error("DynamicLayout can contain only HorizontalLayouts as direct child element.");
+                break;
+            }
+            if (LabsLayoutHelper.switchToLabelFromEditedField(tempParentLayout)) {
+                setModifiedComponent(null);
+            }
+        }
+
     }
 
     private void initialisePanelComponents() {
@@ -115,8 +174,7 @@ public class StudyView extends Panel {
     }
 
     private void createPanelListener() {
-        // this.clientViewEventHandler = new LabsClientViewEventHandler(registeredComponents, dynamicLayout, this,
-        // this);
+        this.clientViewEventHandler = new LabsClientViewEventHandler(registeredComponents, dynamicLayout, this, this);
         this.dynamicLayout.addListener(this.clientViewEventHandler);
 
     }
@@ -132,4 +190,52 @@ public class StudyView extends Panel {
         this.addComponent(new ResourcePropertiesViewHelper(containerProxy, breadCrumbModel).generatePropertiesView());
     }
 
+    @Override
+    public void showButtonLayout() {
+        HorizontalLayout horizontalLayout = null;
+        if (dynamicLayout != null && buttonLayout != null) {
+            try {
+                horizontalLayout = (HorizontalLayout) dynamicLayout.getComponent(COMPONENT_COUNT);
+            }
+            catch (ClassCastException e) {
+                LOG.error(e.getMessage());
+            }
+            if (horizontalLayout != null) {
+                horizontalLayout.removeAllComponents();
+                horizontalLayout.addComponent(buttonLayout);
+            }
+        }
+    }
+
+    @Override
+    public Component getModifiedComponent() {
+        return modifiedComponent;
+    }
+
+    @Override
+    public void setModifiedComponent(Component modifiedComponent) {
+        try {
+            this.modifiedComponent = (HorizontalLayout) modifiedComponent;
+        }
+        catch (ClassCastException e) {
+            LOG.error(e.getMessage());
+        }
+    }
+
+    @Override
+    public Panel getReference() {
+        return this;
+    }
+
+    @Override
+    public void hideButtonLayout() {
+        if (dynamicLayout != null && dynamicLayout.getComponent(COMPONENT_COUNT) != null) {
+            try {
+                ((HorizontalLayout) dynamicLayout.getComponent(COMPONENT_COUNT)).removeAllComponents();
+            }
+            catch (ClassCastException e) {
+                LOG.error(e.getMessage());
+            }
+        }
+    }
 }
