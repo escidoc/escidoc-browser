@@ -38,7 +38,7 @@ import org.escidoc.browser.elabsmodul.interfaces.ILabsPanel;
 import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
 import org.escidoc.browser.elabsmodul.model.InstrumentBean;
 import org.escidoc.browser.elabsmodul.views.helper.LabsLayoutHelper;
-import org.escidoc.browser.elabsmodul.views.helpers.ItemPropertiesViewHelper;
+import org.escidoc.browser.elabsmodul.views.helpers.ResourcePropertiesViewHelper;
 import org.escidoc.browser.elabsmodul.views.listeners.LabsClientViewEventHandler;
 import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.ResourceModel;
@@ -138,7 +138,7 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
      * Build the read-only layout of the eLabsElement
      */
     private void buildPropertiesGUI() {
-        this.addComponent(new ItemPropertiesViewHelper(itemProxy, breadCrumbModel).generatePropertiesView());
+        this.addComponent(new ResourcePropertiesViewHelper(itemProxy, breadCrumbModel).generatePropertiesView());
     }
 
     /**

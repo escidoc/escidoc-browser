@@ -2,8 +2,8 @@ package org.escidoc.browser.elabsmodul.views.helpers;
 
 import java.util.List;
 
-import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.BreadCrumbMenu;
 
@@ -12,7 +12,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.themes.Runo;
 
-public class ItemPropertiesViewHelper {
+public class ResourcePropertiesViewHelper {
 
     final String LAST_MODIFIED_BY = "Last modification by ";
 
@@ -20,18 +20,18 @@ public class ItemPropertiesViewHelper {
 
     final String FLOAT_RIGHT = "floatright";
 
-    private ItemProxy itemProxy;
+    private ResourceProxy resourceProxy;
 
     private List<ResourceModel> breadCrumbModel;
 
-    public ItemPropertiesViewHelper(ItemProxy itemProxy, List<ResourceModel> breadCrumbModel) {
-        this.itemProxy = itemProxy;
+    public ResourcePropertiesViewHelper(ResourceProxy itemProxy, List<ResourceModel> breadCrumbModel) {
+        this.resourceProxy = itemProxy;
         this.breadCrumbModel = breadCrumbModel;
     }
 
     public Panel generatePropertiesView() {
         // Item title
-        final Label titleLabel = new Label(ViewConstants.RESOURCE_NAME + itemProxy.getName());
+        final Label titleLabel = new Label(ViewConstants.RESOURCE_NAME + resourceProxy.getName());
         titleLabel.setDescription("header");
         titleLabel.setStyleName("h2 fullwidth");
 
@@ -44,9 +44,9 @@ public class ItemPropertiesViewHelper {
         propertiesView.setWidth("100%");
         propertiesView.setHeight("100%");
 
-        final Label descMetadata1 = new Label("ID: " + itemProxy.getId());
+        final Label descMetadata1 = new Label("ID: " + resourceProxy.getId());
         final Label descMetadata2 =
-            new Label(LAST_MODIFIED_BY + " " + itemProxy.getModifier() + " on " + itemProxy.getModifiedOn(),
+            new Label(LAST_MODIFIED_BY + " " + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(),
                 Label.CONTENT_XHTML);
 
         final Panel pnlPropertiesLeft = buildLeftPanel();
