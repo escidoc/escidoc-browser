@@ -125,8 +125,11 @@ public final class RigController extends Controller implements ISaveAction {
             final Element e = itemProxy.getMedataRecords().get("escidoc").getContent();
             final String xml = DOM2String.convertDom2String(e);
 
-            final NodeList nodeList = e.getChildNodes();
+            final String URI_DC = "http://purl.org/dc/elements/1.1/";
+            final String URI_EL = "http://escidoc.org/ontologies/bw-elabs/re#";
+            final String URI_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
+            final NodeList nodeList = e.getChildNodes();
             rigBean.setObjectId(itemProxy.getId());
 
             for (int i = 0; i < nodeList.getLength(); i++) {
@@ -134,22 +137,23 @@ public final class RigController extends Controller implements ISaveAction {
                 final String nodeName = node.getLocalName();
                 final String nsUri = node.getNamespaceURI();
 
-                if ("title".equals(nodeName) && "http://purl.org/dc/elements/1.1/".equals(nsUri)) {
+                if ("title".equals(nodeName) && URI_DC.equals(nsUri)) {
                     rigBean.setTitle((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
                 }
 
-                if ("description".equals(nodeName) && "http://purl.org/dc/elements/1.1/".equals(nsUri)) {
+                else if ("description".equals(nodeName) && URI_DC.equals(nsUri)) {
                     rigBean.setDescription((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
                 }
-            }
-            final NodeList instrumentNodeList =
-                e.getElementsByTagNameNS("http://escidoc.org/ontologies/bw-elabs/re#", "instrument");
-            for (int i = 0; i < instrumentNodeList.getLength(); i++) {
-                final Node instrumentNode = nodeList.item(i);
+                else if ("instrument".equals(nodeName) && URI_EL.equals(nsUri)) {
+                    if (node.getAttributes() != null
+                        && node.getAttributes().getNamedItemNS(URI_RDF, "resource") != null) {
+                        Node attributeNode = node.getAttributes().getNamedItemNS(URI_RDF, "resource");
+                        String instrumentID = attributeNode.getNodeValue();
 
-                // if (instrumentNode.getAttributes().getNamedItem("rdf:resource") != null) {
-                // TODO
-                // }
+                        // get the whole instrBean
+
+                    }
+                }
             }
 
             LOG.debug(xml);
