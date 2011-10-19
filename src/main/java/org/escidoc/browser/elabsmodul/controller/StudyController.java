@@ -80,15 +80,14 @@ public class StudyController extends Controller implements ISaveAction {
             LOG.error(e.getLocalizedMessage());
             studyBean = null;
         }
-        // Instrument View
-        Component instrumentView = new StudyView(studyBean, this, this.BreadCrumbModel(), resourceProxy);
-        return instrumentView; // pushed into InstrumentView
+        // Study View
+        Component studyView = new StudyView(studyBean, this, this.createBeadCrumbModel(), resourceProxy);
+        return studyView; // pushed into StudyView
     }
 
     private synchronized StudyBean loadBeanData(ContainerProxy containerProxy) throws EscidocBrowserException {
-        // TODO NOT YET IMPLEMENTED
         if (resourceProxy == null || !(resourceProxy instanceof ContainerProxy)) {
-            throw new EscidocBrowserException("NOT an ItemProxy", null);
+            throw new EscidocBrowserException("NOT an ContainerProxy", null);
         }
 
         final ContainerProxy containerProxy1 = (ContainerProxy) resourceProxy;
@@ -114,45 +113,13 @@ public class StudyController extends Controller implements ISaveAction {
                     studyBean
                         .setDescription((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
                 }
+                else if (nodeName.equals("el:motivating-publication")) {
 
-                else if (nodeName.equals("el:requires-configuration")) {
-                    final String value = node.getFirstChild().getNodeValue();
-                    if (value.equals("no")) {
-                        studyBean.setConfiguration(false);
-                    }
-                    else if (value.equals("yes")) {
-                        studyBean.setConfiguration(true);
-                    }
-
+                    studyBean.setMotivatingProperties(node.getAttributes().getNamedItem("rdf:resource").getNodeValue());
                 }
-                else if (nodeName.equals("el:requires-calibration")) {
-                    final String value = node.getFirstChild().getNodeValue();
-                    if (value.equals("no")) {
-                        studyBean.setCalibration(false);
-                    }
-                    else if (value.equals("yes")) {
-                        studyBean.setCalibration(true);
-                    }
+                else if (nodeName.equals("el:resulting-publication")) {
+                    studyBean.setResultingPublication(node.getAttributes().getNamedItem("rdf:resource").getNodeValue());
                 }
-                else if (nodeName.equals("el:esync-endpoint")) {
-                    studyBean
-                        .setESyncDaemon((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
-                }
-                else if (nodeName.equals("el:monitored-folder")) {
-                    studyBean.setFolder((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
-                }
-                else if (nodeName.equals("el:result-mime-type")) {
-                    studyBean
-                        .setFileFormat((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
-                }
-                else if (nodeName.equals("el:responsible-person")
-                    && node.getAttributes().getNamedItem("rdf:resource") != null) {
-                    studyBean.setDeviceSupervisor(node.getAttributes().getNamedItem("rdf:resource").getNodeValue());
-                }
-                else if (nodeName.equals("el:institution") && node.getAttributes().getNamedItem("rdf:resource") != null) {
-                    studyBean.setInstitute(node.getAttributes().getNamedItem("rdf:resource").getNodeValue());
-                }
-
             }
             LOG.debug(xml);
         }
@@ -162,15 +129,13 @@ public class StudyController extends Controller implements ISaveAction {
         return studyBean;
     }
 
-    private List<ResourceModel> BreadCrumbModel() {
+    private List<ResourceModel> createBeadCrumbModel() {
         final ResourceHierarchy rs = new ResourceHierarchy(serviceLocation, repositories);
         List<ResourceModel> hierarchy = null;
         try {
             hierarchy = rs.getHierarchy(resourceProxy);
         }
         catch (EscidocClientException e) {
-            // TODO Auto-generated catch block
-            // e.printStackTrace();
             LOG.debug("Fatal error, could not load BreadCrumb " + e.getLocalizedMessage());
         }
         Collections.reverse(hierarchy);

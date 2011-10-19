@@ -175,7 +175,7 @@ public class ELabsViewContants {
 
     public static final String P_STUDY_RES_PUB = "resultingPublication";
 
-    public static final String[] STUDY_PROPERTIES = { P_STUDY_TITLE, P_STUDY_TITLE, P_STUDY_MOT_PUB, P_STUDY_RES_PUB };
+    public static final String[] STUDY_PROPERTIES = { P_STUDY_TITLE, P_STUDY_DESC, P_STUDY_MOT_PUB, P_STUDY_RES_PUB };
 
     // eLabs Header Labels
     public static final String RESOURCE_RIG_NAME = "Rig item: ";
