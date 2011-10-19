@@ -36,7 +36,7 @@ import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsAction;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsPanel;
 import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
-import org.escidoc.browser.elabsmodul.model.InstrumentBean;
+import org.escidoc.browser.elabsmodul.model.RigBean;
 import org.escidoc.browser.elabsmodul.views.helper.LabsLayoutHelper;
 import org.escidoc.browser.elabsmodul.views.helpers.ResourcePropertiesViewHelper;
 import org.escidoc.browser.elabsmodul.views.listeners.LabsClientViewEventHandler;
@@ -57,17 +57,15 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 
 /**
- * Specific BWeLabsView for Instrument item-element.
+ * Specific BWeLabsView for Rig item-element.
  */
-public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
+public class RigView extends Panel implements ILabsPanel, ILabsAction {
 
-    private static final long serialVersionUID = -7601252311598579746L;
+    private static final long serialVersionUID = -6095498070313755653L;
 
-    private static Logger LOG = LoggerFactory.getLogger(InstrumentView.class);
+    private static Logger LOG = LoggerFactory.getLogger(RigView.class);
 
-    private final String[] PROPERTIES = ELabsViewContants.INSTRUMENT_PROPERTIES;
-
-    final String VIEWCAPTION = "Instument View";
+    private final String[] PROPERTIES = ELabsViewContants.RIG_PROPERTIES;
 
     final String LAST_MODIFIED_BY = "Last modification by ";
 
@@ -75,11 +73,11 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
 
     final String FLOAT_RIGHT = "floatright";
 
-    private final int COMPONENT_COUNT = 9;
+    private final int COMPONENT_COUNT = 3;
 
-    private POJOItem<InstrumentBean> pojoItem = null;
+    private POJOItem<RigBean> pojoItem = null;
 
-    private InstrumentBean instrumentBean = null;
+    private RigBean rigBean = null;
 
     private VerticalLayout mainLayout = null, dynamicLayout = null;
 
@@ -99,16 +97,13 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
 
     private ItemProxy itemProxy;
 
-    private List<String> eSyncDaemonUrls;
+    public RigView(RigBean sourceBean, ISaveAction saveComponent, List<ResourceModel> breadCrumbModel,
+        ResourceProxy resourceProxy) {
 
-    public InstrumentView(InstrumentBean sourceBean, ISaveAction saveComponent, List<ResourceModel> breadCrumbModel,
-        ResourceProxy resourceProxy, List<String> eSyncDaemonUrls) {
-
-        instrumentBean = (sourceBean != null) ? sourceBean : new InstrumentBean();
+        this.rigBean = (sourceBean != null) ? sourceBean : new RigBean();
         this.saveComponent = saveComponent;
         this.breadCrumbModel = breadCrumbModel;
-        itemProxy = (ItemProxy) resourceProxy;
-        this.eSyncDaemonUrls = eSyncDaemonUrls;
+        this.itemProxy = (ItemProxy) resourceProxy;
 
         initialisePanelComponents();
         buildPropertiesGUI();
@@ -119,115 +114,79 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
 
     private void initialisePanelComponents() {
 
-        mainLayout = new VerticalLayout();
-        mainLayout.setSpacing(true);
-        mainLayout.setMargin(true);
-        dynamicLayout = new VerticalLayout();
-        dynamicLayout.setSpacing(true);
-        dynamicLayout.setMargin(true);
+        this.mainLayout = new VerticalLayout();
+        this.mainLayout.setSpacing(true);
+        this.mainLayout.setMargin(true);
+        this.dynamicLayout = new VerticalLayout();
+        this.dynamicLayout.setSpacing(true);
+        this.dynamicLayout.setMargin(true);
 
-        pojoItem = new POJOItem<InstrumentBean>(instrumentBean, PROPERTIES);
-        registeredComponents = new ArrayList<HorizontalLayout>(COMPONENT_COUNT);
+        this.pojoItem = new POJOItem<RigBean>(this.rigBean, PROPERTIES);
+        this.registeredComponents = new ArrayList<HorizontalLayout>(COMPONENT_COUNT);
 
-        setContent(mainLayout);
-        setScrollable(true);
+        this.setContent(this.mainLayout);
+        this.setScrollable(true);
     }
 
     /**
      * Build the read-only layout of the eLabsElement
      */
     private void buildPropertiesGUI() {
-        addComponent(new ResourcePropertiesViewHelper(itemProxy, breadCrumbModel).generatePropertiesView());
+        this.addComponent(new ResourcePropertiesViewHelper(itemProxy, breadCrumbModel).generatePropertiesView());
     }
 
     /**
      * Build the specific editable layout of the eLabsElement.
      */
     private void buildPanelGUI() {
-        dynamicLayout.setStyleName(ELabsViewContants.STYLE_ELABS_FORM);
+        this.dynamicLayout.setStyleName(ELabsViewContants.STYLE_ELABS_FORM);
 
-        buttonLayout = LabsLayoutHelper.createButtonLayout();
+        this.buttonLayout = LabsLayoutHelper.createButtonLayout();
         HorizontalLayout h1 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_INSTRUMENT_TITLE,
-                pojoItem.getItemProperty(ELabsViewContants.P_INSTRUMENT_TITLE));
+            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_RIG_TITLE,
+                pojoItem.getItemProperty(ELabsViewContants.P_RIG_TITLE));
         HorizontalLayout h2 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_INSTRUMENT_DESC,
-                getPojoItem().getItemProperty(ELabsViewContants.P_INSTRUMENT_DESC));
+            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_RIG_DESC,
+                getPojoItem().getItemProperty(ELabsViewContants.P_RIG_DESC));
         HorizontalLayout h3 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndCheckBoxData(
-                ELabsViewContants.L_INSTRUMENT_CONFIGURATION_KEY, ELabsViewContants.L_INSTRUMENT_CONFIGURATION_VALUE,
-                getPojoItem().getItemProperty(ELabsViewContants.P_INSTRUMENT_CONFIGURATION));
-        HorizontalLayout h4 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndCheckBoxData(
-                ELabsViewContants.L_INSTRUMENT_CALIBRATION_KEY, ELabsViewContants.L_INSTRUMENT_CALIBRATION_VALUE,
-                getPojoItem().getItemProperty(ELabsViewContants.P_INSTRUMENT_CALIBRATION));
-        HorizontalLayout h5 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(
-                ELabsViewContants.L_INSTRUMENT_ESYNC_DAEMON,
-                getPojoItem().getItemProperty(ELabsViewContants.P_INSTRUMENT_ESYNCDAEMON));
-        HorizontalLayout h6 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_INSTRUMENT_FOLDER,
-                getPojoItem().getItemProperty(ELabsViewContants.P_INSTRUMENT_FOLDER));
-        HorizontalLayout h7 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(
-                ELabsViewContants.L_INSTRUMENT_FILE_FORMAT,
-                getPojoItem().getItemProperty(ELabsViewContants.P_INSTRUMENT_FILEFORMAT));
-        HorizontalLayout h8 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(
-                ELabsViewContants.L_INSTRUMENT_DEVICE_SUPERVISOR,
-                getPojoItem().getItemProperty(ELabsViewContants.P_INSTRUMENT_DEVICESUPERVISOR));
-        HorizontalLayout h9 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_INSTRUMENT_INSTITUTE,
-                getPojoItem().getItemProperty(ELabsViewContants.P_INSTRUMENT_INSTITUTE));
+            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_RIG_CONTENT,
+                getPojoItem().getItemProperty(ELabsViewContants.P_RIG_CONTENT));
 
         registeredComponents.add(h1);
         registeredComponents.add(h2);
         registeredComponents.add(h3);
-        registeredComponents.add(h4);
-        registeredComponents.add(h5);
-        registeredComponents.add(h6);
-        registeredComponents.add(h7);
-        registeredComponents.add(h8);
-        registeredComponents.add(h9);
 
-        dynamicLayout.addComponent(h1, 0);
-        dynamicLayout.addComponent(h2, 1);
-        dynamicLayout.addComponent(h3, 2);
-        dynamicLayout.addComponent(h4, 3);
-        dynamicLayout.addComponent(h5, 4);
-        dynamicLayout.addComponent(h6, 5);
-        dynamicLayout.addComponent(h7, 6);
-        dynamicLayout.addComponent(h8, 7);
-        dynamicLayout.addComponent(h9, 8);
-        dynamicLayout.addComponent(new HorizontalLayout(), 9);
+        this.dynamicLayout.addComponent(h1, 0);
+        this.dynamicLayout.addComponent(h2, 1);
+        this.dynamicLayout.addComponent(h3, 2);
+        this.dynamicLayout.addComponent(new HorizontalLayout(), 3);
 
-        mainLayout.addComponent(dynamicLayout);
-        mainLayout.attach();
-        mainLayout.requestRepaintAll();
+        this.mainLayout.addComponent(this.dynamicLayout);
+        this.mainLayout.attach();
+        this.mainLayout.requestRepaintAll();
     }
 
     private void createPanelListener() {
-        clientViewEventHandler = new LabsClientViewEventHandler(registeredComponents, dynamicLayout, this, this);
-        dynamicLayout.addListener(clientViewEventHandler);
+        this.clientViewEventHandler = new LabsClientViewEventHandler(registeredComponents, dynamicLayout, this, this);
+        this.dynamicLayout.addListener(this.clientViewEventHandler);
     }
 
     private void createClickListener() {
-        mouseClickListener = new Button.ClickListener() {
+        this.mouseClickListener = new Button.ClickListener() {
             private static final long serialVersionUID = -8330004043242560612L;
 
             @Override
             public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
                 if (event.getButton().getCaption().equals("Save")) {
-                    saveComponent.saveAction(instrumentBean);
-                    InstrumentView.this.resetLayout();
-                    dynamicLayout.requestRepaintAll();
-
+                    RigView.this.saveComponent.saveAction(RigView.this.rigBean);
+                    RigView.this.resetLayout();
+                    RigView.this.dynamicLayout.requestRepaintAll();
                 }
             }
         };
 
         try {
-            ((Button) buttonLayout.getComponent(1)).addListener(mouseClickListener);
+            ((Button) this.buttonLayout.getComponent(1)).addListener(this.mouseClickListener);
         }
         catch (ClassCastException e) {
             LOG.error(e.getMessage());
@@ -235,10 +194,10 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
     }
 
     protected void resetLayout() {
-        Preconditions.checkNotNull(dynamicLayout, "View's dynamiclayout is null.");
+        Preconditions.checkNotNull(this.dynamicLayout, "View's dynamiclayout is null.");
 
         HorizontalLayout tempParentLayout = null;
-        for (Iterator<Component> iterator = dynamicLayout.getComponentIterator(); iterator.hasNext();) {
+        for (Iterator<Component> iterator = this.dynamicLayout.getComponentIterator(); iterator.hasNext();) {
             Component component = iterator.next();
             if (component instanceof HorizontalLayout) {
                 tempParentLayout = (HorizontalLayout) component;
@@ -248,16 +207,16 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
                 break;
             }
             if (LabsLayoutHelper.switchToLabelFromEditedField(tempParentLayout)) {
-                setModifiedComponent(null);
+                this.setModifiedComponent(null);
             }
         }
     }
 
     @Override
     public void hideButtonLayout() {
-        if (dynamicLayout != null && dynamicLayout.getComponent(COMPONENT_COUNT) != null) {
+        if (this.dynamicLayout != null && this.dynamicLayout.getComponent(COMPONENT_COUNT) != null) {
             try {
-                ((HorizontalLayout) dynamicLayout.getComponent(COMPONENT_COUNT)).removeAllComponents();
+                ((HorizontalLayout) this.dynamicLayout.getComponent(COMPONENT_COUNT)).removeAllComponents();
             }
             catch (ClassCastException e) {
                 LOG.error(e.getMessage());
@@ -268,23 +227,23 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
     @Override
     public void showButtonLayout() {
         HorizontalLayout horizontalLayout = null;
-        if (dynamicLayout != null && buttonLayout != null) {
+        if (this.dynamicLayout != null && this.buttonLayout != null) {
             try {
-                horizontalLayout = (HorizontalLayout) dynamicLayout.getComponent(COMPONENT_COUNT);
+                horizontalLayout = (HorizontalLayout) this.dynamicLayout.getComponent(COMPONENT_COUNT);
             }
             catch (ClassCastException e) {
                 LOG.error(e.getMessage());
             }
             if (horizontalLayout != null) {
                 horizontalLayout.removeAllComponents();
-                horizontalLayout.addComponent(buttonLayout);
+                horizontalLayout.addComponent(this.buttonLayout);
             }
         }
     }
 
     @Override
     public Component getModifiedComponent() {
-        return modifiedComponent;
+        return this.modifiedComponent;
     }
 
     @Override
@@ -302,7 +261,7 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
         return this;
     }
 
-    public POJOItem<InstrumentBean> getPojoItem() {
+    public POJOItem<RigBean> getPojoItem() {
         return pojoItem;
     }
 
@@ -325,7 +284,7 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final InstrumentView other = (InstrumentView) obj;
+        final RigView other = (RigView) obj;
         if (itemProxy == null) {
             if (other.itemProxy != null) {
                 return false;
@@ -336,5 +295,4 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
         }
         return true;
     }
-
 }
