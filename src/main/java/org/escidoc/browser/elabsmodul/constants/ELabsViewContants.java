@@ -285,4 +285,6 @@ public class ELabsViewContants {
     public static final String DIALOG_SAVEINVESTIGATION_HEADER = "Saving Investigation";
 
     public static final String DIALOG_SAVEINVESTIGATION_TEXT = "Are you sure to save this Investigation?";
+
+    public static final String[] INVESTIGATION_PROPERTIES = { "test" };
 }

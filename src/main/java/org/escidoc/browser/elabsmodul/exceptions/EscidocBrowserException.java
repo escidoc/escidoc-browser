@@ -34,4 +34,16 @@ public class EscidocBrowserException extends Exception {
     public EscidocBrowserException(String arg0, Throwable arg1) {
         super(arg0, arg1);
     }
+
+    public EscidocBrowserException() {
+        super();
+    }
+
+    public EscidocBrowserException(String message) {
+        super(message);
+    }
+
+    public EscidocBrowserException(Throwable cause) {
+        super(cause);
+    }
 }
