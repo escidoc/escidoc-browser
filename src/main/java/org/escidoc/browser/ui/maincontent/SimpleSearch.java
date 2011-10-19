@@ -54,24 +54,24 @@ public class SimpleSearch extends VerticalLayout {
 
     private final Button advancedBtn;
 
-    private final Router mainSite;
+    private final Router router;
 
     private final EscidocServiceLocation serviceLocation;
 
     private final Repositories repositories;
 
     private final CurrentUser currentUser;
-    
+
     private LayoutDesign layout;
 
-    public SimpleSearch(final Router mainSite, LayoutDesign layout, final EscidocServiceLocation serviceLocation,
+    public SimpleSearch(final Router router, LayoutDesign layout, final EscidocServiceLocation serviceLocation,
         final Repositories repositories, final CurrentUser currentUser) {
-        Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
+        Preconditions.checkNotNull(router, "mainSite is null: %s", router);
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
-        this.mainSite = mainSite;
-        this.layout=layout;
+        this.router = router;
+        this.layout = layout;
         this.serviceLocation = serviceLocation;
         this.repositories = repositories;
         this.currentUser = currentUser;
@@ -110,9 +110,9 @@ public class SimpleSearch extends VerticalLayout {
      * @param event
      */
     public void onClick(final Button.ClickEvent event) {
-        final SearchResultsView smpSearch =
-            new SearchResultsView(mainSite, layout, "null", serviceLocation, repositories, currentUser);
-        mainSite.openTab(smpSearch, "Search Results");
+        Preconditions.checkNotNull(router, "router is null: %s", router);
+        router.openTab(new SearchResultsView(router, layout, "null", serviceLocation, repositories, currentUser),
+            "Search Results");
 
     }
 
@@ -123,7 +123,7 @@ public class SimpleSearch extends VerticalLayout {
      * @param event
      */
     public void onClickAdvSearch(final Button.ClickEvent event) {
-        final SearchAdvancedView advSearch = new SearchAdvancedView(mainSite, serviceLocation);
-        mainSite.openTab(advSearch, "Search Results");
+        final SearchAdvancedView advSearch = new SearchAdvancedView(router, serviceLocation);
+        router.openTab(advSearch, "Search Results");
     }
 }

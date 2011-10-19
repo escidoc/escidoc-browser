@@ -414,5 +414,4 @@ public final class InstrumentController extends Controller implements ISaveActio
     public List<String> getDepositEndPointUrl() {
         return depositEndPointUrls;
     }
-
 }
