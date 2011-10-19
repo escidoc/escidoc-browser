@@ -23,8 +23,8 @@ public class ResourcePropertiesViewHelper {
 
     private List<ResourceModel> breadCrumbModel;
 
-    public ResourcePropertiesViewHelper(ResourceProxy itemProxy, List<ResourceModel> breadCrumbModel) {
-        this.resourceProxy = itemProxy;
+    public ResourcePropertiesViewHelper(ResourceProxy resourceProxy, List<ResourceModel> breadCrumbModel) {
+        this.resourceProxy = resourceProxy;
         this.breadCrumbModel = breadCrumbModel;
     }
 
