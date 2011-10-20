@@ -38,6 +38,7 @@ import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
+import org.escidoc.browser.ui.view.helpers.DirectMember;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +57,6 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
-import com.vaadin.ui.themes.Reindeer;
 import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -86,13 +86,11 @@ public class ContainerView extends VerticalLayout {
 
     private static final String LAST_MODIFIED_BY = "Last modification by ";
 
-    private static final String DIRECT_MEMBERS = "Direct Members";
-
     private static final String RESOURCE_NAME = "Container: ";
 
     private final int appHeight;
 
-    private final Router mainSite;
+    private final Router router;
 
     private final ContainerProxy resourceProxy;
 
@@ -142,7 +140,7 @@ public class ContainerView extends VerticalLayout {
         Preconditions.checkArgument(resourceProxy instanceof ContainerProxy, resourceProxy.getClass()
             + " is not an instance of ContainerProxy.class");
         this.serviceLocation = serviceLocation;
-        this.mainSite = mainSite;
+        this.router = mainSite;
         appHeight = mainSite.getApplicationHeight();
         this.resourceProxy = (ContainerProxy) resourceProxy;
         this.mainWindow = mainWindow;
@@ -159,20 +157,14 @@ public class ContainerView extends VerticalLayout {
         bindDescription();
         addHorizontalRuler();
         bindProperties();
-        addDirectMembers();
+        leftCell();
         addMetadataRecords();
         addComponent(cssLayout);
     }
 
     private void addMetadataRecords() {
         rightCell(new MetadataRecs(resourceProxy, accordionHeight, mainWindow, serviceLocation, repositories,
-            currentUser, mainSite).asAccord());
-    }
-
-    private void addDirectMembers() throws EscidocClientException {
-        final DirectMember directMembers =
-            new DirectMember(serviceLocation, mainSite, resourceProxy.getId(), mainWindow, currentUser, repositories);
-        leftCell(DIRECT_MEMBERS, directMembers.containerAsTree());
+            currentUser, router).asAccord());
     }
 
     /**
@@ -194,7 +186,7 @@ public class ContainerView extends VerticalLayout {
     }
 
     @SuppressWarnings("deprecation")
-    private void leftCell(final String string, final Component comptoBind) {
+    private void leftCell() throws EscidocClientException {
         final Panel leftPanel = new Panel();
         leftPanel.setStyleName("directmembers floatleft");
         leftPanel.setScrollable(false);
@@ -202,36 +194,8 @@ public class ContainerView extends VerticalLayout {
         leftPanel.setWidth("30%");
         leftPanel.setHeight("82%");
 
-        final Label nameofPanel = new Label("<strong>" + DIRECT_MEMBERS + "</string>", Label.CONTENT_RAW);
-        nameofPanel.setStyleName("grey-label");
-        leftPanel.addComponent(nameofPanel);
-
-        // the changes start here
-        VerticalLayout panelLayout = (VerticalLayout) leftPanel.getContent();
-        panelLayout.setHeight("100%");
-        panelLayout.addStyleName("my-panel");
-
-        Button addButton = new Button("Container");
-        addButton.setStyleName(Reindeer.BUTTON_SMALL);
-
-        Button removeButton = new Button();
-        removeButton.setStyleName(Reindeer.BUTTON_SMALL);
-
-        HorizontalLayout hl = new HorizontalLayout();
-        hl.setStyleName("button-layout");
-        hl.setWidth("200px");
-        hl.setHeight("20px");
-
-        panelLayout.addComponent(hl);
-
-        HorizontalLayout buttonLayout = new HorizontalLayout();
-        hl.addComponent(buttonLayout);
-
-        buttonLayout.addComponent(addButton);
-        buttonLayout.addComponent(removeButton);
-
-        panelLayout.addComponent(comptoBind);
-        panelLayout.setExpandRatio(comptoBind, 1.0f);
+        new DirectMember(serviceLocation, router, resourceProxy.getId(), mainWindow, currentUser, repositories,
+            leftPanel).containerAsTree();
         cssLayout.addComponent(leftPanel);
     }
 
