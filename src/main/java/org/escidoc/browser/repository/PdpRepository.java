@@ -28,9 +28,9 @@
  */
 package org.escidoc.browser.repository;
 
-import org.escidoc.browser.model.ResourceType;
-
 import java.net.URISyntaxException;
+
+import org.escidoc.browser.model.ResourceType;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -43,6 +43,8 @@ public interface PdpRepository {
     PdpRepository forResource(String resourceId) throws URISyntaxException;
 
     PdpRepository forUser(String userId) throws URISyntaxException;
+
+    PdpRepository forCurrentUser() throws URISyntaxException;
 
     boolean permitted() throws EscidocClientException;
 

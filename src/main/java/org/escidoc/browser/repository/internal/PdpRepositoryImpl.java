@@ -28,12 +28,11 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import com.google.common.base.Preconditions;
-
-import com.sun.xacml.attr.StringAttribute;
-import com.sun.xacml.ctx.Attribute;
-import com.sun.xacml.ctx.RequestCtx;
-import com.sun.xacml.ctx.Subject;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ResourceType;
@@ -41,13 +40,14 @@ import org.escidoc.browser.repository.PdpRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
+import com.google.common.base.Preconditions;
+import com.sun.xacml.attr.StringAttribute;
+import com.sun.xacml.ctx.Attribute;
+import com.sun.xacml.ctx.RequestCtx;
+import com.sun.xacml.ctx.Subject;
 
 import de.escidoc.core.client.PolicyDecisionPointHandlerClient;
+import de.escidoc.core.client.UserAccountHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.aa.pdp.Decision;
 import de.escidoc.core.resources.aa.pdp.Requests;
@@ -59,14 +59,21 @@ public class PdpRepositoryImpl implements PdpRepository {
 
     private final PolicyDecisionPointHandlerClient client;
 
+    private final UserAccountHandlerClient clientUserAccount;
+
     private Set<Attribute> actionAttrs = new HashSet<Attribute>();
 
     private Set<Attribute> resourceAttrs = new HashSet<Attribute>();
 
     private Set<Subject> subjects = new HashSet<Subject>();
 
+    private String loggedInUserId = null;
+
+    private String currentUser;
+
     public PdpRepositoryImpl(final URL serviceAddress) {
         client = new PolicyDecisionPointHandlerClient(serviceAddress);
+        clientUserAccount = new UserAccountHandlerClient(serviceAddress);
     }
 
     @Override
@@ -104,6 +111,11 @@ public class PdpRepositoryImpl implements PdpRepository {
     }
 
     @Override
+    public PdpRepository forCurrentUser() throws URISyntaxException {
+        return this.forUser(this.currentUser);
+    }
+
+    @Override
     public boolean permitted() throws EscidocClientException {
         Preconditions.checkArgument(subjects.size() <= 1, "more than one subjects are not yet implemented");
         Preconditions.checkArgument(actionAttrs.size() == 1, "more than one actions are not yet implemented");
@@ -137,6 +149,15 @@ public class PdpRepositoryImpl implements PdpRepository {
     @Override
     public void loginWith(final String token) {
         client.setHandle(token);
+        clientUserAccount.setHandle(token);
+        try {
+            this.currentUser = clientUserAccount.retrieveCurrentUser().getObjid();
+        }
+        catch (EscidocClientException e) {
+            // FIXME
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
