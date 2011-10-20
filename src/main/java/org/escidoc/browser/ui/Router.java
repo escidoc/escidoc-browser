@@ -337,4 +337,17 @@ public class Router extends VerticalLayout {
         }
         return repository.findById(clickedResource.getId());
     }
+
+    public Window getMainWindow() {
+        return mainWindow;
+    }
+
+    public EscidocServiceLocation getServiceLocation() {
+        return serviceLocation;
+    }
+
+    public Repositories getRepositories() {
+        return repositories;
+    }
+
 }
