@@ -52,9 +52,19 @@ public class ResourcePropertiesViewHelper {
                 Label.CONTENT_XHTML);
 
         final Panel pnlPropertiesLeft = buildLeftPanel();
+        pnlPropertiesLeft.setWidth("40%");
+        pnlPropertiesLeft.setHeight("60px");
+        pnlPropertiesLeft.setStyleName(FLOAT_LEFT);
+        pnlPropertiesLeft.addStyleName(Runo.PANEL_LIGHT);
+        pnlPropertiesLeft.getLayout().setMargin(false);
         pnlPropertiesLeft.addComponent(descMetadata1);
 
         final Panel pnlPropertiesRight = buildRightPanel();
+        pnlPropertiesRight.setWidth("60%");
+        pnlPropertiesRight.setHeight("60px");
+        pnlPropertiesRight.setStyleName(FLOAT_RIGHT);
+        pnlPropertiesRight.addStyleName(Runo.PANEL_LIGHT);
+        pnlPropertiesRight.getLayout().setMargin(false);
         pnlPropertiesRight.addComponent(descMetadata2);
 
         propertiesView.addComponent(pnlPropertiesLeft);
@@ -67,7 +77,9 @@ public class ResourcePropertiesViewHelper {
         viewHandler.addComponent(titleLabel);
         viewHandler.addComponent(descRuler);
         viewHandler.addComponent(propertiesView);
-        viewHandler.addComponent(descRuler);
+        final Label panelRuler = new Label("<hr/>", Label.CONTENT_RAW);
+        panelRuler.setStyleName("hr");
+        viewHandler.addComponent(panelRuler);
 
         return viewHandler;
     }
