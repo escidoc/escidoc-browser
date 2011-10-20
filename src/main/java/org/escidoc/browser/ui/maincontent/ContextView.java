@@ -33,14 +33,12 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.helper.DirectMember;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.terminal.Sizeable;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
@@ -63,7 +61,7 @@ public class ContextView extends VerticalLayout {
 
     private final CssLayout cssLayout = new CssLayout();
 
-    private final Router mainSite;
+    private final Router router;
 
     private final ResourceProxy resourceProxy;
 
@@ -79,23 +77,23 @@ public class ContextView extends VerticalLayout {
 
     private final Repositories repositories;
 
-    public ContextView(final EscidocServiceLocation serviceLocation, final Router mainSite,
+    public ContextView(final EscidocServiceLocation serviceLocation, final Router router,
         final ResourceProxy resourceProxy, final Window mainWindow, final CurrentUser currentUser,
         final Repositories repositories) throws EscidocClientException {
 
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
-        Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
+        Preconditions.checkNotNull(router, "mainSite is null: %s", router);
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
 
         this.serviceLocation = serviceLocation;
-        this.mainSite = mainSite;
+        this.router = router;
         this.resourceProxy = resourceProxy;
         this.mainWindow = mainWindow;
         this.currentUser = currentUser;
         this.repositories = repositories;
-        appHeight = mainSite.getApplicationHeight();
+        appHeight = router.getApplicationHeight();
         init();
     }
 
@@ -106,18 +104,13 @@ public class ContextView extends VerticalLayout {
         bindDescription();
         addHorizontalRuler();
         bindProperties();
-        addDirectMembersView();
+        leftCell();
         addContextDetailsView();
         addComponent(cssLayout);
     }
 
     private void addContextDetailsView() {
         rightCell(new MetadataRecsContext(resourceProxy, accordionHeight, mainWindow).asAccord());
-    }
-
-    private void addDirectMembersView() throws EscidocClientException {
-        leftCell(DIRECT_MEMBERS, new DirectMember(serviceLocation, mainSite, resourceProxy.getId(), mainWindow,
-            currentUser, repositories).contextAsTree());
     }
 
     /**
@@ -145,7 +138,7 @@ public class ContextView extends VerticalLayout {
      * @param comptoBind
      */
     @SuppressWarnings("deprecation")
-    private void leftCell(final String directMembers, final Component comptoBind) {
+    private void leftCell() throws EscidocClientException {
         final Panel leftPanel = new Panel();
 
         leftPanel.setStyleName("directmembers floatleft");
@@ -154,29 +147,8 @@ public class ContextView extends VerticalLayout {
         leftPanel.setHeight("82%");
         leftPanel.getLayout().setMargin(false);
 
-        final Label nameofPanel = new Label("<strong>" + DIRECT_MEMBERS + "</string>", Label.CONTENT_RAW);
-        leftPanel.addComponent(nameofPanel);
-
-        leftPanel.addComponent(comptoBind);
-
-        // the changes start here
-        VerticalLayout panelLayout = (VerticalLayout) leftPanel.getContent();
-        panelLayout.setExpandRatio(comptoBind, 1.0f);
-        panelLayout.setHeight("100%");
-
-        Button addButton = new Button("+");
-        Button removeButton = new Button("-");
-
-        HorizontalLayout buttonLayout = new HorizontalLayout();
-        buttonLayout.setSpacing(true);
-        buttonLayout.setMargin(true);
-
-        buttonLayout.addComponent(addButton);
-        buttonLayout.addComponent(removeButton);
-
-        panelLayout.addComponent(buttonLayout);
-        panelLayout.setComponentAlignment(buttonLayout, Alignment.BOTTOM_LEFT);
-
+        new DirectMember(serviceLocation, router, resourceProxy.getId(), mainWindow, currentUser, repositories,
+            leftPanel).contextAsTree();
         cssLayout.addComponent(leftPanel);
     }
 
@@ -225,7 +197,7 @@ public class ContextView extends VerticalLayout {
     }
 
     private void configureLayout() {
-        appHeight = mainSite.getApplicationHeight();
+        appHeight = router.getApplicationHeight();
 
         setMargin(true, true, false, true);
         setHeight(100, Sizeable.UNITS_PERCENTAGE);

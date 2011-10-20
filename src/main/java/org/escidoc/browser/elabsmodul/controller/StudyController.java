@@ -116,7 +116,7 @@ public class StudyController extends Controller implements ISaveAction {
         finally {
             beanModel = null;
         }
-        LOG.info("Instument is successfully saved.");
+        LOG.info("Study is successfully saved.");
 
     }
 
