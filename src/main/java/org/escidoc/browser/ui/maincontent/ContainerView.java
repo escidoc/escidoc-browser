@@ -37,8 +37,8 @@ import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.helper.DirectMember;
 import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
+import org.escidoc.browser.ui.view.helpers.DirectMember;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
