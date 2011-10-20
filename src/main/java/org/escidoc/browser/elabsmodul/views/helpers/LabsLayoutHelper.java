@@ -42,13 +42,12 @@ import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DE
 import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_TEXTFIELD_TO_SAVE_OR_CANCEL;
 
 import org.escidoc.browser.elabsmodul.enums.ELabsFileFormatsEnum;
+import org.escidoc.browser.elabsmodul.model.RigBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
-import com.vaadin.data.Container;
 import com.vaadin.data.Property;
-import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -57,7 +56,6 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 
 /**
@@ -104,49 +102,25 @@ public final class LabsLayoutHelper {
     }
 
     public static synchronized HorizontalLayout createHorizontalLayoutWithELabsLabelAndRelatedData(
-        final String labelTxt, Property dataProperty) {
+        final String labelTxt, Property dataProperty, RigBean rigBean) {
         Preconditions.checkNotNull(labelTxt, "Label is null");
         Preconditions.checkNotNull(dataProperty, "DataSource is null");
+        Preconditions.checkNotNull(rigBean, "RigBean is null");
 
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSizeUndefined();
-        horizontalLayout.setDescription(USER_DESCR_ON_HOR_LAYOUT_TO_EDIT);
         horizontalLayout.setEnabled(true);
         horizontalLayout.setSpacing(true);
-        // horizontalLayout.setHeight(HOR_PANEL_HEIGHT);
 
-        Label label = new Label();
+        Label label = new Label(" ");
         label.setWidth(LABEL_WIDTH);
-        label.setValue(DIV_ALIGN_RIGHT + labelTxt + DIV_END);
-        label.setContentMode(Label.CONTENT_XHTML);
-        label.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
-
-        final String prop1 = "id", prop2 = "title", prop3 = "action";
-
-        Container container = new IndexedContainer();
-        container.addContainerProperty(prop1, String.class, "escidoc:12002");
-        container.addContainerProperty(prop2, String.class, "FRS Instrument 01");
-        container.addContainerProperty(prop3, Button.class, "Delete");
-        container.addItem();
-
-        Table table = new Table("Related instruments", container);
-        table.setMultiSelect(false);
-        table.setVisibleColumns(new String[] { prop1, prop2, prop3 });
-        table.setColumnReorderingAllowed(false);
-        table.setEnabled(true);
-        table.setVisible(true);
-        table.setHeight("200px");
-
-        table.setDescription("Instruments related to the rig");
-        table.setColumnHeader(prop1, "Identifier");
-        table.setColumnHeader(prop2, "Instrument's name");
-        table.setColumnHeader(prop3, "Action");
+        // label.setValue(DIV_ALIGN_RIGHT + labelTxt + DIV_END);
+        // label.setContentMode(Label.CONTENT_XHTML);
 
         horizontalLayout.addComponent(label, 0);
-        horizontalLayout.addComponent(table, 1);
-        horizontalLayout.setComponentAlignment(label, Alignment.TOP_LEFT);
-        horizontalLayout.setComponentAlignment(table, Alignment.TOP_RIGHT);
-
+        horizontalLayout.addComponent(LabsTableHelper.singleton().createTableLayoutForRig(rigBean), 1);
+        horizontalLayout.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
+        // horizontalLayout.setComponentAlignment(table, Alignment.TOP_RIGHT);
         return horizontalLayout;
     }
 
