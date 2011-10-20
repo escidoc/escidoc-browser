@@ -33,7 +33,7 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.helper.DirectMember;
+import org.escidoc.browser.ui.view.helpers.DirectMember;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.terminal.Sizeable;
