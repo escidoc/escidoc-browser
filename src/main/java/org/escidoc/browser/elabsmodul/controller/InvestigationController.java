@@ -216,6 +216,12 @@ public class InvestigationController extends Controller implements ISaveAction {
                     investigationBean.setDepositEndpoint(node.getTextContent());
                 }
 
+                else if ("investigator".equals(nodeName) && "http://escidoc.org/ontologies/bw-elabs/re#".equals(nsUri)) {
+                    investigationBean.setInvestigator(node
+                        .getAttributes().getNamedItemNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "resource")
+                        .getTextContent());
+                }
+
                 else if ("rig".equals(nodeName) && "http://escidoc.org/ontologies/bw-elabs/re#".equals(nsUri)) {
                     investigationBean.setRig(node
                         .getAttributes().getNamedItemNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "resource")
@@ -281,7 +287,7 @@ public class InvestigationController extends Controller implements ISaveAction {
         finally {
             this.model = null;
         }
-        LOG.info("Instument is successfully saved.");
+        LOG.info("Investigation is successfully saved.");
     }
 
     public synchronized static Element createInvestigationDOMElementByBeanModel(final InvestigationBean instrumentBean) {
