@@ -169,7 +169,7 @@ public class LabsTableHelper {
 
                             @Override
                             public void onAcceptRigAction(Set<String> instrumentIdentifiers) {
-                                // TODO implement me.
+
                             }
                         }));
                 }

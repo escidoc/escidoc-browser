@@ -293,6 +293,6 @@ public final class RigController extends Controller implements ISaveAction {
         finally {
             beanModel = null;
         }
-        LOG.info("Instument is successfully saved.");
+        LOG.info("Rig is successfully saved.");
     }
 }
