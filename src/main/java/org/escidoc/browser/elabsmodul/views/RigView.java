@@ -132,7 +132,7 @@ public class RigView extends Panel implements ILabsPanel, ILabsAction {
      * Build the read-only layout of the eLabsElement
      */
     private void buildPropertiesGUI() {
-        this.addComponent(new ResourcePropertiesViewHelper(itemProxy, breadCrumbModel).generatePropertiesView());
+        this.addComponent(new ResourcePropertiesViewHelper(itemProxy, breadCrumbModel, "Rig").generatePropertiesView());
     }
 
     /**

@@ -23,14 +23,25 @@ public class ResourcePropertiesViewHelper {
 
     private List<ResourceModel> breadCrumbModel;
 
+    private String type;
+
     public ResourcePropertiesViewHelper(ResourceProxy resourceProxy, List<ResourceModel> breadCrumbModel) {
         this.resourceProxy = resourceProxy;
         this.breadCrumbModel = breadCrumbModel;
     }
 
+    public ResourcePropertiesViewHelper(ResourceProxy resourceProxy, List<ResourceModel> breadCrumbModel, String type) {
+        this.resourceProxy = resourceProxy;
+        this.breadCrumbModel = breadCrumbModel;
+        this.type = type;
+    }
+
     public Panel generatePropertiesView() {
         // Item title
         String resourceType = resourceProxy.getType().toString();
+        if (this.type != null && this.type.length() > 0) {
+            resourceType = this.type;
+        }
         final Label titleLabel =
             new Label(resourceType.substring(0, 1).toUpperCase() + resourceType.substring(1).toLowerCase() + ": "
                 + resourceProxy.getName());

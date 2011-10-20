@@ -125,7 +125,7 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
      * Build the read-only layout of the eLabsElement
      */
     private void buildPropertiesGUI() {
-        addComponent(new ResourcePropertiesViewHelper(this.containerProxy, this.breadCrumbModel)
+        addComponent(new ResourcePropertiesViewHelper(this.containerProxy, this.breadCrumbModel, "Investigation")
             .generatePropertiesView());
     }
 

@@ -163,7 +163,8 @@ public class InvestigationSeriesView extends Panel implements ILabsPanel, ILabsA
     }
 
     private void buildPropertiesView() {
-        addComponent(new ResourcePropertiesViewHelper(containerProxy, breadCrumb).generatePropertiesView());
+        addComponent(new ResourcePropertiesViewHelper(containerProxy, breadCrumb, "Investigationseries")
+            .generatePropertiesView());
     }
 
     private void initPanelComponents() {

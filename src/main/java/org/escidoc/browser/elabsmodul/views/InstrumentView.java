@@ -137,7 +137,8 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
      * Build the read-only layout of the eLabsElement
      */
     private void buildPropertiesGUI() {
-        addComponent(new ResourcePropertiesViewHelper(itemProxy, breadCrumbModel).generatePropertiesView());
+        addComponent(new ResourcePropertiesViewHelper(itemProxy, breadCrumbModel, "Instrument")
+            .generatePropertiesView());
     }
 
     /**
