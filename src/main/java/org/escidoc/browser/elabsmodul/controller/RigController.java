@@ -29,6 +29,7 @@
 package org.escidoc.browser.elabsmodul.controller;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -70,7 +71,7 @@ import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.om.item.Item;
 
 /**
- * 
+ * Rig controller class.
  */
 public final class RigController extends Controller implements ISaveAction {
 
@@ -84,7 +85,6 @@ public final class RigController extends Controller implements ISaveAction {
 
     private Window mainWindow;
 
-    // the bean model to store
     private IBeanModel beanModel = null;
 
     @Override
@@ -145,12 +145,10 @@ public final class RigController extends Controller implements ISaveAction {
                 }
             }
         }
-
         return rigBean;
     }
 
     /**
-     * 
      * @param resourceProxy
      * @return
      */
@@ -178,7 +176,7 @@ public final class RigController extends Controller implements ISaveAction {
         return instrumentBean;
     }
 
-    public synchronized static Element createRigDOMElementByBeanModel(final RigBean rigBean) {
+    private synchronized static Element createRigDOMElementByBeanModel(final RigBean rigBean) {
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         factory.setCoalescing(true);
@@ -201,8 +199,16 @@ public final class RigController extends Controller implements ISaveAction {
             description.setTextContent(rigBean.getDescription());
             rig.appendChild(description);
 
-            // TODO CONTENT element
-
+            for (Iterator<InstrumentBean> iterator = rigBean.getContentList().iterator(); iterator.hasNext();) {
+                InstrumentBean instrumentBean = iterator.next();
+                final Element insturmentRelation =
+                    doc.createElementNS("http://escidoc.org/ontologies/bw-elabs/re#", "instrument");
+                insturmentRelation.setPrefix("el");
+                insturmentRelation.setAttributeNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdf:resource",
+                    instrumentBean.getObjectId());
+                rig.appendChild(insturmentRelation);
+            }
+            return rig;
         }
         catch (DOMException e) {
             LOG.error(e.getLocalizedMessage());
@@ -210,21 +216,7 @@ public final class RigController extends Controller implements ISaveAction {
         catch (ParserConfigurationException e) {
             LOG.error(e.getLocalizedMessage());
         }
-
         return null;
-    }
-
-    private static String booleanToHumanReadable(final boolean value) {
-        return (value) ? "yes" : "no";
-    }
-
-    private static Element createDOMElementWithoutNamespace(
-        Document doc, Element rig, String attributeValue, String value) {
-        final Element element = doc.createElementNS("http://escidoc.org/ontologies/bw-elabs/re#", attributeValue);
-        element.setTextContent(value);
-        element.setPrefix("el");
-        rig.appendChild(element);
-        return rig;
     }
 
     private Component createView(final ResourceProxy resourceProxy) {
@@ -267,7 +259,7 @@ public final class RigController extends Controller implements ISaveAction {
                 @Override
                 public void onDialogResult(boolean resultIsYes) {
                     if (resultIsYes) {
-                        // RigController.this.saveModel();
+                        RigController.this.saveModel();
                     }
                     else {
                         ((RigView) RigController.this.view).hideButtonLayout();
@@ -284,7 +276,7 @@ public final class RigController extends Controller implements ISaveAction {
         RigBean rigBean = null;
         Item item = null;
 
-        if (beanModel instanceof RigBean) {
+        if (this.beanModel instanceof RigBean) {
             rigBean = (RigBean) beanModel;
         }
         final Element metaDataContent = RigController.createRigDOMElementByBeanModel(rigBean);

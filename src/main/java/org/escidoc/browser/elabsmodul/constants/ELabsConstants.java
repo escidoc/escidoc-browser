@@ -219,32 +219,6 @@ public final class ELabsConstants {
 
     public static final String SAMPLE_CONTENT_MODEL = "Sample";
 
-    public static final Resource DEVICE_ICON = new ThemeResource("icons/32/Device.jpg");
-
-    public static final Resource STUDY_ICON = new ThemeResource("icons/32/StudyIcon.png");
-
-    public static final Resource RIGS_ICON = new ThemeResource("icons/32/Rigs.png");
-
-    public static final Resource EXECUTE_ICON = new ThemeResource("icons/32/Execute.png");
-
-    public static final Resource SEARCH_ICON = new ThemeResource("icons/32/maginfier.png");
-
-    public static final Resource SEARCH_ICON_SMALL = new ThemeResource("icons/32/All_Search_LensStart_15_Hover.gif");
-
-    public static final Resource DEBUG_ICON = new ThemeResource("icons/32/debug.gif");
-
-    public static final Resource SETUP_ICON = new ThemeResource("icons/32/32x32-pege_setup.png");
-
-    public static final Resource DETAILS_ICON = new ThemeResource("icons/32/maginfier.png");
-
-    public static final Resource RIGHTS_ICON = new ThemeResource("icons/32/key.png");
-
-    public static final Resource HISTORY_ICON = new ThemeResource("icons/32/history.png");
-
-    public static final ThemeResource RESULT_ICON = new ThemeResource("icons/32/result.jpg");
-
-    public static final ThemeResource LOGOUT_ICON = new ThemeResource("icons/32/Log-Out-icon.png");
-
     public static final String DETAILS = "Details";
 
     public static final String HISTORY = "History";

@@ -1,44 +1,49 @@
 package org.escidoc.browser.elabsmodul.views.helpers;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.model.InstrumentBean;
 import org.escidoc.browser.elabsmodul.model.RigBean;
+import org.escidoc.browser.elabsmodul.views.AddNewInstrumentsWindow;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.IndexedContainer;
-import com.vaadin.event.Action;
-import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbstractSelect.MultiSelectMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.Table.CellStyleGenerator;
 import com.vaadin.ui.VerticalLayout;
 
 public class LabsTableHelper {
 
+    // properties for the tables def
     private final String rigProperty1 = "title", rigProperty2 = "id";
 
-    final Label selectedLabel = new Label("No selection");
+    // buttons related to the tables
+    private Button rigDeleteButton = null, rigAddButton = null;
 
-    final HashSet<Object> markedContactRows = new HashSet<Object>();
+    // table references
+    private Table rigTable = null; // table on the RigView
 
-    private Table table = null;
+    private Table studyTable = null; // table on the StudyView and so on...
 
-    private Button deleteButton = null, addButton = null;
+    // model references
+    private RigBean rigBean = null;
 
+    // common texts
     private final String ADD_BUTTON = "Add element";
 
-    private final String DELETE_BUTTON = "Delete element";
+    private final String DELETE_BUTTON_TEXT = "Delete element";
 
-    private final String DELETES_BUTTON = "Delete all elements";
+    private final String DELETES_BUTTON_TEXT = "Delete all elements";
 
     private static LabsTableHelper singleton = null;
 
@@ -59,63 +64,37 @@ public class LabsTableHelper {
     }
 
     public synchronized VerticalLayout createTableLayoutForRig(final RigBean rigBean) {
+        final Label selectedLabel = new Label("No selection");
+        Preconditions.checkNotNull(rigBean, "rigModel is null");
         VerticalLayout layout = new VerticalLayout();
-        table = new Table("Related instruments");
+        this.rigBean = rigBean;
 
-        final Action ACTION_MARK = new Action("Mark");
-        final Action ACTION_UNMARK = new Action("Unmark");
-        final Action ACTION_LOG = new Action("Save");
-        final Action[] ACTIONS_UNMARKED = new Action[] { ACTION_MARK, ACTION_LOG };
-        final Action[] ACTIONS_MARKED = new Action[] { ACTION_UNMARK, ACTION_LOG };
-
-        table.setWidth("90%");
-        table.setHeight("200px");
-
-        table.setSelectable(true);
-        table.setMultiSelect(true);
-        table.setImmediate(true);
-        table.setEditable(false);
-        table.setMultiSelectMode(MultiSelectMode.DEFAULT);
+        rigTable = new Table("Related instruments");
+        rigTable.setWidth("90%");
+        rigTable.setHeight("100px");
+        rigTable.setSelectable(true);
+        rigTable.setMultiSelect(true);
+        rigTable.setImmediate(true);
+        rigTable.setEditable(false);
+        rigTable.setMultiSelectMode(MultiSelectMode.DEFAULT);
+        rigTable.setColumnReorderingAllowed(true);
+        rigTable.setColumnCollapsingAllowed(false);
 
         // contactsTable.setStyleName();
+        rigTable.setContainerDataSource(fillRigTableData(rigBean.getContentList()));
+        rigTable.setVisibleColumns(new Object[] { rigProperty1, rigProperty2 });
+        rigTable.setColumnHeaders(new String[] { "Instrument's name", "Instrument's ID" });
 
-        table.setContainerDataSource(fillRigTableData(rigBean.getContentList()));
+        rigTable.setColumnIcon(rigProperty1, ELabsViewContants.ICON_16_USERS);
+        rigTable.setColumnIcon(rigProperty2, ELabsViewContants.ICON_16_GLOBE);
 
-        table.setColumnReorderingAllowed(false);
-        table.setColumnCollapsingAllowed(false);
+        rigTable.setColumnAlignment(rigProperty1, Table.ALIGN_LEFT);
+        rigTable.setColumnAlignment(rigProperty2, Table.ALIGN_LEFT);
 
-        // table.setColumnIcon(propertyId, icon
-        table.setVisibleColumns(new Object[] { rigProperty1, rigProperty2 });
-        table.setColumnHeaders(new String[] { "Instrument's name", "Instrument's ID" });
+        rigTable.setRowHeaderMode(Table.ROW_HEADER_MODE_ICON_ONLY);
+        rigTable.setWriteThrough(false);
 
-        table.setColumnIcon(rigProperty1, new ThemeResource("runo/icons/16/email.png"));
-        table.setColumnIcon(rigProperty2, new ThemeResource("runo/icons/16/email-reply.png"));
-
-        table.setColumnAlignment(rigProperty1, Table.ALIGN_LEFT);
-        table.setColumnAlignment(rigProperty2, Table.ALIGN_LEFT);
-
-        table.setRowHeaderMode(Table.ROW_HEADER_MODE_ICON_ONLY);
-        table.setWriteThrough(false);
-
-        table.setCellStyleGenerator(new CellStyleGenerator() {
-            private static final long serialVersionUID = 6844387492599807143L;
-
-            @Override
-            public String getStyle(Object itemId, Object propertyId) {
-                if (propertyId == null) {
-                    // no propertyId, styling row
-                    return (markedContactRows.contains(itemId) ? "marked" : null);
-                }
-                else if (rigProperty1.equals(propertyId) || rigProperty2.equals(propertyId)) {
-                    return "bold";
-                }
-                else {
-                    return null;
-                }
-            }
-        });
-
-        table.addListener(new Table.ValueChangeListener() {
+        rigTable.addListener(new Table.ValueChangeListener() {
             private static final long serialVersionUID = 2000562132182698589L;
 
             @Override
@@ -124,31 +103,27 @@ public class LabsTableHelper {
                 Set<?> value = (Set<?>) event.getProperty().getValue();
                 if (value == null || value.size() == 0) {
                     selectedLabel.setValue("No selection");
+
                 }
                 else {
                     selSize = value.size();
-                    if (selSize == 1) {
-                        selectedLabel.setValue("Selected: 1 element");
-                    }
-                    else {
-                        selectedLabel.setValue("Selected: " + selSize + " elements");
-                    }
+                    selectedLabel.setValue("Selected: " + selSize + " element" + ((selSize > 1) ? "s" : ""));
                 }
 
                 if (selSize == 0) {
-                    deleteButton.setEnabled(false);
+                    rigDeleteButton.setEnabled(false);
                 }
                 else if (selSize == 1) {
-                    deleteButton.setEnabled(true);
-                    deleteButton.setCaption(DELETE_BUTTON);
+                    rigDeleteButton.setEnabled(true);
+                    rigDeleteButton.setCaption(DELETE_BUTTON_TEXT);
                 }
                 else {
-                    deleteButton.setEnabled(true);
-                    deleteButton.setCaption(DELETES_BUTTON);
+                    rigDeleteButton.setEnabled(true);
+                    rigDeleteButton.setCaption(DELETES_BUTTON_TEXT);
                 }
             }
         });
-        layout.addComponent(table);
+        layout.addComponent(rigTable);
         layout.addComponent(selectedLabel);
         addRigButtonToLayout(layout);
 
@@ -157,37 +132,69 @@ public class LabsTableHelper {
 
     private void addRigButtonToLayout(final VerticalLayout layout) {
 
-        addButton = new Button(ADD_BUTTON);
-        addButton.setEnabled(true);
-        addButton.setVisible(true);
-        addButton.setIcon(new ThemeResource("runo/icons/16/ok.png"));
+        rigAddButton = new Button(ADD_BUTTON);
+        rigAddButton.setEnabled(true);
+        rigAddButton.setVisible(true);
+        rigAddButton.setIcon(ELabsViewContants.ICON_16_OK);
 
-        deleteButton = new Button(DELETE_BUTTON);
-        deleteButton.setEnabled(false);
-        deleteButton.setVisible(true);
-        deleteButton.setIcon(new ThemeResource("runo/icons/16/cancel.png"));
+        rigDeleteButton = new Button(DELETE_BUTTON_TEXT);
+        rigDeleteButton.setEnabled(false);
+        rigDeleteButton.setVisible(true);
+        rigDeleteButton.setIcon(ELabsViewContants.ICON_16_CANCEL);
 
-        deleteButton.addListener(new Button.ClickListener() {
+        Button.ClickListener rigButtonsListener = new Button.ClickListener() {
             private static final long serialVersionUID = 1586321256611542129L;
 
             @Override
             public void buttonClick(final ClickEvent event) {
-                if (event.getButton().getCaption().equals(DELETE_BUTTON)
-                    || event.getButton().getCaption().equals(DELETES_BUTTON)) {
+                if (event.getButton().getCaption().equals(DELETE_BUTTON_TEXT)
+                    || event.getButton().getCaption().equals(DELETES_BUTTON_TEXT)) {
+                    @SuppressWarnings("unchecked")
+                    Set<String> selectedIdSet = (Set<String>) rigTable.getValue();
 
+                    // delete relations from the model
+                    LabsTableHelper.this.synchronizeRigModel(selectedIdSet);
+
+                    // instant delete from table containerdatasource
+                    for (Iterator<String> iterator = selectedIdSet.iterator(); iterator.hasNext();) {
+                        String idToDelete = iterator.next();
+                        rigTable.getContainerDataSource().removeItem(idToDelete);
+                    }
+                    rigTable.requestRepaint();
                 }
                 else if (event.getButton().getCaption().equals(ADD_BUTTON)) {
-                    // TODO
+                    rigTable
+                        .getApplication().getMainWindow()
+                        .addWindow(new AddNewInstrumentsWindow(rigBean, new AddNewInstrumentsWindow.Callback() {
+
+                            @Override
+                            public void onAcceptRigAction(Set<String> instrumentIdentifiers) {
+                                // TODO implement me.
+                            }
+                        }));
                 }
             }
-        });
+        };
 
+        rigDeleteButton.addListener(rigButtonsListener);
+        rigAddButton.addListener(rigButtonsListener);
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSpacing(true);
 
-        horizontalLayout.addComponent(deleteButton);
-        horizontalLayout.addComponent(addButton);
+        horizontalLayout.addComponent(rigDeleteButton);
+        horizontalLayout.addComponent(rigAddButton);
         layout.addComponent(horizontalLayout);
+    }
+
+    private void synchronizeRigModel(final Set<String> selectedElements) {
+        List<InstrumentBean> beanToDelete = new ArrayList<InstrumentBean>();
+        for (Iterator<InstrumentBean> iterator = this.rigBean.getContentList().iterator(); iterator.hasNext();) {
+            InstrumentBean bean = iterator.next();
+            if (selectedElements.contains(bean.getObjectId())) {
+                beanToDelete.add(bean);
+            }
+        }
+        this.rigBean.getContentList().removeAll(beanToDelete);
     }
 
     private IndexedContainer fillRigTableData(List<InstrumentBean> instrumentBeans) {
@@ -200,7 +207,6 @@ public class LabsTableHelper {
 
             String id = instrumentBean.getObjectId();
             String title = instrumentBean.getName();
-            String desc = instrumentBean.getDescription();
             Item item = container.addItem(id);
             item.getItemProperty(rigProperty1).setValue(title);
             item.getItemProperty(rigProperty2).setValue(id);

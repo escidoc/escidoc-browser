@@ -204,8 +204,7 @@ public final class InstrumentController extends Controller implements ISaveActio
         return instrumentBean;
     }
 
-    // TODO
-    public synchronized static Element createInstrumentDOMElementByBeanModel(final InstrumentBean instrumentBean) {
+    private synchronized static Element createInstrumentDOMElementByBeanModel(final InstrumentBean instrumentBean) {
 
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);

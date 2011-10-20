@@ -41,6 +41,7 @@ import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DE
 import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_LABEL_TO_EDIT;
 import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_TEXTFIELD_TO_SAVE_OR_CANCEL;
 
+import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.enums.ELabsFileFormatsEnum;
 import org.escidoc.browser.elabsmodul.model.RigBean;
 import org.slf4j.Logger;
@@ -250,6 +251,7 @@ public final class LabsLayoutHelper {
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSpacing(true);
         Button saveButton = new Button("Save");
+        saveButton.setIcon(ELabsViewContants.ICON_16_OK);
         Label blank = new Label("");
         blank.setWidth(LABEL_WIDTH);
         horizontalLayout.addComponent(blank, 0);

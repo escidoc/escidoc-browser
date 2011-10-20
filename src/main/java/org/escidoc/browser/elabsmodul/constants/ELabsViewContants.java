@@ -28,6 +28,9 @@
  */
 package org.escidoc.browser.elabsmodul.constants;
 
+import com.vaadin.terminal.Resource;
+import com.vaadin.terminal.ThemeResource;
+
 public class ELabsViewContants {
 
     private ELabsViewContants() {
@@ -294,4 +297,23 @@ public class ELabsViewContants {
     public static final String DIALOG_SAVEINVESTIGATION_TEXT = "Are you sure to save this Investigation?";
 
     public static final String[] INVESTIGATION_SERIES_PROPERTIES = { "name", "description" };
+
+    // ICONs
+    public static final Resource ICON_16_OK = new ThemeResource("runo/icons/16/ok.png");
+
+    public static final Resource ICON_16_CANCEL = new ThemeResource("runo/icons/16/cancel.png");
+
+    public static final Resource ICON_16_EMAIL = new ThemeResource("runo/icons/16/email.png");
+
+    public static final Resource ICON_16_EMAIL_REPLY = new ThemeResource("runo/icons/16/email-reply.png");
+
+    public static final Resource ICON_16_HELP = new ThemeResource("runo/icons/16/help.png");
+
+    public static final Resource ICON_16_USER = new ThemeResource("runo/icons/16/user.png");
+
+    public static final Resource ICON_16_USERS = new ThemeResource("runo/icons/16/users.png");
+
+    public static final Resource ICON_16_GLOBE = new ThemeResource("runo/icons/16/globe.png");
+
+    public static final Resource ICON_16_NOTE = new ThemeResource("runo/icons/16/note.png");
 }
