@@ -77,9 +77,8 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
 
     private Router router;
 
-    public StudyView(StudyBean sourceBean, ISaveAction saveComponent,
-        List<ResourceModel> breadCrumbModel, ResourceProxy resourceProxy,
-        Router router) {
+    public StudyView(StudyBean sourceBean, ISaveAction saveComponent, List<ResourceModel> breadCrumbModel,
+        ResourceProxy resourceProxy, Router router) {
         this.studyBean = (sourceBean != null) ? sourceBean : new StudyBean();
         this.lastStateBean = studyBean;
         this.saveComponent = saveComponent;
@@ -110,8 +109,7 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
         };
 
         try {
-            ((Button) buttonLayout.getComponent(1))
-                .addListener(mouseClickListener);
+            ((Button) buttonLayout.getComponent(1)).addListener(mouseClickListener);
         }
         catch (ClassCastException e) {
             LOG.error(e.getMessage());
@@ -120,19 +118,16 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
     }
 
     protected void resetLayout() {
-        Preconditions.checkNotNull(dynamicLayout,
-            "View's dynamiclayout is null.");
+        Preconditions.checkNotNull(dynamicLayout, "View's dynamiclayout is null.");
 
         HorizontalLayout tempParentLayout = null;
-        for (Iterator<Component> iterator =
-            dynamicLayout.getComponentIterator(); iterator.hasNext();) {
+        for (Iterator<Component> iterator = dynamicLayout.getComponentIterator(); iterator.hasNext();) {
             Component component = iterator.next();
             if (component instanceof HorizontalLayout) {
                 tempParentLayout = (HorizontalLayout) component;
             }
             else {
-                LOG
-                    .error("DynamicLayout can contain only HorizontalLayouts as direct child element.");
+                LOG.error("DynamicLayout can contain only HorizontalLayouts as direct child element.");
                 break;
             }
             if (LabsLayoutHelper.switchToLabelFromEditedField(tempParentLayout)) {
@@ -153,8 +148,7 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
         dynamicLayout.setMargin(true);
 
         this.pojoItem = new POJOItem<StudyBean>(studyBean, PROPERTIES);
-        this.registeredComponents =
-            new ArrayList<HorizontalLayout>(COMPONENT_COUNT);
+        this.registeredComponents = new ArrayList<HorizontalLayout>(COMPONENT_COUNT);
 
         this.setContent(mainLayout);
 
@@ -166,21 +160,17 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
 
         this.buttonLayout = LabsLayoutHelper.createButtonLayout();
         HorizontalLayout h1 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(
-                ELabsViewContants.L_STUDY_TITLE,
+            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_STUDY_TITLE,
                 pojoItem.getItemProperty(ELabsViewContants.P_STUDY_TITLE));
         HorizontalLayout h2 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(
-                ELabsViewContants.L_STUDY_DESC,
+            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_STUDY_DESC,
                 getPojoItem().getItemProperty(ELabsViewContants.P_STUDY_DESC));
         HorizontalLayout h3 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(
-                ELabsViewContants.L_STUDY_MOT_PUB, getPojoItem()
-                    .getItemProperty(ELabsViewContants.P_STUDY_MOT_PUB));
+            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_STUDY_MOT_PUB,
+                getPojoItem().getItemProperty(ELabsViewContants.P_STUDY_MOT_PUB));
         HorizontalLayout h4 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(
-                ELabsViewContants.L_STUDY_RES_PUB, getPojoItem()
-                    .getItemProperty(ELabsViewContants.P_STUDY_RES_PUB));
+            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_STUDY_RES_PUB,
+                getPojoItem().getItemProperty(ELabsViewContants.P_STUDY_RES_PUB));
 
         registeredComponents.add(h1);
         registeredComponents.add(h2);
@@ -203,9 +193,7 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
     }
 
     private void createPanelListener() {
-        this.clientViewEventHandler =
-            new LabsClientViewEventHandler(registeredComponents, dynamicLayout,
-                this, this);
+        this.clientViewEventHandler = new LabsClientViewEventHandler(registeredComponents, dynamicLayout, this, this);
         dynamicLayout.addListener(this.clientViewEventHandler);
 
     }
@@ -227,9 +215,8 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
     }
 
     /**
-     * This is the inner Right Cell within a Context By default a set of
-     * Organizational Unit / Admin Description / RelatedItem / Resources are
-     * bound
+     * This is the inner Right Cell within a Context By default a set of Organizational Unit / Admin Description /
+     * RelatedItem / Resources are bound
      * 
      * @param comptoBind
      */
@@ -242,8 +229,7 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
         rightpnl.setHeight("82%");
         rightpnl.getLayout().setMargin(false);
         final Label nameofPanel =
-            new Label("<strong>" + ELabsViewContants.BWELABS_STUDY
-                + "</string>", Label.CONTENT_RAW);
+            new Label("<strong>" + ELabsViewContants.BWELABS_STUDY + "</string>", Label.CONTENT_RAW);
         nameofPanel.setStyleName("grey-label");
         rightpnl.addComponent(nameofPanel);
         rightpnl.addComponent(comptoBind);
@@ -259,10 +245,8 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
         leftPanel.setWidth("30%");
         leftPanel.setHeight("82%");
 
-        new DirectMember(router.getServiceLocation(), router,
-            containerProxy.getId(), router.getMainWindow(),
-            router.getCurrentUser(), router.getRepositories(), leftPanel)
-            .containerAsTree();
+        new DirectMember(router.getServiceLocation(), router, containerProxy.getId(), router.getMainWindow(),
+            router.getCurrentUser(), router.getRepositories(), leftPanel).containerAsTree();
         cssLayout.addComponent(leftPanel);
     }
 
@@ -270,8 +254,8 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
      * Build the read-only layout of the eLabsElement
      */
     private void buildPropertiesGUI() {
-        this.addComponent(new ResourcePropertiesViewHelper(containerProxy,
-            breadCrumbModel, "Study").generatePropertiesView());
+        this.addComponent(new ResourcePropertiesViewHelper(containerProxy, breadCrumbModel, "Study")
+            .generatePropertiesView());
     }
 
     @Override
@@ -279,9 +263,7 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
         HorizontalLayout horizontalLayout = null;
         if (dynamicLayout != null && buttonLayout != null) {
             try {
-                horizontalLayout =
-                    (HorizontalLayout) dynamicLayout
-                        .getComponent(COMPONENT_COUNT);
+                horizontalLayout = (HorizontalLayout) dynamicLayout.getComponent(COMPONENT_COUNT);
             }
             catch (ClassCastException e) {
                 LOG.error(e.getMessage());
@@ -315,11 +297,9 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
 
     @Override
     public void hideButtonLayout() {
-        if (dynamicLayout != null
-            && dynamicLayout.getComponent(COMPONENT_COUNT) != null) {
+        if (dynamicLayout != null && dynamicLayout.getComponent(COMPONENT_COUNT) != null) {
             try {
-                ((HorizontalLayout) dynamicLayout.getComponent(COMPONENT_COUNT))
-                    .removeAllComponents();
+                ((HorizontalLayout) dynamicLayout.getComponent(COMPONENT_COUNT)).removeAllComponents();
             }
             catch (ClassCastException e) {
                 LOG.error(e.getMessage());

@@ -55,19 +55,19 @@ public class StudyController extends Controller implements ISaveAction {
     // the bean model to store
     private IBeanModel beanModel = null;
 
-	private Router router;
+    private Router router;
 
     private static Logger LOG = LoggerFactory.getLogger(InstrumentController.class);
 
     @Override
     public void init(
-        EscidocServiceLocation serviceLocation, Repositories repositories, Router router,
-        ResourceProxy resourceProxy, Window mainWindow, CurrentUser currentUser) {
+        EscidocServiceLocation serviceLocation, Repositories repositories, Router router, ResourceProxy resourceProxy,
+        Window mainWindow, CurrentUser currentUser) {
         this.serviceLocation = serviceLocation;
         this.resourceProxy = resourceProxy;
         this.repositories = repositories;
         this.mainWindow = mainWindow;
-        this.router=router;
+        this.router = router;
         this.view = createView(resourceProxy);
         this.getResourceName(resourceProxy.getName());
 

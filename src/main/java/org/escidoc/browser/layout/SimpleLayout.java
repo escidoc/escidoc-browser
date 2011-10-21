@@ -88,7 +88,8 @@ public class SimpleLayout extends VerticalLayout implements LayoutDesign {
     }
 
     private void addHeader() {
-        final HeaderContainer header = new HeaderContainer(router, this,app, serviceLocation, currentUser, repositories);
+        final HeaderContainer header =
+            new HeaderContainer(router, this, app, serviceLocation, currentUser, repositories);
         header.init();
 
         mainLayout.addComponent(header);

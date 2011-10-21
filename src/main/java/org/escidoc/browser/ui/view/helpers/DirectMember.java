@@ -68,8 +68,8 @@ public class DirectMember {
     private static final String DIRECT_MEMBERS = "Direct Members";
 
     /**
-     * The method retrieves a Panel as the View where it should place itself and
-     * binds there a List of Members and some activity buttons
+     * The method retrieves a Panel as the View where it should place itself and binds there a List of Members and some
+     * activity buttons
      * 
      * @param serviceLocation
      * @param router
@@ -79,22 +79,15 @@ public class DirectMember {
      * @param repositories
      * @param leftPanel
      */
-    public DirectMember(final EscidocServiceLocation serviceLocation,
-        final Router router, final String parentId, final Window mainWindow,
-        final CurrentUser currentUser, final Repositories repositories,
-        Panel leftPanel) {
-        Preconditions.checkNotNull(serviceLocation,
-            "serviceLocation is null: %s", serviceLocation);
+    public DirectMember(final EscidocServiceLocation serviceLocation, final Router router, final String parentId,
+        final Window mainWindow, final CurrentUser currentUser, final Repositories repositories, Panel leftPanel) {
+        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(router, "Router is null: %s", router);
         Preconditions.checkNotNull(parentId, "parentID is null: %s", parentId);
-        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s",
-            mainWindow);
-        Preconditions.checkNotNull(currentUser, "currentUser is null: %s",
-            currentUser);
-        Preconditions.checkNotNull(repositories, "repositories is null: %s",
-            repositories);
-        Preconditions.checkNotNull(leftPanel,
-            "Panel from the View is null: %s", repositories);
+        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
+        Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        Preconditions.checkNotNull(leftPanel, "Panel from the View is null: %s", repositories);
 
         this.parentId = parentId;
         this.router = router;
@@ -107,9 +100,7 @@ public class DirectMember {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        navigationTreeBuilder =
-            new NavigationTreeBuilder(serviceLocation, currentUser,
-                repositories);
+        navigationTreeBuilder = new NavigationTreeBuilder(serviceLocation, currentUser, repositories);
     }
 
     public void contextAsTree() throws EscidocClientException {
@@ -119,10 +110,8 @@ public class DirectMember {
 
     }
 
-    private NavigationTreeView createContextDirectMembers()
-        throws EscidocClientException {
-        return navigationTreeBuilder.buildContextDirectMemberTree(router,
-            parentId, mainWindow);
+    private NavigationTreeView createContextDirectMembers() throws EscidocClientException {
+        return navigationTreeBuilder.buildContextDirectMemberTree(router, parentId, mainWindow);
     }
 
     public void containerAsTree() throws EscidocClientException {
@@ -131,16 +120,12 @@ public class DirectMember {
         bindDirectMembersInTheContainer(tree);
     }
 
-    private NavigationTreeView createContainerDirectMembers()
-        throws EscidocClientException {
-        return navigationTreeBuilder.buildContainerDirectMemberTree(router,
-            parentId, mainWindow);
+    private NavigationTreeView createContainerDirectMembers() throws EscidocClientException {
+        return navigationTreeBuilder.buildContainerDirectMemberTree(router, parentId, mainWindow);
     }
 
     protected void createButtons() throws EscidocClientException {
-        final Label nameofPanel =
-            new Label("<strong>" + DIRECT_MEMBERS + "</strong>",
-                Label.CONTENT_RAW);
+        final Label nameofPanel = new Label("<strong>" + DIRECT_MEMBERS + "</strong>", Label.CONTENT_RAW);
         nameofPanel.setStyleName("grey-label");
         nameofPanel.setWidth("100%");
         panel.addComponent(nameofPanel);
@@ -154,21 +139,18 @@ public class DirectMember {
         addContainerButton.setStyleName(Reindeer.BUTTON_SMALL);
 
         final ContainerProxy containerProxy =
-            new ContainerProxyImpl(router
-                .getRepositories().container().findContainerById(parentId));
+            new ContainerProxyImpl(router.getRepositories().container().findContainerById(parentId));
         final String contextId = containerProxy.getContext().getObjid();
         addContainerButton.addListener(new ClickListener() {
 
             @Override
             public void buttonClick(ClickEvent event) {
                 try {
-                    new ContainerAddView(router.getRepositories(), router
-                        .getMainWindow(), containerProxy, contextId)
+                    new ContainerAddView(router.getRepositories(), router.getMainWindow(), containerProxy, contextId)
                         .openSubWindow();
                 }
                 catch (final EscidocClientException e) {
-                    mainWindow.showNotification(e.getMessage(),
-                        Window.Notification.TYPE_ERROR_MESSAGE);
+                    mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
                 }
             }
         });
@@ -180,13 +162,11 @@ public class DirectMember {
             @Override
             public void buttonClick(ClickEvent event) {
                 try {
-                    new ItemAddView(router.getRepositories(), router
-                        .getMainWindow(), containerProxy, contextId)
+                    new ItemAddView(router.getRepositories(), router.getMainWindow(), containerProxy, contextId)
                         .openSubWindow();
                 }
                 catch (final EscidocClientException e) {
-                    mainWindow.showNotification(e.getMessage(),
-                        Window.Notification.TYPE_ERROR_MESSAGE);
+                    mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
                 }
 
             }

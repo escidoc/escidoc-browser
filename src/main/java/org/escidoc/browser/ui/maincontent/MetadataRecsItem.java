@@ -86,7 +86,7 @@ public class MetadataRecsItem {
 
     private final Router mainSite;
 
-	private LayoutDesign layout;
+    private LayoutDesign layout;
 
     MetadataRecsItem(final ItemProxy resourceProxy, final int innerelementsHeight, final Window mainWindow,
         final EscidocServiceLocation escidocServiceLocation, final Repositories repositories,
@@ -104,7 +104,7 @@ public class MetadataRecsItem {
         this.repositories = repositories;
         this.currentUser = currentUser;
         this.mainSite = mainSite;
-        this.layout=layout;
+        this.layout = layout;
     }
 
     protected Accordion asAccord() {

@@ -129,13 +129,13 @@ public class BreadCrumbMenu {
     }
 
     public BreadCrumbMenu(Component component, List<ResourceModel> breadCrumbModel) {
-    	final StringBuffer buf = new StringBuffer();
+        final StringBuffer buf = new StringBuffer();
         Preconditions.checkNotNull(breadCrumbModel, "###BreadCrumbModel ref is null");
 
-            for (final ResourceModel resourceModel : breadCrumbModel) {
-                buf.append("<li><a href='#'>" + resourceModel.getName() + "</a></li>");
-            }
-            ((ComponentContainer) component).addComponent(new Label(bCstring + buf.toString() + "<li></ul>",
+        for (final ResourceModel resourceModel : breadCrumbModel) {
+            buf.append("<li><a href='#'>" + resourceModel.getName() + "</a></li>");
+        }
+        ((ComponentContainer) component).addComponent(new Label(bCstring + buf.toString() + "<li></ul>",
             Label.CONTENT_RAW));
 
     }

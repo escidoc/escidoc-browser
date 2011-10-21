@@ -325,7 +325,7 @@ public class ELabsViewContants {
     public static final Resource ICON_16_GLOBE = new ThemeResource("runo/icons/16/globe.png");
 
     public static final Resource ICON_16_NOTE = new ThemeResource("runo/icons/16/note.png");
-    
-    //Additional Caption names
-    public static final String BWELABS_STUDY="BW-eLabs Study";
+
+    // Additional Caption names
+    public static final String BWELABS_STUDY = "BW-eLabs Study";
 }

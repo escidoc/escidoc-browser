@@ -78,8 +78,7 @@ public class ItemAddView {
 
     private final TextField nameField = new TextField(ViewConstants.ITEM_NAME);
 
-    private final NativeSelect contentModelSelect = new NativeSelect(
-        ViewConstants.PLEASE_SELECT_CONTENT_MODEL);
+    private final NativeSelect contentModelSelect = new NativeSelect(ViewConstants.PLEASE_SELECT_CONTENT_MODEL);
 
     private final Window subwindow = new Window(ViewConstants.CREATE_ITEM);
 
@@ -93,8 +92,7 @@ public class ItemAddView {
 
     private final String contextId;
 
-    private final Label status = new Label(
-        "Upload a wellformed XML file to create metadata!");
+    private final Label status = new Label("Upload a wellformed XML file to create metadata!");
 
     private final ProgressIndicator progressIndicator = new ProgressIndicator();
 
@@ -104,18 +102,13 @@ public class ItemAddView {
 
     private final Upload upload = new Upload("", receiver);
 
-    ItemAddView(final Repositories repositories, final Window mainWindow,
-        final ResourceModel parent, final TreeDataSource treeDataSource,
-        final String contextId) {
-        Preconditions.checkNotNull(repositories, "repositories is null: %s",
-            repositories);
-        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s",
-            mainWindow);
+    ItemAddView(final Repositories repositories, final Window mainWindow, final ResourceModel parent,
+        final TreeDataSource treeDataSource, final String contextId) {
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(parent, "parent is null: %s", parent);
-        Preconditions.checkNotNull(treeDataSource,
-            "treeDataSource is null: %s", treeDataSource);
-        Preconditions.checkNotNull(contextId, "contextId is null: %s",
-            contextId);
+        Preconditions.checkNotNull(treeDataSource, "treeDataSource is null: %s", treeDataSource);
+        Preconditions.checkNotNull(contextId, "contextId is null: %s", contextId);
         this.repositories = repositories;
         this.mainWindow = mainWindow;
         this.parent = parent;
@@ -123,16 +116,11 @@ public class ItemAddView {
         this.contextId = contextId;
     }
 
-    public ItemAddView(Repositories repositories, Window mainWindow,
-        ContainerProxy containerProxy, String contextId) {
-        Preconditions.checkNotNull(repositories, "repositories is null: %s",
-            repositories);
-        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s",
-            mainWindow);
-        Preconditions.checkNotNull(containerProxy, "parent is null: %s",
-            containerProxy);
-        Preconditions.checkNotNull(contextId, "contextId is null: %s",
-            contextId);
+    public ItemAddView(Repositories repositories, Window mainWindow, ContainerProxy containerProxy, String contextId) {
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
+        Preconditions.checkNotNull(containerProxy, "parent is null: %s", containerProxy);
+        Preconditions.checkNotNull(contextId, "contextId is null: %s", contextId);
         this.repositories = repositories;
         this.mainWindow = mainWindow;
         this.parent = (ResourceModel) containerProxy;
@@ -151,34 +139,30 @@ public class ItemAddView {
     private void addNameField() {
         nameField.setRequired(true);
         nameField.setRequiredError(ViewConstants.PLEASE_ENTER_AN_ITEM_NAME);
-        nameField.addValidator(new StringLengthValidator(
-            ViewConstants.ITEM_NAME_MUST_BE_3_25_CHARACTERS, 3, 25, false));
+        nameField
+            .addValidator(new StringLengthValidator(ViewConstants.ITEM_NAME_MUST_BE_3_25_CHARACTERS, 3, 25, false));
         nameField.setImmediate(true);
         addForm.addComponent(nameField);
     }
 
-    private void addContentModelSelect() throws EscidocException,
-        InternalClientException, TransportException {
-        Preconditions.checkNotNull(repositories.contentModel(),
-            "ContentModelRepository is null: %s", repositories.contentModel());
+    private void addContentModelSelect() throws EscidocException, InternalClientException, TransportException {
+        Preconditions.checkNotNull(repositories.contentModel(), "ContentModelRepository is null: %s",
+            repositories.contentModel());
         contentModelSelect.setRequired(true);
         bindData();
         addForm.addComponent(contentModelSelect);
     }
 
-    private void bindData() throws EscidocException, InternalClientException,
-        TransportException {
+    private void bindData() throws EscidocException, InternalClientException, TransportException {
         final Collection<? extends Resource> contentModelList =
             repositories.contentModel().findPublicOrReleasedResources();
-        final List<ResourceDisplay> resourceDisplayList =
-            new ArrayList<ResourceDisplay>(contentModelList.size());
+        final List<ResourceDisplay> resourceDisplayList = new ArrayList<ResourceDisplay>(contentModelList.size());
         for (final Resource resource : contentModelList) {
-            resourceDisplayList.add(new ResourceDisplay(resource.getObjid(),
-                resource.getXLinkTitle() + " (" + resource.getObjid() + ")"));
+            resourceDisplayList.add(new ResourceDisplay(resource.getObjid(), resource.getXLinkTitle() + " ("
+                + resource.getObjid() + ")"));
         }
         final BeanItemContainer<ResourceDisplay> resourceDisplayContainer =
-            new BeanItemContainer<ResourceDisplay>(ResourceDisplay.class,
-                resourceDisplayList);
+            new BeanItemContainer<ResourceDisplay>(ResourceDisplay.class, resourceDisplayList);
         resourceDisplayContainer.addNestedContainerProperty("objectId");
         resourceDisplayContainer.addNestedContainerProperty("title");
         contentModelSelect.setContainerDataSource(resourceDisplayContainer);
@@ -186,8 +170,7 @@ public class ItemAddView {
     }
 
     private void addButton() {
-        addForm.addComponent(new Button(ViewConstants.ADD, new AddItemListener(
-            this)));
+        addForm.addComponent(new Button(ViewConstants.ADD, new AddItemListener(this)));
     }
 
     @SuppressWarnings("serial")
@@ -206,8 +189,7 @@ public class ItemAddView {
         progressLayout.setSpacing(true);
         progressLayout.setVisible(false);
         progressLayout.addComponent(progressIndicator);
-        progressLayout.setComponentAlignment(progressIndicator,
-            Alignment.MIDDLE_LEFT);
+        progressLayout.setComponentAlignment(progressIndicator, Alignment.MIDDLE_LEFT);
 
         final Button cancelProcessing = new Button("Cancel");
         cancelProcessing.addListener(new Button.ClickListener() {
@@ -220,8 +202,7 @@ public class ItemAddView {
         progressLayout.addComponent(cancelProcessing);
 
         /**
-         * =========== Add needed listener for the upload component: start,
-         * progress, finish, success, fail ===========
+         * =========== Add needed listener for the upload component: start, progress, finish, success, fail ===========
          */
 
         upload.addListener(new Upload.StartedListener() {
@@ -232,18 +213,15 @@ public class ItemAddView {
                 progressLayout.setVisible(true);
                 progressIndicator.setValue(Float.valueOf(0f));
                 progressIndicator.setPollingInterval(500);
-                status.setValue("Uploading file \"" + event.getFilename()
-                    + "\"");
+                status.setValue("Uploading file \"" + event.getFilename() + "\"");
             }
         });
 
         upload.addListener(new Upload.ProgressListener() {
             @Override
-            public void updateProgress(
-                final long readBytes, final long contentLength) {
+            public void updateProgress(final long readBytes, final long contentLength) {
                 // This method gets called several times during the update
-                progressIndicator.setValue(new Float(readBytes
-                    / (float) contentLength));
+                progressIndicator.setValue(new Float(readBytes / (float) contentLength));
             }
 
         });
@@ -252,10 +230,8 @@ public class ItemAddView {
             @Override
             public void uploadSucceeded(final SucceededEvent event) {
                 // This method gets called when the upload finished successfully
-                status.setValue("Uploading file \"" + event.getFilename()
-                    + "\" succeeded");
-                final boolean isWellFormed =
-                    XmlUtil.isWellFormed(receiver.getFileContent());
+                status.setValue("Uploading file \"" + event.getFilename() + "\" succeeded");
+                final boolean isWellFormed = XmlUtil.isWellFormed(receiver.getFileContent());
                 receiver.setWellFormed(isWellFormed);
                 if (isWellFormed) {
                     status.setValue(ViewConstants.XML_IS_WELL_FORMED);
@@ -316,8 +292,7 @@ public class ItemAddView {
     }
 
     protected void showRequiredMessage() {
-        mainWindow.showNotification("Please fill in all the required elements",
-            1);
+        mainWindow.showNotification("Please fill in all the required elements", 1);
     }
 
     protected void create() {
@@ -326,8 +301,7 @@ public class ItemAddView {
 
     private void createNewResource() {
         try {
-            final Item createdItem =
-                repositories.item().createWithParent(buildItem(), parent);
+            final Item createdItem = repositories.item().createWithParent(buildItem(), parent);
             // The case when we are adding links from a button
             if (treeDataSource != null) {
                 treeDataSource.addChild(parent, new ItemModel(createdItem));
@@ -335,8 +309,7 @@ public class ItemAddView {
             subwindow.getParent().removeWindow(subwindow);
         }
         catch (final EscidocClientException e) {
-            mainWindow.showNotification(e.getMessage(),
-                Window.Notification.TYPE_ERROR_MESSAGE);
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
         }
     }
 
@@ -348,8 +321,7 @@ public class ItemAddView {
     }
 
     private Item buildItem() {
-        return new ItemBuilder(new ContextRef(getContextId()),
-            new ContentModelRef(getContentModelId()), getMetadata())
+        return new ItemBuilder(new ContextRef(getContextId()), new ContentModelRef(getContentModelId()), getMetadata())
             .build(getName());
     }
 

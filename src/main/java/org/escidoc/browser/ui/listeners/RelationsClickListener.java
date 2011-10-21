@@ -84,7 +84,7 @@ public class RelationsClickListener implements ClickListener {
 
     protected Component cmpView;
 
-	protected LayoutDesign layout;
+    protected LayoutDesign layout;
 
     /**
      * Container for the ItemProxy case
@@ -95,8 +95,8 @@ public class RelationsClickListener implements ClickListener {
      * @param escidocServiceLocation
      */
     public RelationsClickListener(final ItemProxy resourceProxy, final Window mainWindow,
-        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories, final Router mainSite, LayoutDesign layout,
-        final CurrentUser currentUser) {
+        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories, final Router mainSite,
+        LayoutDesign layout, final CurrentUser currentUser) {
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions
@@ -111,7 +111,7 @@ public class RelationsClickListener implements ClickListener {
         this.mainSite = mainSite;
         this.escidocServiceLocation = escidocServiceLocation;
         this.repositories = repositories;
-        this.layout=layout;
+        this.layout = layout;
         itemOrContainerRepository = repositories.item();
     }
 
@@ -180,8 +180,9 @@ public class RelationsClickListener implements ClickListener {
                     else if (type.name().equals("ITEM")) {
                         try {
                             cmpView =
-                                new ItemView(escidocServiceLocation, repositories, mainSite, layout, (ItemProxy) repositories
-                                    .item().findById(relation.getObjid()), mainWindow, currentUser);
+                                new ItemView(escidocServiceLocation, repositories, mainSite, layout,
+                                    (ItemProxy) repositories.item().findById(relation.getObjid()), mainWindow,
+                                    currentUser);
                         }
                         catch (EscidocClientException e) {
                             mainWindow.showNotification(e.getLocalizedMessage());
