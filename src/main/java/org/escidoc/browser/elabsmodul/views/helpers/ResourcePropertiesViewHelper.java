@@ -88,9 +88,6 @@ public class ResourcePropertiesViewHelper {
         viewHandler.addComponent(titleLabel);
         viewHandler.addComponent(descRuler);
         viewHandler.addComponent(propertiesView);
-        final Label panelRuler = new Label("<hr/>", Label.CONTENT_RAW);
-        panelRuler.setStyleName("hr");
-        viewHandler.addComponent(panelRuler);
 
         return viewHandler;
     }
