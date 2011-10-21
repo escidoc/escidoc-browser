@@ -8,9 +8,9 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.Runo;
 
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsAction;
@@ -229,12 +229,10 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
         final Panel rightpnl = new Panel();
         rightpnl.setDescription(RIGHT_PANEL);
         rightpnl.setStyleName("floatright");
+        rightpnl.addStyleName(Runo.PANEL_LIGHT);
         rightpnl.setWidth("70%");
         rightpnl.setHeight("82%");
         rightpnl.getLayout().setMargin(false);
-        final Label nameofPanel =
-            new Label("<strong>" + ELabsViewContants.BWELABS_STUDY + "</string>", Label.CONTENT_RAW);
-        nameofPanel.setStyleName("grey-label");
         rightpnl.addComponent(comptoBind);
         cssLayout.addComponent(rightpnl);
     }
@@ -244,6 +242,7 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
     private void leftCell() throws EscidocClientException {
         final Panel leftPanel = new Panel();
         leftPanel.setStyleName("directmembers floatleft");
+        leftPanel.addStyleName(Runo.PANEL_LIGHT);
         leftPanel.setScrollable(false);
         leftPanel.getLayout().setMargin(false);
         leftPanel.setWidth("30%");

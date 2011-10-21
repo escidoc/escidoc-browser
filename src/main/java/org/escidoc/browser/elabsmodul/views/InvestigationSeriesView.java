@@ -28,11 +28,19 @@
  */
 package org.escidoc.browser.elabsmodul.views;
 
-import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.LABEL_WIDTH;
+import com.google.common.base.Preconditions;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import com.vaadin.data.util.BeanItem;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.Runo;
+
+import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.LABEL_WIDTH;
 
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsAction;
@@ -48,15 +56,9 @@ import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.view.helpers.DirectMember;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -65,7 +67,7 @@ public class InvestigationSeriesView extends Panel implements ILabsPanel, ILabsA
 
     private static final int COMPONENT_COUNT = 3;
 
-    private final String[] PROPERTIES = ELabsViewContants.INVESTIGATION_SERIES_PROPERTIES;
+    private static final String[] PROPERTIES = ELabsViewContants.INVESTIGATION_SERIES_PROPERTIES;
 
     private VerticalLayout mainLayout;
 
@@ -87,11 +89,11 @@ public class InvestigationSeriesView extends Panel implements ILabsPanel, ILabsA
 
     private Component buttonLayout;
 
-    HorizontalLayout foo = new HorizontalLayout();
+    private HorizontalLayout hl = new HorizontalLayout();
 
     private Button saveButton = new Button("Save");
 
-    private final CssLayout cssLayout = new CssLayout();
+    private CssLayout cssLayout = new CssLayout();
 
     private Router router;
 
@@ -116,7 +118,6 @@ public class InvestigationSeriesView extends Panel implements ILabsPanel, ILabsA
         buildPanelView();
         createPanelListener();
         createClickListener();
-
     }
 
     private void createClickListener() {
@@ -155,7 +156,7 @@ public class InvestigationSeriesView extends Panel implements ILabsPanel, ILabsA
 
         dynamicLayout.addComponent(name, 0);
         dynamicLayout.addComponent(description, 1);
-        dynamicLayout.addComponent(foo, 2);
+        dynamicLayout.addComponent(hl, 2);
 
         rightCell(dynamicLayout);
         mainLayout.addComponent(cssLayout);
@@ -202,7 +203,7 @@ public class InvestigationSeriesView extends Panel implements ILabsPanel, ILabsA
         try {
             leftCell();
         }
-        catch (final EscidocClientException e) {
+        catch (EscidocClientException e) {
             router.getMainWindow().showNotification(
                 "Could not load the Direct Members Helper in the View" + e.getLocalizedMessage());
         }
@@ -216,23 +217,21 @@ public class InvestigationSeriesView extends Panel implements ILabsPanel, ILabsA
      */
     // TODO why deprecated?
     @SuppressWarnings("deprecation")
-    private void rightCell(final Component comptoBind) {
-        final Panel rightpnl = new Panel();
+    private void rightCell(Component comptoBind) {
+        Panel rightpnl = new Panel();
         rightpnl.setStyleName("floatright");
+        rightpnl.addStyleName(Runo.PANEL_LIGHT);
         rightpnl.setWidth("70%");
         rightpnl.setHeight("82%");
         rightpnl.getLayout().setMargin(false);
-        final Label nameofPanel =
-            new Label("<strong>" + ELabsViewContants.BWELABS_INVSERIES + "</string>", Label.CONTENT_RAW);
-        nameofPanel.setStyleName("grey-label");
-        rightpnl.addComponent(nameofPanel);
         rightpnl.addComponent(comptoBind);
         cssLayout.addComponent(rightpnl);
     }
 
     private void leftCell() throws EscidocClientException {
-        final Panel leftPanel = new Panel();
+        Panel leftPanel = new Panel();
         leftPanel.setStyleName("directmembers floatleft");
+        leftPanel.addStyleName(Runo.PANEL_LIGHT);
         leftPanel.setScrollable(false);
         leftPanel.getLayout().setMargin(false);
         leftPanel.setWidth("30%");
@@ -245,13 +244,13 @@ public class InvestigationSeriesView extends Panel implements ILabsPanel, ILabsA
 
     @Override
     public void showButtonLayout() {
-        foo.removeAllComponents();
-        foo.addComponent(buttonLayout);
+        hl.removeAllComponents();
+        hl.addComponent(buttonLayout);
     }
 
     @Override
     public void hideButtonLayout() {
-        foo.removeAllComponents();
+        hl.removeAllComponents();
     }
 
     @Override
