@@ -42,6 +42,8 @@ import org.escidoc.browser.elabsmodul.views.helpers.ResourcePropertiesViewHelper
 import org.escidoc.browser.elabsmodul.views.listeners.LabsClientViewEventHandler;
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.view.helpers.DirectMember;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,9 +53,13 @@ import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
+
+import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class InvestigationView extends Panel implements ILabsPanel, ILabsAction {
 
@@ -87,21 +93,76 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
 
     private HorizontalLayout modifiedComponent;
 
+    private CssLayout cssLayout = new CssLayout();
+
+    private Router router;
+
     public InvestigationView(InvestigationBean sourceBean, ISaveAction saveComponent,
-        List<ResourceModel> breadCrumbModel, ContainerProxy containerProxy, List<String> depositEndPointUrls) {
+        List<ResourceModel> breadCrumbModel, ContainerProxy containerProxy, List<String> depositEndPointUrls,
+        Router router) {
 
         this.investigationBean = (sourceBean != null) ? sourceBean : new InvestigationBean();
         this.saveComponent = saveComponent;
         this.breadCrumbModel = breadCrumbModel;
         this.containerProxy = containerProxy;
         this.eSyncDaemonUrls = depositEndPointUrls;
+        this.router = router;
 
         initialisePanelComponents();
         buildPropertiesGUI();
+        buildContainerGUI();
         buildPanelGUI();
         createPanelListener();
         createClickListener();
 
+    }
+
+    private void buildContainerGUI() {
+        cssLayout.setWidth("100%");
+        cssLayout.setHeight("100%");
+        try {
+            leftCell();
+        }
+        catch (final EscidocClientException e) {
+            router.getMainWindow().showNotification(
+                "Could not load the Direct Members Helper in the View" + e.getLocalizedMessage());
+        }
+
+    }
+
+    private void leftCell() throws EscidocClientException {
+        final Panel leftPanel = new Panel();
+        leftPanel.setStyleName("directmembers floatleft");
+        leftPanel.setScrollable(false);
+        leftPanel.getLayout().setMargin(false);
+        leftPanel.setWidth("30%");
+        leftPanel.setHeight("82%");
+
+        new DirectMember(router.getServiceLocation(), router, containerProxy.getId(), router.getMainWindow(),
+            router.getCurrentUser(), router.getRepositories(), leftPanel).containerAsTree();
+        cssLayout.addComponent(leftPanel);
+    }
+
+    /**
+     * This is the inner Right Cell within a Context By default a set of Organizational Unit / Admin Description /
+     * RelatedItem / Resources are bound
+     * 
+     * @param comptoBind
+     */
+    // TODO why deprecated?
+    @SuppressWarnings("deprecation")
+    private void rightCell(final Component comptoBind) {
+        final Panel rightpnl = new Panel();
+        rightpnl.setStyleName("floatright");
+        rightpnl.setWidth("70%");
+        rightpnl.setHeight("82%");
+        rightpnl.getLayout().setMargin(false);
+        final Label nameofPanel =
+            new Label("<strong>" + ELabsViewContants.BWELABS_INVSERIES + "</string>", Label.CONTENT_RAW);
+        nameofPanel.setStyleName("grey-label");
+        rightpnl.addComponent(nameofPanel);
+        rightpnl.addComponent(comptoBind);
+        cssLayout.addComponent(rightpnl);
     }
 
     private void initialisePanelComponents() {
@@ -224,7 +285,9 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
         dynamicLayout.addComponent(h6, 5);
         dynamicLayout.addComponent(new HorizontalLayout(), 6);
 
-        mainLayout.addComponent(dynamicLayout);
+        rightCell(dynamicLayout);
+        mainLayout.addComponent(cssLayout);
+        mainLayout.setExpandRatio(cssLayout, 1.0f);
         mainLayout.attach();
         mainLayout.requestRepaintAll();
 
