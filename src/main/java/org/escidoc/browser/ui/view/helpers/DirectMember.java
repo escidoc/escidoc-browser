@@ -28,15 +28,20 @@
  */
 package org.escidoc.browser.ui.view.helpers;
 
+import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.internal.ContainerProxyImpl;
 import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.maincontent.ContainerAddView;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.navigation.NavigationTreeView;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -62,8 +67,8 @@ public class DirectMember {
     private static final String DIRECT_MEMBERS = "Direct Members";
 
     /**
-     * The method retrieves a Panel as the View where it should place itself and binds there a List of Members and some
-     * activity buttons
+     * The method retrieves a Panel as the View where it should place itself and
+     * binds there a List of Members and some activity buttons
      * 
      * @param serviceLocation
      * @param router
@@ -73,22 +78,37 @@ public class DirectMember {
      * @param repositories
      * @param leftPanel
      */
-    public DirectMember(final EscidocServiceLocation serviceLocation, final Router router, final String parentId,
-        final Window mainWindow, final CurrentUser currentUser, final Repositories repositories, Panel leftPanel) {
-        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
+    public DirectMember(final EscidocServiceLocation serviceLocation,
+        final Router router, final String parentId, final Window mainWindow,
+        final CurrentUser currentUser, final Repositories repositories,
+        Panel leftPanel) {
+        Preconditions.checkNotNull(serviceLocation,
+            "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(router, "Router is null: %s", router);
         Preconditions.checkNotNull(parentId, "parentID is null: %s", parentId);
-        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
-        Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
-        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
-        Preconditions.checkNotNull(leftPanel, "Panel from the View is null: %s", repositories);
+        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s",
+            mainWindow);
+        Preconditions.checkNotNull(currentUser, "currentUser is null: %s",
+            currentUser);
+        Preconditions.checkNotNull(repositories, "repositories is null: %s",
+            repositories);
+        Preconditions.checkNotNull(leftPanel,
+            "Panel from the View is null: %s", repositories);
 
         this.parentId = parentId;
         this.router = router;
         this.mainWindow = mainWindow;
         this.panel = leftPanel;
-        createButtons();
-        navigationTreeBuilder = new NavigationTreeBuilder(serviceLocation, currentUser, repositories);
+        try {
+            createButtons();
+        }
+        catch (EscidocClientException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        navigationTreeBuilder =
+            new NavigationTreeBuilder(serviceLocation, currentUser,
+                repositories);
     }
 
     public void contextAsTree() throws EscidocClientException {
@@ -98,8 +118,10 @@ public class DirectMember {
 
     }
 
-    private NavigationTreeView createContextDirectMembers() throws EscidocClientException {
-        return navigationTreeBuilder.buildContextDirectMemberTree(router, parentId, mainWindow);
+    private NavigationTreeView createContextDirectMembers()
+        throws EscidocClientException {
+        return navigationTreeBuilder.buildContextDirectMemberTree(router,
+            parentId, mainWindow);
     }
 
     public void containerAsTree() throws EscidocClientException {
@@ -108,13 +130,18 @@ public class DirectMember {
         bindDirectMembersInTheContainer(tree);
     }
 
-    private NavigationTreeView createContainerDirectMembers() throws EscidocClientException {
-        return navigationTreeBuilder.buildContainerDirectMemberTree(router, parentId, mainWindow);
+    private NavigationTreeView createContainerDirectMembers()
+        throws EscidocClientException {
+        return navigationTreeBuilder.buildContainerDirectMemberTree(router,
+            parentId, mainWindow);
     }
 
-    protected void createButtons() {
-        final Label nameofPanel = new Label("<strong>" + DIRECT_MEMBERS + "</string>", Label.CONTENT_RAW);
+    protected void createButtons() throws EscidocClientException {
+        final Label nameofPanel =
+            new Label("<strong>" + DIRECT_MEMBERS + "</strong>",
+                Label.CONTENT_RAW);
         nameofPanel.setStyleName("grey-label");
+        nameofPanel.setWidth("100%");
         panel.addComponent(nameofPanel);
 
         // the changes start here
@@ -125,9 +152,44 @@ public class DirectMember {
         Button addContainerButton = new Button("Add Container");
         addContainerButton.setStyleName(Reindeer.BUTTON_SMALL);
 
+        final ContainerProxy containerProxy =
+            new ContainerProxyImpl(router
+                .getRepositories().container().findContainerById(parentId));
+        final String contextId = containerProxy.getContext().getObjid();
+        addContainerButton.addListener(new ClickListener() {
+
+            @Override
+            public void buttonClick(ClickEvent event) {
+                try {
+                    new ContainerAddView(router.getRepositories(), router
+                        .getMainWindow(), containerProxy, contextId)
+                        .openSubWindow();
+                }
+                catch (final EscidocClientException e) {
+                    mainWindow.showNotification(e.getMessage(),
+                        Window.Notification.TYPE_ERROR_MESSAGE);
+                }
+            }
+        });
+
         Button addItemButton = new Button("Add Item");
         addItemButton.setStyleName(Reindeer.BUTTON_SMALL);
-
+        // addItemButton.addListener(new ClickListener() {
+        //
+        // @Override
+        // public void buttonClick(ClickEvent event) {
+        // try {
+        // new ItemAddView(router.getRepositories(), router
+        // .getMainWindow(), containerProxy, null, contextId)
+        // .openSubWindow();
+        // }
+        // catch (final EscidocClientException e) {
+        // mainWindow.showNotification(e.getMessage(),
+        // Window.Notification.TYPE_ERROR_MESSAGE);
+        // }
+        //
+        // }
+        // });
 
         HorizontalLayout hl = new HorizontalLayout();
         hl.setStyleName("button-layout");

@@ -34,6 +34,7 @@ import java.util.List;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ContainerModel;
+import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.ContainerBuilder;
@@ -75,17 +76,21 @@ import de.escidoc.core.resources.om.container.Container;
 
 public class ContainerAddView {
 
-    private final static Logger LOG = LoggerFactory.getLogger(ContainerAddView.class);
+    private final static Logger LOG = LoggerFactory
+        .getLogger(ContainerAddView.class);
 
     private final FormLayout addContainerForm = new FormLayout();
 
-    private final TextField nameField = new TextField(ViewConstants.CONTAINER_NAME);
+    private final TextField nameField = new TextField(
+        ViewConstants.CONTAINER_NAME);
 
-    private final NativeSelect contentModelSelect = new NativeSelect(ViewConstants.PLEASE_SELECT_CONTENT_MODEL);
+    private final NativeSelect contentModelSelect = new NativeSelect(
+        ViewConstants.PLEASE_SELECT_CONTENT_MODEL);
 
     private final Window subwindow = new Window(ViewConstants.CREATE_CONTAINER);
 
-    private final Label status = new Label("Upload a wellformed XML file to create metadata!");
+    private final Label status = new Label(
+        "Upload a wellformed XML file to create metadata!");
 
     private final ProgressIndicator progressIndicator = new ProgressIndicator();
 
@@ -105,18 +110,44 @@ public class ContainerAddView {
 
     private final String contextId;
 
-    public ContainerAddView(final Repositories repositories, final Window mainWindow, final ResourceModel parent,
+    public ContainerAddView(final Repositories repositories,
+        final Window mainWindow, final ResourceModel parent,
         final TreeDataSource treeDataSource, final String contextId) {
-        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
-        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
+        Preconditions.checkNotNull(repositories, "repositories is null: %s",
+            repositories);
+        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s",
+            mainWindow);
         Preconditions.checkNotNull(parent, "parent is null: %s", parent);
-        Preconditions.checkNotNull(treeDataSource, "treeDataSource is null: %s", treeDataSource);
-        Preconditions.checkNotNull(contextId, "contextId is null: %s", contextId);
+        Preconditions.checkNotNull(treeDataSource,
+            "treeDataSource is null: %s", treeDataSource);
+        Preconditions.checkNotNull(contextId, "contextId is null: %s",
+            contextId);
         this.repositories = repositories;
         this.mainWindow = mainWindow;
         this.parent = parent;
         this.treeDataSource = treeDataSource;
         this.contextId = contextId;
+    }
+
+    /*
+     * This is the case where the buton is invoked from a button and not from a
+     * tree
+     */
+    public ContainerAddView(Repositories repositories, Window mainWindow,
+        ContainerProxy containerProxy, String contextId) {
+        Preconditions.checkNotNull(repositories, "repositories is null: %s",
+            repositories);
+        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s",
+            mainWindow);
+        Preconditions.checkNotNull(containerProxy, "parent is null: %s",
+            containerProxy);
+        Preconditions.checkNotNull(contextId, "contextId is null: %s",
+            contextId);
+        this.repositories = repositories;
+        this.mainWindow = mainWindow;
+        this.parent = (ResourceModel) containerProxy;
+        this.contextId = contextId;
+        this.treeDataSource = null;
     }
 
     private void buildContainerForm() throws EscidocClientException {
@@ -130,29 +161,34 @@ public class ContainerAddView {
     private void addNameField() {
         nameField.setRequired(true);
         nameField.setRequiredError(ViewConstants.PLEASE_ENTER_A_CONTAINER_NAME);
-        nameField.addValidator(new StringLengthValidator(ViewConstants.CONTAINER_LENGTH, 3, 50, false));
+        nameField.addValidator(new StringLengthValidator(
+            ViewConstants.CONTAINER_LENGTH, 3, 50, false));
         nameField.setImmediate(true);
         addContainerForm.addComponent(nameField);
     }
 
-    private void addContentModelSelect() throws EscidocException, InternalClientException, TransportException {
-        Preconditions.checkNotNull(repositories.contentModel(), "ContentModelRepository is null: %s",
-            repositories.contentModel());
+    private void addContentModelSelect() throws EscidocException,
+        InternalClientException, TransportException {
+        Preconditions.checkNotNull(repositories.contentModel(),
+            "ContentModelRepository is null: %s", repositories.contentModel());
         contentModelSelect.setRequired(true);
         bindData();
         addContainerForm.addComponent(contentModelSelect);
     }
 
-    private void bindData() throws EscidocException, InternalClientException, TransportException {
+    private void bindData() throws EscidocException, InternalClientException,
+        TransportException {
         final Collection<? extends Resource> contentModelList =
             repositories.contentModel().findPublicOrReleasedResources();
-        final List<ResourceDisplay> resourceDisplayList = new ArrayList<ResourceDisplay>(contentModelList.size());
+        final List<ResourceDisplay> resourceDisplayList =
+            new ArrayList<ResourceDisplay>(contentModelList.size());
         for (final Resource resource : contentModelList) {
-            resourceDisplayList.add(new ResourceDisplay(resource.getObjid(), resource.getXLinkTitle() + " ("
-                + resource.getObjid() + ")"));
+            resourceDisplayList.add(new ResourceDisplay(resource.getObjid(),
+                resource.getXLinkTitle() + " (" + resource.getObjid() + ")"));
         }
         final BeanItemContainer<ResourceDisplay> resourceDisplayContainer =
-            new BeanItemContainer<ResourceDisplay>(ResourceDisplay.class, resourceDisplayList);
+            new BeanItemContainer<ResourceDisplay>(ResourceDisplay.class,
+                resourceDisplayList);
         resourceDisplayContainer.addNestedContainerProperty("objectId");
         resourceDisplayContainer.addNestedContainerProperty("title");
         contentModelSelect.setContainerDataSource(resourceDisplayContainer);
@@ -172,7 +208,8 @@ public class ContainerAddView {
         progressLayout.setSpacing(true);
         progressLayout.setVisible(false);
         progressLayout.addComponent(progressIndicator);
-        progressLayout.setComponentAlignment(progressIndicator, Alignment.MIDDLE_LEFT);
+        progressLayout.setComponentAlignment(progressIndicator,
+            Alignment.MIDDLE_LEFT);
 
         final Button cancelProcessing = new Button("Cancel");
         cancelProcessing.addListener(new Button.ClickListener() {
@@ -185,7 +222,8 @@ public class ContainerAddView {
         progressLayout.addComponent(cancelProcessing);
 
         /**
-         * =========== Add needed listener for the upload component: start, progress, finish, success, fail ===========
+         * =========== Add needed listener for the upload component: start,
+         * progress, finish, success, fail ===========
          */
 
         upload.addListener(new Upload.StartedListener() {
@@ -196,15 +234,18 @@ public class ContainerAddView {
                 progressLayout.setVisible(true);
                 progressIndicator.setValue(Float.valueOf(0f));
                 progressIndicator.setPollingInterval(500);
-                status.setValue("Uploading file \"" + event.getFilename() + "\"");
+                status.setValue("Uploading file \"" + event.getFilename()
+                    + "\"");
             }
         });
 
         upload.addListener(new Upload.ProgressListener() {
             @Override
-            public void updateProgress(final long readBytes, final long contentLength) {
+            public void updateProgress(
+                final long readBytes, final long contentLength) {
                 // This method gets called several times during the update
-                progressIndicator.setValue(new Float(readBytes / (float) contentLength));
+                progressIndicator.setValue(new Float(readBytes
+                    / (float) contentLength));
             }
 
         });
@@ -213,8 +254,10 @@ public class ContainerAddView {
             @Override
             public void uploadSucceeded(final SucceededEvent event) {
                 // This method gets called when the upload finished successfully
-                status.setValue("Uploading file \"" + event.getFilename() + "\" succeeded");
-                final boolean isWellFormed = XmlUtil.isWellFormed(receiver.getFileContent());
+                status.setValue("Uploading file \"" + event.getFilename()
+                    + "\" succeeded");
+                final boolean isWellFormed =
+                    XmlUtil.isWellFormed(receiver.getFileContent());
                 receiver.setWellFormed(isWellFormed);
                 if (isWellFormed) {
                     status.setValue(ViewConstants.XML_IS_WELL_FORMED);
@@ -247,7 +290,8 @@ public class ContainerAddView {
     }
 
     private void addButton() {
-        addContainerForm.addComponent(new Button(ViewConstants.ADD, new AddContainerListener(this)));
+        addContainerForm.addComponent(new Button(ViewConstants.ADD,
+            new AddContainerListener(this)));
     }
 
     private void buildSubWindowUsingContainerForm() {
@@ -279,7 +323,8 @@ public class ContainerAddView {
     }
 
     public void showRequiredMessage() {
-        mainWindow.showNotification("Please fill in all the required elements", 1);
+        mainWindow.showNotification("Please fill in all the required elements",
+            1);
     }
 
     private String getMetadata() {
@@ -290,28 +335,43 @@ public class ContainerAddView {
     }
 
     public void create() {
-        createNewContainer(getContainerName(), getContentModelId(), getContextId());
+        createNewContainer(getContainerName(), getContentModelId(),
+            getContextId());
     }
 
-    private void createNewContainer(final String containerName, final String contentModelId, final String contextId) {
+    private void createNewContainer(
+        final String containerName, final String contentModelId,
+        final String contextId) {
         try {
-            updateDataSource(createContainerInRepository(buildContainer(containerName, contentModelId, contextId)));
+            Container createdContainer =
+                createContainerInRepository(buildContainer(containerName,
+                    contentModelId, contextId));
+            // Tree might be null in the case when these methods are called from
+            // buttons
+            if (treeDataSource != null) {
+                updateDataSource(createContainerInRepository(createdContainer));
+            }
             closeSubWindow();
         }
         catch (final EscidocClientException e) {
             LOG.error(e.getMessage());
-            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            mainWindow.showNotification(e.getMessage(),
+                Window.Notification.TYPE_ERROR_MESSAGE);
         }
     }
 
-    private Container buildContainer(final String containerName, final String contentModelId, final String contextId) {
+    private Container buildContainer(
+        final String containerName, final String contentModelId,
+        final String contextId) {
         final Container tobeCreated =
-            new ContainerBuilder(new ContextRef(contextId), new ContentModelRef(contentModelId), getMetadata())
+            new ContainerBuilder(new ContextRef(contextId),
+                new ContentModelRef(contentModelId), getMetadata())
                 .build(containerName);
         return tobeCreated;
     }
 
-    private Container createContainerInRepository(final Container newContainer) throws EscidocClientException {
+    private Container createContainerInRepository(final Container newContainer)
+        throws EscidocClientException {
         return repositories.container().createWithParent(newContainer, parent);
     }
 

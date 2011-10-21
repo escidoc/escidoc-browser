@@ -143,7 +143,6 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
     }
 
     private void initialisePanelComponents() {
-
         this.mainLayout = new VerticalLayout();
         this.mainLayout.setSpacing(true);
         this.mainLayout.setMargin(true);
