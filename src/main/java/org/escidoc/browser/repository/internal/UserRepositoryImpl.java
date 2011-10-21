@@ -40,6 +40,7 @@ import com.google.common.base.Preconditions;
 
 import de.escidoc.core.client.UserAccountHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.client.exceptions.InternalClientException;
 
 public class UserRepositoryImpl implements UserRepository {
 
@@ -62,6 +63,9 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public CurrentUser findCurrentUser() {
         try {
+            if (token == null || token.trim().length() <= 0) {
+                throw new InternalClientException("No user token available.");
+            }
             return new LoggedInUser(client.retrieveCurrentUser(), token);
         }
         catch (final EscidocClientException e) {

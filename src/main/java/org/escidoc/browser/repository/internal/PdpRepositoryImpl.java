@@ -149,15 +149,18 @@ public class PdpRepositoryImpl implements PdpRepository {
     @Override
     public void loginWith(final String token) {
         client.setHandle(token);
-        // clientUserAccount.setHandle(token);
-        // try {
-        // this.currentUser = clientUserAccount.retrieveCurrentUser().getObjid();
-        // }
-        // catch (EscidocClientException e) {
-        // // FIXME
-        // e.printStackTrace();
-        // throw new RuntimeException(e);
-        // }
+        clientUserAccount.setHandle(token);
+        try {
+            if (token != null && token.trim().length() > 0) {
+                this.currentUser = clientUserAccount.retrieveCurrentUser().getObjid();
+            }
+            else {
+                LOG.info("The user is not logged in");
+            }
+        }
+        catch (EscidocClientException e) {
+            LOG.info("The user is not logged in.", e);
+        }
     }
 
     @Override
