@@ -72,7 +72,7 @@ import de.escidoc.core.resources.common.reference.ContentModelRef;
 import de.escidoc.core.resources.common.reference.ContextRef;
 import de.escidoc.core.resources.om.item.Item;
 
-class ItemAddView {
+public class ItemAddView {
 
     private final FormLayout addForm = new FormLayout();
 
@@ -293,7 +293,7 @@ class ItemAddView {
         subwindow.addComponent(addForm);
     }
 
-    protected void openSubWindow() throws EscidocClientException {
+    public void openSubWindow() throws EscidocClientException {
         buildForm();
         buildSubWindowUsingForm();
         mainWindow.addWindow(subwindow);

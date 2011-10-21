@@ -37,6 +37,7 @@ import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.maincontent.ContainerAddView;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.navigation.NavigationTreeView;
+import org.escidoc.browser.ui.navigation.menubar.ItemAddView;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Button;
@@ -174,22 +175,22 @@ public class DirectMember {
 
         Button addItemButton = new Button("Add Item");
         addItemButton.setStyleName(Reindeer.BUTTON_SMALL);
-        // addItemButton.addListener(new ClickListener() {
-        //
-        // @Override
-        // public void buttonClick(ClickEvent event) {
-        // try {
-        // new ItemAddView(router.getRepositories(), router
-        // .getMainWindow(), containerProxy, null, contextId)
-        // .openSubWindow();
-        // }
-        // catch (final EscidocClientException e) {
-        // mainWindow.showNotification(e.getMessage(),
-        // Window.Notification.TYPE_ERROR_MESSAGE);
-        // }
-        //
-        // }
-        // });
+        addItemButton.addListener(new ClickListener() {
+
+            @Override
+            public void buttonClick(ClickEvent event) {
+                try {
+                    new ItemAddView(router.getRepositories(), router
+                        .getMainWindow(), containerProxy, contextId)
+                        .openSubWindow();
+                }
+                catch (final EscidocClientException e) {
+                    mainWindow.showNotification(e.getMessage(),
+                        Window.Notification.TYPE_ERROR_MESSAGE);
+                }
+
+            }
+        });
 
         HorizontalLayout hl = new HorizontalLayout();
         hl.setStyleName("button-layout");
