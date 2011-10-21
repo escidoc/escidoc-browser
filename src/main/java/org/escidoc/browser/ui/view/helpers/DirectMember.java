@@ -122,14 +122,12 @@ public class DirectMember {
         panelLayout.setHeight("100%");
         panelLayout.addStyleName("my-panel");
 
-        Button addContainerButton = new Button("Container");
+        Button addContainerButton = new Button("Add Container");
         addContainerButton.setStyleName(Reindeer.BUTTON_SMALL);
 
-        Button addItemButton = new Button("Item");
+        Button addItemButton = new Button("Add Item");
         addItemButton.setStyleName(Reindeer.BUTTON_SMALL);
 
-        Button removeButton = new Button("Remove");
-        removeButton.setStyleName(Reindeer.BUTTON_SMALL);
 
         HorizontalLayout hl = new HorizontalLayout();
         hl.setStyleName("button-layout");
@@ -143,7 +141,6 @@ public class DirectMember {
 
         buttonLayout.addComponent(addContainerButton);
         buttonLayout.addComponent(addItemButton);
-        buttonLayout.addComponent(removeButton);
 
     }
 
