@@ -1,16 +1,8 @@
 package org.escidoc.browser.elabsmodul.views;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.data.util.POJOItem;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsAction;
@@ -28,9 +20,16 @@ import org.escidoc.browser.ui.view.helpers.DirectMember;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import com.google.common.base.Preconditions;
+import com.vaadin.data.util.POJOItem;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -188,8 +187,8 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
         rightCell(dynamicLayout);
         mainLayout.addComponent(cssLayout);
         mainLayout.setExpandRatio(cssLayout, 1.0f);
-        this.mainLayout.attach();
-        this.mainLayout.requestRepaintAll();
+        mainLayout.attach();
+        mainLayout.requestRepaintAll();
     }
 
     private void createPanelListener() {
@@ -202,6 +201,9 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
         return pojoItem;
     }
 
+    /**
+     * Builds a Container for the DM and the ElabPanel
+     */
     private void buildContainerGUI() {
         cssLayout.setWidth("100%");
         cssLayout.setHeight("100%");
@@ -209,8 +211,8 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
             leftCell();
         }
         catch (final EscidocClientException e) {
-            // TODO log exception and tell the user something going wrong
-            e.printStackTrace();
+            router.getMainWindow().showNotification(
+                "Could not load the Direct Members Helper in the View" + e.getLocalizedMessage());
         }
     }
 

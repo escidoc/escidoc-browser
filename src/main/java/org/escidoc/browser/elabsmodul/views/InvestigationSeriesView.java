@@ -45,15 +45,20 @@ import org.escidoc.browser.elabsmodul.views.listeners.LabsClientViewEventHandler
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.view.helpers.DirectMember;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
+
+import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
 public class InvestigationSeriesView extends Panel implements ILabsPanel, ILabsAction {
@@ -86,8 +91,12 @@ public class InvestigationSeriesView extends Panel implements ILabsPanel, ILabsA
 
     private Button saveButton = new Button("Save");
 
+    private final CssLayout cssLayout = new CssLayout();
+
+    private Router router;
+
     public InvestigationSeriesView(ContainerProxy containerProxy, InvestigationSeriesBean investigationSeriesBean,
-        List<ResourceModel> breadCrumb, ISaveAction saveAction) {
+        List<ResourceModel> breadCrumb, ISaveAction saveAction, Router router) {
 
         Preconditions.checkNotNull(containerProxy, "containerProxy is null: %s", containerProxy);
         Preconditions.checkNotNull(investigationSeriesBean, "investigationSeriesBean is null: %s",
@@ -99,9 +108,11 @@ public class InvestigationSeriesView extends Panel implements ILabsPanel, ILabsA
         this.investigationSeriesBean = investigationSeriesBean;
         this.breadCrumb = breadCrumb;
         this.saveAction = saveAction;
+        this.router = router;
 
         initPanelComponents();
         buildPropertiesView();
+        buildContainerGUI();
         buildPanelView();
         createPanelListener();
         createClickListener();
@@ -146,7 +157,9 @@ public class InvestigationSeriesView extends Panel implements ILabsPanel, ILabsA
         dynamicLayout.addComponent(description, 1);
         dynamicLayout.addComponent(foo, 2);
 
-        mainLayout.addComponent(dynamicLayout);
+        rightCell(dynamicLayout);
+        mainLayout.addComponent(cssLayout);
+        mainLayout.setExpandRatio(cssLayout, 1.0f);
         mainLayout.attach();
         mainLayout.requestRepaintAll();
 
@@ -181,6 +194,53 @@ public class InvestigationSeriesView extends Panel implements ILabsPanel, ILabsA
 
         setContent(mainLayout);
         setScrollable(true);
+    }
+
+    private void buildContainerGUI() {
+        cssLayout.setWidth("100%");
+        cssLayout.setHeight("100%");
+        try {
+            leftCell();
+        }
+        catch (final EscidocClientException e) {
+            router.getMainWindow().showNotification(
+                "Could not load the Direct Members Helper in the View" + e.getLocalizedMessage());
+        }
+    }
+
+    /**
+     * This is the inner Right Cell within a Context By default a set of Organizational Unit / Admin Description /
+     * RelatedItem / Resources are bound
+     * 
+     * @param comptoBind
+     */
+    // TODO why deprecated?
+    @SuppressWarnings("deprecation")
+    private void rightCell(final Component comptoBind) {
+        final Panel rightpnl = new Panel();
+        rightpnl.setStyleName("floatright");
+        rightpnl.setWidth("70%");
+        rightpnl.setHeight("82%");
+        rightpnl.getLayout().setMargin(false);
+        final Label nameofPanel =
+            new Label("<strong>" + ELabsViewContants.BWELABS_INVSERIES + "</string>", Label.CONTENT_RAW);
+        nameofPanel.setStyleName("grey-label");
+        rightpnl.addComponent(nameofPanel);
+        rightpnl.addComponent(comptoBind);
+        cssLayout.addComponent(rightpnl);
+    }
+
+    private void leftCell() throws EscidocClientException {
+        final Panel leftPanel = new Panel();
+        leftPanel.setStyleName("directmembers floatleft");
+        leftPanel.setScrollable(false);
+        leftPanel.getLayout().setMargin(false);
+        leftPanel.setWidth("30%");
+        leftPanel.setHeight("82%");
+
+        new DirectMember(router.getServiceLocation(), router, containerProxy.getId(), router.getMainWindow(),
+            router.getCurrentUser(), router.getRepositories(), leftPanel).containerAsTree();
+        cssLayout.addComponent(leftPanel);
     }
 
     @Override

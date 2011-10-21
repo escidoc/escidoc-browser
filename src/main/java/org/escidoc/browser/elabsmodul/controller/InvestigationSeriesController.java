@@ -203,7 +203,7 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
     }
 
     private Component createView() {
-        return new InvestigationSeriesView(resourceProxy, isb, createBreadCrumbModel(), this);
+        return new InvestigationSeriesView(resourceProxy, isb, createBreadCrumbModel(), this, router);
     }
 
     private List<ResourceModel> createBreadCrumbModel() {

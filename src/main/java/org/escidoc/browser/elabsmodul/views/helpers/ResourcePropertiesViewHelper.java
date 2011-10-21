@@ -64,7 +64,7 @@ public class ResourcePropertiesViewHelper {
 
         final Panel pnlPropertiesLeft = buildLeftPanel();
         pnlPropertiesLeft.setWidth("40%");
-        pnlPropertiesLeft.setHeight("60px");
+        pnlPropertiesLeft.setHeight("20px");
         pnlPropertiesLeft.setStyleName(FLOAT_LEFT);
         pnlPropertiesLeft.addStyleName(Runo.PANEL_LIGHT);
         pnlPropertiesLeft.getLayout().setMargin(false);
@@ -72,7 +72,7 @@ public class ResourcePropertiesViewHelper {
 
         final Panel pnlPropertiesRight = buildRightPanel();
         pnlPropertiesRight.setWidth("60%");
-        pnlPropertiesRight.setHeight("60px");
+        pnlPropertiesRight.setHeight("20px");
         pnlPropertiesRight.setStyleName(FLOAT_RIGHT);
         pnlPropertiesRight.addStyleName(Runo.PANEL_LIGHT);
         pnlPropertiesRight.getLayout().setMargin(false);

@@ -328,4 +328,6 @@ public class ELabsViewContants {
 
     // Additional Caption names
     public static final String BWELABS_STUDY = "BW-eLabs Study";
+
+    public static final String BWELABS_INVSERIES = "BW-eLabs Investigation Series";
 }
