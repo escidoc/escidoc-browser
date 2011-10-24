@@ -145,17 +145,11 @@ public class Router extends VerticalLayout {
     private void createLayout() {
         final String layoutClassName = browserProperties.getProperty("design");
         try {
-            // Class cls = Class.forName(layoutClassName);
-            // layout = cls.newInstance();
             layout = new SimpleLayout(mainWindow, serviceLocation, app, currentUser, repositories, this);
         }
         catch (final EscidocClientException e) {
             showError(ERROR_NO_LAYOUT + e.getLocalizedMessage());
         }
-        // catch (ClassNotFoundException e) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
     }
 
     /**

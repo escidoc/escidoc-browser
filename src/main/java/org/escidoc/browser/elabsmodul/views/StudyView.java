@@ -77,10 +77,10 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         Preconditions.checkNotNull(router, "router is null: %s", router);
 
-        this.studyBean = (sourceBean != null) ? sourceBean : new StudyBean();
+        studyBean = (sourceBean != null) ? sourceBean : new StudyBean();
         this.saveComponent = saveComponent;
         this.breadCrumbModel = breadCrumbModel;
-        this.containerProxy = (ContainerProxy) resourceProxy;
+        containerProxy = (ContainerProxy) resourceProxy;
         this.router = router;
 
         initialisePanelComponents();
@@ -138,27 +138,27 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
     }
 
     private void initialisePanelComponents() {
-        this.mainLayout = new VerticalLayout();
-        this.mainLayout.setSpacing(true);
-        this.mainLayout.setMargin(true);
-        this.mainLayout.setHeight(router.getApplicationHeight() - 30 + "px");
-        this.mainLayout.setStyleName("red");
-        this.dynamicLayout = new VerticalLayout();
+        mainLayout = new VerticalLayout();
+        mainLayout.setSpacing(true);
+        mainLayout.setMargin(true);
+        mainLayout.setHeight(router.getApplicationHeight() - 30 + "px");
+        mainLayout.setStyleName("red");
+        dynamicLayout = new VerticalLayout();
         dynamicLayout.setSpacing(true);
         dynamicLayout.setMargin(true);
 
-        this.pojoItem = new POJOItem<StudyBean>(studyBean, PROPERTIES);
-        this.registeredComponents = new ArrayList<HorizontalLayout>(COMPONENT_COUNT);
+        pojoItem = new POJOItem<StudyBean>(studyBean, PROPERTIES);
+        registeredComponents = new ArrayList<HorizontalLayout>(COMPONENT_COUNT);
 
-        this.setContent(mainLayout);
+        setContent(mainLayout);
 
-        this.setScrollable(true);
+        setScrollable(true);
     }
 
     private void buildPanelGUI() {
         dynamicLayout.setStyleName(ELabsViewContants.STYLE_ELABS_FORM);
 
-        this.buttonLayout = LabsLayoutHelper.createButtonLayout();
+        buttonLayout = LabsLayoutHelper.createButtonLayout();
         final HorizontalLayout h1 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_STUDY_TITLE,
                 pojoItem.getItemProperty(ELabsViewContants.P_STUDY_TITLE));
@@ -192,8 +192,8 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
     }
 
     private void createPanelListener() {
-        this.clientViewEventHandler = new LabsClientViewEventHandler(registeredComponents, dynamicLayout, this, this);
-        dynamicLayout.addListener(this.clientViewEventHandler);
+        clientViewEventHandler = new LabsClientViewEventHandler(registeredComponents, dynamicLayout, this, this);
+        dynamicLayout.addListener(clientViewEventHandler);
 
     }
 
@@ -255,7 +255,7 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
      * Build the read-only layout of the eLabsElement
      */
     private void buildPropertiesGUI() {
-        this.addComponent(new ResourcePropertiesViewHelper(containerProxy, breadCrumbModel, "Study")
+        addComponent(new ResourcePropertiesViewHelper(containerProxy, breadCrumbModel, "Study")
             .generatePropertiesView());
     }
 

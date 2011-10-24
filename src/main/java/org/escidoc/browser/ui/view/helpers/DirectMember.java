@@ -92,7 +92,7 @@ public class DirectMember {
         this.parentId = parentId;
         this.router = router;
         this.mainWindow = mainWindow;
-        this.panel = leftPanel;
+        panel = leftPanel;
         try {
             createButtons();
         }
@@ -124,6 +124,7 @@ public class DirectMember {
         return navigationTreeBuilder.buildContainerDirectMemberTree(router, parentId, mainWindow);
     }
 
+    @SuppressWarnings("serial")
     protected void createButtons() throws EscidocClientException {
         final Label nameofPanel =
             new Label("<div class=\"v-accordion-item-caption\"><div class=\"v-caption\"><div class=\"v-captiontext\">"
@@ -148,8 +149,8 @@ public class DirectMember {
             @Override
             public void buttonClick(ClickEvent event) {
                 try {
-                    new ContainerAddView(router.getRepositories(), router.getMainWindow(), containerProxy, contextId)
-                        .openSubWindow();
+                    new ContainerAddView(router.getRepositories(), router.getMainWindow(), containerProxy, contextId,
+                        router).openSubWindow();
                 }
                 catch (final EscidocClientException e) {
                     mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);

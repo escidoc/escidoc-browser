@@ -40,6 +40,7 @@ import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.ContainerBuilder;
 import org.escidoc.browser.model.internal.ResourceDisplay;
 import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.AddContainerListener;
 import org.escidoc.browser.ui.listeners.MetadataFileReceiver;
@@ -106,6 +107,8 @@ public class ContainerAddView {
 
     private final String contextId;
 
+    private Router router;
+
     public ContainerAddView(final Repositories repositories, final Window mainWindow, final ResourceModel parent,
         final TreeDataSource treeDataSource, final String contextId) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
@@ -124,16 +127,19 @@ public class ContainerAddView {
      * This is the case where the buton is invoked from a button and not from a tree
      */
     public ContainerAddView(Repositories repositories, Window mainWindow, ContainerProxy containerProxy,
-        String contextId) {
+        String contextId, Router router) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(containerProxy, "parent is null: %s", containerProxy);
         Preconditions.checkNotNull(contextId, "contextId is null: %s", contextId);
+        Preconditions.checkNotNull(router, "router is null: %s", router);
+
         this.repositories = repositories;
         this.mainWindow = mainWindow;
-        this.parent = (ResourceModel) containerProxy;
+        parent = containerProxy;
         this.contextId = contextId;
-        this.treeDataSource = null;
+        treeDataSource = null;
+        this.router = router;
     }
 
     private void buildContainerForm() throws EscidocClientException {
@@ -318,6 +324,9 @@ public class ContainerAddView {
             // buttons
             if (treeDataSource != null) {
                 updateDataSource(createContainerInRepository(createdContainer));
+            }
+            if (router != null) {
+                router.show(parent);
             }
             closeSubWindow();
         }
