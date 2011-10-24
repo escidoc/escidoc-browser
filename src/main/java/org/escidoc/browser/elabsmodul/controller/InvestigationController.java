@@ -111,7 +111,7 @@ public class InvestigationController extends Controller implements ISaveAction {
         Preconditions.checkNotNull(model, "Model is null.");
         this.model = model;
 
-        mainWindow.addWindow(new YesNoDialog(ELabsViewContants.DIALOG_SAVE_INVESTIGATION_TEXT,
+        mainWindow.addWindow(new YesNoDialog(ELabsViewContants.DIALOG_SAVE_INVESTIGATION_HEADER,
             ELabsViewContants.DIALOG_SAVE_INVESTIGATION_TEXT, new YesNoDialog.Callback() {
 
                 @Override
