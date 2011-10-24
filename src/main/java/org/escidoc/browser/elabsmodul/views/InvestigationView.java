@@ -147,11 +147,11 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
 
     /**
      * This is the inner Right Cell within a Context By default a set of Organizational Unit / Admin Description /
-     * RelatedItem / Resources are bound
+     * RelatedItem / Resources are bound This Cell is binding the Panel and the Start/Stop button in the Investigation,
+     * through StartInvestigationViewHelper
      * 
      * @param comptoBind
      */
-    // TODO why deprecated?
     @SuppressWarnings("deprecation")
     private void rightCell(final Component comptoBind) {
         final Panel rightpnl = new Panel();
