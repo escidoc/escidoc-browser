@@ -305,9 +305,9 @@ public class ELabsViewContants {
 
     public static final String DIALOG_SAVESTUDY_TEXT = "Are you sure to save this Study?";
 
-    public static final String DIALOG_SAVEINVESTIGATION_HEADER = "Saving Investigation";
+    public static final String DIALOG_SAVE_INVESTIGATION_HEADER = "Saving Investigation";
 
-    public static final String DIALOG_SAVEINVESTIGATION_TEXT = "Are you sure to save this Investigation?";
+    public static final String DIALOG_SAVE_INVESTIGATION_TEXT = "Are you sure to save this Investigation?";
 
     public static final String[] INVESTIGATION_SERIES_PROPERTIES = { "name", "description" };
 
@@ -334,4 +334,9 @@ public class ELabsViewContants {
     public static final String BWELABS_STUDY = "BW-eLabs Study";
 
     public static final String BWELABS_INVSERIES = "BW-eLabs Investigation Series";
+
+    public static final String DIALOG_SAVE_INVESTIGATION_SERIES_HEADER = "Saving Investigation Series";
+
+    public static final String DIALOG_SAVE_INVESTIGATION_SERIES_TEXT =
+        "Are you sure to save this Investigation Series?";
 }

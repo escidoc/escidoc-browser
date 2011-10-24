@@ -111,8 +111,8 @@ public class InvestigationController extends Controller implements ISaveAction {
         Preconditions.checkNotNull(model, "Model is null.");
         this.model = model;
 
-        this.mainWindow.addWindow(new YesNoDialog(ELabsViewContants.DIALOG_SAVEINSTRUMENT_HEADER,
-            ELabsViewContants.DIALOG_SAVEINSTRUMENT_TEXT, new YesNoDialog.Callback() {
+        mainWindow.addWindow(new YesNoDialog(ELabsViewContants.DIALOG_SAVE_INVESTIGATION_HEADER,
+            ELabsViewContants.DIALOG_SAVE_INVESTIGATION_TEXT, new YesNoDialog.Callback() {
 
                 @Override
                 public void onDialogResult(boolean resultIsYes) {
@@ -144,8 +144,8 @@ public class InvestigationController extends Controller implements ISaveAction {
         this.resourceProxy = resourceProxy;
         this.mainWindow = mainWindow;
 
-        this.loadAdminDescriptorInfo();
-        this.view = createView(resourceProxy);
+        loadAdminDescriptorInfo();
+        view = createView(resourceProxy);
         this.getResourceName(resourceProxy.getName());
 
     }
@@ -287,15 +287,15 @@ public class InvestigationController extends Controller implements ISaveAction {
     }
 
     private synchronized void saveModel() {
-        Preconditions.checkNotNull(this.model, "Model is NULL. Can not save.");
+        Preconditions.checkNotNull(model, "Model is NULL. Can not save.");
         ContainerRepository containerRepository = repositories.container();
         final String ESCIDOC = "escidoc";
 
         InvestigationBean investigationBean = null;
         Container container = null;
 
-        if (this.model instanceof InvestigationBean) {
-            investigationBean = (InvestigationBean) this.model;
+        if (model instanceof InvestigationBean) {
+            investigationBean = (InvestigationBean) model;
         }
         final Element metaDataContent =
             InvestigationController.createInvestigationDOMElementByBeanModel(investigationBean);
@@ -310,7 +310,7 @@ public class InvestigationController extends Controller implements ISaveAction {
             LOG.error(e.getLocalizedMessage());
         }
         finally {
-            this.model = null;
+            model = null;
         }
         LOG.info("Investigation is successfully saved.");
     }

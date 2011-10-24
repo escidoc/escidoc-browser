@@ -35,6 +35,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.controller.Controller;
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
@@ -88,8 +89,8 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
     public void saveAction(IBeanModel beanModel) {
         Preconditions.checkNotNull(beanModel, "DataBean to store is NULL");
 
-        mainWindow.addWindow(new YesNoDialog(ELabsViewContants.DIALOG_SAVEINSTRUMENT_HEADER,
-            ELabsViewContants.DIALOG_SAVEINSTRUMENT_TEXT, new YesNoDialog.Callback() {
+        mainWindow.addWindow(new YesNoDialog(ELabsViewContants.DIALOG_SAVE_INVESTIGATION_SERIES_HEADER,
+            ELabsViewContants.DIALOG_SAVE_INVESTIGATION_SERIES_TEXT, new YesNoDialog.Callback() {
 
                 @Override
                 public void onDialogResult(boolean resultIsYes) {
@@ -185,16 +186,15 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
         InvestigationSeriesBean isb = new InvestigationSeriesBean();
 
         final NodeList nodeList = resourceProxy.getMedataRecords().get("escidoc").getContent().getChildNodes();
+
         for (int i = 0; i < nodeList.getLength(); i++) {
 
             final Node node = nodeList.item(i);
-            final String nodeName = node.getNodeName();
-
-            if (nodeName.equals("dc:title")) {
+            if ("title".equals(node.getLocalName()) && AppConstants.DC_NAMESPACE.equals(node.getNamespaceURI())) {
                 isb.setName((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
             }
-
-            else if (nodeName.equals("dc:description")) {
+            else if ("description".equals(node.getLocalName())
+                && AppConstants.DC_NAMESPACE.equals(node.getNamespaceURI())) {
                 isb.setDescription((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
             }
         }
