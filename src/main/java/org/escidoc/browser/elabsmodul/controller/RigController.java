@@ -28,9 +28,12 @@
  */
 package org.escidoc.browser.elabsmodul.controller;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -39,13 +42,14 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.escidoc.browser.controller.Controller;
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
-import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
+import org.escidoc.browser.elabsmodul.interfaces.IRigAction;
 import org.escidoc.browser.elabsmodul.model.InstrumentBean;
 import org.escidoc.browser.elabsmodul.model.RigBean;
 import org.escidoc.browser.elabsmodul.views.RigView;
 import org.escidoc.browser.elabsmodul.views.YesNoDialog;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
@@ -73,7 +77,7 @@ import de.escidoc.core.resources.om.item.Item;
 /**
  * Rig controller class.
  */
-public final class RigController extends Controller implements ISaveAction {
+public final class RigController extends Controller implements IRigAction {
 
     private static Logger LOG = LoggerFactory.getLogger(RigController.class);
 
@@ -86,6 +90,12 @@ public final class RigController extends Controller implements ISaveAction {
     private Window mainWindow;
 
     private IBeanModel beanModel = null;
+
+    private static List<String> cmmIds4Instrument = null;
+
+    static {
+        cmmIds4Instrument = new ArrayList<String>();
+    }
 
     @Override
     public void init(
@@ -231,6 +241,7 @@ public final class RigController extends Controller implements ISaveAction {
         }
 
         return new RigView(rigBean, this, createBeadCrumbModel(), resourceProxy);
+
     }
 
     private List<ResourceModel> createBeadCrumbModel() {
@@ -294,5 +305,56 @@ public final class RigController extends Controller implements ISaveAction {
             beanModel = null;
         }
         LOG.info("Rig is successfully saved.");
+    }
+
+    @Override
+    public synchronized List<InstrumentBean> getNewAvailableInstruments(final List<String> containedInstrumentIDs) {
+        List<InstrumentBean> result = new ArrayList<InstrumentBean>();
+
+        List<ResourceModel> itemList = null;
+        final String SEARCH_STRING_IN_CMM = "org.escidoc.bwelabs.Instrument";
+        final String SEARCH_STRING_FOR_MATCHER = "org.escidoc.browser.Controller=([^;]*);";
+        try {
+            final Pattern controllerIdPattern = Pattern.compile(SEARCH_STRING_FOR_MATCHER);
+            itemList = repositories.item().findAll();
+            for (Iterator<ResourceModel> iterator = itemList.iterator(); iterator.hasNext();) {
+                ResourceModel resourceModel = iterator.next();
+                if (ItemModel.isItem(resourceModel)) {
+                    ItemProxy itemProxy = (ItemProxy) repositories.item().findById(resourceModel.getId());
+                    final String cmmId = itemProxy.getContentModel().getObjid();
+                    if (cmmIds4Instrument.contains(cmmId)) {
+                        if (!containedInstrumentIDs.contains(itemProxy.getId())) {
+                            result.add(loadRelatedInstrumentBeanData(repositories.item().findItemById(
+                                resourceModel.getId())));
+                        }
+                        continue;
+                    }
+
+                    final String cmmDescription =
+                        repositories.contentModel().findById(cmmId).getProperties().getDescription();
+                    if (cmmDescription != null) {
+                        final Matcher controllerIdMatcher = controllerIdPattern.matcher(cmmDescription);
+                        String controllerId = null;
+                        if (controllerIdMatcher.find()) {
+                            controllerId = controllerIdMatcher.group(1);
+                        }
+                        if (controllerId != null && controllerId.equals(SEARCH_STRING_IN_CMM)) {
+                            cmmIds4Instrument.add(cmmId);
+                            if (!containedInstrumentIDs.contains(itemProxy.getId())) {
+                                result.add(loadRelatedInstrumentBeanData(repositories.item().findItemById(
+                                    resourceModel.getId())));
+                            }
+                        }
+                    }
+                }
+
+            }
+
+            LOG.debug("Collected CMM IDs: " + cmmIds4Instrument.toString());
+        }
+        catch (EscidocClientException e) {
+            LOG.error(e.getMessage());
+        }
+        return result;
     }
 }

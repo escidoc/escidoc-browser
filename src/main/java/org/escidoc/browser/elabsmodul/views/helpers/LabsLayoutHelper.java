@@ -44,6 +44,7 @@ import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DE
 
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.enums.ELabsFileFormatsEnum;
+import org.escidoc.browser.elabsmodul.interfaces.IRigAction;
 import org.escidoc.browser.elabsmodul.model.RigBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,7 +105,7 @@ public final class LabsLayoutHelper {
     }
 
     public static synchronized HorizontalLayout createHorizontalLayoutWithELabsLabelAndRelatedDataForRig(
-        final String labelTxt, Property dataProperty, RigBean rigBean) {
+        final String labelTxt, Property dataProperty, RigBean rigBean, final IRigAction controller) {
         Preconditions.checkNotNull(labelTxt, "Label is null");
         Preconditions.checkNotNull(dataProperty, "DataSource is null");
         Preconditions.checkNotNull(rigBean, "RigBean is null");
@@ -123,8 +124,8 @@ public final class LabsLayoutHelper {
         label.setStyleName(STYLE_ELABS_HOR_PANEL);
 
         horizontalLayout.addComponent(label, 0);
-        horizontalLayout.addComponent(LabsTableHelper.singleton().createTableLayoutForRig(rigBean), 1);
-        horizontalLayout.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
+        horizontalLayout.addComponent(LabsTableHelper.singleton().createTableLayoutForRig(rigBean, controller), 1);
+        horizontalLayout.setComponentAlignment(label, Alignment.TOP_LEFT);
 
         return horizontalLayout;
     }

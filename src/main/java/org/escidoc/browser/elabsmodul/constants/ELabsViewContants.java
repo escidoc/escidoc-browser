@@ -103,6 +103,8 @@ public class ELabsViewContants {
 
     public static final String L_RIG_CONTENT = "Instruments:";
 
+    public static final String RIG_NO_DESCRIPTION_BY_INSTR = "<no description available>";
+
     // eLabs Instrument View
 
     public static final String L_INSTRUMENT_TITLE = "Title:";

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
+import org.escidoc.browser.elabsmodul.interfaces.IRigAction;
 import org.escidoc.browser.elabsmodul.model.InstrumentBean;
 import org.escidoc.browser.elabsmodul.model.RigBean;
 import org.escidoc.browser.elabsmodul.views.AddNewInstrumentsWindow;
@@ -24,6 +25,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 
+//TODO rename class
 public class LabsTableHelper {
 
     // properties for the tables def
@@ -40,12 +42,14 @@ public class LabsTableHelper {
     // model references
     private RigBean rigBean = null;
 
+    private IndexedContainer rigContainer = null;
+
     // common texts
     private final String ADD_BUTTON = "Add element";
 
     private final String DELETE_BUTTON_TEXT = "Delete element";
 
-    private final String DELETES_BUTTON_TEXT = "Delete all elements";
+    private final String DELETES_BUTTON_TEXT = "Delete selected elements";
 
     private static LabsTableHelper singleton = null;
 
@@ -67,7 +71,7 @@ public class LabsTableHelper {
         return singleton;
     }
 
-    public synchronized VerticalLayout createTableLayoutForRig(final RigBean rigBean) {
+    public synchronized VerticalLayout createTableLayoutForRig(final RigBean rigBean, final IRigAction controller) {
         Preconditions.checkNotNull(rigBean, "rigModel is null");
         this.rigBean = rigBean;
 
@@ -126,11 +130,11 @@ public class LabsTableHelper {
         });
         layout.addComponent(rigTable);
         layout.addComponent(selectedLabel);
-        addRigButtonToLayout(layout);
+        addRigButtonToLayout(layout, controller);
         return layout;
     }
 
-    private void addRigButtonToLayout(final VerticalLayout layout) {
+    private void addRigButtonToLayout(final VerticalLayout layout, final IRigAction controller) {
 
         rigAddButton = new Button(ADD_BUTTON);
         rigAddButton.setEnabled(true);
@@ -164,14 +168,36 @@ public class LabsTableHelper {
                 }
                 else if (event.getButton().getCaption().equals(ADD_BUTTON)) {
                     rigTable
-                        .getApplication().getMainWindow()
-                        .addWindow(new AddNewInstrumentsWindow(rigBean, new AddNewInstrumentsWindow.Callback() {
-
-                            @Override
-                            public void onAcceptRigAction(Set<String> instrumentIdentifiers) {
-
-                            }
-                        }));
+                        .getApplication()
+                        .getMainWindow()
+                        .addWindow(
+                            new AddNewInstrumentsWindow(rigBean, controller, new AddNewInstrumentsWindow.Callback() {
+                                @Override
+                                public void onAcceptRigAction(
+                                    final List<InstrumentBean> assignableInstruments,
+                                    final Set<String> instrumentIdentifiers) {
+                                    if (assignableInstruments == null || assignableInstruments.isEmpty()) {
+                                        return;
+                                    }
+                                    if (instrumentIdentifiers == null || instrumentIdentifiers.isEmpty()) {
+                                        return;
+                                    }
+                                    for (Iterator<String> iterator = instrumentIdentifiers.iterator(); iterator
+                                        .hasNext();) {
+                                        final String id = iterator.next();
+                                        for (Iterator<InstrumentBean> iterator2 = assignableInstruments.iterator(); iterator2
+                                            .hasNext();) {
+                                            InstrumentBean instrumentBean = iterator2.next();
+                                            if (instrumentBean.getObjectId().equals(id)) {
+                                                // update model
+                                                LabsTableHelper.this.rigBean.getContentList().add(instrumentBean);
+                                                // update view
+                                                LabsTableHelper.this.addnewItemToRigTable(instrumentBean);
+                                            }
+                                        }
+                                    }
+                                }
+                            }));
                 }
             }
         };
@@ -180,7 +206,6 @@ public class LabsTableHelper {
         rigAddButton.addListener(rigButtonsListener);
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSpacing(true);
-
         horizontalLayout.addComponent(rigDeleteButton);
         horizontalLayout.addComponent(rigAddButton);
         layout.addComponent(horizontalLayout);
@@ -198,21 +223,32 @@ public class LabsTableHelper {
     }
 
     private IndexedContainer fillRigTableData(List<InstrumentBean> instrumentBeans) {
-        IndexedContainer container = new IndexedContainer();
-        container.addContainerProperty(rigProperty1, String.class, null);
-        container.addContainerProperty(rigProperty2, String.class, null);
+        rigContainer = new IndexedContainer();
+        rigContainer.addContainerProperty(rigProperty1, String.class, null);
+        rigContainer.addContainerProperty(rigProperty2, String.class, null);
 
         for (Iterator<InstrumentBean> iterator = instrumentBeans.iterator(); iterator.hasNext();) {
             InstrumentBean instrumentBean = iterator.next();
             String id = instrumentBean.getObjectId();
             String title = instrumentBean.getName();
-            Item item = container.addItem(id);
-            if (id != null) {
+            Item item = rigContainer.addItem(id);
+            if (item != null) {
                 item.getItemProperty(rigProperty1).setValue(title);
                 item.getItemProperty(rigProperty2).setValue(id);
             }
         }
-        container.sort(new Object[] { rigProperty1 }, new boolean[] { true });
-        return container;
+        rigContainer.sort(new Object[] { rigProperty1 }, new boolean[] { true });
+        return rigContainer;
+    }
+
+    private void addnewItemToRigTable(final InstrumentBean instrumentBean) {
+        Preconditions.checkNotNull(rigContainer, "Rig Container is null");
+        Preconditions.checkNotNull(instrumentBean, "Bean is null");
+        Item newItem = rigContainer.addItem(instrumentBean.getObjectId());
+        if (newItem != null) {
+            newItem.getItemProperty(rigProperty1).setValue(instrumentBean.getName());
+            newItem.getItemProperty(rigProperty2).setValue(instrumentBean.getObjectId());
+        }
+        this.rigTable.requestRepaint();
     }
 }

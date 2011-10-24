@@ -28,15 +28,19 @@
  */
 package org.escidoc.browser.elabsmodul.views;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
+import org.escidoc.browser.elabsmodul.interfaces.IRigAction;
 import org.escidoc.browser.elabsmodul.model.InstrumentBean;
 import org.escidoc.browser.elabsmodul.model.RigBean;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.data.Container;
+import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.AbstractSelect.MultiSelectMode;
@@ -61,17 +65,23 @@ public class AddNewInstrumentsWindow extends Window implements Button.ClickListe
 
     private RigBean rigBean = null;
 
+    private final IRigAction rigController;
+
+    private List<InstrumentBean> assignableInstruments = null;
+
     private final String property1 = "title", property2 = "description", property3 = "id";
 
-    private final String ADD_BUTTON_TEXT = "Add element", ADD_ALL_BUTTON_TEXT = "Add all elements",
+    private final String ADD_BUTTON_TEXT = "Add element", ADD_ALL_BUTTON_TEXT = "Add selected elements",
         CANCEL_BUTTON_TEXT = "Cancel";
 
-    public AddNewInstrumentsWindow(RigBean rigBean, Callback callback) {
+    public AddNewInstrumentsWindow(RigBean rigBean, final IRigAction controller, final Callback callback) {
         Preconditions.checkNotNull(rigBean, "rigModel is null");
+        Preconditions.checkNotNull(controller, "rigController is null");
         Preconditions.checkNotNull(callback, "callback is null");
 
         this.callback = callback;
         this.rigBean = rigBean;
+        this.rigController = controller;
 
         setModal(true);
         setWidth("50%");
@@ -91,7 +101,6 @@ public class AddNewInstrumentsWindow extends Window implements Button.ClickListe
     }
 
     private VerticalLayout createAvailableInsturmentsTableLayout() {
-
         VerticalLayout layout = new VerticalLayout();
         addOnTable = new Table("Available instuments to choose");
         addOnTable.setWidth("90%");
@@ -103,20 +112,16 @@ public class AddNewInstrumentsWindow extends Window implements Button.ClickListe
         addOnTable.setMultiSelectMode(MultiSelectMode.DEFAULT);
         addOnTable.setColumnReorderingAllowed(true);
         addOnTable.setColumnCollapsingAllowed(false);
-
-        addOnTable.setContainerDataSource(fillAddOnTableData(rigBean.getContentList()));
+        addOnTable.setContainerDataSource(fillAddOnTableData(this.rigController, rigBean.getContentList()));
         addOnTable.setVisibleColumns(new Object[] { property1, property2, property3 });
         addOnTable.setColumnHeaders(new String[] { "Name", "Description", "Id" });
-
         addOnTable.setColumnAlignment(property1, Table.ALIGN_LEFT);
         addOnTable.setColumnAlignment(property2, Table.ALIGN_LEFT);
         addOnTable.setColumnAlignment(property3, Table.ALIGN_CENTER);
-
         addOnTable.setColumnCollapsingAllowed(true);
         addOnTable.setColumnCollapsed(property1, false);
         addOnTable.setColumnCollapsed(property2, false);
         addOnTable.setColumnCollapsed(property3, false);
-
         addOnTable.setRowHeaderMode(Table.ROW_HEADER_MODE_HIDDEN);
         addOnTable.setWriteThrough(false);
 
@@ -145,7 +150,7 @@ public class AddNewInstrumentsWindow extends Window implements Button.ClickListe
                 }
                 else {
                     okButton.setEnabled(true);
-                    okButton.setCaption(ADD_BUTTON_TEXT);
+                    okButton.setCaption(ADD_ALL_BUTTON_TEXT);
                 }
             }
         });
@@ -155,22 +160,33 @@ public class AddNewInstrumentsWindow extends Window implements Button.ClickListe
         return layout;
     }
 
-    private Container fillAddOnTableData(List<InstrumentBean> contentList) {
-
+    private Container fillAddOnTableData(final IRigAction rigController, final List<InstrumentBean> contentList) {
+        Preconditions.checkNotNull(rigController, "RigController is null");
         Preconditions.checkNotNull(contentList, "InstumentList is null");
+
+        final List<String> storedInstrumentIDs = new ArrayList<String>();
+        for (Iterator<InstrumentBean> iterator = contentList.iterator(); iterator.hasNext();) {
+            InstrumentBean instrumentBean = iterator.next();
+            storedInstrumentIDs.add(instrumentBean.getObjectId());
+        }
+        assignableInstruments = rigController.getNewAvailableInstruments(storedInstrumentIDs);
 
         IndexedContainer container = new IndexedContainer();
         container.addContainerProperty(property1, String.class, null);
         container.addContainerProperty(property2, String.class, null);
         container.addContainerProperty(property3, String.class, null);
 
-        // TODO fill from proper dataSource
-        // Item item = container.addItem("escidoc;110011");
-        // item.getItemProperty(property1).setValue("New Instrument 01");
-        // item.getItemProperty(property2).setValue("BWeLabs not used instrument");
-        // item.getItemProperty(property3).setValue("escidoc:110011");
-        // container.sort(new Object[] { property1 }, new boolean[] { true });
-
+        for (Iterator<InstrumentBean> iterator = assignableInstruments.iterator(); iterator.hasNext();) {
+            InstrumentBean instrumentBean = iterator.next();
+            final String id = instrumentBean.getObjectId(), title = instrumentBean.getName(), description =
+                (instrumentBean.getDescription() == null || instrumentBean.getDescription().equals("")) ? ELabsViewContants.RIG_NO_DESCRIPTION_BY_INSTR : instrumentBean
+                    .getDescription();
+            Item item = container.addItem(id);
+            item.getItemProperty(property1).setValue(title);
+            item.getItemProperty(property2).setValue(description);
+            item.getItemProperty(property3).setValue(id);
+        }
+        container.sort(new Object[] { property1 }, new boolean[] { true });
         return container;
     }
 
@@ -188,10 +204,6 @@ public class AddNewInstrumentsWindow extends Window implements Button.ClickListe
         return buttonLayout;
     }
 
-    protected void synchronizeWithRigModel(Set<String> selectedIdSet) {
-        // TODO Add newly selected items to the rigmodel
-    }
-
     @Override
     public void buttonClick(final ClickEvent event) {
         if (getParent() != null) {
@@ -202,11 +214,11 @@ public class AddNewInstrumentsWindow extends Window implements Button.ClickListe
             || event.getButton().getCaption().equals(ADD_ALL_BUTTON_TEXT)) {
             @SuppressWarnings("unchecked")
             final Set<String> selectedIdSet = (Set<String>) addOnTable.getValue();
-            callback.onAcceptRigAction(selectedIdSet);
+            callback.onAcceptRigAction(assignableInstruments, selectedIdSet);
         }
     }
 
     public interface Callback {
-        void onAcceptRigAction(Set<String> instrumentIdentifiers);
+        void onAcceptRigAction(final List<InstrumentBean> assignableInstruments, final Set<String> instrumentIdentifiers);
     }
 }

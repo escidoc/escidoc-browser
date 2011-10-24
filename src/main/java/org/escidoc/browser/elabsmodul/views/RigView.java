@@ -35,7 +35,7 @@ import java.util.List;
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsAction;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsPanel;
-import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
+import org.escidoc.browser.elabsmodul.interfaces.IRigAction;
 import org.escidoc.browser.elabsmodul.model.RigBean;
 import org.escidoc.browser.elabsmodul.views.helpers.LabsLayoutHelper;
 import org.escidoc.browser.elabsmodul.views.helpers.ResourcePropertiesViewHelper;
@@ -91,16 +91,16 @@ public class RigView extends Panel implements ILabsPanel, ILabsAction {
 
     private HorizontalLayout buttonLayout = null;
 
-    private final ISaveAction saveComponent;
+    private final IRigAction controller;
 
     private List<ResourceModel> breadCrumbModel;
 
     private ItemProxy itemProxy;
 
-    public RigView(RigBean sourceBean, ISaveAction saveComponent, List<ResourceModel> breadCrumbModel,
-        ResourceProxy resourceProxy) {
+    public RigView(RigBean sourceBean, final IRigAction controller, List<ResourceModel> breadCrumbModel,
+        final ResourceProxy resourceProxy) {
         this.rigBean = (sourceBean != null) ? sourceBean : new RigBean();
-        this.saveComponent = saveComponent;
+        this.controller = controller;
         this.breadCrumbModel = breadCrumbModel;
         this.itemProxy = (ItemProxy) resourceProxy;
 
@@ -146,7 +146,7 @@ public class RigView extends Panel implements ILabsPanel, ILabsAction {
                 getPojoItem().getItemProperty(ELabsViewContants.P_RIG_DESC));
         HorizontalLayout h3 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndRelatedDataForRig(ELabsViewContants.L_RIG_CONTENT,
-                getPojoItem().getItemProperty(ELabsViewContants.P_RIG_CONTENT), this.rigBean);
+                getPojoItem().getItemProperty(ELabsViewContants.P_RIG_CONTENT), this.rigBean, this.controller);
 
         registeredComponents.add(h1);
         registeredComponents.add(h2);
@@ -174,7 +174,7 @@ public class RigView extends Panel implements ILabsPanel, ILabsAction {
             @Override
             public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
                 if (event.getButton().getCaption().equals("Save")) {
-                    RigView.this.saveComponent.saveAction(RigView.this.rigBean);
+                    RigView.this.controller.saveAction(RigView.this.rigBean);
                     RigView.this.resetLayout();
                     RigView.this.dynamicLayout.requestRepaintAll();
                 }
