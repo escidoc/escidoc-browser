@@ -163,7 +163,7 @@ public final class ShowAddViewCommand implements Command {
     public void showItemAddView() {
         Preconditions.checkNotNull(parent, "parent is null: %s", parent);
         try {
-            new ItemAddView(repositories, mainWindow, parent, treeDataSource, contextId).openSubWindow();
+            new ItemAddView(repositories, mainWindow, parent, treeDataSource, contextId, router).openSubWindow();
         }
         catch (final EscidocClientException e) {
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);

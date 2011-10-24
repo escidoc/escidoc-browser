@@ -165,7 +165,7 @@ public class DirectMember {
             @Override
             public void buttonClick(ClickEvent event) {
                 try {
-                    new ItemAddView(router.getRepositories(), router.getMainWindow(), containerProxy, contextId)
+                    new ItemAddView(router.getRepositories(), router.getMainWindow(), containerProxy, contextId, router)
                         .openSubWindow();
                 }
                 catch (final EscidocClientException e) {
