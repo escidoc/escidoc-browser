@@ -325,7 +325,7 @@ public class ContainerAddView {
             // Tree might be null in the case when these methods are called from
             // buttons
             if (treeDataSource != null) {
-                updateDataSource(createContainerInRepository(createdContainer));
+                updateDataSource(createdContainer);
             }
             if (router != null) {
                 router.show(parent);
