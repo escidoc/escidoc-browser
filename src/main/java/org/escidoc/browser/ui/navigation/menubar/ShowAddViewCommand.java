@@ -36,6 +36,7 @@ import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
+import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.ContainerAddView;
 import org.slf4j.Logger;
@@ -65,18 +66,22 @@ public final class ShowAddViewCommand implements Command {
 
     private ResourceModel parent;
 
+    private Router router;
+
     public ShowAddViewCommand(final Repositories repositories, final Window mainWindow, final String contextId,
-        final TreeDataSource treeDataSource, final CurrentUser currentUser) {
+        final TreeDataSource treeDataSource, final CurrentUser currentUser, Router router) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(contextId, "contextId is null: %s", contextId);
         Preconditions.checkNotNull(treeDataSource, "treeDataSource is null: %s", treeDataSource);
         Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
+        Preconditions.checkNotNull(router, "router is null: %s", router);
         this.repositories = repositories;
         this.mainWindow = mainWindow;
         this.contextId = contextId;
         this.treeDataSource = treeDataSource;
         this.currentUser = currentUser;
+        this.router = router;
     }
 
     public void withParent(final ResourceModel parent) {
@@ -168,7 +173,7 @@ public final class ShowAddViewCommand implements Command {
     public void showContainerAddView() {
         Preconditions.checkNotNull(parent, "parent is null: %s", parent);
         try {
-            new ContainerAddView(repositories, mainWindow, parent, treeDataSource, contextId).openSubWindow();
+            new ContainerAddView(repositories, mainWindow, parent, treeDataSource, contextId, router).openSubWindow();
         }
         catch (final EscidocClientException e) {
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);

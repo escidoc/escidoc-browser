@@ -110,17 +110,19 @@ public class ContainerAddView {
     private Router router;
 
     public ContainerAddView(final Repositories repositories, final Window mainWindow, final ResourceModel parent,
-        final TreeDataSource treeDataSource, final String contextId) {
+        final TreeDataSource treeDataSource, final String contextId, Router router) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(parent, "parent is null: %s", parent);
         Preconditions.checkNotNull(treeDataSource, "treeDataSource is null: %s", treeDataSource);
         Preconditions.checkNotNull(contextId, "contextId is null: %s", contextId);
+        Preconditions.checkNotNull(router, "router is null: %s", router);
         this.repositories = repositories;
         this.mainWindow = mainWindow;
         this.parent = parent;
         this.treeDataSource = treeDataSource;
         this.contextId = contextId;
+        this.router = router;
     }
 
     /*
