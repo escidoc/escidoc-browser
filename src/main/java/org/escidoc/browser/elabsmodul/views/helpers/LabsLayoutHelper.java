@@ -124,7 +124,7 @@ public final class LabsLayoutHelper {
         label.setStyleName(STYLE_ELABS_HOR_PANEL);
 
         horizontalLayout.addComponent(label, 0);
-        horizontalLayout.addComponent(LabsTableHelper.singleton().createTableLayoutForRig(rigBean, controller), 1);
+        horizontalLayout.addComponent(LabsRigTableHelper.singleton().createTableLayoutForRig(rigBean, controller), 1);
         horizontalLayout.setComponentAlignment(label, Alignment.TOP_LEFT);
 
         return horizontalLayout;

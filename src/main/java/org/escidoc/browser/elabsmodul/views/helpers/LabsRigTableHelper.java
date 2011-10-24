@@ -25,8 +25,11 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 
-//TODO rename class
-public class LabsTableHelper {
+/**
+ * Helper class to build data tables related to Rig Element.
+ * 
+ */
+public final class LabsRigTableHelper {
 
     // properties for the tables def
     private final String rigProperty1 = "title", rigProperty2 = "id";
@@ -36,8 +39,6 @@ public class LabsTableHelper {
 
     // table references
     private Table rigTable = null; // table on the RigView
-
-    private Table studyTable = null; // table on the StudyView and so on...
 
     // model references
     private RigBean rigBean = null;
@@ -51,20 +52,20 @@ public class LabsTableHelper {
 
     private final String DELETES_BUTTON_TEXT = "Delete selected elements";
 
-    private static LabsTableHelper singleton = null;
+    private static LabsRigTableHelper singleton = null;
 
     private static Object syncObject = new Object();
 
-    private static final Logger LOG = LoggerFactory.getLogger(LabsTableHelper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LabsRigTableHelper.class);
 
-    private LabsTableHelper() {
+    private LabsRigTableHelper() {
     }
 
-    public static LabsTableHelper singleton() {
+    public static LabsRigTableHelper singleton() {
         if (singleton == null) {
             synchronized (syncObject) {
                 if (singleton == null) {
-                    singleton = new LabsTableHelper();
+                    singleton = new LabsRigTableHelper();
                 }
             }
         }
@@ -75,7 +76,7 @@ public class LabsTableHelper {
         Preconditions.checkNotNull(rigBean, "rigModel is null");
         this.rigBean = rigBean;
 
-        final int RIGTABLESIZE = 5;
+        final int RIG_TABLE_SIZE = 5;
         final Label selectedLabel = new Label("No selection");
         final VerticalLayout layout = new VerticalLayout();
         layout.setSizeUndefined();
@@ -85,7 +86,7 @@ public class LabsTableHelper {
         rigTable.setMultiSelect(true);
         rigTable.setMultiSelectMode(MultiSelectMode.DEFAULT);
         rigTable.setImmediate(true);
-        rigTable.setPageLength(RIGTABLESIZE);
+        rigTable.setPageLength(RIG_TABLE_SIZE);
 
         rigTable.setColumnReorderingAllowed(false);
         rigTable.setColumnCollapsingAllowed(false);
@@ -157,7 +158,7 @@ public class LabsTableHelper {
                     Set<String> selectedIdSet = (Set<String>) rigTable.getValue();
 
                     // delete relations from the model
-                    LabsTableHelper.this.synchronizeRigModel(selectedIdSet);
+                    LabsRigTableHelper.this.synchronizeRigModel(selectedIdSet);
 
                     // instant delete from table containerdatasource
                     for (Iterator<String> iterator = selectedIdSet.iterator(); iterator.hasNext();) {
@@ -190,9 +191,9 @@ public class LabsTableHelper {
                                             InstrumentBean instrumentBean = iterator2.next();
                                             if (instrumentBean.getObjectId().equals(id)) {
                                                 // update model
-                                                LabsTableHelper.this.rigBean.getContentList().add(instrumentBean);
+                                                LabsRigTableHelper.this.rigBean.getContentList().add(instrumentBean);
                                                 // update view
-                                                LabsTableHelper.this.addnewItemToRigTable(instrumentBean);
+                                                LabsRigTableHelper.this.addnewItemToRigTable(instrumentBean);
                                             }
                                         }
                                     }
@@ -206,8 +207,8 @@ public class LabsTableHelper {
         rigAddButton.addListener(rigButtonsListener);
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSpacing(true);
-        horizontalLayout.addComponent(rigDeleteButton);
         horizontalLayout.addComponent(rigAddButton);
+        horizontalLayout.addComponent(rigDeleteButton);
         layout.addComponent(horizontalLayout);
     }
 
