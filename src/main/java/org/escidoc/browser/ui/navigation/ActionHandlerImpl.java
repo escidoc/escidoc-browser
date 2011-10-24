@@ -31,7 +31,6 @@ package org.escidoc.browser.ui.navigation;
 import java.net.URISyntaxException;
 
 import org.escidoc.browser.AppConstants;
-import org.escidoc.browser.elabsmodul.constants.ELabsConstants;
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.CurrentUser;
@@ -41,6 +40,7 @@ import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
+import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.navigation.menubar.ShowAddViewCommand;
 import org.slf4j.Logger;
@@ -66,17 +66,22 @@ final class ActionHandlerImpl implements Action.Handler {
 
     private final TreeDataSource treeDataSource;
 
+    private Router router;
+
     public ActionHandlerImpl(final Window mainWindow, final Repositories repositories, final CurrentUser currentUser,
-        final TreeDataSource treeDataSource) {
+        final TreeDataSource treeDataSource, Router router) {
 
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
         Preconditions.checkNotNull(treeDataSource, "treeDataSource is null: %s", treeDataSource);
+        Preconditions.checkNotNull(router, "router is null: %s", router);
+
         this.mainWindow = mainWindow;
         this.repositories = repositories;
         this.currentUser = currentUser;
         this.treeDataSource = treeDataSource;
+        this.router = router;
     }
 
     @Override
@@ -327,7 +332,7 @@ final class ActionHandlerImpl implements Action.Handler {
 
     private ShowAddViewCommand buildCommand(final Object target, final String contextId) {
         final ShowAddViewCommand showAddViewCommand =
-            new ShowAddViewCommand(repositories, getWindow(), contextId, treeDataSource, currentUser);
+            new ShowAddViewCommand(repositories, getWindow(), contextId, treeDataSource, currentUser, router);
         showAddViewCommand.withParent((ResourceModel) target);
         return showAddViewCommand;
     }

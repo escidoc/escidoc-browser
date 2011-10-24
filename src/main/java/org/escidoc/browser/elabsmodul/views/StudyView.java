@@ -1,16 +1,8 @@
 package org.escidoc.browser.elabsmodul.views;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.data.util.POJOItem;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsAction;
@@ -28,9 +20,16 @@ import org.escidoc.browser.ui.view.helpers.DirectMember;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import com.google.common.base.Preconditions;
+import com.vaadin.data.util.POJOItem;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -78,10 +77,10 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         Preconditions.checkNotNull(router, "router is null: %s", router);
 
-        this.studyBean = (sourceBean != null) ? sourceBean : new StudyBean();
+        studyBean = (sourceBean != null) ? sourceBean : new StudyBean();
         this.saveComponent = saveComponent;
         this.breadCrumbModel = breadCrumbModel;
-        this.containerProxy = (ContainerProxy) resourceProxy;
+        containerProxy = (ContainerProxy) resourceProxy;
         this.router = router;
 
         initialisePanelComponents();
@@ -139,27 +138,27 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
     }
 
     private void initialisePanelComponents() {
-        this.mainLayout = new VerticalLayout();
-        this.mainLayout.setSpacing(true);
-        this.mainLayout.setMargin(true);
-        this.mainLayout.setHeight(router.getApplicationHeight() - 30 + "px");
-        this.mainLayout.setStyleName("red");
-        this.dynamicLayout = new VerticalLayout();
+        mainLayout = new VerticalLayout();
+        mainLayout.setSpacing(true);
+        mainLayout.setMargin(true);
+        mainLayout.setHeight(router.getApplicationHeight() - 30 + "px");
+        mainLayout.setStyleName("red");
+        dynamicLayout = new VerticalLayout();
         dynamicLayout.setSpacing(true);
         dynamicLayout.setMargin(true);
 
-        this.pojoItem = new POJOItem<StudyBean>(studyBean, PROPERTIES);
-        this.registeredComponents = new ArrayList<HorizontalLayout>(COMPONENT_COUNT);
+        pojoItem = new POJOItem<StudyBean>(studyBean, PROPERTIES);
+        registeredComponents = new ArrayList<HorizontalLayout>(COMPONENT_COUNT);
 
-        this.setContent(mainLayout);
+        setContent(mainLayout);
 
-        this.setScrollable(true);
+        setScrollable(true);
     }
 
     private void buildPanelGUI() {
         dynamicLayout.setStyleName(ELabsViewContants.STYLE_ELABS_FORM);
 
-        this.buttonLayout = LabsLayoutHelper.createButtonLayout();
+        buttonLayout = LabsLayoutHelper.createButtonLayout();
         final HorizontalLayout h1 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_STUDY_TITLE,
                 pojoItem.getItemProperty(ELabsViewContants.P_STUDY_TITLE));
@@ -188,13 +187,13 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
         rightCell(dynamicLayout);
         mainLayout.addComponent(cssLayout);
         mainLayout.setExpandRatio(cssLayout, 1.0f);
-        this.mainLayout.attach();
-        this.mainLayout.requestRepaintAll();
+        mainLayout.attach();
+        mainLayout.requestRepaintAll();
     }
 
     private void createPanelListener() {
-        this.clientViewEventHandler = new LabsClientViewEventHandler(registeredComponents, dynamicLayout, this, this);
-        dynamicLayout.addListener(this.clientViewEventHandler);
+        clientViewEventHandler = new LabsClientViewEventHandler(registeredComponents, dynamicLayout, this, this);
+        dynamicLayout.addListener(clientViewEventHandler);
 
     }
 
@@ -202,6 +201,9 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
         return pojoItem;
     }
 
+    /**
+     * Builds a Container for the DM and the ElabPanel
+     */
     private void buildContainerGUI() {
         cssLayout.setWidth("100%");
         cssLayout.setHeight("100%");
@@ -209,8 +211,8 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
             leftCell();
         }
         catch (final EscidocClientException e) {
-            // TODO log exception and tell the user something going wrong
-            e.printStackTrace();
+            router.getMainWindow().showNotification(
+                "Could not load the Direct Members Helper in the View" + e.getLocalizedMessage());
         }
     }
 
@@ -226,13 +228,10 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
         final Panel rightpnl = new Panel();
         rightpnl.setDescription(RIGHT_PANEL);
         rightpnl.setStyleName("floatright");
+        rightpnl.addStyleName(Runo.PANEL_LIGHT);
         rightpnl.setWidth("70%");
         rightpnl.setHeight("82%");
         rightpnl.getLayout().setMargin(false);
-        final Label nameofPanel =
-            new Label("<strong>" + ELabsViewContants.BWELABS_STUDY + "</string>", Label.CONTENT_RAW);
-        nameofPanel.setStyleName("grey-label");
-        rightpnl.addComponent(nameofPanel);
         rightpnl.addComponent(comptoBind);
         cssLayout.addComponent(rightpnl);
     }
@@ -256,7 +255,7 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
      * Build the read-only layout of the eLabsElement
      */
     private void buildPropertiesGUI() {
-        this.addComponent(new ResourcePropertiesViewHelper(containerProxy, breadCrumbModel, "Study")
+        addComponent(new ResourcePropertiesViewHelper(containerProxy, breadCrumbModel, "Study")
             .generatePropertiesView());
     }
 

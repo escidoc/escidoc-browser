@@ -91,13 +91,13 @@ public class NavigationTreeBuilder {
     }
 
     private NavigationTreeView createNavigationTreeView(
-        final Router mainSite, final Window mainWindow, final TreeDataSource treeDataSource) {
+        final Router router, final Window mainWindow, final TreeDataSource treeDataSource) {
         final NavigationTreeView navigationTreeView = new NavigationTreeViewImpl(repositories, currentUser);
-        navigationTreeView.setDataSource(treeDataSource, mainSite);
-        navigationTreeView.addClickListener(new TreeClickListener(serviceLocation, repositories, mainWindow, mainSite,
+        navigationTreeView.setDataSource(treeDataSource, router);
+        navigationTreeView.addClickListener(new TreeClickListener(serviceLocation, repositories, mainWindow, router,
             currentUser));
-        navigationTreeView
-            .addActionHandler(new ActionHandlerImpl(mainWindow, repositories, currentUser, treeDataSource));
+        navigationTreeView.addActionHandler(new ActionHandlerImpl(mainWindow, repositories, currentUser,
+            treeDataSource, router));
         return navigationTreeView;
     }
 }

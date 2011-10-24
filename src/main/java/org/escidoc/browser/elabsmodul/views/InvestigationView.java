@@ -28,9 +28,18 @@
  */
 package org.escidoc.browser.elabsmodul.views;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.data.util.POJOItem;
+import com.vaadin.event.LayoutEvents.LayoutClickListener;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.Runo;
 
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsAction;
@@ -42,18 +51,16 @@ import org.escidoc.browser.elabsmodul.views.helpers.ResourcePropertiesViewHelper
 import org.escidoc.browser.elabsmodul.views.listeners.LabsClientViewEventHandler;
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.view.helpers.DirectMember;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.data.util.POJOItem;
-import com.vaadin.event.LayoutEvents.LayoutClickListener;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class InvestigationView extends Panel implements ILabsPanel, ILabsAction {
 
@@ -61,15 +68,15 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
 
     private static Logger LOG = LoggerFactory.getLogger(InvestigationView.class);
 
-    private InvestigationBean investigationBean;
+    private final InvestigationBean investigationBean;
 
-    private ISaveAction saveComponent;
+    private final ISaveAction saveComponent;
 
-    private List<ResourceModel> breadCrumbModel;
+    private final List<ResourceModel> breadCrumbModel;
 
-    private ContainerProxy containerProxy;
+    private final ContainerProxy containerProxy;
 
-    private List<String> eSyncDaemonUrls;
+    private final List<String> eSyncDaemonUrls;
 
     private VerticalLayout mainLayout, dynamicLayout;
 
@@ -87,21 +94,74 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
 
     private HorizontalLayout modifiedComponent;
 
-    public InvestigationView(InvestigationBean sourceBean, ISaveAction saveComponent,
-        List<ResourceModel> breadCrumbModel, ContainerProxy containerProxy, List<String> depositEndPointUrls) {
+    private final CssLayout cssLayout = new CssLayout();
+
+    private final Router router;
+
+    public InvestigationView(final InvestigationBean sourceBean, final ISaveAction saveComponent,
+        final List<ResourceModel> breadCrumbModel, final ContainerProxy containerProxy,
+        final List<String> depositEndPointUrls, final Router router) {
 
         this.investigationBean = (sourceBean != null) ? sourceBean : new InvestigationBean();
         this.saveComponent = saveComponent;
         this.breadCrumbModel = breadCrumbModel;
         this.containerProxy = containerProxy;
         this.eSyncDaemonUrls = depositEndPointUrls;
+        this.router = router;
 
         initialisePanelComponents();
         buildPropertiesGUI();
+        buildContainerGUI();
         buildPanelGUI();
         createPanelListener();
         createClickListener();
 
+    }
+
+    private void buildContainerGUI() {
+        cssLayout.setWidth("100%");
+        cssLayout.setHeight("100%");
+        try {
+            leftCell();
+        }
+        catch (final EscidocClientException e) {
+            router.getMainWindow().showNotification(
+                "Could not load the Direct Members Helper in the View" + e.getLocalizedMessage());
+        }
+
+    }
+
+    private void leftCell() throws EscidocClientException {
+        final Panel leftPanel = new Panel();
+        leftPanel.setStyleName("directmembers floatleft");
+        leftPanel.addStyleName(Runo.PANEL_LIGHT);
+        leftPanel.setScrollable(false);
+        leftPanel.getLayout().setMargin(false);
+        leftPanel.setWidth("30%");
+        leftPanel.setHeight("82%");
+
+        new DirectMember(router.getServiceLocation(), router, containerProxy.getId(), router.getMainWindow(),
+            router.getCurrentUser(), router.getRepositories(), leftPanel).containerAsTree();
+        cssLayout.addComponent(leftPanel);
+    }
+
+    /**
+     * This is the inner Right Cell within a Context By default a set of Organizational Unit / Admin Description /
+     * RelatedItem / Resources are bound
+     * 
+     * @param comptoBind
+     */
+    // TODO why deprecated?
+    @SuppressWarnings("deprecation")
+    private void rightCell(final Component comptoBind) {
+        final Panel rightpnl = new Panel();
+        rightpnl.setStyleName("floatright");
+        rightpnl.addStyleName(Runo.PANEL_LIGHT);
+        rightpnl.setWidth("70%");
+        rightpnl.setHeight("82%");
+        rightpnl.getLayout().setMargin(false);
+        rightpnl.addComponent(comptoBind);
+        cssLayout.addComponent(rightpnl);
     }
 
     private void initialisePanelComponents() {
@@ -141,7 +201,7 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
             private static final long serialVersionUID = 3427496817637644626L;
 
             @Override
-            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+            public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
                 if (event.getButton().getCaption().equals("Save")) {
                     saveComponent.saveAction(investigationBean);
                     // FIXME why do we these methods?
@@ -155,7 +215,7 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
         try {
             ((Button) buttonLayout.getComponent(1)).addListener(mouseClickListener);
         }
-        catch (ClassCastException e) {
+        catch (final ClassCastException e) {
             LOG.error(e.getMessage());
         }
     }
@@ -165,8 +225,8 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
         Preconditions.checkNotNull(dynamicLayout, "View's dynamiclayout is null.");
 
         HorizontalLayout tempParentLayout = null;
-        for (Iterator<Component> iterator = dynamicLayout.getComponentIterator(); iterator.hasNext();) {
-            Component component = iterator.next();
+        for (final Iterator<Component> iterator = dynamicLayout.getComponentIterator(); iterator.hasNext();) {
+            final Component component = iterator.next();
             if (component instanceof HorizontalLayout) {
                 tempParentLayout = (HorizontalLayout) component;
             }
@@ -187,25 +247,25 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
         this.dynamicLayout.setStyleName(ELabsViewContants.STYLE_ELABS_FORM);
 
         this.buttonLayout = LabsLayoutHelper.createButtonLayout();
-        HorizontalLayout h1 =
+        final HorizontalLayout h1 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_INVESTIGATION_TITLE,
                 pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_TITLE));
-        HorizontalLayout h2 =
+        final HorizontalLayout h2 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_INVESTIGATION_DESC,
                 pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_DESC));
-        HorizontalLayout h3 =
+        final HorizontalLayout h3 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(
                 ELabsViewContants.L_INVESTIGATION_DEPOSIT_SERVICE,
                 pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_DEPOSIT_SERVICE));
-        HorizontalLayout h4 =
+        final HorizontalLayout h4 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(
                 ELabsViewContants.L_INVESTIGATION_INVESTIGATOR,
                 pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_INVESTIGATOR));
-        HorizontalLayout h5 =
+        final HorizontalLayout h5 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(
                 ELabsViewContants.L_INVESTIGATION_DURATION,
                 pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_DURATION));
-        HorizontalLayout h6 =
+        final HorizontalLayout h6 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_INVESTIGATION_RIG,
                 pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_RIG));
 
@@ -224,7 +284,9 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
         dynamicLayout.addComponent(h6, 5);
         dynamicLayout.addComponent(new HorizontalLayout(), 6);
 
-        mainLayout.addComponent(dynamicLayout);
+        rightCell(dynamicLayout);
+        mainLayout.addComponent(cssLayout);
+        mainLayout.setExpandRatio(cssLayout, 1.0f);
         mainLayout.attach();
         mainLayout.requestRepaintAll();
 
@@ -237,7 +299,7 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
             try {
                 horizontalLayout = (HorizontalLayout) dynamicLayout.getComponent(COMPONENT_COUNT);
             }
-            catch (ClassCastException e) {
+            catch (final ClassCastException e) {
                 LOG.error(e.getMessage());
             }
             if (horizontalLayout != null) {
@@ -253,7 +315,7 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
             try {
                 ((HorizontalLayout) dynamicLayout.getComponent(COMPONENT_COUNT)).removeAllComponents();
             }
-            catch (ClassCastException e) {
+            catch (final ClassCastException e) {
                 LOG.error(e.getMessage());
             }
         }
@@ -265,11 +327,11 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
     }
 
     @Override
-    public void setModifiedComponent(Component modifiedComponent) {
+    public void setModifiedComponent(final Component modifiedComponent) {
         try {
             this.modifiedComponent = (HorizontalLayout) modifiedComponent;
         }
-        catch (ClassCastException e) {
+        catch (final ClassCastException e) {
             LOG.error(e.getMessage());
         }
     }

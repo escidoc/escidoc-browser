@@ -189,7 +189,7 @@ public class InvestigationController extends Controller implements ISaveAction {
         breadCrumbModel = createBreadCrumbModel();
 
         Component investigationView =
-            new InvestigationView(investigationBean, this, breadCrumbModel, containerProxy, depositEndPointUrls);
+            new InvestigationView(investigationBean, this, breadCrumbModel, containerProxy, depositEndPointUrls, router);
         return investigationView;
     }
 

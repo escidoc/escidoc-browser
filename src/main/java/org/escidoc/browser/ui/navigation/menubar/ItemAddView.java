@@ -40,6 +40,7 @@ import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.ItemBuilder;
 import org.escidoc.browser.model.internal.ResourceDisplay;
 import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.MetadataFileReceiver;
 import org.escidoc.browser.ui.maincontent.XmlUtil;
@@ -102,30 +103,36 @@ public class ItemAddView {
 
     private final Upload upload = new Upload("", receiver);
 
+    private Router router;
+
     ItemAddView(final Repositories repositories, final Window mainWindow, final ResourceModel parent,
-        final TreeDataSource treeDataSource, final String contextId) {
+        final TreeDataSource treeDataSource, final String contextId, Router router) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(parent, "parent is null: %s", parent);
         Preconditions.checkNotNull(treeDataSource, "treeDataSource is null: %s", treeDataSource);
         Preconditions.checkNotNull(contextId, "contextId is null: %s", contextId);
+        Preconditions.checkNotNull(router, "router is null: %s", router);
         this.repositories = repositories;
         this.mainWindow = mainWindow;
         this.parent = parent;
         this.treeDataSource = treeDataSource;
         this.contextId = contextId;
+        this.router = router;
     }
 
-    public ItemAddView(Repositories repositories, Window mainWindow, ContainerProxy containerProxy, String contextId) {
+    public ItemAddView(Repositories repositories, Window mainWindow, ContainerProxy containerProxy, String contextId,
+        Router router) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(containerProxy, "parent is null: %s", containerProxy);
         Preconditions.checkNotNull(contextId, "contextId is null: %s", contextId);
         this.repositories = repositories;
         this.mainWindow = mainWindow;
-        this.parent = (ResourceModel) containerProxy;
+        parent = containerProxy;
         this.contextId = contextId;
-        this.treeDataSource = null;
+        treeDataSource = null;
+        this.router = router;
     }
 
     private void buildForm() throws EscidocClientException {
@@ -306,6 +313,7 @@ public class ItemAddView {
             if (treeDataSource != null) {
                 treeDataSource.addChild(parent, new ItemModel(createdItem));
             }
+            router.show(parent);
             subwindow.getParent().removeWindow(subwindow);
         }
         catch (final EscidocClientException e) {

@@ -92,7 +92,7 @@ public class DirectMember {
         this.parentId = parentId;
         this.router = router;
         this.mainWindow = mainWindow;
-        this.panel = leftPanel;
+        panel = leftPanel;
         try {
             createButtons();
         }
@@ -124,9 +124,12 @@ public class DirectMember {
         return navigationTreeBuilder.buildContainerDirectMemberTree(router, parentId, mainWindow);
     }
 
+    @SuppressWarnings("serial")
     protected void createButtons() throws EscidocClientException {
-        final Label nameofPanel = new Label("<strong>" + DIRECT_MEMBERS + "</strong>", Label.CONTENT_RAW);
-        nameofPanel.setStyleName("grey-label");
+        final Label nameofPanel =
+            new Label("<div class=\"v-accordion-item-caption\"><div class=\"v-caption\"><div class=\"v-captiontext\">"
+                + DIRECT_MEMBERS + "</div><div class=\"v-caption-clearelem\"></div></div></div>", Label.CONTENT_RAW);
+        nameofPanel.setStyleName("accordion v-captiontext");
         nameofPanel.setWidth("100%");
         panel.addComponent(nameofPanel);
 
@@ -135,7 +138,7 @@ public class DirectMember {
         panelLayout.setHeight("100%");
         panelLayout.addStyleName("my-panel");
 
-        Button addContainerButton = new Button("Add Container");
+        Button addContainerButton = new Button("+Container  ");
         addContainerButton.setStyleName(Reindeer.BUTTON_SMALL);
 
         final ContainerProxy containerProxy =
@@ -146,8 +149,8 @@ public class DirectMember {
             @Override
             public void buttonClick(ClickEvent event) {
                 try {
-                    new ContainerAddView(router.getRepositories(), router.getMainWindow(), containerProxy, contextId)
-                        .openSubWindow();
+                    new ContainerAddView(router.getRepositories(), router.getMainWindow(), containerProxy, contextId,
+                        router).openSubWindow();
                 }
                 catch (final EscidocClientException e) {
                     mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
@@ -155,14 +158,14 @@ public class DirectMember {
             }
         });
 
-        Button addItemButton = new Button("Add Item");
+        Button addItemButton = new Button("+Item  ");
         addItemButton.setStyleName(Reindeer.BUTTON_SMALL);
         addItemButton.addListener(new ClickListener() {
 
             @Override
             public void buttonClick(ClickEvent event) {
                 try {
-                    new ItemAddView(router.getRepositories(), router.getMainWindow(), containerProxy, contextId)
+                    new ItemAddView(router.getRepositories(), router.getMainWindow(), containerProxy, contextId, router)
                         .openSubWindow();
                 }
                 catch (final EscidocClientException e) {
@@ -173,7 +176,7 @@ public class DirectMember {
         });
 
         HorizontalLayout hl = new HorizontalLayout();
-        hl.setStyleName("button-layout");
+        // hl.setStyleName("button-layout");
         hl.setWidth("200px");
         hl.setHeight("20px");
 

@@ -40,6 +40,7 @@ import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.ContainerBuilder;
 import org.escidoc.browser.model.internal.ResourceDisplay;
 import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.AddContainerListener;
 import org.escidoc.browser.ui.listeners.MetadataFileReceiver;
@@ -106,34 +107,41 @@ public class ContainerAddView {
 
     private final String contextId;
 
+    private Router router;
+
     public ContainerAddView(final Repositories repositories, final Window mainWindow, final ResourceModel parent,
-        final TreeDataSource treeDataSource, final String contextId) {
+        final TreeDataSource treeDataSource, final String contextId, Router router) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(parent, "parent is null: %s", parent);
         Preconditions.checkNotNull(treeDataSource, "treeDataSource is null: %s", treeDataSource);
         Preconditions.checkNotNull(contextId, "contextId is null: %s", contextId);
+        Preconditions.checkNotNull(router, "router is null: %s", router);
         this.repositories = repositories;
         this.mainWindow = mainWindow;
         this.parent = parent;
         this.treeDataSource = treeDataSource;
         this.contextId = contextId;
+        this.router = router;
     }
 
     /*
      * This is the case where the buton is invoked from a button and not from a tree
      */
     public ContainerAddView(Repositories repositories, Window mainWindow, ContainerProxy containerProxy,
-        String contextId) {
+        String contextId, Router router) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(containerProxy, "parent is null: %s", containerProxy);
         Preconditions.checkNotNull(contextId, "contextId is null: %s", contextId);
+        Preconditions.checkNotNull(router, "router is null: %s", router);
+
         this.repositories = repositories;
         this.mainWindow = mainWindow;
-        this.parent = (ResourceModel) containerProxy;
+        parent = containerProxy;
         this.contextId = contextId;
-        this.treeDataSource = null;
+        treeDataSource = null;
+        this.router = router;
     }
 
     private void buildContainerForm() throws EscidocClientException {
@@ -317,7 +325,10 @@ public class ContainerAddView {
             // Tree might be null in the case when these methods are called from
             // buttons
             if (treeDataSource != null) {
-                updateDataSource(createContainerInRepository(createdContainer));
+                updateDataSource(createdContainer);
+            }
+            if (router != null) {
+                router.show(parent);
             }
             closeSubWindow();
         }
