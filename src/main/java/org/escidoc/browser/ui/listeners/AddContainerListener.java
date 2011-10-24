@@ -41,7 +41,7 @@ public final class AddContainerListener implements Button.ClickListener {
 
     public AddContainerListener(final ContainerAddView containerAddView) {
         Preconditions.checkNotNull(containerAddView, "containerAddView is null: %s", containerAddView);
-        this.addView = containerAddView;
+        addView = containerAddView;
     }
 
     @Override
@@ -53,5 +53,4 @@ public final class AddContainerListener implements Button.ClickListener {
             addView.showRequiredMessage();
         }
     }
-
 }
