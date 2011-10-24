@@ -28,8 +28,27 @@
  */
 package org.escidoc.browser.elabsmodul.views;
 
-import com.google.common.base.Preconditions;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
+import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
+import org.escidoc.browser.elabsmodul.interfaces.ILabsAction;
+import org.escidoc.browser.elabsmodul.interfaces.ILabsPanel;
+import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
+import org.escidoc.browser.elabsmodul.model.InvestigationBean;
+import org.escidoc.browser.elabsmodul.views.helpers.LabsLayoutHelper;
+import org.escidoc.browser.elabsmodul.views.helpers.ResourcePropertiesViewHelper;
+import org.escidoc.browser.elabsmodul.views.helpers.StartInvestigationViewHelper;
+import org.escidoc.browser.elabsmodul.views.listeners.LabsClientViewEventHandler;
+import org.escidoc.browser.model.ContainerProxy;
+import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.view.helpers.DirectMember;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Preconditions;
 import com.vaadin.data.util.POJOItem;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.Button;
@@ -40,25 +59,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
-
-import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
-import org.escidoc.browser.elabsmodul.interfaces.ILabsAction;
-import org.escidoc.browser.elabsmodul.interfaces.ILabsPanel;
-import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
-import org.escidoc.browser.elabsmodul.model.InvestigationBean;
-import org.escidoc.browser.elabsmodul.views.helpers.LabsLayoutHelper;
-import org.escidoc.browser.elabsmodul.views.helpers.ResourcePropertiesViewHelper;
-import org.escidoc.browser.elabsmodul.views.listeners.LabsClientViewEventHandler;
-import org.escidoc.browser.model.ContainerProxy;
-import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.view.helpers.DirectMember;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -134,7 +134,7 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
     private void leftCell() throws EscidocClientException {
         final Panel leftPanel = new Panel();
         leftPanel.setStyleName("directmembers floatleft");
-        leftPanel.addStyleName(Runo.PANEL_LIGHT);
+
         leftPanel.setScrollable(false);
         leftPanel.getLayout().setMargin(false);
         leftPanel.setWidth("30%");
@@ -161,6 +161,7 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
         rightpnl.setHeight("82%");
         rightpnl.getLayout().setMargin(false);
         rightpnl.addComponent(comptoBind);
+        new StartInvestigationViewHelper(router).createStartButton(rightpnl);
         cssLayout.addComponent(rightpnl);
     }
 
@@ -169,6 +170,7 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
         this.mainLayout = new VerticalLayout();
         this.mainLayout.setSpacing(true);
         this.mainLayout.setMargin(true);
+        mainLayout.setHeight(router.getApplicationHeight() - 30 + "px");
         this.dynamicLayout = new VerticalLayout();
         this.dynamicLayout.setSpacing(true);
         this.dynamicLayout.setMargin(true);
