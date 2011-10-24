@@ -99,7 +99,6 @@ public class RigView extends Panel implements ILabsPanel, ILabsAction {
 
     public RigView(RigBean sourceBean, ISaveAction saveComponent, List<ResourceModel> breadCrumbModel,
         ResourceProxy resourceProxy) {
-
         this.rigBean = (sourceBean != null) ? sourceBean : new RigBean();
         this.saveComponent = saveComponent;
         this.breadCrumbModel = breadCrumbModel;
@@ -113,18 +112,15 @@ public class RigView extends Panel implements ILabsPanel, ILabsAction {
     }
 
     private void initialisePanelComponents() {
-
         this.mainLayout = new VerticalLayout();
         this.mainLayout.setSpacing(true);
         this.mainLayout.setMargin(true);
         this.dynamicLayout = new VerticalLayout();
         this.dynamicLayout.setSpacing(true);
         this.dynamicLayout.setMargin(true);
-
         this.pojoItem = new POJOItem<RigBean>(this.rigBean, PROPERTIES);
         this.registeredComponents = new ArrayList<HorizontalLayout>(COMPONENT_COUNT);
-
-        this.setContent(this.mainLayout);
+        this.setContent(mainLayout);
         this.setScrollable(true);
     }
 
@@ -149,7 +145,7 @@ public class RigView extends Panel implements ILabsPanel, ILabsAction {
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_RIG_DESC,
                 getPojoItem().getItemProperty(ELabsViewContants.P_RIG_DESC));
         HorizontalLayout h3 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndRelatedData(ELabsViewContants.L_RIG_CONTENT,
+            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndRelatedDataForRig(ELabsViewContants.L_RIG_CONTENT,
                 getPojoItem().getItemProperty(ELabsViewContants.P_RIG_CONTENT), this.rigBean);
 
         registeredComponents.add(h1);

@@ -37,7 +37,6 @@ import org.escidoc.browser.elabsmodul.model.RigBean;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.data.Container;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.AbstractSelect.MultiSelectMode;
@@ -62,14 +61,12 @@ public class AddNewInstrumentsWindow extends Window implements Button.ClickListe
 
     private RigBean rigBean = null;
 
-    private final String property1 = "id", property2 = "title", property3 = "description";
+    private final String property1 = "title", property2 = "description", property3 = "id";
 
     private final String ADD_BUTTON_TEXT = "Add element", ADD_ALL_BUTTON_TEXT = "Add all elements",
         CANCEL_BUTTON_TEXT = "Cancel";
 
     public AddNewInstrumentsWindow(RigBean rigBean, Callback callback) {
-        super("Available Instruments");
-
         Preconditions.checkNotNull(rigBean, "rigModel is null");
         Preconditions.checkNotNull(callback, "callback is null");
 
@@ -107,21 +104,20 @@ public class AddNewInstrumentsWindow extends Window implements Button.ClickListe
         addOnTable.setColumnReorderingAllowed(true);
         addOnTable.setColumnCollapsingAllowed(false);
 
-        // contactsTable.setStyleName();
         addOnTable.setContainerDataSource(fillAddOnTableData(rigBean.getContentList()));
         addOnTable.setVisibleColumns(new Object[] { property1, property2, property3 });
-        addOnTable
-            .setColumnHeaders(new String[] { "Instrument's ID", "Instrument's name", "Instrument's description" });
+        addOnTable.setColumnHeaders(new String[] { "Name", "Description", "Id" });
 
-        addOnTable.setColumnIcon(property1, ELabsViewContants.ICON_16_GLOBE);
-        addOnTable.setColumnIcon(property2, ELabsViewContants.ICON_16_USERS);
-        addOnTable.setColumnIcon(property3, ELabsViewContants.ICON_16_NOTE);
-
-        addOnTable.setColumnAlignment(property1, Table.ALIGN_CENTER);
+        addOnTable.setColumnAlignment(property1, Table.ALIGN_LEFT);
         addOnTable.setColumnAlignment(property2, Table.ALIGN_LEFT);
-        addOnTable.setColumnAlignment(property3, Table.ALIGN_LEFT);
+        addOnTable.setColumnAlignment(property3, Table.ALIGN_CENTER);
 
-        addOnTable.setRowHeaderMode(Table.ROW_HEADER_MODE_ICON_ONLY);
+        addOnTable.setColumnCollapsingAllowed(true);
+        addOnTable.setColumnCollapsed(property1, false);
+        addOnTable.setColumnCollapsed(property2, false);
+        addOnTable.setColumnCollapsed(property3, false);
+
+        addOnTable.setRowHeaderMode(Table.ROW_HEADER_MODE_HIDDEN);
         addOnTable.setWriteThrough(false);
 
         final Label selectedLabel = new Label("No selection");
@@ -169,11 +165,12 @@ public class AddNewInstrumentsWindow extends Window implements Button.ClickListe
         container.addContainerProperty(property3, String.class, null);
 
         // TODO fill from proper dataSource
-        Item item = container.addItem("escidoc;110011");
-        item.getItemProperty(property1).setValue("escidoc;110011");
-        item.getItemProperty(property2).setValue("New Instrument 01");
-        item.getItemProperty(property3).setValue("BWeLabs not used instrument");
-        container.sort(new Object[] { property1 }, new boolean[] { true });
+        // Item item = container.addItem("escidoc;110011");
+        // item.getItemProperty(property1).setValue("New Instrument 01");
+        // item.getItemProperty(property2).setValue("BWeLabs not used instrument");
+        // item.getItemProperty(property3).setValue("escidoc:110011");
+        // container.sort(new Object[] { property1 }, new boolean[] { true });
+
         return container;
     }
 

@@ -78,7 +78,6 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
 
     public LabsClientViewEventHandler(final List<HorizontalLayout> registeredComponents,
         final VerticalLayout mainComponent, final ILabsPanel containerPanel, final ILabsAction containerAction) {
-        LOG.info("Constructor created.");
         this.clientTextFieldEventHandler = new LabsClientTextFieldEventHandler();
         this.registeredComponents = registeredComponents;
         this.mainComponent = mainComponent;
@@ -92,7 +91,7 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
         final Component component = event.getComponent();
         final Component childComponent = event.getChildComponent();
         final Object source = event.getSource();
-        LOG.info("Layout Click Event happpened. \n" + "childComponent: " + childComponent + "\nComponent" + component
+        LOG.debug("Layout Click Event happpened. \n" + "childComponent: " + childComponent + "\nComponent" + component
             + "\nsource: " + source);
 
         synchronized (component) {
@@ -112,7 +111,7 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
                 this.containerPanel.setModifiedComponent(null);
             }
             else {
-                LOG.info("Nothing was modified");
+                LOG.debug("Nothing was modified");
             }
 
             if (childComponent instanceof HorizontalLayout) {
@@ -129,13 +128,11 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
                 }
 
                 if (dataComponent instanceof Label) {
-                    LOG.info("Change Label to TextField");
                     if (this.containerPanel.getModifiedComponent() != null) {
                         LOG.error("LastModifiedComponent must be saved already at this point!!!");
                         return;
                     }
                     this.containerPanel.setModifiedComponent(childComponent);
-                    // TODO refactor this temporarily implementation about FileFormat condition.
                     final String queryTextforFileFormat =
                         ELabsViewContants.DIV_ALIGN_RIGHT + ELabsViewContants.L_INSTRUMENT_FILE_FORMAT
                             + ELabsViewContants.DIV_END;
@@ -168,10 +165,9 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
                     }
                 }
                 else if (dataComponent instanceof CheckBox) {
-                    boolean value = (Boolean) ((CheckBox) dataComponent).getValue();
+                    final boolean value = (Boolean) ((CheckBox) dataComponent).getValue();
+                    ((CheckBox) dataComponent).setValue(!value);
                 }
-                LOG.info("Child's Data Component: " + dataComponent);
-                LOG.info("Actual modified Component: " + this.containerPanel.getModifiedComponent());
             }
         }
     }
@@ -208,17 +204,12 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
             }
 
             if (action.equals(action_ok)) {
-                LOG.info("Enter Key is hit.");
-
+                LOG.debug("Enter Key is hit.");
                 ((TextField) target).commit();
-
-                // LOG.info("Save Modified Component...");
-                // saveComponent(modifiedComponent);
                 LabsClientViewEventHandler.this.mainComponent.setDescription(null);
             }
             else if (action.equals(action_esc)) {
-                LOG.info("Escape Key is hit.");
-                LOG.info("DO NOT Save Component...");
+                LOG.debug("Escape Key is hit.");
                 ((TextField) target).discard();
             }
 

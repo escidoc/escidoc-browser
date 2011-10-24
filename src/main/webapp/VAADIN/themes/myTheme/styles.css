@@ -265,6 +265,21 @@ ul.horizontal_list li {
 	font-weight: bold;
 }
 
+.elabsLineWithTable {
+	-moz-border-radius: 1em 1em 1em 1em;
+	border-radius: 1em 1em 1em 1em;
+}
+
+.elabsLineWithTable:active {
+	background: #FFFFFF;
+	text-decoration;
+}
+
+.elabsLineWithTable:hover {
+	background: #E8E8E8;
+	text-decoration: none;
+}
+
 .elabsTextField {
 	-moz-border-radius: 1em 1em 1em 1em;
 	border-radius: 1em 1em 1em 1em;

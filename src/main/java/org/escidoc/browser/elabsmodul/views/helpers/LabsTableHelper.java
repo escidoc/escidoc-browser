@@ -9,6 +9,8 @@ import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.model.InstrumentBean;
 import org.escidoc.browser.elabsmodul.model.RigBean;
 import org.escidoc.browser.elabsmodul.views.AddNewInstrumentsWindow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.data.Item;
@@ -49,6 +51,8 @@ public class LabsTableHelper {
 
     private static Object syncObject = new Object();
 
+    private static final Logger LOG = LoggerFactory.getLogger(LabsTableHelper.class);
+
     private LabsTableHelper() {
     }
 
@@ -64,35 +68,27 @@ public class LabsTableHelper {
     }
 
     public synchronized VerticalLayout createTableLayoutForRig(final RigBean rigBean) {
-        final Label selectedLabel = new Label("No selection");
         Preconditions.checkNotNull(rigBean, "rigModel is null");
-        VerticalLayout layout = new VerticalLayout();
         this.rigBean = rigBean;
 
-        rigTable = new Table("Related instruments");
-        rigTable.setWidth("90%");
-        rigTable.setHeight("100px");
+        final int RIGTABLESIZE = 5;
+        final Label selectedLabel = new Label("No selection");
+        final VerticalLayout layout = new VerticalLayout();
+        layout.setSizeUndefined();
+
+        rigTable = new Table();
         rigTable.setSelectable(true);
         rigTable.setMultiSelect(true);
-        rigTable.setImmediate(true);
-        rigTable.setEditable(false);
         rigTable.setMultiSelectMode(MultiSelectMode.DEFAULT);
-        rigTable.setColumnReorderingAllowed(true);
+        rigTable.setImmediate(true);
+        rigTable.setPageLength(RIGTABLESIZE);
+
+        rigTable.setColumnReorderingAllowed(false);
         rigTable.setColumnCollapsingAllowed(false);
+        rigTable.setRowHeaderMode(Table.ROW_HEADER_MODE_HIDDEN);
 
-        // contactsTable.setStyleName();
         rigTable.setContainerDataSource(fillRigTableData(rigBean.getContentList()));
-        rigTable.setVisibleColumns(new Object[] { rigProperty1, rigProperty2 });
-        rigTable.setColumnHeaders(new String[] { "Instrument's name", "Instrument's ID" });
-
-        rigTable.setColumnIcon(rigProperty1, ELabsViewContants.ICON_16_USERS);
-        rigTable.setColumnIcon(rigProperty2, ELabsViewContants.ICON_16_GLOBE);
-
-        rigTable.setColumnAlignment(rigProperty1, Table.ALIGN_LEFT);
-        rigTable.setColumnAlignment(rigProperty2, Table.ALIGN_LEFT);
-
-        rigTable.setRowHeaderMode(Table.ROW_HEADER_MODE_ICON_ONLY);
-        rigTable.setWriteThrough(false);
+        rigTable.setColumnHeaders(new String[] { "Name", "Id" }); // put these into ELabsViewContants
 
         rigTable.addListener(new Table.ValueChangeListener() {
             private static final long serialVersionUID = 2000562132182698589L;
@@ -100,13 +96,18 @@ public class LabsTableHelper {
             @Override
             public void valueChange(final ValueChangeEvent event) {
                 int selSize = 0;
-                Set<?> value = (Set<?>) event.getProperty().getValue();
-                if (value == null || value.size() == 0) {
+                Set<?> values = null;
+                try {
+                    values = (Set<?>) event.getProperty().getValue();
+                }
+                catch (ClassCastException e) {
+                    LOG.warn("Table should be multiselectable!", e.getMessage());
+                }
+                if (values == null || values.size() == 0) {
                     selectedLabel.setValue("No selection");
-
                 }
                 else {
-                    selSize = value.size();
+                    selSize = values.size();
                     selectedLabel.setValue("Selected: " + selSize + " element" + ((selSize > 1) ? "s" : ""));
                 }
 
@@ -126,7 +127,6 @@ public class LabsTableHelper {
         layout.addComponent(rigTable);
         layout.addComponent(selectedLabel);
         addRigButtonToLayout(layout);
-
         return layout;
     }
 
@@ -204,15 +204,15 @@ public class LabsTableHelper {
 
         for (Iterator<InstrumentBean> iterator = instrumentBeans.iterator(); iterator.hasNext();) {
             InstrumentBean instrumentBean = iterator.next();
-
             String id = instrumentBean.getObjectId();
             String title = instrumentBean.getName();
             Item item = container.addItem(id);
-            item.getItemProperty(rigProperty1).setValue(title);
-            item.getItemProperty(rigProperty2).setValue(id);
+            if (id != null) {
+                item.getItemProperty(rigProperty1).setValue(title);
+                item.getItemProperty(rigProperty2).setValue(id);
+            }
         }
         container.sort(new Object[] { rigProperty1 }, new boolean[] { true });
-
         return container;
     }
 }

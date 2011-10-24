@@ -101,7 +101,7 @@ public class ELabsViewContants {
 
     public static final String L_RIG_DESC = "Description:";
 
-    public static final String L_RIG_CONTENT = "Instruments in the Rig:";
+    public static final String L_RIG_CONTENT = "Instruments:";
 
     // eLabs Instrument View
 
@@ -284,6 +284,8 @@ public class ELabsViewContants {
     public static final String STYLE_ELABS_FORM = "elabsForm";
 
     public static final String STYLE_ELABS_HOR_PANEL = "elabsLine";
+
+    public static final String STYLE_ELABS_HOR_PANEL_FOR_TABLE = "elabsLineWithTable";
 
     public static final String STYLE_ELABS_TEXT = "elabsTextField";
 

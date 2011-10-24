@@ -34,6 +34,7 @@ import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.DIV_END
 import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.HOR_PANEL_HEIGHT;
 import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.LABEL_WIDTH;
 import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.STYLE_ELABS_HOR_PANEL;
+import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.STYLE_ELABS_HOR_PANEL_FOR_TABLE;
 import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.STYLE_ELABS_TEXT;
 import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.STYLE_ELABS_TEXT_AS_LABEL;
 import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.TEXT_WIDTH;
@@ -102,7 +103,7 @@ public final class LabsLayoutHelper {
         return horizontalLayout;
     }
 
-    public static synchronized HorizontalLayout createHorizontalLayoutWithELabsLabelAndRelatedData(
+    public static synchronized HorizontalLayout createHorizontalLayoutWithELabsLabelAndRelatedDataForRig(
         final String labelTxt, Property dataProperty, RigBean rigBean) {
         Preconditions.checkNotNull(labelTxt, "Label is null");
         Preconditions.checkNotNull(dataProperty, "DataSource is null");
@@ -112,16 +113,19 @@ public final class LabsLayoutHelper {
         horizontalLayout.setSizeUndefined();
         horizontalLayout.setEnabled(true);
         horizontalLayout.setSpacing(true);
+        horizontalLayout.setStyleName(STYLE_ELABS_HOR_PANEL_FOR_TABLE);
 
-        Label label = new Label(" ");
+        Label label = new Label();
         label.setWidth(LABEL_WIDTH);
-        // label.setValue(DIV_ALIGN_RIGHT + labelTxt + DIV_END);
-        // label.setContentMode(Label.CONTENT_XHTML);
+        label.setValue(DIV_ALIGN_RIGHT + labelTxt + DIV_END);
+        label.setContentMode(Label.CONTENT_XHTML);
+        label.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
+        label.setStyleName(STYLE_ELABS_HOR_PANEL);
 
         horizontalLayout.addComponent(label, 0);
         horizontalLayout.addComponent(LabsTableHelper.singleton().createTableLayoutForRig(rigBean), 1);
         horizontalLayout.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
-        // horizontalLayout.setComponentAlignment(table, Alignment.TOP_RIGHT);
+
         return horizontalLayout;
     }
 
