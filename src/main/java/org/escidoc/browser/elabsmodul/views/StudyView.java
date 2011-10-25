@@ -164,8 +164,10 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
         final HorizontalLayout h2 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_STUDY_DESC,
                 getPojoItem().getItemProperty(ELabsViewContants.P_STUDY_DESC));
-        // init bean model
+        // inject bean model and action interface
         LabsStudyTableHelper.singleton().setModel(this.studyBean);
+        LabsStudyTableHelper.singleton().setELabAction(this);
+
         final HorizontalLayout h3 =
             LabsLayoutHelper.createHorizontalLayoutWithPublicationDataForStudy(ELabsViewContants.L_STUDY_MOT_PUB,
                 getPojoItem().getItemProperty(ELabsViewContants.P_STUDY_MOT_PUB), true);

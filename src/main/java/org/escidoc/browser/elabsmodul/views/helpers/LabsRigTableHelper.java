@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
+import org.escidoc.browser.elabsmodul.interfaces.ILabsAction;
 import org.escidoc.browser.elabsmodul.interfaces.IRigAction;
 import org.escidoc.browser.elabsmodul.model.InstrumentBean;
 import org.escidoc.browser.elabsmodul.model.RigBean;
@@ -55,6 +56,8 @@ public final class LabsRigTableHelper {
 
     private static Object syncObject = new Object();
 
+    private ILabsAction labsAction = null;
+
     private static final Logger LOG = LoggerFactory.getLogger(LabsRigTableHelper.class);
 
     private LabsRigTableHelper() {
@@ -70,6 +73,11 @@ public final class LabsRigTableHelper {
             }
         }
         return singleton;
+    }
+
+    public synchronized void setELabAction(final ILabsAction labsAction) {
+        Preconditions.checkNotNull(labsAction, "iLabsAction is null");
+        this.labsAction = labsAction;
     }
 
     public synchronized VerticalLayout createTableLayoutForRig(final RigBean rigBean, final IRigAction controller) {
@@ -152,6 +160,8 @@ public final class LabsRigTableHelper {
 
             @Override
             public void buttonClick(final ClickEvent event) {
+                LabsRigTableHelper.this.labsAction.showButtonLayout();
+
                 if (event.getButton().getCaption().equals(DELETE_BUTTON_TEXT)
                     || event.getButton().getCaption().equals(DELETES_BUTTON_TEXT)) {
                     @SuppressWarnings("unchecked")

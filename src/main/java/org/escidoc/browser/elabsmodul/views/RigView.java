@@ -38,6 +38,7 @@ import org.escidoc.browser.elabsmodul.interfaces.ILabsPanel;
 import org.escidoc.browser.elabsmodul.interfaces.IRigAction;
 import org.escidoc.browser.elabsmodul.model.RigBean;
 import org.escidoc.browser.elabsmodul.views.helpers.LabsLayoutHelper;
+import org.escidoc.browser.elabsmodul.views.helpers.LabsRigTableHelper;
 import org.escidoc.browser.elabsmodul.views.helpers.ResourcePropertiesViewHelper;
 import org.escidoc.browser.elabsmodul.views.listeners.LabsClientViewEventHandler;
 import org.escidoc.browser.model.ItemProxy;
@@ -144,6 +145,7 @@ public class RigView extends Panel implements ILabsPanel, ILabsAction {
         HorizontalLayout h2 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_RIG_DESC,
                 getPojoItem().getItemProperty(ELabsViewContants.P_RIG_DESC));
+        LabsRigTableHelper.singleton().setELabAction(this);
         HorizontalLayout h3 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndRelatedDataForRig(ELabsViewContants.L_RIG_CONTENT,
                 getPojoItem().getItemProperty(ELabsViewContants.P_RIG_CONTENT), this.rigBean, this.controller);
