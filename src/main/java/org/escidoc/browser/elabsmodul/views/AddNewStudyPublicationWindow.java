@@ -57,7 +57,7 @@ public class AddNewStudyPublicationWindow extends Window implements Button.Click
         this.callback = callback;
 
         setModal(true);
-        setWidth("50%");
+        setWidth("550px");
         setHeight("100px");
         setClosable(true);
         setResizable(true);
