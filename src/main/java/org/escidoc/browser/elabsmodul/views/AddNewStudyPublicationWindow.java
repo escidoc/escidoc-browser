@@ -55,6 +55,8 @@ public class AddNewStudyPublicationWindow extends Window implements Button.Click
 
     private final String OK_BUTTON_TEXT = "Ok", CANCEL_BUTTON_TEXT = "Cancel";
 
+    private static final String HTTP = "http://", HTTPS = "https://";
+
     public AddNewStudyPublicationWindow(final Callback callback) {
         Preconditions.checkNotNull(callback, "callback is null");
         this.callback = callback;
@@ -117,7 +119,6 @@ public class AddNewStudyPublicationWindow extends Window implements Button.Click
                 else if (action.equals(action_esc)) {
                     AddNewStudyPublicationWindow.this.closeMe(false);
                 }
-
             }
 
             @Override
@@ -125,7 +126,6 @@ public class AddNewStudyPublicationWindow extends Window implements Button.Click
                 return new Action[] { action_ok, action_esc };
             }
         });
-
         return panel;
     }
 
@@ -134,10 +134,9 @@ public class AddNewStudyPublicationWindow extends Window implements Button.Click
         if (getParent() != null) {
             getParent().removeWindow(this);
         }
-
+        String input = null;
         if (event.getButton().getCaption().equals(OK_BUTTON_TEXT)) {
-            String input = (String) publicationTextField.getValue();
-            if (input != null && !input.equals("")) {
+            if (validateURL(input = (String) publicationTextField.getValue())) {
                 callback.onAcceptAction(input);
             }
         }
@@ -147,14 +146,22 @@ public class AddNewStudyPublicationWindow extends Window implements Button.Click
         if (getParent() != null) {
             getParent().removeWindow(this);
         }
-
+        String input = null;
         if (withSave) {
-            String input = (String) publicationTextField.getValue();
-            if (input != null && !input.equals("")) {
+            if (validateURL(input = (String) publicationTextField.getValue())) {
                 callback.onAcceptAction(input);
             }
         }
 
+    }
+
+    private boolean validateURL(final String URL) {
+        if (URL == null || URL.trim().equals("") || URL.trim().equals(HTTP) || URL.trim().equals(HTTPS)) {
+            return false;
+        }
+        else {
+            return true;
+        }
     }
 
     public interface Callback {

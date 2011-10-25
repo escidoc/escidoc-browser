@@ -31,6 +31,8 @@ public final class LabsStudyTableHelper {
     // properties for the tables def
     private final String motPubProperty1 = "path-mot", resPubProperty1 = "path-res";
 
+    private static final String HTTP = "http://", HTTPS = "https://";
+
     // buttons related to the tables
     private Button motPubDeleteButton = null, motPubAddButton = null;
 
@@ -410,8 +412,6 @@ public final class LabsStudyTableHelper {
 
     private static Link createLinkByResourcePath(String urlString) {
         Preconditions.checkNotNull(urlString, "URL is null");
-        final String HTTP = "http://", HTTPS = "https://";
-
         urlString = urlString.trim();
 
         if (!urlString.toLowerCase().startsWith(HTTP) && !urlString.toLowerCase().startsWith(HTTPS)) {
