@@ -77,8 +77,8 @@ public class SimpleLayout extends VerticalLayout implements LayoutDesign {
         configureLayout();
         addHeader();
         addNavigationPanel();
-        new CloseTabsViewHelper(mainLayout).bindtoCssLayout();
         addMainContentTabs();
+        new CloseTabsViewHelper(mainLayout, mainContentTabs);
         addFooter();
         addComponent(mainLayout);
     }

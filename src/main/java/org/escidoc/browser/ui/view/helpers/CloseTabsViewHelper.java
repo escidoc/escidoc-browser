@@ -20,11 +20,19 @@ public class CloseTabsViewHelper implements ClickListener {
 
     private static final String FLOAT_RIGHT = "floatright";
 
+    TabSheet ts = null;
+
     public CloseTabsViewHelper(AbstractLayout layout) {
         this.layout = layout;
     }
 
-    public void bindtoCssLayout() {
+    public CloseTabsViewHelper(AbstractLayout layout, TabSheet mainContentTabs) {
+        this.ts = mainContentTabs;
+        this.layout = layout;
+        buildButton(layout);
+    }
+
+    private void buildButton(AbstractLayout layout) {
         Button btnRemoveTabs = new Button();
         ThemeResource icon = new ThemeResource("../runo/icons/16/cancel.png");
         btnRemoveTabs.setStyleName(BaseTheme.BUTTON_LINK);
@@ -38,7 +46,10 @@ public class CloseTabsViewHelper implements ClickListener {
 
     @Override
     public void buttonClick(ClickEvent event) {
-        TabSheet ts = (TabSheet) getParent(layout);
+        if (ts == null) {
+            ts = (TabSheet) getParent(layout);
+        }
+
         for (int i = ts.getComponentCount() - 1; i >= 0; i--) {
             ts.removeTab(ts.getTab(i));
         }
