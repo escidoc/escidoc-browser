@@ -1,6 +1,7 @@
 package org.escidoc.browser.elabsmodul.controller;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -146,17 +147,26 @@ public class StudyController extends Controller implements ISaveAction {
             description.setTextContent(studyBean.getDescription());
             study.appendChild(description);
 
-            final Element resultingPublication = doc.createElement("el:resulting-publication");
-            resultingPublication.setAttributeNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdf:resource",
-                studyBean.getResultingPublication());
-            study.appendChild(resultingPublication);
+            for (Iterator<String> iterator = studyBean.getResultingPublication().iterator(); iterator.hasNext();) {
+                String publicationPath = iterator.next();
+                if (publicationPath != null && !publicationPath.equals("")) {
+                    final Element resultingPublication = doc.createElement("el:resulting-publication");
+                    resultingPublication.setAttributeNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdf:resource",
+                        publicationPath);
+                    study.appendChild(resultingPublication);
+                }
+            }
 
-            final Element motivatingProperties = doc.createElement("el:motivating-publication");
-            motivatingProperties.setAttributeNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdf:resource",
-                studyBean.getMotivatingProperties());
-            study.appendChild(motivatingProperties);
+            for (Iterator<String> iterator = studyBean.getMotivatingPublication().iterator(); iterator.hasNext();) {
+                String publicationPath = iterator.next();
+                if (publicationPath != null && !publicationPath.equals("")) {
+                    final Element motivatingPublication = doc.createElement("el:motivating-publication");
+                    motivatingPublication.setAttributeNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdf:resource",
+                        publicationPath);
+                    study.appendChild(motivatingPublication);
+                }
+            }
             return study;
-
         }
         catch (DOMException e) {
             LOG.error(e.getLocalizedMessage());
@@ -164,7 +174,6 @@ public class StudyController extends Controller implements ISaveAction {
         catch (ParserConfigurationException e) {
             LOG.error(e.getLocalizedMessage());
         }
-
         return null;
     }
 
@@ -221,15 +230,19 @@ public class StudyController extends Controller implements ISaveAction {
                         .setDescription((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
                 }
                 else if ("motivating-publication".equals(nodeName) && URI_EL.equals(nsUri)) {
-                    studyBean.setMotivatingProperties(node.getAttributes().getNamedItem("rdf:resource").getNodeValue());
+                    studyBean.getMotivatingPublication().add(
+                        node.getAttributes().getNamedItem("rdf:resource").getNodeValue());
                 }
                 else if ("resulting-publication".equals(nodeName) && URI_EL.equals(nsUri)) {
-                    studyBean.setResultingPublication(node.getAttributes().getNamedItem("rdf:resource").getNodeValue());
+                    studyBean.getResultingPublication().add(
+                        node.getAttributes().getNamedItem("rdf:resource").getNodeValue());
                 }
             }
-            LOG.debug(xml);
+            LOG.debug(xml); // TODO delete
         }
-
+        catch (NullPointerException e) {
+            LOG.error(e.getLocalizedMessage());
+        }
         catch (final TransformerException e) {
             LOG.error(e.getLocalizedMessage());
         }

@@ -130,6 +130,35 @@ public final class LabsLayoutHelper {
         return horizontalLayout;
     }
 
+    public static synchronized HorizontalLayout createHorizontalLayoutWithPublicationDataForStudy(
+        final String labelTxt, Property dataProperty, boolean isMotNotResPublication) {
+        Preconditions.checkNotNull(labelTxt, "Label is null");
+        Preconditions.checkNotNull(dataProperty, "DataSource is null");
+
+        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        horizontalLayout.setSizeUndefined();
+        horizontalLayout.setEnabled(true);
+        horizontalLayout.setSpacing(true);
+        horizontalLayout.setStyleName(STYLE_ELABS_HOR_PANEL_FOR_TABLE);
+
+        Label label = new Label();
+        label.setWidth(LABEL_WIDTH);
+        label.setValue(DIV_ALIGN_RIGHT + labelTxt + DIV_END);
+        label.setContentMode(Label.CONTENT_XHTML);
+        label.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
+        label.setStyleName(STYLE_ELABS_HOR_PANEL);
+
+        horizontalLayout.addComponent(label, 0);
+        if (isMotNotResPublication) {
+            horizontalLayout.addComponent(LabsStudyTableHelper.singleton().createTableLayoutForMotPublications(), 1);
+        }
+        else {
+            horizontalLayout.addComponent(LabsStudyTableHelper.singleton().createTableLayoutForResPublications(), 1);
+        }
+        horizontalLayout.setComponentAlignment(label, Alignment.TOP_LEFT);
+        return horizontalLayout;
+    }
+
     public static synchronized HorizontalLayout createHorizontalLayoutWithELabsLabelAndCheckBoxData(
         final String labelTxt, final String checkBoxDescription, Property dataProperty) {
         HorizontalLayout horizontalLayout = new HorizontalLayout();
@@ -213,6 +242,7 @@ public final class LabsLayoutHelper {
         textField.setWidth(TEXT_WIDTH);
         textField.setStyleName(STYLE_ELABS_TEXT);
         textField.setDescription(USER_DESCR_ON_TEXTFIELD_TO_SAVE_OR_CANCEL);
+        textField.setNullRepresentation("");
         textField.commit();
         textField.focus();
         return textField;

@@ -192,7 +192,7 @@ public class ELabsViewContants {
 
     public static final String P_STUDY_DESC = "description";
 
-    public static final String P_STUDY_MOT_PUB = "motivatingProperties";
+    public static final String P_STUDY_MOT_PUB = "motivatingPublication";
 
     public static final String P_STUDY_RES_PUB = "resultingPublication";
 

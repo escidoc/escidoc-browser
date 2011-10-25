@@ -29,12 +29,17 @@
 package org.escidoc.browser.elabsmodul.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
 
+/**
+ * 
+ */
 public class StudyBean implements Serializable, IBeanModel {
 
-    private static final long serialVersionUID = -7950795372352237485L;
+    private static final long serialVersionUID = -8047692815915730494L;
 
     private String objectId;
 
@@ -50,9 +55,9 @@ public class StudyBean implements Serializable, IBeanModel {
 
     private String contentModel;
 
-    private String motivatingProperties;
+    private List<String> motivatingPublication = new ArrayList<String>();
 
-    private String resultingPublication;
+    private List<String> resultingPublication = new ArrayList<String>();
 
     /**
      * @return the objectId
@@ -178,27 +183,25 @@ public class StudyBean implements Serializable, IBeanModel {
         this.context = context;
     }
 
+    public List<String> getMotivatingPublication() {
+        return motivatingPublication;
+    }
+
+    public List<String> getResultingPublication() {
+        return resultingPublication;
+    }
+
+    public void setMotivatingPublication(List<String> motivatingPublication) {
+        this.motivatingPublication = motivatingPublication;
+    }
+
+    public void setResultingPublication(List<String> resultingPublication) {
+        this.resultingPublication = resultingPublication;
+    }
+
     @Override
     public String toString() {
 
         return name;
-    }
-
-    public String getMotivatingProperties() {
-        return motivatingProperties;
-    }
-
-    public String getResultingPublication() {
-        return resultingPublication;
-    }
-
-    public void setMotivatingProperties(String motivatingProperties) {
-        this.motivatingProperties = motivatingProperties;
-
-    }
-
-    public void setResultingPublication(String resultingPublication) {
-        this.resultingPublication = resultingPublication;
-
     }
 }

@@ -27,7 +27,6 @@ import com.vaadin.ui.VerticalLayout;
 
 /**
  * Helper class to build data tables related to Rig Element.
- * 
  */
 public final class LabsRigTableHelper {
 
@@ -61,6 +60,7 @@ public final class LabsRigTableHelper {
     private LabsRigTableHelper() {
     }
 
+    // TODO refactor , do not use Singleton DP
     public static LabsRigTableHelper singleton() {
         if (singleton == null) {
             synchronized (syncObject) {

@@ -10,6 +10,7 @@ import org.escidoc.browser.elabsmodul.interfaces.ILabsPanel;
 import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
 import org.escidoc.browser.elabsmodul.model.StudyBean;
 import org.escidoc.browser.elabsmodul.views.helpers.LabsLayoutHelper;
+import org.escidoc.browser.elabsmodul.views.helpers.LabsStudyTableHelper;
 import org.escidoc.browser.elabsmodul.views.helpers.ResourcePropertiesViewHelper;
 import org.escidoc.browser.elabsmodul.views.listeners.LabsClientViewEventHandler;
 import org.escidoc.browser.model.ContainerProxy;
@@ -94,13 +95,12 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
     @SuppressWarnings("serial")
     private void createClickListener() {
         mouseClickListener = new Button.ClickListener() {
-
             @Override
             public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
                 if (event.getButton().getCaption().equals("Save")) {
                     saveComponent.saveAction(studyBean);
-
                     // TODO Why do we need to call these two methods?
+                    // ANS edited but not reset form's text fields should be converted into a label
                     StudyView.this.resetLayout();
                     dynamicLayout.requestRepaintAll();
                 }
@@ -114,7 +114,6 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
             // TODO report error to user?
             LOG.error(e.getMessage());
         }
-
     }
 
     protected void resetLayout() {
@@ -165,12 +164,14 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
         final HorizontalLayout h2 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_STUDY_DESC,
                 getPojoItem().getItemProperty(ELabsViewContants.P_STUDY_DESC));
+        // init bean model
+        LabsStudyTableHelper.singleton().setModel(this.studyBean);
         final HorizontalLayout h3 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_STUDY_MOT_PUB,
-                getPojoItem().getItemProperty(ELabsViewContants.P_STUDY_MOT_PUB));
+            LabsLayoutHelper.createHorizontalLayoutWithPublicationDataForStudy(ELabsViewContants.L_STUDY_MOT_PUB,
+                getPojoItem().getItemProperty(ELabsViewContants.P_STUDY_MOT_PUB), true);
         final HorizontalLayout h4 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_STUDY_RES_PUB,
-                getPojoItem().getItemProperty(ELabsViewContants.P_STUDY_RES_PUB));
+            LabsLayoutHelper.createHorizontalLayoutWithPublicationDataForStudy(ELabsViewContants.L_STUDY_RES_PUB,
+                getPojoItem().getItemProperty(ELabsViewContants.P_STUDY_RES_PUB), false);
 
         registeredComponents.add(h1);
         registeredComponents.add(h2);
