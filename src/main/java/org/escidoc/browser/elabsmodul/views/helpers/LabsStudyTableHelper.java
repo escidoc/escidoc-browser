@@ -414,7 +414,7 @@ public final class LabsStudyTableHelper {
 
         urlString = urlString.trim();
 
-        if (!urlString.toLowerCase().startsWith(HTTP) || !urlString.toLowerCase().startsWith(HTTPS)) {
+        if (!urlString.toLowerCase().startsWith(HTTP) && !urlString.toLowerCase().startsWith(HTTPS)) {
             urlString = HTTP + urlString;
         }
 

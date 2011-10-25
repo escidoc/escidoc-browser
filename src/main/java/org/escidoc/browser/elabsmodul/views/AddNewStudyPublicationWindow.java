@@ -31,11 +31,14 @@ package org.escidoc.browser.elabsmodul.views;
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 
 import com.google.common.base.Preconditions;
+import com.vaadin.event.Action;
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -81,6 +84,7 @@ public class AddNewStudyPublicationWindow extends Window implements Button.Click
         publicationTextField.setRequiredError("Document URL cannot be empty!");
         publicationTextField.setWidth("350px");
         publicationTextField.focus();
+
         inputLayout.addComponent(new Label("New publication's URL:"), 0);
         inputLayout.addComponent(publicationTextField, 1);
 
@@ -97,7 +101,32 @@ public class AddNewStudyPublicationWindow extends Window implements Button.Click
         rootLayout.addComponent(inputLayout);
         rootLayout.addComponent(buttonLayout);
 
-        return rootLayout;
+        Panel panel = new Panel();
+        panel.setContent(rootLayout);
+
+        panel.addActionHandler(new Action.Handler() {
+            private final Action action_ok = new ShortcutAction("Enter key", ShortcutAction.KeyCode.ENTER, null);
+
+            private final Action action_esc = new ShortcutAction("Escape key", ShortcutAction.KeyCode.ESCAPE, null);
+
+            @Override
+            public void handleAction(Action action, Object sender, Object target) {
+                if (action.equals(action_ok)) {
+                    AddNewStudyPublicationWindow.this.closeMe(true);
+                }
+                else if (action.equals(action_esc)) {
+                    AddNewStudyPublicationWindow.this.closeMe(false);
+                }
+
+            }
+
+            @Override
+            public Action[] getActions(Object target, Object sender) {
+                return new Action[] { action_ok, action_esc };
+            }
+        });
+
+        return panel;
     }
 
     @Override
@@ -112,6 +141,20 @@ public class AddNewStudyPublicationWindow extends Window implements Button.Click
                 callback.onAcceptAction(input);
             }
         }
+    }
+
+    private void closeMe(boolean withSave) {
+        if (getParent() != null) {
+            getParent().removeWindow(this);
+        }
+
+        if (withSave) {
+            String input = (String) publicationTextField.getValue();
+            if (input != null && !input.equals("")) {
+                callback.onAcceptAction(input);
+            }
+        }
+
     }
 
     public interface Callback {
