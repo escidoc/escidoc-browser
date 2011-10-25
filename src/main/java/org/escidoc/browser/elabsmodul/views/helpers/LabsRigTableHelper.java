@@ -95,6 +95,7 @@ public final class LabsRigTableHelper {
         rigTable.setMultiSelectMode(MultiSelectMode.DEFAULT);
         rigTable.setImmediate(true);
         rigTable.setPageLength(RIG_TABLE_SIZE);
+        rigTable.setWidth("350px");
 
         rigTable.setColumnReorderingAllowed(false);
         rigTable.setColumnCollapsingAllowed(false);
