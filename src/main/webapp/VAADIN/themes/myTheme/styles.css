@@ -32,7 +32,13 @@
 .paddingtop30 {
 	padding-top: 60.0px;
 }
-
+.closeallTabs {
+	z-index: 10;
+	position: absolute;
+	margin-right: 13px;
+	top: 72px;
+	right: 0;
+}
 .paddingbottom10 {
 	padding-bottom: 10px;
 }

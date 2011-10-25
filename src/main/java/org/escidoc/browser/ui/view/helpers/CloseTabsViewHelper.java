@@ -28,6 +28,7 @@ public class CloseTabsViewHelper implements ClickListener {
         Button btnRemoveTabs = new Button();
         ThemeResource icon = new ThemeResource("../runo/icons/16/cancel.png");
         btnRemoveTabs.setStyleName(BaseTheme.BUTTON_LINK);
+        btnRemoveTabs.addStyleName("closeallTabs");
         btnRemoveTabs.setDescription("Remove all open Tabs");
         btnRemoveTabs.setIcon(icon);
         btnRemoveTabs.addStyleName(FLOAT_RIGHT);

@@ -35,7 +35,6 @@ import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.view.helpers.CloseTabsViewHelper;
 import org.escidoc.browser.ui.view.helpers.ItemPropertiesVH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,7 +99,6 @@ public final class ItemView extends VerticalLayout {
 
     private final void init() {
         buildLayout();
-        new CloseTabsViewHelper(cssLayout).bindtoCssLayout();
         new ItemPropertiesVH(resourceProxy, repositories, currentUser, cssLayout, mainWindow, serviceLocation).init();
         buildLeftCell(new ItemContent(repositories, resourceProxy, serviceLocation, mainWindow, currentUser));
         buildRightCell(new MetadataRecsItem(resourceProxy, accordionHeight, mainWindow, serviceLocation, repositories,

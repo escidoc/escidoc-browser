@@ -19,6 +19,7 @@ import org.escidoc.browser.ui.mainpage.HeaderContainer;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.navigation.NavigationTreeView;
 import org.escidoc.browser.ui.navigation.RootNode;
+import org.escidoc.browser.ui.view.helpers.CloseTabsViewHelper;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -76,6 +77,7 @@ public class SimpleLayout extends VerticalLayout implements LayoutDesign {
         configureLayout();
         addHeader();
         addNavigationPanel();
+        new CloseTabsViewHelper(mainLayout).bindtoCssLayout();
         addMainContentTabs();
         addFooter();
         addComponent(mainLayout);
