@@ -38,6 +38,7 @@ import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
+import org.escidoc.browser.ui.view.helpers.CloseTabsViewHelper;
 import org.escidoc.browser.ui.view.helpers.DirectMember;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -152,7 +153,9 @@ public class ContainerView extends VerticalLayout {
     private void init() throws EscidocClientException {
         configureLayout();
         handleLayoutListeners();
+        new CloseTabsViewHelper(cssLayout).bindtoCssLayout();
         createBreadCrumb();
+
         bindNameToHeader();
         bindDescription();
         addHorizontalRuler();

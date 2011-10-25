@@ -9,6 +9,7 @@ import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.themes.BaseTheme;
 
@@ -34,13 +35,29 @@ public class CloseTabsViewHelper implements ClickListener {
         layout.addComponent(btnRemoveTabs);
     }
 
-    // TODO FIX the navigation to the Parent which is a TabSheet
     @Override
     public void buttonClick(ClickEvent event) {
-        LOG.debug((layout.getParent().getParent().getClass().toString()));
-        TabSheet ts = (TabSheet) layout.getParent().getParent();
+        TabSheet ts = (TabSheet) getParent(layout);
         for (int i = ts.getComponentCount() - 1; i >= 0; i--) {
             ts.removeTab(ts.getTab(i));
         }
+    }
+
+    /**
+     * Recursive procedure to find the parent of a Layout that is a TabSheet
+     * 
+     * @param son
+     * @return
+     * @throws NullPointerException
+     */
+    private Component getParent(Component son) throws NullPointerException {
+        Component father;
+        if (son.getParent().getClass().toString().equals("class com.vaadin.ui.TabSheet")) {
+            return (TabSheet) son.getParent();
+        }
+        else {
+            father = getParent(son.getParent());
+        }
+        return father;
     }
 }
