@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
+import org.escidoc.browser.elabsmodul.interfaces.ILabsAction;
 import org.escidoc.browser.elabsmodul.model.StudyBean;
 import org.escidoc.browser.elabsmodul.views.AddNewStudyPublicationWindow;
 import org.slf4j.Logger;
@@ -50,6 +51,8 @@ public final class LabsStudyTableHelper {
 
     private final String DELETES_BUTTON_TEXT = "Delete selected documents";
 
+    private ILabsAction labsAction;
+
     private static LabsStudyTableHelper singleton = null;
 
     private static Object syncObject = new Object();
@@ -74,6 +77,11 @@ public final class LabsStudyTableHelper {
     public synchronized void setModel(final StudyBean studyBean) {
         Preconditions.checkNotNull(studyBean, "studyBean is null");
         this.studyBean = studyBean;
+    }
+
+    public synchronized void setELabAction(final ILabsAction labsAction) {
+        Preconditions.checkNotNull(labsAction, "iLabsAction is null");
+        this.labsAction = labsAction;
     }
 
     public synchronized VerticalLayout createTableLayoutForMotPublications() {
@@ -157,6 +165,8 @@ public final class LabsStudyTableHelper {
             public void buttonClick(final ClickEvent event) {
                 if (event.getButton().getCaption().equals(DELETE_BUTTON_TEXT)
                     || event.getButton().getCaption().equals(DELETES_BUTTON_TEXT)) {
+                    LabsStudyTableHelper.this.labsAction.showButtonLayout();
+
                     @SuppressWarnings("unchecked")
                     Set<String> selectedIdSet = (Set<String>) motPubTable.getValue();
 
@@ -171,6 +181,8 @@ public final class LabsStudyTableHelper {
                     motPubTable.requestRepaint();
                 }
                 else if (event.getButton().getCaption().equals(ADD_BUTTON)) {
+                    LabsStudyTableHelper.this.labsAction.showButtonLayout();
+
                     motPubTable
                         .getApplication().getMainWindow()
                         .addWindow(new AddNewStudyPublicationWindow(new AddNewStudyPublicationWindow.Callback() {
@@ -276,6 +288,8 @@ public final class LabsStudyTableHelper {
             public void buttonClick(final ClickEvent event) {
                 if (event.getButton().getCaption().equals(DELETE_BUTTON_TEXT)
                     || event.getButton().getCaption().equals(DELETES_BUTTON_TEXT)) {
+                    LabsStudyTableHelper.this.labsAction.showButtonLayout();
+
                     @SuppressWarnings("unchecked")
                     Set<String> selectedIdSet = (Set<String>) resPubTable.getValue();
 
@@ -290,6 +304,8 @@ public final class LabsStudyTableHelper {
                     resPubTable.requestRepaint();
                 }
                 else if (event.getButton().getCaption().equals(ADD_BUTTON)) {
+                    LabsStudyTableHelper.this.labsAction.showButtonLayout();
+
                     resPubTable
                         .getApplication().getMainWindow()
                         .addWindow(new AddNewStudyPublicationWindow(new AddNewStudyPublicationWindow.Callback() {
