@@ -84,8 +84,8 @@ public class AddNewInstrumentsWindow extends Window implements Button.ClickListe
         this.rigController = controller;
 
         setModal(true);
-        setWidth("50%");
-        setHeight("500px");
+        setWidth("650px");
+        setHeight("450px");
         setClosable(true);
         setResizable(true);
         setScrollable(false);
