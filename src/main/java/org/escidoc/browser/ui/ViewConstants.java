@@ -30,9 +30,6 @@ package org.escidoc.browser.ui;
 
 public class ViewConstants {
 
-    public static final String BREAD_CRUMP_CONTENT =
-        "<ul id='crumbs'><li><a href='#'>Home</a></li><li><a href='#'>Main section</a></li><li><a href='#'>Sub section</a></li><li><a href='#'>Sub sub section</a></li><li>The page you are on right now</li></ul>";
-
     public static final String THEME_NAME = "myTheme";
 
     public static final String MAIN_WINDOW_TITLE = "eSciDoc Browser";
@@ -151,4 +148,22 @@ public class ViewConstants {
     public static final String RELATIONS = "Relations";
 
     public static final String ADDITIONAL_RESOURCES = "Additional Resources";
+
+    // Router
+    public static final String LAYOUT_ERR_CANNOT_FIND_CLASS = "Could not load the class name for the layout ";
+
+    public static final String LAYOUT_ERR_INSTANTIATE_CLASS = "Could not create an instance out of the layout class ";
+
+    public static final String LAYOUT_ERR_ILLEG_EXEP = "Could not load the layout because of an Illegal Exception ";
+
+    public static final String CONTROLLER_ERR_CANNOT_FIND_CLASS = "Could not load the class name for the controller ";
+
+    public static final String CONTROLLER_ERR_INSTANTIATE_CLASS =
+        "Could not create an instance out of the controller class ";
+
+    public static final String CONTROLLER_ERR_ILLEG_EXEP =
+        "Could not load the controller because of an Illegal Exception ";
+
+    public static final String LAYOUT_ERR_CANNOT_LOAD_CLASS = "Could not load Layout Name from the properties ";
+
 }

@@ -56,10 +56,10 @@ public class SimpleLayout extends VerticalLayout implements LayoutDesign {
 
     private TreeDataSource treeDataSource;
 
-    public SimpleLayout(final Window mainWindow, final EscidocServiceLocation serviceLocation,
-        final BrowserApplication app, final CurrentUser currentUser, final Repositories repositories,
-        final Router router) throws EscidocClientException {
-
+    public void init(
+        final Window mainWindow, final EscidocServiceLocation serviceLocation, final BrowserApplication app,
+        final CurrentUser currentUser, final Repositories repositories, final Router router)
+        throws EscidocClientException {
         this.serviceLocation = serviceLocation;
         this.app = app;
         this.mainWindow = mainWindow;
@@ -67,11 +67,11 @@ public class SimpleLayout extends VerticalLayout implements LayoutDesign {
         this.currentUser = currentUser;
         this.repositories = repositories;
         this.router = router;
+        buildViews();
 
-        init();
     }
 
-    private void init() throws EscidocClientException {
+    private void buildViews() throws EscidocClientException {
         initTreeDataSource();
         configureLayout();
         addHeader();

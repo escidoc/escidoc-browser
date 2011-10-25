@@ -71,8 +71,6 @@ import de.escidoc.core.resources.cmm.ContentModel;
 
 public class Router {
 
-    private static final String ERROR_NO_LAYOUT = "Couldn't create a layout for you.";
-
     private final BrowserApplication app;
 
     private final Window mainWindow;
@@ -119,7 +117,7 @@ public class Router {
      * Read the Plugins from a directory
      */
     private void initiatePlugins() {
-        // Determin here the Layout and additional Controllers that have to be
+        // Determine here the Layout and additional Controllers that have to be
         // used
         try {
             browserProperties = new Properties();
@@ -144,12 +142,42 @@ public class Router {
      */
     private void createLayout() {
         final String layoutClassName = browserProperties.getProperty("design");
-        try {
-            layout = new SimpleLayout(mainWindow, serviceLocation, app, currentUser, repositories, this);
+        LOG.debug(layoutClassName);
+        if (layoutClassName == null) {
+            this.getMainWindow().showNotification(ViewConstants.LAYOUT_ERR_CANNOT_LOAD_CLASS,
+                Notification.TYPE_ERROR_MESSAGE);
+            LOG.error("Could not resolve Layout ClassName. " + layoutClassName);
         }
-        catch (final EscidocClientException e) {
-            showError(ERROR_NO_LAYOUT + e.getLocalizedMessage());
+        else {
+            Class<?> layoutClass;
+            try {
+                layoutClass = Class.forName(layoutClassName);
+                LayoutDesign layoutInstance = (LayoutDesign) layoutClass.newInstance();
+                layoutInstance.init(mainWindow, serviceLocation, app, currentUser, repositories, this);
+                layout = layoutInstance;
+
+            }
+            catch (ClassNotFoundException e) {
+                this.getMainWindow().showNotification(ViewConstants.LAYOUT_ERR_CANNOT_FIND_CLASS,
+                    Notification.TYPE_ERROR_MESSAGE);
+                LOG.error(ViewConstants.LAYOUT_ERR_CANNOT_FIND_CLASS + e.getLocalizedMessage());
+            }
+            catch (InstantiationException e) {
+                this.getMainWindow().showNotification(ViewConstants.LAYOUT_ERR_INSTANTIATE_CLASS,
+                    Notification.TYPE_ERROR_MESSAGE);
+                LOG.error(ViewConstants.LAYOUT_ERR_INSTANTIATE_CLASS + e.getLocalizedMessage());
+            }
+            catch (IllegalAccessException e) {
+                this.getMainWindow().showNotification(ViewConstants.LAYOUT_ERR_ILLEG_EXEP,
+                    Notification.TYPE_ERROR_MESSAGE);
+                LOG.error(ViewConstants.LAYOUT_ERR_ILLEG_EXEP + e.getLocalizedMessage());
+            }
+            catch (EscidocClientException e) {
+                this.getMainWindow().showNotification(e.getLocalizedMessage(), Notification.TYPE_ERROR_MESSAGE);
+                LOG.error(e.getLocalizedMessage());
+            }
         }
+
     }
 
     /**
@@ -303,17 +331,20 @@ public class Router {
                     controller.showView(layout);
                 }
             }
-            catch (final ClassNotFoundException e) {
-                // TODO tell the user what happens.
-                LOG.error("Controller class could not be found. " + e.getMessage());
+            catch (ClassNotFoundException e) {
+                this.getMainWindow().showNotification(ViewConstants.CONTROLLER_ERR_CANNOT_FIND_CLASS,
+                    Notification.TYPE_ERROR_MESSAGE);
+                LOG.error(ViewConstants.CONTROLLER_ERR_CANNOT_FIND_CLASS + e.getLocalizedMessage());
             }
-            catch (final InstantiationException e) {
-                // TODO tell the user what happens.
-                LOG.error("Controller class could not be created. " + e.getMessage());
+            catch (InstantiationException e) {
+                this.getMainWindow().showNotification(ViewConstants.CONTROLLER_ERR_INSTANTIATE_CLASS,
+                    Notification.TYPE_ERROR_MESSAGE);
+                LOG.error(ViewConstants.CONTROLLER_ERR_INSTANTIATE_CLASS + e.getLocalizedMessage());
             }
-            catch (final IllegalAccessException e) {
-                // TODO tell the user what happens.
-                LOG.error("Access issues creating controller class. " + e.getMessage());
+            catch (IllegalAccessException e) {
+                this.getMainWindow().showNotification(ViewConstants.CONTROLLER_ERR_ILLEG_EXEP,
+                    Notification.TYPE_ERROR_MESSAGE);
+                LOG.error(ViewConstants.CONTROLLER_ERR_ILLEG_EXEP + e.getLocalizedMessage());
             }
         }
     }
