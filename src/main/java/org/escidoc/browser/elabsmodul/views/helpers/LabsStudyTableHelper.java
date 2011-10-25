@@ -87,6 +87,7 @@ public final class LabsStudyTableHelper {
         motPubTable.setMultiSelectMode(MultiSelectMode.DEFAULT);
         motPubTable.setImmediate(true);
         motPubTable.setPageLength(RIG_TABLE_SIZE);
+        motPubTable.setWidth("400px");
 
         motPubTable.setColumnReorderingAllowed(false);
         motPubTable.setColumnCollapsingAllowed(false);
@@ -205,6 +206,7 @@ public final class LabsStudyTableHelper {
         resPubTable.setMultiSelectMode(MultiSelectMode.DEFAULT);
         resPubTable.setImmediate(true);
         resPubTable.setPageLength(RIG_TABLE_SIZE);
+        resPubTable.setWidth("400px");
 
         resPubTable.setColumnReorderingAllowed(false);
         resPubTable.setColumnCollapsingAllowed(false);
