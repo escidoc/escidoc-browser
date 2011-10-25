@@ -79,6 +79,7 @@ public class AddNewStudyPublicationWindow extends Window implements Button.Click
         publicationTextField.setImmediate(true);
         publicationTextField.setRequired(true);
         publicationTextField.setRequiredError("Document URL cannot be empty!");
+        publicationTextField.setWidth("350px");
         publicationTextField.focus();
         inputLayout.addComponent(new Label("New publication's URL:"), 0);
         inputLayout.addComponent(publicationTextField, 1);

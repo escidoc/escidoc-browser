@@ -330,6 +330,18 @@ public class ELabsViewContants {
 
     public static final Resource ICON_16_NOTE = new ThemeResource("runo/icons/16/note.png");
 
+    public static final Resource ICON_16_DOC_TXT = new ThemeResource("runo/icons/16/document-txt.png");
+
+    public static final Resource ICON_16_DOC_PDF = new ThemeResource("runo/icons/16/document-pdf.png");
+
+    public static final Resource ICON_16_DOC_PPT = new ThemeResource("runo/icons/16/document-ppt.png");
+
+    public static final Resource ICON_16_DOC_DOC = new ThemeResource("runo/icons/16/document-doc.png");
+
+    public static final Resource ICON_16_DOC_IMG = new ThemeResource("runo/icons/16/document-image.png");
+
+    public static final Resource ICON_16_DOC_WEB = new ThemeResource("runo/icons/16/document-web.png");
+
     // Additional Caption names
     public static final String BWELABS_STUDY = "BW-eLabs Study";
 

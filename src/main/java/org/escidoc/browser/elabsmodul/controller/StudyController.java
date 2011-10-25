@@ -134,7 +134,7 @@ public class StudyController extends Controller implements ISaveAction {
             builder = factory.newDocumentBuilder();
             final Document doc = builder.newDocument();
 
-            Element study = doc.createElementNS("http://escidoc.org/ontologies/bw-elabs/re#", "Instrument");
+            Element study = doc.createElementNS("http://escidoc.org/ontologies/bw-elabs/re#", "Study");
             study.setPrefix("el");
 
             final Element title = doc.createElementNS("http://purl.org/dc/elements/1.1/", "title");
