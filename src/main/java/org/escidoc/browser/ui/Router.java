@@ -142,7 +142,6 @@ public class Router {
      */
     private void createLayout() {
         final String layoutClassName = browserProperties.getProperty("design");
-        LOG.debug(layoutClassName);
         if (layoutClassName == null) {
             this.getMainWindow().showNotification(ViewConstants.LAYOUT_ERR_CANNOT_LOAD_CLASS,
                 Notification.TYPE_ERROR_MESSAGE);

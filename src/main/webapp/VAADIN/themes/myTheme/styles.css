@@ -336,3 +336,16 @@ ul.horizontal_list li {
 	border-bottom:1px solid black;
 	background: #eeeeee;
 }
+.v-loading-indicator, .v-loading-indicator-delay, .v-loading-indicator-wait {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-position: 50%; /* Center the spinner inside the element */
+    background-color: #ccc; /* Choose whatever color you wish */
+    opacity: .5;
+    filter: alpha(opacity=50);
+    -ms-filter: alpha(opacity=50);
+    background-repeat: no-repeat; /* thanks to Marthin for pointing this out */
+}
