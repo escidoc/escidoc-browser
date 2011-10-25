@@ -156,7 +156,7 @@ public class ItemContent extends Panel {
             public void buttonClick(final ClickEvent event) {
                 mainWindow.open(new ExternalResource(
                     serviceLocation.getEscidocUri() + comp.getContent().getXLinkHref(), comp
-                        .getProperties().getMimeType()));
+                        .getProperties().getMimeType()), "_new");
             }
         });
         return link;
