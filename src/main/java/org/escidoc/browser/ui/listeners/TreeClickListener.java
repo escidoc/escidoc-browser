@@ -127,7 +127,7 @@ public class TreeClickListener implements ItemClickListener {
                 return repositories.container().findById(containerModel.getId()).getContext().getObjid();
             }
             catch (final EscidocClientException e) {
-                router.getWindow().showNotification(ViewConstants.NOT_ABLE_TO_RETRIEVE_A_CONTEXT);
+                router.getMainWindow().showNotification(ViewConstants.NOT_ABLE_TO_RETRIEVE_A_CONTEXT);
             }
         }
         else if (clickedResource instanceof ItemModel) {
@@ -136,7 +136,7 @@ public class TreeClickListener implements ItemClickListener {
                 return repositories.item().findById(itemModel.getId()).getContext().getObjid();
             }
             catch (final EscidocClientException e) {
-                router.getWindow().showNotification(ViewConstants.NOT_ABLE_TO_RETRIEVE_A_CONTEXT);
+                router.getMainWindow().showNotification(ViewConstants.NOT_ABLE_TO_RETRIEVE_A_CONTEXT);
             }
         }
         return AppConstants.EMPTY_STRING;

@@ -144,8 +144,7 @@ public class BrowserApplication extends Application {
         final Repositories repositories = new RepositoriesImpl(serviceLocation, mainWindow).createAllRepositories();
         repositories.loginWith(getCurrentUser().getToken());
         final Router router = new Router(mainWindow, serviceLocation, this, getCurrentUser(), repositories);
-        router.setHeight(getApplicationHeight() + "px");
-        router.setWidth("100%");
+
         return router;
     }
 

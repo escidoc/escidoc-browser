@@ -69,7 +69,7 @@ import com.vaadin.ui.Window.Notification;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.cmm.ContentModel;
 
-public class Router extends VerticalLayout {
+public class Router {
 
     private static final String ERROR_NO_LAYOUT = "Couldn't create a layout for you.";
 
@@ -237,7 +237,7 @@ public class Router extends VerticalLayout {
     }
 
     private void showError(final String msg) {
-        getWindow().showNotification(msg, Notification.TYPE_HUMANIZED_MESSAGE);
+        mainWindow.showNotification(msg, Notification.TYPE_HUMANIZED_MESSAGE);
     }
 
     public void show(final ResourceModel clickedResource) throws EscidocClientException {

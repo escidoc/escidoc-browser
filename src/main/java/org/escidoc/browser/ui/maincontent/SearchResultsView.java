@@ -118,7 +118,7 @@ public class SearchResultsView extends VerticalLayout {
             createPaginationTblResults(cssLayout);
         }
         catch (final EscidocClientException e) {
-            router.getApplication().getMainWindow().showNotification(e.getMessage());
+            router.getMainWindow().showNotification(e.getMessage());
         }
         addComponent(cssLayout);
     }
@@ -137,7 +137,7 @@ public class SearchResultsView extends VerticalLayout {
             createPaginationTblResults(cssLayout);
         }
         catch (final EscidocClientException e) {
-            mainSite.getApplication().getMainWindow().showNotification(e.getMessage());
+            mainSite.getMainWindow().showNotification(e.getMessage());
         }
         addComponent(cssLayout);
     }
@@ -263,7 +263,7 @@ public class SearchResultsView extends VerticalLayout {
                 if (variablesForTheTab[0].equals(ResourceType.CONTAINER.asLabel())) {
                     try {
                         return new ContainerView(serviceLocation, router, find(variablesForTheTab,
-                            ResourceType.CONTAINER), router.getWindow(), router.getCurrentUser(), repositories);
+                            ResourceType.CONTAINER), router.getMainWindow(), router.getCurrentUser(), repositories);
                     }
                     catch (final EscidocClientException e) {
                         showerror();
@@ -272,7 +272,7 @@ public class SearchResultsView extends VerticalLayout {
                 else if (variablesForTheTab[0].equals(ResourceType.ITEM.asLabel())) {
                     try {
                         return new ItemView(serviceLocation, repositories, router, layout, find(variablesForTheTab,
-                            ResourceType.ITEM), router.getWindow(), currentUser);
+                            ResourceType.ITEM), router.getMainWindow(), currentUser);
                     }
                     catch (final EscidocClientException e) {
                         showerror();
@@ -281,7 +281,7 @@ public class SearchResultsView extends VerticalLayout {
                 else if (variablesForTheTab[0].equals(ResourceType.CONTEXT.asLabel())) {
                     try {
                         return new ContextView(serviceLocation, router, find(variablesForTheTab, ResourceType.CONTEXT),
-                            router.getWindow(), router.getCurrentUser(), repositories);
+                            router.getMainWindow(), router.getCurrentUser(), repositories);
                     }
                     catch (final EscidocClientException e) {
                         showerror();
