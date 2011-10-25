@@ -75,7 +75,7 @@ public class AddNewStudyPublicationWindow extends Window implements Button.Click
         publicationTextField.setEnabled(true);
         publicationTextField.setVisible(true);
         publicationTextField.setNullRepresentation("");
-        publicationTextField.setInputPrompt("Input a new document URL...");
+        publicationTextField.setValue("http://");
         publicationTextField.setImmediate(true);
         publicationTextField.setRequired(true);
         publicationTextField.setRequiredError("Document URL cannot be empty!");

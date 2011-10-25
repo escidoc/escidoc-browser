@@ -188,10 +188,11 @@ public final class LabsStudyTableHelper {
                         .addWindow(new AddNewStudyPublicationWindow(new AddNewStudyPublicationWindow.Callback() {
                             @Override
                             public void onAcceptAction(String inputURLText) {
-                                // add to model
-                                LabsStudyTableHelper.this.studyBean.getMotivatingPublication().add(inputURLText);
                                 // add to table
-                                LabsStudyTableHelper.this.addnewItemToPublicationsTable(inputURLText, true);
+                                final String newURL =
+                                    LabsStudyTableHelper.this.addnewItemToPublicationsTable(inputURLText, true);
+                                // add to model
+                                LabsStudyTableHelper.this.studyBean.getMotivatingPublication().add(newURL);
                             }
                         }));
                 }
@@ -311,10 +312,11 @@ public final class LabsStudyTableHelper {
                         .addWindow(new AddNewStudyPublicationWindow(new AddNewStudyPublicationWindow.Callback() {
                             @Override
                             public void onAcceptAction(String inputURLText) {
-                                // add to model
-                                LabsStudyTableHelper.this.studyBean.getResultingPublication().add(inputURLText);
                                 // add to table
-                                LabsStudyTableHelper.this.addnewItemToPublicationsTable(inputURLText, false);
+                                final String newURL =
+                                    LabsStudyTableHelper.this.addnewItemToPublicationsTable(inputURLText, false);
+                                // add to model
+                                LabsStudyTableHelper.this.studyBean.getResultingPublication().add(newURL);
                             }
                         }));
                 }
@@ -383,7 +385,7 @@ public final class LabsStudyTableHelper {
         return resPubContainer;
     }
 
-    private void addnewItemToPublicationsTable(final String newDocumentURL, boolean isMotNotResPublication) {
+    private String addnewItemToPublicationsTable(final String newDocumentURL, boolean isMotNotResPublication) {
         Preconditions.checkNotNull(motPubContainer, "motPubContainer is null");
         Preconditions.checkNotNull(resPubContainer, "motPubContainer is null");
         Preconditions.checkNotNull(newDocumentURL, "document URL is null");
@@ -403,9 +405,19 @@ public final class LabsStudyTableHelper {
             }
             this.resPubTable.requestRepaint();
         }
+        return link.getCaption();
     }
 
     private static Link createLinkByResourcePath(String urlString) {
+        Preconditions.checkNotNull(urlString, "URL is null");
+        final String HTTP = "http://", HTTPS = "https://";
+
+        urlString = urlString.trim();
+
+        if (!urlString.toLowerCase().startsWith(HTTP) || !urlString.toLowerCase().startsWith(HTTPS)) {
+            urlString = HTTP + urlString;
+        }
+
         String inputString = new String(urlString);
         String fileFormat = null;
 
