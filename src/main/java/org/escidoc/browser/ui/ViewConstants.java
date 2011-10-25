@@ -30,6 +30,9 @@ package org.escidoc.browser.ui;
 
 public class ViewConstants {
 
+    public static final String BREAD_CRUMP_CONTENT =
+        "<ul id='crumbs'><li><a href='#'>Home</a></li><li><a href='#'>Main section</a></li><li><a href='#'>Sub section</a></li><li><a href='#'>Sub sub section</a></li><li>The page you are on right now</li></ul>";
+
     public static final String THEME_NAME = "myTheme";
 
     public static final String MAIN_WINDOW_TITLE = "eSciDoc Browser";
@@ -169,5 +172,30 @@ public class ViewConstants {
     // /End Router
 
     public static final String CLOSE_ALL_OPEN_TABS = "Close all open Tabs";
+
+    private static final String COULD_NOT_RETRIEVE_APPLICATION_URL = "Could not retrieve application URL";
+
+    public static final String RESOURCES = "Resources";
+
+    public static final String ADMINISTRATION = "Administration";
+
+    public static final String ORGANIZATIONAL_UNITS = "Organizational Units";
+
+    public static final String USERS = "Users";
+
+    public static final String REINDEX = "Reindex";
+
+    public static final String REPOSITORY_INFORMATION = "Repository Information";
+
+    public static final String LOAD_EXAMPLE = "Load Example";
+
+    public static final String LOAD_EXAMPLE_TEXT = "<p>Loads a set of example objects into the framework.</p>";
+
+    public static final String CLEAR_INDEX = "Clear Index?";
+
+    public static final String INDEX_NAME = "Index Name";
+
+    public static final String REINDEX_TEXT =
+        "Reinitialize the search index. The initialization runs asynchronously and returns some useful information to the user, e.g. the total number of objects found.";
 
 }

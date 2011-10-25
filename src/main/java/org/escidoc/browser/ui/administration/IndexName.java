@@ -26,31 +26,38 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-/**
- * 
- */
-package org.escidoc.browser.layout;
+package org.escidoc.browser.ui.administration;
 
-import org.escidoc.browser.BrowserApplication;
-import org.escidoc.browser.model.CurrentUser;
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.Router;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Window;
+import com.google.common.base.Preconditions;
 
-import de.escidoc.core.client.exceptions.EscidocClientException;
+public enum IndexName {
 
-/**
- * @author ajb More should be added here
- */
-public interface LayoutDesign {
+    REINDEX_ALL("all"), CONTEXT_ADMIN("context_admin"), CONTENT_RELATION_ADMIN("content_relation_admin"), REINDEX_ESCIDOC_OU(
+        "escidocou_all"), OU_ADMIN("ou_admin"), ESCIDOCOAIPMH_ALL("escidocoaipmh_all"), ITEM_CONTAINER_ADMIN(
+        "item_container_admin"), REINDEX_ESCIDOC("escidoc_all"), CONTENT_MODEL_ADMIN("content_model_admin");
 
-    void init(
-        Window mainWindow, EscidocServiceLocation serviceLocation, BrowserApplication app, CurrentUser currentUser,
-        Repositories repositories, Router router) throws EscidocClientException;
+    private String internalName;
 
-    void openView(Component cmp, String title);
+    IndexName(String internalName) {
+        Preconditions.checkNotNull(internalName, "internalName is null: %s", internalName);
+        this.internalName = internalName;
+    }
+
+    public String asInternalName() {
+        return internalName;
+    }
+
+    private final static Set<String> set = new HashSet<String>(values().length);
+
+    public static Collection<?> all() {
+        for (final IndexName indexName : values()) {
+            set.add(indexName.asInternalName());
+        }
+        return set;
+    }
 
 }

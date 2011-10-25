@@ -33,11 +33,12 @@ import org.escidoc.browser.repository.internal.ContentModelRepository;
 import org.escidoc.browser.repository.internal.ContextRepository;
 import org.escidoc.browser.repository.internal.ItemRepository;
 
+import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.InternalClientException;
 
 public interface Repositories {
 
-    void loginWith(String token) throws InternalClientException;
+    void loginWith(String token) throws InternalClientException, EscidocClientException;
 
     ContextRepository context();
 
@@ -50,5 +51,7 @@ public interface Repositories {
     PdpRepository pdp();
 
     ContentModelRepository contentModel();
+
+    AdminRepository admin();
 
 }

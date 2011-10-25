@@ -5,7 +5,7 @@
 
 	<groupId>org.escidoc</groupId>
 	<artifactId>browser</artifactId>
-	<version>0.3-SNAPSHOT</version>
+	<version>0.4-SNAPSHOT</version>
 	<packaging>war</packaging>
 
 	<dependencies>
@@ -13,7 +13,7 @@
 		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin</artifactId>
-			<version>6.6.8</version>
+			<version>6.7.1</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -46,7 +46,7 @@
 		<dependency>
 			<groupId>org.escidoc.core</groupId>
 			<artifactId>escidoc-ijc</artifactId>
-			<version>1.3.3</version>
+			<version>1.3.2</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-discovery</groupId>
@@ -244,6 +244,41 @@
 		</plugins>
 
 		<finalName>${project.artifactId}</finalName>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.zeroturnaround
+										</groupId>
+										<artifactId>
+											jrebel-maven-plugin
+										</artifactId>
+										<versionRange>
+											[1.0.7,)
+										</versionRange>
+										<goals>
+											<goal>generate</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 	<name>${project.name}</name>

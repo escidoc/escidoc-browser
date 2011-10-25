@@ -29,6 +29,7 @@
 package org.escidoc.browser.ui;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -61,6 +62,7 @@ import org.escidoc.browser.ui.maincontent.SearchAdvancedView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.vaadin.Application;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -108,7 +110,7 @@ public class Router {
         init();
     }
 
-    private void init() throws EscidocClientException {
+    private void init() {
         initiatePlugins();
         createLayout();
     }
@@ -264,7 +266,7 @@ public class Router {
     }
 
     private void showError(final String msg) {
-        mainWindow.showNotification(msg, Notification.TYPE_HUMANIZED_MESSAGE);
+        app.getMainWindow().showNotification(msg, Notification.TYPE_HUMANIZED_MESSAGE);
     }
 
     public void show(final ResourceModel clickedResource) throws EscidocClientException {
@@ -374,4 +376,7 @@ public class Router {
         return repositories;
     }
 
+    public Application getApp() {
+        return app;
+    }
 }

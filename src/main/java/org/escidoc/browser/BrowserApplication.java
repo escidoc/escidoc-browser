@@ -45,8 +45,6 @@ import org.escidoc.browser.ui.listeners.StartButtonListener;
 import org.escidoc.browser.ui.listeners.WindowResizeListener;
 import org.escidoc.browser.ui.listeners.WindowResizeObserver;
 import org.escidoc.browser.ui.listeners.WindowResizeObserverImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.Application;
@@ -58,9 +56,7 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 @SuppressWarnings("serial")
 public class BrowserApplication extends Application {
 
-    static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
-
-    final Window mainWindow = new Window(ViewConstants.MAIN_WINDOW_TITLE);
+    private final Window mainWindow = new Window(ViewConstants.MAIN_WINDOW_TITLE);
 
     private EscidocServiceLocation serviceLocation = new EscidocServiceLocationImpl();
 
@@ -68,7 +64,7 @@ public class BrowserApplication extends Application {
 
     private WindowResizeListener windowResizeListener;
 
-    WindowResizeObserver observer;
+    private WindowResizeObserver observer;
 
     private Map<String, String[]> parameters;
 
@@ -124,7 +120,7 @@ public class BrowserApplication extends Application {
 
     private void setMainWindowContent(final EscidocServiceLocation serviceLocation) {
         try {
-            Router router = createRouter(serviceLocation, mainWindow, observer);
+            Router router = createRouter(serviceLocation, mainWindow);
             mainWindow.setContent(router.getLayout());
         }
         catch (final EscidocClientException e) {
@@ -137,8 +133,7 @@ public class BrowserApplication extends Application {
         }
     }
 
-    private Router createRouter(
-        final EscidocServiceLocation serviceLocation, final Window mainWindow, final WindowResizeObserver observer)
+    private Router createRouter(final EscidocServiceLocation serviceLocation, final Window mainWindow)
         throws EscidocClientException, MalformedURLException {
 
         final Repositories repositories = new RepositoriesImpl(serviceLocation, mainWindow).createAllRepositories();

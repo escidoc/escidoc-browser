@@ -1,5 +1,30 @@
 /**
- * 
+ * CDDL HEADER START
+ *
+ * The contents of this file are subject to the terms of the
+ * Common Development and Distribution License, Version 1.0 only
+ * (the "License").  You may not use this file except in compliance
+ * with the License.
+ *
+ * You can obtain a copy of the license at license/ESCIDOC.LICENSE
+ * or https://www.escidoc.org/license/ESCIDOC.LICENSE .
+ * See the License for the specific language governing permissions
+ * and limitations under the License.
+ *
+ * When distributing Covered Code, include this CDDL HEADER in each
+ * file and include the License file at license/ESCIDOC.LICENSE.
+ * If applicable, add the following below this CDDL HEADER, with the
+ * fields enclosed by brackets "[]" replaced with your own identifying
+ * information: Portions Copyright [yyyy] [name of copyright owner]
+ *
+ * CDDL HEADER END
+ *
+ *
+ *
+ * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * fuer wissenschaftlich-technische Information mbH and Max-Planck-
+ * Gesellschaft zur Foerderung der Wissenschaft e.V.
+ * All rights reserved.  Use is subject to license terms.
  */
 package org.escidoc.browser.layout;
 
@@ -13,6 +38,8 @@ import org.escidoc.browser.model.internal.TreeDataSourceImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.administration.AdministrationTreeView;
 import org.escidoc.browser.ui.maincontent.SimpleSearch;
 import org.escidoc.browser.ui.mainpage.Footer;
 import org.escidoc.browser.ui.mainpage.HeaderContainer;
@@ -20,10 +47,16 @@ import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.navigation.NavigationTreeView;
 import org.escidoc.browser.ui.navigation.RootNode;
 import org.escidoc.browser.ui.view.helpers.CloseTabsViewHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
@@ -31,10 +64,15 @@ import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.themes.BaseTheme;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
+@SuppressWarnings("serial")
 public class SimpleLayout extends VerticalLayout implements LayoutDesign {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SimpleLayout.class);
+
     private final TabSheet mainContentTabs = new TabSheet();
 
     private final CssLayout mainLayout = new CssLayout();
@@ -57,6 +95,7 @@ public class SimpleLayout extends VerticalLayout implements LayoutDesign {
 
     private TreeDataSource treeDataSource;
 
+    @Override
     public void init(
         final Window mainWindow, final EscidocServiceLocation serviceLocation, final BrowserApplication app,
         final CurrentUser currentUser, final Repositories repositories, final Router router)
@@ -69,7 +108,6 @@ public class SimpleLayout extends VerticalLayout implements LayoutDesign {
         this.repositories = repositories;
         this.router = router;
         buildViews();
-
     }
 
     private void buildViews() throws EscidocClientException {
@@ -106,7 +144,17 @@ public class SimpleLayout extends VerticalLayout implements LayoutDesign {
     }
 
     private void addNavigationPanel() throws EscidocClientException {
-        mainLayout.addComponent(buildNavigationPanel());
+        try {
+            mainLayout.addComponent(buildNavigationPanel());
+        }
+        catch (UnsupportedOperationException e) {
+            LOG.error(e.getMessage());
+            mainWindow.showNotification("Error", e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        }
+        catch (URISyntaxException e) {
+            LOG.error(e.getMessage());
+            mainWindow.showNotification("Error", e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        }
     }
 
     /**
@@ -126,23 +174,53 @@ public class SimpleLayout extends VerticalLayout implements LayoutDesign {
      * 
      * @return Panel
      * @throws EscidocClientException
+     * @throws URISyntaxException
+     * @throws UnsupportedOperationException
      */
-    private Panel buildNavigationPanel() throws EscidocClientException {
+    private Panel buildNavigationPanel() throws EscidocClientException, UnsupportedOperationException,
+        URISyntaxException {
         mainNavigation.setScrollable(true);
         mainNavigation.setStyleName("floatleft paddingtop10");
         mainNavigation.setWidth("30%");
         mainNavigation.setHeight("88%");
 
         addRootNode();
-        addNavigationTree();
+        addAccordion();
         return mainNavigation;
     }
 
-    private void addNavigationTree() throws EscidocClientException {
+    private void addAccordion() throws UnsupportedOperationException, EscidocClientException, URISyntaxException {
+        final Accordion accordion = new Accordion();
+
         mainNavigationTree =
             new NavigationTreeBuilder(serviceLocation, currentUser, repositories).buildNavigationTree(router,
                 mainWindow, treeDataSource);
-        mainNavigation.addComponent(mainNavigationTree);
+
+        accordion.addTab(mainNavigationTree, ViewConstants.RESOURCES, null);
+
+        AdministrationTreeView administrationTreeView =
+            new AdministrationTreeView(router, repositories.admin(), repositories.pdp());
+        administrationTreeView.init();
+
+        Button users = new Button("User Accounts");
+        users.setStyleName(BaseTheme.BUTTON_LINK);
+        users.addListener(new ClickListener() {
+
+            @SuppressWarnings("deprecation")
+            @Override
+            public void buttonClick(ClickEvent event) {
+
+                UserView userView = new UserView();
+                userView.init();
+                router.openTab(userView, "User Accounts");
+            }
+        });
+
+        accordion.addTab(administrationTreeView, ViewConstants.ADMINISTRATION, null);
+        accordion.addTab(new Label(ViewConstants.ORGANIZATIONAL_UNITS), ViewConstants.ORGANIZATIONAL_UNITS, null);
+        accordion.addTab(users, ViewConstants.USERS, null);
+
+        mainNavigation.addComponent(accordion);
         ((Layout) mainNavigation.getContent()).setMargin(false);
     }
 
@@ -177,6 +255,7 @@ public class SimpleLayout extends VerticalLayout implements LayoutDesign {
      * @param cmp
      * @param tabname
      */
+    @Override
     public void openView(final Component cmp, String tabname) {
         final Tab tb = mainContentTabs.addTab(cmp);
         if (tabname.length() > 50) {

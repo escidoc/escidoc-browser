@@ -85,4 +85,44 @@ public class NavigationTreeViewImpl extends CustomComponent implements Navigatio
         Preconditions.checkNotNull(handler, "handler is null: %s", handler);
         tree.addActionHandler(handler);
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((itemClickListener == null) ? 0 : itemClickListener.hashCode());
+        result = prime * result + ((tree == null) ? 0 : tree.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        NavigationTreeViewImpl other = (NavigationTreeViewImpl) obj;
+        if (itemClickListener == null) {
+            if (other.itemClickListener != null) {
+                return false;
+            }
+        }
+        else if (!itemClickListener.equals(other.itemClickListener)) {
+            return false;
+        }
+        if (tree == null) {
+            if (other.tree != null) {
+                return false;
+            }
+        }
+        else if (!tree.equals(other.tree)) {
+            return false;
+        }
+        return true;
+    }
 }

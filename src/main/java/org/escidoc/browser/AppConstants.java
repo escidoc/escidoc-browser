@@ -30,11 +30,11 @@ package org.escidoc.browser;
 
 public final class AppConstants {
 
-    public static final String MIMETYPE_ICON_LOCATION = "src/main/webapp/VAADIN/themes/myTheme/images/filetypes/";
-
     private AppConstants() {
         // not to be initialized
     }
+
+    public static final String MIMETYPE_ICON_LOCATION = "src/main/webapp/VAADIN/themes/myTheme/images/filetypes/";
 
     public static final String PENDING = "pending";
 

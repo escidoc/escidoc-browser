@@ -26,31 +26,43 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-/**
- * 
- */
-package org.escidoc.browser.layout;
+package org.escidoc.browser.ui.administration;
 
-import org.escidoc.browser.BrowserApplication;
-import org.escidoc.browser.model.CurrentUser;
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.Router;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.themes.Reindeer;
 
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Window;
+public class Style {
 
-import de.escidoc.core.client.exceptions.EscidocClientException;
+    private Style() {
+        // do not init.
+    }
 
-/**
- * @author ajb More should be added here
- */
-public interface LayoutDesign {
+    public static class Ruler extends Label {
+        private static final long serialVersionUID = -4909196895183387829L;
 
-    void init(
-        Window mainWindow, EscidocServiceLocation serviceLocation, BrowserApplication app, CurrentUser currentUser,
-        Repositories repositories, Router router) throws EscidocClientException;
+        public Ruler() {
+            super("<hr />", Label.CONTENT_XHTML);
+        }
+    }
 
-    void openView(Component cmp, String title);
+    public static class H1 extends Label {
+        private static final long serialVersionUID = -2843233317747887008L;
+
+        public H1(final String caption) {
+            super(caption);
+            setSizeUndefined();
+            setStyleName(Reindeer.LABEL_H1);
+        }
+    }
+
+    public static class H2 extends Label {
+        private static final long serialVersionUID = 1210257960304559971L;
+
+        public H2(final String caption) {
+            super(caption);
+            setSizeUndefined();
+            setStyleName(Reindeer.LABEL_H2);
+        }
+    }
 
 }

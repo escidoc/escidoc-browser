@@ -31,6 +31,7 @@ package org.escidoc.browser.repository.internal;
 import java.net.MalformedURLException;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.repository.AdminRepository;
 import org.escidoc.browser.repository.PdpRepository;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.StagingRepository;
@@ -38,7 +39,7 @@ import org.escidoc.browser.repository.StagingRepository;
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Window;
 
-import de.escidoc.core.client.exceptions.InternalClientException;
+import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class RepositoriesImpl implements Repositories {
 
@@ -56,10 +57,11 @@ public class RepositoriesImpl implements Repositories {
 
     private ContentModelRepository contentModelRepository;
 
+    private AdminRepository adminRepository;
+
     private final Window mainWindow;
 
-    public RepositoriesImpl(final EscidocServiceLocation serviceLocation, Window mainWindow)
-        throws MalformedURLException {
+    public RepositoriesImpl(final EscidocServiceLocation serviceLocation, Window mainWindow) {
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         this.serviceLocation = serviceLocation;
         this.mainWindow = mainWindow;
@@ -72,16 +74,18 @@ public class RepositoriesImpl implements Repositories {
         stagingRepository = new StagingRepositoryImpl(serviceLocation);
         pdpRepository = new PdpRepositoryImpl(serviceLocation.getEscidocUrl());
         contentModelRepository = new ContentModelRepository(serviceLocation);
+        adminRepository = new AdminRepository(serviceLocation);
         return this;
     }
 
     @Override
-    public void loginWith(final String token) throws InternalClientException {
+    public void loginWith(final String token) throws EscidocClientException {
         contextRepository.loginWith(token);
         containerRepository.loginWith(token);
         itemRepository.loginWith(token);
         stagingRepository.loginWith(token);
         pdpRepository.loginWith(token);
+        adminRepository.loginWith(token);
     }
 
     @Override
@@ -119,5 +123,11 @@ public class RepositoriesImpl implements Repositories {
         Preconditions
             .checkNotNull(contentModelRepository, "contentModelRepository is null: %s", contentModelRepository);
         return contentModelRepository;
+    }
+
+    @Override
+    public AdminRepository admin() {
+        Preconditions.checkNotNull(adminRepository, "adminRepository is null: %s", adminRepository);
+        return adminRepository;
     }
 }
