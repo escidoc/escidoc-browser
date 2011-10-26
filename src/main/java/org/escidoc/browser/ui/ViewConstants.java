@@ -166,4 +166,8 @@ public class ViewConstants {
 
     public static final String LAYOUT_ERR_CANNOT_LOAD_CLASS = "Could not load Layout Name from the properties ";
 
+    // /End Router
+
+    public static final String CLOSE_ALL_OPEN_TABS = "Close all open Tabs";
+
 }

@@ -1,5 +1,6 @@
 package org.escidoc.browser.ui.view.helpers;
 
+import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.ItemView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,7 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.themes.BaseTheme;
 
 public class CloseTabsViewHelper implements ClickListener {
+
     private AbstractLayout layout;
 
     private static final Logger LOG = LoggerFactory.getLogger(ItemView.class);
@@ -34,10 +36,10 @@ public class CloseTabsViewHelper implements ClickListener {
 
     private void buildButton(AbstractLayout layout) {
         Button btnRemoveTabs = new Button();
-        ThemeResource icon = new ThemeResource("../runo/icons/16/cancel.png");
+        ThemeResource icon = new ThemeResource("images/assets/close.gif");
         btnRemoveTabs.setStyleName(BaseTheme.BUTTON_LINK);
         btnRemoveTabs.addStyleName("closeallTabs");
-        btnRemoveTabs.setDescription("Remove all open Tabs");
+        btnRemoveTabs.setDescription(ViewConstants.CLOSE_ALL_OPEN_TABS);
         btnRemoveTabs.setIcon(icon);
         btnRemoveTabs.addStyleName(FLOAT_RIGHT);
         btnRemoveTabs.addListener(this);
