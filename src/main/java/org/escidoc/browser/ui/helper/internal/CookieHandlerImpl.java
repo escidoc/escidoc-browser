@@ -36,7 +36,6 @@ public class CookieHandlerImpl extends CookieHandler implements HttpServletReque
             Cookie[] cookies = request.getCookies();
             for (int i = 0; i < cookies.length; i++) {
                 if ("username".equals(cookies[i].getName()))
-                    // Log the user in automatically
                     eSciDocUserHandle = cookies[i].getValue();
             }
         }
