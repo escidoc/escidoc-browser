@@ -97,11 +97,17 @@ public class ItemPropertiesVH {
 
     public void init() {
         handleLayoutListeners();
-        createBreadcrumbp();
+        createBreadcrump();
+        createPermanentLink();
         bindNametoHeader();
         bindHrRuler();
         bindProperties();
 
+    }
+
+    private void createPermanentLink() {
+        new CreatePermanentLinkVH(mainWindow.getURL().toString(), resourceProxy.getId(), resourceProxy
+            .getType().toString(), cssLayout, serviceLocation);
     }
 
     private void bindProperties() {
@@ -182,8 +188,7 @@ public class ItemPropertiesVH {
         cssLayout.addComponent(headerContext);
     }
 
-    @SuppressWarnings("unused")
-    private void createBreadcrumbp() {
+    private void createBreadcrump() {
         new BreadCrumbMenu(cssLayout, resourceProxy, mainWindow, serviceLocation, repositories);
     }
 

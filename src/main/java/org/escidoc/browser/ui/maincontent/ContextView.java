@@ -33,6 +33,7 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.view.helpers.CreatePermanentLinkVH;
 import org.escidoc.browser.ui.view.helpers.DirectMember;
 
 import com.google.common.base.Preconditions;
@@ -99,7 +100,9 @@ public class ContextView extends VerticalLayout {
 
     private void init() throws EscidocClientException {
         configureLayout();
-        createBreadCrumb();
+        createBreadCrump();
+        new CreatePermanentLinkVH(mainWindow.getURL().toString(), resourceProxy.getId(), resourceProxy
+            .getType().toString(), cssLayout, serviceLocation);
         bindNameToHeader();
         bindDescription();
         addHorizontalRuler();
@@ -186,7 +189,7 @@ public class ContextView extends VerticalLayout {
         cssLayout.addComponent(description);
     }
 
-    private void createBreadCrumb() {
+    private void createBreadCrump() {
         new BreadCrumbMenu(cssLayout, resourceProxy);
     }
 

@@ -38,6 +38,7 @@ import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
+import org.escidoc.browser.ui.view.helpers.CreatePermanentLinkVH;
 import org.escidoc.browser.ui.view.helpers.DirectMember;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -153,7 +154,8 @@ public class ContainerView extends VerticalLayout {
         configureLayout();
         handleLayoutListeners();
         createBreadCrumb();
-
+        new CreatePermanentLinkVH(mainWindow.getURL().toString(), resourceProxy.getId(), resourceProxy
+            .getType().toString(), cssLayout, serviceLocation);
         bindNameToHeader();
         bindDescription();
         addHorizontalRuler();
