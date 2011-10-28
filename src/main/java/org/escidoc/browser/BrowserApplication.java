@@ -223,7 +223,7 @@ public class BrowserApplication extends Application implements HttpServletReques
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals(AppConstants.COOKIE_NAME)) {
-                LOG.debug("E GJETA COOKIE " + cookie.getValue());
+                LOG.debug("Cookie was found " + cookie.getValue());
                 return cookie.getValue();
             }
         }

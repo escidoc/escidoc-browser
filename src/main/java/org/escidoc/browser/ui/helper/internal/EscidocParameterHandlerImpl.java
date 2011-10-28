@@ -87,16 +87,15 @@ public class EscidocParameterHandlerImpl implements EscidocParameterHandler {
         }
         else if (Util.isEscidocUrlExists(parameters) && hasNotEscidocHandler(parameters)) {
             // TODO FIx the case where we have a cookie, but no eSciDocHandler on the parameters
-            // LOG.debug("This is the case" + app.getCookieValue(AppConstants.COOKIE_NAME));
-            // if (app.getCookieValue(AppConstants.COOKIE_NAME) != null) {
-            // setEscidocUri(parameters);
-            // app.setServiceLocation(serviceLocation);
-            // app.setLogoutURL(serviceLocation.getLogoutUri());
-            // loginThroughCookie(app.getCookieValue(AppConstants.COOKIE_NAME));
-            // app.setUser(new UserRepositoryImpl(serviceLocation).findCurrentUser());
-            // }
-            // else
-            if (isServerOnline(tryToParseEscidocUriFromParameter(parameters))) {
+            LOG.debug("This is the case" + app.getCookieValue(AppConstants.COOKIE_NAME));
+            if (app.getCookieValue(AppConstants.COOKIE_NAME) != null) {
+                setEscidocUri(parameters);
+                app.setServiceLocation(serviceLocation);
+                app.setLogoutURL(serviceLocation.getLogoutUri());
+                loginThroughCookie(app.getCookieValue(AppConstants.COOKIE_NAME));
+                app.setUser(new UserRepositoryImpl(serviceLocation).findCurrentUser());
+            }
+            else if (isServerOnline(tryToParseEscidocUriFromParameter(parameters))) {
 
                 setEscidocUri(parameters);
                 app.setServiceLocation(serviceLocation);
@@ -144,6 +143,7 @@ public class EscidocParameterHandlerImpl implements EscidocParameterHandler {
 
     // TODO fix and use for the case of no eSciDocHandler
     private void loginThroughCookie(String escidocToken) {
+        LOG.debug("I LOGGED WITH THE userCookie");
         // final String escidocToken = ParamaterDecoder.parseAndDecodeToken(parameters);
         final UserRepositoryImpl userRepository = new UserRepositoryImpl(serviceLocation);
         userRepository.withToken(escidocToken);
