@@ -92,7 +92,8 @@ public class DirectMember {
         this.parentId = parentId;
         this.router = router;
         this.mainWindow = mainWindow;
-        panel = leftPanel;
+        this.panel = leftPanel;
+
         try {
             createButtons();
         }
@@ -130,13 +131,13 @@ public class DirectMember {
             new Label("<div class=\"v-accordion-item-caption\"><div class=\"v-caption\"><div class=\"v-captiontext\">"
                 + DIRECT_MEMBERS + "</div><div class=\"v-caption-clearelem\"></div></div></div>", Label.CONTENT_RAW);
         nameofPanel.setStyleName("accordion v-captiontext");
+
         nameofPanel.setWidth("100%");
         panel.addComponent(nameofPanel);
-
         // the changes start here
         VerticalLayout panelLayout = (VerticalLayout) panel.getContent();
         panelLayout.setHeight("100%");
-        panelLayout.addStyleName("my-panel");
+        // panelLayout.addStyleName("my-panel");
 
         Button addContainerButton = new Button("+Container  ");
         addContainerButton.setStyleName(Reindeer.BUTTON_SMALL);
@@ -176,8 +177,8 @@ public class DirectMember {
         });
 
         HorizontalLayout hl = new HorizontalLayout();
-        // hl.setStyleName("button-layout");
         hl.setWidth("200px");
+
         hl.setHeight("20px");
 
         panelLayout.addComponent(hl);

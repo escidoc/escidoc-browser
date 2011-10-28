@@ -28,10 +28,16 @@
  */
 package org.escidoc.browser.ui.helper.internal;
 
-import com.google.common.base.Preconditions;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.Map;
 
-import com.vaadin.ui.Window.Notification;
-
+import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
@@ -43,14 +49,8 @@ import org.escidoc.browser.ui.helper.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Map;
+import com.google.common.base.Preconditions;
+import com.vaadin.ui.Window.Notification;
 
 @SuppressWarnings("serial")
 public class EscidocParameterHandlerImpl implements EscidocParameterHandler {
@@ -86,7 +86,18 @@ public class EscidocParameterHandlerImpl implements EscidocParameterHandler {
             doLogin(parameters);
         }
         else if (Util.isEscidocUrlExists(parameters) && hasNotEscidocHandler(parameters)) {
+            // TODO FIx the case where we have a cookie, but no eSciDocHandler on the parameters
+            // LOG.debug("This is the case" + app.getCookieValue(AppConstants.COOKIE_NAME));
+            // if (app.getCookieValue(AppConstants.COOKIE_NAME) != null) {
+            // setEscidocUri(parameters);
+            // app.setServiceLocation(serviceLocation);
+            // app.setLogoutURL(serviceLocation.getLogoutUri());
+            // loginThroughCookie(app.getCookieValue(AppConstants.COOKIE_NAME));
+            // app.setUser(new UserRepositoryImpl(serviceLocation).findCurrentUser());
+            // }
+            // else
             if (isServerOnline(tryToParseEscidocUriFromParameter(parameters))) {
+
                 setEscidocUri(parameters);
                 app.setServiceLocation(serviceLocation);
                 app.setLogoutURL(serviceLocation.getLogoutUri());
@@ -122,6 +133,18 @@ public class EscidocParameterHandlerImpl implements EscidocParameterHandler {
 
     private void login(final Map<String, String[]> parameters) {
         final String escidocToken = ParamaterDecoder.parseAndDecodeToken(parameters);
+        final UserRepositoryImpl userRepository = new UserRepositoryImpl(serviceLocation);
+        userRepository.withToken(escidocToken);
+        final CurrentUser currentUser = userRepository.findCurrentUser();
+        app.setUser(currentUser);
+        // app.setCookie(AppConstants.COOKIE_NAME, escidocToken);
+        // Storing the encoded handler
+        app.setCookie(AppConstants.COOKIE_NAME, findEscidocToken(parameters));
+    }
+
+    // TODO fix and use for the case of no eSciDocHandler
+    private void loginThroughCookie(String escidocToken) {
+        // final String escidocToken = ParamaterDecoder.parseAndDecodeToken(parameters);
         final UserRepositoryImpl userRepository = new UserRepositoryImpl(serviceLocation);
         userRepository.withToken(escidocToken);
         final CurrentUser currentUser = userRepository.findCurrentUser();
@@ -174,5 +197,14 @@ public class EscidocParameterHandlerImpl implements EscidocParameterHandler {
     @Override
     public EscidocServiceLocation getServiceLocation() {
         return serviceLocation;
+    }
+
+    private static String findEscidocToken(final Map<String, String[]> parameters) {
+        final String[] escidocHandeList = parameters.get(AppConstants.ESCIDOC_USER_HANDLE);
+        if (escidocHandeList.length > 1) {
+            LOG.warn("Found more than one eSciDoc token. The first will be used.");
+
+        }
+        return escidocHandeList[0];
     }
 }

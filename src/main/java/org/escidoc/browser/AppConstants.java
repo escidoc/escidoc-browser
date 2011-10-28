@@ -74,4 +74,12 @@ public final class AppConstants {
     public static final String ESCIDOC = "escidoc";
 
     public static final String DC_NAMESPACE = "http://purl.org/dc/elements/1.1/";
+
+    // Anyone wants cookies?
+    public static final String COOKIE_NAME = "eSciDocUserHandle";
+
+    public static final String COOKIE_PATH = "/browser";
+
+    public static final int COOKIE_MAX_AGE = 7200;
+
 }
