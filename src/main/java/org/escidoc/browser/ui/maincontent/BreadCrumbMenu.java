@@ -28,9 +28,11 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
+import java.net.MalformedURLException;
 import java.util.Collections;
 import java.util.List;
 
+import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
@@ -40,7 +42,6 @@ import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.escidoc.browser.ui.helper.ResourceHierarchy;
 
 import com.google.common.base.Preconditions;
-import com.vaadin.ui.AbstractComponentContainer;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
@@ -89,7 +90,16 @@ public class BreadCrumbMenu {
             final List<ResourceModel> hierarchy = rs.getHierarchy(resourceProxy);
             Collections.reverse(hierarchy);
             for (final ResourceModel resourceModel : hierarchy) {
-                buf.append("<li><a href='#'>" + resourceModel.getName() + "</a></li>");
+                try {
+                    buf.append("<li><a href='"
+                        + this.generateLink(resourceModel.getId(), resourceModel.getType().asLabel().toUpperCase(),
+                            escidocServiceLocation.getEscidocUrl().toString()) + "'>" + resourceModel.getName()
+                        + "</a></li>");
+                }
+                catch (MalformedURLException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
             }
         }
         catch (final EscidocClientException e) {
@@ -118,9 +128,12 @@ public class BreadCrumbMenu {
             final List<ResourceModel> hierarchy = rs.getHierarchy(resourceProxy);
             Collections.reverse(hierarchy);
             for (final ResourceModel resourceModel : hierarchy) {
-                buf.append("<li><a href='#'>" + resourceModel.getName() + "</a></li>");
+                buf.append("<li><a href='"
+                    + this.generateLink(resourceModel.getId(), resourceModel.getType().asLabel().toUpperCase(),
+                        escidocServiceLocation.getEscidocUrl().toString()) + "'>" + resourceModel.getName()
+                    + "</a></li>");
             }
-            buf.append("<li><a href='#'>" + resourceProxy.getName() + "</a></li>");
+            buf.append("<li><a href=''>" + resourceProxy.getName() + "</a></li>");
         }
         catch (final Exception e) {
             buf.append("<li><a href='#'>" + resourceProxy.getContext().getXLinkTitle() + "</a></li>");
@@ -133,10 +146,16 @@ public class BreadCrumbMenu {
         Preconditions.checkNotNull(breadCrumbModel, "###BreadCrumbModel ref is null");
 
         for (final ResourceModel resourceModel : breadCrumbModel) {
-            buf.append("<li><a href='#'>" + resourceModel.getName() + "</a></li>");
+            buf.append("<li><a href='"
+                + this.generateLink(resourceModel.getId(), resourceModel.getType().asLabel().toUpperCase(),
+                    ((BrowserApplication) component.getApplication()).getServiceLocation().getEscidocUri().toString())
+                + "'>" + resourceModel.getName() + "</a></li>");
         }
         ((ComponentContainer) component).addComponent(new Label(bCstring + buf.toString() + "<li></ul>",
             Label.CONTENT_RAW));
+    }
 
+    private String generateLink(String id, String type, String url) {
+        return "?id=" + id + "&type=" + type + "&escidocurl=" + url;
     }
 }
