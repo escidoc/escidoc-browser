@@ -213,7 +213,7 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
     }
 
     private void redirectToLoginView() {
-        getWindow().open(new ExternalResource(serviceLocation.getLoginUri()));
+        getWindow().open(new ExternalResource(serviceLocation.getLoginUri() + "?target=http://www.shqiperia.com"));
     }
 
     @Override

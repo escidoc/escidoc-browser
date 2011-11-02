@@ -204,6 +204,7 @@ public class BrowserApplication extends Application implements HttpServletReques
     public void onRequestStart(HttpServletRequest request, HttpServletResponse response) {
         this.response = response;
         this.request = request;
+        System.out.println("HEADER: " + request.getHeader("Referer"));
     }
 
     @Override
@@ -221,10 +222,12 @@ public class BrowserApplication extends Application implements HttpServletReques
 
     public String getCookieValue(String cookieName) {
         Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals(AppConstants.COOKIE_NAME)) {
-                LOG.debug("Cookie was found " + cookie.getValue());
-                return cookie.getValue();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals(AppConstants.COOKIE_NAME)) {
+                    LOG.debug("Cookie was found " + cookie.getValue());
+                    return cookie.getValue();
+                }
             }
         }
         return null;
