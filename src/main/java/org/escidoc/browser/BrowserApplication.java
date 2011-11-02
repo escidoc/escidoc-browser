@@ -230,7 +230,7 @@ public class BrowserApplication extends Application implements HttpServletReques
         return null;
     }
 
-    public void eraseCookie(String cookieName) {
+    public void removeCookie(String cookieName) {
         Cookie cookie = new Cookie(cookieName, "");
         cookie.setPath(AppConstants.COOKIE_PATH);
         cookie.setMaxAge(0); // Delete
