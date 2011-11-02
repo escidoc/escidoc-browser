@@ -71,4 +71,6 @@ public interface ItemProxy extends ResourceProxy {
     String getLatestVersionId();
 
     Components getElements();
+
+    String getReleasedBy();
 }

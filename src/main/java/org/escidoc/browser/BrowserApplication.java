@@ -31,6 +31,10 @@ package org.escidoc.browser;
 import java.net.MalformedURLException;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.internal.EscidocServiceLocationImpl;
@@ -48,13 +52,14 @@ import org.escidoc.browser.ui.listeners.WindowResizeObserverImpl;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.Application;
+import com.vaadin.terminal.gwt.server.HttpServletRequestListener;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
-public class BrowserApplication extends Application {
+public class BrowserApplication extends Application implements HttpServletRequestListener {
 
     private final Window mainWindow = new Window(ViewConstants.MAIN_WINDOW_TITLE);
 
@@ -67,6 +72,10 @@ public class BrowserApplication extends Application {
     private WindowResizeObserver observer;
 
     private Map<String, String[]> parameters;
+
+    private HttpServletResponse response;
+
+    private HttpServletRequest request;
 
     @Override
     public void init() {
@@ -177,4 +186,53 @@ public class BrowserApplication extends Application {
     public CurrentUser getCurrentUser() {
         return (CurrentUser) getUser();
     }
+
+    public HttpServletResponse getResponse() {
+        return response;
+    }
+
+    public HttpServletRequest getRequest() {
+        return request;
+    }
+
+    @Override
+    public void onRequestStart(HttpServletRequest request, HttpServletResponse response) {
+        this.response = response;
+        this.request = request;
+        System.out.println("HEADER: " + request.getHeader("Referer"));
+    }
+
+    @Override
+    public void onRequestEnd(HttpServletRequest request, HttpServletResponse response) {
+        // Just ignore this! I am not going to write anywhere else but the browser!
+    }
+
+    public void setCookie(String cookieName, String cookieValue) {
+        Cookie cookie = new Cookie(cookieName, cookieValue);
+        // Use a fixed path
+        cookie.setPath(AppConstants.COOKIE_PATH);
+        cookie.setMaxAge(AppConstants.COOKIE_MAX_AGE); // One hour
+        response.addCookie(cookie);
+    }
+
+    public String getCookieValue(String cookieName) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals(AppConstants.COOKIE_NAME)) {
+                    LOG.debug("Cookie was found " + cookie.getValue());
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
+    }
+
+    public void removeCookie(String cookieName) {
+        Cookie cookie = new Cookie(cookieName, "");
+        cookie.setPath(AppConstants.COOKIE_PATH);
+        cookie.setMaxAge(0); // Delete
+        response.addCookie(cookie);
+    }
+
 }

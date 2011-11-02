@@ -42,7 +42,6 @@ import org.escidoc.browser.ui.listeners.LogoutListener;
 import org.escidoc.browser.ui.maincontent.SearchResultsView;
 
 import com.google.common.base.Preconditions;
-import com.vaadin.Application;
 import com.vaadin.Application.UserChangeEvent;
 import com.vaadin.Application.UserChangeListener;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -77,7 +76,7 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
 
     private Button logout;
 
-    private final Application app;
+    private final BrowserApplication app;
 
     private final EscidocServiceLocation serviceLocation;
 
@@ -214,7 +213,7 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
     }
 
     private void redirectToLoginView() {
-        getWindow().open(new ExternalResource(serviceLocation.getLoginUri()));
+        getWindow().open(new ExternalResource(serviceLocation.getLoginUri() + "?target=http://www.shqiperia.com"));
     }
 
     @Override

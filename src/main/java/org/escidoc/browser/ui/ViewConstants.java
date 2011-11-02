@@ -198,4 +198,6 @@ public class ViewConstants {
     public static final String REINDEX_TEXT =
         "Reinitialize the search index. The initialization runs asynchronously and returns some useful information to the user, e.g. the total number of objects found.";
 
+    private static final String COULD_NOT_RETRIEVE_APPLICATION_URL = "Could not retrieve application URL";
+
 }

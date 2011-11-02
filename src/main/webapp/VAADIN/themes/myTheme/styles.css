@@ -355,3 +355,10 @@ ul.horizontal_list li {
     -ms-filter: alpha(opacity=50);
     background-repeat: no-repeat; /* thanks to Marthin for pointing this out */
 }
+.permanentLink {
+	z-index: 10;
+	position: absolute;
+	margin-right: 18px;
+	top: 0px;
+	right: 0;
+}

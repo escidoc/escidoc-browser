@@ -71,6 +71,9 @@ import de.escidoc.core.resources.cmm.ContentModel;
 
 public class Router {
 
+    private static final String FAIL_RETRIEVING_RESOURCE =
+        "Cannot retrieve resource, or you don't have access to see this resource";
+
     private final BrowserApplication app;
 
     private final Window mainWindow;
@@ -104,13 +107,13 @@ public class Router {
         this.serviceLocation = serviceLocation;
         this.currentUser = currentUser;
         this.repositories = repositories;
-
         init();
     }
 
     private void init() {
         initiatePlugins();
         createLayout();
+        permanentURLelement();
     }
 
     /**
@@ -210,7 +213,7 @@ public class Router {
     /**
      * This is the Permanent Link entry point Check if there is a tab variable set in the GET Method of the page and
      * open a tab containing the object with that ID URL Example
-     * http://escidev4:8084/browser/mainWindow?tab=escidoc:16037
+     * http://escidev4:8084/browser/mainWindow?id=escidoc:16037
      * &type=Item&escidocurl=http://escidev4.fiz-karlsruhe.de:8080
      */
     private void permanentURLelement() {
@@ -228,7 +231,7 @@ public class Router {
                         context.getName());
                 }
                 catch (final EscidocClientException e) {
-                    showError("Cannot retrieve Context");
+                    showError(FAIL_RETRIEVING_RESOURCE);
                 }
             }
             else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("CONTAINER")) {
@@ -239,7 +242,7 @@ public class Router {
                         container.getName());
                 }
                 catch (final EscidocClientException e) {
-                    showError("Cannot retrieve Container");
+                    showError(FAIL_RETRIEVING_RESOURCE);
                 }
             }
             else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("ITEM")) {
@@ -249,7 +252,7 @@ public class Router {
                         item.getName());
                 }
                 catch (final EscidocClientException e) {
-                    showError("Cannot retrieve Item");
+                    showError(FAIL_RETRIEVING_RESOURCE);
                 }
             }
             else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("sa")) {
@@ -263,7 +266,7 @@ public class Router {
     }
 
     private void showError(final String msg) {
-        app.getMainWindow().showNotification(msg, Notification.TYPE_HUMANIZED_MESSAGE);
+        mainWindow.showNotification(msg, Notification.TYPE_ERROR_MESSAGE);
     }
 
     public void show(final ResourceModel clickedResource) throws EscidocClientException {
