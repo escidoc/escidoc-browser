@@ -291,23 +291,23 @@ public class InvestigationController extends Controller implements ISaveAction {
         ContainerRepository containerRepository = repositories.container();
         final String ESCIDOC = "escidoc";
 
-        InvestigationBean investigationBean = null;
-        Container container = null;
-
-        if (model instanceof InvestigationBean) {
-            investigationBean = (InvestigationBean) model;
+        if (!(model instanceof InvestigationBean)) {
+            return;
         }
+
+        InvestigationBean investigationBean = (InvestigationBean) model;
         final Element metaDataContent =
             InvestigationController.createInvestigationDOMElementByBeanModel(investigationBean);
 
         try {
-            container = containerRepository.findContainerById(investigationBean.getObjid());
+            Container container = containerRepository.findContainerById(investigationBean.getObjid());
             MetadataRecord metadataRecord = container.getMetadataRecords().get(ESCIDOC);
             metadataRecord.setContent(metaDataContent);
             containerRepository.update(container);
         }
         catch (EscidocClientException e) {
             LOG.error(e.getLocalizedMessage());
+            // TODO show error to user
         }
         finally {
             model = null;

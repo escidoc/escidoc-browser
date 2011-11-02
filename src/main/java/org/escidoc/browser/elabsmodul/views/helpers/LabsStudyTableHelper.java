@@ -29,7 +29,6 @@
 package org.escidoc.browser.elabsmodul.views.helpers;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -204,8 +203,7 @@ public final class LabsStudyTableHelper {
                     LabsStudyTableHelper.this.synchronizeStudyModel(selectedIdSet, true);
 
                     // instant delete from table containerdatasource
-                    for (Iterator<String> iterator = selectedIdSet.iterator(); iterator.hasNext();) {
-                        String idToDelete = iterator.next();
+                    for (String idToDelete : selectedIdSet) {
                         motPubTable.getContainerDataSource().removeItem(idToDelete);
                     }
                     motPubTable.requestRepaint();
@@ -328,8 +326,7 @@ public final class LabsStudyTableHelper {
                     LabsStudyTableHelper.this.synchronizeStudyModel(selectedIdSet, false);
 
                     // instant delete from table containerdatasource
-                    for (Iterator<String> iterator = selectedIdSet.iterator(); iterator.hasNext();) {
-                        String idToDelete = iterator.next();
+                    for (String idToDelete : selectedIdSet) {
                         resPubTable.getContainerDataSource().removeItem(idToDelete);
                     }
                     resPubTable.requestRepaint();
@@ -365,8 +362,7 @@ public final class LabsStudyTableHelper {
     private void synchronizeStudyModel(final Set<String> selectedElements, boolean isMotNotResPublication) {
         List<String> idsToDelete = new ArrayList<String>();
         if (isMotNotResPublication) {
-            for (Iterator<String> iterator = this.studyBean.getMotivatingPublication().iterator(); iterator.hasNext();) {
-                String publicationString = iterator.next();
+            for (String publicationString : this.studyBean.getMotivatingPublication()) {
                 if (selectedElements.contains(publicationString)) {
                     idsToDelete.add(publicationString);
                 }
@@ -374,9 +370,7 @@ public final class LabsStudyTableHelper {
             this.studyBean.getMotivatingPublication().removeAll(idsToDelete);
         }
         else {
-            for (Iterator<String> iterator = this.studyBean.getResultingPublication().iterator(); iterator.hasNext();) {
-                String publicationString = iterator.next();
-                List<String> idsToDelet = new ArrayList<String>();
+            for (String publicationString : this.studyBean.getResultingPublication()) {
                 if (selectedElements.contains(publicationString)) {
                     idsToDelete.add(publicationString);
                 }
@@ -388,8 +382,7 @@ public final class LabsStudyTableHelper {
     private IndexedContainer fillMotPubTableData(final List<String> motivationPublications) {
         motPubContainer = new IndexedContainer();
         motPubContainer.addContainerProperty(motPubProperty1, Link.class, null);
-        for (Iterator<String> iterator = this.studyBean.getMotivatingPublication().iterator(); iterator.hasNext();) {
-            String publicationURL = iterator.next();
+        for (String publicationURL : this.studyBean.getMotivatingPublication()) {
             Link link = createLinkByResourcePath(publicationURL);
             Item item = motPubContainer.addItem(publicationURL);
             if (item != null) {
@@ -403,8 +396,7 @@ public final class LabsStudyTableHelper {
     private IndexedContainer fillResPubTableData(final List<String> motivationPublications) {
         resPubContainer = new IndexedContainer();
         resPubContainer.addContainerProperty(resPubProperty1, Link.class, null);
-        for (Iterator<String> iterator = this.studyBean.getResultingPublication().iterator(); iterator.hasNext();) {
-            String publicationURL = iterator.next();
+        for (String publicationURL : this.studyBean.getResultingPublication()) {
             Link link = createLinkByResourcePath(publicationURL);
             Item item = resPubContainer.addItem(publicationURL);
             if (item != null) {
@@ -446,8 +438,8 @@ public final class LabsStudyTableHelper {
             urlString = HTTP + urlString;
         }
 
-        String inputString = new String(urlString);
-        String fileFormat = null;
+        String inputString = urlString;
+        String fileFormat;
 
         while (inputString.endsWith("/")) {
             inputString = inputString.substring(0, inputString.length() - 1);

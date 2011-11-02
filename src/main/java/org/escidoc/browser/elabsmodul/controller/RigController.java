@@ -30,7 +30,6 @@ package org.escidoc.browser.elabsmodul.controller;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -74,9 +73,6 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.om.item.Item;
 
-/**
- * Rig controller class.
- */
 public final class RigController extends Controller implements IRigAction {
 
     private static Logger LOG = LoggerFactory.getLogger(RigController.class);
@@ -209,8 +205,7 @@ public final class RigController extends Controller implements IRigAction {
             description.setTextContent(rigBean.getDescription());
             rig.appendChild(description);
 
-            for (Iterator<InstrumentBean> iterator = rigBean.getContentList().iterator(); iterator.hasNext();) {
-                InstrumentBean instrumentBean = iterator.next();
+            for (InstrumentBean instrumentBean : rigBean.getContentList()) {
                 final Element insturmentRelation =
                     doc.createElementNS("http://escidoc.org/ontologies/bw-elabs/re#", "instrument");
                 insturmentRelation.setPrefix("el");
@@ -284,16 +279,15 @@ public final class RigController extends Controller implements IRigAction {
         ItemRepository itemRepositories = repositories.item();
         final String ESCIDOC = "escidoc";
 
-        RigBean rigBean = null;
-        Item item = null;
-
-        if (this.beanModel instanceof RigBean) {
-            rigBean = (RigBean) beanModel;
+        if (!(this.beanModel instanceof RigBean)) {
+            return;
         }
+
+        RigBean rigBean = (RigBean) beanModel;
         final Element metaDataContent = RigController.createRigDOMElementByBeanModel(rigBean);
 
         try {
-            item = itemRepositories.findItemById(rigBean.getObjectId());
+            Item item = itemRepositories.findItemById(rigBean.getObjectId());
             MetadataRecord metadataRecord = item.getMetadataRecords().get(ESCIDOC);
             metadataRecord.setContent(metaDataContent);
             itemRepositories.update(item.getObjid(), item);
@@ -317,8 +311,7 @@ public final class RigController extends Controller implements IRigAction {
         try {
             final Pattern controllerIdPattern = Pattern.compile(SEARCH_STRING_FOR_MATCHER);
             itemList = repositories.item().findAll();
-            for (Iterator<ResourceModel> iterator = itemList.iterator(); iterator.hasNext();) {
-                ResourceModel resourceModel = iterator.next();
+            for (ResourceModel resourceModel : itemList) {
                 if (ItemModel.isItem(resourceModel)) {
                     ItemProxy itemProxy = (ItemProxy) repositories.item().findById(resourceModel.getId());
                     final String cmmId = itemProxy.getContentModel().getObjid();

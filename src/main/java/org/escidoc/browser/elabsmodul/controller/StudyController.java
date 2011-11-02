@@ -29,7 +29,6 @@
 package org.escidoc.browser.elabsmodul.controller;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -128,22 +127,22 @@ public class StudyController extends Controller implements ISaveAction {
         ContainerRepository containerRepositories = repositories.container();
         final String ESCIDOC = "escidoc";
 
-        StudyBean studyBean = null;
-        Container container = null;
-
-        if (beanModel instanceof StudyBean) {
-            studyBean = (StudyBean) beanModel;
+        if (!(beanModel instanceof StudyBean)) {
+            return;
         }
+
+        StudyBean studyBean = (StudyBean) beanModel;
         final Element metaDataContent = StudyController.createInstrumentDOMElementByBeanModel(studyBean);
 
         try {
-            container = containerRepositories.findContainerById(studyBean.getObjectId());
+            Container container = containerRepositories.findContainerById(studyBean.getObjectId());
             MetadataRecord metadataRecord = container.getMetadataRecords().get(ESCIDOC);
             metadataRecord.setContent(metaDataContent);
             containerRepositories.update(container);
         }
         catch (EscidocClientException e) {
             LOG.error(e.getLocalizedMessage());
+            // TODO show error to user.
         }
         finally {
             beanModel = null;
@@ -175,8 +174,7 @@ public class StudyController extends Controller implements ISaveAction {
             description.setTextContent(studyBean.getDescription());
             study.appendChild(description);
 
-            for (Iterator<String> iterator = studyBean.getResultingPublication().iterator(); iterator.hasNext();) {
-                String publicationPath = iterator.next();
+            for (String publicationPath : studyBean.getResultingPublication()) {
                 if (publicationPath != null && !publicationPath.equals("")) {
                     final Element resultingPublication = doc.createElement("el:resulting-publication");
                     resultingPublication.setAttributeNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdf:resource",
@@ -185,8 +183,7 @@ public class StudyController extends Controller implements ISaveAction {
                 }
             }
 
-            for (Iterator<String> iterator = studyBean.getMotivatingPublication().iterator(); iterator.hasNext();) {
-                String publicationPath = iterator.next();
+            for (String publicationPath : studyBean.getMotivatingPublication()) {
                 if (publicationPath != null && !publicationPath.equals("")) {
                     final Element motivatingPublication = doc.createElement("el:motivating-publication");
                     motivatingPublication.setAttributeNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdf:resource",
@@ -216,18 +213,16 @@ public class StudyController extends Controller implements ISaveAction {
         }
 
         try {
-            studyBean = loadBeanData(containerProxy);
+            studyBean = loadBeanData();
         }
         catch (final EscidocBrowserException e) {
             LOG.error(e.getLocalizedMessage());
-            studyBean = null;
+            // TODO show error to the user
         }
-        // Study View
-        Component studyView = new StudyView(studyBean, this, this.createBeadCrumbModel(), resourceProxy, router);
-        return studyView; // pushed into StudyView
+        return new StudyView(studyBean, this, this.createBeadCrumbModel(), resourceProxy, router);
     }
 
-    private synchronized StudyBean loadBeanData(ContainerProxy containerProxy) throws EscidocBrowserException {
+    private synchronized StudyBean loadBeanData() throws EscidocBrowserException {
         if (resourceProxy == null || !(resourceProxy instanceof ContainerProxy)) {
             throw new EscidocBrowserException("NOT an ContainerProxy", null);
         }
@@ -278,17 +273,18 @@ public class StudyController extends Controller implements ISaveAction {
     }
 
     private List<ResourceModel> createBeadCrumbModel() {
-        final ResourceHierarchy rs = new ResourceHierarchy(serviceLocation, repositories);
-        List<ResourceModel> hierarchy = null;
         try {
-            hierarchy = rs.getHierarchy(resourceProxy);
+            List<ResourceModel> hierarchy =
+                new ResourceHierarchy(serviceLocation, repositories).getHierarchy(resourceProxy);
+            Collections.reverse(hierarchy);
+            hierarchy.add(resourceProxy);
+            return hierarchy;
         }
         catch (EscidocClientException e) {
-            LOG.debug("Fatal error, could not load BreadCrumb " + e.getLocalizedMessage());
+            LOG.error("Fatal error, could not load BreadCrumb " + e.getLocalizedMessage());
+            // TODO show error to the user
         }
-        Collections.reverse(hierarchy);
-        hierarchy.add(resourceProxy);
-        return hierarchy;
+        return Collections.emptyList();
     }
 
 }

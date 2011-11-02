@@ -216,7 +216,7 @@ public class BrowserApplication extends Application implements HttpServletReques
         Cookie cookie = new Cookie(cookieName, cookieValue);
         // Use a fixed path
         cookie.setPath(AppConstants.COOKIE_PATH);
-        cookie.setMaxAge(AppConstants.COOKIE_MAX_AGE); // One hour
+        cookie.setMaxAge(AppConstants.TWO_HOURS); // One hour
         response.addCookie(cookie);
     }
 

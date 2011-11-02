@@ -37,17 +37,17 @@ import org.escidoc.browser.BrowserApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
+
 public class CookieHandler {
     static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
-
-    private BrowserApplication app;
 
     private HttpServletResponse response;
 
     private HttpServletRequest request;
 
     public CookieHandler(BrowserApplication app) {
-        this.app = app;
+        Preconditions.checkNotNull(app, "app is null: %s", app);
         this.response = app.getResponse();
         this.request = app.getRequest();
     }
@@ -56,15 +56,15 @@ public class CookieHandler {
         Cookie cookie = new Cookie(cookieName, cookieValue);
         // Use a fixed path
         cookie.setPath(AppConstants.COOKIE_PATH);
-        cookie.setMaxAge(AppConstants.COOKIE_MAX_AGE); // One hour
+        cookie.setMaxAge(AppConstants.TWO_HOURS);
         response.addCookie(cookie);
     }
 
-    public String getCookieValue(String cookieName) {
+    public String getCookieValue() {
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals(AppConstants.COOKIE_NAME)) {
-                LOG.debug("E GJETA COOKIE " + cookie.getValue());
+                LOG.debug("cookie value" + cookie.getValue());
                 return cookie.getValue();
             }
         }

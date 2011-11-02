@@ -80,6 +80,6 @@ public final class AppConstants {
 
     public static final String COOKIE_PATH = "/browser";
 
-    public static final int COOKIE_MAX_AGE = 7200;
+    public static final int TWO_HOURS = 7200;
 
 }

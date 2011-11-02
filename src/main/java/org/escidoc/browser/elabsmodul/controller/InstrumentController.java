@@ -35,11 +35,9 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 
 import org.escidoc.browser.controller.Controller;
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
-import org.escidoc.browser.elabsmodul.controller.utils.DOM2String;
 import org.escidoc.browser.elabsmodul.exceptions.EscidocBrowserException;
 import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
 import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
@@ -130,75 +128,66 @@ public final class InstrumentController extends Controller implements ISaveActio
         final ItemProxy itemProxy = (ItemProxy) resourceProxy;
         final InstrumentBean instrumentBean = new InstrumentBean();
 
-        try {
-            final Element e = itemProxy.getMedataRecords().get("escidoc").getContent();
-            final String xml = DOM2String.convertDom2String(e);
+        final Element e = itemProxy.getMedataRecords().get("escidoc").getContent();
+        final NodeList nodeList = e.getChildNodes();
 
-            final NodeList nodeList = e.getChildNodes();
+        instrumentBean.setObjectId(itemProxy.getId());
 
-            instrumentBean.setObjectId(itemProxy.getId());
+        final String URI_DC = "http://purl.org/dc/elements/1.1/";
+        final String URI_EL = "http://escidoc.org/ontologies/bw-elabs/re#";
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            final Node node = nodeList.item(i);
+            final String nodeName = node.getLocalName();
+            final String nsUri = node.getNamespaceURI();
 
-            final String URI_DC = "http://purl.org/dc/elements/1.1/";
-            final String URI_EL = "http://escidoc.org/ontologies/bw-elabs/re#";
-            for (int i = 0; i < nodeList.getLength(); i++) {
-                final Node node = nodeList.item(i);
-                final String nodeName = node.getLocalName();
-                final String nsUri = node.getNamespaceURI();
+            if ("title".equals(nodeName) && URI_DC.equals(nsUri)) {
+                instrumentBean.setName((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
+            }
 
-                if ("title".equals(nodeName) && URI_DC.equals(nsUri)) {
-                    instrumentBean.setName((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
-                }
+            else if ("description".equals(nodeName) && URI_DC.equals(nsUri)) {
+                instrumentBean
+                    .setDescription((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
+            }
 
-                else if ("description".equals(nodeName) && URI_DC.equals(nsUri)) {
-                    instrumentBean
-                        .setDescription((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
+            else if ("requires-configuration".equals(nodeName) && URI_EL.equals(nsUri)) {
+                final String value = node.getFirstChild().getNodeValue();
+                if (value.equals("no")) {
+                    instrumentBean.setConfiguration(false);
                 }
-
-                else if ("requires-configuration".equals(nodeName) && URI_EL.equals(nsUri)) {
-                    final String value = node.getFirstChild().getNodeValue();
-                    if (value.equals("no")) {
-                        instrumentBean.setConfiguration(false);
-                    }
-                    else if (value.equals("yes")) {
-                        instrumentBean.setConfiguration(true);
-                    }
-
-                }
-                else if ("requires-calibration".equals(nodeName) && URI_EL.equals(nsUri)) {
-                    final String value = node.getFirstChild().getNodeValue();
-                    if (value.equals("no")) {
-                        instrumentBean.setCalibration(false);
-                    }
-                    else if (value.equals("yes")) {
-                        instrumentBean.setCalibration(true);
-                    }
-                }
-                else if ("esync-endpoint".equals(nodeName) && URI_EL.equals(nsUri)) {
-                    instrumentBean
-                        .setESyncDaemon((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
-                }
-                else if ("monitored-folder".equals(nodeName) && URI_EL.equals(nsUri)) {
-                    instrumentBean
-                        .setFolder((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
-                }
-                else if ("result-mime-type".equals(nodeName) && URI_EL.equals(nsUri)) {
-                    instrumentBean
-                        .setFileFormat((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
-                }
-                else if ("responsible-person".equals(nodeName) && URI_EL.equals(nsUri)
-                    && node.getAttributes().getNamedItem("rdf:resource") != null) {
-                    instrumentBean
-                        .setDeviceSupervisor(node.getAttributes().getNamedItem("rdf:resource").getNodeValue());
-                }
-                else if ("institution".equals(nodeName) && URI_EL.equals(nsUri)
-                    && node.getAttributes().getNamedItem("rdf:resource") != null) {
-                    instrumentBean.setInstitute(node.getAttributes().getNamedItem("rdf:resource").getNodeValue());
+                else if (value.equals("yes")) {
+                    instrumentBean.setConfiguration(true);
                 }
 
             }
-        }
-        catch (final TransformerException e) {
-            LOG.error(e.getLocalizedMessage());
+            else if ("requires-calibration".equals(nodeName) && URI_EL.equals(nsUri)) {
+                final String value = node.getFirstChild().getNodeValue();
+                if (value.equals("no")) {
+                    instrumentBean.setCalibration(false);
+                }
+                else if (value.equals("yes")) {
+                    instrumentBean.setCalibration(true);
+                }
+            }
+            else if ("esync-endpoint".equals(nodeName) && URI_EL.equals(nsUri)) {
+                instrumentBean
+                    .setESyncDaemon((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
+            }
+            else if ("monitored-folder".equals(nodeName) && URI_EL.equals(nsUri)) {
+                instrumentBean.setFolder((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
+            }
+            else if ("result-mime-type".equals(nodeName) && URI_EL.equals(nsUri)) {
+                instrumentBean
+                    .setFileFormat((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
+            }
+            else if ("responsible-person".equals(nodeName) && URI_EL.equals(nsUri)
+                && node.getAttributes().getNamedItem("rdf:resource") != null) {
+                instrumentBean.setDeviceSupervisor(node.getAttributes().getNamedItem("rdf:resource").getNodeValue());
+            }
+            else if ("institution".equals(nodeName) && URI_EL.equals(nsUri)
+                && node.getAttributes().getNamedItem("rdf:resource") != null) {
+                instrumentBean.setInstitute(node.getAttributes().getNamedItem("rdf:resource").getNodeValue());
+            }
+
         }
 
         return instrumentBean;
@@ -383,22 +372,22 @@ public final class InstrumentController extends Controller implements ISaveActio
         ItemRepository itemRepositories = repositories.item();
         final String ESCIDOC = "escidoc";
 
-        InstrumentBean instrumentBean = null;
-        Item item = null;
-
-        if (beanModel instanceof InstrumentBean) {
-            instrumentBean = (InstrumentBean) beanModel;
+        if (!(beanModel instanceof InstrumentBean)) {
+            return;
         }
+
+        InstrumentBean instrumentBean = (InstrumentBean) beanModel;
         final Element metaDataContent = InstrumentController.createInstrumentDOMElementByBeanModel(instrumentBean);
 
         try {
-            item = itemRepositories.findItemById(instrumentBean.getObjectId());
+            Item item = itemRepositories.findItemById(instrumentBean.getObjectId());
             MetadataRecord metadataRecord = item.getMetadataRecords().get(ESCIDOC);
             metadataRecord.setContent(metaDataContent);
             itemRepositories.update(item.getObjid(), item);
         }
         catch (EscidocClientException e) {
             LOG.error(e.getLocalizedMessage());
+            // TODO show error message to user
         }
         finally {
             beanModel = null;

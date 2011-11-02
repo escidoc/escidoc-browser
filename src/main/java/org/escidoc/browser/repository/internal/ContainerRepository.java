@@ -80,8 +80,6 @@ public class ContainerRepository implements Repository {
 
     private final Window mainWindow;
 
-    private boolean delete;
-
     static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
 
     ContainerRepository(final EscidocServiceLocation escidocServiceLocation, Window mainWindow) {

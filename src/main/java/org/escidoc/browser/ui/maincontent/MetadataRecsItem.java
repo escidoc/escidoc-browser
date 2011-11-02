@@ -74,13 +74,9 @@ public class MetadataRecsItem {
 
     private final Repositories repositories;
 
-    private Accordion metadataRecs;
+    private final Panel pnl = new Panel();
 
-    private Panel pnlmdRec;
-
-    final Panel pnl = new Panel();
-
-    VerticalLayout btnaddContainer = new VerticalLayout();
+    private VerticalLayout btnaddContainer = new VerticalLayout();
 
     private final CurrentUser currentUser;
 

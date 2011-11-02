@@ -84,15 +84,13 @@ public class ItemPropertiesVH {
 
     private Label lblLockstatus;
 
-    private Component oldComponent = null;
+    private Component oldComponent;
 
-    private Component swapComponent = null;
+    private Component swapComponent;
 
     private Label lblStatus;
 
     private Window subwindow;
-
-    private Label lblLatestVersionStatus;
 
     private String lockStatus;
 
