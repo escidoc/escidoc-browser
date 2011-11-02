@@ -170,6 +170,8 @@ public class ViewConstants {
 
     public static final String CLOSE_ALL_OPEN_TABS = "Close all open Tabs";
 
-    private static final String COULD_NOT_RETRIEVE_APPLICATION_URL = "Could not retrieve application URL";
+    public static final String COULD_NOT_RETRIEVE_APPLICATION_URL = "Could not retrieve application URL";
+
+    public static final String PERMANENT_LINK = "Permanent Link";
 
 }
