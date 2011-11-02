@@ -49,6 +49,8 @@ import org.escidoc.browser.ui.listeners.StartButtonListener;
 import org.escidoc.browser.ui.listeners.WindowResizeListener;
 import org.escidoc.browser.ui.listeners.WindowResizeObserver;
 import org.escidoc.browser.ui.listeners.WindowResizeObserverImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.Application;
@@ -60,6 +62,8 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
 public class BrowserApplication extends Application implements HttpServletRequestListener {
+
+    private static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
 
     private final Window mainWindow = new Window(ViewConstants.MAIN_WINDOW_TITLE);
 
