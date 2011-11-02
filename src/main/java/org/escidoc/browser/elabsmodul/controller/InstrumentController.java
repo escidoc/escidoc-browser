@@ -39,7 +39,6 @@ import javax.xml.transform.TransformerException;
 
 import org.escidoc.browser.controller.Controller;
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
-import org.escidoc.browser.elabsmodul.controller.utils.DOM2String;
 import org.escidoc.browser.elabsmodul.exceptions.EscidocBrowserException;
 import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
 import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
@@ -132,7 +131,6 @@ public final class InstrumentController extends Controller implements ISaveActio
 
         try {
             final Element e = itemProxy.getMedataRecords().get("escidoc").getContent();
-            final String xml = DOM2String.convertDom2String(e);
 
             final NodeList nodeList = e.getChildNodes();
 

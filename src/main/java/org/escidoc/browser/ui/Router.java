@@ -29,7 +29,6 @@
 package org.escidoc.browser.ui;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -53,7 +52,6 @@ import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.helper.Util;
 import org.escidoc.browser.ui.maincontent.ContainerView;
 import org.escidoc.browser.ui.maincontent.ContextView;
@@ -147,7 +145,6 @@ public class Router {
         if (layoutClassName == null) {
             this.getMainWindow().showNotification(ViewConstants.LAYOUT_ERR_CANNOT_LOAD_CLASS,
                 Notification.TYPE_ERROR_MESSAGE);
-            LOG.error("Could not resolve Layout ClassName. " + layoutClassName);
         }
         else {
             Class<?> layoutClass;
@@ -351,17 +348,16 @@ public class Router {
     }
 
     private ResourceProxy tryToFindResource(final ResourceModel clickedResource) throws EscidocClientException {
-        Repository repository = null;
         if (ContainerModel.isContainer(clickedResource)) {
-            repository = repositories.container();
+            return repositories.container().findById(clickedResource.getId());
         }
         else if (ItemModel.isItem(clickedResource)) {
-            repository = repositories.item();
+            return repositories.item().findById(clickedResource.getId());
         }
         else if (ContextModel.isContext(clickedResource)) {
-            repository = repositories.context();
+            return repositories.context().findById(clickedResource.getId());
         }
-        return repository.findById(clickedResource.getId());
+        throw new UnsupportedOperationException(clickedResource + " is unsupported");
     }
 
     public Window getMainWindow() {

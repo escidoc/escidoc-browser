@@ -163,31 +163,6 @@ final class ActionHandlerImpl implements Action.Handler {
         else if (action.equals(ActionList.ACTION_DELETE_ITEM)) {
             tryDeleteItem(selectedResource);
         }
-        // new bw-elabs doActions
-        else if (action.equals(ActionList.ACTION_ADD_STUDY)) {
-        }
-        else if (action.equals(ActionList.ACTION_MODIFY_STUDY)) {
-        }
-        else if (action.equals(ActionList.ACTION_DELETE_STUDY)) {
-        }
-        else if (action.equals(ActionList.ACTION_ADD_INVESTIGATION)) {
-        }
-        else if (action.equals(ActionList.ACTION_MODIFY_INVESTIGATION)) {
-        }
-        else if (action.equals(ActionList.ACTION_DELETE_INVESTIGATION)) {
-        }
-        else if (action.equals(ActionList.ACTION_ADD_RIG)) {
-        }
-        else if (action.equals(ActionList.ACTION_MODIFY_RIG)) {
-        }
-        else if (action.equals(ActionList.ACTION_DELETE_RIG)) {
-        }
-        else if (action.equals(ActionList.ACTION_ADD_INSTRUMENT)) {
-        }
-        else if (action.equals(ActionList.ACTION_MODIFY_INSTRUMENT)) {
-        }
-        else if (action.equals(ActionList.ACTION_DELETE_INSTRUMENT)) {
-        }
         else {
             mainWindow.showNotification("Unknown Action: " + action.getCaption(),
                 Window.Notification.TYPE_ERROR_MESSAGE);

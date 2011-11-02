@@ -49,7 +49,7 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 @SuppressWarnings("serial")
 public class AdministrationTreeView extends VerticalLayout {
 
-    private class Node {
+    private static class Node {
 
         private NODE_TYPE type;
 

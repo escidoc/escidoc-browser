@@ -33,7 +33,6 @@ import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
@@ -44,8 +43,6 @@ import org.escidoc.browser.model.internal.HasNoNameResource;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.helper.Util;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Button;
@@ -79,10 +76,6 @@ public class ContainerRepository implements Repository {
     private final ContainerHandlerClientInterface client;
 
     private final Window mainWindow;
-
-    private boolean delete;
-
-    static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
 
     ContainerRepository(final EscidocServiceLocation escidocServiceLocation, Window mainWindow) {
         Preconditions
