@@ -148,8 +148,6 @@ public class EscidocParameterHandlerImpl implements EscidocParameterHandler {
     }
 
     private void loginThroughCookie(String escidocToken) {
-        LOG.debug("I LOGGED WITH THE userCookie");
-
         final UserRepositoryImpl userRepository = new UserRepositoryImpl(serviceLocation);
         userRepository.withToken(Base64Coder.decodeString(escidocToken));
         final CurrentUser currentUser = userRepository.findCurrentUser();
