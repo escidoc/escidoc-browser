@@ -49,6 +49,8 @@ import org.escidoc.browser.ui.helper.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import biz.source_code.base64Coder.Base64Coder;
+
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Window.Notification;
 
@@ -93,7 +95,7 @@ public class EscidocParameterHandlerImpl implements EscidocParameterHandler {
                 app.setServiceLocation(serviceLocation);
                 app.setLogoutURL(serviceLocation.getLogoutUri());
                 loginThroughCookie(app.getCookieValue(AppConstants.COOKIE_NAME));
-                app.setUser(new UserRepositoryImpl(serviceLocation).findCurrentUser());
+
             }
             else if (isServerOnline(tryToParseEscidocUriFromParameter(parameters))) {
 
@@ -136,8 +138,6 @@ public class EscidocParameterHandlerImpl implements EscidocParameterHandler {
         userRepository.withToken(escidocToken);
         final CurrentUser currentUser = userRepository.findCurrentUser();
         app.setUser(currentUser);
-        // app.setCookie(AppConstants.COOKIE_NAME, escidocToken);
-        // Storing the encoded handler
         app.setCookie(AppConstants.COOKIE_NAME, findEscidocToken(parameters));
     }
 
@@ -146,7 +146,7 @@ public class EscidocParameterHandlerImpl implements EscidocParameterHandler {
         LOG.debug("I LOGGED WITH THE userCookie");
         // final String escidocToken = ParamaterDecoder.parseAndDecodeToken(parameters);
         final UserRepositoryImpl userRepository = new UserRepositoryImpl(serviceLocation);
-        userRepository.withToken(escidocToken);
+        userRepository.withToken(Base64Coder.decodeString(escidocToken));
         final CurrentUser currentUser = userRepository.findCurrentUser();
         app.setUser(currentUser);
     }
