@@ -392,4 +392,16 @@ public class ContainerRepository implements Repository {
         client.update(container);
     }
 
+    @Override
+    public List<ResourceModel> filterUsingInput(String query) throws EscidocClientException {
+        final SearchRetrieveRequestType filter = new SearchRetrieveRequestType();
+        filter.setQuery(query);
+        List<Container> list = client.retrieveContainersAsList(filter);
+        List<ResourceModel> ret = new ArrayList<ResourceModel>(list.size());
+        for (Container resource : list) {
+            ret.add(new ContainerProxyImpl(resource));
+        }
+        return ret;
+    }
+
 }

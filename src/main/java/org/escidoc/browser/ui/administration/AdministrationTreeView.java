@@ -31,8 +31,7 @@ package org.escidoc.browser.ui.administration;
 import java.net.URISyntaxException;
 
 import org.escidoc.browser.AppConstants;
-import org.escidoc.browser.repository.AdminRepository;
-import org.escidoc.browser.repository.PdpRepository;
+import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
@@ -70,7 +69,7 @@ public class AdministrationTreeView extends VerticalLayout {
     enum NODE_TYPE {
 
         LOAD_EXAMPLE(ViewConstants.LOAD_EXAMPLE), REPO_INFO(ViewConstants.REPOSITORY_INFORMATION), REINDEX(
-            ViewConstants.REINDEX);
+            ViewConstants.REINDEX), PURGE_RESOURCES(ViewConstants.PURGE_RESOURCES);
 
         private String label;
 
@@ -83,21 +82,17 @@ public class AdministrationTreeView extends VerticalLayout {
         }
     }
 
-    private Tree tree = new Tree();
+    private final Tree tree = new Tree();
 
     private Router router;
 
-    private AdminRepository adminRepository;
+    private Repositories repositories;
 
-    private PdpRepository pdpRepository;
-
-    public AdministrationTreeView(Router router, AdminRepository adminRepository, PdpRepository pdpRepository) {
+    public AdministrationTreeView(Router router, Repositories repositories) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
-        Preconditions.checkNotNull(adminRepository, "adminRepository is null: %s", adminRepository);
-        Preconditions.checkNotNull(pdpRepository, "pdpRepository is null: %s", pdpRepository);
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         this.router = router;
-        this.adminRepository = adminRepository;
-        this.pdpRepository = pdpRepository;
+        this.repositories = repositories;
     }
 
     public void init() throws UnsupportedOperationException, EscidocClientException, URISyntaxException {
@@ -112,30 +107,38 @@ public class AdministrationTreeView extends VerticalLayout {
             @SuppressWarnings("deprecation")
             @Override
             public void itemClick(ItemClickEvent event) {
-                NODE_TYPE type = ((Node) event.getItemId()).getType();
-                switch (type) {
+                switch (getType(event)) {
                     case LOAD_EXAMPLE:
-                        router.openTab(new LoadExampleView(router, adminRepository), type.getLabel());
+                        router.openTab(new LoadExampleView(router, repositories.admin()), getType(event).getLabel());
                         break;
                     case REPO_INFO:
-                        RepositoryInfoView infoView = new RepositoryInfoView(adminRepository);
+                        RepositoryInfoView infoView = new RepositoryInfoView(repositories.admin());
                         try {
                             infoView.init();
-                            router.openTab(infoView, type.getLabel());
+                            router.openTab(infoView, getType(event).getLabel());
                         }
                         catch (EscidocClientException e) {
-                            router.getMainWindow().showNotification("Error", e.getMessage(),
+                            router.getMainWindow().showNotification(ViewConstants.ERROR, e.getMessage(),
                                 Window.Notification.TYPE_ERROR_MESSAGE);
                         }
                         break;
                     case REINDEX:
-                        ReindexView view = new ReindexView(router, adminRepository);
+                        ReindexView view = new ReindexView(router, repositories.admin());
                         view.init();
-                        router.openTab(view, type.getLabel());
+                        router.openTab(view, getType(event).getLabel());
+                        break;
+                    case PURGE_RESOURCES:
+                        PurgeResourceView purgeView = new PurgeResourceView(router, repositories);
+                        purgeView.init();
+                        router.openTab(purgeView, getType(event).getLabel());
                         break;
                     default:
                         break;
                 }
+            }
+
+            private NODE_TYPE getType(ItemClickEvent event) {
+                return ((Node) event.getItemId()).getType();
             }
         });
     }
@@ -151,12 +154,17 @@ public class AdministrationTreeView extends VerticalLayout {
             tree.addItem(new Node(NODE_TYPE.REINDEX));
         }
 
+        if (hasGrantTo(ActionIdConstants.PURGE_RESOURCES)) {
+            tree.addItem(new Node(NODE_TYPE.PURGE_RESOURCES));
+        }
+
         for (Object object : tree.getContainerDataSource().getItemIds()) {
             tree.setChildrenAllowed(object, false);
         }
     }
 
     private boolean hasGrantTo(String actionId) throws EscidocClientException, URISyntaxException {
-        return pdpRepository.forCurrentUser().isAction(actionId).forResource(AppConstants.EMPTY_STRING).permitted();
+        return repositories
+            .pdp().forCurrentUser().isAction(actionId).forResource(AppConstants.EMPTY_STRING).permitted();
     }
 }

@@ -30,6 +30,7 @@ package org.escidoc.browser.repository.internal;
 
 import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.escidoc.browser.model.ContextModel;
@@ -347,12 +348,22 @@ public class ItemRepository implements Repository {
 
     public void updateMetaData(final MetadataRecord metadataRecord, final Item item) throws EscidocClientException {
         final MetadataRecords itemMetadataList = item.getMetadataRecords();
-
         itemMetadataList.del(metadataRecord.getName());
         itemMetadataList.add(metadataRecord);
         item.setMetadataRecords(itemMetadataList);
-
         client.update(item);
-
     }
+
+    @Override
+    public List<ResourceModel> filterUsingInput(String query) throws EscidocClientException {
+        final SearchRetrieveRequestType filter = new SearchRetrieveRequestType();
+        filter.setQuery(query);
+        List<Item> list = client.retrieveItemsAsList(filter);
+        List<ResourceModel> ret = new ArrayList<ResourceModel>(list.size());
+        for (Item item : list) {
+            ret.add(new ItemProxyImpl(item));
+        }
+        return ret;
+    }
+
 }

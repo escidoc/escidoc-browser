@@ -200,4 +200,32 @@ public class ViewConstants {
     public static final String REINDEX_TEXT =
         "Reinitialize the search index. The initialization runs asynchronously and returns some useful information to the user, e.g. the total number of objects found.";
 
+    public static final String SEARCH_RESULTS = "Search Results";
+
+    public static final String USER_ACCOUNTS = "User Accounts";
+
+    public static final String PURGE_RESOURCES = "Purge Resources";
+
+    public static final String FILTERING_RESOURCES_TITLE = "Filter and Purge Resources";
+
+    public static final String FILTER_DESCRIPTION_TEXT =
+        "Filters work on all resources, independent from their status in object lifecycle. Access policies are evaluated for each resource in the answer set. The answer set will only contain those resources the user has access to. Similar to searches, filter methods are based on the SRU standard, so queries are formulated in CQL. Filter methods are not provided by a dedicated service. Instead, they belong to the APIs of the respective resource services. They always retrieve resources of the same type, i.e. the filter method of the Item service will always retrieve Item representations exclusively.(An exception to this rule are the retrieveMembers() methods in the Context and Container service: the result list may contain both Items and Containers.)";
+
+    public static final String FILTER_LABEL = "Filter";
+
+    public static final String PLEASE_SELECT_A_RESOURCE_TYPE = "Please select a resource type";
+
+    public static final String EXAMPLE_QUERY = "\"/properties/created-by/id\"=escidoc:exuser1";
+
+    public static final String FILTER_EXAMPLE_TOOLTIP_TEXT =
+        "<h2>Query examples: </h2>"
+            + "<ul>"
+            + "  <li>\"/id\"=escidoc:5 <br/> filter selected resource type with the id escidoc:5</li>"
+            + "  <li>\"/properties/public-status\"= \"released\" <br/> filter selected resource type which are released</li>"
+            + "<li>" + EXAMPLE_QUERY
+            + "<br/> filter selected resource type that created by user account with the id exuser1</li>" + "</ul>";
+
+    public static final String TIP = "Hint";
+
+    public static final String NO_RESULT = "No Result";
 }

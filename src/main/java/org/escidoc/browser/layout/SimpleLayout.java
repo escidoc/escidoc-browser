@@ -72,6 +72,7 @@ import org.escidoc.browser.ui.view.helpers.CloseTabsViewHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -122,6 +123,13 @@ public class SimpleLayout extends VerticalLayout implements LayoutDesign {
         final Window mainWindow, final EscidocServiceLocation serviceLocation, final BrowserApplication app,
         final CurrentUser currentUser, final Repositories repositories, final Router router)
         throws EscidocClientException {
+        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
+        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
+        Preconditions.checkNotNull(app, "app is null: %s", app);
+        Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        Preconditions.checkNotNull(router, "router is null: %s", router);
+
         this.serviceLocation = serviceLocation;
         this.app = app;
         this.mainWindow = mainWindow;
@@ -138,6 +146,7 @@ public class SimpleLayout extends VerticalLayout implements LayoutDesign {
         addHeader();
         addNavigationPanel();
         addMainContentTabs();
+        // FIXME: bad design, create a static class instead.
         new CloseTabsViewHelper(mainLayout, mainContentTabs);
         addFooter();
         addComponent(mainLayout);
@@ -171,11 +180,11 @@ public class SimpleLayout extends VerticalLayout implements LayoutDesign {
         }
         catch (UnsupportedOperationException e) {
             LOG.error(e.getMessage());
-            mainWindow.showNotification("Error", e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            mainWindow.showNotification(ViewConstants.ERROR, e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
         }
         catch (URISyntaxException e) {
             LOG.error(e.getMessage());
-            mainWindow.showNotification("Error", e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            mainWindow.showNotification(ViewConstants.ERROR, e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
         }
     }
 
@@ -220,11 +229,10 @@ public class SimpleLayout extends VerticalLayout implements LayoutDesign {
 
         accordion.addTab(mainNavigationTree, ViewConstants.RESOURCES, null);
 
-        AdministrationTreeView administrationTreeView =
-            new AdministrationTreeView(router, repositories.admin(), repositories.pdp());
+        AdministrationTreeView administrationTreeView = new AdministrationTreeView(router, repositories);
         administrationTreeView.init();
 
-        Button users = new Button("User Accounts");
+        Button users = new Button(ViewConstants.USER_ACCOUNTS);
         users.setStyleName(BaseTheme.BUTTON_LINK);
         users.addListener(new ClickListener() {
 
@@ -234,7 +242,7 @@ public class SimpleLayout extends VerticalLayout implements LayoutDesign {
 
                 UserView userView = new UserView();
                 userView.init();
-                router.openTab(userView, "User Accounts");
+                router.openTab(userView, ViewConstants.USER_ACCOUNTS);
             }
         });
 
@@ -307,8 +315,8 @@ public class SimpleLayout extends VerticalLayout implements LayoutDesign {
      * @param event
      */
     public void onClickSrchButton(final Button.ClickEvent event) {
-        final SimpleSearch smpSearch = new SimpleSearch(router, this, serviceLocation, repositories, currentUser);
-        openView(smpSearch, "Search Results");
+        final SimpleSearch simpleSearch = new SimpleSearch(router, this, serviceLocation, repositories, currentUser);
+        openView(simpleSearch, ViewConstants.SEARCH_RESULTS);
     }
 
     public int getApplicationHeight() {
@@ -320,7 +328,6 @@ public class SimpleLayout extends VerticalLayout implements LayoutDesign {
     }
 
     private void showError(final String msg) {
-        getWindow().showNotification(msg, Notification.TYPE_HUMANIZED_MESSAGE);
+        getWindow().showNotification(msg, Notification.TYPE_ERROR_MESSAGE);
     }
-
 }
