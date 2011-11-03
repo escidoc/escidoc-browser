@@ -70,7 +70,7 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
 
     private final InvestigationBean investigationBean;
 
-    private final ISaveAction saveComponent;
+    private final ISaveAction controller;
 
     private final List<ResourceModel> breadCrumbModel;
 
@@ -98,12 +98,12 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
 
     private final Router router;
 
-    public InvestigationView(final InvestigationBean sourceBean, final ISaveAction saveComponent,
+    public InvestigationView(final InvestigationBean sourceBean, final ISaveAction controller,
         final List<ResourceModel> breadCrumbModel, final ContainerProxy containerProxy,
         final List<String> depositEndPointUrls, final Router router) {
 
         this.investigationBean = (sourceBean != null) ? sourceBean : new InvestigationBean();
-        this.saveComponent = saveComponent;
+        this.controller = controller;
         this.breadCrumbModel = breadCrumbModel;
         this.containerProxy = containerProxy;
         this.eSyncDaemonUrls = depositEndPointUrls;
@@ -113,9 +113,10 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
         buildPropertiesGUI();
         buildContainerGUI();
         buildPanelGUI();
-        createPanelListener();
-        createClickListener();
-
+        if (controller.hasUpdateAccess()) {
+            createPanelListener();
+            createClickListener();
+        }
     }
 
     private void buildContainerGUI() {
@@ -166,7 +167,6 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
     }
 
     private void initialisePanelComponents() {
-
         this.mainLayout = new VerticalLayout();
         this.mainLayout.setSpacing(true);
         this.mainLayout.setMargin(true);
@@ -205,7 +205,7 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
             @Override
             public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
                 if (event.getButton().getCaption().equals("Save")) {
-                    saveComponent.saveAction(investigationBean);
+                    controller.saveAction(investigationBean);
                     // FIXME why do we these methods?
                     InvestigationView.this.resetLayout();
                     dynamicLayout.requestRepaintAll();

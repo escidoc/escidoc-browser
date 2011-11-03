@@ -72,7 +72,7 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
 
     private final StudyBean studyBean;
 
-    private final ISaveAction saveComponent;
+    private final ISaveAction controller;
 
     private final List<ResourceModel> breadCrumbModel;
 
@@ -100,27 +100,29 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
 
     private LabsStudyTableHelper studyTableHelper = null;
 
-    public StudyView(final StudyBean sourceBean, final ISaveAction saveComponent,
+    public StudyView(final StudyBean sourceBean, final ISaveAction controller,
         final List<ResourceModel> breadCrumbModel, final ResourceProxy resourceProxy, final Router router) {
         Preconditions.checkNotNull(sourceBean, "sourceBean is null: %s", sourceBean);
-        Preconditions.checkNotNull(saveComponent, "saveComponent is null: %s", saveComponent);
+        Preconditions.checkNotNull(controller, "saveComponent is null: %s", controller);
         Preconditions.checkNotNull(breadCrumbModel, "breadCrumbModel is null: %s", breadCrumbModel);
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         Preconditions.checkNotNull(router, "router is null: %s", router);
 
         studyBean = (sourceBean != null) ? sourceBean : new StudyBean();
-        this.saveComponent = saveComponent;
+        this.controller = controller;
         this.breadCrumbModel = breadCrumbModel;
         containerProxy = (ContainerProxy) resourceProxy;
         this.router = router;
-        this.studyTableHelper = new LabsStudyTableHelper(studyBean, this);
+        this.studyTableHelper = new LabsStudyTableHelper(studyBean, this, this.controller.hasUpdateAccess());
 
         initialisePanelComponents();
         buildContainerGUI();
         buildPropertiesGUI();
         buildPanelGUI();
-        createPanelListener();
-        createClickListener();
+        if (controller.hasUpdateAccess()) {
+            createPanelListener();
+            createClickListener();
+        }
     }
 
     @SuppressWarnings("serial")
@@ -129,7 +131,7 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
             @Override
             public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
                 if (event.getButton().getCaption().equals("Save")) {
-                    saveComponent.saveAction(studyBean);
+                    controller.saveAction(studyBean);
                     // TODO Why do we need to call these two methods?
                     // ANS edited but not reset form's text fields should be converted into a label
                     StudyView.this.resetLayout();

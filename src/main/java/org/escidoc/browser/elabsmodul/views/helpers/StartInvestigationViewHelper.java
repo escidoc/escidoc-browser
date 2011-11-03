@@ -30,9 +30,10 @@ package org.escidoc.browser.elabsmodul.views.helpers;
 
 import org.escidoc.browser.ui.Router;
 
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.themes.Runo;
 
@@ -44,25 +45,27 @@ public class StartInvestigationViewHelper {
     }
 
     public void createStartButton(Panel panel) {
-        Button startBtn = new Button("Start");
+        Button startBtn = new Button("Start Investigation");
         startBtn.setStyleName(Runo.BUTTON_BIG);
-        startBtn.setWidth("100%");
-        startBtn.addListener(new ClickListener() {
+        startBtn.addListener(new Button.ClickListener() {
+
+            private static final long serialVersionUID = -7563393988056484131L;
 
             @Override
             public void buttonClick(ClickEvent event) {
-                if (event.getButton().getCaption().equals("Start")) {
+                if (event.getButton().getCaption().equals("Start Investigation")) {
                     router.getMainWindow().getWindow().showNotification("Starting Process");
-                    event.getButton().setCaption("Stop");
+                    event.getButton().setCaption("Stop Investigation");
                 }
                 else {
                     router.getMainWindow().getWindow().showNotification("Halting Process");
-                    event.getButton().setCaption("Start");
+                    event.getButton().setCaption("Start Investigation");
                 }
-
             }
         });
-        panel.addComponent(startBtn);
+        HorizontalLayout layout = new HorizontalLayout();
+        layout.addComponent(startBtn);
+        layout.setComponentAlignment(startBtn, Alignment.MIDDLE_CENTER);
+        panel.addComponent(layout);
     }
-
 }

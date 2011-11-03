@@ -28,6 +28,7 @@
  */
 package org.escidoc.browser.elabsmodul.controller;
 
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 
@@ -49,6 +50,7 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.helper.ResourceHierarchy;
 import org.slf4j.Logger;
@@ -218,5 +220,29 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
             LOG.error("Fatal error, could not load BreadCrumb " + e.getLocalizedMessage());
         }
         return Collections.emptyList();
+    }
+
+    @Override
+    public boolean hasUpdateAccess() {
+        try {
+            return repositories
+                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER).forResource(resourceProxy.getId())
+                .permitted();
+        }
+        catch (UnsupportedOperationException e) {
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            e.printStackTrace();
+            return false;
+        }
+        catch (EscidocClientException e) {
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            e.printStackTrace();
+            return false;
+        }
+        catch (URISyntaxException e) {
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            e.printStackTrace();
+            return false;
+        }
     }
 }

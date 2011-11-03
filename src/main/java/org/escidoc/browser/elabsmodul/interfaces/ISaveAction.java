@@ -39,4 +39,6 @@ public interface ISaveAction {
      *            the dataBean to store
      */
     void saveAction(final IBeanModel dataBean);
+
+    boolean hasUpdateAccess();
 }

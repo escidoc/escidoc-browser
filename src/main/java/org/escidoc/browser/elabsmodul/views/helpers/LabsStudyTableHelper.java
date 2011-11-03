@@ -82,13 +82,16 @@ public final class LabsStudyTableHelper {
 
     private ILabsAction labsAction;
 
+    private final boolean hasUpdateAccess;
+
     private static final Logger LOG = LoggerFactory.getLogger(LabsStudyTableHelper.class);
 
-    public LabsStudyTableHelper(StudyBean bean, ILabsAction action) {
+    public LabsStudyTableHelper(StudyBean bean, final ILabsAction action, final boolean hasUpdateAccess) {
         Preconditions.checkNotNull(bean, "Bean is null");
         Preconditions.checkNotNull(action, "Action is null");
         this.studyBean = bean;
         this.labsAction = action;
+        this.hasUpdateAccess = hasUpdateAccess;
     }
 
     public synchronized VerticalLayout createTableLayoutForMotPublications() {
@@ -155,16 +158,6 @@ public final class LabsStudyTableHelper {
 
     private void addMotPubButtonsToLayout(final VerticalLayout layout) {
 
-        motPubAddButton = new Button(ADD_BUTTON);
-        motPubAddButton.setEnabled(true);
-        motPubAddButton.setVisible(true);
-        motPubAddButton.setIcon(ELabsViewContants.ICON_16_OK);
-
-        motPubDeleteButton = new Button(DELETE_BUTTON_TEXT);
-        motPubDeleteButton.setEnabled(false);
-        motPubDeleteButton.setVisible(true);
-        motPubDeleteButton.setIcon(ELabsViewContants.ICON_16_CANCEL);
-
         Button.ClickListener motPubButtonsListener = new Button.ClickListener() {
             private static final long serialVersionUID = 1586321256611542129L;
 
@@ -205,8 +198,24 @@ public final class LabsStudyTableHelper {
             }
         };
 
-        motPubDeleteButton.addListener(motPubButtonsListener);
-        motPubAddButton.addListener(motPubButtonsListener);
+        motPubAddButton = new Button(ADD_BUTTON);
+        motPubDeleteButton = new Button(DELETE_BUTTON_TEXT);
+        if (hasUpdateAccess) {
+            motPubAddButton.setEnabled(true);
+            motPubAddButton.setVisible(true);
+            motPubAddButton.setIcon(ELabsViewContants.ICON_16_OK);
+            motPubDeleteButton.setEnabled(false);
+            motPubDeleteButton.setVisible(true);
+            motPubDeleteButton.setIcon(ELabsViewContants.ICON_16_CANCEL);
+            motPubDeleteButton.addListener(motPubButtonsListener);
+            motPubAddButton.addListener(motPubButtonsListener);
+        }
+        else {
+            motPubAddButton.setVisible(false);
+            motPubAddButton.setEnabled(false);
+            motPubDeleteButton.setVisible(false);
+            motPubDeleteButton.setEnabled(false);
+        }
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSpacing(true);
         horizontalLayout.addComponent(motPubAddButton);
@@ -278,16 +287,6 @@ public final class LabsStudyTableHelper {
 
     private void addResPubButtonsToLayout(final VerticalLayout layout) {
 
-        resPubAddButton = new Button(ADD_BUTTON);
-        resPubAddButton.setEnabled(true);
-        resPubAddButton.setVisible(true);
-        resPubAddButton.setIcon(ELabsViewContants.ICON_16_OK);
-
-        resPubDeleteButton = new Button(DELETE_BUTTON_TEXT);
-        resPubDeleteButton.setEnabled(false);
-        resPubDeleteButton.setVisible(true);
-        resPubDeleteButton.setIcon(ELabsViewContants.ICON_16_CANCEL);
-
         Button.ClickListener resPubButtonsListener = new Button.ClickListener() {
             private static final long serialVersionUID = 1586321256611542129L;
 
@@ -328,8 +327,25 @@ public final class LabsStudyTableHelper {
             }
         };
 
-        resPubDeleteButton.addListener(resPubButtonsListener);
-        resPubAddButton.addListener(resPubButtonsListener);
+        resPubAddButton = new Button(ADD_BUTTON);
+        resPubDeleteButton = new Button(DELETE_BUTTON_TEXT);
+        if (hasUpdateAccess) {
+            resPubAddButton.setEnabled(true);
+            resPubAddButton.setVisible(true);
+            resPubAddButton.setIcon(ELabsViewContants.ICON_16_OK);
+            resPubDeleteButton.setEnabled(false);
+            resPubDeleteButton.setVisible(true);
+            resPubDeleteButton.setIcon(ELabsViewContants.ICON_16_CANCEL);
+            resPubDeleteButton.addListener(resPubButtonsListener);
+            resPubAddButton.addListener(resPubButtonsListener);
+        }
+        else {
+            resPubAddButton.setVisible(false);
+            resPubAddButton.setEnabled(false);
+            resPubDeleteButton.setVisible(false);
+            resPubDeleteButton.setEnabled(false);
+        }
+
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSpacing(true);
         horizontalLayout.addComponent(resPubAddButton);

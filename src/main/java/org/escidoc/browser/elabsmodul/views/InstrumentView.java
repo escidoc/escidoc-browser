@@ -94,7 +94,7 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
 
     private HorizontalLayout buttonLayout = null;
 
-    private final ISaveAction saveComponent;
+    private final ISaveAction controller;
 
     private List<ResourceModel> breadCrumbModel;
 
@@ -104,11 +104,11 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
 
     private EscidocServiceLocation serviceLocation;
 
-    public InstrumentView(InstrumentBean sourceBean, ISaveAction saveComponent, List<ResourceModel> breadCrumbModel,
+    public InstrumentView(InstrumentBean sourceBean, ISaveAction controller, List<ResourceModel> breadCrumbModel,
         ResourceProxy resourceProxy, List<String> eSyncDaemonUrls, EscidocServiceLocation serviceLocation) {
 
         instrumentBean = (sourceBean != null) ? sourceBean : new InstrumentBean();
-        this.saveComponent = saveComponent;
+        this.controller = controller;
         this.breadCrumbModel = breadCrumbModel;
         itemProxy = (ItemProxy) resourceProxy;
         this.eSyncDaemonUrls = eSyncDaemonUrls;
@@ -117,8 +117,10 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
         initialisePanelComponents();
         buildPropertiesGUI();
         buildPanelGUI();
-        createPanelListener();
-        createClickListener();
+        if (controller.hasUpdateAccess()) {
+            createPanelListener();
+            createClickListener();
+        }
     }
 
     private void initialisePanelComponents() {
@@ -223,7 +225,7 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
             @Override
             public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
                 if (event.getButton().getCaption().equals("Save")) {
-                    saveComponent.saveAction(instrumentBean);
+                    controller.saveAction(instrumentBean);
                     // FIXME why do we these methods?
                     InstrumentView.this.resetLayout();
                     dynamicLayout.requestRepaintAll();

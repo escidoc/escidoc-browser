@@ -28,6 +28,7 @@
  */
 package org.escidoc.browser.elabsmodul.controller;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -45,7 +46,6 @@ import org.escidoc.browser.elabsmodul.exceptions.EscidocBrowserException;
 import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
 import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
 import org.escidoc.browser.elabsmodul.model.InvestigationBean;
-import org.escidoc.browser.elabsmodul.views.InstrumentView;
 import org.escidoc.browser.elabsmodul.views.InvestigationView;
 import org.escidoc.browser.elabsmodul.views.YesNoDialog;
 import org.escidoc.browser.model.ContainerProxy;
@@ -55,6 +55,7 @@ import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.repository.internal.ContainerProxyImpl;
 import org.escidoc.browser.repository.internal.ContainerRepository;
 import org.escidoc.browser.ui.Router;
@@ -120,7 +121,7 @@ public class InvestigationController extends Controller implements ISaveAction {
                         InvestigationController.this.saveModel();
                     }
                     else {
-                        ((InstrumentView) InvestigationController.this.view).hideButtonLayout();
+                        ((InvestigationView) InvestigationController.this.view).hideButtonLayout();
                     }
                 }
             }));
@@ -415,4 +416,27 @@ public class InvestigationController extends Controller implements ISaveAction {
         return null;
     }
 
+    @Override
+    public boolean hasUpdateAccess() {
+        try {
+            return repositories
+                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER).forResource(resourceProxy.getId())
+                .permitted();
+        }
+        catch (UnsupportedOperationException e) {
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            e.printStackTrace();
+            return false;
+        }
+        catch (EscidocClientException e) {
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            e.printStackTrace();
+            return false;
+        }
+        catch (URISyntaxException e) {
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

@@ -155,16 +155,6 @@ public final class LabsRigTableHelper {
 
     private void addRigButtonToLayout(final VerticalLayout layout, final IRigAction controller) {
 
-        rigAddButton = new Button(ADD_BUTTON);
-        rigAddButton.setEnabled(true);
-        rigAddButton.setVisible(true);
-        rigAddButton.setIcon(ELabsViewContants.ICON_16_OK);
-
-        rigDeleteButton = new Button(DELETE_BUTTON_TEXT);
-        rigDeleteButton.setEnabled(false);
-        rigDeleteButton.setVisible(true);
-        rigDeleteButton.setIcon(ELabsViewContants.ICON_16_CANCEL);
-
         Button.ClickListener rigButtonsListener = new Button.ClickListener() {
             private static final long serialVersionUID = 1586321256611542129L;
 
@@ -223,8 +213,25 @@ public final class LabsRigTableHelper {
             }
         };
 
-        rigDeleteButton.addListener(rigButtonsListener);
-        rigAddButton.addListener(rigButtonsListener);
+        rigAddButton = new Button(ADD_BUTTON);
+        rigDeleteButton = new Button(DELETE_BUTTON_TEXT);
+        if (controller.hasUpdateAccess()) {
+            rigAddButton.setEnabled(true);
+            rigAddButton.setVisible(true);
+            rigAddButton.setIcon(ELabsViewContants.ICON_16_OK);
+
+            rigDeleteButton.setEnabled(false);
+            rigDeleteButton.setVisible(true);
+            rigDeleteButton.setIcon(ELabsViewContants.ICON_16_CANCEL);
+
+            rigDeleteButton.addListener(rigButtonsListener);
+            rigAddButton.addListener(rigButtonsListener);
+        }
+        else {
+            rigAddButton.setVisible(false);
+            rigDeleteButton.setVisible(false);
+        }
+
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSpacing(true);
         horizontalLayout.addComponent(rigAddButton);

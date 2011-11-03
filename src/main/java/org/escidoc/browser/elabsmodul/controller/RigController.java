@@ -28,6 +28,7 @@
  */
 package org.escidoc.browser.elabsmodul.controller;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -53,6 +54,7 @@ import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.internal.ItemRepository;
 import org.escidoc.browser.ui.Router;
@@ -351,5 +353,29 @@ public final class RigController extends Controller implements IRigAction {
             LOG.error(e.getMessage());
         }
         return result;
+    }
+
+    @Override
+    public boolean hasUpdateAccess() {
+        try {
+            return repositories
+                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_ITEM).forResource(resourceProxy.getId())
+                .permitted();
+        }
+        catch (UnsupportedOperationException e) {
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            e.printStackTrace();
+            return false;
+        }
+        catch (EscidocClientException e) {
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            e.printStackTrace();
+            return false;
+        }
+        catch (URISyntaxException e) {
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            e.printStackTrace();
+            return false;
+        }
     }
 }

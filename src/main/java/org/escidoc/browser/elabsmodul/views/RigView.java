@@ -115,8 +115,10 @@ public class RigView extends Panel implements ILabsPanel, ILabsAction {
         initialisePanelComponents();
         buildPropertiesGUI();
         buildPanelGUI();
-        createPanelListener();
-        createClickListener();
+        if (controller.hasUpdateAccess()) {
+            createPanelListener();
+            createClickListener();
+        }
     }
 
     private void initialisePanelComponents() {
