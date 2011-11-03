@@ -82,35 +82,13 @@ public final class LabsStudyTableHelper {
 
     private ILabsAction labsAction;
 
-    private static LabsStudyTableHelper singleton = null;
-
-    private static Object syncObject = new Object();
-
     private static final Logger LOG = LoggerFactory.getLogger(LabsStudyTableHelper.class);
 
-    private LabsStudyTableHelper() {
-    }
-
-    // TODO refactor , do not use Singleton DP
-    public static LabsStudyTableHelper singleton() {
-        if (singleton == null) {
-            synchronized (syncObject) {
-                if (singleton == null) {
-                    singleton = new LabsStudyTableHelper();
-                }
-            }
-        }
-        return singleton;
-    }
-
-    public synchronized void setModel(final StudyBean studyBean) {
-        Preconditions.checkNotNull(studyBean, "studyBean is null");
-        this.studyBean = studyBean;
-    }
-
-    public synchronized void setELabAction(final ILabsAction labsAction) {
-        Preconditions.checkNotNull(labsAction, "iLabsAction is null");
-        this.labsAction = labsAction;
+    public LabsStudyTableHelper(StudyBean bean, ILabsAction action) {
+        Preconditions.checkNotNull(bean, "Bean is null");
+        Preconditions.checkNotNull(action, "Action is null");
+        this.studyBean = bean;
+        this.labsAction = action;
     }
 
     public synchronized VerticalLayout createTableLayoutForMotPublications() {

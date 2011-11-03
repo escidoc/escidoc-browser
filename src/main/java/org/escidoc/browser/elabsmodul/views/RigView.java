@@ -101,6 +101,8 @@ public class RigView extends Panel implements ILabsPanel, ILabsAction {
 
     private EscidocServiceLocation serviceLocation;
 
+    private LabsRigTableHelper rigTableHelper;
+
     public RigView(RigBean sourceBean, final IRigAction controller, List<ResourceModel> breadCrumbModel,
         final ResourceProxy resourceProxy, EscidocServiceLocation serviceLocation) {
         this.rigBean = (sourceBean != null) ? sourceBean : new RigBean();
@@ -108,6 +110,7 @@ public class RigView extends Panel implements ILabsPanel, ILabsAction {
         this.breadCrumbModel = breadCrumbModel;
         this.itemProxy = (ItemProxy) resourceProxy;
         this.serviceLocation = serviceLocation;
+        this.rigTableHelper = new LabsRigTableHelper(this);
 
         initialisePanelComponents();
         buildPropertiesGUI();
@@ -141,6 +144,7 @@ public class RigView extends Panel implements ILabsPanel, ILabsAction {
      * Build the specific editable layout of the eLabsElement.
      */
     private void buildPanelGUI() {
+        Preconditions.checkNotNull(rigTableHelper, "Helper is not null");
         this.dynamicLayout.setStyleName(ELabsViewContants.STYLE_ELABS_FORM);
 
         this.buttonLayout = LabsLayoutHelper.createButtonLayout();
@@ -150,10 +154,10 @@ public class RigView extends Panel implements ILabsPanel, ILabsAction {
         HorizontalLayout h2 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_RIG_DESC,
                 getPojoItem().getItemProperty(ELabsViewContants.P_RIG_DESC));
-        LabsRigTableHelper.singleton().setELabAction(this);
         HorizontalLayout h3 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndRelatedDataForRig(ELabsViewContants.L_RIG_CONTENT,
-                getPojoItem().getItemProperty(ELabsViewContants.P_RIG_CONTENT), this.rigBean, this.controller);
+                getPojoItem().getItemProperty(ELabsViewContants.P_RIG_CONTENT), this.rigBean, this.controller,
+                this.rigTableHelper);
 
         registeredComponents.add(h1);
         registeredComponents.add(h2);

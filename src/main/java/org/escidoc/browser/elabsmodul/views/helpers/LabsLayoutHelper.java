@@ -105,10 +105,13 @@ public final class LabsLayoutHelper {
     }
 
     public static synchronized HorizontalLayout createHorizontalLayoutWithELabsLabelAndRelatedDataForRig(
-        final String labelTxt, Property dataProperty, RigBean rigBean, final IRigAction controller) {
+        final String labelTxt, Property dataProperty, RigBean rigBean, final IRigAction controller,
+        LabsRigTableHelper helper) {
         Preconditions.checkNotNull(labelTxt, "Label is null");
         Preconditions.checkNotNull(dataProperty, "DataSource is null");
         Preconditions.checkNotNull(rigBean, "RigBean is null");
+        Preconditions.checkNotNull(helper, "Helper is null");
+        Preconditions.checkNotNull(controller, "Controller is null");
 
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSizeUndefined();
@@ -124,16 +127,17 @@ public final class LabsLayoutHelper {
         label.setStyleName(STYLE_ELABS_HOR_PANEL);
 
         horizontalLayout.addComponent(label, 0);
-        horizontalLayout.addComponent(LabsRigTableHelper.singleton().createTableLayoutForRig(rigBean, controller), 1);
+        horizontalLayout.addComponent(helper.createTableLayoutForRig(rigBean, controller), 1);
         horizontalLayout.setComponentAlignment(label, Alignment.TOP_LEFT);
 
         return horizontalLayout;
     }
 
     public static synchronized HorizontalLayout createHorizontalLayoutWithPublicationDataForStudy(
-        final String labelTxt, Property dataProperty, boolean isMotNotResPublication) {
+        final String labelTxt, Property dataProperty, boolean isMotNotResPublication, LabsStudyTableHelper helper) {
         Preconditions.checkNotNull(labelTxt, "Label is null");
         Preconditions.checkNotNull(dataProperty, "DataSource is null");
+        Preconditions.checkNotNull(helper, "Helper is null");
 
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSizeUndefined();
@@ -150,10 +154,10 @@ public final class LabsLayoutHelper {
 
         horizontalLayout.addComponent(label, 0);
         if (isMotNotResPublication) {
-            horizontalLayout.addComponent(LabsStudyTableHelper.singleton().createTableLayoutForMotPublications(), 1);
+            horizontalLayout.addComponent(helper.createTableLayoutForMotPublications(), 1);
         }
         else {
-            horizontalLayout.addComponent(LabsStudyTableHelper.singleton().createTableLayoutForResPublications(), 1);
+            horizontalLayout.addComponent(helper.createTableLayoutForResPublications(), 1);
         }
         horizontalLayout.setComponentAlignment(label, Alignment.TOP_LEFT);
         return horizontalLayout;

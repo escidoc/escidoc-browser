@@ -80,32 +80,13 @@ public final class LabsRigTableHelper {
 
     private final String DELETES_BUTTON_TEXT = "Delete selected elements";
 
-    private static LabsRigTableHelper singleton = null;
-
-    private static Object syncObject = new Object();
-
     private ILabsAction labsAction = null;
 
     private static final Logger LOG = LoggerFactory.getLogger(LabsRigTableHelper.class);
 
-    private LabsRigTableHelper() {
-    }
-
-    // TODO refactor , do not use Singleton DP
-    public static LabsRigTableHelper singleton() {
-        if (singleton == null) {
-            synchronized (syncObject) {
-                if (singleton == null) {
-                    singleton = new LabsRigTableHelper();
-                }
-            }
-        }
-        return singleton;
-    }
-
-    public synchronized void setELabAction(final ILabsAction labsAction) {
-        Preconditions.checkNotNull(labsAction, "iLabsAction is null");
-        this.labsAction = labsAction;
+    public LabsRigTableHelper(ILabsAction action) {
+        Preconditions.checkNotNull(action, "Action is null");
+        this.labsAction = action;
     }
 
     public synchronized VerticalLayout createTableLayoutForRig(final RigBean rigBean, final IRigAction controller) {

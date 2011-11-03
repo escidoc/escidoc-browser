@@ -98,6 +98,8 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
 
     private HorizontalLayout modifiedComponent;
 
+    private LabsStudyTableHelper studyTableHelper = null;
+
     public StudyView(final StudyBean sourceBean, final ISaveAction saveComponent,
         final List<ResourceModel> breadCrumbModel, final ResourceProxy resourceProxy, final Router router) {
         Preconditions.checkNotNull(sourceBean, "sourceBean is null: %s", sourceBean);
@@ -111,6 +113,7 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
         this.breadCrumbModel = breadCrumbModel;
         containerProxy = (ContainerProxy) resourceProxy;
         this.router = router;
+        this.studyTableHelper = new LabsStudyTableHelper(studyBean, this);
 
         initialisePanelComponents();
         buildContainerGUI();
@@ -183,6 +186,7 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
     }
 
     private void buildPanelGUI() {
+        Preconditions.checkNotNull(studyTableHelper, "StudyHelper is null");
         dynamicLayout.setStyleName(ELabsViewContants.STYLE_ELABS_FORM);
 
         buttonLayout = LabsLayoutHelper.createButtonLayout();
@@ -192,16 +196,12 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
         final HorizontalLayout h2 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_STUDY_DESC,
                 getPojoItem().getItemProperty(ELabsViewContants.P_STUDY_DESC));
-        // inject bean model and action interface
-        LabsStudyTableHelper.singleton().setModel(this.studyBean);
-        LabsStudyTableHelper.singleton().setELabAction(this);
-
         final HorizontalLayout h3 =
             LabsLayoutHelper.createHorizontalLayoutWithPublicationDataForStudy(ELabsViewContants.L_STUDY_MOT_PUB,
-                getPojoItem().getItemProperty(ELabsViewContants.P_STUDY_MOT_PUB), true);
+                getPojoItem().getItemProperty(ELabsViewContants.P_STUDY_MOT_PUB), true, studyTableHelper);
         final HorizontalLayout h4 =
             LabsLayoutHelper.createHorizontalLayoutWithPublicationDataForStudy(ELabsViewContants.L_STUDY_RES_PUB,
-                getPojoItem().getItemProperty(ELabsViewContants.P_STUDY_RES_PUB), false);
+                getPojoItem().getItemProperty(ELabsViewContants.P_STUDY_RES_PUB), false, studyTableHelper);
 
         registeredComponents.add(h1);
         registeredComponents.add(h2);
