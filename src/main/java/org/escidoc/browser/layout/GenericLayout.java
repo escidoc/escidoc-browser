@@ -1,0 +1,238 @@
+package org.escidoc.browser.layout;
+
+import org.escidoc.browser.BrowserApplication;
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.TreeDataSource;
+import org.escidoc.browser.model.internal.TreeDataSourceImpl;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.maincontent.GenericView;
+import org.escidoc.browser.ui.mainpage.HeaderContainer;
+import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
+import org.escidoc.browser.ui.navigation.NavigationTreeView;
+import org.escidoc.browser.ui.navigation.RootNode;
+
+import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+
+import de.escidoc.core.client.exceptions.EscidocClientException;
+
+public class GenericLayout extends LayoutDesign {
+
+    private AbsoluteLayout mainLayout;
+
+    private HorizontalLayout container;
+
+    private TabSheet mainContentTabs;
+
+    private Panel contentPanel;
+
+    private VerticalLayout vlContentPanel;
+
+    private Panel metaViewsPanel;
+
+    private HorizontalLayout hlMetaViews;
+
+    private Panel rightPanel;
+
+    private VerticalLayout vlRightPanel;
+
+    private Accordion metaDataRecsAcc;
+
+    private Label l3;
+
+    private Label l2;
+
+    private Label l1;
+
+    private Panel leftPanel;
+
+    private VerticalLayout vlLeftPanel;
+
+    private Panel directMembersPanel;
+
+    private VerticalLayout vlDirectMember;
+
+    private Panel resourcePropertiesPanel;
+
+    private VerticalLayout vlResourceProperties;
+
+    private Label label_1;
+
+    private Panel breadCrumpPanel;
+
+    private VerticalLayout vlBreadCrump;
+
+    private Panel navigationPanel;
+
+    private VerticalLayout vlNavigationPanel;
+
+    private HorizontalLayout headerContainer;
+
+    private EscidocServiceLocation serviceLocation;
+
+    private BrowserApplication app;
+
+    private Window mainWindow;
+
+    private Repositories repositories;
+
+    private Router router;
+
+    private NavigationTreeView mainNavigationTree;
+
+    private TreeDataSource treeDataSource;
+
+    @Override
+    public void init(
+        Window mainWindow, EscidocServiceLocation serviceLocation, BrowserApplication app, Repositories repositories,
+        Router router) throws EscidocClientException {
+        this.serviceLocation = serviceLocation;
+        this.app = app;
+        this.mainWindow = mainWindow;
+        this.serviceLocation = serviceLocation;
+        this.repositories = repositories;
+        this.router = router;
+        buildMainLayout();
+        addComponent(mainLayout);
+    }
+
+    @Override
+    public void openView(Component cmp, String tabname) {
+        final Tab tb = mainContentTabs.addTab(cmp);
+        if (tabname.length() > 50) {
+            tb.setDescription(tabname);
+            tabname = tabname.substring(0, 50) + "...";
+        }
+        tb.setCaption(tabname);
+        tb.setDescription(tabname);
+        mainContentTabs.setSelectedTab(cmp);
+        tb.setClosable(true);
+    }
+
+    @Override
+    public int getApplicationHeight() {
+        // Not really needed for this Layout
+        return 0;
+    }
+
+    private AbsoluteLayout buildMainLayout() throws EscidocClientException {
+        // common part: create layout
+        mainLayout = new AbsoluteLayout();
+        mainLayout.setImmediate(false);
+        mainLayout.setWidth("100%");
+        mainLayout.setHeight("100%");
+        mainLayout.setMargin(false, true, false, true);
+
+        // top-level component properties
+        setWidth("100.0%");
+        setHeight("100.0%");
+
+        // headerContainer
+        buildHeader();
+        mainLayout.addComponent(headerContainer, "top:0.0px;right:0.0px;left:0.0px;");
+
+        // container
+        container = buildContainer();
+        mainLayout.addComponent(container, "top:75.0px;right:0.0px;bottom:20.0px;left:0.0px;");
+
+        return mainLayout;
+    }
+
+    private void buildHeader() {
+        headerContainer = new HorizontalLayout();
+        headerContainer.setImmediate(false);
+        headerContainer.setWidth("100.0%");
+        headerContainer.setHeight("70px");
+        headerContainer.setMargin(false);
+        final HeaderContainer header = new HeaderContainer(router, this, app, serviceLocation, repositories);
+        header.init();
+        headerContainer.addComponent(header);
+    }
+
+    private HorizontalLayout buildContainer() throws EscidocClientException {
+        // common part: create layout
+        container = new HorizontalLayout();
+        container.setImmediate(false);
+        container.setWidth("100.0%");
+        container.setHeight("100.0%");
+        container.setMargin(false);
+
+        // navigationPanel
+        navigationPanel = buildNavigationPanel();
+        container.addComponent(navigationPanel);
+        container.setExpandRatio(navigationPanel, 3.0f);
+
+        // TabContainer
+        mainContentTabs = buildTabContainer();
+        container.addComponent(mainContentTabs);
+        container.setExpandRatio(mainContentTabs, 7.0f);
+
+        return container;
+    }
+
+    private Panel buildNavigationPanel() throws EscidocClientException {
+        // common part: create layout
+        navigationPanel = new Panel();
+        navigationPanel.setImmediate(false);
+        navigationPanel.setWidth("100.0%");
+        navigationPanel.setHeight("100.0%");
+
+        // vlNavigationPanel
+        vlNavigationPanel = new VerticalLayout();
+        vlNavigationPanel.setImmediate(false);
+        vlNavigationPanel.setWidth("100.0%");
+        vlNavigationPanel.setHeight("100.0%");
+        vlNavigationPanel.setMargin(false);
+
+        // Adding a root element in the Navigation Tree
+        vlNavigationPanel.addComponent(new RootNode(serviceLocation));
+
+        // Binding the tree to the NavigationPanel
+        mainNavigationTree = this.addNavigationTree();
+        vlNavigationPanel.addComponent(mainNavigationTree);
+        vlNavigationPanel.setExpandRatio(mainNavigationTree, 1.0f);
+
+        navigationPanel.setContent(vlNavigationPanel);
+
+        return navigationPanel;
+    }
+
+    private NavigationTreeView addNavigationTree() throws EscidocClientException {
+
+        treeDataSource = new TreeDataSourceImpl(repositories.context().findAllWithChildrenInfo());
+        treeDataSource.init();
+
+        mainNavigationTree =
+            new NavigationTreeBuilder(serviceLocation, repositories).buildNavigationTree(router, mainWindow,
+                treeDataSource);
+        return mainNavigationTree;
+    }
+
+    private TabSheet buildTabContainer() {
+        // common part: create layout
+        mainContentTabs = new TabSheet();
+        mainContentTabs.setImmediate(true);
+        mainContentTabs.setWidth("100.0%");
+        mainContentTabs.setHeight("100.0%");
+
+        // contentPanel
+        contentPanel = buildContentPanel();
+        mainContentTabs.addTab(contentPanel, "Tab", null);
+
+        return mainContentTabs;
+    }
+
+    private Panel buildContentPanel() {
+        return new GenericView(serviceLocation, repositories, router, this, null, mainWindow).buildContentPanel();
+    }
+
+}
