@@ -33,7 +33,6 @@ import java.net.URISyntaxException;
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
-import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceType;
@@ -62,24 +61,20 @@ final class ActionHandlerImpl implements Action.Handler {
 
     private final Repositories repositories;
 
-    private final CurrentUser currentUser;
-
     private final TreeDataSource treeDataSource;
 
     private Router router;
 
-    public ActionHandlerImpl(final Window mainWindow, final Repositories repositories, final CurrentUser currentUser,
+    public ActionHandlerImpl(final Window mainWindow, final Repositories repositories,
         final TreeDataSource treeDataSource, Router router) {
 
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
-        Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
         Preconditions.checkNotNull(treeDataSource, "treeDataSource is null: %s", treeDataSource);
         Preconditions.checkNotNull(router, "router is null: %s", router);
 
         this.mainWindow = mainWindow;
         this.repositories = repositories;
-        this.currentUser = currentUser;
         this.treeDataSource = treeDataSource;
         this.router = router;
     }
@@ -109,8 +104,7 @@ final class ActionHandlerImpl implements Action.Handler {
 
     private boolean allowedToDeleteItem(final String resourceId) throws EscidocClientException, URISyntaxException {
         return repositories
-            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_ITEM).forResource(resourceId)
-            .permitted();
+            .pdp().forCurrentUser().isAction(ActionIdConstants.DELETE_ITEM).forResource(resourceId).permitted();
     }
 
     private static boolean isContext(final Object target) {
@@ -263,26 +257,25 @@ final class ActionHandlerImpl implements Action.Handler {
 
     private boolean allowedToAddMember(final ResourceModel target) throws EscidocClientException, URISyntaxException {
         return repositories
-            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.ADD_MEMBERS_TO_CONTAINER)
-            .forResource(target.getId()).permitted();
+            .pdp().forCurrentUser().isAction(ActionIdConstants.ADD_MEMBERS_TO_CONTAINER).forResource(target.getId())
+            .permitted();
     }
 
     private boolean allowedToDeleteContainer(final String containerId) throws EscidocClientException,
         URISyntaxException {
         return repositories
-            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_CONTAINER)
-            .forResource(containerId).permitted();
+            .pdp().forCurrentUser().isAction(ActionIdConstants.DELETE_CONTAINER).forResource(containerId).permitted();
     }
 
     private boolean allowedToCreateItem(final String contextId) throws EscidocClientException, URISyntaxException {
         return repositories
-            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.CREATE_ITEM).forResource("")
+            .pdp().forCurrentUser().isAction(ActionIdConstants.CREATE_ITEM).forResource("")
             .withTypeAndInContext(ResourceType.ITEM, contextId).permitted();
     }
 
     private boolean allowedToCreateContainer(final String contextId) throws EscidocClientException, URISyntaxException {
         return repositories
-            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.CREATE_CONTAINER).forResource("")
+            .pdp().forCurrentUser().isAction(ActionIdConstants.CREATE_CONTAINER).forResource("")
             .withTypeAndInContext(ResourceType.CONTAINER, contextId).permitted();
     }
 
@@ -332,7 +325,7 @@ final class ActionHandlerImpl implements Action.Handler {
 
     private ShowAddViewCommand buildCommand(final Object target, final String contextId) {
         final ShowAddViewCommand showAddViewCommand =
-            new ShowAddViewCommand(repositories, getWindow(), contextId, treeDataSource, currentUser, router);
+            new ShowAddViewCommand(repositories, getWindow(), contextId, treeDataSource, router);
         showAddViewCommand.withParent((ResourceModel) target);
         return showAddViewCommand;
     }

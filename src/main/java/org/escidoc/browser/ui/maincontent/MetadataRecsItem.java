@@ -32,7 +32,6 @@ import java.net.URISyntaxException;
 
 import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.layout.LayoutDesign;
-import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.repository.Repositories;
@@ -78,15 +77,13 @@ public class MetadataRecsItem {
 
     private VerticalLayout btnaddContainer = new VerticalLayout();
 
-    private final CurrentUser currentUser;
-
     private final Router mainSite;
 
     private LayoutDesign layout;
 
     MetadataRecsItem(final ItemProxy resourceProxy, final int innerelementsHeight, final Window mainWindow,
-        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories,
-        final CurrentUser currentUser, final Router mainSite, LayoutDesign layout) {
+        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories, final Router mainSite,
+        LayoutDesign layout) {
         Preconditions.checkNotNull(mainWindow, "resource is null.");
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions
@@ -98,7 +95,6 @@ public class MetadataRecsItem {
         this.mainWindow = mainWindow;
         this.escidocServiceLocation = escidocServiceLocation;
         this.repositories = repositories;
-        this.currentUser = currentUser;
         this.mainSite = mainSite;
         this.layout = layout;
     }
@@ -128,7 +124,7 @@ public class MetadataRecsItem {
 
         final Button btnContentRelation =
             new Button("Item Content Relations", new RelationsClickListener(resourceProxy, mainWindow,
-                escidocServiceLocation, repositories, mainSite, layout, currentUser));
+                escidocServiceLocation, repositories, mainSite, layout));
         btnContentRelation.setStyleName(BaseTheme.BUTTON_LINK);
         btnContentRelation.setDescription("Show Version history in a Pop-up");
 
@@ -201,8 +197,8 @@ public class MetadataRecsItem {
     private boolean hasAccess() {
         try {
             return repositories
-                .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.UPDATE_ITEM)
-                .forResource(resourceProxy.getId()).permitted();
+                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_ITEM).forResource(resourceProxy.getId())
+                .permitted();
         }
         catch (final EscidocClientException e) {
             LOG.debug(e.getLocalizedMessage());

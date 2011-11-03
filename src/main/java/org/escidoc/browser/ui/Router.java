@@ -152,7 +152,7 @@ public class Router {
             try {
                 layoutClass = Class.forName(layoutClassName);
                 LayoutDesign layoutInstance = (LayoutDesign) layoutClass.newInstance();
-                layoutInstance.init(mainWindow, serviceLocation, app, currentUser, repositories, this);
+                layoutInstance.init(mainWindow, serviceLocation, app, repositories, this);
                 layout = layoutInstance;
 
             }
@@ -204,10 +204,6 @@ public class Router {
         return app.getApplicationHeight();
     }
 
-    public CurrentUser getCurrentUser() {
-        return currentUser;
-    }
-
     /**
      * This is the Permanent Link entry point Check if there is a tab variable set in the GET Method of the page and
      * open a tab containing the object with that ID URL Example
@@ -225,7 +221,7 @@ public class Router {
                 try {
                     final ContextProxyImpl context =
                         (ContextProxyImpl) resourceFactory.find(escidocID, ResourceType.CONTEXT);
-                    openTab(new ContextView(serviceLocation, this, context, mainWindow, currentUser, repositories),
+                    openTab(new ContextView(serviceLocation, this, context, mainWindow, repositories),
                         context.getName());
                 }
                 catch (final EscidocClientException e) {
@@ -236,7 +232,7 @@ public class Router {
                 try {
                     final ContainerProxy container =
                         (ContainerProxy) resourceFactory.find(escidocID, ResourceType.CONTAINER);
-                    openTab(new ContainerView(serviceLocation, this, container, mainWindow, currentUser, repositories),
+                    openTab(new ContainerView(serviceLocation, this, container, mainWindow, repositories),
                         container.getName());
                 }
                 catch (final EscidocClientException e) {
@@ -246,8 +242,7 @@ public class Router {
             else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("ITEM")) {
                 try {
                     final ItemProxy item = (ItemProxy) resourceFactory.find(escidocID, ResourceType.ITEM);
-                    openTab(new ItemView(serviceLocation, repositories, this, layout, item, mainWindow, currentUser),
-                        item.getName());
+                    openTab(new ItemView(serviceLocation, repositories, this, layout, item, mainWindow), item.getName());
                 }
                 catch (final EscidocClientException e) {
                     showError(FAIL_RETRIEVING_RESOURCE);
@@ -305,15 +300,16 @@ public class Router {
         Controller controller;
         if (controllerId.equals("org.escidoc.browser.Item")) {
             openTab(new ItemView(serviceLocation, repositories, this, layout, tryToFindResource(clickedResource),
-                mainWindow, currentUser), clickedResource.getName());
+                mainWindow), clickedResource.getName());
         }
         else if (controllerId.equals("org.escidoc.browser.Container")) {
             openTab(new ContainerView(serviceLocation, this, tryToFindResource(clickedResource), mainWindow,
-                currentUser, repositories), clickedResource.getName());
+                repositories), clickedResource.getName());
         }
         else if (controllerId.equals("org.escidoc.browser.Context")) {
-            openTab(new ContextView(serviceLocation, this, tryToFindResource(clickedResource), mainWindow, currentUser,
-                repositories), clickedResource.getName());
+            openTab(
+                new ContextView(serviceLocation, this, tryToFindResource(clickedResource), mainWindow, repositories),
+                clickedResource.getName());
         }
         else {
             try {

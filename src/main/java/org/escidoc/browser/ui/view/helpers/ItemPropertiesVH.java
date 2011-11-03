@@ -30,7 +30,6 @@ package org.escidoc.browser.ui.view.helpers;
 
 import java.net.URISyntaxException;
 
-import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
@@ -100,8 +99,6 @@ public class ItemPropertiesVH {
 
     private Repositories repositories;
 
-    private CurrentUser currentUser;
-
     private CssLayout cssLayout;
 
     private Window mainWindow;
@@ -110,11 +107,10 @@ public class ItemPropertiesVH {
 
     private EscidocServiceLocation serviceLocation;
 
-    public ItemPropertiesVH(ItemProxyImpl resourceProxy, Repositories repositories, CurrentUser currentUser,
-        CssLayout cssLayout, Window mainWindow, EscidocServiceLocation serviceLocation) {
+    public ItemPropertiesVH(ItemProxyImpl resourceProxy, Repositories repositories, CssLayout cssLayout,
+        Window mainWindow, EscidocServiceLocation serviceLocation) {
         this.resourceProxy = resourceProxy;
         this.repositories = repositories;
-        this.currentUser = currentUser;
         this.cssLayout = cssLayout;
         this.mainWindow = mainWindow;
         this.serviceLocation = serviceLocation;
@@ -227,8 +223,8 @@ public class ItemPropertiesVH {
     private boolean hasAccess() {
         try {
             return repositories
-                .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.UPDATE_CONTAINER)
-                .forResource(resourceProxy.getId()).permitted();
+                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER).forResource(resourceProxy.getId())
+                .permitted();
         }
         catch (final EscidocClientException e) {
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
@@ -355,7 +351,7 @@ public class ItemPropertiesVH {
                 private boolean hasAccessDelResource() {
                     try {
                         return repositories
-                            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_CONTAINER)
+                            .pdp().forCurrentUser().isAction(ActionIdConstants.DELETE_CONTAINER)
                             .forResource(resourceProxy.getId()).permitted();
                     }
                     catch (final UnsupportedOperationException e) {

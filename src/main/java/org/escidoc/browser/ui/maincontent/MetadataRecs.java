@@ -32,7 +32,6 @@ import java.net.URISyntaxException;
 
 import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.ContainerProxy;
-import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
@@ -82,17 +81,13 @@ public class MetadataRecs {
 
     VerticalLayout btnaddContainer = new VerticalLayout();
 
-    private final CurrentUser currentUser;
-
     private final Router mainSite;
 
     public MetadataRecs(final ResourceProxy resourceProxy, final int innerelementsHeight, final Window mainWindow,
-        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories,
-        final CurrentUser currentUser, final Router mainSite) {
+        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories, final Router mainSite) {
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
-        Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
         Preconditions.checkNotNull(escidocServiceLocation, "escidocServiceLocation is null.");
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
 
@@ -101,7 +96,6 @@ public class MetadataRecs {
         this.mainWindow = mainWindow;
         this.escidocServiceLocation = escidocServiceLocation;
         this.repositories = repositories;
-        this.currentUser = currentUser;
         this.mainSite = mainSite;
     }
 
@@ -129,7 +123,7 @@ public class MetadataRecs {
 
         final Button btnContentRelation =
             new Button("Container Content Relations", new RelationsClickListener(resourceProxy, mainWindow,
-                escidocServiceLocation, repositories, currentUser, mainSite));
+                escidocServiceLocation, repositories, mainSite));
         btnContentRelation.setStyleName(BaseTheme.BUTTON_LINK);
         btnContentRelation.setDescription("Show Version history in a Pop-up");
 
@@ -202,8 +196,8 @@ public class MetadataRecs {
     private boolean hasAccess() {
         try {
             return repositories
-                .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.UPDATE_CONTAINER)
-                .forResource(resourceProxy.getId()).permitted();
+                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER).forResource(resourceProxy.getId())
+                .permitted();
         }
         catch (final EscidocClientException e) {
             LOG.debug(e.getLocalizedMessage());

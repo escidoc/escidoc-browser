@@ -31,7 +31,6 @@ package org.escidoc.browser.ui.maincontent;
 import java.net.URISyntaxException;
 
 import org.escidoc.browser.model.ContainerProxy;
-import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
@@ -89,31 +88,29 @@ public class ContainerView extends VerticalLayout {
 
     private static final String RESOURCE_NAME = "Container: ";
 
+    private final VerticalLayout vlPropertiesLeft = new VerticalLayout();
+
+    private final CssLayout cssLayout = new CssLayout();
+
     private final int appHeight;
 
     private final Router router;
 
     private final ContainerProxy resourceProxy;
 
-    private final CssLayout cssLayout = new CssLayout();
-
     private String status;
 
     private int accordionHeight;
-
-    private int innerelementsHeight;
 
     private final EscidocServiceLocation serviceLocation;
 
     private final Window mainWindow;
 
-    private final CurrentUser currentUser;
-
     private final Repositories repositories;
 
-    private Component oldComponent = null;
+    private Component oldComponent;
 
-    private Component swapComponent = null;
+    private Component swapComponent;
 
     private Label lblStatus;
 
@@ -123,15 +120,13 @@ public class ContainerView extends VerticalLayout {
 
     private Label lblCurrentVersionStatus;
 
-    private final VerticalLayout vlPropertiesLeft = new VerticalLayout();
-
     private String lockStatus;
 
     private static final Logger LOG = LoggerFactory.getLogger(ContainerView.class);
 
     public ContainerView(final EscidocServiceLocation serviceLocation, final Router mainSite,
-        final ResourceProxy resourceProxy, final Window mainWindow, final CurrentUser currentUser,
-        final Repositories repositories) throws EscidocClientException {
+        final ResourceProxy resourceProxy, final Window mainWindow, final Repositories repositories)
+        throws EscidocClientException {
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
@@ -145,7 +140,6 @@ public class ContainerView extends VerticalLayout {
         appHeight = mainSite.getApplicationHeight();
         this.resourceProxy = (ContainerProxy) resourceProxy;
         this.mainWindow = mainWindow;
-        this.currentUser = currentUser;
         this.repositories = repositories;
         init();
     }
@@ -166,8 +160,8 @@ public class ContainerView extends VerticalLayout {
     }
 
     private void addMetadataRecords() {
-        rightCell(new MetadataRecs(resourceProxy, accordionHeight, mainWindow, serviceLocation, repositories,
-            currentUser, router).asAccord());
+        rightCell(new MetadataRecs(resourceProxy, accordionHeight, mainWindow, serviceLocation, repositories, router)
+            .asAccord());
     }
 
     /**
@@ -197,8 +191,8 @@ public class ContainerView extends VerticalLayout {
         leftPanel.setWidth("30%");
         leftPanel.setHeight("82%");
 
-        new DirectMember(serviceLocation, router, resourceProxy.getId(), mainWindow, currentUser, repositories,
-            leftPanel).containerAsTree();
+        new DirectMember(serviceLocation, router, resourceProxy.getId(), mainWindow, repositories, leftPanel)
+            .containerAsTree();
         cssLayout.addComponent(leftPanel);
     }
 
@@ -433,7 +427,7 @@ public class ContainerView extends VerticalLayout {
                 private boolean hasAccessDelResource() {
                     try {
                         return repositories
-                            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.DELETE_CONTAINER)
+                            .pdp().forCurrentUser().isAction(ActionIdConstants.DELETE_CONTAINER)
                             .forResource(resourceProxy.getId()).permitted();
                     }
                     catch (UnsupportedOperationException e) {
@@ -560,8 +554,8 @@ public class ContainerView extends VerticalLayout {
     private boolean hasAccess() {
         try {
             return repositories
-                .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.UPDATE_CONTAINER)
-                .forResource(resourceProxy.getId()).permitted();
+                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER).forResource(resourceProxy.getId())
+                .permitted();
         }
         catch (EscidocClientException e) {
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);

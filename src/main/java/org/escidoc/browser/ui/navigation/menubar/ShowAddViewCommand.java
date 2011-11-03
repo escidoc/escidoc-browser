@@ -30,7 +30,6 @@ package org.escidoc.browser.ui.navigation.menubar;
 
 import java.net.URISyntaxException;
 
-import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.TreeDataSource;
@@ -62,25 +61,21 @@ public final class ShowAddViewCommand implements Command {
 
     private final TreeDataSource treeDataSource;
 
-    private final CurrentUser currentUser;
-
     private ResourceModel parent;
 
     private Router router;
 
     public ShowAddViewCommand(final Repositories repositories, final Window mainWindow, final String contextId,
-        final TreeDataSource treeDataSource, final CurrentUser currentUser, Router router) {
+        final TreeDataSource treeDataSource, Router router) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(contextId, "contextId is null: %s", contextId);
         Preconditions.checkNotNull(treeDataSource, "treeDataSource is null: %s", treeDataSource);
-        Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
         Preconditions.checkNotNull(router, "router is null: %s", router);
         this.repositories = repositories;
         this.mainWindow = mainWindow;
         this.contextId = contextId;
         this.treeDataSource = treeDataSource;
-        this.currentUser = currentUser;
         this.router = router;
     }
 
@@ -139,20 +134,20 @@ public final class ShowAddViewCommand implements Command {
 
     private boolean allowedToCreateContainer(final String contextId) throws EscidocClientException, URISyntaxException {
         return repositories
-            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.CREATE_CONTAINER).forResource("")
+            .pdp().forCurrentUser().isAction(ActionIdConstants.CREATE_CONTAINER).forResource("")
             .withTypeAndInContext(ResourceType.CONTAINER, contextId).permitted();
     }
 
     private boolean allowedToCreateITem(final String contextId) throws EscidocClientException, URISyntaxException {
         return repositories
-            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.CREATE_ITEM).forResource("")
+            .pdp().forCurrentUser().isAction(ActionIdConstants.CREATE_ITEM).forResource("")
             .withTypeAndInContext(ResourceType.ITEM, contextId).permitted();
     }
 
     private boolean isUserAllowedToAddMembers(final ResourceModel selectedItem) throws EscidocClientException,
         URISyntaxException {
         return repositories
-            .pdp().forUser(currentUser.getUserId()).isAction(ActionIdConstants.ADD_MEMBERS_TO_CONTAINER)
+            .pdp().forCurrentUser().isAction(ActionIdConstants.ADD_MEMBERS_TO_CONTAINER)
             .forResource(selectedItem.getId()).permitted();
     }
 

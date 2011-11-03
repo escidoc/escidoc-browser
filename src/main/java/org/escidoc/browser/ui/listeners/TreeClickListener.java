@@ -31,7 +31,6 @@ package org.escidoc.browser.ui.listeners;
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
-import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ResourceModel;
@@ -62,24 +61,20 @@ public class TreeClickListener implements ItemClickListener {
 
     private final Window mainWindow;
 
-    private final CurrentUser currentUser;
-
     private final Repositories repositories;
 
     public TreeClickListener(final EscidocServiceLocation serviceLocation, final Repositories repositories,
-        final Window mainWindow, final Router mainSite, final CurrentUser currentUser) {
+        final Window mainWindow, final Router mainSite) {
 
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
-        Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
 
         this.repositories = repositories;
         this.mainWindow = mainWindow;
         router = mainSite;
         this.serviceLocation = serviceLocation;
-        this.currentUser = currentUser;
     }
 
     @Override

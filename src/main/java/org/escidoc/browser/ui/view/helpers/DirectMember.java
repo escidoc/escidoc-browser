@@ -29,7 +29,6 @@
 package org.escidoc.browser.ui.view.helpers;
 
 import org.escidoc.browser.model.ContainerProxy;
-import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ContainerProxyImpl;
@@ -80,12 +79,11 @@ public class DirectMember {
      * @param leftPanel
      */
     public DirectMember(final EscidocServiceLocation serviceLocation, final Router router, final String parentId,
-        final Window mainWindow, final CurrentUser currentUser, final Repositories repositories, Panel leftPanel) {
+        final Window mainWindow, final Repositories repositories, Panel leftPanel) {
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(router, "Router is null: %s", router);
         Preconditions.checkNotNull(parentId, "parentID is null: %s", parentId);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
-        Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(leftPanel, "Panel from the View is null: %s", repositories);
 
@@ -98,10 +96,10 @@ public class DirectMember {
             createButtons();
         }
         catch (EscidocClientException e) {
-            // TODO Auto-generated catch block
+            // TODO show error message
             e.printStackTrace();
         }
-        navigationTreeBuilder = new NavigationTreeBuilder(serviceLocation, currentUser, repositories);
+        navigationTreeBuilder = new NavigationTreeBuilder(serviceLocation, repositories);
     }
 
     public void contextAsTree() throws EscidocClientException {

@@ -32,7 +32,6 @@
 package org.escidoc.browser.layout;
 
 import org.escidoc.browser.BrowserApplication;
-import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
@@ -49,8 +48,8 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 public abstract class LayoutDesign extends VerticalLayout {
 
     public abstract void init(
-        Window mainWindow, EscidocServiceLocation serviceLocation, BrowserApplication app, CurrentUser currentUser,
-        Repositories repositories, Router router) throws EscidocClientException;
+        Window mainWindow, EscidocServiceLocation serviceLocation, BrowserApplication app, Repositories repositories,
+        Router router) throws EscidocClientException;
 
     public abstract void openView(Component cmp, String title);
 

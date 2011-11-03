@@ -80,26 +80,25 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
 
     private final EscidocServiceLocation serviceLocation;
 
-    private final CurrentUser user;
-
     private final Repositories repositories;
 
     private LayoutDesign layout;
 
     private Router router;
 
+    private CurrentUser user;
+
     public HeaderContainer(final Router router, LayoutDesign layout, final BrowserApplication app,
-        final EscidocServiceLocation serviceLocation, final CurrentUser user, final Repositories repositories) {
+        final EscidocServiceLocation serviceLocation, final Repositories repositories) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
         Preconditions.checkNotNull(layout, "mainSite is null: %s", layout);
         Preconditions.checkNotNull(app, "app is null: %s", app);
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
-        Preconditions.checkNotNull(user, "user is null: %s", user);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         this.router = router;
         this.app = app;
         this.serviceLocation = serviceLocation;
-        this.user = user;
+        this.user = app.getCurrentUser();
         this.layout = layout;
         this.repositories = repositories;
         this.setMargin(false);
@@ -192,7 +191,7 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
         final String searchString = (String) searchField.getValue();
         if (validate(searchString)) {
             Preconditions.checkNotNull(router, "router is null: %s", router);
-            router.openTab(new SearchResultsView(router, layout, searchString, serviceLocation, repositories, user),
+            router.openTab(new SearchResultsView(router, layout, searchString, serviceLocation, repositories),
                 "Search results for: " + (String) searchField.getValue());
         }
         else {

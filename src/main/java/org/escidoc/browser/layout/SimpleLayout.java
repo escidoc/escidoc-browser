@@ -62,6 +62,9 @@ import com.vaadin.ui.Window.Notification;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class SimpleLayout extends LayoutDesign {
+
+    private static final long serialVersionUID = 6951413012418459954L;
+
     private final TabSheet mainContentTabs = new TabSheet();
 
     private final CssLayout mainLayout = new CssLayout();
@@ -74,8 +77,6 @@ public class SimpleLayout extends LayoutDesign {
 
     private Window mainWindow;
 
-    private CurrentUser currentUser;
-
     private Repositories repositories;
 
     private Router router;
@@ -84,15 +85,14 @@ public class SimpleLayout extends LayoutDesign {
 
     private TreeDataSource treeDataSource;
 
+    @Override
     public void init(
-        final Window mainWindow, final EscidocServiceLocation serviceLocation, final BrowserApplication app,
-        final CurrentUser currentUser, final Repositories repositories, final Router router)
-        throws EscidocClientException {
+        Window mainWindow, EscidocServiceLocation serviceLocation, BrowserApplication app, Repositories repositories,
+        Router router) throws EscidocClientException {
         this.serviceLocation = serviceLocation;
         this.app = app;
         this.mainWindow = mainWindow;
         this.serviceLocation = serviceLocation;
-        this.currentUser = currentUser;
         this.repositories = repositories;
         this.router = router;
         buildViews();
@@ -117,8 +117,7 @@ public class SimpleLayout extends LayoutDesign {
     }
 
     private void addHeader() {
-        final HeaderContainer header =
-            new HeaderContainer(router, this, app, serviceLocation, currentUser, repositories);
+        final HeaderContainer header = new HeaderContainer(router, this, app, serviceLocation, repositories);
         header.init();
 
         mainLayout.addComponent(header);
@@ -167,8 +166,8 @@ public class SimpleLayout extends LayoutDesign {
 
     private void addNavigationTree() throws EscidocClientException {
         mainNavigationTree =
-            new NavigationTreeBuilder(serviceLocation, currentUser, repositories).buildNavigationTree(router,
-                mainWindow, treeDataSource);
+            new NavigationTreeBuilder(serviceLocation, repositories).buildNavigationTree(router, mainWindow,
+                treeDataSource);
         mainNavigation.addComponent(mainNavigationTree);
         ((Layout) mainNavigation.getContent()).setMargin(false);
     }
@@ -185,8 +184,7 @@ public class SimpleLayout extends LayoutDesign {
     public boolean isUserAllowedToCreateContext() {
         try {
             return repositories
-                .pdp().isAction(ActionIdConstants.CREATE_CONTEXT).forResource("").forUser(currentUser.getUserId())
-                .permitted();
+                .pdp().isAction(ActionIdConstants.CREATE_CONTEXT).forResource("").forCurrentUser().permitted();
         }
         catch (final EscidocClientException e) {
             showError(e.getMessage());
@@ -233,7 +231,7 @@ public class SimpleLayout extends LayoutDesign {
      * @param event
      */
     public void onClickSrchButton(final Button.ClickEvent event) {
-        final SimpleSearch smpSearch = new SimpleSearch(router, this, serviceLocation, repositories, currentUser);
+        final SimpleSearch smpSearch = new SimpleSearch(router, this, serviceLocation, repositories);
         openView(smpSearch, "Search Results");
     }
 
@@ -242,11 +240,10 @@ public class SimpleLayout extends LayoutDesign {
     }
 
     public CurrentUser getCurrentUser() {
-        return currentUser;
+        return app.getCurrentUser();
     }
 
     private void showError(final String msg) {
         getWindow().showNotification(msg, Notification.TYPE_HUMANIZED_MESSAGE);
     }
-
 }

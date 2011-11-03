@@ -29,7 +29,6 @@
 package org.escidoc.browser.ui.maincontent;
 
 import org.escidoc.browser.layout.LayoutDesign;
-import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
@@ -69,15 +68,12 @@ public final class ItemView extends VerticalLayout {
 
     private final Repositories repositories;
 
-    private final CurrentUser currentUser;
-
     private int accordionHeight;
 
     private LayoutDesign layout;
 
     public ItemView(final EscidocServiceLocation serviceLocation, final Repositories repositories, final Router router,
-        final LayoutDesign layout, final ResourceProxy resourceProxy, final Window mainWindow,
-        final CurrentUser currentUser) {
+        final LayoutDesign layout, final ResourceProxy resourceProxy, final Window mainWindow) {
 
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null.");
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
@@ -92,17 +88,15 @@ public final class ItemView extends VerticalLayout {
         this.layout = router.getLayout();
         this.serviceLocation = serviceLocation;
         appHeight = router.getApplicationHeight();
-        this.currentUser = currentUser;
-
         init();
     }
 
     private final void init() {
         buildLayout();
-        new ItemPropertiesVH(resourceProxy, repositories, currentUser, cssLayout, mainWindow, serviceLocation).init();
-        buildLeftCell(new ItemContent(repositories, resourceProxy, serviceLocation, mainWindow, currentUser));
+        new ItemPropertiesVH(resourceProxy, repositories, cssLayout, mainWindow, serviceLocation).init();
+        buildLeftCell(new ItemContent(repositories, resourceProxy, serviceLocation, mainWindow));
         buildRightCell(new MetadataRecsItem(resourceProxy, accordionHeight, mainWindow, serviceLocation, repositories,
-            currentUser, router, layout).asAccord());
+            router, layout).asAccord());
 
         addComponent(cssLayout);
     }

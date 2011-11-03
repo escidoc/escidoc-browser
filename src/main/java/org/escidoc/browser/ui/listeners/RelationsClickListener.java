@@ -30,7 +30,6 @@ package org.escidoc.browser.ui.listeners;
 
 import org.escidoc.browser.layout.LayoutDesign;
 import org.escidoc.browser.model.ContainerProxy;
-import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.repository.Repositories;
@@ -78,8 +77,6 @@ public class RelationsClickListener implements ClickListener {
 
     private Repositories repositories;
 
-    private CurrentUser currentUser;
-
     private Router mainSite;
 
     protected Component cmpView;
@@ -96,7 +93,7 @@ public class RelationsClickListener implements ClickListener {
      */
     public RelationsClickListener(final ItemProxy resourceProxy, final Window mainWindow,
         final EscidocServiceLocation escidocServiceLocation, final Repositories repositories, final Router mainSite,
-        LayoutDesign layout, final CurrentUser currentUser) {
+        LayoutDesign layout) {
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions
@@ -107,7 +104,6 @@ public class RelationsClickListener implements ClickListener {
         itemProxy = resourceProxy;
         Preconditions.checkNotNull(itemProxy, "resourceProxy is null: %s", itemProxy);
         this.mainWindow = mainWindow;
-        this.currentUser = currentUser;
         this.mainSite = mainSite;
         this.escidocServiceLocation = escidocServiceLocation;
         this.repositories = repositories;
@@ -122,19 +118,16 @@ public class RelationsClickListener implements ClickListener {
      * @param mainWindow
      * @param escidocServiceLocation
      * @param repositories
-     * @param currentUser
      * @param mainSite
      */
     public RelationsClickListener(final ContainerProxy resourceProxy, final Window mainWindow,
-        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories, CurrentUser currentUser,
-        Router mainSite) {
+        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories, Router mainSite) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null.");
 
         containerProxy = resourceProxy;
         this.mainWindow = mainWindow;
         this.repositories = repositories;
-        this.currentUser = currentUser;
         this.mainSite = mainSite;
         itemOrContainerRepository = repositories.container();
     }
@@ -170,7 +163,7 @@ public class RelationsClickListener implements ClickListener {
                         try {
                             cmpView =
                                 new ContainerView(escidocServiceLocation, mainSite, (ContainerProxy) repositories
-                                    .container().findById(relation.getObjid()), mainWindow, currentUser, repositories);
+                                    .container().findById(relation.getObjid()), mainWindow, repositories);
                         }
                         catch (EscidocClientException e) {
                             mainWindow.showNotification(e.getLocalizedMessage());
@@ -181,8 +174,7 @@ public class RelationsClickListener implements ClickListener {
                         try {
                             cmpView =
                                 new ItemView(escidocServiceLocation, repositories, mainSite, layout,
-                                    (ItemProxy) repositories.item().findById(relation.getObjid()), mainWindow,
-                                    currentUser);
+                                    (ItemProxy) repositories.item().findById(relation.getObjid()), mainWindow);
                         }
                         catch (EscidocClientException e) {
                             mainWindow.showNotification(e.getLocalizedMessage());

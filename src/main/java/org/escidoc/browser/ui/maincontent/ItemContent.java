@@ -32,7 +32,6 @@ import java.io.File;
 import java.net.URISyntaxException;
 
 import org.escidoc.browser.AppConstants;
-import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.repository.Repositories;
@@ -70,8 +69,6 @@ public class ItemContent extends Panel {
 
     private final Repositories repositories;
 
-    private final CurrentUser currentUser;
-
     private final Window mainWindow;
 
     private ItemProxy itemProxy;
@@ -79,7 +76,7 @@ public class ItemContent extends Panel {
     private Table table;
 
     public ItemContent(final Repositories repositories, final ItemProxyImpl itemProxy,
-        final EscidocServiceLocation serviceLocation, final Window mainWindow, final CurrentUser currentUser) {
+        final EscidocServiceLocation serviceLocation, final Window mainWindow) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(itemProxy, "resourceProxy is null.");
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null.");
@@ -88,7 +85,6 @@ public class ItemContent extends Panel {
         this.repositories = repositories;
         this.itemProxy = itemProxy;
         this.serviceLocation = serviceLocation;
-        this.currentUser = currentUser;
         this.mainWindow = mainWindow;
         initView();
     }
@@ -134,8 +130,7 @@ public class ItemContent extends Panel {
 
     private boolean userIsPermittedToUpdate() throws EscidocClientException, URISyntaxException {
         return repositories
-            .pdp().isAction(ActionIdConstants.UPDATE_ITEM).forUser(currentUser.getUserId())
-            .forResource(itemProxy.getId()).permitted();
+            .pdp().isAction(ActionIdConstants.UPDATE_ITEM).forCurrentUser().forResource(itemProxy.getId()).permitted();
     }
 
     private void showError(final Exception e) {

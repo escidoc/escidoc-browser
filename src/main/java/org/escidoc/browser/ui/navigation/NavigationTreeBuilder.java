@@ -28,7 +28,6 @@
  */
 package org.escidoc.browser.ui.navigation;
 
-import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.TreeDataSourceImpl;
@@ -44,19 +43,16 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class NavigationTreeBuilder {
 
-    private final CurrentUser currentUser;
+    // private final CurrentUser currentUser;
 
     private final EscidocServiceLocation serviceLocation;
 
     private final Repositories repositories;
 
-    public NavigationTreeBuilder(final EscidocServiceLocation serviceLocation, final CurrentUser currentUser,
-        final Repositories repositories) {
+    public NavigationTreeBuilder(final EscidocServiceLocation serviceLocation, final Repositories repositories) {
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
-        Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         this.serviceLocation = serviceLocation;
-        this.currentUser = currentUser;
         this.repositories = repositories;
     }
 
@@ -92,12 +88,10 @@ public class NavigationTreeBuilder {
 
     private NavigationTreeView createNavigationTreeView(
         final Router router, final Window mainWindow, final TreeDataSource treeDataSource) {
-        final NavigationTreeView navigationTreeView = new NavigationTreeViewImpl(repositories, currentUser);
+        final NavigationTreeView navigationTreeView = new NavigationTreeViewImpl();
         navigationTreeView.setDataSource(treeDataSource, router);
-        navigationTreeView.addClickListener(new TreeClickListener(serviceLocation, repositories, mainWindow, router,
-            currentUser));
-        navigationTreeView.addActionHandler(new ActionHandlerImpl(mainWindow, repositories, currentUser,
-            treeDataSource, router));
+        navigationTreeView.addClickListener(new TreeClickListener(serviceLocation, repositories, mainWindow, router));
+        navigationTreeView.addActionHandler(new ActionHandlerImpl(mainWindow, repositories, treeDataSource, router));
         return navigationTreeView;
     }
 }

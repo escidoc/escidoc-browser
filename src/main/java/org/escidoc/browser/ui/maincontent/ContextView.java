@@ -28,7 +28,6 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
@@ -74,25 +73,21 @@ public class ContextView extends VerticalLayout {
 
     private final Window mainWindow;
 
-    private final CurrentUser currentUser;
-
     private final Repositories repositories;
 
     public ContextView(final EscidocServiceLocation serviceLocation, final Router router,
-        final ResourceProxy resourceProxy, final Window mainWindow, final CurrentUser currentUser,
-        final Repositories repositories) throws EscidocClientException {
+        final ResourceProxy resourceProxy, final Window mainWindow, final Repositories repositories)
+        throws EscidocClientException {
 
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(router, "mainSite is null: %s", router);
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
-        Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
 
         this.serviceLocation = serviceLocation;
         this.router = router;
         this.resourceProxy = resourceProxy;
         this.mainWindow = mainWindow;
-        this.currentUser = currentUser;
         this.repositories = repositories;
         appHeight = router.getApplicationHeight();
         init();
@@ -150,8 +145,8 @@ public class ContextView extends VerticalLayout {
         leftPanel.setHeight("82%");
         leftPanel.getLayout().setMargin(false);
 
-        new DirectMember(serviceLocation, router, resourceProxy.getId(), mainWindow, currentUser, repositories,
-            leftPanel).contextAsTree();
+        new DirectMember(serviceLocation, router, resourceProxy.getId(), mainWindow, repositories, leftPanel)
+            .contextAsTree();
         cssLayout.addComponent(leftPanel);
     }
 

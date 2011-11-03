@@ -237,7 +237,7 @@ public class InvestigationSeriesView extends Panel implements ILabsPanel, ILabsA
         leftPanel.setHeight("82%");
 
         new DirectMember(router.getServiceLocation(), router, containerProxy.getId(), router.getMainWindow(),
-            router.getCurrentUser(), router.getRepositories(), leftPanel).containerAsTree();
+            router.getRepositories(), leftPanel).containerAsTree();
         cssLayout.addComponent(leftPanel);
     }
 
