@@ -66,9 +66,9 @@ public class SearchAdvancedView extends VerticalLayout {
 
     private final EscidocServiceLocation serviceLocation;
 
-    public SearchAdvancedView(final Router mainSite, final EscidocServiceLocation serviceLocation) {
-        this.router = mainSite;
-        appHeight = mainSite.getApplicationHeight();
+    public SearchAdvancedView(final Router router, final EscidocServiceLocation serviceLocation) {
+        this.router = router;
+        appHeight = router.getLayout().getApplicationHeight();
         this.serviceLocation = serviceLocation;
         setWidth("100.0%");
         setHeight("85%");

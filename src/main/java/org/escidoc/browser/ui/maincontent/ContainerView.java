@@ -124,11 +124,12 @@ public class ContainerView extends VerticalLayout {
 
     private static final Logger LOG = LoggerFactory.getLogger(ContainerView.class);
 
-    public ContainerView(final EscidocServiceLocation serviceLocation, final Router mainSite,
+    public ContainerView(final EscidocServiceLocation serviceLocation, final Router router,
         final ResourceProxy resourceProxy, final Window mainWindow, final Repositories repositories)
         throws EscidocClientException {
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
-        Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
+        Preconditions.checkNotNull(router, "Router is null: %s", router);
+
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         Preconditions.checkArgument(resourceProxy instanceof ContainerProxy, resourceProxy.getClass()
             + " is not an instance of ContainerProxy.class");
@@ -136,8 +137,8 @@ public class ContainerView extends VerticalLayout {
         Preconditions.checkArgument(resourceProxy instanceof ContainerProxy, resourceProxy.getClass()
             + " is not an instance of ContainerProxy.class");
         this.serviceLocation = serviceLocation;
-        this.router = mainSite;
-        appHeight = mainSite.getApplicationHeight();
+        this.router = router;
+        appHeight = router.getLayout().getApplicationHeight();
         this.resourceProxy = (ContainerProxy) resourceProxy;
         this.mainWindow = mainWindow;
         this.repositories = repositories;

@@ -170,7 +170,7 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
         this.mainLayout = new VerticalLayout();
         this.mainLayout.setSpacing(true);
         this.mainLayout.setMargin(true);
-        mainLayout.setHeight(router.getApplicationHeight() - 30 + "px");
+        mainLayout.setHeight(router.getLayout().getApplicationHeight() - 30 + "px");
         this.dynamicLayout = new VerticalLayout();
         this.dynamicLayout.setSpacing(true);
         this.dynamicLayout.setMargin(true);

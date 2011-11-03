@@ -200,10 +200,6 @@ public class Router {
 
     }
 
-    public int getApplicationHeight() {
-        return app.getApplicationHeight();
-    }
-
     /**
      * This is the Permanent Link entry point Check if there is a tab variable set in the GET Method of the page and
      * open a tab containing the object with that ID URL Example

@@ -53,4 +53,6 @@ public abstract class LayoutDesign extends VerticalLayout {
 
     public abstract void openView(Component cmp, String title);
 
+    public abstract int getApplicationHeight();
+
 }

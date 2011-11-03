@@ -85,9 +85,9 @@ public final class ItemView extends VerticalLayout {
         this.repositories = repositories;
         this.mainWindow = mainWindow;
         this.router = router;
-        this.layout = router.getLayout();
+        this.layout = layout;
         this.serviceLocation = serviceLocation;
-        appHeight = router.getApplicationHeight();
+        appHeight = layout.getApplicationHeight();
         init();
     }
 

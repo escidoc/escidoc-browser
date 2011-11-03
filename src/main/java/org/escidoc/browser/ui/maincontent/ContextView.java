@@ -89,7 +89,7 @@ public class ContextView extends VerticalLayout {
         this.resourceProxy = resourceProxy;
         this.mainWindow = mainWindow;
         this.repositories = repositories;
-        appHeight = router.getApplicationHeight();
+        appHeight = router.getLayout().getApplicationHeight();
         init();
     }
 
@@ -195,7 +195,6 @@ public class ContextView extends VerticalLayout {
     }
 
     private void configureLayout() {
-        appHeight = router.getApplicationHeight();
 
         setMargin(true, true, false, true);
         setHeight(100, Sizeable.UNITS_PERCENTAGE);

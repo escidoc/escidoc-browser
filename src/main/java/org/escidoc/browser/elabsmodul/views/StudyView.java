@@ -168,7 +168,7 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
         mainLayout = new VerticalLayout();
         mainLayout.setSpacing(true);
         mainLayout.setMargin(true);
-        mainLayout.setHeight(router.getApplicationHeight() - 30 + "px");
+        mainLayout.setHeight(router.getLayout().getApplicationHeight() - 30 + "px");
         mainLayout.setStyleName("red");
         dynamicLayout = new VerticalLayout();
         dynamicLayout.setSpacing(true);
