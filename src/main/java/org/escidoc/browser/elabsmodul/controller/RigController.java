@@ -87,10 +87,11 @@ public final class RigController extends Controller implements IRigAction {
 
     private IBeanModel beanModel = null;
 
-    private static List<String> cmmIds4Instrument = null;
+    private static List<String> cmmIds4Instrument = null, cmmIds4Rig = null;
 
     static {
         cmmIds4Instrument = new ArrayList<String>();
+        cmmIds4Rig = new ArrayList<String>();
     }
 
     @Override
@@ -142,8 +143,8 @@ public final class RigController extends Controller implements IRigAction {
                     String instrumentID = attributeNode.getNodeValue();
 
                     try {
-                        Item instrumentItem = repositories.item().findItemById(instrumentID);
-                        rigBean.getContentList().add(loadRelatedInstrumentBeanData(instrumentItem));
+                        ItemProxy instrumentProxy = (ItemProxy) repositories.item().findById(instrumentID);
+                        rigBean.getContentList().add(loadRelatedInstrumentBeanData(instrumentProxy));
                     }
                     catch (EscidocClientException e) {
                         LOG.error(e.getLocalizedMessage());
@@ -158,12 +159,12 @@ public final class RigController extends Controller implements IRigAction {
      * @param resourceProxy
      * @return
      */
-    private static synchronized InstrumentBean loadRelatedInstrumentBeanData(final Item instrumentItem) {
+    private static synchronized InstrumentBean loadRelatedInstrumentBeanData(final ItemProxy instrumentItem) {
         Preconditions.checkNotNull(instrumentItem, "Resource is null");
 
         final InstrumentBean instrumentBean = new InstrumentBean();
         final String URI_DC = "http://purl.org/dc/elements/1.1/";
-        final NodeList nodeList = instrumentItem.getMetadataRecords().get("escidoc").getContent().getChildNodes();
+        final NodeList nodeList = instrumentItem.getMedataRecords().get("escidoc").getContent().getChildNodes();
 
         for (int i = 0; i < nodeList.getLength(); i++) {
             final Node node = nodeList.item(i);
@@ -177,7 +178,7 @@ public final class RigController extends Controller implements IRigAction {
                 instrumentBean
                     .setDescription((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
             }
-            instrumentBean.setObjectId(instrumentItem.getObjid());
+            instrumentBean.setObjectId(instrumentItem.getId());
         }
         return instrumentBean;
     }
@@ -304,7 +305,6 @@ public final class RigController extends Controller implements IRigAction {
     @Override
     public synchronized List<InstrumentBean> getNewAvailableInstruments(final List<String> containedInstrumentIDs) {
         List<InstrumentBean> result = new ArrayList<InstrumentBean>();
-
         List<ResourceModel> itemList = null;
         final String SEARCH_STRING_IN_CMM = "org.escidoc.bwelabs.Instrument";
         final String SEARCH_STRING_FOR_MATCHER = "org.escidoc.browser.Controller=([^;]*);";
@@ -317,9 +317,11 @@ public final class RigController extends Controller implements IRigAction {
                     final String cmmId = itemProxy.getContentModel().getObjid();
                     if (cmmIds4Instrument.contains(cmmId)) {
                         if (!containedInstrumentIDs.contains(itemProxy.getId())) {
-                            result.add(loadRelatedInstrumentBeanData(repositories.item().findItemById(
-                                resourceModel.getId())));
+                            result.add(loadRelatedInstrumentBeanData(itemProxy));
                         }
+                        continue;
+                    }
+                    else if (cmmIds4Rig.contains(cmmId)) {
                         continue;
                     }
 
@@ -334,16 +336,16 @@ public final class RigController extends Controller implements IRigAction {
                         if (controllerId != null && controllerId.equals(SEARCH_STRING_IN_CMM)) {
                             cmmIds4Instrument.add(cmmId);
                             if (!containedInstrumentIDs.contains(itemProxy.getId())) {
-                                result.add(loadRelatedInstrumentBeanData(repositories.item().findItemById(
-                                    resourceModel.getId())));
+                                result.add(loadRelatedInstrumentBeanData(itemProxy));
                             }
+                        }
+                        else if (controllerId != null && !controllerId.equals(SEARCH_STRING_IN_CMM)) {
+                            cmmIds4Rig.add(cmmId);
                         }
                     }
                 }
 
             }
-
-            LOG.debug("Collected CMM IDs: " + cmmIds4Instrument.toString());
         }
         catch (EscidocClientException e) {
             LOG.error(e.getMessage());
