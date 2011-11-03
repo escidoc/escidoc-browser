@@ -13,10 +13,8 @@ import org.escidoc.browser.ui.navigation.NavigationTreeView;
 import org.escidoc.browser.ui.navigation.RootNode;
 
 import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
@@ -34,42 +32,6 @@ public class GenericLayout extends LayoutDesign {
     private TabSheet mainContentTabs;
 
     private Panel contentPanel;
-
-    private VerticalLayout vlContentPanel;
-
-    private Panel metaViewsPanel;
-
-    private HorizontalLayout hlMetaViews;
-
-    private Panel rightPanel;
-
-    private VerticalLayout vlRightPanel;
-
-    private Accordion metaDataRecsAcc;
-
-    private Label l3;
-
-    private Label l2;
-
-    private Label l1;
-
-    private Panel leftPanel;
-
-    private VerticalLayout vlLeftPanel;
-
-    private Panel directMembersPanel;
-
-    private VerticalLayout vlDirectMember;
-
-    private Panel resourcePropertiesPanel;
-
-    private VerticalLayout vlResourceProperties;
-
-    private Label label_1;
-
-    private Panel breadCrumpPanel;
-
-    private VerticalLayout vlBreadCrump;
 
     private Panel navigationPanel;
 
