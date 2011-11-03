@@ -329,7 +329,8 @@ public final class InstrumentController extends Controller implements ISaveActio
             mainWindow.showNotification(new Notification("Error", e.getMessage(), Notification.TYPE_ERROR_MESSAGE));
             LOG.error(e.getLocalizedMessage());
         }
-        return new InstrumentView(instumentBean, this, createBeadCrumbModel(), resourceProxy, eSyncDaemonUrls);
+        return new InstrumentView(instumentBean, this, createBeadCrumbModel(), resourceProxy, eSyncDaemonUrls,
+            serviceLocation);
     }
 
     private List<ResourceModel> createBeadCrumbModel() {

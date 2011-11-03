@@ -41,6 +41,7 @@ import org.escidoc.browser.elabsmodul.views.helpers.LabsLayoutHelper;
 import org.escidoc.browser.elabsmodul.views.helpers.LabsRigTableHelper;
 import org.escidoc.browser.elabsmodul.views.helpers.ResourcePropertiesViewHelper;
 import org.escidoc.browser.elabsmodul.views.listeners.LabsClientViewEventHandler;
+import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
@@ -98,12 +99,15 @@ public class RigView extends Panel implements ILabsPanel, ILabsAction {
 
     private ItemProxy itemProxy;
 
+    private EscidocServiceLocation serviceLocation;
+
     public RigView(RigBean sourceBean, final IRigAction controller, List<ResourceModel> breadCrumbModel,
-        final ResourceProxy resourceProxy) {
+        final ResourceProxy resourceProxy, EscidocServiceLocation serviceLocation) {
         this.rigBean = (sourceBean != null) ? sourceBean : new RigBean();
         this.controller = controller;
         this.breadCrumbModel = breadCrumbModel;
         this.itemProxy = (ItemProxy) resourceProxy;
+        this.serviceLocation = serviceLocation;
 
         initialisePanelComponents();
         buildPropertiesGUI();
@@ -129,7 +133,8 @@ public class RigView extends Panel implements ILabsPanel, ILabsAction {
      * Build the read-only layout of the eLabsElement
      */
     private void buildPropertiesGUI() {
-        this.addComponent(new ResourcePropertiesViewHelper(itemProxy, breadCrumbModel, "Rig").generatePropertiesView());
+        this.addComponent(new ResourcePropertiesViewHelper(itemProxy, breadCrumbModel, "Rig", serviceLocation)
+            .generatePropertiesView());
     }
 
     /**

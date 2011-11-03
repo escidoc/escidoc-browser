@@ -61,7 +61,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.ui.Component;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
@@ -184,8 +183,8 @@ public class Router {
      * 
      * @return Layout to the MainWindow normally
      */
-    public VerticalLayout getLayout() {
-        return (VerticalLayout) layout;
+    public LayoutDesign getLayout() {
+        return layout;
     }
 
     /**

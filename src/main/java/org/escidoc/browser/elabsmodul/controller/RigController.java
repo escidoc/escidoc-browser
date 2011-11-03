@@ -235,7 +235,7 @@ public final class RigController extends Controller implements IRigAction {
             rigBean = loadBeanData(itemProxyImpl);
         }
 
-        return new RigView(rigBean, this, createBeadCrumbModel(), resourceProxy);
+        return new RigView(rigBean, this, createBeadCrumbModel(), resourceProxy, serviceLocation);
 
     }
 

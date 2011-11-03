@@ -28,19 +28,11 @@
  */
 package org.escidoc.browser.elabsmodul.views;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.Runo;
-
 import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.LABEL_WIDTH;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsAction;
@@ -56,9 +48,16 @@ import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.view.helpers.DirectMember;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import com.google.common.base.Preconditions;
+import com.vaadin.data.util.BeanItem;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -177,8 +176,8 @@ public class InvestigationSeriesView extends Panel implements ILabsPanel, ILabsA
     }
 
     private void buildPropertiesView() {
-        addComponent(new ResourcePropertiesViewHelper(containerProxy, breadCrumb, "Investigationseries")
-            .generatePropertiesView());
+        addComponent(new ResourcePropertiesViewHelper(containerProxy, breadCrumb, "Investigationseries",
+            router.getServiceLocation()).generatePropertiesView());
     }
 
     private void initPanelComponents() {

@@ -40,6 +40,7 @@ import org.escidoc.browser.elabsmodul.model.InstrumentBean;
 import org.escidoc.browser.elabsmodul.views.helpers.LabsLayoutHelper;
 import org.escidoc.browser.elabsmodul.views.helpers.ResourcePropertiesViewHelper;
 import org.escidoc.browser.elabsmodul.views.listeners.LabsClientViewEventHandler;
+import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
@@ -101,14 +102,17 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
 
     private List<String> eSyncDaemonUrls;
 
+    private EscidocServiceLocation serviceLocation;
+
     public InstrumentView(InstrumentBean sourceBean, ISaveAction saveComponent, List<ResourceModel> breadCrumbModel,
-        ResourceProxy resourceProxy, List<String> eSyncDaemonUrls) {
+        ResourceProxy resourceProxy, List<String> eSyncDaemonUrls, EscidocServiceLocation serviceLocation) {
 
         instrumentBean = (sourceBean != null) ? sourceBean : new InstrumentBean();
         this.saveComponent = saveComponent;
         this.breadCrumbModel = breadCrumbModel;
         itemProxy = (ItemProxy) resourceProxy;
         this.eSyncDaemonUrls = eSyncDaemonUrls;
+        this.serviceLocation = serviceLocation;
 
         initialisePanelComponents();
         buildPropertiesGUI();
@@ -137,7 +141,7 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
      * Build the read-only layout of the eLabsElement
      */
     private void buildPropertiesGUI() {
-        addComponent(new ResourcePropertiesViewHelper(itemProxy, breadCrumbModel, "Instrument")
+        addComponent(new ResourcePropertiesViewHelper(itemProxy, breadCrumbModel, "Instrument", serviceLocation)
             .generatePropertiesView());
     }
 

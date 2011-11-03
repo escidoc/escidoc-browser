@@ -56,13 +56,12 @@ import com.vaadin.ui.Layout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
-public class SimpleLayout extends VerticalLayout implements LayoutDesign {
+public class SimpleLayout extends LayoutDesign {
     private final TabSheet mainContentTabs = new TabSheet();
 
     private final CssLayout mainLayout = new CssLayout();

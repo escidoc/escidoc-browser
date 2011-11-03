@@ -286,8 +286,8 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
      * Build the read-only layout of the eLabsElement
      */
     private void buildPropertiesGUI() {
-        addComponent(new ResourcePropertiesViewHelper(containerProxy, breadCrumbModel, "Study")
-            .generatePropertiesView());
+        addComponent(new ResourcePropertiesViewHelper(containerProxy, breadCrumbModel, "Study",
+            router.getServiceLocation()).generatePropertiesView());
     }
 
     @Override

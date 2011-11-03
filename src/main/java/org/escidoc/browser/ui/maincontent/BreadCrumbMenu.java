@@ -32,7 +32,6 @@ import java.net.MalformedURLException;
 import java.util.Collections;
 import java.util.List;
 
-import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
@@ -141,15 +140,16 @@ public class BreadCrumbMenu {
         cssLayout.addComponent(new Label(bCstring + buf.toString(), Label.CONTENT_RAW));
     }
 
-    public BreadCrumbMenu(Component component, List<ResourceModel> breadCrumbModel) {
+    public BreadCrumbMenu(Component component, List<ResourceModel> breadCrumbModel,
+        final EscidocServiceLocation escidocServiceLocation) {
         final StringBuffer buf = new StringBuffer();
+        Preconditions.checkNotNull(component, "###BreadCrumbModel component is null");
         Preconditions.checkNotNull(breadCrumbModel, "###BreadCrumbModel ref is null");
 
         for (final ResourceModel resourceModel : breadCrumbModel) {
             buf.append("<li><a href='"
                 + this.generateLink(resourceModel.getId(), resourceModel.getType().asLabel().toUpperCase(),
-                    ((BrowserApplication) component.getApplication()).getServiceLocation().getEscidocUri().toString())
-                + "'>" + resourceModel.getName() + "</a></li>");
+                    escidocServiceLocation.getEscidocUri().toString()) + "'>" + resourceModel.getName() + "</a></li>");
         }
         ((ComponentContainer) component).addComponent(new Label(bCstring + buf.toString() + "<li></ul>",
             Label.CONTENT_RAW));

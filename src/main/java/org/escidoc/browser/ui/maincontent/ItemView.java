@@ -57,7 +57,7 @@ public final class ItemView extends VerticalLayout {
 
     private final CssLayout cssLayout = new CssLayout();
 
-    private final Router mainSite;
+    private final Router router;
 
     private final int appHeight;
 
@@ -75,23 +75,23 @@ public final class ItemView extends VerticalLayout {
 
     private LayoutDesign layout;
 
-    public ItemView(final EscidocServiceLocation serviceLocation, final Repositories repositories,
-        final Router mainSite, final LayoutDesign layout, final ResourceProxy resourceProxy, final Window mainWindow,
+    public ItemView(final EscidocServiceLocation serviceLocation, final Repositories repositories, final Router router,
+        final LayoutDesign layout, final ResourceProxy resourceProxy, final Window mainWindow,
         final CurrentUser currentUser) {
 
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null.");
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
-        Preconditions.checkNotNull(mainSite, "mainSite is null.");
+        Preconditions.checkNotNull(router, "mainSite is null.");
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null.");
         Preconditions.checkNotNull(mainWindow, "mainWindow is null.");
 
         this.resourceProxy = (ItemProxyImpl) resourceProxy;
         this.repositories = repositories;
         this.mainWindow = mainWindow;
-        this.mainSite = mainSite;
-        this.layout = layout;
+        this.router = router;
+        this.layout = router.getLayout();
         this.serviceLocation = serviceLocation;
-        appHeight = mainSite.getApplicationHeight();
+        appHeight = router.getApplicationHeight();
         this.currentUser = currentUser;
 
         init();
@@ -102,7 +102,7 @@ public final class ItemView extends VerticalLayout {
         new ItemPropertiesVH(resourceProxy, repositories, currentUser, cssLayout, mainWindow, serviceLocation).init();
         buildLeftCell(new ItemContent(repositories, resourceProxy, serviceLocation, mainWindow, currentUser));
         buildRightCell(new MetadataRecsItem(resourceProxy, accordionHeight, mainWindow, serviceLocation, repositories,
-            currentUser, mainSite, layout).asAccord());
+            currentUser, router, layout).asAccord());
 
         addComponent(cssLayout);
     }

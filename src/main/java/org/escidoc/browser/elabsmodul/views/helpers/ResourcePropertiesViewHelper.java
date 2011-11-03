@@ -30,6 +30,7 @@ package org.escidoc.browser.elabsmodul.views.helpers;
 
 import java.util.List;
 
+import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.ui.maincontent.BreadCrumbMenu;
@@ -53,15 +54,21 @@ public class ResourcePropertiesViewHelper {
 
     private String type;
 
-    public ResourcePropertiesViewHelper(ResourceProxy resourceProxy, List<ResourceModel> breadCrumbModel) {
+    private EscidocServiceLocation serviceLocation;
+
+    public ResourcePropertiesViewHelper(ResourceProxy resourceProxy, List<ResourceModel> breadCrumbModel,
+        EscidocServiceLocation serviceLocation) {
         this.resourceProxy = resourceProxy;
         this.breadCrumbModel = breadCrumbModel;
+        this.serviceLocation = serviceLocation;
     }
 
-    public ResourcePropertiesViewHelper(ResourceProxy resourceProxy, List<ResourceModel> breadCrumbModel, String type) {
+    public ResourcePropertiesViewHelper(ResourceProxy resourceProxy, List<ResourceModel> breadCrumbModel, String type,
+        EscidocServiceLocation serviceLocation) {
         this.resourceProxy = resourceProxy;
         this.breadCrumbModel = breadCrumbModel;
         this.type = type;
+        this.serviceLocation = serviceLocation;
     }
 
     public Panel generatePropertiesView() {
@@ -111,7 +118,7 @@ public class ResourcePropertiesViewHelper {
 
         Panel viewHandler = buildmainView();
 
-        new BreadCrumbMenu(viewHandler, breadCrumbModel);
+        new BreadCrumbMenu(viewHandler, breadCrumbModel, serviceLocation);
 
         viewHandler.addComponent(titleLabel);
         viewHandler.addComponent(descRuler);
