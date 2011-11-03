@@ -35,7 +35,6 @@ import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.BreadCrumbMenu;
 import org.escidoc.browser.ui.maincontent.ItemView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

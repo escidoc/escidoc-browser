@@ -33,7 +33,7 @@ import java.util.List;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.ui.maincontent.BreadCrumbMenu;
+import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
 
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;

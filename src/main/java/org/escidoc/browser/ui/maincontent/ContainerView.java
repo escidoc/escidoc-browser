@@ -37,6 +37,7 @@ import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
+import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
 import org.escidoc.browser.ui.view.helpers.CreatePermanentLinkVH;
 import org.escidoc.browser.ui.view.helpers.DirectMember;
 import org.slf4j.Logger;

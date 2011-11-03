@@ -38,7 +38,6 @@ import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.controller.Controller;
 import org.escidoc.browser.layout.LayoutDesign;
-import org.escidoc.browser.layout.SimpleLayout;
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.ContextModel;
@@ -196,7 +195,7 @@ public class Router {
      */
     @Deprecated
     public void openTab(final Component cmp, final String tabname) {
-        ((SimpleLayout) layout).openView(cmp, tabname);
+        layout.openView(cmp, tabname);
 
     }
 

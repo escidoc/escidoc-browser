@@ -119,7 +119,6 @@ public class SimpleLayout extends LayoutDesign {
     private void addHeader() {
         final HeaderContainer header = new HeaderContainer(router, this, app, serviceLocation, repositories);
         header.init();
-
         mainLayout.addComponent(header);
     }
 
