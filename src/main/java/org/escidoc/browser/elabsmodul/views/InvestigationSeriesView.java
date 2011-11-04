@@ -230,7 +230,6 @@ public class InvestigationSeriesView extends Panel implements ILabsPanel, ILabsA
     private void leftCell() throws EscidocClientException {
         Panel leftPanel = new Panel();
         leftPanel.setStyleName("directmembers floatleft");
-        leftPanel.addStyleName(Runo.PANEL_LIGHT);
         leftPanel.setScrollable(false);
         leftPanel.getLayout().setMargin(false);
         leftPanel.setWidth("30%");
