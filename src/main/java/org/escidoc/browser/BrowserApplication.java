@@ -109,7 +109,7 @@ public class BrowserApplication extends Application implements HttpServletReques
     }
 
     public void buildMainView() {
-        if (observer.getDimension().getHeight() > 0) {
+        if ((observer.getDimension().getHeight() > 0) && (serviceLocation.getEscidocUri() != null)) {
             buildMainWindow(serviceLocation);
         }
         else {
