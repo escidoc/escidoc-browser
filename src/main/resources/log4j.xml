@@ -6,7 +6,7 @@
         <param name="Threshold" value="DEBUG" />
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern"
-                value="%5p [%t] %d{dd MMM yyyy HH:mm:ss,SSS} (%F:%L) - %m%n" />
+                   value="%-5p: %m  at %C.(%F:%L) on %d{ISO8601}%n" />
         </layout>
     </appender>
     <appender name="R" class="org.apache.log4j.RollingFileAppender">
@@ -15,7 +15,7 @@
         <param name="MaxBackupIndex" value="1" />
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern"
-                value="%5p [%t] %d{dd MMM yyyy HH:mm:ss,SSS} (%F:%L) - %m%n" />
+                   value="%-5p: %m  at %C.(%F:%L) on %d{ISO8601}%n" />
         </layout>
     </appender>
     <logger name="org.apache">
