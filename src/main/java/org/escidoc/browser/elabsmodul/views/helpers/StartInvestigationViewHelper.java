@@ -35,7 +35,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.themes.Runo;
 
 public class StartInvestigationViewHelper {
     private Router router;
@@ -46,7 +45,8 @@ public class StartInvestigationViewHelper {
 
     public void createStartButton(Panel panel) {
         Button startBtn = new Button("Start Investigation");
-        startBtn.setStyleName(Runo.BUTTON_BIG);
+        startBtn.setWidth("100%");
+        // startBtn.setStyleName(Runo.BUTTON_BIG);
         startBtn.addListener(new Button.ClickListener() {
 
             private static final long serialVersionUID = -7563393988056484131L;
@@ -65,6 +65,7 @@ public class StartInvestigationViewHelper {
         });
         HorizontalLayout layout = new HorizontalLayout();
         layout.addComponent(startBtn);
+        layout.setWidth("100%");
         layout.setComponentAlignment(startBtn, Alignment.MIDDLE_CENTER);
         panel.addComponent(layout);
     }
