@@ -1,11 +1,16 @@
-How to Install/Deploy and Run eSciDoc Browser
+eSciDoc Browser 0.3.3 must be deployed in JBoss Application Server 4.3.x.
 
-1. Put browser.war in [escidoc-directory]/jboss/server/default/deploy
+!!!!! For detailed instructions see https://www.escidoc.org/wiki/ESciDoc_Browser. !!!!!
 
-2. If you want to access eSciDoc instance outside your network, please configure JBoss and JAVA_OPTS to use your local proxy settings.
-    for example:
-        JAVA_OPTS=-Dhttp.proxyHost=proxy.[host-name] -Dhttp.proxyPort=[proxy-port-number] -Dhttp.nonProxyHosts=localhost|127.0.0.1|*.fiz-karlsruhe.de|www.escidoc.org
+Put the Web Archive file ''browser.war'' in 
+[escidoc-directory]/jboss/server/default/deploy
 
-3. In a web browser, write http://[escidoc-jboss-host-name]:[port-number]/browser?escidocurl=http://[escidoc-hostname]:[portnumber]
-    for example: 
-        http://escidoc.fiz-karlsruhe.de:8080/browser?escidocurl=http://escidoc.fiz-karlsruhe.de:8080
+If a proxy server must be used for internet access configure proxy settings for JBoss.
+E.g. by giving the following Java options:
+	JAVA_OPTS=-Dhttp.proxyHost=proxy.[host-name] -Dhttp.proxyPort=[proxy-port-number] -Dhttp.nonProxyHosts=localhost|127.0.0.1
+
+After starting JBoss the eSciDoc Browser is accessible via JBoss URL and the context ''browser''.
+	http://[escidoc-jboss-host-name]:[port-number]/browser?escidocurl=http://[escidoc-hostname]:[portnumber]
+E.g.
+	http://escidoc.fiz-karlsruhe.de:8080/browser?escidocurl=http://escidoc.fiz-karlsruhe.de:8080
+        
