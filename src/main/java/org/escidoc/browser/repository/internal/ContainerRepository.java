@@ -251,7 +251,6 @@ public class ContainerRepository implements Repository {
                 this.delete(container);
             }
             catch (EscidocClientException e) {
-                System.out.println(e.getMessage());
                 if (e.getMessage().toString().contains("An error occured removing member entries for container")) {
                     mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR,
                         "Cannot remove the resource as it belongs to a resource which is not deletable",

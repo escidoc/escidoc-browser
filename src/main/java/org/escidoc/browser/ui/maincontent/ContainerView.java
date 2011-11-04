@@ -373,7 +373,6 @@ public class ContainerView extends VerticalLayout {
                 private Component editLockStatus(final String lockStatus) {
                     final ComboBox cmbLockStatus = new ComboBox();
                     cmbLockStatus.setNullSelectionAllowed(false);
-                    System.out.println(lockStatus);
                     if (lockStatus.contains("unlocked")) {
                         cmbLockStatus.addItem(LockStatus.LOCKED.toString().toLowerCase());
                     }
