@@ -36,7 +36,7 @@ public interface EscidocServiceLocation {
 
     String getEscidocUri();
 
-    String getLoginUri();
+    String getLoginUri(String url);
 
     String getLogoutUri();
 

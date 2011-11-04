@@ -61,8 +61,8 @@ public class EscidocServiceLocationImpl implements EscidocServiceLocation {
      * @see org.escidoc.browser.model.EscidocServiceLocation#getLoginUri()
      */
     @Override
-    public String getLoginUri() {
-        return escidocUri + AppConstants.LOGIN_TARGET + appUri + "?escidocurl=" + escidocUri;
+    public String getLoginUri(String appUrl) {
+        return escidocUri + AppConstants.LOGIN_TARGET + appUrl + "?escidocurl=" + escidocUri;
     }
 
     /*
@@ -87,9 +87,9 @@ public class EscidocServiceLocationImpl implements EscidocServiceLocation {
         if (getEscidocUri() != null) {
             builder.append("getUri()=").append(getEscidocUri()).append(", ");
         }
-        if (getLoginUri() != null) {
-            builder.append("getLoginUri()=").append(getLoginUri()).append(", ");
-        }
+        // if (getLoginUri() != null) {
+        // builder.append("getLoginUri()=").append(getLoginUri()).append(", ");
+        // }
         if (getLogoutUri() != null) {
             builder.append("getLogoutUri()=").append(getLogoutUri());
         }
