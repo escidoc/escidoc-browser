@@ -26,15 +26,15 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.ui.administration;
+package org.escidoc.browser.ui.tools;
 
 import java.util.List;
 
 import org.escidoc.browser.repository.AdminRepository;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.administration.Style.H2;
-import org.escidoc.browser.ui.administration.Style.Ruler;
+import org.escidoc.browser.ui.tools.Style.H2;
+import org.escidoc.browser.ui.tools.Style.Ruler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

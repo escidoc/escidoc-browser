@@ -26,12 +26,38 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.ui.administration;
+package org.escidoc.browser.ui.tools;
 
-import de.escidoc.core.resources.adm.MessagesStatus;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
-public interface ShowStatusCommand {
+import com.google.common.base.Preconditions;
 
-    void execute(MessagesStatus status);
+public enum IndexName {
+
+    REINDEX_ALL("all"), CONTEXT_ADMIN("context_admin"), CONTENT_RELATION_ADMIN("content_relation_admin"), REINDEX_ESCIDOC_OU(
+        "escidocou_all"), OU_ADMIN("ou_admin"), ESCIDOCOAIPMH_ALL("escidocoaipmh_all"), ITEM_CONTAINER_ADMIN(
+        "item_container_admin"), REINDEX_ESCIDOC("escidoc_all"), CONTENT_MODEL_ADMIN("content_model_admin");
+
+    private String internalName;
+
+    IndexName(String internalName) {
+        Preconditions.checkNotNull(internalName, "internalName is null: %s", internalName);
+        this.internalName = internalName;
+    }
+
+    public String asInternalName() {
+        return internalName;
+    }
+
+    private final static Set<String> set = new HashSet<String>(values().length);
+
+    public static Collection<?> all() {
+        for (final IndexName indexName : values()) {
+            set.add(indexName.asInternalName());
+        }
+        return set;
+    }
 
 }

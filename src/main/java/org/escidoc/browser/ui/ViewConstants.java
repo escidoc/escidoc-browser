@@ -179,7 +179,7 @@ public class ViewConstants {
 
     public static final String RESOURCES = "Resources";
 
-    public static final String ADMINISTRATION = "Administration";
+    public static final String TOOLS = "Tools";
 
     public static final String ORGANIZATIONAL_UNITS = "Organizational Units";
 
@@ -228,4 +228,16 @@ public class ViewConstants {
     public static final String TIP = "Hint";
 
     public static final String NO_RESULT = "No Result";
+
+    public static final String PURGE = "Purge";
+
+    public static final String INFO = "Info";
+
+    public static final String FILTERED_RESOURCES = "Filtered Resources";
+
+    public static final String NAME = "Name";
+
+    public static final String ID = "Id";
+
+    public static final String TYPE = "Type";
 }

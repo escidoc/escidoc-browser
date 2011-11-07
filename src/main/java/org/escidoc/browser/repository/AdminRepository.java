@@ -30,6 +30,7 @@ package org.escidoc.browser.repository;
 
 import java.net.MalformedURLException;
 import java.util.List;
+import java.util.Set;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 
@@ -44,6 +45,7 @@ import de.escidoc.core.client.interfaces.AdminHandlerClientInterface;
 import de.escidoc.core.resources.adm.LoadExamplesResult.Entry;
 import de.escidoc.core.resources.adm.MessagesStatus;
 import de.escidoc.core.resources.adm.RepositoryInfo;
+import de.escidoc.core.resources.common.TaskParam;
 
 public class AdminRepository {
 
@@ -79,5 +81,22 @@ public class AdminRepository {
 
     public MessagesStatus retrieveReindexStatus() throws EscidocException, InternalClientException, TransportException {
         return client.getReindexStatus();
+    }
+
+    public MessagesStatus purge(Set<String> objectIds) throws EscidocClientException {
+        return client.deleteObjects(usingTaskParam(objectIds));
+    }
+
+    private TaskParam usingTaskParam(final Set<String> ids) {
+        final TaskParam param = new TaskParam();
+        param.setKeepInSync(true);
+        for (final String id : ids) {
+            param.addResourceRef(id);
+        }
+        return param;
+    }
+
+    public MessagesStatus retrievePurgeStatus() throws EscidocClientException {
+        return client.getPurgeStatus();
     }
 }

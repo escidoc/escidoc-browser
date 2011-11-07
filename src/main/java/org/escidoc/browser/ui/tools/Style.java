@@ -26,38 +26,43 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.ui.administration;
+package org.escidoc.browser.ui.tools;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.themes.Reindeer;
 
-import com.google.common.base.Preconditions;
+public class Style {
 
-public enum IndexName {
-
-    REINDEX_ALL("all"), CONTEXT_ADMIN("context_admin"), CONTENT_RELATION_ADMIN("content_relation_admin"), REINDEX_ESCIDOC_OU(
-        "escidocou_all"), OU_ADMIN("ou_admin"), ESCIDOCOAIPMH_ALL("escidocoaipmh_all"), ITEM_CONTAINER_ADMIN(
-        "item_container_admin"), REINDEX_ESCIDOC("escidoc_all"), CONTENT_MODEL_ADMIN("content_model_admin");
-
-    private String internalName;
-
-    IndexName(String internalName) {
-        Preconditions.checkNotNull(internalName, "internalName is null: %s", internalName);
-        this.internalName = internalName;
+    private Style() {
+        // do not init.
     }
 
-    public String asInternalName() {
-        return internalName;
-    }
+    public static class Ruler extends Label {
+        private static final long serialVersionUID = -4909196895183387829L;
 
-    private final static Set<String> set = new HashSet<String>(values().length);
-
-    public static Collection<?> all() {
-        for (final IndexName indexName : values()) {
-            set.add(indexName.asInternalName());
+        public Ruler() {
+            super("<hr />", Label.CONTENT_XHTML);
         }
-        return set;
+    }
+
+    public static class H1 extends Label {
+        private static final long serialVersionUID = -2843233317747887008L;
+
+        public H1(final String caption) {
+            super(caption);
+            setSizeUndefined();
+            setStyleName(Reindeer.LABEL_H1);
+        }
+    }
+
+    public static class H2 extends Label {
+        private static final long serialVersionUID = 1210257960304559971L;
+
+        public H2(final String caption) {
+            super(caption);
+            setSizeUndefined();
+            setStyleName(Reindeer.LABEL_H2);
+        }
     }
 
 }

@@ -61,13 +61,13 @@ import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.administration.AdministrationTreeView;
 import org.escidoc.browser.ui.maincontent.SimpleSearch;
 import org.escidoc.browser.ui.mainpage.Footer;
 import org.escidoc.browser.ui.mainpage.HeaderContainer;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.navigation.NavigationTreeView;
 import org.escidoc.browser.ui.navigation.RootNode;
+import org.escidoc.browser.ui.tools.ToolsTreeView;
 import org.escidoc.browser.ui.view.helpers.CloseTabsViewHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,11 +75,8 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
@@ -87,7 +84,6 @@ import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
-import com.vaadin.ui.themes.BaseTheme;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -229,26 +225,10 @@ public class SimpleLayout extends VerticalLayout implements LayoutDesign {
 
         accordion.addTab(mainNavigationTree, ViewConstants.RESOURCES, null);
 
-        AdministrationTreeView administrationTreeView = new AdministrationTreeView(router, repositories);
-        administrationTreeView.init();
+        ToolsTreeView toolsTreeView = new ToolsTreeView(router, repositories);
+        toolsTreeView.init();
 
-        Button users = new Button(ViewConstants.USER_ACCOUNTS);
-        users.setStyleName(BaseTheme.BUTTON_LINK);
-        users.addListener(new ClickListener() {
-
-            @SuppressWarnings("deprecation")
-            @Override
-            public void buttonClick(ClickEvent event) {
-
-                UserView userView = new UserView();
-                userView.init();
-                router.openTab(userView, ViewConstants.USER_ACCOUNTS);
-            }
-        });
-
-        accordion.addTab(administrationTreeView, ViewConstants.ADMINISTRATION, null);
-        accordion.addTab(new Label(ViewConstants.ORGANIZATIONAL_UNITS), ViewConstants.ORGANIZATIONAL_UNITS, null);
-        accordion.addTab(users, ViewConstants.USERS, null);
+        accordion.addTab(toolsTreeView, ViewConstants.TOOLS, null);
 
         mainNavigation.addComponent(accordion);
         ((Layout) mainNavigation.getContent()).setMargin(false);

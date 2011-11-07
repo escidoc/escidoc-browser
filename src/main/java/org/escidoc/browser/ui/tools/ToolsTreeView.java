@@ -26,7 +26,7 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.ui.administration;
+package org.escidoc.browser.ui.tools;
 
 import java.net.URISyntaxException;
 
@@ -46,7 +46,7 @@ import com.vaadin.ui.Window;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
-public class AdministrationTreeView extends VerticalLayout {
+public class ToolsTreeView extends VerticalLayout {
 
     private static class Node {
 
@@ -88,7 +88,7 @@ public class AdministrationTreeView extends VerticalLayout {
 
     private Repositories repositories;
 
-    public AdministrationTreeView(Router router, Repositories repositories) {
+    public ToolsTreeView(Router router, Repositories repositories) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         this.router = router;

@@ -28,11 +28,9 @@
  */
 package org.escidoc.browser.ui.navigation;
 
-import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.PropertyId;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.TreeDataSource;
-import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 
 import com.google.common.base.Preconditions;
@@ -50,7 +48,7 @@ public class NavigationTreeViewImpl extends CustomComponent implements Navigatio
 
     private ItemClickListener itemClickListener;
 
-    public NavigationTreeViewImpl(final Repositories repositories, final CurrentUser currentUser) {
+    public NavigationTreeViewImpl() {
         setCompositionRoot(tree);
         tree.setImmediate(true);
     }

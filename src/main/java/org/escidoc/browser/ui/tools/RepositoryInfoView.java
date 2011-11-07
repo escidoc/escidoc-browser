@@ -26,7 +26,7 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.ui.administration;
+package org.escidoc.browser.ui.tools;
 
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Label;
@@ -35,8 +35,8 @@ import com.vaadin.ui.VerticalLayout;
 
 import org.escidoc.browser.repository.AdminRepository;
 import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.administration.Style.H2;
-import org.escidoc.browser.ui.administration.Style.Ruler;
+import org.escidoc.browser.ui.tools.Style.H2;
+import org.escidoc.browser.ui.tools.Style.Ruler;
 
 import java.util.Map.Entry;
 

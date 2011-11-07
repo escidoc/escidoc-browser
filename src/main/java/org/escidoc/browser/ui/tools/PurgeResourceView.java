@@ -26,19 +26,23 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.ui.administration;
+package org.escidoc.browser.ui.tools;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.PropertyId;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.Repository;
+import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.administration.Style.H2;
+import org.escidoc.browser.ui.tools.Style.H2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,10 +60,13 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.ResourceType;
+import de.escidoc.core.resources.adm.AdminStatus;
+import de.escidoc.core.resources.adm.MessagesStatus;
 
 @SuppressWarnings("serial")
 public class PurgeResourceView extends VerticalLayout {
@@ -70,14 +77,106 @@ public class PurgeResourceView extends VerticalLayout {
 
         private VerticalLayout resultLayout = new VerticalLayout();
 
+        private Table resultTable;
+
         @Override
         public void buttonClick(ClickEvent event) {
             try {
                 showResult(getResult());
+
+                if (isPurgePermitted()) {
+                    showPurgeView();
+                }
             }
             catch (EscidocClientException e) {
-                // TODO show error
+                LOG.error(e.getMessage());
+                showErrorMessage(e);
             }
+            catch (URISyntaxException e) {
+                LOG.error(e.getMessage());
+                showErrorMessage(e);
+            }
+        }
+
+        private boolean isPurgePermitted() throws EscidocClientException, URISyntaxException {
+            return repositories.pdp().forCurrentUser().isAction(ActionIdConstants.PURGE_RESOURCES).permitted();
+        }
+
+        private void showPurgeView() {
+            addHintForSelection();
+            addPurgeButton();
+        }
+
+        private void addHintForSelection() {
+            final Label hintText =
+                new Label(
+                    "<div><em>Hint: </em>"
+                        + "To select multiple resources, hold down the CONTROL key while you click on the resource.</br></div>"
+                        + "<strong>Warning:</strong> Purging resources can cause inconsitencies in the repository.</div>",
+                    Label.CONTENT_XHTML);
+            resultLayout.addComponent(hintText);
+        }
+
+        private void addPurgeButton() {
+            final Button purgeButton = new Button(ViewConstants.PURGE);
+            resultLayout.addComponent(purgeButton);
+            purgeButton.addListener(new ClickListener() {
+
+                @SuppressWarnings("unchecked")
+                @Override
+                public void buttonClick(ClickEvent event) {
+                    final Object object = resultTable.getValue();
+                    if (object instanceof Set) {
+
+                        Set<ResourceModel> selectedResources = (Set<ResourceModel>) object;
+                        if (selectedResources.isEmpty()) {
+                            return;
+                        }
+
+                        final Set<String> objectIds = new HashSet<String>(selectedResources.size());
+                        for (final ResourceModel resource : selectedResources) {
+                            objectIds.add(resource.getId());
+                        }
+
+                        tryPurge(objectIds);
+                    }
+                }
+
+                private void tryPurge(Set<String> objectIds) {
+                    try {
+                        showPurgeStatus(startPurging(objectIds));
+                    }
+                    catch (final EscidocClientException e) {
+                        LOG.error("Internal Server Error while purging resources. " + e);
+                        showErrorMessage(e);
+                    }
+
+                }
+
+                private void showPurgeStatus(MessagesStatus status) throws EscidocClientException {
+                    if (status.getStatusCode() == AdminStatus.STATUS_INVALID_RESULT) {
+                        showErrorMessage(status);
+                    }
+                    if (status.getStatusCode() == AdminStatus.STATUS_FINISHED) {
+                        showSucess(status);
+                    }
+                    else if (status.getStatusCode() == AdminStatus.STATUS_IN_PROGRESS) {
+                        showPurgeStatus(repositories.admin().retrievePurgeStatus());
+                    }
+                    else {
+                        showErrorMessage(status);
+                    }
+                }
+
+                private void showSucess(MessagesStatus status) {
+                    router.getMainWindow().showNotification(ViewConstants.INFO, status.getStatusMessage(),
+                        Notification.TYPE_TRAY_NOTIFICATION);
+                }
+
+                private MessagesStatus startPurging(Set<String> objectIds) throws EscidocClientException {
+                    return repositories.admin().purge(objectIds);
+                }
+            });
         }
 
         private void showResult(List<ResourceModel> result) {
@@ -87,15 +186,13 @@ public class PurgeResourceView extends VerticalLayout {
                 showNoResult();
             }
             else {
-                Table table = createFilterResultView(result);
-                showFilterResultView(table);
+                showFilterResultView(createFilterResultView(result));
             }
         }
 
         private void emptyPreviousResult() {
             resultLayout.removeAllComponents();
             resultLayout.addComponent(new Style.Ruler());
-            resultLayout.setHeight("100%");
         }
 
         private void showFilterResultView(Table table) {
@@ -104,22 +201,22 @@ public class PurgeResourceView extends VerticalLayout {
         }
 
         private Table createFilterResultView(List<ResourceModel> result) {
-            LOG.debug("found" + result.size());
-            BeanItemContainer<ResourceModel> filteredResourcesContainer =
-                new BeanItemContainer<ResourceModel>(ResourceModel.class, result);
+            LOG.debug("found filtered resources: " + result.size());
 
-            Table filterResultTable = new Table("Filtered Resources", filteredResourcesContainer);
-            filterResultTable.setHeight("100px");
-            filterResultTable.setWidth("100%");
-            // filterResultTable.setColumnWidth(PropertyId.OBJECT_ID, 70);
-
-            // filterResultTable.setVisibleColumns(new Object[] { PropertyId.OBJECT_ID, PropertyId.XLINK_TITLE });
-            // filterResultTable.setColumnHeader(PropertyId.OBJECT_ID, ViewConstants.OBJECT_ID_LABEL);
-            // filterResultTable.setColumnHeader(PropertyId.XLINK_TITLE, ViewConstants.TITLE_LABEL);
-
-            filterResultTable.setSelectable(true);
-            filterResultTable.setMultiSelect(true);
-            return filterResultTable;
+            resultTable =
+                new Table("Found: " + result.size() + " " + result.get(0).getType().asLabel() + "s",
+                    new BeanItemContainer<ResourceModel>(ResourceModel.class, result));
+            resultTable.setWidth("100%");
+            resultTable.setHeight("100%");
+            resultTable.setSizeFull();
+            resultTable.setColumnWidth("id", -1);
+            resultTable.setColumnExpandRatio("name", 1);
+            resultTable.setColumnHeader(PropertyId.ID, ViewConstants.ID);
+            resultTable.setColumnHeader(PropertyId.NAME, ViewConstants.NAME);
+            resultTable.setColumnHeader(PropertyId.TYPE, ViewConstants.TYPE);
+            resultTable.setSelectable(true);
+            resultTable.setMultiSelect(true);
+            return resultTable;
         }
 
         private void showNoResult() {
@@ -140,8 +237,7 @@ public class PurgeResourceView extends VerticalLayout {
         }
 
         private Repository getRepository() {
-            ResourceType selectedType = getSelectedType();
-            switch (selectedType) {
+            switch (getSelectedType()) {
                 case ITEM:
                     return repositories.item();
                 case CONTAINER:
@@ -149,11 +245,10 @@ public class PurgeResourceView extends VerticalLayout {
                 case CONTEXT:
                     return repositories.context();
                 default:
-                    router.getMainWindow().showNotification(selectedType + " not yet supported",
+                    router.getMainWindow().showNotification(getSelectedType() + " not yet supported",
                         Window.Notification.TYPE_WARNING_MESSAGE);
             }
-
-            return null;
+            throw new UnsupportedOperationException(getSelectedType() + " not yet supported");
         }
 
         private boolean isInputEmpty() {
@@ -224,7 +319,6 @@ public class PurgeResourceView extends VerticalLayout {
         list.add(ResourceType.CONTAINER);
         list.add(ResourceType.ITEM);
         resourceOption.setContainerDataSource(new BeanItemContainer<ResourceType>(ResourceType.class, list));
-        resourceOption.setItemCaptionPropertyId(PropertyId.LABEL);
         resourceOption.setNewItemsAllowed(false);
         resourceOption.setNullSelectionAllowed(false);
         resourceOption.select(ResourceType.ITEM);
@@ -258,5 +352,16 @@ public class PurgeResourceView extends VerticalLayout {
         final Label text = new H2(ViewConstants.FILTERING_RESOURCES_TITLE);
         text.setContentMode(Label.CONTENT_XHTML);
         addComponent(text);
+    }
+
+    private void showErrorMessage(final Exception e) {
+        router
+            .getApp().getMainWindow()
+            .showNotification(ViewConstants.ERROR, e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+    }
+
+    private void showErrorMessage(MessagesStatus status) {
+        router.getMainWindow().showNotification(
+            new Notification("Error", status.getStatusMessage(), Notification.TYPE_ERROR_MESSAGE));
     }
 }
