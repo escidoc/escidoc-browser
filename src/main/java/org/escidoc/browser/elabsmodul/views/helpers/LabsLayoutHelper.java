@@ -42,8 +42,9 @@ import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DE
 import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_LABEL_TO_EDIT;
 import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_TEXTFIELD_TO_SAVE_OR_CANCEL;
 
+import java.util.Collection;
+
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
-import org.escidoc.browser.elabsmodul.enums.ELabsFileFormatsEnum;
 import org.escidoc.browser.elabsmodul.interfaces.IRigAction;
 import org.escidoc.browser.elabsmodul.model.RigBean;
 import org.slf4j.Logger;
@@ -256,34 +257,22 @@ public final class LabsLayoutHelper {
      * @param property
      * @return
      */
-    public static synchronized AbstractComponent createComboBoxFieldFromLabel(Property property, boolean isComboItem) {
+    public static synchronized AbstractComponent createComboBoxFieldFromLabel(Property property, Collection<?> options) {
         Preconditions.checkNotNull(property, "Datasource is null");
+        Preconditions.checkNotNull(options, "Options collection is null");
 
-        if (isComboItem) {
-            // create ComboBox
-            final ComboBox comboBox = new ComboBox(null, ELabsFileFormatsEnum.toList());
-            comboBox.setEnabled(true);
-            comboBox.setVisible(true);
-            comboBox.setImmediate(true);
-            comboBox.setMultiSelect(false);
-            comboBox.setNullSelectionAllowed(false);
-            comboBox.setPropertyDataSource(property);
-            comboBox.setReadOnly(false);
-            comboBox.setWidth(COMBOBOX_WIDTH);
-            comboBox.setStyleName(STYLE_ELABS_TEXT_AS_LABEL);
-            comboBox.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
-            return comboBox;
-        }
-        else {
-            // create TextField
-            TextField textField = new TextField(property);
-            textField.setWidth(TEXT_WIDTH);
-            textField.setStyleName(STYLE_ELABS_TEXT);
-            textField.setDescription(USER_DESCR_ON_TEXTFIELD_TO_SAVE_OR_CANCEL);
-            textField.commit();
-            textField.focus();
-            return textField;
-        }
+        final ComboBox comboBox = new ComboBox(null, options);
+        comboBox.setEnabled(true);
+        comboBox.setVisible(true);
+        comboBox.setImmediate(true);
+        comboBox.setMultiSelect(false);
+        comboBox.setNullSelectionAllowed(false);
+        comboBox.setPropertyDataSource(property);
+        comboBox.setReadOnly(false);
+        comboBox.setWidth(COMBOBOX_WIDTH);
+        comboBox.setStyleName(STYLE_ELABS_TEXT_AS_LABEL);
+        comboBox.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
+        return comboBox;
     }
 
     public static HorizontalLayout createButtonLayout() {

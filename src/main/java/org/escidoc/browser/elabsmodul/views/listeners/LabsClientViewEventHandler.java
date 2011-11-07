@@ -36,6 +36,7 @@ import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DE
 import java.util.List;
 
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
+import org.escidoc.browser.elabsmodul.enums.ELabsFileFormatsEnum;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsAction;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsPanel;
 import org.escidoc.browser.elabsmodul.views.helpers.LabsLayoutHelper;
@@ -141,7 +142,7 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
                     if (queryTextforFileFormat.equals(((Label) labelComponent).getValue())) {
                         newComponent =
                             LabsLayoutHelper.createComboBoxFieldFromLabel(
-                                ((Label) dataComponent).getPropertyDataSource(), true);
+                                ((Label) dataComponent).getPropertyDataSource(), ELabsFileFormatsEnum.toList());
                     }
                     else {
                         newComponent =
