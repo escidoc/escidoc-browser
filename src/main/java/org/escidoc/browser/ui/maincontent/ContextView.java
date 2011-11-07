@@ -30,6 +30,7 @@ package org.escidoc.browser.ui.maincontent;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
@@ -146,8 +147,8 @@ public class ContextView extends VerticalLayout {
         leftPanel.setHeight("82%");
         leftPanel.getLayout().setMargin(false);
 
-        new DirectMember(serviceLocation, router, resourceProxy.getId(), mainWindow, repositories, leftPanel)
-            .contextAsTree();
+        new DirectMember(serviceLocation, router, resourceProxy.getId(), mainWindow, repositories, leftPanel,
+            ResourceType.CONTEXT.toString()).contextAsTree();
         cssLayout.addComponent(leftPanel);
     }
 

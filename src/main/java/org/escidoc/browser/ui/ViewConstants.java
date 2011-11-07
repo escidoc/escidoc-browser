@@ -174,4 +174,8 @@ public class ViewConstants {
 
     public static final String PERMANENT_LINK = "Permanent Link";
 
+    // DirectMember
+
+    public static final String CANNOT_CREATE_BUTTONS = "CANNOT CREATE BUTTONS FOR THIS VIEW";
+
 }

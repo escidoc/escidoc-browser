@@ -33,9 +33,9 @@ import java.util.Collection;
 import java.util.List;
 
 import org.escidoc.browser.AppConstants;
-import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.ItemBuilder;
 import org.escidoc.browser.model.internal.ResourceDisplay;
@@ -121,15 +121,15 @@ public class ItemAddView {
         this.router = router;
     }
 
-    public ItemAddView(Repositories repositories, Window mainWindow, ContainerProxy containerProxy, String contextId,
+    public ItemAddView(Repositories repositories, Window mainWindow, ResourceProxy resourceProxy, String contextId,
         Router router) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
-        Preconditions.checkNotNull(containerProxy, "parent is null: %s", containerProxy);
+        Preconditions.checkNotNull(resourceProxy, "parent is null: %s", resourceProxy);
         Preconditions.checkNotNull(contextId, "contextId is null: %s", contextId);
         this.repositories = repositories;
         this.mainWindow = mainWindow;
-        parent = containerProxy;
+        parent = resourceProxy;
         this.contextId = contextId;
         treeDataSource = null;
         this.router = router;

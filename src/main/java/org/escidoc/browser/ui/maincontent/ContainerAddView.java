@@ -34,8 +34,8 @@ import java.util.List;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ContainerModel;
-import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.ContainerBuilder;
 import org.escidoc.browser.model.internal.ResourceDisplay;
@@ -121,14 +121,14 @@ public class ContainerAddView {
         this.mainWindow = mainWindow;
         this.parent = parent;
         this.treeDataSource = treeDataSource;
-        this.contextId = contextId;
         this.router = router;
+        this.contextId = contextId;
     }
 
     /*
-     * This is the case where the buton is invoked from a button and not from a tree
+     * This is the case where the button is invoked from a button and not from a tree
      */
-    public ContainerAddView(Repositories repositories, Window mainWindow, ContainerProxy containerProxy,
+    public ContainerAddView(Repositories repositories, Window mainWindow, ResourceProxy containerProxy,
         String contextId, Router router) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);

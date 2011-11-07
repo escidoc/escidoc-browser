@@ -44,6 +44,7 @@ import org.escidoc.browser.elabsmodul.views.listeners.LabsClientViewEventHandler
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.view.helpers.DirectMember;
 import org.slf4j.Logger;
@@ -282,7 +283,7 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
         leftPanel.setHeight("82%");
 
         new DirectMember(router.getServiceLocation(), router, containerProxy.getId(), router.getMainWindow(),
-            router.getRepositories(), leftPanel).containerAsTree();
+            router.getRepositories(), leftPanel, ResourceType.CONTAINER.toString()).containerAsTree();
         cssLayout.addComponent(leftPanel);
     }
 
