@@ -61,8 +61,9 @@ import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
-@SuppressWarnings("serial")
 public class InvestigationSeriesView extends Panel implements ILabsPanel, ILabsAction {
+
+    private static final long serialVersionUID = 8357388998587122127L;
 
     private static final int COMPONENT_COUNT = 3;
 

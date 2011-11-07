@@ -64,6 +64,8 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class StudyView extends Panel implements ILabsPanel, ILabsAction {
 
+    private static final long serialVersionUID = -6071621079544448578L;
+
     private static Logger LOG = LoggerFactory.getLogger(StudyView.class);
 
     private static final String RIGHT_PANEL = "";
