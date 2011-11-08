@@ -344,5 +344,4 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
         }
         return true;
     }
-
 }

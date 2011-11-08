@@ -33,6 +33,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -44,13 +46,16 @@ import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.controller.utils.DOM2String;
 import org.escidoc.browser.elabsmodul.exceptions.EscidocBrowserException;
 import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
-import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
+import org.escidoc.browser.elabsmodul.interfaces.IInvestigationAction;
 import org.escidoc.browser.elabsmodul.model.InvestigationBean;
+import org.escidoc.browser.elabsmodul.model.RigBean;
 import org.escidoc.browser.elabsmodul.views.InvestigationView;
 import org.escidoc.browser.elabsmodul.views.YesNoDialog;
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ItemModel;
+import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
@@ -80,7 +85,7 @@ import de.escidoc.core.resources.om.container.Container;
  * @author frs
  * 
  */
-public class InvestigationController extends Controller implements ISaveAction {
+public class InvestigationController extends Controller implements IInvestigationAction {
 
     private static Logger LOG = LoggerFactory.getLogger(InstrumentController.class);
 
@@ -99,6 +104,12 @@ public class InvestigationController extends Controller implements ISaveAction {
     private IBeanModel model;
 
     private Window mainWindow;
+
+    private static List<String> cmmIds4Rig = null;
+
+    static {
+        cmmIds4Rig = new ArrayList<String>();
+    }
 
     /*
      * (non-Javadoc)
@@ -262,7 +273,6 @@ public class InvestigationController extends Controller implements ISaveAction {
                     // System.out.println("#" + instrument + "#" + folder + "#");
                     investigationBean.getInstrumentFolder().put(instrument, folder);
                 }
-
             }
         }
         catch (final TransformerException e) {
@@ -270,6 +280,33 @@ public class InvestigationController extends Controller implements ISaveAction {
         }
 
         return investigationBean;
+    }
+
+    /**
+     * @param resourceProxy
+     * @return
+     */
+    private static synchronized RigBean loadRelatedRigBeanData(final ItemProxy rigItem) {
+        Preconditions.checkNotNull(rigItem, "Resource is null");
+
+        final RigBean rigBean = new RigBean();
+        final String URI_DC = "http://purl.org/dc/elements/1.1/";
+        final NodeList nodeList = rigItem.getMedataRecords().get("escidoc").getContent().getChildNodes();
+
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            final Node node = nodeList.item(i);
+            final String nodeName = node.getLocalName();
+            final String nsUri = node.getNamespaceURI();
+
+            if ("title".equals(nodeName) && URI_DC.equals(nsUri)) {
+                rigBean.setName((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
+            }
+            else if ("description".equals(nodeName) && URI_DC.equals(nsUri)) {
+                rigBean.setDescription((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
+            }
+            rigBean.setObjectId(rigItem.getId());
+        }
+        return rigBean;
     }
 
     private List<ResourceModel> createBreadCrumbModel() {
@@ -287,6 +324,7 @@ public class InvestigationController extends Controller implements ISaveAction {
         return Collections.emptyList();
     }
 
+    @SuppressWarnings("unused")
     private synchronized void saveModel() {
         Preconditions.checkNotNull(model, "Model is NULL. Can not save.");
         ContainerRepository containerRepository = repositories.container();
@@ -316,7 +354,8 @@ public class InvestigationController extends Controller implements ISaveAction {
         LOG.info("Investigation is successfully saved.");
     }
 
-    public synchronized static Element createInvestigationDOMElementByBeanModel(final InvestigationBean instrumentBean) {
+    public synchronized static Element createInvestigationDOMElementByBeanModel(
+        final InvestigationBean investigationBean) {
 
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
@@ -338,7 +377,7 @@ public class InvestigationController extends Controller implements ISaveAction {
             // Instrument 01</dc:title>
             final Element title = doc.createElementNS("http://purl.org/dc/elements/1.1/", "title");
             title.setPrefix("dc");
-            title.setTextContent(instrumentBean.getName());
+            title.setTextContent(investigationBean.getName());
             investigation.appendChild(title);
 
             // e.g. <dc:description
@@ -346,7 +385,7 @@ public class InvestigationController extends Controller implements ISaveAction {
             // description.</dc:description>
             final Element description = doc.createElementNS("http://purl.org/dc/elements/1.1/", "description");
             description.setPrefix("dc");
-            description.setTextContent(instrumentBean.getDescription());
+            description.setTextContent(investigationBean.getDescription());
             investigation.appendChild(description);
 
             // private long maxRuntime;
@@ -361,25 +400,25 @@ public class InvestigationController extends Controller implements ISaveAction {
 
             Element maxRuntime = doc.createElementNS(NSURI_ELABS_RE, "max-runtime");
             maxRuntime.setPrefix(NSPREFIX_ELABS_RE);
-            maxRuntime.setTextContent("" + instrumentBean.getMaxRuntime());
+            maxRuntime.setTextContent("" + investigationBean.getMaxRuntime());
             investigation.appendChild(maxRuntime);
 
             Element depositEndpoint = doc.createElementNS(NSURI_ELABS_RE, "deposit-endpoint");
             depositEndpoint.setPrefix(NSPREFIX_ELABS_RE);
-            depositEndpoint.setTextContent(instrumentBean.getDepositEndpoint());
+            depositEndpoint.setTextContent(investigationBean.getDepositEndpoint());
             investigation.appendChild(depositEndpoint);
 
             Element investigator = doc.createElementNS(NSURI_ELABS_RE, "investigator");
             investigator.setPrefix(NSPREFIX_ELABS_RE);
-            investigator.setAttributeNS(NSURI_RDF, NSPREFIX_RDF + ":resource", instrumentBean.getInvestigator());
+            investigator.setAttributeNS(NSURI_RDF, NSPREFIX_RDF + ":resource", investigationBean.getInvestigator());
             investigation.appendChild(investigator);
 
             Element rig = doc.createElementNS(NSURI_ELABS_RE, "rig");
             rig.setPrefix(NSPREFIX_ELABS_RE);
-            rig.setAttributeNS(NSURI_RDF, NSPREFIX_RDF + ":resource", instrumentBean.getRig());
+            rig.setAttributeNS(NSURI_RDF, NSPREFIX_RDF + ":resource", investigationBean.getRig());
             investigation.appendChild(rig);
 
-            for (Entry<String, String> instrumentFolder : instrumentBean.getInstrumentFolder().entrySet()) {
+            for (Entry<String, String> instrumentFolder : investigationBean.getInstrumentFolder().entrySet()) {
                 Element instrument = doc.createElementNS(NSURI_ELABS_RE, "instrument");
                 instrument.setPrefix(NSPREFIX_ELABS_RE);
                 instrument.setAttributeNS(NSURI_RDF, NSPREFIX_RDF + ":resource", instrumentFolder.getKey());
@@ -438,5 +477,45 @@ public class InvestigationController extends Controller implements ISaveAction {
             e.printStackTrace();
             return false;
         }
+    }
+
+    @Override
+    public synchronized List<RigBean> getAvailableRigs() {
+        List<RigBean> result = new ArrayList<RigBean>();
+        List<ResourceModel> itemList = null;
+        final String SEARCH_STRING_IN_CMM = "org.escidoc.bwelabs.Rig";
+        final String SEARCH_STRING_FOR_MATCHER = "org.escidoc.browser.Controller=([^;]*);";
+        try {
+            final Pattern controllerIdPattern = Pattern.compile(SEARCH_STRING_FOR_MATCHER);
+            itemList = repositories.item().findAll();
+            for (ResourceModel resourceModel : itemList) {
+                if (ItemModel.isItem(resourceModel)) {
+                    ItemProxy itemProxy = (ItemProxy) repositories.item().findById(resourceModel.getId());
+                    final String cmmId = itemProxy.getContentModel().getObjid();
+                    if (cmmIds4Rig.contains(cmmId)) {
+                        result.add(loadRelatedRigBeanData(itemProxy));
+                        continue;
+                    }
+
+                    final String cmmDescription =
+                        repositories.contentModel().findById(cmmId).getProperties().getDescription();
+                    if (cmmDescription != null) {
+                        final Matcher controllerIdMatcher = controllerIdPattern.matcher(cmmDescription);
+                        String controllerId = null;
+                        if (controllerIdMatcher.find()) {
+                            controllerId = controllerIdMatcher.group(1);
+                        }
+                        if (controllerId != null && controllerId.equals(SEARCH_STRING_IN_CMM)) {
+                            cmmIds4Rig.add(cmmId);
+                            result.add(loadRelatedRigBeanData(itemProxy));
+                        }
+                    }
+                }
+            }
+        }
+        catch (EscidocClientException e) {
+            LOG.error(e.getMessage());
+        }
+        return result;
     }
 }

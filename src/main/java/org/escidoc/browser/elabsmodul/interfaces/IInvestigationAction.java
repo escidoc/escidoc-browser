@@ -28,9 +28,14 @@
  */
 package org.escidoc.browser.elabsmodul.interfaces;
 
-public interface ILabsAction {
+import java.util.List;
 
-    void showButtonLayout();
+import org.escidoc.browser.elabsmodul.model.RigBean;
 
-    void hideButtonLayout();
+public interface IInvestigationAction extends ISaveAction {
+    /**
+     * 
+     * @return
+     */
+    List<RigBean> getAvailableRigs();
 }

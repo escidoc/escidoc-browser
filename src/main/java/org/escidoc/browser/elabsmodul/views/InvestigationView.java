@@ -33,10 +33,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
+import org.escidoc.browser.elabsmodul.interfaces.IInvestigationAction;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsAction;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsPanel;
-import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
 import org.escidoc.browser.elabsmodul.model.InvestigationBean;
+import org.escidoc.browser.elabsmodul.model.RigBean;
 import org.escidoc.browser.elabsmodul.views.helpers.LabsLayoutHelper;
 import org.escidoc.browser.elabsmodul.views.helpers.ResourcePropertiesViewHelper;
 import org.escidoc.browser.elabsmodul.views.helpers.StartInvestigationViewHelper;
@@ -70,7 +71,7 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
 
     private final InvestigationBean investigationBean;
 
-    private final ISaveAction controller;
+    private final IInvestigationAction controller;
 
     private final List<ResourceModel> breadCrumbModel;
 
@@ -98,7 +99,7 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
 
     private final Router router;
 
-    public InvestigationView(final InvestigationBean sourceBean, final ISaveAction controller,
+    public InvestigationView(final InvestigationBean sourceBean, final IInvestigationAction controller,
         final List<ResourceModel> breadCrumbModel, final ContainerProxy containerProxy,
         final List<String> depositEndPointUrls, final Router router) {
 
@@ -129,7 +130,6 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
             router.getMainWindow().showNotification(
                 "Could not load the Direct Members Helper in the View" + e.getLocalizedMessage());
         }
-
     }
 
     private void leftCell() throws EscidocClientException {
@@ -267,7 +267,12 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(
                 ELabsViewContants.L_INVESTIGATION_DURATION,
                 pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_DURATION));
+
         final HorizontalLayout h6 =
+            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_INVESTIGATION_RIG,
+                pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_RIG));
+
+        final HorizontalLayout h7 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_INVESTIGATION_RIG,
                 pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_RIG));
 
@@ -372,5 +377,9 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
             return false;
         }
         return true;
+    }
+
+    public List<RigBean> getAvailableRigs() {
+        return this.controller.getAvailableRigs();
     }
 }

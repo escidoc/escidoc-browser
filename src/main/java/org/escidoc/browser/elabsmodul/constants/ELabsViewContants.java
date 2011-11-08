@@ -275,7 +275,7 @@ public class ELabsViewContants {
 
     public static final String TEXT_WIDTH = "400px";
 
-    public static final String COMBOBOX_WIDTH = "200px";
+    public static final String COMBOBOX_WIDTH = "300px";
 
     public static final String DIV_ALIGN_RIGHT = "<div align=\"right\">";
 

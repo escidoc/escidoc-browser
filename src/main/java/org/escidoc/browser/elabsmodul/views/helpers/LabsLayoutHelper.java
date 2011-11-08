@@ -43,6 +43,7 @@ import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DE
 import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_TEXTFIELD_TO_SAVE_OR_CANCEL;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.interfaces.IRigAction;
@@ -51,7 +52,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
+import com.vaadin.data.Container;
+import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -257,11 +261,11 @@ public final class LabsLayoutHelper {
      * @param property
      * @return
      */
-    public static synchronized AbstractComponent createComboBoxFieldFromLabel(Property property, Collection<?> options) {
+    public static synchronized AbstractComponent createStaticComboBoxFieldFromLabel(
+        Property property, Collection<?> options) {
         Preconditions.checkNotNull(property, "Datasource is null");
         Preconditions.checkNotNull(options, "Options collection is null");
-
-        final ComboBox comboBox = new ComboBox(null, options);
+        ComboBox comboBox = new ComboBox(null, options);
         comboBox.setEnabled(true);
         comboBox.setVisible(true);
         comboBox.setImmediate(true);
@@ -272,6 +276,43 @@ public final class LabsLayoutHelper {
         comboBox.setWidth(COMBOBOX_WIDTH);
         comboBox.setStyleName(STYLE_ELABS_TEXT_AS_LABEL);
         comboBox.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
+
+        return comboBox;
+    }
+
+    /**
+     * @param property
+     * @return
+     */
+    public static synchronized AbstractComponent createDynamicComboBoxFieldFromLabel(
+        Property property, Collection<?> options) {
+        Preconditions.checkNotNull(property, "Datasource is null");
+        Preconditions.checkNotNull(options, "Options collection is null");
+        ComboBox comboBox = new ComboBox();
+        Container container = new IndexedContainer();
+        container.addContainerProperty("id", String.class, null);
+        container.addContainerProperty("title", String.class, null);
+
+        for (Iterator iterator = options.iterator(); iterator.hasNext();) {
+            RigBean bean = (RigBean) iterator.next();
+            Item item = container.addItem(bean.getObjectId());
+            item.getItemProperty("id").setValue(bean.getObjectId());
+            item.getItemProperty("title").setValue(bean.getName());
+            comboBox.setItemCaption(bean.getObjectId(), bean.getName());
+        }
+
+        comboBox.setContainerDataSource(container);
+        comboBox.setEnabled(true);
+        comboBox.setVisible(true);
+        comboBox.setImmediate(true);
+        comboBox.setMultiSelect(false);
+        comboBox.setNullSelectionAllowed(false);
+        comboBox.setPropertyDataSource(property);
+        comboBox.setReadOnly(false);
+        comboBox.setWidth(COMBOBOX_WIDTH);
+        comboBox.setStyleName(STYLE_ELABS_TEXT_AS_LABEL);
+        comboBox.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
+
         return comboBox;
     }
 

@@ -33,10 +33,9 @@ import com.vaadin.ui.Panel;
 
 public interface ILabsPanel {
 
-    public Component getModifiedComponent();
+    Component getModifiedComponent();
 
-    public void setModifiedComponent(Component modifiedComponent);
+    void setModifiedComponent(Component modifiedComponent);
 
-    public Panel getReference();
-
+    Panel getReference();
 }

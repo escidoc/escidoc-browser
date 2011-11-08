@@ -39,6 +39,7 @@ import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.enums.ELabsFileFormatsEnum;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsAction;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsPanel;
+import org.escidoc.browser.elabsmodul.views.InvestigationView;
 import org.escidoc.browser.elabsmodul.views.helpers.LabsLayoutHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -138,11 +139,23 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
                         ELabsViewContants.DIV_ALIGN_RIGHT + ELabsViewContants.L_INSTRUMENT_FILE_FORMAT
                             + ELabsViewContants.DIV_END;
 
+                    final String queryTextforChooseRig =
+                        ELabsViewContants.DIV_ALIGN_RIGHT + ELabsViewContants.L_INVESTIGATION_RIG
+                            + ELabsViewContants.DIV_END;
+
                     Component newComponent = null;
                     if (queryTextforFileFormat.equals(((Label) labelComponent).getValue())) {
                         newComponent =
-                            LabsLayoutHelper.createComboBoxFieldFromLabel(
+                            LabsLayoutHelper.createStaticComboBoxFieldFromLabel(
                                 ((Label) dataComponent).getPropertyDataSource(), ELabsFileFormatsEnum.toList());
+                    }
+                    else if (queryTextforChooseRig.equals(((Label) labelComponent).getValue())) {
+                        if (this.containerPanel.getReference() instanceof InvestigationView) {
+                            newComponent =
+                                LabsLayoutHelper.createDynamicComboBoxFieldFromLabel(
+                                    ((Label) dataComponent).getPropertyDataSource(),
+                                    ((InvestigationView) this.containerPanel.getReference()).getAvailableRigs());
+                        }
                     }
                     else {
                         newComponent =
@@ -191,7 +204,6 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
 
         @Override
         public void handleAction(Action action, Object sender, Object target) {
-
             Component modifiedComponent = LabsClientViewEventHandler.this.containerPanel.getModifiedComponent();
 
             if (modifiedComponent == null || !registeredComponents.contains(modifiedComponent)) {
