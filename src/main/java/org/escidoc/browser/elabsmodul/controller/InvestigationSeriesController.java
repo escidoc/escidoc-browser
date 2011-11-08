@@ -231,17 +231,17 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
         }
         catch (UnsupportedOperationException e) {
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-            e.printStackTrace();
+            LOG.error(e.getMessage());
             return false;
         }
         catch (EscidocClientException e) {
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-            e.printStackTrace();
+            LOG.error(e.getMessage());
             return false;
         }
         catch (URISyntaxException e) {
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-            e.printStackTrace();
+            LOG.error(e.getMessage());
             return false;
         }
     }
