@@ -90,6 +90,8 @@ public class ResourceAddViewImpl implements ResourceAddView {
 
     private final NativeSelect contentModelSelect = new NativeSelect(ViewConstants.PLEASE_SELECT_CONTENT_MODEL);
 
+    private final NativeSelect resourceTypeSelect = new NativeSelect(ViewConstants.PLEASE_SELECT_RESOURCE_TOCREATE);
+
     private final Window subwindow = new Window(ViewConstants.CREATE_CONTAINER);
 
     private final Label status = new Label("Upload a wellformed XML file to create metadata!");
@@ -171,6 +173,17 @@ public class ResourceAddViewImpl implements ResourceAddView {
         contentModelSelect.setRequired(true);
         bindData();
         addResourceForm.addComponent(contentModelSelect);
+    }
+
+    /**
+     * This dropbox is needed only if there is no resourceType description in the ContentModel
+     */
+    private void addResouceTypeSelect() {
+        resourceTypeSelect.addItem("Item");
+        resourceTypeSelect.addItem("Container");
+        resourceTypeSelect.setRequired(true);
+        addResourceForm.addComponent(resourceTypeSelect, 2);
+
     }
 
     private void bindData() throws EscidocException, InternalClientException, TransportException {
@@ -308,7 +321,6 @@ public class ResourceAddViewImpl implements ResourceAddView {
         try {
             ContentModel contentModel = repositories.contentModel().findById(id);
             String objectType = contentModel.getProperties().getDescription();
-            // TODO make sure we have a resourceType here
             if ((objectType != null) && (objectType.contains("http://www.w3.org/1999/02/22-rdf-syntax-ns#type="))) {
                 objectType =
                     objectType.replace("http://www.w3.org/1999/02/22-rdf-syntax-ns#type=org.escidoc.resources.", "");
@@ -349,18 +361,26 @@ public class ResourceAddViewImpl implements ResourceAddView {
      */
     public void createResource() {
         String resourceType = getContentModelType(getContentModelId());
+        LOG.debug("Resource Type" + resourceTypeSelect.getValue());
         try {
-            if ((resourceType == null)) {
-                mainWindow.showNotification(
-                    ViewConstants.ERROR_NO_RESOURCETYPE_IN_CONTENTMODEL + contentModelSelect.getValue() + "\"",
-                    Window.Notification.TYPE_ERROR_MESSAGE);
+            if (resourceType == null) {
+                if (resourceTypeSelect.getValue() == null) {
+                    mainWindow.showNotification(ViewConstants.ERROR_NO_RESOURCETYPE_IN_CONTENTMODEL
+                        + contentModelSelect.getValue() + "\"", Window.Notification.TYPE_HUMANIZED_MESSAGE);
+                    addResouceTypeSelect();
+                }
+                else if (resourceTypeSelect.getValue() == "Container") {
+                    createNewResource(ResourceType.CONTAINER.toString());
+                }
+                else {
+                    createNewResource(ResourceType.ITEM.toString());
+                }
             }
             else if (resourceType.toUpperCase().equals(ResourceType.CONTAINER.toString())) {
-                createNewResource(getResourceName(), getContentModelId(), getContextId(),
-                    ResourceType.CONTAINER.toString());
+                createNewResource(ResourceType.CONTAINER.toString());
             }
             else if (resourceType.toUpperCase().equals(ResourceType.ITEM.toString())) {
-                createNewResource(getResourceName(), getContentModelId(), getContextId(), ResourceType.ITEM.toString());
+                createNewResource(ResourceType.ITEM.toString());
             }
             else {
                 mainWindow.showNotification(
@@ -373,13 +393,12 @@ public class ResourceAddViewImpl implements ResourceAddView {
         }
     }
 
-    private void createNewResource(
-        final String containerName, final String contentModelId, final String contextId, String resourceType)
-        throws EscidocClientException {
+    private void createNewResource(String resourceType) throws EscidocClientException {
 
         VersionableResource createdResource = null;
         if (resourceType.equals(ResourceType.CONTAINER.toString())) {
-            createdResource = createContainerInRepository(buildContainer(containerName, contentModelId, contextId));
+            createdResource =
+                createContainerInRepository(buildContainer(getResourceName(), getContentModelId(), getContextId()));
         }
         else if (resourceType.equals(ResourceType.ITEM.toString())) {
             createdResource = repositories.item().createWithParent(buildItem(), parent);

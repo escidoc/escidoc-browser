@@ -275,7 +275,6 @@ public class Router {
                 repositories.contentModel().findById(resourceProxy.getContentModel().getObjid());
             final String description = contentModel.getProperties().getDescription();
 
-            LOG.debug("Description is " + description);
             if (description != null) {
                 final Pattern controllerIdPattern = Pattern.compile("org.escidoc.browser.Controller=([^;]*);");
                 final Matcher controllerIdMatcher = controllerIdPattern.matcher(description);

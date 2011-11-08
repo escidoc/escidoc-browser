@@ -89,6 +89,8 @@ public class ViewConstants {
 
     public static final String PLEASE_SELECT_CONTENT_MODEL = "Please select Content Model";
 
+    public static final String PLEASE_SELECT_RESOURCE_TOCREATE = "Please select the resource type";
+
     public static final String ERROR_RETRIEVING_CONTENTMODEL = "Could not retrieve the content model ";
 
     public static final String RESOURCE_LENGTH = "Resource Name must be 3-25 characters";
