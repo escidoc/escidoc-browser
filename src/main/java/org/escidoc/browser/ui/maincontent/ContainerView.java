@@ -33,6 +33,7 @@ import java.net.URISyntaxException;
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
@@ -193,8 +194,8 @@ public class ContainerView extends VerticalLayout {
         leftPanel.setWidth("30%");
         leftPanel.setHeight("82%");
 
-        new DirectMember(serviceLocation, router, resourceProxy.getId(), mainWindow, repositories, leftPanel)
-            .containerAsTree();
+        new DirectMember(serviceLocation, router, resourceProxy.getId(), mainWindow, repositories, leftPanel,
+            ResourceType.CONTAINER.toString()).containerAsTree();
         cssLayout.addComponent(leftPanel);
     }
 

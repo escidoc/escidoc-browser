@@ -78,13 +78,23 @@ public class ViewConstants {
 
     public static final String EDIT_METADATA = "Edit MetaData";
 
+    // ResourceAddViewImpl ContainerAddView
     public static final String CONTAINER_NAME = "Container name";
+
+    public static final String RESOURCE_NAME_GENERIC = "Resource Name ";
 
     public static final String PLEASE_ENTER_A_CONTAINER_NAME = "Please enter a Container Name";
 
+    public static final String PLEASE_ENTER_A_RESOURCE_NAME = "Please enter a Resource Name";
+
     public static final String PLEASE_SELECT_CONTENT_MODEL = "Please select Content Model";
 
-    public static final String CONTAINER_LENGTH = "Container Name must be 3-25 characters";
+    public static final String ERROR_RETRIEVING_CONTENTMODEL = "Could not retrieve the content model ";
+
+    public static final String RESOURCE_LENGTH = "Resource Name must be 3-25 characters";
+
+    public static final String ERROR_NO_RESOURCETYPE_IN_CONTENTMODEL =
+        "Could not find a definition for the resource type in Content Model \"";
 
     public static final String ITEM_NAME = "Item name";
 
@@ -173,5 +183,9 @@ public class ViewConstants {
     public static final String COULD_NOT_RETRIEVE_APPLICATION_URL = "Could not retrieve application URL";
 
     public static final String PERMANENT_LINK = "Permanent Link";
+
+    // DirectMember
+
+    public static final String CANNOT_CREATE_BUTTONS = "CANNOT CREATE BUTTONS FOR THIS VIEW";
 
 }
