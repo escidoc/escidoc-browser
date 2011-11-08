@@ -303,10 +303,10 @@ public class ItemAddView {
     }
 
     protected void create() {
-        createNewResource();
+        createNewItem();
     }
 
-    private void createNewResource() {
+    private void createNewItem() {
         try {
             final Item createdItem = repositories.item().createWithParent(buildItem(), parent);
             // The case when we are adding links from a button

@@ -28,26 +28,26 @@
  */
 package org.escidoc.browser.ui.listeners;
 
-import org.escidoc.browser.ui.maincontent.ContainerAddView;
+import org.escidoc.browser.ui.maincontent.ResourceAddView;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 
 @SuppressWarnings("serial")
-public final class AddContainerListener implements Button.ClickListener {
+public final class AddResourceListener implements Button.ClickListener {
 
-    private final ContainerAddView addView;
+    private final ResourceAddView addView;
 
-    public AddContainerListener(final ContainerAddView containerAddView) {
-        Preconditions.checkNotNull(containerAddView, "containerAddView is null: %s", containerAddView);
-        addView = containerAddView;
+    public AddResourceListener(ResourceAddView resourceAddView) {
+        Preconditions.checkNotNull(resourceAddView, "resourceAddView is null: %s", resourceAddView);
+        addView = resourceAddView;
     }
 
     @Override
     public void buttonClick(final ClickEvent event) {
-        if (addView.allValid()) {
-            addView.create();
+        if (addView.validateFields()) {
+            addView.createResource();
         }
         else {
             addView.showRequiredMessage();

@@ -36,8 +36,10 @@ import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.ContainerBuilder;
+import org.escidoc.browser.model.internal.ItemBuilder;
 import org.escidoc.browser.model.internal.ResourceDisplay;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
@@ -71,17 +73,20 @@ import de.escidoc.core.client.exceptions.EscidocException;
 import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.client.exceptions.TransportException;
 import de.escidoc.core.resources.Resource;
+import de.escidoc.core.resources.VersionableResource;
+import de.escidoc.core.resources.cmm.ContentModel;
 import de.escidoc.core.resources.common.reference.ContentModelRef;
 import de.escidoc.core.resources.common.reference.ContextRef;
 import de.escidoc.core.resources.om.container.Container;
+import de.escidoc.core.resources.om.item.Item;
 
-public class ContainerAddView implements ResourceAddView {
+public class ResourceAddViewImpl implements ResourceAddView {
 
-    private final static Logger LOG = LoggerFactory.getLogger(ContainerAddView.class);
+    private final static Logger LOG = LoggerFactory.getLogger(ResourceAddViewImpl.class);
 
-    private final FormLayout addContainerForm = new FormLayout();
+    private final FormLayout addResourceForm = new FormLayout();
 
-    private final TextField nameField = new TextField(ViewConstants.CONTAINER_NAME);
+    private final TextField nameField = new TextField(ViewConstants.RESOURCE_NAME_GENERIC);
 
     private final NativeSelect contentModelSelect = new NativeSelect(ViewConstants.PLEASE_SELECT_CONTENT_MODEL);
 
@@ -109,7 +114,7 @@ public class ContainerAddView implements ResourceAddView {
 
     private Router router;
 
-    public ContainerAddView(final Repositories repositories, final Window mainWindow, final ResourceModel parent,
+    public ResourceAddViewImpl(final Repositories repositories, final Window mainWindow, final ResourceModel parent,
         final TreeDataSource treeDataSource, final String contextId, Router router) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
@@ -128,7 +133,7 @@ public class ContainerAddView implements ResourceAddView {
     /*
      * This is the case where the button is invoked from a button and not from a tree
      */
-    public ContainerAddView(Repositories repositories, Window mainWindow, ResourceProxy containerProxy,
+    public ResourceAddViewImpl(Repositories repositories, Window mainWindow, ResourceProxy containerProxy,
         String contextId, Router router) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
@@ -145,7 +150,7 @@ public class ContainerAddView implements ResourceAddView {
     }
 
     private void buildContainerForm() throws EscidocClientException {
-        addContainerForm.setImmediate(true);
+        addResourceForm.setImmediate(true);
         addNameField();
         addContentModelSelect();
         addMetaData();
@@ -154,10 +159,10 @@ public class ContainerAddView implements ResourceAddView {
 
     private void addNameField() {
         nameField.setRequired(true);
-        nameField.setRequiredError(ViewConstants.PLEASE_ENTER_A_CONTAINER_NAME);
+        nameField.setRequiredError(ViewConstants.PLEASE_ENTER_A_RESOURCE_NAME);
         nameField.addValidator(new StringLengthValidator(ViewConstants.RESOURCE_LENGTH, 3, 50, false));
         nameField.setImmediate(true);
-        addContainerForm.addComponent(nameField);
+        addResourceForm.addComponent(nameField);
     }
 
     private void addContentModelSelect() throws EscidocException, InternalClientException, TransportException {
@@ -165,7 +170,7 @@ public class ContainerAddView implements ResourceAddView {
             repositories.contentModel());
         contentModelSelect.setRequired(true);
         bindData();
-        addContainerForm.addComponent(contentModelSelect);
+        addResourceForm.addComponent(contentModelSelect);
     }
 
     private void bindData() throws EscidocException, InternalClientException, TransportException {
@@ -186,9 +191,9 @@ public class ContainerAddView implements ResourceAddView {
 
     @SuppressWarnings("serial")
     private void addMetaData() {
-        addContainerForm.addComponent(status);
-        addContainerForm.addComponent(upload);
-        addContainerForm.addComponent(progressLayout);
+        addResourceForm.addComponent(status);
+        addResourceForm.addComponent(upload);
+        addResourceForm.addComponent(progressLayout);
 
         // Make uploading start immediately when file is selected
         upload.setImmediate(true);
@@ -272,13 +277,13 @@ public class ContainerAddView implements ResourceAddView {
     }
 
     private void addButton() {
-        addContainerForm.addComponent(new Button(ViewConstants.ADD, new AddResourceListener(this)));
+        addResourceForm.addComponent(new Button(ViewConstants.ADD, new AddResourceListener(this)));
     }
 
     private void buildSubWindowUsingContainerForm() {
         subwindow.setWidth("600px");
         subwindow.setModal(true);
-        subwindow.addComponent(addContainerForm);
+        subwindow.addComponent(addResourceForm);
     }
 
     public void openSubWindow() throws EscidocClientException {
@@ -299,7 +304,30 @@ public class ContainerAddView implements ResourceAddView {
         return AppConstants.EMPTY_STRING;
     }
 
-    public String getContainerName() {
+    public String getContentModelType(String id) {
+        try {
+            ContentModel contentModel = repositories.contentModel().findById(id);
+            String objectType = contentModel.getProperties().getDescription();
+            // TODO make sure we have a resourceType here
+            if ((objectType != null) && (objectType.contains("http://www.w3.org/1999/02/22-rdf-syntax-ns#type="))) {
+                objectType =
+                    objectType.replace("http://www.w3.org/1999/02/22-rdf-syntax-ns#type=org.escidoc.resources.", "");
+                objectType = objectType.replace(";", "");
+                return objectType;
+            }
+            else {
+                return null;
+            }
+        }
+        catch (EscidocClientException e) {
+            mainWindow.showNotification(ViewConstants.ERROR_RETRIEVING_CONTENTMODEL + e.getLocalizedMessage(),
+                Window.Notification.TYPE_ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public String getResourceName() {
         return nameField.getValue().toString();
     }
 
@@ -314,28 +342,63 @@ public class ContainerAddView implements ResourceAddView {
         return AppConstants.EMPTY_STRING;
     }
 
+    /**
+     * Create a resource
+     * 
+     * @throws EscidocClientException
+     */
     public void createResource() {
-        createNewContainer(getContainerName(), getContentModelId(), getContextId());
+        String resourceType = getContentModelType(getContentModelId());
+        try {
+            if ((resourceType == null)) {
+                mainWindow.showNotification(
+                    ViewConstants.ERROR_NO_RESOURCETYPE_IN_CONTENTMODEL + contentModelSelect.getValue() + "\"",
+                    Window.Notification.TYPE_ERROR_MESSAGE);
+            }
+            else if (resourceType.toUpperCase().equals(ResourceType.CONTAINER.toString())) {
+                createNewResource(getResourceName(), getContentModelId(), getContextId(),
+                    ResourceType.CONTAINER.toString());
+            }
+            else if (resourceType.toUpperCase().equals(ResourceType.ITEM.toString())) {
+                createNewResource(getResourceName(), getContentModelId(), getContextId(), ResourceType.ITEM.toString());
+            }
+            else {
+                mainWindow.showNotification(
+                    ViewConstants.ERROR_NO_RESOURCETYPE_IN_CONTENTMODEL + contentModelSelect.getValue() + "\"",
+                    Window.Notification.TYPE_ERROR_MESSAGE);
+            }
+        }
+        catch (EscidocClientException e) {
+            mainWindow.showNotification(e.getLocalizedMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        }
     }
 
-    private void createNewContainer(final String containerName, final String contentModelId, final String contextId) {
-        try {
-            Container createdContainer =
-                createContainerInRepository(buildContainer(containerName, contentModelId, contextId));
-            // Tree might be null in the case when these methods are called from
-            // buttons
-            if (treeDataSource != null) {
-                updateDataSource(createdContainer);
-            }
-            if (router != null) {
-                router.show(parent);
-            }
-            closeSubWindow();
+    private void createNewResource(
+        final String containerName, final String contentModelId, final String contextId, String resourceType)
+        throws EscidocClientException {
+
+        VersionableResource createdResource = null;
+        if (resourceType.equals(ResourceType.CONTAINER.toString())) {
+            createdResource = createContainerInRepository(buildContainer(containerName, contentModelId, contextId));
         }
-        catch (final EscidocClientException e) {
-            LOG.error(e.getMessage());
-            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        else if (resourceType.equals(ResourceType.ITEM.toString())) {
+            createdResource = repositories.item().createWithParent(buildItem(), parent);
         }
+        else {
+        }
+
+        if (treeDataSource != null) {
+            updateDataSource(createdResource);
+        }
+        if (router != null) {
+            router.show(parent);
+        }
+        closeSubWindow();
+    }
+
+    private Item buildItem() {
+        return new ItemBuilder(new ContextRef(getContextId()), new ContentModelRef(getContentModelId()), getMetadata())
+            .build(getResourceName());
     }
 
     private Container buildContainer(final String containerName, final String contentModelId, final String contextId) {
@@ -349,7 +412,7 @@ public class ContainerAddView implements ResourceAddView {
         return repositories.container().createWithParent(newContainer, parent);
     }
 
-    private void updateDataSource(final Container createdContainer) {
+    private void updateDataSource(final VersionableResource createdContainer) {
         treeDataSource.addChild(parent, new ContainerModel(createdContainer));
     }
 
