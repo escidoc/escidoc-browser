@@ -159,10 +159,12 @@ public class ItemContent extends Panel {
 
     private Label createLabelForMetadata(final Component comp) {
         final Label labelMetadata =
-            new Label(comp.getContent().getXLinkTitle() + "<br />" + ViewConstants.CREATED_ON
+            new Label("<strong>" + comp.getContent().getXLinkTitle() + "</strong>" + "<br />"
+                + comp.getProperties().getContentCategory() + "<hr />" + ViewConstants.CREATED_ON
                 + comp.getProperties().getCreationDate().toString("d.M.y, H:mm") + "<br /> by "
                 + comp.getProperties().getCreatedBy().getXLinkTitle() + "<br /> Mime Type: "
-                + comp.getProperties().getMimeType() + "<br />", Label.CONTENT_RAW);
+                + comp.getProperties().getMimeType() + "<br />" + "MD5Checksum " + comp.getProperties().getChecksum(),
+                Label.CONTENT_RAW);
         labelMetadata.setStyleName("smallfont");
         return labelMetadata;
     }
