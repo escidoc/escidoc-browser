@@ -34,6 +34,7 @@ import java.util.List;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ContainerModel;
+import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
@@ -407,7 +408,7 @@ public class ResourceAddViewImpl implements ResourceAddView {
         }
 
         if (treeDataSource != null) {
-            updateDataSource(createdResource);
+            updateDataSource(createdResource, resourceType);
         }
         if (router != null) {
             router.show(parent);
@@ -431,8 +432,13 @@ public class ResourceAddViewImpl implements ResourceAddView {
         return repositories.container().createWithParent(newContainer, parent);
     }
 
-    private void updateDataSource(final VersionableResource createdContainer) {
-        treeDataSource.addChild(parent, new ContainerModel(createdContainer));
+    private void updateDataSource(final VersionableResource createdResource, String resourceType) {
+        if (resourceType.equals(ResourceType.CONTAINER.toString())) {
+            treeDataSource.addChild(parent, new ContainerModel(createdResource));
+        }
+        else {
+            treeDataSource.addChild(parent, new ItemModel(createdResource));
+        }
     }
 
     private void closeSubWindow() {
