@@ -190,7 +190,7 @@ public class ContainerProxyImpl implements ContainerProxy {
      * @see org.escidoc.browser.repository.ContainerProxy#hasPreviousVersion()
      */
     @Override
-    public boolean getPreviousVersion() {
+    public Boolean hasPreviousVersion() {
 
         if (containerFromCore.getProperties().getLatestVersion().getNumber() != "1") {
             return true;
@@ -217,7 +217,7 @@ public class ContainerProxyImpl implements ContainerProxy {
     }
 
     @Override
-    public boolean getVersionHistory() {
+    public Boolean hasVersionHistory() {
         final String version = containerFromCore.getProperties().getVersion().getNumber();
         final int versionNumber = Integer.parseInt(version);
         if (versionNumber > 1) {

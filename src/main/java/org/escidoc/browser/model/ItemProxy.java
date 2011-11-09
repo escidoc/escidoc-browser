@@ -34,7 +34,7 @@ import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.MetadataRecords;
 import de.escidoc.core.resources.om.item.component.Components;
 
-public interface ItemProxy extends ResourceProxy {
+public interface ItemProxy extends ContentResourceProxy {
 
     @Override
     String getDescription();
@@ -59,7 +59,7 @@ public interface ItemProxy extends ResourceProxy {
 
     MetadataRecords getMedataRecords();
 
-    boolean getPreviousVersion();
+    Boolean hasPreviousVersion();
 
     String getContentUrl();
 

@@ -28,47 +28,24 @@
  */
 package org.escidoc.browser.model;
 
-import java.util.List;
-
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.MetadataRecords;
 
-public interface ContainerProxy extends ContentResourceProxy {
+interface ContentResourceProxy extends ResourceProxy {
 
-    @Override
-    String getDescription();
+    Resource getContext();
 
-    @Override
-    String getStatus();
+    String getLockStatus();
 
-    @Override
-    String getCreator();
+    String getVersionStatus();
 
-    @Override
-    String getCreatedOn();
-
-    @Override
-    String getModifier();
-
-    @Override
-    String getModifiedOn();
-
-    @Override
-    List<String> getRelations();
+    Resource getContentModel();
 
     Boolean hasPreviousVersion();
 
     MetadataRecords getMedataRecords();
 
     Boolean hasVersionHistory();
-
-    @Override
-    Resource getContext();
-
-    void setName(String name);
-
-    @Override
-    String getLockStatus();
 
     String getCurrentVersionId();
 
