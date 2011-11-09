@@ -37,7 +37,7 @@ import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.ContainerAddView;
+import org.escidoc.browser.ui.maincontent.ResourceAddViewImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,29 +89,29 @@ public final class ShowAddViewCommand implements Command {
             if (isContainerSelected(selectedItem)) {
                 if (allowedToCreateContainer(contextId)) {
                     if (parent.getType().equals(ResourceType.CONTEXT)) {
-                        showContainerAddView();
+                        showResourceAddView();
                     }
                     else if (parent.getType().equals(ResourceType.CONTAINER) && isUserAllowedToAddMembers(parent)) {
-                        showContainerAddView();
+                        showResourceAddView();
                     }
                     else {
-                        showWarning("You do not have the right to add a container to " + parent.getName());
+                        showWarning("You do not have the right to add a resource to " + parent.getName());
                     }
                 }
                 else {
-                    showWarning("You do not have the right to create a container in context: " + contextId);
+                    showWarning("You do not have the right to create a resource in context: " + contextId);
                 }
             }
             else if (isItemSelected(selectedItem)) {
                 if (allowedToCreateITem(contextId)) {
                     if (parent.getType().equals(ResourceType.CONTEXT)) {
-                        showItemAddView();
+                        showResourceAddView();
                     }
                     else if (parent.getType().equals(ResourceType.CONTAINER) && isUserAllowedToAddMembers(parent)) {
-                        showItemAddView();
+                        showResourceAddView();
                     }
                     else {
-                        showWarning("You do not have the right to add an item to " + parent.getName());
+                        showWarning("You do not have the right to add an resource to " + parent.getName());
                     }
                 }
                 else {
@@ -155,20 +155,11 @@ public final class ShowAddViewCommand implements Command {
         mainWindow.showNotification(ViewConstants.NOT_AUTHORIZED, message, Window.Notification.TYPE_WARNING_MESSAGE);
     }
 
-    public void showItemAddView() {
+    public void showResourceAddView() {
         Preconditions.checkNotNull(parent, "parent is null: %s", parent);
         try {
-            new ItemAddView(repositories, mainWindow, parent, treeDataSource, contextId, router).openSubWindow();
-        }
-        catch (final EscidocClientException e) {
-            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-        }
-    }
-
-    public void showContainerAddView() {
-        Preconditions.checkNotNull(parent, "parent is null: %s", parent);
-        try {
-            new ContainerAddView(repositories, mainWindow, parent, treeDataSource, contextId, router).openSubWindow();
+            new ResourceAddViewImpl(repositories, mainWindow, parent, treeDataSource, contextId, router)
+                .openSubWindow();
         }
         catch (final EscidocClientException e) {
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);

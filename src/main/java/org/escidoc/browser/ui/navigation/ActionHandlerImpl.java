@@ -50,7 +50,6 @@ import com.vaadin.event.Action;
 import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
-import de.escidoc.core.resources.Resource;
 
 @SuppressWarnings("serial")
 final class ActionHandlerImpl implements Action.Handler {
@@ -86,12 +85,11 @@ final class ActionHandlerImpl implements Action.Handler {
 
         // Original Browser tree element
         if (isContext(target)) {
-            return new Action[] { ActionList.ACTION_ADD_CONTAINER, ActionList.ACTION_ADD_ITEM };
+            return new Action[] { ActionList.ACTION_ADD_RESOURCE };
         }
 
         if (isContainer(target)) {
-            return new Action[] { ActionList.ACTION_ADD_CONTAINER, ActionList.ACTION_ADD_ITEM,
-                ActionList.ACTION_DELETE_CONTAINER };
+            return new Action[] { ActionList.ACTION_ADD_RESOURCE, ActionList.ACTION_DELETE_CONTAINER };
         }
 
         if (isItem(target)) {
@@ -145,11 +143,8 @@ final class ActionHandlerImpl implements Action.Handler {
         throws EscidocClientException, URISyntaxException {
 
         // original doActions
-        if (action.equals(ActionList.ACTION_ADD_CONTAINER)) {
-            tryShowCreateContainerView(selectedResource, contextId);
-        }
-        else if (action.equals(ActionList.ACTION_ADD_ITEM)) {
-            tryShowCreateItemView(selectedResource, contextId);
+        if (action.equals(ActionList.ACTION_ADD_RESOURCE)) {
+            tryShowCreateResourceView(selectedResource, contextId);
         }
         else if (action.equals(ActionList.ACTION_DELETE_CONTAINER)) {
             tryDeleteContainer(selectedResource);
@@ -211,36 +206,14 @@ final class ActionHandlerImpl implements Action.Handler {
         }
     }
 
-    private void tryShowCreateItemView(final Object target, final String contextId) throws EscidocClientException,
+    private void tryShowCreateResourceView(final Object target, final String contextId) throws EscidocClientException,
         URISyntaxException {
-        if (allowedToCreateItem(contextId)) {
+        if ((allowedToCreateContainer(contextId)) && (allowedToCreateItem(contextId))) {
             if (target instanceof ContextModel) {
-                showCreateItemView(target, contextId);
-            }
-            else if (target instanceof ContainerModel && allowedToAddMember((ResourceModel) target)) {
-                showCreateItemView(target, contextId);
-            }
-            else {
-                mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
-                    "You do not have the right to add an item to " + ((ResourceModel) target).getName(),
-                    Window.Notification.TYPE_WARNING_MESSAGE));
-            }
-        }
-        else {
-            mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
-                "You do not have the right to create an item in context: " + contextId,
-                Window.Notification.TYPE_WARNING_MESSAGE));
-        }
-    }
-
-    private void tryShowCreateContainerView(final Object target, final String contextId) throws EscidocClientException,
-        URISyntaxException {
-        if (allowedToCreateContainer(contextId)) {
-            if (target instanceof ContextModel) {
-                showCreateContainerView(target, contextId);
+                showCreateResourceView(target, contextId);
             }
             else if ((target instanceof ContainerModel) && allowedToAddMember((ResourceModel) target)) {
-                showCreateContainerView(target, contextId);
+                showCreateResourceView(target, contextId);
             }
             else {
                 mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
@@ -315,12 +288,8 @@ final class ActionHandlerImpl implements Action.Handler {
         return AppConstants.EMPTY_STRING;
     }
 
-    private void showCreateContainerView(final Object target, final String contextId) {
-        buildCommand(target, contextId).showContainerAddView();
-    }
-
-    private void showCreateItemView(final Object target, final String contextId) {
-        buildCommand(target, contextId).showItemAddView();
+    private void showCreateResourceView(final Object target, final String contextId) {
+        buildCommand(target, contextId).showResourceAddView();
     }
 
     private ShowAddViewCommand buildCommand(final Object target, final String contextId) {
@@ -342,31 +311,5 @@ final class ActionHandlerImpl implements Action.Handler {
 
     private void deleteSelected(final ItemModel selected) throws EscidocClientException {
         repositories.item().delete(selected);
-    }
-
-    private String findContentModelId(final Object target) {
-        String contentModelId = "escidoc:";
-        Resource eSciDocResource = null;
-        try {
-            if (isContext(target)) {
-                contentModelId = AppConstants.EMPTY_STRING;
-            }
-            else if (isContainer(target)) {
-                eSciDocResource = repositories.container().findById(((ResourceModel) target).getId()).getContentModel();
-                contentModelId += (eSciDocResource.getXLinkHref().split(":"))[1];
-            }
-            else if (isItem(target)) {
-                eSciDocResource = repositories.item().findById(((ResourceModel) target).getId()).getContentModel();
-                contentModelId += (eSciDocResource.getXLinkHref().split(":"))[1];
-            }
-            else {
-                contentModelId = null;
-            }
-        }
-        catch (EscidocClientException e) {
-            LOG.error("Unable to retreive ContentModel data from repository object", e);
-            contentModelId = null;
-        }
-        return contentModelId;
     }
 }

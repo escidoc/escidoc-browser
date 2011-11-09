@@ -39,6 +39,8 @@ public class ActionList {
     // original browser Actions
     static final Action ACTION_ADD_CONTAINER = new Action(ViewConstants.ADD_CONTAINER);
 
+    static final Action ACTION_ADD_RESOURCE = new Action(ViewConstants.ADD_RESOURCE);
+
     static final Action ACTION_ADD_ITEM = new Action(ViewConstants.ADD_ITEM);
 
     static final Action ACTION_DELETE_ITEM = new Action(ViewConstants.DELETE_RESOURCE);
