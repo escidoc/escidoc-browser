@@ -103,7 +103,7 @@ public class ItemProxyImpl implements ItemProxy {
     }
 
     @Override
-    public boolean getPreviousVersion() {
+    public Boolean hasPreviousVersion() {
         final String version = itemFromCore.getProperties().getVersion().getNumber();
         final int versionNumber = Integer.parseInt(version);
         if (versionNumber > 1) {
@@ -203,5 +203,20 @@ public class ItemProxyImpl implements ItemProxy {
     @Override
     public Resource getContentModel() {
         return itemFromCore.getProperties().getContentModel();
+    }
+
+    @Override
+    public String getCurrentVersionId() {
+        return itemFromCore.getProperties().getVersion().getObjid();
+    }
+
+    @Override
+    public Boolean hasVersionHistory() {
+        final String version = itemFromCore.getProperties().getVersion().getNumber();
+        final int versionNumber = Integer.parseInt(version);
+        if (versionNumber > 1) {
+            return true;
+        }
+        return false;
     }
 }

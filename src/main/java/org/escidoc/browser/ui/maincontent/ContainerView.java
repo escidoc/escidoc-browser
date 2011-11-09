@@ -539,7 +539,7 @@ public class ContainerView extends VerticalLayout {
      * @return String
      */
     private Component getHistory() {
-        if (resourceProxy.getPreviousVersion()) {
+        if (resourceProxy.hasPreviousVersion()) {
             final Button versionHistory =
                 new Button(" Has previous version", new VersionHistoryClickListener(resourceProxy, mainWindow,
                     serviceLocation, repositories));
