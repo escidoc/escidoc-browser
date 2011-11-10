@@ -54,4 +54,6 @@ public interface Repositories {
 
     AdminRepository admin();
 
+    IngestRepository ingest();
+
 }

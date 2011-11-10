@@ -26,26 +26,29 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.model;
+package org.escidoc.browser.repository;
 
-import com.google.common.base.Preconditions;
+import java.net.MalformedURLException;
 
-public enum ResourceType {
+import org.escidoc.browser.model.EscidocServiceLocation;
 
-    CONTEXT("Context"), CONTAINER("Container"), ITEM("Item"), CONTENT_MODEL("Content Model");
+import de.escidoc.core.client.IngestHandlerClient;
+import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.client.interfaces.IngestHandlerClientInterface;
 
-    private String label;
+public class IngestRepository {
 
-    private ResourceType(final String label) {
-        Preconditions.checkNotNull(label, "value is null: %s", label);
-        this.label = label;
+    private IngestHandlerClientInterface client;
+
+    public IngestRepository(EscidocServiceLocation serviceLocation) throws MalformedURLException {
+        client = new IngestHandlerClient(serviceLocation.getEscidocUrl());
     }
 
-    private ResourceType() {
-        label = "";
+    public void loginWith(String token) throws EscidocClientException {
+        client.setHandle(token);
     }
 
-    public String asLabel() {
-        return label;
+    public void ingest(String resourceXml) throws EscidocClientException {
+        client.ingest(resourceXml);
     }
 }

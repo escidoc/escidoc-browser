@@ -32,6 +32,7 @@ import java.net.MalformedURLException;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.repository.AdminRepository;
+import org.escidoc.browser.repository.IngestRepository;
 import org.escidoc.browser.repository.PdpRepository;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.StagingRepository;
@@ -61,6 +62,8 @@ public class RepositoriesImpl implements Repositories {
 
     private final Window mainWindow;
 
+    private IngestRepository ingestRepository;
+
     public RepositoriesImpl(final EscidocServiceLocation serviceLocation, Window mainWindow) {
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         this.serviceLocation = serviceLocation;
@@ -75,6 +78,7 @@ public class RepositoriesImpl implements Repositories {
         pdpRepository = new PdpRepositoryImpl(serviceLocation.getEscidocUrl());
         contentModelRepository = new ContentModelRepository(serviceLocation);
         adminRepository = new AdminRepository(serviceLocation);
+        ingestRepository = new IngestRepository(serviceLocation);
         return this;
     }
 
@@ -86,6 +90,7 @@ public class RepositoriesImpl implements Repositories {
         stagingRepository.loginWith(token);
         pdpRepository.loginWith(token);
         adminRepository.loginWith(token);
+        ingestRepository.loginWith(token);
     }
 
     @Override
@@ -129,5 +134,11 @@ public class RepositoriesImpl implements Repositories {
     public AdminRepository admin() {
         Preconditions.checkNotNull(adminRepository, "adminRepository is null: %s", adminRepository);
         return adminRepository;
+    }
+
+    @Override
+    public IngestRepository ingest() {
+        Preconditions.checkNotNull(ingestRepository, "ingestRepository is null: %s", ingestRepository);
+        return ingestRepository;
     }
 }

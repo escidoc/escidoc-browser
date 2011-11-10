@@ -128,7 +128,7 @@ public class ToolsTreeView extends VerticalLayout {
                         router.openTab(view, getType(event).getLabel());
                         break;
                     case PURGE_RESOURCES:
-                        PurgeResourceView purgeView = new PurgeResourceView(router, repositories);
+                        PurgeAndExportResourceView purgeView = new PurgeAndExportResourceView(router, repositories);
                         purgeView.init();
                         router.openTab(purgeView, getType(event).getLabel());
                         break;

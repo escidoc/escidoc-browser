@@ -33,9 +33,15 @@ import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.axis.types.NonNegativeInteger;
+import org.escidoc.browser.model.ContentModelProxyImpl;
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ModelConverter;
+import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.repository.Repository;
 
 import com.google.common.base.Preconditions;
 
@@ -45,10 +51,13 @@ import de.escidoc.core.client.exceptions.EscidocException;
 import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.client.exceptions.TransportException;
 import de.escidoc.core.client.interfaces.ContentModelHandlerClientInterface;
+import de.escidoc.core.client.rest.RestContentModelHandlerClient;
 import de.escidoc.core.resources.Resource;
-import de.escidoc.core.resources.cmm.ContentModel;
+import de.escidoc.core.resources.common.Relations;
+import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 
-public class ContentModelRepository {
+public class ContentModelRepository implements Repository {
+
     private final ContentModelHandlerClientInterface client;
 
     public ContentModelRepository(final EscidocServiceLocation escidocServiceLocation) throws MalformedURLException {
@@ -70,7 +79,53 @@ public class ContentModelRepository {
         return filter;
     }
 
-    public ContentModel findById(final String id) throws EscidocClientException {
-        return client.retrieve(id);
+    @Override
+    public ResourceProxy findById(final String id) throws EscidocClientException {
+        return new ContentModelProxyImpl(client.retrieve(id));
+    }
+
+    public String getAsXmlString(String id) throws EscidocClientException {
+        return new RestContentModelHandlerClient(client.getServiceAddress()).retrieve(id);
+    }
+
+    @Override
+    public void loginWith(String handle) throws InternalClientException {
+        client.setHandle(handle);
+    }
+
+    @Override
+    public List<ResourceModel> findAll() throws EscidocClientException {
+        return ModelConverter.contentModelListToModel(client
+            .retrieveContentModelsAsList(new SearchRetrieveRequestType()));
+    }
+
+    @Override
+    public List<ResourceModel> findTopLevelMembersById(String id) throws EscidocClientException {
+        throw new UnsupportedOperationException("Not yet implemented");
+
+    }
+
+    @Override
+    public VersionHistory getVersionHistory(String id) throws EscidocClientException {
+        throw new UnsupportedOperationException("Not yet implemented");
+
+    }
+
+    @Override
+    public Relations getRelations(String id) throws EscidocClientException {
+        throw new UnsupportedOperationException("Not yet implemented");
+
+    }
+
+    @Override
+    public void delete(ResourceModel model) throws EscidocClientException {
+        throw new UnsupportedOperationException("Not yet implemented");
+
+    }
+
+    @Override
+    public List<ResourceModel> filterUsingInput(String query) throws EscidocClientException {
+        throw new UnsupportedOperationException("Not yet implemented");
+
     }
 }

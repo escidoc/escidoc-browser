@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.ResourceType;
 import de.escidoc.core.resources.VersionableResource;
+import de.escidoc.core.resources.cmm.ContentModel;
 import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.om.context.Context;
 import de.escidoc.core.resources.om.item.Item;
@@ -114,6 +115,14 @@ public final class ModelConverter {
 
     private static boolean isItem(final Resource containerOrItem) {
         return containerOrItem.getResourceType() == ResourceType.ITEM;
+    }
+
+    public static List<ResourceModel> contentModelListToModel(List<ContentModel> list) {
+        final List<ResourceModel> models = new ArrayList<ResourceModel>(list.size());
+        for (final Resource resource : list) {
+            models.add(new ContentModelProxyImpl(resource));
+        }
+        return models;
     }
 
 }

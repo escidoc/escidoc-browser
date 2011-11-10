@@ -30,7 +30,6 @@ package org.escidoc.browser.elabsmodul.controller;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -209,8 +208,7 @@ public final class RigController extends Controller implements IRigAction {
             description.setTextContent(rigBean.getDescription());
             rig.appendChild(description);
 
-            for (Iterator<InstrumentBean> iterator = rigBean.getContentList().iterator(); iterator.hasNext();) {
-                InstrumentBean instrumentBean = iterator.next();
+            for (InstrumentBean instrumentBean : rigBean.getContentList()) {
                 final Element insturmentRelation =
                     doc.createElementNS("http://escidoc.org/ontologies/bw-elabs/re#", "instrument");
                 insturmentRelation.setPrefix("el");
@@ -317,8 +315,7 @@ public final class RigController extends Controller implements IRigAction {
         try {
             final Pattern controllerIdPattern = Pattern.compile(SEARCH_STRING_FOR_MATCHER);
             itemList = repositories.item().findAll();
-            for (Iterator<ResourceModel> iterator = itemList.iterator(); iterator.hasNext();) {
-                ResourceModel resourceModel = iterator.next();
+            for (ResourceModel resourceModel : itemList) {
                 if (ItemModel.isItem(resourceModel)) {
                     ItemProxy itemProxy = (ItemProxy) repositories.item().findById(resourceModel.getId());
                     final String cmmId = itemProxy.getContentModel().getObjid();
@@ -330,8 +327,7 @@ public final class RigController extends Controller implements IRigAction {
                         continue;
                     }
 
-                    final String cmmDescription =
-                        repositories.contentModel().findById(cmmId).getProperties().getDescription();
+                    final String cmmDescription = repositories.contentModel().findById(cmmId).getDescription();
                     if (cmmDescription != null) {
                         final Matcher controllerIdMatcher = controllerIdPattern.matcher(cmmDescription);
                         String controllerId = null;

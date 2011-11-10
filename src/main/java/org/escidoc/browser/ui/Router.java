@@ -67,7 +67,6 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
-import de.escidoc.core.resources.cmm.ContentModel;
 
 public class Router {
 
@@ -283,9 +282,8 @@ public class Router {
             }
 
             final ResourceProxy resourceProxy = tryToFindResource(clickedResource);
-            final ContentModel contentModel =
-                repositories.contentModel().findById(resourceProxy.getContentModel().getObjid());
-            final String description = contentModel.getProperties().getDescription();
+            final String description =
+                repositories.contentModel().findById(resourceProxy.getContentModel().getObjid()).getDescription();
 
             LOG.debug("Description is " + description);
             if (description != null) {
