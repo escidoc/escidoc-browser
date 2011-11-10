@@ -31,6 +31,8 @@ package org.escidoc.browser.ui.maincontent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ContainerModel;
@@ -323,9 +325,15 @@ public class ResourceAddViewImpl implements ResourceAddView {
             ContentModel contentModel = repositories.contentModel().findById(id);
             String objectType = contentModel.getProperties().getDescription();
             if ((objectType != null) && (objectType.contains("http://www.w3.org/1999/02/22-rdf-syntax-ns#type="))) {
-                objectType =
-                    objectType.replace("http://www.w3.org/1999/02/22-rdf-syntax-ns#type=org.escidoc.resources.", "");
-                objectType = objectType.replace(";", "");
+                final Pattern controllerIdPattern =
+                    Pattern.compile("http://www.w3.org/1999/02/22-rdf-syntax-ns#type=org.escidoc.resources.([^;]*);");
+                final Matcher controllerIdMatcher =
+                    controllerIdPattern.matcher(contentModel.getProperties().getDescription());
+
+                if (controllerIdMatcher.find()) {
+                    objectType = controllerIdMatcher.group(1);
+                }
+
                 return objectType;
             }
             else {
