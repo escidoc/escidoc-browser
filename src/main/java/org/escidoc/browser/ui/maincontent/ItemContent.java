@@ -49,7 +49,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -59,7 +58,7 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.om.item.component.Component;
 
 @SuppressWarnings("serial")
-public class ItemContent extends Panel {
+public class ItemContent extends VerticalLayout {
 
     private static final Logger LOG = LoggerFactory.getLogger(ItemContent.class);
 
@@ -90,9 +89,6 @@ public class ItemContent extends Panel {
     }
 
     private void initView() {
-        getLayout().setMargin(false);
-        setScrollable(false);
-        this.setHeight("100%");
         wrap(verticalLayout);
         if (hasComponents()) {
             verticalLayout.addComponent(buildTable());
@@ -110,8 +106,9 @@ public class ItemContent extends Panel {
     private void wrap(final VerticalLayout verticalLayout) {
         try {
             if (userIsPermittedToUpdate()) {
-                verticalLayout.setHeight(mainWindow.getHeight() * 60 / 100 + "px");
+                verticalLayout.setHeight(mainWindow.getHeight() * 65 / 100 + "px");
                 verticalLayout.setWidth("100%");
+
                 final DragAndDropFileUpload dragAndDropFileUpload =
                     new DragAndDropFileUpload(repositories, itemProxy, this, verticalLayout);
                 dragAndDropFileUpload.setSizeFull();

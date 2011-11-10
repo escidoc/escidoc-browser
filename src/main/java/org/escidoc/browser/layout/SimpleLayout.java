@@ -39,14 +39,17 @@ import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.navigation.NavigationTreeView;
 import org.escidoc.browser.ui.navigation.RootNode;
 
+import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -54,7 +57,7 @@ public class SimpleLayout extends LayoutDesign {
 
     private AbsoluteLayout mainLayout;
 
-    private HorizontalLayout container;
+    private HorizontalSplitPanel container;
 
     private TabSheet mainContentTabs;
 
@@ -145,23 +148,27 @@ public class SimpleLayout extends LayoutDesign {
         headerContainer.addComponent(header);
     }
 
-    private HorizontalLayout buildContainer() throws EscidocClientException {
+    private HorizontalSplitPanel buildContainer() throws EscidocClientException {
         // common part: create layout
-        container = new HorizontalLayout();
+        container = new HorizontalSplitPanel();
+        container.setStyleName(Runo.SPLITPANEL_SMALL);
         container.setImmediate(false);
-        container.setWidth("100.0%");
-        container.setHeight("100.0%");
+
         container.setMargin(false);
+
+        container.setSplitPosition(30, Sizeable.UNITS_PERCENTAGE);
+        container.setSizeFull();
+        container.setLocked(false);
 
         // navigationPanel
         navigationPanel = buildNavigationPanel();
         container.addComponent(navigationPanel);
-        container.setExpandRatio(navigationPanel, 3.0f);
+        // container.setExpandRatio(navigationPanel, 3.0f);
 
         // TabContainer
         mainContentTabs = buildTabContainer();
         container.addComponent(mainContentTabs);
-        container.setExpandRatio(mainContentTabs, 7.0f);
+        // container.setExpandRatio(mainContentTabs, 7.0f);
 
         return container;
     }

@@ -207,10 +207,30 @@ public final class ItemView extends Panel {
         vlLeftPanel.setMargin(false);
 
         // directMembersPanel
-        Panel directMembersPanel = new ItemContent(repositories, resourceProxy, serviceLocation, mainWindow);
+        Panel directMembersPanel = buildDirectMembersPanel();
         vlLeftPanel.addComponent(directMembersPanel);
 
         return vlLeftPanel;
+    }
+
+    private Panel buildDirectMembersPanel() throws EscidocClientException {
+        // common part: create layout
+        Panel directMembersPanel = new Panel();
+        directMembersPanel.setImmediate(false);
+        directMembersPanel.setWidth("100.0%");
+        directMembersPanel.setHeight("100.0%");
+        directMembersPanel.setStyleName(Runo.PANEL_LIGHT);
+
+        // vlDirectMember
+        VerticalLayout vlDirectMember = new VerticalLayout();
+        vlDirectMember.setImmediate(false);
+        vlDirectMember.setWidth("100.0%");
+        vlDirectMember.setHeight("100.0%");
+        vlDirectMember.setMargin(false);
+        vlDirectMember = new ItemContent(repositories, resourceProxy, serviceLocation, mainWindow);
+        directMembersPanel.setContent(vlDirectMember);
+
+        return directMembersPanel;
     }
 
     private Panel buildResourcePropertiesPanel() {
