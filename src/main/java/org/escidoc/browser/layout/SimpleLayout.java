@@ -34,6 +34,7 @@ import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.TreeDataSourceImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.mainpage.Footer;
 import org.escidoc.browser.ui.mainpage.HeaderContainer;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.navigation.NavigationTreeView;
@@ -77,6 +78,8 @@ public class SimpleLayout extends LayoutDesign {
     private NavigationTreeView mainNavigationTree;
 
     private TreeDataSource treeDataSource;
+
+    private HorizontalLayout footer;
 
     @Override
     public void init(
@@ -126,6 +129,8 @@ public class SimpleLayout extends LayoutDesign {
         // headerContainer
         buildHeader();
         mainLayout.addComponent(headerContainer, "top:0.0px;right:0.0px;left:0.0px;");
+        buildFooter();
+        mainLayout.addComponent(footer, "right:0.0px;bottom:0.0px;left:0.0px;");
 
         // container
         container = buildContainer();
@@ -143,6 +148,17 @@ public class SimpleLayout extends LayoutDesign {
         final HeaderContainer header = new HeaderContainer(router, this, app, serviceLocation, repositories);
         header.init();
         headerContainer.addComponent(header);
+    }
+
+    private void buildFooter() {
+        footer = new HorizontalLayout();
+        footer.setImmediate(false);
+        footer.setWidth("100.0%");
+        footer.setHeight("20px");
+        footer.setMargin(false);
+        final Footer footerHtml = new Footer(serviceLocation);
+        footer.addComponent(footerHtml);
+
     }
 
     private HorizontalLayout buildContainer() throws EscidocClientException {
