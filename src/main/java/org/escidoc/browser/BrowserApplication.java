@@ -204,6 +204,7 @@ public class BrowserApplication extends Application implements HttpServletReques
     public void onRequestStart(HttpServletRequest request, HttpServletResponse response) {
         this.response = response;
         this.request = request;
+        // LOG.debug(request.toString());
     }
 
     @Override
