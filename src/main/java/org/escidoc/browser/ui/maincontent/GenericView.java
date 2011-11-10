@@ -113,6 +113,7 @@ public class GenericView {
         contentPanel.setImmediate(false);
         contentPanel.setWidth("100.0%");
         contentPanel.setHeight("100.0%");
+        contentPanel.setStyleName("red");
 
         // vlContentPanel
         vlContentPanel = buildVlContentPanel();
@@ -285,7 +286,7 @@ public class GenericView {
         // common part: create layout
         rightPanel = new Panel();
         rightPanel.setImmediate(false);
-        rightPanel.setWidth("1500.0%");
+        rightPanel.setWidth("100.0%");
         rightPanel.setHeight("100.0%");
 
         // vlRightPanel
