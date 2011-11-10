@@ -63,8 +63,6 @@ public class MetadataRecsItem {
 
     private static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
 
-    private final int height;
-
     private final ItemProxy resourceProxy;
 
     private final Window mainWindow;
@@ -81,16 +79,15 @@ public class MetadataRecsItem {
 
     private LayoutDesign layout;
 
-    MetadataRecsItem(final ItemProxy resourceProxy, final int innerelementsHeight, final Window mainWindow,
+    MetadataRecsItem(final ItemProxy resourceProxy, final Window mainWindow,
         final EscidocServiceLocation escidocServiceLocation, final Repositories repositories, final Router mainSite,
         LayoutDesign layout) {
-        Preconditions.checkNotNull(mainWindow, "resource is null.");
+        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null.");
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions
             .checkNotNull(escidocServiceLocation, "escidocServiceLocation is null: %s", escidocServiceLocation);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
 
-        height = innerelementsHeight;
         this.resourceProxy = resourceProxy;
         this.mainWindow = mainWindow;
         this.escidocServiceLocation = escidocServiceLocation;
@@ -129,20 +126,18 @@ public class MetadataRecsItem {
         btnContentRelation.setDescription("Show Version history in a Pop-up");
 
         final Panel pnl = new Panel();
-        pnl.setHeight(height + "px");
+        pnl.setHeight("100%");
         pnl.addComponent(btnVersionHistory);
         pnl.addComponent(btnContentRelation);
         return pnl;
     }
 
     private Panel lblMetadaRecs() {
-        pnl.setHeight(height + "px");
-
+        pnl.setHeight("100%");
         final MetadataRecords mdRecs = resourceProxy.getMedataRecords();
         for (final MetadataRecord metadataRecord : mdRecs) {
             buildMDButtons(btnaddContainer, metadataRecord);
         }
-
         if (hasAccess()) {
             final Button btnAddNew =
                 new Button("Add New Metadata", new AddMetaDataFileItemBehaviour(mainWindow, repositories,

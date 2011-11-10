@@ -67,23 +67,23 @@ public class NavigationTreeBuilder {
     }
 
     public NavigationTreeView buildContainerDirectMemberTree(
-        final Router mainSite, final String parentID, final Window mainWindow) throws EscidocClientException {
+        final Router router, final String parentID, final Window mainWindow) throws EscidocClientException {
 
         final TreeDataSource treeDataSource =
             new TreeDataSourceImpl(repositories.container().findTopLevelMembersById(parentID));
         treeDataSource.init();
 
-        return createNavigationTreeView(mainSite, mainWindow, treeDataSource);
+        return createNavigationTreeView(router, mainWindow, treeDataSource);
     }
 
     public NavigationTreeView buildContextDirectMemberTree(
-        final Router mainSite, final String parentId, final Window mainWindow) throws EscidocClientException {
+        final Router router, final String parentId, final Window mainWindow) throws EscidocClientException {
 
         final TreeDataSource treeDataSource =
             new TreeDataSourceImpl(repositories.context().findTopLevelMembersById(parentId));
         treeDataSource.init();
 
-        return createNavigationTreeView(mainSite, mainWindow, treeDataSource);
+        return createNavigationTreeView(router, mainWindow, treeDataSource);
     }
 
     private NavigationTreeView createNavigationTreeView(

@@ -53,6 +53,7 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
+import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -153,9 +154,12 @@ public class DirectMember {
 
         nameofPanel.setWidth("100%");
         panel.addComponent(nameofPanel);
+        panel.setStyleName(Runo.PANEL_LIGHT);
         // the changes start here
         VerticalLayout panelLayout = (VerticalLayout) panel.getContent();
         panelLayout.setHeight("100%");
+        panelLayout.setStyleName(Runo.PANEL_LIGHT);
+
         // panelLayout.addStyleName("my-panel");
 
         if (resourceType == ResourceType.CONTAINER.toString()) {
@@ -201,6 +205,7 @@ public class DirectMember {
         VerticalLayout panelLayout = (VerticalLayout) panel.getContent();
         panelLayout.addComponent(comptoBind);
         panelLayout.setExpandRatio(comptoBind, 1.0f);
+        panelLayout.setStyleName(Runo.PANEL_LIGHT);
     }
 
     private boolean hasAccessAddResources() {

@@ -38,14 +38,14 @@ import org.slf4j.LoggerFactory;
 
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.AbstractComponentContainer;
 import com.vaadin.ui.Link;
 
 public class CreatePermanentLinkVH {
 
     private static final Logger LOG = LoggerFactory.getLogger(ItemView.class);
 
-    public CreatePermanentLinkVH(String url, String id, String type, CssLayout cssLayout,
+    public CreatePermanentLinkVH(String url, String id, String type, AbstractComponentContainer componentContainer,
         EscidocServiceLocation serviceLocation) {
         Link l;
         try {
@@ -55,10 +55,10 @@ public class CreatePermanentLinkVH {
             l.setDescription(ViewConstants.PERMANENT_LINK);
             l.setIcon(new ThemeResource("images/assets/link.png"));
             l.setStyleName("permanentLink");
-            cssLayout.addComponent(l);
+            componentContainer.addComponent(l);
         }
         catch (MalformedURLException e) {
-            cssLayout.getWindow().showNotification(ViewConstants.COULD_NOT_RETRIEVE_APPLICATION_URL);
+            componentContainer.getWindow().showNotification(ViewConstants.COULD_NOT_RETRIEVE_APPLICATION_URL);
             LOG.error(ViewConstants.COULD_NOT_RETRIEVE_APPLICATION_URL + e.getLocalizedMessage());
         }
     }

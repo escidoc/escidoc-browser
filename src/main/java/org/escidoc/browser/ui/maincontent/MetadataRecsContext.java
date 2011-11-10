@@ -73,39 +73,39 @@ class MetadataRecsContext {
     public Accordion asAccord() {
         final Accordion metadataRecs = new Accordion();
         metadataRecs.setSizeFull();
-        addComponentAsTabs(metadataRecs, ELEMENT_HEIGHT);
+        addComponentAsTabs(metadataRecs);
         return metadataRecs;
     }
 
-    private void addComponentAsTabs(final Accordion metadataRecs, final int elementHeight) {
-        metadataRecs.addTab(buildOrganizationUnit(elementHeight), ViewConstants.ORGANIZATIONAL_UNIT, null);
-        metadataRecs.addTab(buildAdminDescription(elementHeight), ViewConstants.ADMIN_DESCRIPTION, null);
-        metadataRecs.addTab(buildRelations(elementHeight), ViewConstants.RELATIONS, null);
-        metadataRecs.addTab(buildResources(elementHeight), ViewConstants.ADDITIONAL_RESOURCES, null);
+    private void addComponentAsTabs(final Accordion metadataRecs) {
+        metadataRecs.addTab(buildOrganizationUnit(), ViewConstants.ORGANIZATIONAL_UNIT, null);
+        metadataRecs.addTab(buildAdminDescription(), ViewConstants.ADMIN_DESCRIPTION, null);
+        metadataRecs.addTab(buildRelations(), ViewConstants.RELATIONS, null);
+        metadataRecs.addTab(buildResources(), ViewConstants.ADDITIONAL_RESOURCES, null);
     }
 
-    private Panel buildResources(final int elementHeight) {
+    private Panel buildResources() {
         final Panel resources = new Panel();
-        resources.setWidth(_100_PERCENT);
-        resources.setHeight(elementHeight + "px");
+        resources.setWidth("100%");
+        resources.setHeight("100%");
         final Label lblresources = new Label("<a href='#'>Members Filtered</a><br />", Label.CONTENT_RAW);
         resources.addComponent(lblresources);
         return resources;
     }
 
-    private Panel buildRelations(final int elementHeight) {
+    private Panel buildRelations() {
         final Panel relations = new Panel();
-        relations.setWidth(_100_PERCENT);
-        relations.setHeight(elementHeight + "px");
+        relations.setWidth("100%");
+        relations.setHeight("100%");
         final Label lblrelations = new Label("isRelatedTo <a href='#'>Other Context</a><br />", Label.CONTENT_RAW);
         relations.addComponent(lblrelations);
         return relations;
     }
 
-    private Panel buildAdminDescription(final int elementHeight) {
+    private Panel buildAdminDescription() {
         final Panel admDescriptors = new Panel();
-        admDescriptors.setWidth(_100_PERCENT);
-        admDescriptors.setHeight(elementHeight + "px");
+        admDescriptors.setWidth("100%");
+        admDescriptors.setHeight("100%");
 
         final AdminDescriptors admDesc = resourceProxy.getAdminDescription();
         for (final AdminDescriptor adminDescriptor : admDesc) {
@@ -117,10 +117,10 @@ class MetadataRecsContext {
         return admDescriptors;
     }
 
-    private Panel buildOrganizationUnit(final int elementHeight) {
+    private Panel buildOrganizationUnit() {
         final Panel orgUnit = new Panel();
-        orgUnit.setWidth(_100_PERCENT);
-        orgUnit.setHeight(elementHeight + "px");
+        orgUnit.setWidth("100%");
+        orgUnit.setHeight("100%");
 
         final OrganizationalUnitRefs orgUnits = resourceProxy.getOrganizationalUnit();
         for (final OrganizationalUnitRef organizationalUnitRef : orgUnits) {

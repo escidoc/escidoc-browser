@@ -41,6 +41,7 @@ import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.escidoc.browser.ui.helper.ResourceHierarchy;
 
 import com.google.common.base.Preconditions;
+import com.vaadin.ui.AbstractComponentContainer;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
@@ -60,7 +61,7 @@ public class BreadCrumbMenu {
      * @param resourceProxy
      * @param repositories
      */
-    public BreadCrumbMenu(final CssLayout cssLayout, final ResourceProxy resourceProxy) {
+    public BreadCrumbMenu(final AbstractComponentContainer componentContainer, final ResourceProxy resourceProxy) {
         String name;
         if (resourceProxy.getName().length() > 100) {
             name = resourceProxy.getName().substring(0, 100);
@@ -68,8 +69,8 @@ public class BreadCrumbMenu {
         else {
             name = resourceProxy.getName();
         }
-        cssLayout.addComponent(new Label("<ul id='crumbs'><li><a href='#'>Home</a></li><li><a href='#'>" + name
-            + "... </a></li></ul>", Label.CONTENT_RAW));
+        componentContainer.addComponent(new Label("<ul id='crumbs'><li><a href='#'>Home</a></li><li><a href='#'>"
+            + name + "... </a></li></ul>", Label.CONTENT_RAW));
     }
 
     /**
