@@ -312,6 +312,7 @@ public final class LabsLayoutHelper {
         comboBox.setWidth(COMBOBOX_WIDTH);
         comboBox.setStyleName(STYLE_ELABS_TEXT_AS_LABEL);
         comboBox.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
+        // comboBox.addI
 
         return comboBox;
     }

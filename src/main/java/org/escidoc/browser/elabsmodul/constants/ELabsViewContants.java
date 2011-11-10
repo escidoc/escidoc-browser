@@ -182,7 +182,7 @@ public class ELabsViewContants {
 
     public static final String P_INVESTIGATION_DURATION = "maxRuntime";
 
-    public static final String P_INVESTIGATION_RIG = "rig";
+    public static final String P_INVESTIGATION_RIG = "rigTitle";
 
     public static final String[] INVESTIGATION_PROPERTIES = { P_INVESTIGATION_TITLE, P_INVESTIGATION_DESC,
         P_INVESTIGATION_DEPOSIT_SERVICE, P_INVESTIGATION_INVESTIGATOR, P_INVESTIGATION_DURATION, P_INVESTIGATION_RIG };

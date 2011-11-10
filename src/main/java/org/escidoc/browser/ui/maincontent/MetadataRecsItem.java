@@ -39,17 +39,18 @@ import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.listeners.AddMetaDataFileItemBehaviour;
 import org.escidoc.browser.ui.listeners.EditMetaDataFileItemBehaviour;
-import org.escidoc.browser.ui.listeners.MetadataRecBehavour;
 import org.escidoc.browser.ui.listeners.RelationsClickListener;
 import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
+import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Link;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -161,8 +162,13 @@ public class MetadataRecsItem {
     private void buildMDButtons(final VerticalLayout btnaddContainer, final MetadataRecord metadataRecord) {
         final HorizontalLayout hl = new HorizontalLayout();
         hl.setStyleName("metadata");
-        final Button btnmdRec =
-            new Button(metadataRecord.getName(), new MetadataRecBehavour(metadataRecord, mainWindow));
+        // final Button btnmdRec =
+        // new Button(metadataRecord.getName(), new MetadataRecBehavour(metadataRecord, mainWindow));
+        Link btnmdRec =
+            new Link(metadataRecord.getName(), new ExternalResource(escidocServiceLocation.getEscidocUri()
+                + metadataRecord.getXLinkHref()));
+        btnmdRec.setTargetName("_blank");
+
         btnmdRec.setStyleName(BaseTheme.BUTTON_LINK);
         btnmdRec.setDescription("Show metadata information in a separate window");
         hl.addComponent(btnmdRec);

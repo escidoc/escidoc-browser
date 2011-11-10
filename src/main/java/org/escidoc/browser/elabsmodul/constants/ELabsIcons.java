@@ -71,6 +71,10 @@ public class ELabsIcons {
     public static final ThemeResource TAB_INVESTIGATION_ICON = new ThemeResource(
         "../myTheme/runo/icons/32/arrow-down.png");
 
+    public static final Resource ADD_ICON = new ThemeResource("icons/32/All_Complete_PlusAdd_15_Active.gif");
+
+    public static final Resource DELETE_ICON = new ThemeResource("icons/32/All_Complete_MinusRemove_15_Active.gif");
+
     // ======================================================================================================================
 
     // OLD ELABS ICONS
