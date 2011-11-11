@@ -55,8 +55,6 @@ public class ContextView extends Panel {
 
     private static final String CREATED_BY = "Created by";
 
-    private static final String FULLWIDHT_STYLE_NAME = "fullwidth";
-
     private static final String LAST_MODIFIED_BY = "Last modification by";
 
     private static final String RESOURCE_NAME = "Workspace: ";

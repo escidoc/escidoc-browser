@@ -138,7 +138,7 @@ public class SimpleLayout extends LayoutDesign {
         // container
         container = buildContainer();
         mainLayout.addComponent(container, "top:75.0px;right:0.0px;bottom:20.0px;left:0.0px;");
-
+        mainLayout.setStyleName("minheight");
         return mainLayout;
     }
 
