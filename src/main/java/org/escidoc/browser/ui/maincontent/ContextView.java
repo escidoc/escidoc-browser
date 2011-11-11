@@ -161,12 +161,6 @@ public class ContextView extends Panel {
         contentLayout.addComponent(descRuler);
     }
 
-    private void bindDescription(AbstractComponentContainer contentLayout) {
-        final Label description = new Label(resourceProxy.getDescription());
-        description.setStyleName(FULLWIDHT_STYLE_NAME);
-        contentLayout.addComponent(description);
-    }
-
     private void bindNameToHeader(AbstractComponentContainer contentLayout) {
         final Label headerContext = new Label(RESOURCE_NAME + resourceProxy.getName());
         headerContext.setStyleName("h1 fullwidth");
@@ -299,7 +293,7 @@ public class ContextView extends Panel {
         Panel resourcePropertiesPanel = new Panel();
         resourcePropertiesPanel.setImmediate(false);
         resourcePropertiesPanel.setWidth("100.0%");
-        resourcePropertiesPanel.setHeight("100.0%");
+        resourcePropertiesPanel.setHeight("100%");
         resourcePropertiesPanel.setStyleName(Runo.PANEL_LIGHT);
 
         // vlResourceProperties
@@ -330,7 +324,6 @@ public class ContextView extends Panel {
     private void createProperties(CssLayout contentContainer) {
         // Create Property fields. Probably not the best place for them to be
         bindNameToHeader(contentContainer);
-        bindDescription(contentContainer);
         addHorizontalRuler(contentContainer);
         bindProperties(contentContainer);
     }
