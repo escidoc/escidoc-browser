@@ -76,6 +76,8 @@ public class ViewConstants {
 
     public static final String CREATE_CONTAINER = "Create Container";
 
+    public static final String CREATE_RESOURCE = "Create Resource";
+
     public static final String EDIT_METADATA = "Edit MetaData";
 
     // ResourceAddViewImpl ContainerAddView

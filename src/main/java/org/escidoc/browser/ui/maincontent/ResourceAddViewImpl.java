@@ -95,7 +95,7 @@ public class ResourceAddViewImpl implements ResourceAddView {
 
     private final NativeSelect resourceTypeSelect = new NativeSelect(ViewConstants.PLEASE_SELECT_RESOURCE_TOCREATE);
 
-    private final Window subwindow = new Window(ViewConstants.CREATE_CONTAINER);
+    private final Window subwindow = new Window(ViewConstants.CREATE_RESOURCE);
 
     private final Label status = new Label("Upload a wellformed XML file to create metadata!");
 
