@@ -53,7 +53,6 @@ import com.google.common.base.Preconditions;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
@@ -94,7 +93,7 @@ public class InvestigationSeriesView extends Panel implements ILabsPanel, ILabsA
 
     private Button saveButton = new Button("Save");
 
-    private CssLayout cssLayout = new CssLayout();
+    private HorizontalLayout directMemberInvSeriesContainer = new HorizontalLayout();
 
     private Router router;
 
@@ -160,8 +159,8 @@ public class InvestigationSeriesView extends Panel implements ILabsPanel, ILabsA
         dynamicLayout.addComponent(hl, 2);
 
         rightCell(dynamicLayout);
-        mainLayout.addComponent(cssLayout);
-        mainLayout.setExpandRatio(cssLayout, 1.0f);
+        mainLayout.addComponent(directMemberInvSeriesContainer);
+        mainLayout.setExpandRatio(directMemberInvSeriesContainer, 1.0f);
         mainLayout.attach();
         mainLayout.requestRepaintAll();
 
@@ -199,8 +198,8 @@ public class InvestigationSeriesView extends Panel implements ILabsPanel, ILabsA
     }
 
     private void buildContainerGUI() {
-        cssLayout.setWidth("100%");
-        cssLayout.setHeight("100%");
+        directMemberInvSeriesContainer.setWidth("100%");
+        directMemberInvSeriesContainer.setHeight("100%");
         try {
             leftCell();
         }
@@ -222,11 +221,12 @@ public class InvestigationSeriesView extends Panel implements ILabsPanel, ILabsA
         Panel rightpnl = new Panel();
         rightpnl.setStyleName("floatright");
         rightpnl.addStyleName(Runo.PANEL_LIGHT);
-        rightpnl.setWidth("70%");
-        rightpnl.setHeight("82%");
+        rightpnl.setSizeFull();
         rightpnl.getLayout().setMargin(false);
         rightpnl.addComponent(comptoBind);
-        cssLayout.addComponent(rightpnl);
+        directMemberInvSeriesContainer.addComponent(rightpnl);
+        directMemberInvSeriesContainer.setExpandRatio(rightpnl, 7.0f);
+
     }
 
     private void leftCell() throws EscidocClientException {
@@ -234,12 +234,12 @@ public class InvestigationSeriesView extends Panel implements ILabsPanel, ILabsA
         leftPanel.setStyleName("directmembers floatleft");
         leftPanel.setScrollable(false);
         leftPanel.getLayout().setMargin(false);
-        leftPanel.setWidth("30%");
-        leftPanel.setHeight("82%");
+        leftPanel.setSizeFull();
 
         new DirectMember(router.getServiceLocation(), router, containerProxy.getId(), router.getMainWindow(),
             router.getRepositories(), leftPanel, ResourceType.CONTAINER.toString()).containerAsTree();
-        cssLayout.addComponent(leftPanel);
+        directMemberInvSeriesContainer.addComponent(leftPanel);
+        directMemberInvSeriesContainer.setExpandRatio(leftPanel, 3.0f);
     }
 
     @Override

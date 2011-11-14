@@ -47,6 +47,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Preconditions;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
+import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComboBox;
@@ -71,7 +72,7 @@ import de.escidoc.core.resources.om.container.Container;
  * 
  */
 @SuppressWarnings("serial")
-public class ContainerView extends VerticalLayout {
+public class ContainerView extends Panel {
     private static final String DESC_LOCKSTATUS = "lockstatus";
 
     private static final String DESC_STATUS2 = "status";
@@ -92,17 +93,11 @@ public class ContainerView extends VerticalLayout {
 
     private final VerticalLayout vlPropertiesLeft = new VerticalLayout();
 
-    private final CssLayout cssLayout = new CssLayout();
-
-    private final int appHeight;
-
     private final Router router;
 
     private final ContainerProxy resourceProxy;
 
     private String status;
-
-    private int accordionHeight;
 
     private final EscidocServiceLocation serviceLocation;
 
@@ -140,69 +135,264 @@ public class ContainerView extends VerticalLayout {
             + " is not an instance of ContainerProxy.class");
         this.serviceLocation = serviceLocation;
         this.router = router;
-        appHeight = router.getLayout().getApplicationHeight();
         this.resourceProxy = (ContainerProxy) resourceProxy;
         this.mainWindow = mainWindow;
         this.repositories = repositories;
-        init();
-    }
-
-    private void init() throws EscidocClientException {
-        configureLayout();
         handleLayoutListeners();
-        createBreadCrumb();
+        buildContentPanel();
+    }
+
+    public Panel buildContentPanel() throws EscidocClientException {
+        this.setImmediate(false);
+        this.setWidth("100.0%");
+        this.setHeight("100.0%");
+        this.setStyleName(Runo.PANEL_LIGHT);
+
+        // vlContentPanel assign a layout to this panel
+        this.setContent(buildVlContentPanel());
+        return this;
+    }
+
+    // the main panel has a Layout.
+    // Elements of the view are bound in this layout of the main Panel
+    private VerticalLayout buildVlContentPanel() throws EscidocClientException {
+        // common part: create layout
+        VerticalLayout vlContentPanel = new VerticalLayout();
+        vlContentPanel.setImmediate(false);
+        vlContentPanel.setWidth("100.0%");
+        vlContentPanel.setHeight("100.0%");
+        vlContentPanel.setMargin(true, true, false, true);
+
         new CreatePermanentLinkVH(mainWindow.getURL().toString(), resourceProxy.getId(), resourceProxy
-            .getType().toString(), cssLayout, serviceLocation);
-        bindNameToHeader();
-        bindDescription();
-        addHorizontalRuler();
-        bindProperties();
-        leftCell();
-        addMetadataRecords();
-        addComponent(cssLayout);
+            .getType().toString(), vlContentPanel, serviceLocation);
+
+        // resourcePropertiesPanel
+        Panel resourcePropertiesPanel = buildResourcePropertiesPanel();
+        vlContentPanel.addComponent(resourcePropertiesPanel);
+        vlContentPanel.setExpandRatio(resourcePropertiesPanel, 1.5f);
+
+        // metaViewsPanel contains Panel for the DirectMembers & for the Metas
+        Panel metaViewsPanel = buildMetaViewsPanel();
+        vlContentPanel.addComponent(metaViewsPanel);
+        vlContentPanel.setExpandRatio(metaViewsPanel, 8.0f);
+
+        return vlContentPanel;
     }
 
-    private void addMetadataRecords() {
-        rightCell(new MetadataRecs(resourceProxy, accordionHeight, mainWindow, serviceLocation, repositories, router)
-            .asAccord());
+    private Panel buildMetaViewsPanel() throws EscidocClientException {
+        // common part: create layout
+        Panel metaViewsPanel = new Panel();
+        metaViewsPanel.setImmediate(false);
+        metaViewsPanel.setWidth("100.0%");
+        metaViewsPanel.setHeight("100.0%");
+        metaViewsPanel.setStyleName(Runo.PANEL_LIGHT);
+
+        // hlMetaViews
+        HorizontalLayout hlMetaViews = buildHlMetaViews();
+        metaViewsPanel.setContent(hlMetaViews);
+
+        return metaViewsPanel;
     }
 
-    /**
-     * This is the inner Right Cell within a Context By default a set of Organizational Unit / Admin Description /
-     * RelatedItem / Resources are bound
-     * 
-     * @param comptoBind
-     */
-    @SuppressWarnings("deprecation")
-    private void rightCell(final Component comptoBind) {
-        final Panel rightpnl = new Panel();
-        rightpnl.setDescription(RIGHT_PANEL);
-        rightpnl.setStyleName("floatright");
-        rightpnl.setWidth("70%");
-        rightpnl.setHeight("82%");
-        rightpnl.getLayout().setMargin(false);
-        rightpnl.addComponent(comptoBind);
-        cssLayout.addComponent(rightpnl);
+    private HorizontalLayout buildHlMetaViews() throws EscidocClientException {
+        // common part: create layout
+        HorizontalLayout hlMetaViews = new HorizontalLayout();
+        hlMetaViews.setImmediate(false);
+        hlMetaViews.setWidth("100.0%");
+        hlMetaViews.setHeight("100.0%");
+        hlMetaViews.setMargin(false);
+
+        // leftPanel
+        Panel leftPanel = buildLeftPanel();
+        hlMetaViews.addComponent(leftPanel);
+        hlMetaViews.setExpandRatio(leftPanel, 4.5f);
+
+        // rightPanel
+        Panel rightPanel = buildRightPanel();
+        hlMetaViews.addComponent(rightPanel);
+        hlMetaViews.setExpandRatio(rightPanel, 5.5f);
+
+        return hlMetaViews;
     }
 
-    @SuppressWarnings("deprecation")
-    private void leftCell() throws EscidocClientException {
-        final Panel leftPanel = new Panel();
-        leftPanel.setStyleName("directmembers floatleft");
-        leftPanel.setScrollable(false);
-        leftPanel.getLayout().setMargin(false);
-        leftPanel.setWidth("30%");
-        leftPanel.setHeight("82%");
+    private Panel buildRightPanel() {
+        // common part: create layout
+        Panel rightPanel = new Panel();
+        rightPanel.setImmediate(false);
+        rightPanel.setWidth("100.0%");
+        rightPanel.setHeight("100.0%");
 
-        new DirectMember(serviceLocation, router, resourceProxy.getId(), mainWindow, repositories, leftPanel,
+        // vlRightPanel
+        VerticalLayout vlRightPanel = buildVlRightPanel();
+        rightPanel.setContent(vlRightPanel);
+
+        return rightPanel;
+    }
+
+    private VerticalLayout buildVlRightPanel() {
+        // common part: create layout
+        VerticalLayout vlRightPanel = new VerticalLayout();
+        vlRightPanel.setImmediate(false);
+        vlRightPanel.setWidth("100.0%");
+        vlRightPanel.setHeight("100.0%");
+        vlRightPanel.setMargin(false);
+
+        // metaDataRecsAcc
+        Accordion metaDataRecsAcc =
+            new MetadataRecs(resourceProxy, 0, mainWindow, serviceLocation, repositories, router).asAccord();
+        vlRightPanel.addComponent(metaDataRecsAcc);
+        return vlRightPanel;
+    }
+
+    private Panel buildLeftPanel() throws EscidocClientException {
+        // common part: create layout
+        Panel leftPanel = new Panel();
+        leftPanel.setImmediate(false);
+        leftPanel.setWidth("100.0%");
+        leftPanel.setHeight("100.0%");
+
+        // vlLeftPanel
+        VerticalLayout vlLeftPanel = buildVlLeftPanel();
+        leftPanel.setContent(vlLeftPanel);
+
+        return leftPanel;
+    }
+
+    private VerticalLayout buildVlLeftPanel() throws EscidocClientException {
+        // common part: create layout
+        VerticalLayout vlLeftPanel = new VerticalLayout();
+        vlLeftPanel.setImmediate(false);
+        vlLeftPanel.setWidth("100.0%");
+        vlLeftPanel.setHeight("100.0%");
+        vlLeftPanel.setMargin(false);
+
+        // directMembersPanel
+        Panel directMembersPanel = buildDirectMembersPanel();
+        vlLeftPanel.addComponent(directMembersPanel);
+
+        return vlLeftPanel;
+    }
+
+    private Panel buildDirectMembersPanel() throws EscidocClientException {
+        // common part: create layout
+        Panel directMembersPanel = new Panel();
+        directMembersPanel.setImmediate(false);
+        directMembersPanel.setWidth("100.0%");
+        directMembersPanel.setHeight("100.0%");
+        directMembersPanel.setStyleName(Runo.PANEL_LIGHT);
+
+        // vlDirectMember
+        VerticalLayout vlDirectMember = new VerticalLayout();
+        vlDirectMember.setImmediate(false);
+        vlDirectMember.setWidth("100.0%");
+        vlDirectMember.setHeight("100.0%");
+        vlDirectMember.setMargin(false);
+        directMembersPanel.setContent(vlDirectMember);
+        new DirectMember(serviceLocation, router, resourceProxy.getId(), mainWindow, repositories, directMembersPanel,
             ResourceType.CONTAINER.toString()).containerAsTree();
-        cssLayout.addComponent(leftPanel);
+
+        return directMembersPanel;
     }
+
+    private Panel buildResourcePropertiesPanel() {
+        // common part: create layout
+        Panel resourcePropertiesPanel = new Panel();
+        resourcePropertiesPanel.setImmediate(false);
+        resourcePropertiesPanel.setWidth("100.0%");
+        resourcePropertiesPanel.setHeight("100.0%");
+        resourcePropertiesPanel.setStyleName(Runo.PANEL_LIGHT);
+
+        // vlResourceProperties
+        VerticalLayout vlResourceProperties = buildVlResourceProperties();
+        resourcePropertiesPanel.setContent(vlResourceProperties);
+
+        return resourcePropertiesPanel;
+    }
+
+    private VerticalLayout buildVlResourceProperties() {
+        // common part: create layout
+        VerticalLayout vlResourceProperties = new VerticalLayout();
+        vlResourceProperties.setImmediate(false);
+        vlResourceProperties.setWidth("100.0%");
+        vlResourceProperties.setHeight("100.0%");
+        vlResourceProperties.setMargin(false);
+
+        CssLayout cssLayout = new CssLayout();
+        cssLayout.setWidth("100%");
+        cssLayout.setHeight("100%");
+
+        // creating the properties / without the breadcrump
+        createProperties(cssLayout);
+        vlResourceProperties.addComponent(cssLayout);
+        return vlResourceProperties;
+    }
+
+    private void createProperties(CssLayout cssLayout) {
+        createBreadCrumb(cssLayout);
+
+        bindNameToHeader(cssLayout);
+        bindDescription(cssLayout);
+        addHorizontalRuler(cssLayout);
+        bindProperties(cssLayout);
+    }
+
+    // private void init() throws EscidocClientException {
+    // // configureLayout();
+    // handleLayoutListeners();
+    // createBreadCrumb();
+    // new CreatePermanentLinkVH(mainWindow.getURL().toString(), resourceProxy.getId(), resourceProxy
+    // .getType().toString(), metadataContainer, serviceLocation);
+    // bindNameToHeader();
+    // bindDescription();
+    // addHorizontalRuler();
+    // bindProperties();
+    // leftCell();
+    // addMetadataRecords();
+    // addComponent(metadataContainer);
+    // }
+
+    // private void addMetadataRecords() {
+    // rightCell(new MetadataRecs(resourceProxy, 0, mainWindow, serviceLocation, repositories, router).asAccord());
+    // }
+
+    // /**
+    // * This is the inner Right Cell within a Context By default a set of Organizational Unit / Admin Description /
+    // * RelatedItem / Resources are bound
+    // *
+    // * @param comptoBind
+    // */
+    // @SuppressWarnings("deprecation")
+    // private void rightCell(final Component comptoBind) {
+    // final Panel rightpnl = new Panel();
+    // rightpnl.setDescription(RIGHT_PANEL);
+    // rightpnl.setStyleName("floatright");
+    // rightpnl.setSizeFull();
+    // rightpnl.getLayout().setMargin(false);
+    // rightpnl.addComponent(comptoBind);
+    // metadataContainer.addComponent(rightpnl);
+    // metadataContainer.setExpandRatio(rightpnl, 7.0f);
+    // }
+    //
+    // @SuppressWarnings("deprecation")
+    // private void leftCell() throws EscidocClientException {
+    // final Panel leftPanel = new Panel();
+    // leftPanel.setStyleName("directmembers floatleft");
+    // leftPanel.setScrollable(false);
+    // leftPanel.getLayout().setMargin(false);
+    // leftPanel.setSizeFull();
+    //
+    // new DirectMember(serviceLocation, router, resourceProxy.getId(), mainWindow, repositories, leftPanel,
+    // ResourceType.CONTAINER.toString()).containerAsTree();
+    // metadataContainer.addComponent(leftPanel);
+    // metadataContainer.setExpandRatio(leftPanel, 3.0f);
+    // }
 
     /**
      * Binding Context Properties 2 sets of labels in 2 rows
+     * 
+     * @param cssLayout
      */
-    private void bindProperties() {
+    private void bindProperties(CssLayout cssLayout) {
         Panel pnlPropertiesLeft = buildLeftPropertiesPnl();
         Panel pnlPropertiesRight = buildRightPnlProperties();
 
@@ -267,26 +457,26 @@ public class ContainerView extends VerticalLayout {
         return pnlPropertiesRight;
     }
 
-    private void addHorizontalRuler() {
+    private void addHorizontalRuler(CssLayout cssLayout) {
         final Label descRuler = new Label("<hr />", Label.CONTENT_RAW);
         descRuler.setStyleName("hr");
         cssLayout.addComponent(descRuler);
     }
 
-    private void bindDescription() {
+    private void bindDescription(CssLayout cssLayout) {
         final Label description = new Label(resourceProxy.getDescription());
         description.setStyleName(FULLWIDHT_STYLE_NAME);
         cssLayout.addComponent(description);
     }
 
-    private void createBreadCrumb() {
+    private void createBreadCrumb(CssLayout cssLayout) {
         new BreadCrumbMenu(cssLayout, resourceProxy, mainWindow, serviceLocation, repositories);
     }
 
     /**
      * Building the Header Element that shows the title of the Container
      */
-    private void bindNameToHeader() {
+    private void bindNameToHeader(CssLayout cssLayout) {
         final Label headerContext = new Label(RESOURCE_NAME + resourceProxy.getName());
         headerContext.setStyleName("h2 fullwidth floatleft");
         headerContext.setWidth("80%");
@@ -294,19 +484,12 @@ public class ContainerView extends VerticalLayout {
         cssLayout.addComponent(headerContext);
     }
 
-    private void configureLayout() {
-        setMargin(true, true, false, true);
-        this.setHeight("100%");
-        cssLayout.setWidth("100%");
-        cssLayout.setHeight("100%");
-        // this is an assumption of the height that should be left for the
-        // accordion or elements of the DirectMember in the same level
-        // I remove 420px that are taken by elements on the de.escidoc.esdc.page
-        // and 40px for the accordion elements?
-        final int innerelementsHeight = appHeight - 420;
-        accordionHeight = innerelementsHeight - 20;
-
-    }
+    // private void configureLayout() {
+    // setMargin(true, true, false, true);
+    // this.setHeight("100%");
+    // metadataContainer.setWidth("100%");
+    // metadataContainer.setHeight("100%");
+    // }
 
     private void handleLayoutListeners() {
         if (hasAccess()) {

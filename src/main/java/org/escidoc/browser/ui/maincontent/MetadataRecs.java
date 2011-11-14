@@ -135,7 +135,7 @@ public class MetadataRecs {
     }
 
     private Panel lblMetadaRecs() {
-        pnl.setHeight(height + "px");
+        pnl.setHeight("100%");
         if (hasAccess()) {
             final Button btnAddNew =
                 new Button("Add New MetaData", new AddMetaDataFileContainerBehaviour(mainWindow, repositories,

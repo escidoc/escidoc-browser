@@ -56,7 +56,6 @@ import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
@@ -96,7 +95,7 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
 
     private HorizontalLayout modifiedComponent;
 
-    private final CssLayout cssLayout = new CssLayout();
+    private final HorizontalLayout directMemberInvestigationContainer = new HorizontalLayout();
 
     private final Router router;
 
@@ -122,8 +121,8 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
     }
 
     private void buildContainerGUI() {
-        cssLayout.setWidth("100%");
-        cssLayout.setHeight("100%");
+        directMemberInvestigationContainer.setWidth("100%");
+        directMemberInvestigationContainer.setHeight("100%");
         try {
             leftCell();
         }
@@ -139,12 +138,12 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
 
         leftPanel.setScrollable(false);
         leftPanel.getLayout().setMargin(false);
-        leftPanel.setWidth("30%");
-        leftPanel.setHeight("82%");
+        leftPanel.setSizeFull();
 
         new DirectMember(router.getServiceLocation(), router, containerProxy.getId(), router.getMainWindow(),
             router.getRepositories(), leftPanel, ResourceType.CONTAINER.toString()).containerAsTree();
-        cssLayout.addComponent(leftPanel);
+        directMemberInvestigationContainer.addComponent(leftPanel);
+        directMemberInvestigationContainer.setExpandRatio(leftPanel, 3.0f);
     }
 
     /**
@@ -159,19 +158,19 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
         final Panel rightpnl = new Panel();
         rightpnl.setStyleName("floatright");
         rightpnl.addStyleName(Runo.PANEL_LIGHT);
-        rightpnl.setWidth("70%");
-        rightpnl.setHeight("82%");
+        rightpnl.setSizeFull();
         rightpnl.getLayout().setMargin(false);
         rightpnl.addComponent(comptoBind);
         new StartInvestigationViewHelper(router).createStartButton(rightpnl);
-        cssLayout.addComponent(rightpnl);
+        directMemberInvestigationContainer.addComponent(rightpnl);
+        directMemberInvestigationContainer.setExpandRatio(rightpnl, 7.0f);
     }
 
     private void initialisePanelComponents() {
         this.mainLayout = new VerticalLayout();
         this.mainLayout.setSpacing(true);
         this.mainLayout.setMargin(true);
-        mainLayout.setHeight(router.getLayout().getApplicationHeight() - 30 + "px");
+
         this.dynamicLayout = new VerticalLayout();
         this.dynamicLayout.setSpacing(true);
         this.dynamicLayout.setMargin(true);
@@ -293,8 +292,8 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
         dynamicLayout.addComponent(new HorizontalLayout(), 6);
 
         rightCell(dynamicLayout);
-        mainLayout.addComponent(cssLayout);
-        mainLayout.setExpandRatio(cssLayout, 1.0f);
+        mainLayout.addComponent(directMemberInvestigationContainer);
+        mainLayout.setExpandRatio(directMemberInvestigationContainer, 1.0f);
         mainLayout.attach();
         mainLayout.requestRepaintAll();
 
