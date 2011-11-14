@@ -313,6 +313,7 @@ public class Router {
                     LOG.error("Could not resolve controller ID. " + controllerId);
                 }
                 else {
+                    LOG.debug(clickedResource.getId());
                     final Class<?> controllerClass = Class.forName(controllerClassName);
                     controller = (Controller) controllerClass.newInstance();
                     controller.init(serviceLocation, repositories, this, tryToFindResource(clickedResource),

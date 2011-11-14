@@ -33,6 +33,7 @@ import org.escidoc.browser.ui.maincontent.ItemView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.Button;
@@ -57,6 +58,8 @@ public class CloseTabsViewHelper implements ClickListener {
     }
 
     public CloseTabsViewHelper(AbstractLayout layout, TabSheet mainContentTabs) {
+        Preconditions.checkNotNull(layout, "Layout is null");
+        Preconditions.checkNotNull(mainContentTabs, "mainContentTabs is null");
         this.ts = mainContentTabs;
         this.layout = layout;
         buildButton(layout);

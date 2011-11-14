@@ -39,6 +39,7 @@ import org.escidoc.browser.ui.mainpage.HeaderContainer;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.navigation.NavigationTreeView;
 import org.escidoc.browser.ui.navigation.RootNode;
+import org.escidoc.browser.ui.view.helpers.CloseTabsViewHelper;
 
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.AbsoluteLayout;
@@ -129,7 +130,6 @@ public class SimpleLayout extends LayoutDesign {
         setWidth("100.0%");
         setHeight("100.0%");
 
-        // headerContainer
         buildHeader();
         mainLayout.addComponent(headerContainer, "top:0.0px;right:0.0px;left:0.0px;");
         buildFooter();
@@ -233,6 +233,7 @@ public class SimpleLayout extends LayoutDesign {
         mainContentTabs.setImmediate(true);
         mainContentTabs.setWidth("100.0%");
         mainContentTabs.setHeight("100.0%");
+        new CloseTabsViewHelper(mainLayout, mainContentTabs); // headerContainer
         return mainContentTabs;
     }
 }

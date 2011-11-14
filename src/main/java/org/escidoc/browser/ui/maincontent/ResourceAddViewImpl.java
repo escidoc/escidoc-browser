@@ -329,7 +329,6 @@ public class ResourceAddViewImpl implements ResourceAddView {
                     Pattern.compile("http://www.w3.org/1999/02/22-rdf-syntax-ns#type=org.escidoc.resources.([^;]*);");
                 final Matcher controllerIdMatcher =
                     controllerIdPattern.matcher(contentModel.getProperties().getDescription());
-
                 if (controllerIdMatcher.find()) {
                     objectType = controllerIdMatcher.group(1);
                 }
@@ -346,6 +345,33 @@ public class ResourceAddViewImpl implements ResourceAddView {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * In case we have models which are different from the default ones, we get the name of the module here
+     * 
+     * @param contentModelid
+     * @return
+     */
+    private String getModuleName(String contentModelid) {
+        ContentModel contentModel;
+        String controllerName = null;
+        try {
+            contentModel = repositories.contentModel().findById(contentModelid);
+            String contentModelDesc = contentModel.getProperties().getDescription();
+            final Pattern controllerIdPattern = Pattern.compile("org.escidoc.browser.Controller=([^;]*);");
+            final Matcher controllerIdMatcher = controllerIdPattern.matcher(contentModelDesc);
+
+            if (controllerIdMatcher.find()) {
+                controllerName = controllerIdMatcher.group(1);
+            }
+            return controllerName;
+        }
+        catch (EscidocClientException e) {
+            LOG.error("Could not find a name for this controller" + e.getLocalizedMessage());
+            return null;
+
+        }
     }
 
     public String getResourceName() {
@@ -370,6 +396,39 @@ public class ResourceAddViewImpl implements ResourceAddView {
      */
     public void createResource() {
         String resourceType = getContentModelType(getContentModelId());
+        // A HOOK is needed here to check if the resource belongs to something external!!!
+        // LOG.debug(getModuleName(getContentModelId()));
+        // if (getModuleName(getContentModelId()) != null) {
+        //
+        // String metadataResourceType =
+        // getModuleName(getContentModelId())
+        // .substring(getModuleName(getContentModelId()).lastIndexOf('.') + 1).toUpperCase();
+        // String constantsClassName =
+        // getModuleName(getContentModelId()).replace(metadataResourceType, "") + "MetaDataConstants";
+        //
+        // Class<?> controllerClass;
+        // try {
+        // controllerClass = Class.forName(constantsClassName);
+        // Object someclass = controllerClass.newInstance();
+        //
+        //
+        // }
+        // catch (ClassNotFoundException e) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
+        // catch (InstantiationException e) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
+        // catch (IllegalAccessException e) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
+        //
+        // LOG.debug("End it is not null" + metadataResourceType + " dhe emri i Classes eshte: " + constantsClassName);
+        // }
+
         LOG.debug("Resource Type" + resourceTypeSelect.getValue());
         try {
             if (resourceType == null) {
