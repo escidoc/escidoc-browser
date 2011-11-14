@@ -48,24 +48,14 @@ import de.escidoc.core.resources.om.context.OrganizationalUnitRefs;
 
 class MetadataRecsContext {
 
-    private static final String _100_PERCENT = "100%";
-
-    private static final int ELEMENT_HEIGHT = 410;
-
     private final ContextProxyImpl resourceProxy;
 
     private final Window mainWindow;
 
-    private int height;
-
-    MetadataRecsContext(final ResourceProxy resourceProxy, final int innerelementsHeight, final Window mainWindow) {
+    MetadataRecsContext(final ResourceProxy resourceProxy, final Window mainWindow) {
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         Preconditions.checkNotNull(mainWindow, "resource is null.");
-        height = innerelementsHeight;
-        if (height < 1) {
-            height = 400;
-        }
-        height = innerelementsHeight;
+
         this.resourceProxy = (ContextProxyImpl) resourceProxy;
         this.mainWindow = mainWindow;
     }
@@ -132,11 +122,4 @@ class MetadataRecsContext {
         return orgUnit;
     }
 
-    public int getHeight() {
-        return height;
-    }
-
-    public void setHeight(final int height) {
-        this.height = height;
-    }
 }

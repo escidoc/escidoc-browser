@@ -232,7 +232,7 @@ public class ContextView extends Panel {
 
     private Accordion buildMetaDataRecsAcc() {
         // common part: create layout
-        Accordion metaDataRecsAcc = new MetadataRecsContext(resourceProxy, accordionHeight, mainWindow).asAccord();
+        Accordion metaDataRecsAcc = new MetadataRecsContext(resourceProxy, mainWindow).asAccord();
         return metaDataRecsAcc;
     }
 

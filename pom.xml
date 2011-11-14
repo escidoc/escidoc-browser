@@ -7,7 +7,6 @@
 	<artifactId>browser</artifactId>
 	<version>0.3.5-SNAPSHOT</version>
 	<packaging>war</packaging>
-
 	<dependencies>
 		<!-- Vaadin -->
 		<dependency>
@@ -319,10 +318,8 @@
 	</mailingLists>
 
 	<scm>
-		<connection>scm:svn:http://escidev5:8888/prototyp/escidoc-browser
-		</connection>
-		<developerConnection>scm:svn:http://escidev5:8888/prototyp/escidoc-browser
-		</developerConnection>
+		<connection>scm:git://github.com/escidoc/escidoc-browser.git</connection>
+		<developerConnection>scm:git://github.com/escidoc/escidoc-browser.git</developerConnection>
 	</scm>
 
 	<repositories>

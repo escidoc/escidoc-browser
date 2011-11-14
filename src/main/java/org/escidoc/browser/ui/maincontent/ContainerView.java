@@ -81,8 +81,6 @@ public class ContainerView extends Panel {
 
     private static final String SUBWINDOW_EDIT = "Add Comment to the Edit operation";
 
-    private static final String RIGHT_PANEL = "Right Panel";
-
     private static final String CREATED_BY = "Created by ";
 
     private static final String FULLWIDHT_STYLE_NAME = "fullwidth";
@@ -239,7 +237,7 @@ public class ContainerView extends Panel {
 
         // metaDataRecsAcc
         Accordion metaDataRecsAcc =
-            new MetadataRecs(resourceProxy, 0, mainWindow, serviceLocation, repositories, router).asAccord();
+            new MetadataRecs(resourceProxy, mainWindow, serviceLocation, repositories, router).asAccord();
         vlRightPanel.addComponent(metaDataRecsAcc);
         return vlRightPanel;
     }

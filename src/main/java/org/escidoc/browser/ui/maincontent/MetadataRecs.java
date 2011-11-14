@@ -63,8 +63,6 @@ public class MetadataRecs {
 
     static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
 
-    private final int height;
-
     private final ContainerProxy resourceProxy;
 
     private final Window mainWindow;
@@ -83,7 +81,7 @@ public class MetadataRecs {
 
     private final Router mainSite;
 
-    public MetadataRecs(final ResourceProxy resourceProxy, final int innerelementsHeight, final Window mainWindow,
+    public MetadataRecs(final ResourceProxy resourceProxy, final Window mainWindow,
         final EscidocServiceLocation escidocServiceLocation, final Repositories repositories, final Router mainSite) {
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
@@ -91,7 +89,6 @@ public class MetadataRecs {
         Preconditions.checkNotNull(escidocServiceLocation, "escidocServiceLocation is null.");
         Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
 
-        height = innerelementsHeight;
         this.resourceProxy = (ContainerProxy) resourceProxy;
         this.mainWindow = mainWindow;
         this.escidocServiceLocation = escidocServiceLocation;
@@ -128,7 +125,7 @@ public class MetadataRecs {
         btnContentRelation.setDescription("Show Version history in a Pop-up");
 
         final Panel pnl = new Panel();
-        pnl.setHeight(height + "px");
+        pnl.setHeight("100%");
         pnl.addComponent(btnVersionHistoryContainer);
         pnl.addComponent(btnContentRelation);
         return pnl;
