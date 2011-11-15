@@ -57,6 +57,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.Runo;
 
 /**
  * Specific BWeLabsView for Rig item-element.
@@ -132,6 +133,8 @@ public class RigView extends Panel implements ILabsPanel, ILabsAction {
         this.registeredComponents = new ArrayList<HorizontalLayout>(COMPONENT_COUNT);
         this.setContent(mainLayout);
         this.setScrollable(true);
+        this.setSizeFull();
+        this.setStyleName(Runo.PANEL_LIGHT);
     }
 
     /**

@@ -56,6 +56,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.Runo;
 
 /**
  * Specific BWeLabsView for Instrument item-element.
@@ -126,6 +127,7 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
     private void initialisePanelComponents() {
 
         mainLayout = new VerticalLayout();
+        mainLayout.setSizeFull();
         mainLayout.setSpacing(true);
         mainLayout.setMargin(true);
         dynamicLayout = new VerticalLayout();
@@ -135,6 +137,8 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
         pojoItem = new POJOItem<InstrumentBean>(instrumentBean, PROPERTIES);
         registeredComponents = new ArrayList<HorizontalLayout>(COMPONENT_COUNT);
 
+        this.setSizeFull();
+        this.setStyleName(Runo.PANEL_LIGHT);
         setContent(mainLayout);
         setScrollable(true);
     }

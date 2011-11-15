@@ -170,7 +170,7 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
         this.mainLayout = new VerticalLayout();
         this.mainLayout.setSpacing(true);
         this.mainLayout.setMargin(true);
-
+        mainLayout.setSizeFull();
         this.dynamicLayout = new VerticalLayout();
         this.dynamicLayout.setSpacing(true);
         this.dynamicLayout.setMargin(true);
@@ -179,6 +179,8 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
             new POJOItem<InvestigationBean>(this.investigationBean, ELabsViewContants.INVESTIGATION_PROPERTIES);
         this.registeredComponents = new ArrayList<HorizontalLayout>(COMPONENT_COUNT);
 
+        setSizeFull();
+        setStyleName(Runo.PANEL_LIGHT);
         setContent(mainLayout);
         setScrollable(true);
     }

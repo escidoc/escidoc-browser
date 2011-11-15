@@ -184,6 +184,7 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
 
         setContent(mainLayout);
 
+        this.setStyleName(Runo.PANEL_LIGHT);
         setScrollable(true);
     }
 
@@ -254,29 +255,30 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
      * 
      * @param comptoBind
      */
-    // TODO why deprecated?
-    @SuppressWarnings("deprecation")
     private void rightCell(final Component comptoBind) {
         final Panel rightpnl = new Panel();
         rightpnl.setDescription(RIGHT_PANEL);
         rightpnl.setStyleName("floatright");
         rightpnl.addStyleName(Runo.PANEL_LIGHT);
         rightpnl.setSizeFull();
-        rightpnl.getLayout().setMargin(false);
-        rightpnl.addComponent(comptoBind);
+        VerticalLayout vlRightPnl = new VerticalLayout();
+        vlRightPnl.setSizeFull();
+        vlRightPnl.setMargin(false);
+        vlRightPnl.addComponent(comptoBind);
+        rightpnl.setContent(vlRightPnl);
         directMemberExperimentContainer.addComponent(rightpnl);
         directMemberExperimentContainer.setExpandRatio(rightpnl, 7.0f);
     }
 
-    // TODO why deprecated?
-    @SuppressWarnings("deprecation")
     private void leftCell() throws EscidocClientException {
         final Panel leftPanel = new Panel();
         leftPanel.setStyleName("directmembers floatleft");
         leftPanel.setScrollable(false);
-        leftPanel.getLayout().setMargin(false);
         leftPanel.setSizeFull();
-
+        VerticalLayout vlLeftPanel = new VerticalLayout();
+        vlLeftPanel.setSizeFull();
+        vlLeftPanel.setMargin(false);
+        leftPanel.setContent(vlLeftPanel);
         new DirectMember(router.getServiceLocation(), router, containerProxy.getId(), router.getMainWindow(),
             router.getRepositories(), leftPanel, ResourceType.CONTAINER.toString()).containerAsTree();
         directMemberExperimentContainer.addComponent(leftPanel);

@@ -192,7 +192,8 @@ public class InvestigationSeriesView extends Panel implements ILabsPanel, ILabsA
 
         beanItem = new BeanItem<InvestigationSeriesBean>(investigationSeriesBean, Arrays.asList(PROPERTIES));
         registeredComponents = new ArrayList<HorizontalLayout>(COMPONENT_COUNT);
-
+        setSizeFull();
+        setStyleName(Runo.PANEL_LIGHT);
         setContent(mainLayout);
         setScrollable(true);
     }
