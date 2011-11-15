@@ -63,8 +63,6 @@ public class ContextView extends Panel {
 
     private final ResourceProxy resourceProxy;
 
-    private int accordionHeight;
-
     private final EscidocServiceLocation serviceLocation;
 
     private final Window mainWindow;

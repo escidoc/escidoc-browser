@@ -37,7 +37,6 @@ import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
 import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
 import org.escidoc.browser.ui.view.helpers.CreatePermanentLinkVH;
 import org.escidoc.browser.ui.view.helpers.DirectMember;
@@ -59,7 +58,6 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -441,7 +439,10 @@ public class ContainerView extends Panel {
         pnlPropertiesLeft.setHeight("60px");
         pnlPropertiesLeft.setStyleName("floatleft");
         pnlPropertiesLeft.addStyleName(Runo.PANEL_LIGHT);
-        pnlPropertiesLeft.getLayout().setMargin(false);
+
+        VerticalLayout vl = new VerticalLayout();
+        vl.setMargin(false);
+        pnlPropertiesLeft.setContent(vl);
         return pnlPropertiesLeft;
     }
 
@@ -451,7 +452,9 @@ public class ContainerView extends Panel {
         pnlPropertiesRight.setHeight("60px");
         pnlPropertiesRight.setStyleName("floatright");
         pnlPropertiesRight.addStyleName(Runo.PANEL_LIGHT);
-        pnlPropertiesRight.getLayout().setMargin(false);
+        VerticalLayout vl = new VerticalLayout();
+        vl.setMargin(false);
+        pnlPropertiesRight.setContent(vl);
         return pnlPropertiesRight;
     }
 
@@ -711,27 +714,6 @@ public class ContainerView extends Panel {
             });
         }
 
-    }
-
-    /**
-     * Checks if a resource has previous history and returns a string TODO in the future it should be a Link (Button
-     * Link) that holds a reference to the history of the resource
-     * 
-     * @return String
-     */
-    private Component getHistory() {
-        if (resourceProxy.hasPreviousVersion()) {
-            final Button versionHistory =
-                new Button(" Has previous version", new VersionHistoryClickListener(resourceProxy, mainWindow,
-                    serviceLocation, repositories));
-            versionHistory.setStyleName(BaseTheme.BUTTON_LINK);
-
-            return versionHistory;
-        }
-        else {
-            final Label strHistory = new Label("Has no previous history");
-            return strHistory;
-        }
     }
 
     private boolean hasAccess() {
