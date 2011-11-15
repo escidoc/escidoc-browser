@@ -76,6 +76,7 @@ import org.w3c.dom.NodeList;
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
@@ -176,6 +177,11 @@ public class InvestigationController extends Controller implements IInvestigatio
         }
         catch (EscidocClientException e) {
             LOG.error("Could not load Admin Descriptor 'elabs'. " + e.getLocalizedMessage(), e);
+        }
+        catch (NullPointerException e) {
+            mainWindow.showNotification(new Notification("Admin Description is null in the context "
+                + resourceProxy.getContext().getObjid(), Notification.TYPE_HUMANIZED_MESSAGE));
+            LOG.debug("Admin Description is null in the context " + resourceProxy.getContext().getObjid());
         }
     }
 
