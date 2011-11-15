@@ -28,6 +28,7 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -118,6 +119,8 @@ public class ResourceAddViewImpl implements ResourceAddView {
     private final String contextId;
 
     private Router router;
+
+    private String metaData;
 
     public ResourceAddViewImpl(final Repositories repositories, final Window mainWindow, final ResourceModel parent,
         final TreeDataSource treeDataSource, final String contextId, Router router) {
@@ -264,6 +267,7 @@ public class ResourceAddViewImpl implements ResourceAddView {
                 receiver.setWellFormed(isWellFormed);
                 if (isWellFormed) {
                     status.setValue(ViewConstants.XML_IS_WELL_FORMED);
+                    setMetaData(receiver.getFileContent());
                     upload.setEnabled(false);
                 }
                 else {
@@ -382,11 +386,12 @@ public class ResourceAddViewImpl implements ResourceAddView {
         mainWindow.showNotification("Please fill in all the required elements", 1);
     }
 
+    private void setMetaData(String mdValue) {
+        metaData = mdValue;
+    }
+
     private String getMetadata() {
-        if (receiver.isWellFormed()) {
-            return receiver.getFileContent();
-        }
-        return AppConstants.EMPTY_STRING;
+        return metaData;
     }
 
     /**
@@ -397,39 +402,11 @@ public class ResourceAddViewImpl implements ResourceAddView {
     public void createResource() {
         String resourceType = getContentModelType(getContentModelId());
         // A HOOK is needed here to check if the resource belongs to something external!!!
-        // LOG.debug(getModuleName(getContentModelId()));
-        // if (getModuleName(getContentModelId()) != null) {
-        //
-        // String metadataResourceType =
-        // getModuleName(getContentModelId())
-        // .substring(getModuleName(getContentModelId()).lastIndexOf('.') + 1).toUpperCase();
-        // String constantsClassName =
-        // getModuleName(getContentModelId()).replace(metadataResourceType, "") + "MetaDataConstants";
-        //
-        // Class<?> controllerClass;
-        // try {
-        // controllerClass = Class.forName(constantsClassName);
-        // Object someclass = controllerClass.newInstance();
-        //
-        //
-        // }
-        // catch (ClassNotFoundException e) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
-        // catch (InstantiationException e) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
-        // catch (IllegalAccessException e) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
-        //
-        // LOG.debug("End it is not null" + metadataResourceType + " dhe emri i Classes eshte: " + constantsClassName);
-        // }
+        LOG.debug(getModuleName(getContentModelId()));
+        if (getModuleName(getContentModelId()) != null) {
+            updateMetaDataForSpecialModules();
+        }
 
-        LOG.debug("Resource Type" + resourceTypeSelect.getValue());
         try {
             if (resourceType == null) {
                 if (resourceTypeSelect.getValue() == null) {
@@ -459,6 +436,52 @@ public class ResourceAddViewImpl implements ResourceAddView {
         catch (EscidocClientException e) {
             mainWindow.showNotification(e.getLocalizedMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
         }
+    }
+
+    /**
+     * The method is called if the ContentModel provides information on a special module (Example BWeLabs). Each of
+     * these Special Modules has special resources, with special MetaData. These metadata are retrieve in this method
+     * 
+     */
+    private void updateMetaDataForSpecialModules() {
+        String moduleName = getModuleName(getContentModelId());
+        String metadataResourceType = moduleName.substring(moduleName.lastIndexOf('.') + 1);
+
+        String constantsClassName =
+            getModuleName(getContentModelId()).replace(metadataResourceType, "").replace("bwelabs",
+                "browser.elabsmodul")
+                + "constants.MetaDataConstants";
+        LOG.debug("End it is not null " + metadataResourceType + " dhe emri i Classes eshte: " + constantsClassName);
+        Class<?> controllerClass;
+        try {
+            controllerClass = Class.forName(constantsClassName);
+            Field[] fields = controllerClass.getDeclaredFields();
+
+            for (Field field : fields) {
+                field.setAccessible(true);
+                if (field.getName().equals(metadataResourceType.toUpperCase())) {
+                    setMetaDataTitle(getResourceName(), field.get(metadataResourceType.toUpperCase()).toString());
+                    // setMetaData(field.get(metadataResourceType.toUpperCase()).toString());
+                    // setMetaData(field.get(metadataResourceType.toUpperCase()).toString().replaceFirst("<dc:title>(.*)</dc:title>",
+                    // getResourceName()));
+                }
+            }
+        }
+        catch (ClassNotFoundException e) {
+            mainWindow.showNotification(ViewConstants.COULD_NOT_LOAD_CONSTANTS_METADATA_CLASS,
+                Window.Notification.TYPE_ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+        catch (IllegalAccessException e) {
+            mainWindow.showNotification(ViewConstants.COULD_NOT_LOAD_CONSTANTS_METADATA_CLASS,
+                Window.Notification.TYPE_ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+
+    private void setMetaDataTitle(String resourceName, String metadata) {
+        setMetaData(metadata.replaceFirst("<dc:title>(.*)</dc:title>", "<dc:title>" + resourceName + "</dc:title>"));
+
     }
 
     private void createNewResource(String resourceType) throws EscidocClientException {

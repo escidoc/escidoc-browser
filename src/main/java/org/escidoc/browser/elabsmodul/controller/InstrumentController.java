@@ -300,6 +300,11 @@ public final class InstrumentController extends Controller implements ISaveActio
         try {
             context = (ContextProxyImpl) repositories.context().findById(resourceProxy.getContext().getObjid());
             Element content = context.getAdminDescription().get("elabs").getContent();
+            if (content == null) {
+                LOG.debug("Admin Description is null in the context " + resourceProxy.getContext().getObjid());
+                throw new NullPointerException("Admin Description is null in the context "
+                    + resourceProxy.getContext().getObjid());
+            }
             NodeList nodeList = content.getElementsByTagName("el:esync-endpoint");
             for (int i = 0; i < nodeList.getLength(); i++) {
                 final Node node = nodeList.item(i);
