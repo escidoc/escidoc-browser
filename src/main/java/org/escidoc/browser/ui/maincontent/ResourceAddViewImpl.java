@@ -402,7 +402,6 @@ public class ResourceAddViewImpl implements ResourceAddView {
     public void createResource() {
         String resourceType = getContentModelType(getContentModelId());
         // A HOOK is needed here to check if the resource belongs to something external!!!
-        LOG.debug(getModuleName(getContentModelId()));
         if (getModuleName(getContentModelId()) != null) {
             updateMetaDataForSpecialModules();
         }
@@ -451,7 +450,7 @@ public class ResourceAddViewImpl implements ResourceAddView {
             getModuleName(getContentModelId()).replace(metadataResourceType, "").replace("bwelabs",
                 "browser.elabsmodul")
                 + "constants.MetaDataConstants";
-        LOG.debug("End it is not null " + metadataResourceType + " dhe emri i Classes eshte: " + constantsClassName);
+
         Class<?> controllerClass;
         try {
             controllerClass = Class.forName(constantsClassName);
@@ -461,9 +460,6 @@ public class ResourceAddViewImpl implements ResourceAddView {
                 field.setAccessible(true);
                 if (field.getName().equals(metadataResourceType.toUpperCase())) {
                     setMetaDataTitle(getResourceName(), field.get(metadataResourceType.toUpperCase()).toString());
-                    // setMetaData(field.get(metadataResourceType.toUpperCase()).toString());
-                    // setMetaData(field.get(metadataResourceType.toUpperCase()).toString().replaceFirst("<dc:title>(.*)</dc:title>",
-                    // getResourceName()));
                 }
             }
         }
