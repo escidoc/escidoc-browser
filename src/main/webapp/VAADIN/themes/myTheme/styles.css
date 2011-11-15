@@ -35,8 +35,8 @@
 .closeallTabs {
 	z-index: 10;
 	position: absolute;
-	margin-right: 18px;
-	top: 75px;
+	margin-right: 4px;
+	top: 6px;
 	right: 0;
 }
 .paddingbottom10 {

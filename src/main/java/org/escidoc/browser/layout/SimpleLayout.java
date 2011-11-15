@@ -44,6 +44,7 @@ import org.escidoc.browser.ui.view.helpers.CloseTabsViewHelper;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Panel;
@@ -84,6 +85,8 @@ public class SimpleLayout extends LayoutDesign {
     private TreeDataSource treeDataSource;
 
     private HorizontalLayout footer;
+
+    private CssLayout cssContent;
 
     @Override
     public void init(
@@ -179,12 +182,14 @@ public class SimpleLayout extends LayoutDesign {
         // navigationPanel
         navigationPanel = buildNavigationPanel();
         container.addComponent(navigationPanel);
-        // container.setExpandRatio(navigationPanel, 3.0f);
 
         // TabContainer
+        cssContent = new CssLayout();
+        cssContent.setSizeFull();
+        cssContent.setMargin(false);
         mainContentTabs = buildTabContainer();
-        container.addComponent(mainContentTabs);
-        // container.setExpandRatio(mainContentTabs, 7.0f);
+        cssContent.addComponent(mainContentTabs);
+        container.addComponent(cssContent);
 
         return container;
     }
@@ -233,7 +238,7 @@ public class SimpleLayout extends LayoutDesign {
         mainContentTabs.setImmediate(true);
         mainContentTabs.setWidth("100.0%");
         mainContentTabs.setHeight("100.0%");
-        new CloseTabsViewHelper(mainLayout, mainContentTabs); // headerContainer
+        new CloseTabsViewHelper(cssContent, mainContentTabs); // headerContainer
         return mainContentTabs;
     }
 }
