@@ -124,6 +124,8 @@ public class InvestigationSeriesView extends Panel implements ILabsPanel, ILabsA
 
         saveButton.addListener(new Button.ClickListener() {
 
+            private static final long serialVersionUID = 6314520686584942778L;
+
             @Override
             public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
                 if (event.getButton().equals(saveButton)) {
@@ -234,9 +236,12 @@ public class InvestigationSeriesView extends Panel implements ILabsPanel, ILabsA
         Panel leftPanel = new Panel();
         leftPanel.setStyleName("directmembers floatleft");
         leftPanel.setScrollable(false);
-        leftPanel.getLayout().setMargin(false);
         leftPanel.setSizeFull();
 
+        VerticalLayout vl = new VerticalLayout();
+        vl.setMargin(false);
+        vl.setSizeFull();
+        leftPanel.setContent(vl);
         new DirectMember(router.getServiceLocation(), router, containerProxy.getId(), router.getMainWindow(),
             router.getRepositories(), leftPanel, ResourceType.CONTAINER.toString()).containerAsTree();
         directMemberInvSeriesContainer.addComponent(leftPanel);

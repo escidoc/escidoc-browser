@@ -77,8 +77,6 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
 
     private final ContainerProxy containerProxy;
 
-    private final List<String> eSyncDaemonUrls;
-
     private VerticalLayout mainLayout, dynamicLayout;
 
     private POJOItem<InvestigationBean> pojoItem;
@@ -107,7 +105,6 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
         this.controller = controller;
         this.breadCrumbModel = breadCrumbModel;
         this.containerProxy = containerProxy;
-        this.eSyncDaemonUrls = depositEndPointUrls;
         this.router = router;
 
         initialisePanelComponents();
@@ -137,9 +134,12 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
         leftPanel.setStyleName("directmembers floatleft");
 
         leftPanel.setScrollable(false);
-        leftPanel.getLayout().setMargin(false);
         leftPanel.setSizeFull();
 
+        VerticalLayout vl = new VerticalLayout();
+        vl.setMargin(false);
+        vl.setSizeFull();
+        leftPanel.setContent(vl);
         new DirectMember(router.getServiceLocation(), router, containerProxy.getId(), router.getMainWindow(),
             router.getRepositories(), leftPanel, ResourceType.CONTAINER.toString()).containerAsTree();
         directMemberInvestigationContainer.addComponent(leftPanel);

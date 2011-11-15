@@ -47,7 +47,6 @@ import org.escidoc.browser.elabsmodul.model.StudyBean;
 import org.escidoc.browser.elabsmodul.views.StudyView;
 import org.escidoc.browser.elabsmodul.views.YesNoDialog;
 import org.escidoc.browser.model.ContainerProxy;
-import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
@@ -92,7 +91,7 @@ public class StudyController extends Controller implements ISaveAction {
     @Override
     public void init(
         EscidocServiceLocation serviceLocation, Repositories repositories, Router router, ResourceProxy resourceProxy,
-        Window mainWindow, CurrentUser currentUser) {
+        Window mainWindow) {
         this.serviceLocation = serviceLocation;
         this.resourceProxy = resourceProxy;
         this.repositories = repositories;

@@ -101,8 +101,6 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
 
     private ItemProxy itemProxy;
 
-    private List<String> eSyncDaemonUrls;
-
     private EscidocServiceLocation serviceLocation;
 
     public InstrumentView(InstrumentBean sourceBean, ISaveAction controller, List<ResourceModel> breadCrumbModel,
@@ -112,7 +110,6 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
         this.controller = controller;
         this.breadCrumbModel = breadCrumbModel;
         itemProxy = (ItemProxy) resourceProxy;
-        this.eSyncDaemonUrls = eSyncDaemonUrls;
         this.serviceLocation = serviceLocation;
 
         initialisePanelComponents();

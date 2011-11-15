@@ -41,7 +41,6 @@ import org.escidoc.browser.layout.LayoutDesign;
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.ContextModel;
-import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ItemProxy;
@@ -75,8 +74,6 @@ public class Router {
 
     private final Window mainWindow;
 
-    private final CurrentUser currentUser;
-
     private final Repositories repositories;
 
     private EscidocServiceLocation serviceLocation;
@@ -96,13 +93,12 @@ public class Router {
      * @throws EscidocClientException
      */
     public Router(final Window mainWindow, final EscidocServiceLocation serviceLocation, final BrowserApplication app,
-        final CurrentUser currentUser, final Repositories repositories) throws EscidocClientException {
+        final Repositories repositories) throws EscidocClientException {
 
         this.serviceLocation = serviceLocation;
         this.app = app;
         this.mainWindow = mainWindow;
         this.serviceLocation = serviceLocation;
-        this.currentUser = currentUser;
         this.repositories = repositories;
         init();
     }
@@ -316,8 +312,8 @@ public class Router {
                     LOG.debug(clickedResource.getId());
                     final Class<?> controllerClass = Class.forName(controllerClassName);
                     controller = (Controller) controllerClass.newInstance();
-                    controller.init(serviceLocation, repositories, this, tryToFindResource(clickedResource),
-                        mainWindow, currentUser);
+                    controller
+                        .init(serviceLocation, repositories, this, tryToFindResource(clickedResource), mainWindow);
                     controller.showView(layout);
                 }
             }

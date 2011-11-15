@@ -152,7 +152,7 @@ public class BrowserApplication extends Application implements HttpServletReques
 
         final Repositories repositories = new RepositoriesImpl(serviceLocation, mainWindow).createAllRepositories();
         repositories.loginWith(getCurrentUser().getToken());
-        final Router router = new Router(mainWindow, serviceLocation, this, getCurrentUser(), repositories);
+        final Router router = new Router(mainWindow, serviceLocation, this, repositories);
 
         return router;
     }

@@ -45,7 +45,6 @@ import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
 import org.escidoc.browser.elabsmodul.model.InstrumentBean;
 import org.escidoc.browser.elabsmodul.views.InstrumentView;
 import org.escidoc.browser.elabsmodul.views.YesNoDialog;
-import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.ResourceModel;
@@ -101,7 +100,7 @@ public final class InstrumentController extends Controller implements ISaveActio
     @Override
     public void init(
         EscidocServiceLocation serviceLocation, Repositories repositories, Router mainSite,
-        ResourceProxy resourceProxy, Window mainWindow, CurrentUser currentUser) {
+        ResourceProxy resourceProxy, Window mainWindow) {
         Preconditions.checkNotNull(repositories, "Repository ref is null");
         Preconditions.checkNotNull(serviceLocation, "ServiceLocation ref is null");
         this.serviceLocation = serviceLocation;
