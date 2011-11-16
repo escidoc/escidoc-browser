@@ -220,6 +220,7 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
 
         rightCell(dynamicLayout);
         mainLayout.addComponent(directMemberExperimentContainer);
+        mainLayout.setExpandRatio(directMemberExperimentContainer, 9.0f);
         mainLayout.attach();
         mainLayout.requestRepaintAll();
     }

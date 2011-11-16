@@ -210,6 +210,7 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
         dynamicLayout.addComponent(new HorizontalLayout(), 9);
 
         mainLayout.addComponent(dynamicLayout);
+        mainLayout.setExpandRatio(dynamicLayout, 9.0f);
         mainLayout.attach();
         mainLayout.requestRepaintAll();
     }
