@@ -40,6 +40,8 @@ import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.navigation.NavigationTreeView;
 import org.escidoc.browser.ui.navigation.RootNode;
 import org.escidoc.browser.ui.view.helpers.CloseTabsViewHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.AbsoluteLayout;
@@ -88,6 +90,8 @@ public class SimpleLayout extends LayoutDesign {
 
     private CssLayout cssContent;
 
+    private static final Logger LOG = LoggerFactory.getLogger(SimpleLayout.class);
+
     @Override
     public void init(
         Window mainWindow, EscidocServiceLocation serviceLocation, BrowserApplication app, Repositories repositories,
@@ -104,13 +108,37 @@ public class SimpleLayout extends LayoutDesign {
 
     @Override
     public void openView(Component cmp, String tabname) {
-        final Tab tb = mainContentTabs.addTab(cmp);
         if (tabname.length() > 50) {
-            tb.setDescription(tabname);
             tabname = tabname.substring(0, 50) + "...";
         }
+
+        final Tab tb = mainContentTabs.addTab(cmp);
+        tb.setDescription(tabname);
         tb.setCaption(tabname);
         tb.setDescription(tabname);
+        mainContentTabs.setSelectedTab(cmp);
+        tb.setClosable(true);
+    }
+
+    public void openViewByReloading(Component cmp, String tabname) {
+        LOG.info("Opened and Reloaded" + tabname);
+        if (tabname.length() > 50) {
+            tabname = tabname.substring(0, 50) + "...";
+        }
+        int position = -1;
+        if (mainContentTabs.getTab(cmp) != null) {
+            Tab tmpTab = mainContentTabs.getTab(cmp);
+            position = mainContentTabs.getTabPosition(tmpTab);
+            mainContentTabs.removeTab(tmpTab);
+        }
+        final Tab tb = mainContentTabs.addTab(cmp);
+        tb.setDescription(tabname);
+        tb.setCaption(tabname);
+        tb.setDescription(tabname);
+        if (position != -1) {
+            mainContentTabs.setTabPosition(tb, position);
+        }
+
         mainContentTabs.setSelectedTab(cmp);
         tb.setClosable(true);
     }

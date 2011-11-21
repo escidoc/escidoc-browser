@@ -109,6 +109,17 @@ public class ContainerAddView implements ResourceAddView {
 
     private Router router;
 
+    /**
+     * Should be used ResourceAddView instead
+     * 
+     * @param repositories
+     * @param mainWindow
+     * @param parent
+     * @param treeDataSource
+     * @param contextId
+     * @param router
+     */
+    @Deprecated
     public ContainerAddView(final Repositories repositories, final Window mainWindow, final ResourceModel parent,
         final TreeDataSource treeDataSource, final String contextId, Router router) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
@@ -328,7 +339,7 @@ public class ContainerAddView implements ResourceAddView {
                 updateDataSource(createdContainer);
             }
             if (router != null) {
-                router.show(parent);
+                router.show(parent, true);
             }
             closeSubWindow();
         }

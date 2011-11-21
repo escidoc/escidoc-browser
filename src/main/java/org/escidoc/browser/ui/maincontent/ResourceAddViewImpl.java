@@ -497,7 +497,7 @@ public class ResourceAddViewImpl implements ResourceAddView {
             updateDataSource(createdResource, resourceType);
         }
         if (router != null) {
-            router.show(parent);
+            router.show(parent, true);
         }
         closeSubWindow();
     }

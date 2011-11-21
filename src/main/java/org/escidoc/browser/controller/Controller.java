@@ -50,6 +50,10 @@ public abstract class Controller {
         layout.openView(this.view, this.getResourceName());
     }
 
+    public void showViewByReloading(final LayoutDesign layout) {
+        layout.openViewByReloading(this.view, this.getResourceName());
+    }
+
     public String getResourceName() {
         return resouceName;
     }
