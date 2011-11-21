@@ -98,7 +98,7 @@ public class StudyController extends Controller implements ISaveAction {
         this.mainWindow = mainWindow;
         this.router = router;
         this.view = createView(resourceProxy);
-        this.getResourceName(resourceProxy.getName());
+        this.setResourceName(resourceProxy.getName());
 
     }
 

@@ -109,7 +109,7 @@ public final class InstrumentController extends Controller implements ISaveActio
         this.mainWindow = mainWindow;
         loadAdminDescriptorInfo();
         view = createView(resourceProxy);
-        this.getResourceName(resourceProxy.getName());
+        this.setResourceName(resourceProxy.getName());
     }
 
     /**

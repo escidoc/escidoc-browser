@@ -116,6 +116,7 @@ public class SimpleLayout extends LayoutDesign {
     }
 
     @Override
+    @Deprecated
     public int getApplicationHeight() {
         // Not really needed for this Layout
         return 0;

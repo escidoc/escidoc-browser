@@ -183,6 +183,15 @@ public class Router {
     }
 
     /**
+     * The router should be passed a controller and the controller should open its personal view
+     * 
+     * @param cnt
+     */
+    public void openControllerView(Controller cnt) {
+
+    }
+
+    /**
      * This method handles the open of a new tab on the right section of the mainWindow This is the perfect place to
      * inject Views that represent objects
      * 

@@ -158,7 +158,7 @@ public class InvestigationController extends Controller implements IInvestigatio
 
         loadAdminDescriptorInfo();
         view = createView(resourceProxy);
-        this.getResourceName(resourceProxy.getName());
+        this.setResourceName(resourceProxy.getName());
 
     }
 
