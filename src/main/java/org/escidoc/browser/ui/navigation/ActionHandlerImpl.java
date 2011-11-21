@@ -302,7 +302,6 @@ final class ActionHandlerImpl implements Action.Handler {
     private void deleteItem(final ItemModel selectedItem) {
         try {
             deleteSelected(selectedItem);
-
             treeDataSource.remove(selectedItem);
         }
         catch (final EscidocClientException e) {

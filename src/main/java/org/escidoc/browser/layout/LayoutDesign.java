@@ -57,5 +57,4 @@ public abstract class LayoutDesign extends VerticalLayout {
 
     @Deprecated
     public abstract int getApplicationHeight();
-
 }

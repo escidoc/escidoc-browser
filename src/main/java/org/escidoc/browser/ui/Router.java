@@ -273,6 +273,7 @@ public class Router {
     public void show(final ResourceModel clickedResource, Boolean doReloadView) throws EscidocClientException {
         String controllerId = getControllerId(clickedResource);
         // Controller by controller-id
+        // TODO refactor ItemView, ContextView, COntainerView to have a Controller so this code can be refactored
         Controller controller;
         if (controllerId.equals("org.escidoc.browser.Item")) {
             Component viewComponent =
