@@ -28,27 +28,35 @@
  */
 package org.escidoc.browser.repository;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.core.client.ingest.zip.ZipIngester;
 
-import de.escidoc.core.client.IngestHandlerClient;
-import de.escidoc.core.client.exceptions.EscidocClientException;
-import de.escidoc.core.client.interfaces.IngestHandlerClientInterface;
+import de.escidoc.core.client.exceptions.EscidocException;
+import de.escidoc.core.client.exceptions.InternalClientException;
+import de.escidoc.core.client.exceptions.TransportException;
 
 public class IngestRepository {
 
-    private IngestHandlerClientInterface client;
+    private ZipIngester zipIngester;
+
+    private URL serviceLocationUrl;
 
     public IngestRepository(EscidocServiceLocation serviceLocation) throws MalformedURLException {
-        client = new IngestHandlerClient(serviceLocation.getEscidocUrl());
+        serviceLocationUrl = serviceLocation.getEscidocUrl();
     }
 
-    public void loginWith(String token) throws EscidocClientException {
-        client.setHandle(token);
+    public void loginWith(String token) {
+        zipIngester = new ZipIngester(serviceLocationUrl, token);
     }
 
-    public void ingest(String resourceXml) throws EscidocClientException {
-        client.ingest(resourceXml);
+    public void ingestZip(InputStream inputStream) throws EscidocException, InternalClientException,
+        TransportException, UnsupportedEncodingException, IOException {
+        zipIngester.ingest(inputStream);
     }
 }

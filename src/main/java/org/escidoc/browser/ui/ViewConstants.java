@@ -242,4 +242,8 @@ public class ViewConstants {
     public static final String TYPE = "Type";
 
     public static final String IMPORT_CONTENT_MODEL = "Import Content Model Set";
+
+    public static final String URL = "URL: ";
+
+    public static final String IMPORT = "Import";
 }

@@ -29,31 +29,19 @@
 package org.escidoc.browser.ui.tools;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.Proxy;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.escidoc.browser.AppConstants;
@@ -94,10 +82,6 @@ import de.escidoc.core.resources.adm.MessagesStatus;
 
 @SuppressWarnings("serial")
 public class PurgeAndExportResourceView extends VerticalLayout {
-
-    private static final int HTTP_PROXY_PORT = 8888;
-
-    private static final String HTTP_PROXY_HOST = "proxy.fiz-karlsruhe.de";
 
     private static final Logger LOG = LoggerFactory.getLogger(PurgeAndExportResourceView.class);
 
@@ -391,114 +375,7 @@ public class PurgeAndExportResourceView extends VerticalLayout {
     }
 
     private void addImportView() {
-        createImportView();
-    }
-
-    private void createImportView() {
-        VerticalLayout vl = new VerticalLayout();
-        final Label text = new H2(ViewConstants.IMPORT_CONTENT_MODEL);
-        text.setContentMode(Label.CONTENT_XHTML);
-        vl.addComponent(text);
-
-        // Ruler
-        vl.addComponent(new Style.Ruler());
-
-        // Input
-        final Label urlLabel = new Label("URL: ");
-        final TextField sourceUrl = new TextField();
-        sourceUrl.setWidth("400px");
-        sourceUrl.setValue("http://dl.dropbox.com/u/419140/eLab-Content-Models.zip");
-        Button importButton = new Button("Import");
-        importButton.addListener(new ClickListener() {
-
-            @Override
-            public void buttonClick(ClickEvent event) {
-                Object value = sourceUrl.getValue();
-                if (value instanceof String) {
-                    try {
-                        ingestZipFile(retrieveZipFile(new URI((String) value)));
-
-                    }
-                    catch (MalformedURLException e) {
-                        showErrorMessage(e);
-                    }
-                    catch (IOException e) {
-                        showErrorMessage(e);
-                    }
-                    catch (EscidocClientException e) {
-                        showErrorMessage(e);
-                    }
-                    catch (URISyntaxException e) {
-                        showErrorMessage(e);
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-            private InputStream retrieveZipFile(URI uri) throws IOException, MalformedURLException, ProtocolException {
-                URLConnection connection =
-                    uri.toURL().openConnection(
-                        new Proxy(Proxy.Type.HTTP, new InetSocketAddress(HTTP_PROXY_HOST, HTTP_PROXY_PORT)));
-                InputStream inputStream = connection.getInputStream();
-                return inputStream;
-            }
-
-            private void ingestZipFile(InputStream inputStream) throws IOException, EscidocClientException,
-                UnsupportedEncodingException {
-                ZipInputStream zis = new ZipInputStream(inputStream);
-                ZipEntry entry;
-                while ((entry = zis.getNextEntry()) != null) {
-                    if (entry.isDirectory()) {
-                        throw new UnsupportedOperationException(
-                            "Extracting ZIP File that contains directory is not supported");
-                    }
-
-                    LOG.debug("Extracting: " + entry);
-                    byte[] buffer = new byte[1024];
-                    int count;
-                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                    while ((count = zis.read(buffer)) != -1) {
-                        outputStream.write(buffer, 0, count);
-                    }
-                    ingest(new String(outputStream.toByteArray(), "UTF-8"));
-                }
-            }
-
-            private void ingest(String string) throws EscidocClientException {
-                repositories.ingest().ingest(string);
-            }
-        });
-
-        HorizontalLayout hl = new HorizontalLayout();
-        hl.setSpacing(true);
-        hl.addComponent(urlLabel);
-        hl.addComponent(sourceUrl);
-        hl.addComponent(importButton);
-        vl.addComponent(hl);
-    }
-
-    public static final void unzip(File zipFile, File targetDirectory) throws ZipException, IOException {
-        Preconditions.checkNotNull(zipFile, "zipFile is null: %s", zipFile);
-        Preconditions.checkNotNull(targetDirectory, "targetDirectory is null: %s", targetDirectory);
-        Preconditions.checkArgument(targetDirectory.isDirectory(), "targetDirectory: " + targetDirectory
-            + " is not a directory.");
-
-        ZipFile zf = new ZipFile(zipFile);
-        Enumeration<? extends ZipEntry> entries = zf.entries();
-        while (entries.hasMoreElements()) {
-            ZipEntry entry = entries.nextElement();
-            LOG.debug("Extracting: " + entry);
-
-            File extractedFile = new File(targetDirectory, entry.getName());
-            if (entry.isDirectory()) {
-                extractedFile.mkdirs();
-            }
-            else {
-                extractedFile.getParentFile().mkdirs();
-                InputStream inputStream = zf.getInputStream(entry);
-                // ingest(inputStream);
-            }
-        }
+        addComponent(new ImportView(router, repositories.ingest()));
     }
 
     private void addContent() {

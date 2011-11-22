@@ -49,6 +49,12 @@
 			<version>20040218.194635</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.escidoc.core.client.ingest</groupId>
+			<artifactId>eSciDocDepositAPI</artifactId>
+			<version>0.9.1-SNAPSHOT</version>
+		</dependency>
+
 		<!-- Utils -->
 		<dependency>
 			<groupId>com.google.guava</groupId>
@@ -241,7 +247,8 @@
 		<finalName>${project.artifactId}</finalName>
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
