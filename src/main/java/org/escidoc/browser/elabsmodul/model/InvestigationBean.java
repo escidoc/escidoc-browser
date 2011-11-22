@@ -50,9 +50,9 @@ public class InvestigationBean implements Serializable, IBeanModel {
 
     private String investigator;
 
-    private String rigTitle;
+    private String rigComplexId;
 
-    private RigBean rigBean = new RigBean();
+    private RigBean rigBean;
 
     private Map<String, String> instrumentFolder = new HashMap<String, String>();
 
@@ -120,11 +120,11 @@ public class InvestigationBean implements Serializable, IBeanModel {
         this.rigBean = rigBean;
     }
 
-    public String getRigTitle() {
-        return rigTitle;
+    public String getRigComplexId() {
+        return rigComplexId;
     }
 
-    public void setRigTitle(String rigTitle) {
-        this.rigTitle = rigTitle;
+    public void setRigComplexId(String rigComplexId) {
+        this.rigComplexId = rigComplexId;
     }
 }

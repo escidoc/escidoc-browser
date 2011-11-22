@@ -35,6 +35,7 @@ import java.util.List;
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.interfaces.IInvestigationAction;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsAction;
+import org.escidoc.browser.elabsmodul.interfaces.ILabsInvestigationAction;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsPanel;
 import org.escidoc.browser.elabsmodul.model.InvestigationBean;
 import org.escidoc.browser.elabsmodul.model.RigBean;
@@ -42,6 +43,7 @@ import org.escidoc.browser.elabsmodul.views.helpers.LabsLayoutHelper;
 import org.escidoc.browser.elabsmodul.views.helpers.ResourcePropertiesViewHelper;
 import org.escidoc.browser.elabsmodul.views.helpers.StartInvestigationViewHelper;
 import org.escidoc.browser.elabsmodul.views.listeners.LabsClientViewEventHandler;
+import org.escidoc.browser.elabsmodul.views.listeners.RigSelectionLayoutListener;
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceType;
@@ -64,7 +66,7 @@ import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
-public class InvestigationView extends Panel implements ILabsPanel, ILabsAction {
+public class InvestigationView extends Panel implements ILabsPanel, ILabsAction, ILabsInvestigationAction {
 
     private static final long serialVersionUID = -5284506653803233585L;
 
@@ -78,7 +80,7 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
 
     private final ContainerProxy containerProxy;
 
-    private final List<String> eSyncDaemonUrls;
+    private final List<String> depositEndPointUrls;
 
     private VerticalLayout mainLayout, dynamicLayout;
 
@@ -108,13 +110,14 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
         this.controller = controller;
         this.breadCrumbModel = breadCrumbModel;
         this.containerProxy = containerProxy;
-        this.eSyncDaemonUrls = depositEndPointUrls;
+        this.depositEndPointUrls = depositEndPointUrls;
         this.router = router;
 
         initialisePanelComponents();
         buildPropertiesGUI();
         buildContainerGUI();
         buildPanelGUI();
+
         if (controller.hasUpdateAccess()) {
             createPanelListener();
             createClickListener();
@@ -136,7 +139,6 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
     private void leftCell() throws EscidocClientException {
         final Panel leftPanel = new Panel();
         leftPanel.setStyleName("directmembers floatleft");
-
         leftPanel.setScrollable(false);
         leftPanel.getLayout().setMargin(false);
         leftPanel.setWidth("30%");
@@ -210,7 +212,6 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
                     // FIXME why do we these methods?
                     InvestigationView.this.resetLayout();
                     dynamicLayout.requestRepaintAll();
-
                 }
             }
         };
@@ -268,14 +269,12 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(
                 ELabsViewContants.L_INVESTIGATION_DURATION,
                 pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_DURATION));
-
         final HorizontalLayout h6 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_INVESTIGATION_RIG,
                 pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_RIG));
 
-        final HorizontalLayout h7 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_INVESTIGATION_RIG,
-                pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_RIG));
+        // set up specific listeners
+        h6.addListener(new RigSelectionLayoutListener(this.controller, this, h6));
 
         registeredComponents.add(h1);
         registeredComponents.add(h2);
@@ -297,7 +296,6 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
         mainLayout.setExpandRatio(cssLayout, 1.0f);
         mainLayout.attach();
         mainLayout.requestRepaintAll();
-
     }
 
     @Override
@@ -382,5 +380,11 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction 
 
     public List<RigBean> getAvailableRigs() {
         return this.controller.getAvailableRigs();
+    }
+
+    @Override
+    public synchronized void setRigBean(RigBean rigBean) {
+        Preconditions.checkNotNull(rigBean, "input arg is null");
+        investigationBean.setRigBean(rigBean);
     }
 }

@@ -211,7 +211,7 @@ public class InvestigationController extends Controller implements IInvestigatio
     private InvestigationBean loadBeanData(ContainerProxy containerProxy) throws EscidocBrowserException {
         final String URI_DC = "http://purl.org/dc/elements/1.1/";
         final String URI_EL = "http://escidoc.org/ontologies/bw-elabs/re#";
-        final String URI_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+        // final String URI_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
         if (containerProxy == null) {
             throw new NullPointerException("Container Proxy is null.");
@@ -227,7 +227,6 @@ public class InvestigationController extends Controller implements IInvestigatio
 
             investigationBean.setObjid(containerProxy.getId());
 
-            // Check if this is really an Investigation
             if (!(("Investigation".equals(e.getLocalName()) && "http://escidoc.org/ontologies/bw-elabs/re#".equals(e
                 .getNamespaceURI())) || "el:Investigation".equals(e.getTagName()))) {
                 LOG.error("Container is not an eLabs Investigation");
@@ -240,31 +239,28 @@ public class InvestigationController extends Controller implements IInvestigatio
                 final String nodeName = node.getLocalName();
                 final String nsUri = node.getNamespaceURI();
 
-                if ("title".equals(nodeName) && "http://purl.org/dc/elements/1.1/".equals(nsUri)) {
-                    // System.out.println("#" + node.getTextContent() + "#");
-                    // System.out.println("#" + node.getFirstChild().getNodeValue() + "#");
-                    investigationBean.setName(node.getTextContent());
+                if (nodeName == null || nsUri == null) {
+                    continue;
                 }
 
+                if ("title".equals(nodeName) && "http://purl.org/dc/elements/1.1/".equals(nsUri)) {
+                    investigationBean.setName(node.getTextContent());
+                }
                 else if ("description".equals(nodeName) && "http://purl.org/dc/elements/1.1/".equals(nsUri)) {
                     investigationBean.setDescription(node.getTextContent());
                 }
-
                 else if ("max-runtime".equals(nodeName) && "http://escidoc.org/ontologies/bw-elabs/re#".equals(nsUri)) {
                     investigationBean.setMaxRuntime(Long.parseLong(node.getTextContent()));
                 }
-
                 else if ("deposit-endpoint".equals(nodeName)
                     && "http://escidoc.org/ontologies/bw-elabs/re#".equals(nsUri)) {
                     investigationBean.setDepositEndpoint(node.getTextContent());
                 }
-
                 else if ("investigator".equals(nodeName) && "http://escidoc.org/ontologies/bw-elabs/re#".equals(nsUri)) {
                     investigationBean.setInvestigator(node
                         .getAttributes().getNamedItemNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "resource")
                         .getTextContent());
                 }
-
                 else if ("rig".equals(nodeName) && "http://escidoc.org/ontologies/bw-elabs/re#".equals(nsUri)) {
                     String rigId =
                         node.getAttributes().getNamedItemNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "resource")
@@ -277,7 +273,6 @@ public class InvestigationController extends Controller implements IInvestigatio
                                 ((ItemProxy) repositories.item().findById(rigId))
                                     .getMedataRecords().get("escidoc").getContent();
 
-                            // Check if this is really a Rig
                             if (!(("Rig".equals(rigElement.getLocalName()) && URI_EL.equals(rigElement
                                 .getNamespaceURI())) || "el:Rig".equals(rigElement.getTagName()))) {
                                 LOG.error("Container is not an eLabs Rig");
@@ -288,9 +283,13 @@ public class InvestigationController extends Controller implements IInvestigatio
 
                             rigBean.setObjectId(rigId);
                             for (int j = 0; j < rigNodeList.getLength(); j++) {
-                                final Node rigNode = rigNodeList.item(i);
+                                final Node rigNode = rigNodeList.item(j);
                                 final String rigNodeName = rigNode.getLocalName();
                                 final String rigNsUri = rigNode.getNamespaceURI();
+
+                                if (rigNodeName == null || rigNsUri == null) {
+                                    continue;
+                                }
 
                                 if ("title".equals(rigNodeName) && URI_DC.equals(rigNsUri)) {
                                     rigBean.setName((rigNode.getFirstChild() != null) ? rigNode
@@ -301,40 +300,23 @@ public class InvestigationController extends Controller implements IInvestigatio
                                     rigBean.setDescription((rigNode.getFirstChild() != null) ? rigNode
                                         .getFirstChild().getNodeValue() : null);
                                 }
-                                else if ("instrument".equals(rigNodeName) && URI_EL.equals(rigNsUri)) {
-                                    if (rigNode.getAttributes() != null
-                                        && rigNode.getAttributes().getNamedItemNS(URI_RDF, "resource") != null) {
-                                        Node attributeNode =
-                                            rigNode.getAttributes().getNamedItemNS(URI_RDF, "resource");
-                                        String instrumentID = attributeNode.getNodeValue();
-
-                                        try {
-                                            ItemProxy instrumentProxy =
-                                                (ItemProxy) repositories.item().findById(instrumentID);
-                                            rigBean
-                                                .getContentList().add(loadRelatedInstrumentBeanData(instrumentProxy));
-                                        }
-                                        catch (EscidocClientException ece) {
-                                            LOG.error(ece.getLocalizedMessage());
-                                        }
-                                    }
-                                }
                             }
                         }
                         catch (Exception ex) {
-                            LOG.error(ex.getLocalizedMessage());
+                            LOG.error(ex.getMessage());
                         }
                         investigationBean.setRigBean(rigBean);
+
+                        if (rigBean != null) {
+                            investigationBean.setRigComplexId(rigBean.getComplexId());
+                        }
                     }
-
                 }
-
                 else if ("instrument".equals(nodeName) && "http://escidoc.org/ontologies/bw-elabs/re#".equals(nsUri)) {
                     String instrument =
                         node.getAttributes().getNamedItemNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "resource")
                             .getTextContent();
                     String folder = node.getTextContent().trim();
-                    // System.out.println("#" + instrument + "#" + folder + "#");
                     investigationBean.getInstrumentFolder().put(instrument, folder);
                 }
             }

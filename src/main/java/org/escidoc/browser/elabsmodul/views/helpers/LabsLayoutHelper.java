@@ -46,16 +46,16 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
+import org.escidoc.browser.elabsmodul.interfaces.ILabsInvestigationAction;
 import org.escidoc.browser.elabsmodul.interfaces.IRigAction;
 import org.escidoc.browser.elabsmodul.model.RigBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
-import com.vaadin.data.Container;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
-import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -216,19 +216,25 @@ public final class LabsLayoutHelper {
             return false;
         }
         Property dataProperty = null;
+        Label label = null;
         if (dataComponent instanceof TextField) {
             dataProperty = ((TextField) dataComponent).getPropertyDataSource();
+            label = new Label(dataProperty);
         }
         else if (dataComponent instanceof ComboBox) {
-            dataProperty = ((ComboBox) dataComponent).getPropertyDataSource();
+            if (((ComboBox) dataComponent).getValue() instanceof RigBean) {
+                label = new Label(((RigBean) ((ComboBox) dataComponent).getValue()).getComplexId());
+            }
+            else if (((ComboBox) dataComponent).getValue() instanceof String) {
+                dataProperty = ((ComboBox) dataComponent).getPropertyDataSource();
+                label = new Label(dataProperty);
+            }
         }
 
-        if (dataProperty == null) {
-            // return because dataComponent is already a Label or a CheckBox
+        if (label == null) {
             return false;
         }
 
-        Label label = new Label(dataProperty);
         label.setWidth(TEXT_WIDTH);
         label.setStyleName(STYLE_ELABS_TEXT_AS_LABEL);
         label.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
@@ -284,35 +290,42 @@ public final class LabsLayoutHelper {
      * @param property
      * @return
      */
-    public static synchronized AbstractComponent createDynamicComboBoxFieldFromLabel(
-        Property property, Collection<?> options) {
+    @SuppressWarnings("serial")
+    public static synchronized AbstractComponent createDynamicComboBoxFieldForInvestigation(
+        final ILabsInvestigationAction labsInvestigationAction, Property property, Collection<?> options) {
+        Preconditions.checkNotNull(labsInvestigationAction, "LabsInvestigationAction is null");
         Preconditions.checkNotNull(property, "Datasource is null");
         Preconditions.checkNotNull(options, "Options collection is null");
-        ComboBox comboBox = new ComboBox();
-        Container container = new IndexedContainer();
-        container.addContainerProperty("id", String.class, null);
-        container.addContainerProperty("title", String.class, null);
 
+        BeanItemContainer<RigBean> itemContainer = new BeanItemContainer<RigBean>(RigBean.class);
         for (Iterator iterator = options.iterator(); iterator.hasNext();) {
             RigBean bean = (RigBean) iterator.next();
-            Item item = container.addItem(bean.getObjectId());
-            item.getItemProperty("id").setValue(bean.getObjectId());
-            item.getItemProperty("title").setValue(bean.getName());
-            comboBox.setItemCaption(bean.getObjectId(), bean.getName());
+            itemContainer.addItem(bean);
         }
-
-        comboBox.setContainerDataSource(container);
+        final ComboBox comboBox = new ComboBox("", itemContainer);
+        comboBox.setItemCaptionMode(ComboBox.ITEM_CAPTION_MODE_PROPERTY);
+        comboBox.setItemCaptionPropertyId(ELabsViewContants.P_RIG_COMPLEX_ID);
         comboBox.setEnabled(true);
         comboBox.setVisible(true);
         comboBox.setImmediate(true);
         comboBox.setMultiSelect(false);
         comboBox.setNullSelectionAllowed(false);
-        comboBox.setPropertyDataSource(property);
         comboBox.setReadOnly(false);
         comboBox.setWidth(COMBOBOX_WIDTH);
         comboBox.setStyleName(STYLE_ELABS_TEXT_AS_LABEL);
         comboBox.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
-        // comboBox.addI
+
+        comboBox.addListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(ValueChangeEvent event) {
+                if (comboBox.getValue() instanceof RigBean) {
+                    labsInvestigationAction.setRigBean((RigBean) comboBox.getValue());
+                }
+                else {
+                    LOG.error("Wrong data type in combobox");
+                }
+            }
+        });
 
         return comboBox;
     }

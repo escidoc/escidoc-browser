@@ -182,7 +182,7 @@ public class ELabsViewContants {
 
     public static final String P_INVESTIGATION_DURATION = "maxRuntime";
 
-    public static final String P_INVESTIGATION_RIG = "rigTitle";
+    public static final String P_INVESTIGATION_RIG = "rigComplexId";
 
     public static final String[] INVESTIGATION_PROPERTIES = { P_INVESTIGATION_TITLE, P_INVESTIGATION_DESC,
         P_INVESTIGATION_DEPOSIT_SERVICE, P_INVESTIGATION_INVESTIGATOR, P_INVESTIGATION_DURATION, P_INVESTIGATION_RIG };
@@ -206,7 +206,9 @@ public class ELabsViewContants {
 
     public static final String P_RIG_CONTENT = "contentList";
 
-    public static final String[] RIG_PROPERTIES = { P_RIG_TITLE, P_RIG_DESC, P_RIG_CONTENT };
+    public static final String P_RIG_COMPLEX_ID = "complexId";
+
+    public static final String[] RIG_PROPERTIES = { P_RIG_TITLE, P_RIG_DESC, P_RIG_CONTENT, P_RIG_COMPLEX_ID };
 
     // eLabs Header Labels
     public static final String RESOURCE_RIG_NAME = "Rig item: ";

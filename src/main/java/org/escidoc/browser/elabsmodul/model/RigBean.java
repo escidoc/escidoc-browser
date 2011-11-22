@@ -53,6 +53,8 @@ public class RigBean implements Serializable, IBeanModel {
 
     private String modifiedBy;
 
+    private String complexId;
+
     private List<InstrumentBean> contentList = new ArrayList<InstrumentBean>();
 
     public String getObjectId() {
@@ -117,5 +119,13 @@ public class RigBean implements Serializable, IBeanModel {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getComplexId() {
+        return name + " - " + objectId;
+    }
+
+    public void setComplexId(String complexId) {
+        this.complexId = name + " - " + objectId;
     }
 }
