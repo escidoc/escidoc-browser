@@ -353,4 +353,7 @@ public class ELabsViewContants {
 
     public static final String DIALOG_SAVE_INVESTIGATION_SERIES_TEXT =
         "Are you sure to save this Investigation Series?";
+
+    public static final String ERROR_INVESTIGATION_VIEW_NO_RIG_SELECTED =
+        "Cannot save without a Rig. Please select a RIG from the \"Select Rig\" drop-down!";
 }

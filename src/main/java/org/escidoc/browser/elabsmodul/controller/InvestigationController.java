@@ -105,7 +105,7 @@ public class InvestigationController extends Controller implements IInvestigatio
 
     private IBeanModel model;
 
-    private Window mainWindow;
+    private static Window mainWindow;
 
     private static List<String> cmmIds4Rig = null;
 
@@ -423,23 +423,30 @@ public class InvestigationController extends Controller implements IInvestigatio
         }
 
         InvestigationBean investigationBean = (InvestigationBean) model;
-        final Element metaDataContent =
-            InvestigationController.createInvestigationDOMElementByBeanModel(investigationBean);
-
+        // The first try checks if the bean can be created Correctly. Maybe the RIG selection is empty
         try {
-            Container container = containerRepository.findContainerById(investigationBean.getObjid());
-            MetadataRecord metadataRecord = container.getMetadataRecords().get(ESCIDOC);
-            metadataRecord.setContent(metaDataContent);
-            containerRepository.update(container);
+            final Element metaDataContent =
+                InvestigationController.createInvestigationDOMElementByBeanModel(investigationBean);
+            try {
+                Container container = containerRepository.findContainerById(investigationBean.getObjid());
+                MetadataRecord metadataRecord = container.getMetadataRecords().get(ESCIDOC);
+                metadataRecord.setContent(metaDataContent);
+                containerRepository.update(container);
+            }
+            catch (EscidocClientException e) {
+                LOG.error(e.getLocalizedMessage());
+                this.mainWindow.showNotification("Error", "Element not found!", Notification.TYPE_ERROR_MESSAGE);
+            }
+            finally {
+                model = null;
+            }
+            LOG.info("Investigation is successfully saved.");
         }
-        catch (EscidocClientException e) {
-            LOG.error(e.getLocalizedMessage());
-            this.mainWindow.showNotification("Error", "Element not found!", Notification.TYPE_ERROR_MESSAGE);
+        catch (Exception e) {
+            mainWindow.showNotification(ELabsViewContants.ERROR_INVESTIGATION_VIEW_NO_RIG_SELECTED,
+                Window.Notification.TYPE_WARNING_MESSAGE);
         }
-        finally {
-            model = null;
-        }
-        LOG.info("Investigation is successfully saved.");
+
     }
 
     public synchronized static Element createInvestigationDOMElementByBeanModel(
