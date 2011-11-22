@@ -180,8 +180,6 @@ public class InvestigationController extends Controller implements IInvestigatio
             LOG.error("Could not load Admin Descriptor 'elabs'. " + e.getLocalizedMessage(), e);
         }
         catch (NullPointerException e) {
-            mainWindow.showNotification(new Notification("Admin Description is null in the context "
-                + resourceProxy.getContext().getObjid(), Notification.TYPE_HUMANIZED_MESSAGE));
             LOG.debug("Admin Description is null in the context " + resourceProxy.getContext().getObjid());
         }
     }

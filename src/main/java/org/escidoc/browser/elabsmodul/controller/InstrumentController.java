@@ -311,8 +311,6 @@ public final class InstrumentController extends Controller implements ISaveActio
             e.printStackTrace();
         }
         catch (NullPointerException e) {
-            mainWindow.showNotification(new Notification("Admin Description is null in the context "
-                + resourceProxy.getContext().getObjid(), Notification.TYPE_HUMANIZED_MESSAGE));
             LOG.debug("Admin Description is null in the context " + resourceProxy.getContext().getObjid());
         }
 
