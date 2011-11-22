@@ -26,16 +26,44 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser;
+package org.escidoc.browser.elabsmodul.cache;
 
-public final class StringUtils {
+import java.util.Collections;
+import java.util.List;
 
-    public static final String EMPTY_STRING = "";
+public class ELabsCache {
 
-    public static boolean notEmpty(final String string) {
-        if (string == null) {
-            return false;
-        }
-        return !string.isEmpty();
+    private static List<String> depositEndpoints = Collections.emptyList();
+
+    private static List<String> esyncEndpoints;
+
+    /**
+     * @return the depositEndpoints
+     */
+    public static List<String> getDepositEndpoints() {
+        return depositEndpoints;
+    }
+
+    /**
+     * @param depositEndpoints
+     *            the depositEndpoints to set
+     */
+    public static void setDepositEndpoints(List<String> depositEndpoints) {
+        ELabsCache.depositEndpoints = depositEndpoints;
+    }
+
+    /**
+     * @return the esyncEndpoints
+     */
+    public static List<String> getEsyncEndpoints() {
+        return esyncEndpoints;
+    }
+
+    /**
+     * @param esyncEndpoints
+     *            the esyncEndpoints to set
+     */
+    public static void setEsyncEndpoints(List<String> esyncEndpoints) {
+        ELabsCache.esyncEndpoints = esyncEndpoints;
     }
 }

@@ -43,6 +43,7 @@ import javax.xml.transform.TransformerException;
 
 import org.escidoc.browser.StringUtils;
 import org.escidoc.browser.controller.Controller;
+import org.escidoc.browser.elabsmodul.cache.ELabsCache;
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.controller.utils.DOM2String;
 import org.escidoc.browser.elabsmodul.exceptions.EscidocBrowserException;
@@ -90,9 +91,6 @@ import de.escidoc.core.resources.om.container.Container;
 public class InvestigationController extends Controller implements IInvestigationAction {
 
     private static Logger LOG = LoggerFactory.getLogger(InstrumentController.class);
-
-    // contains default deposit endpoint URLs
-    private List<String> depositEndPointUrls = new ArrayList<String>();
 
     // FIXME move to Repositories
     private EscidocServiceLocation serviceLocation;
@@ -165,7 +163,12 @@ public class InvestigationController extends Controller implements IInvestigatio
     }
 
     private void loadAdminDescriptorInfo() {
+        if (!ELabsCache.getDepositEndpoints().isEmpty()) {
+            return;
+        }
+
         ContextProxyImpl context;
+        List<String> depositEndPointUrls = new ArrayList<String>();
         try {
             context = (ContextProxyImpl) repositories.context().findById(resourceProxy.getContext().getObjid());
             Element content = context.getAdminDescription().get("elabs").getContent();
@@ -174,7 +177,11 @@ public class InvestigationController extends Controller implements IInvestigatio
                 final Node node = nodeList.item(i);
                 depositEndPointUrls.add(node.getTextContent());
             }
-
+            synchronized (ELabsCache.getDepositEndpoints()) {
+                if (!depositEndPointUrls.isEmpty()) {
+                    ELabsCache.setDepositEndpoints(Collections.unmodifiableList(depositEndPointUrls));
+                }
+            }
         }
         catch (EscidocClientException e) {
             LOG.error("Could not load Admin Descriptor 'elabs'. " + e.getLocalizedMessage(), e);
@@ -208,7 +215,7 @@ public class InvestigationController extends Controller implements IInvestigatio
         breadCrumbModel = createBreadCrumbModel();
 
         Component investigationView =
-            new InvestigationView(investigationBean, this, breadCrumbModel, containerProxy, depositEndPointUrls, router);
+            new InvestigationView(investigationBean, this, breadCrumbModel, containerProxy, router);
         return investigationView;
     }
 

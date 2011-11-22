@@ -43,8 +43,8 @@ import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DE
 import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_TEXTFIELD_TO_SAVE_OR_CANCEL;
 
 import java.util.Collection;
-import java.util.Iterator;
 
+import org.escidoc.browser.StringUtils;
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsInvestigationAction;
 import org.escidoc.browser.elabsmodul.interfaces.IRigAction;
@@ -53,9 +53,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
+import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -222,12 +222,12 @@ public final class LabsLayoutHelper {
             label = new Label(dataProperty);
         }
         else if (dataComponent instanceof ComboBox) {
-            if (((ComboBox) dataComponent).getValue() instanceof RigBean) {
-                label = new Label(((RigBean) ((ComboBox) dataComponent).getValue()).getComplexId());
-            }
-            else if (((ComboBox) dataComponent).getValue() instanceof String) {
+            if (((ComboBox) dataComponent).getValue() instanceof String) {
                 dataProperty = ((ComboBox) dataComponent).getPropertyDataSource();
                 label = new Label(dataProperty);
+            }
+            else if (((ComboBox) dataComponent).getValue() instanceof RigBean) {
+                label = new Label(((RigBean) ((ComboBox) dataComponent).getValue()).getComplexId());
             }
         }
 
@@ -292,42 +292,51 @@ public final class LabsLayoutHelper {
      */
     @SuppressWarnings("serial")
     public static synchronized AbstractComponent createDynamicComboBoxFieldForInvestigation(
-        final ILabsInvestigationAction labsInvestigationAction, Property property, Collection<?> options) {
+        final ILabsInvestigationAction labsInvestigationAction, Property property, String itemCaptionProperty,
+        final Container itemContainer) {
         Preconditions.checkNotNull(labsInvestigationAction, "LabsInvestigationAction is null");
-        Preconditions.checkNotNull(property, "Datasource is null");
-        Preconditions.checkNotNull(options, "Options collection is null");
+        Preconditions.checkNotNull(itemContainer, "ItemContainer is null");
 
-        BeanItemContainer<RigBean> itemContainer = new BeanItemContainer<RigBean>(RigBean.class);
-        for (Iterator iterator = options.iterator(); iterator.hasNext();) {
-            RigBean bean = (RigBean) iterator.next();
-            itemContainer.addItem(bean);
-        }
-        final ComboBox comboBox = new ComboBox("", itemContainer);
-        comboBox.setItemCaptionMode(ComboBox.ITEM_CAPTION_MODE_PROPERTY);
-        comboBox.setItemCaptionPropertyId(ELabsViewContants.P_RIG_COMPLEX_ID);
-        comboBox.setEnabled(true);
-        comboBox.setVisible(true);
-        comboBox.setImmediate(true);
-        comboBox.setMultiSelect(false);
-        comboBox.setNullSelectionAllowed(false);
-        comboBox.setReadOnly(false);
-        comboBox.setWidth(COMBOBOX_WIDTH);
-        comboBox.setStyleName(STYLE_ELABS_TEXT_AS_LABEL);
-        comboBox.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
+        try {
+            final ComboBox comboBox = new ComboBox(StringUtils.EMPTY_STRING, itemContainer);
 
-        comboBox.addListener(new Property.ValueChangeListener() {
-            @Override
-            public void valueChange(ValueChangeEvent event) {
-                if (comboBox.getValue() instanceof RigBean) {
-                    labsInvestigationAction.setRigBean((RigBean) comboBox.getValue());
-                }
-                else {
-                    LOG.error("Wrong data type in combobox");
-                }
+            if (property != null && itemCaptionProperty == null) {
+                comboBox.setPropertyDataSource(property);
             }
-        });
+            else if (property == null && itemCaptionProperty != null) {
+                comboBox.setItemCaptionMode(ComboBox.ITEM_CAPTION_MODE_PROPERTY);
+                comboBox.setItemCaptionPropertyId(itemCaptionProperty);
+            }
 
-        return comboBox;
+            comboBox.setEnabled(true);
+            comboBox.setVisible(true);
+            comboBox.setImmediate(true);
+            comboBox.setMultiSelect(false);
+            comboBox.setNullSelectionAllowed(false);
+            comboBox.setReadOnly(false);
+            comboBox.setWidth(COMBOBOX_WIDTH);
+            comboBox.setStyleName(STYLE_ELABS_TEXT_AS_LABEL);
+            comboBox.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
+
+            comboBox.addListener(new Property.ValueChangeListener() {
+                @Override
+                public void valueChange(ValueChangeEvent event) {
+                    if ((comboBox.getValue() instanceof String)) {
+                    }
+                    else if (comboBox.getValue() instanceof RigBean) {
+                        labsInvestigationAction.setRigBean((RigBean) comboBox.getValue());
+                    }
+                    else {
+                        LOG.error("Wrong data type in combobox");
+                    }
+                }
+            });
+            return comboBox;
+        }
+        catch (Exception e) {
+            LOG.error(e.getMessage());
+        }
+        return null;
     }
 
     public static HorizontalLayout createButtonLayout() {

@@ -42,6 +42,7 @@ import org.escidoc.browser.elabsmodul.model.RigBean;
 import org.escidoc.browser.elabsmodul.views.helpers.LabsLayoutHelper;
 import org.escidoc.browser.elabsmodul.views.helpers.ResourcePropertiesViewHelper;
 import org.escidoc.browser.elabsmodul.views.helpers.StartInvestigationViewHelper;
+import org.escidoc.browser.elabsmodul.views.listeners.DepositEndpointSelectionLayoutListener;
 import org.escidoc.browser.elabsmodul.views.listeners.LabsClientViewEventHandler;
 import org.escidoc.browser.elabsmodul.views.listeners.RigSelectionLayoutListener;
 import org.escidoc.browser.model.ContainerProxy;
@@ -100,8 +101,7 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction,
     private final Router router;
 
     public InvestigationView(final InvestigationBean sourceBean, final IInvestigationAction controller,
-        final List<ResourceModel> breadCrumbModel, final ContainerProxy containerProxy,
-        final List<String> depositEndPointUrls, final Router router) {
+        final List<ResourceModel> breadCrumbModel, final ContainerProxy containerProxy, final Router router) {
 
         this.investigationBean = (sourceBean != null) ? sourceBean : new InvestigationBean();
         this.controller = controller;
@@ -275,6 +275,7 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction,
                 pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_RIG));
 
         // set up specific listeners
+        h3.addListener(new DepositEndpointSelectionLayoutListener(this, h3));
         h6.addListener(new RigSelectionLayoutListener(this.controller, this, h6));
 
         registeredComponents.add(h1);

@@ -33,10 +33,8 @@ import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DE
 
 import java.util.Iterator;
 
-import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
-import org.escidoc.browser.elabsmodul.interfaces.IInvestigationAction;
+import org.escidoc.browser.elabsmodul.cache.ELabsCache;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsInvestigationAction;
-import org.escidoc.browser.elabsmodul.model.RigBean;
 import org.escidoc.browser.elabsmodul.views.helpers.LabsLayoutHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,28 +49,21 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 
-/**
- * Layout listener for investigation view.
- */
-public class RigSelectionLayoutListener implements LayoutClickListener {
+public class DepositEndpointSelectionLayoutListener implements LayoutClickListener {
 
-    private static final long serialVersionUID = -1787438522603054074L;
+    private static final long serialVersionUID = 3913787093238168593L;
 
-    private Logger LOG = LoggerFactory.getLogger(RigSelectionLayoutListener.class);
+    private Logger LOG = LoggerFactory.getLogger(DepositEndpointSelectionLayoutListener.class);
 
-    private final IInvestigationAction controller;
-
-    private final ILabsInvestigationAction labsInvestigationAction;
+    final ILabsInvestigationAction labsInvestigationAction;
 
     private HorizontalLayout layout = null;
 
-    public RigSelectionLayoutListener(final IInvestigationAction controller,
-        final ILabsInvestigationAction labsInvestigationAction, final HorizontalLayout layout) {
-        Preconditions.checkNotNull(controller, "Controller is null");
-        Preconditions.checkNotNull(labsInvestigationAction, "LabsInvestigationAction is null");
+    public DepositEndpointSelectionLayoutListener(final ILabsInvestigationAction labsInvestigationAction,
+        final HorizontalLayout layout) {
         Preconditions.checkNotNull(layout, "Layout is null");
+        Preconditions.checkNotNull(labsInvestigationAction, "LabsInvestigationAction is null");
         this.labsInvestigationAction = labsInvestigationAction;
-        this.controller = controller;
         this.layout = layout;
     }
 
@@ -92,15 +83,15 @@ public class RigSelectionLayoutListener implements LayoutClickListener {
             }
             if (dataComponent instanceof Label) {
 
-                BeanItemContainer<RigBean> itemContainer = new BeanItemContainer<RigBean>(RigBean.class);
-                for (Iterator iterator = this.controller.getAvailableRigs().iterator(); iterator.hasNext();) {
-                    RigBean bean = (RigBean) iterator.next();
-                    itemContainer.addItem(bean);
+                BeanItemContainer<String> itemContainer = new BeanItemContainer<String>(String.class);
+                for (Iterator<String> iterator = ELabsCache.getDepositEndpoints().iterator(); iterator.hasNext();) {
+                    String element = iterator.next();
+                    itemContainer.addItem(element);
                 }
 
                 Component newComponent =
-                    LabsLayoutHelper.createDynamicComboBoxFieldForInvestigation(this.labsInvestigationAction, null,
-                        ELabsViewContants.P_RIG_COMPLEX_ID, itemContainer);
+                    LabsLayoutHelper.createDynamicComboBoxFieldForInvestigation(this.labsInvestigationAction,
+                        ((Label) dataComponent).getPropertyDataSource(), null, itemContainer);
                 if (newComponent != null) {
                     ((HorizontalLayout) component).replaceComponent(dataComponent, newComponent);
                     ((HorizontalLayout) component).setComponentAlignment(
