@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 
 import com.vaadin.event.Action;
 import com.vaadin.event.Action.Handler;
+import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.event.ShortcutAction;
@@ -99,6 +100,9 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
                 return;
             }
             Component modifiedComponent = this.containerPanel.getModifiedComponent();
+            if (event.getButton() == ItemClickEvent.BUTTON_MIDDLE) {
+                return;
+            }
             if (modifiedComponent != null && (childComponent == null || !modifiedComponent.equals(childComponent))) {
                 Component dataComponent = ((HorizontalLayout) modifiedComponent).getComponent(1);
 
