@@ -280,10 +280,10 @@ public class Router {
                 new ItemView(serviceLocation, repositories, this, layout, tryToFindResource(clickedResource),
                     mainWindow);
             if (!doReloadView) {
-                layout.openView(viewComponent, clickedResource.getName());
+                layout.openView(viewComponent, tryToFindResource(clickedResource).getName());
             }
             else {
-                layout.openViewByReloading(viewComponent, clickedResource.getName());
+                layout.openViewByReloading(viewComponent, tryToFindResource(clickedResource).getName());
             }
         }
         else if (controllerId.equals("org.escidoc.browser.Container")) {
@@ -300,10 +300,10 @@ public class Router {
             Component viewComponent =
                 new ContextView(serviceLocation, this, tryToFindResource(clickedResource), mainWindow, repositories);
             if (!doReloadView) {
-                layout.openView(viewComponent, clickedResource.getName());
+                layout.openView(viewComponent, tryToFindResource(clickedResource).getName());
             }
             else {
-                layout.openViewByReloading(viewComponent, clickedResource.getName());
+                layout.openViewByReloading(viewComponent, tryToFindResource(clickedResource).getName());
             }
         }
         else {

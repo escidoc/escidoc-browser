@@ -28,7 +28,6 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -120,7 +119,7 @@ public class ResourceAddViewImpl implements ResourceAddView {
 
     private Router router;
 
-    private String metaData;
+    private String metaData = AppConstants.EMPTY_STRING;
 
     public ResourceAddViewImpl(final Repositories repositories, final Window mainWindow, final ResourceModel parent,
         final TreeDataSource treeDataSource, final String contextId, Router router) {
@@ -352,33 +351,6 @@ public class ResourceAddViewImpl implements ResourceAddView {
         return null;
     }
 
-    /**
-     * In case we have models which are different from the default ones, we get the name of the module here
-     * 
-     * @param contentModelid
-     * @return
-     */
-    private String getModuleName(String contentModelid) {
-        ContentModel contentModel;
-        String controllerName = null;
-        try {
-            contentModel = repositories.contentModel().findById(contentModelid);
-            String contentModelDesc = contentModel.getProperties().getDescription();
-            final Pattern controllerIdPattern = Pattern.compile("org.escidoc.browser.Controller=([^;]*);");
-            final Matcher controllerIdMatcher = controllerIdPattern.matcher(contentModelDesc);
-
-            if (controllerIdMatcher.find()) {
-                controllerName = controllerIdMatcher.group(1);
-            }
-            return controllerName;
-        }
-        catch (EscidocClientException e) {
-            LOG.error("Could not find a name for this controller" + e.getLocalizedMessage());
-            return null;
-
-        }
-    }
-
     public String getResourceName() {
         return nameField.getValue().toString();
     }
@@ -405,9 +377,9 @@ public class ResourceAddViewImpl implements ResourceAddView {
     public void createResource() {
         String resourceType = getContentModelType(getContentModelId());
         // A HOOK is needed here to check if the resource belongs to something external!!!
-        if (getModuleName(getContentModelId()) != null) {
-            updateMetaDataForSpecialModules();
-        }
+        // if (getModuleName(getContentModelId()) != null) {
+        // updateMetaDataForSpecialModules();
+        // }
 
         try {
             if (resourceType == null) {
@@ -438,49 +410,6 @@ public class ResourceAddViewImpl implements ResourceAddView {
         catch (EscidocClientException e) {
             mainWindow.showNotification(e.getLocalizedMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
         }
-    }
-
-    /**
-     * The method is called if the ContentModel provides information on a special module (Example BWeLabs). Each of
-     * these Special Modules has special resources, with special MetaData. These metadata are retrieve in this method
-     * 
-     */
-    private void updateMetaDataForSpecialModules() {
-        String moduleName = getModuleName(getContentModelId());
-        String metadataResourceType = moduleName.substring(moduleName.lastIndexOf('.') + 1);
-
-        String constantsClassName =
-            getModuleName(getContentModelId()).replace(metadataResourceType, "").replace("bwelabs",
-                "browser.elabsmodul")
-                + "constants.MetaDataConstants";
-
-        Class<?> controllerClass;
-        try {
-            controllerClass = Class.forName(constantsClassName);
-            Field[] fields = controllerClass.getDeclaredFields();
-
-            for (Field field : fields) {
-                field.setAccessible(true);
-                if (field.getName().equals(metadataResourceType.toUpperCase())) {
-                    setMetaDataTitle(getResourceName(), field.get(metadataResourceType.toUpperCase()).toString());
-                }
-            }
-        }
-        catch (ClassNotFoundException e) {
-            mainWindow.showNotification(ViewConstants.COULD_NOT_LOAD_CONSTANTS_METADATA_CLASS,
-                Window.Notification.TYPE_ERROR_MESSAGE);
-            e.printStackTrace();
-        }
-        catch (IllegalAccessException e) {
-            mainWindow.showNotification(ViewConstants.COULD_NOT_LOAD_CONSTANTS_METADATA_CLASS,
-                Window.Notification.TYPE_ERROR_MESSAGE);
-            e.printStackTrace();
-        }
-    }
-
-    private void setMetaDataTitle(String resourceName, String metadata) {
-        setMetaData(metadata.replaceFirst("<dc:title>(.*)</dc:title>", "<dc:title>" + resourceName + "</dc:title>"));
-
     }
 
     private void createNewResource(String resourceType) throws EscidocClientException {
