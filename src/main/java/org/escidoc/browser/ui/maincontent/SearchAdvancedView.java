@@ -48,8 +48,6 @@ public class SearchAdvancedView extends VerticalLayout {
 
     private final Router router;
 
-    private final int appHeight;
-
     TextField txtTitle;
 
     TextField txtCreator;
@@ -68,7 +66,6 @@ public class SearchAdvancedView extends VerticalLayout {
 
     public SearchAdvancedView(final Router router, final EscidocServiceLocation serviceLocation) {
         this.router = router;
-        appHeight = router.getLayout().getApplicationHeight();
         this.serviceLocation = serviceLocation;
         setWidth("100.0%");
         setHeight("85%");

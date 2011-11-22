@@ -106,7 +106,7 @@ public class TreeClickListener implements ItemClickListener {
     }
 
     private void createView(final ResourceModel clickedResource) throws EscidocClientException {
-        router.show(clickedResource);
+        router.show(clickedResource, false);
     }
 
     private void showErrorMessageToUser(final ResourceModel hasChildrenResource, final EscidocClientException e) {

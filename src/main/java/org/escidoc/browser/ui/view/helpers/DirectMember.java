@@ -190,7 +190,6 @@ public class DirectMember {
 
         HorizontalLayout hl = new HorizontalLayout();
         hl.setWidth("200px");
-
         hl.setHeight("20px");
 
         panelLayout.addComponent(hl);

@@ -41,7 +41,6 @@ import org.escidoc.browser.layout.LayoutDesign;
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.ContextModel;
-import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ItemProxy;
@@ -75,8 +74,6 @@ public class Router {
 
     private final Window mainWindow;
 
-    private final CurrentUser currentUser;
-
     private final Repositories repositories;
 
     private EscidocServiceLocation serviceLocation;
@@ -96,13 +93,12 @@ public class Router {
      * @throws EscidocClientException
      */
     public Router(final Window mainWindow, final EscidocServiceLocation serviceLocation, final BrowserApplication app,
-        final CurrentUser currentUser, final Repositories repositories) throws EscidocClientException {
+        final Repositories repositories) throws EscidocClientException {
 
         this.serviceLocation = serviceLocation;
         this.app = app;
         this.mainWindow = mainWindow;
         this.serviceLocation = serviceLocation;
-        this.currentUser = currentUser;
         this.repositories = repositories;
         init();
     }
@@ -187,6 +183,22 @@ public class Router {
     }
 
     /**
+     * The router should be passed a controller and the controller should open its personal view Should be the default
+     * method for binding ControllerViews to the Layout. + Should be the default call
+     * 
+     * @param cnt
+     */
+    public void openControllerView(Controller cnt, ResourceProxy resourceProxy, Boolean doReloadView) {
+        cnt.init(serviceLocation, repositories, this, resourceProxy, mainWindow);
+        if (!doReloadView) {
+            cnt.showView(layout);
+        }
+        else {
+            cnt.showViewByReloading(layout);
+        }
+    }
+
+    /**
      * This method handles the open of a new tab on the right section of the mainWindow This is the perfect place to
      * inject Views that represent objects
      * 
@@ -216,7 +228,7 @@ public class Router {
                 try {
                     final ContextProxyImpl context =
                         (ContextProxyImpl) resourceFactory.find(escidocID, ResourceType.CONTEXT);
-                    openTab(new ContextView(serviceLocation, this, context, mainWindow, repositories),
+                    layout.openView(new ContextView(serviceLocation, this, context, mainWindow, repositories),
                         context.getName());
                 }
                 catch (final EscidocClientException e) {
@@ -227,7 +239,7 @@ public class Router {
                 try {
                     final ContainerProxy container =
                         (ContainerProxy) resourceFactory.find(escidocID, ResourceType.CONTAINER);
-                    openTab(new ContainerView(serviceLocation, this, container, mainWindow, repositories),
+                    layout.openView(new ContainerView(serviceLocation, this, container, mainWindow, repositories),
                         container.getName());
                 }
                 catch (final EscidocClientException e) {
@@ -237,7 +249,8 @@ public class Router {
             else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("ITEM")) {
                 try {
                     final ItemProxy item = (ItemProxy) resourceFactory.find(escidocID, ResourceType.ITEM);
-                    openTab(new ItemView(serviceLocation, repositories, this, layout, item, mainWindow), item.getName());
+                    layout.openView(new ItemView(serviceLocation, repositories, this, layout, item, mainWindow),
+                        item.getName());
                 }
                 catch (final EscidocClientException e) {
                     showError(FAIL_RETRIEVING_RESOURCE);
@@ -245,7 +258,7 @@ public class Router {
             }
             else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("sa")) {
                 final SearchAdvancedView srch = new SearchAdvancedView(this, serviceLocation);
-                openTab(srch, "Advanced Search");
+                layout.openView(srch, "Advanced Search");
             }
             else {
                 throw new UnsupportedOperationException("Not yet implemented");
@@ -257,7 +270,82 @@ public class Router {
         mainWindow.showNotification(msg, Notification.TYPE_ERROR_MESSAGE);
     }
 
-    public void show(final ResourceModel clickedResource) throws EscidocClientException {
+    public void show(final ResourceModel clickedResource, Boolean doReloadView) throws EscidocClientException {
+        String controllerId = getControllerId(clickedResource);
+        // Controller by controller-id
+        // TODO refactor ItemView, ContextView, COntainerView to have a Controller so this code can be refactored
+        Controller controller;
+        if (controllerId.equals("org.escidoc.browser.Item")) {
+            Component viewComponent =
+                new ItemView(serviceLocation, repositories, this, layout, tryToFindResource(clickedResource),
+                    mainWindow);
+            if (!doReloadView) {
+                layout.openView(viewComponent, clickedResource.getName());
+            }
+            else {
+                layout.openViewByReloading(viewComponent, clickedResource.getName());
+            }
+        }
+        else if (controllerId.equals("org.escidoc.browser.Container")) {
+            Component viewComponent =
+                new ContainerView(serviceLocation, this, tryToFindResource(clickedResource), mainWindow, repositories);
+            if (!doReloadView) {
+                layout.openView(viewComponent, clickedResource.getName());
+            }
+            else {
+                layout.openViewByReloading(viewComponent, clickedResource.getName());
+            }
+        }
+        else if (controllerId.equals("org.escidoc.browser.Context")) {
+            Component viewComponent =
+                new ContextView(serviceLocation, this, tryToFindResource(clickedResource), mainWindow, repositories);
+            if (!doReloadView) {
+                layout.openView(viewComponent, clickedResource.getName());
+            }
+            else {
+                layout.openViewByReloading(viewComponent, clickedResource.getName());
+            }
+        }
+        else {
+            try {
+                String controllerClassName = browserProperties.getProperty(controllerId);
+                // TODO find a better solution for "controller ID not configured"
+                if (controllerClassName == null) {
+                    LOG.error("Could not resolve controller ID. " + controllerId);
+                }
+                else {
+                    LOG.debug(clickedResource.getId());
+                    final Class<?> controllerClass = Class.forName(controllerClassName);
+                    controller = (Controller) controllerClass.newInstance();
+                    controller
+                        .init(serviceLocation, repositories, this, tryToFindResource(clickedResource), mainWindow);
+                    if (!doReloadView) {
+                        controller.showView(layout);
+                    }
+                    else {
+                        controller.showViewByReloading(layout);
+                    }
+                }
+            }
+            catch (ClassNotFoundException e) {
+                this.getMainWindow().showNotification(ViewConstants.CONTROLLER_ERR_CANNOT_FIND_CLASS,
+                    Notification.TYPE_ERROR_MESSAGE);
+                LOG.error(ViewConstants.CONTROLLER_ERR_CANNOT_FIND_CLASS + e.getLocalizedMessage());
+            }
+            catch (InstantiationException e) {
+                this.getMainWindow().showNotification(ViewConstants.CONTROLLER_ERR_INSTANTIATE_CLASS,
+                    Notification.TYPE_ERROR_MESSAGE);
+                LOG.error(ViewConstants.CONTROLLER_ERR_INSTANTIATE_CLASS + e.getLocalizedMessage());
+            }
+            catch (IllegalAccessException e) {
+                this.getMainWindow().showNotification(ViewConstants.CONTROLLER_ERR_ILLEG_EXEP,
+                    Notification.TYPE_ERROR_MESSAGE);
+                LOG.error(ViewConstants.CONTROLLER_ERR_ILLEG_EXEP + e.getLocalizedMessage());
+            }
+        }
+    }
+
+    private String getControllerId(final ResourceModel clickedResource) throws EscidocClientException {
         String controllerId = null;
         if (ContextModel.isContext(clickedResource)) {
             controllerId = "org.escidoc.browser.Context";
@@ -289,53 +377,7 @@ public class Router {
         if (controllerId == null) {
             throw new UnsupportedOperationException("Unknown resource. Can not be shown.");
         }
-
-        // Controller by controller-id
-        Controller controller;
-        if (controllerId.equals("org.escidoc.browser.Item")) {
-            openTab(new ItemView(serviceLocation, repositories, this, layout, tryToFindResource(clickedResource),
-                mainWindow), clickedResource.getName());
-        }
-        else if (controllerId.equals("org.escidoc.browser.Container")) {
-            openTab(new ContainerView(serviceLocation, this, tryToFindResource(clickedResource), mainWindow,
-                repositories), clickedResource.getName());
-        }
-        else if (controllerId.equals("org.escidoc.browser.Context")) {
-            openTab(
-                new ContextView(serviceLocation, this, tryToFindResource(clickedResource), mainWindow, repositories),
-                clickedResource.getName());
-        }
-        else {
-            try {
-                String controllerClassName = browserProperties.getProperty(controllerId);
-                // TODO find a better solution for "controller ID not configured"
-                if (controllerClassName == null) {
-                    LOG.error("Could not resolve controller ID. " + controllerId);
-                }
-                else {
-                    final Class<?> controllerClass = Class.forName(controllerClassName);
-                    controller = (Controller) controllerClass.newInstance();
-                    controller.init(serviceLocation, repositories, this, tryToFindResource(clickedResource),
-                        mainWindow, currentUser);
-                    controller.showView(layout);
-                }
-            }
-            catch (ClassNotFoundException e) {
-                this.getMainWindow().showNotification(ViewConstants.CONTROLLER_ERR_CANNOT_FIND_CLASS,
-                    Notification.TYPE_ERROR_MESSAGE);
-                LOG.error(ViewConstants.CONTROLLER_ERR_CANNOT_FIND_CLASS + e.getLocalizedMessage());
-            }
-            catch (InstantiationException e) {
-                this.getMainWindow().showNotification(ViewConstants.CONTROLLER_ERR_INSTANTIATE_CLASS,
-                    Notification.TYPE_ERROR_MESSAGE);
-                LOG.error(ViewConstants.CONTROLLER_ERR_INSTANTIATE_CLASS + e.getLocalizedMessage());
-            }
-            catch (IllegalAccessException e) {
-                this.getMainWindow().showNotification(ViewConstants.CONTROLLER_ERR_ILLEG_EXEP,
-                    Notification.TYPE_ERROR_MESSAGE);
-                LOG.error(ViewConstants.CONTROLLER_ERR_ILLEG_EXEP + e.getLocalizedMessage());
-            }
-        }
+        return controllerId;
     }
 
     private ResourceProxy tryToFindResource(final ResourceModel clickedResource) throws EscidocClientException {

@@ -63,8 +63,6 @@ public class ContextView extends Panel {
 
     private final ResourceProxy resourceProxy;
 
-    private int accordionHeight;
-
     private final EscidocServiceLocation serviceLocation;
 
     private final Window mainWindow;
@@ -232,7 +230,7 @@ public class ContextView extends Panel {
 
     private Accordion buildMetaDataRecsAcc() {
         // common part: create layout
-        Accordion metaDataRecsAcc = new MetadataRecsContext(resourceProxy, accordionHeight, mainWindow).asAccord();
+        Accordion metaDataRecsAcc = new MetadataRecsContext(resourceProxy, mainWindow).asAccord();
         return metaDataRecsAcc;
     }
 

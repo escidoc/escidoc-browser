@@ -45,7 +45,6 @@ import org.escidoc.browser.elabsmodul.model.InvestigationSeriesBean;
 import org.escidoc.browser.elabsmodul.views.InvestigationSeriesView;
 import org.escidoc.browser.elabsmodul.views.YesNoDialog;
 import org.escidoc.browser.model.ContainerProxy;
-import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
@@ -82,8 +81,6 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
     private ContainerProxy resourceProxy;
 
     private Window mainWindow;
-
-    private CurrentUser currentUser;
 
     private InvestigationSeriesBean isb;
 
@@ -161,13 +158,12 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
     @Override
     public void init(
         EscidocServiceLocation serviceLocation, Repositories repositories, Router router, ResourceProxy resourceProxy,
-        Window mainWindow, CurrentUser currentUser) {
+        Window mainWindow) {
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(router, "mainSite is null: %s", router);
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
-        Preconditions.checkNotNull(currentUser, "currentUser is null: %s", currentUser);
         Preconditions.checkArgument(resourceProxy instanceof ContainerProxy, "resourceProxy is not container proxy");
 
         this.serviceLocation = serviceLocation;
@@ -175,10 +171,9 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
         this.router = router;
         this.resourceProxy = (ContainerProxy) resourceProxy;
         this.mainWindow = mainWindow;
-        this.currentUser = currentUser;
 
         // FIXME a little bit weird
-        getResourceName(resourceProxy.getName());
+        setResourceName(resourceProxy.getName());
 
         isb = resourceToBean();
         view = createView();

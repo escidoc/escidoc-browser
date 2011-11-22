@@ -54,7 +54,6 @@ import org.escidoc.browser.elabsmodul.model.RigBean;
 import org.escidoc.browser.elabsmodul.views.InvestigationView;
 import org.escidoc.browser.elabsmodul.views.YesNoDialog;
 import org.escidoc.browser.model.ContainerProxy;
-import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ItemProxy;
@@ -151,7 +150,7 @@ public class InvestigationController extends Controller implements IInvestigatio
     @Override
     public void init(
         EscidocServiceLocation serviceLocation, Repositories repositories, Router router, ResourceProxy resourceProxy,
-        Window mainWindow, CurrentUser currentUser) {
+        Window mainWindow) {
         Preconditions.checkNotNull(repositories, "Repository ref is null");
         this.serviceLocation = serviceLocation;
         this.repositories = repositories;
@@ -161,7 +160,7 @@ public class InvestigationController extends Controller implements IInvestigatio
 
         loadAdminDescriptorInfo();
         view = createView(resourceProxy);
-        this.getResourceName(resourceProxy.getName());
+        this.setResourceName(resourceProxy.getName());
 
     }
 
@@ -179,6 +178,11 @@ public class InvestigationController extends Controller implements IInvestigatio
         }
         catch (EscidocClientException e) {
             LOG.error("Could not load Admin Descriptor 'elabs'. " + e.getLocalizedMessage(), e);
+        }
+        catch (NullPointerException e) {
+            mainWindow.showNotification(new Notification("Admin Description is null in the context "
+                + resourceProxy.getContext().getObjid(), Notification.TYPE_HUMANIZED_MESSAGE));
+            LOG.debug("Admin Description is null in the context " + resourceProxy.getContext().getObjid());
         }
     }
 

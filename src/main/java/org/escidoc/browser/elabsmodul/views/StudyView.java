@@ -55,7 +55,6 @@ import com.vaadin.data.util.POJOItem;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
@@ -83,7 +82,7 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
 
     private final int COMPONENT_COUNT = 4;
 
-    private final CssLayout cssLayout = new CssLayout();
+    private final HorizontalLayout directMemberExperimentContainer = new HorizontalLayout();
 
     private final Router router;
 
@@ -135,8 +134,6 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
             public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
                 if (event.getButton().getCaption().equals("Save")) {
                     controller.saveAction(studyBean);
-                    // TODO Why do we need to call these two methods?
-                    // ANS edited but not reset form's text fields should be converted into a label
                     StudyView.this.resetLayout();
                     dynamicLayout.requestRepaintAll();
                 }
@@ -176,17 +173,18 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
         mainLayout = new VerticalLayout();
         mainLayout.setSpacing(true);
         mainLayout.setMargin(true);
-        mainLayout.setHeight(router.getLayout().getApplicationHeight() - 30 + "px");
-        mainLayout.setStyleName("red");
+        mainLayout.setSizeFull();
         dynamicLayout = new VerticalLayout();
         dynamicLayout.setSpacing(true);
         dynamicLayout.setMargin(true);
+        dynamicLayout.setSizeFull();
 
         pojoItem = new POJOItem<StudyBean>(studyBean, PROPERTIES);
         registeredComponents = new ArrayList<HorizontalLayout>(COMPONENT_COUNT);
 
         setContent(mainLayout);
 
+        this.setStyleName(Runo.PANEL_LIGHT);
         setScrollable(true);
     }
 
@@ -221,8 +219,8 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
         dynamicLayout.addComponent(new HorizontalLayout(), 4);
 
         rightCell(dynamicLayout);
-        mainLayout.addComponent(cssLayout);
-        mainLayout.setExpandRatio(cssLayout, 1.0f);
+        mainLayout.addComponent(directMemberExperimentContainer);
+        mainLayout.setExpandRatio(directMemberExperimentContainer, 9.0f);
         mainLayout.attach();
         mainLayout.requestRepaintAll();
     }
@@ -241,8 +239,8 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
      * Builds a Container for the DM and the ElabPanel
      */
     private void buildContainerGUI() {
-        cssLayout.setWidth("100%");
-        cssLayout.setHeight("100%");
+        directMemberExperimentContainer.setWidth("100%");
+        directMemberExperimentContainer.setHeight("100%");
         try {
             leftCell();
         }
@@ -258,33 +256,34 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
      * 
      * @param comptoBind
      */
-    // TODO why deprecated?
-    @SuppressWarnings("deprecation")
     private void rightCell(final Component comptoBind) {
         final Panel rightpnl = new Panel();
         rightpnl.setDescription(RIGHT_PANEL);
         rightpnl.setStyleName("floatright");
         rightpnl.addStyleName(Runo.PANEL_LIGHT);
-        rightpnl.setWidth("70%");
-        rightpnl.setHeight("82%");
-        rightpnl.getLayout().setMargin(false);
-        rightpnl.addComponent(comptoBind);
-        cssLayout.addComponent(rightpnl);
+        rightpnl.setSizeFull();
+        VerticalLayout vlRightPnl = new VerticalLayout();
+        vlRightPnl.setSizeFull();
+        vlRightPnl.setMargin(false);
+        vlRightPnl.addComponent(comptoBind);
+        rightpnl.setContent(vlRightPnl);
+        directMemberExperimentContainer.addComponent(rightpnl);
+        directMemberExperimentContainer.setExpandRatio(rightpnl, 7.0f);
     }
 
-    // TODO why deprecated?
-    @SuppressWarnings("deprecation")
     private void leftCell() throws EscidocClientException {
         final Panel leftPanel = new Panel();
         leftPanel.setStyleName("directmembers floatleft");
         leftPanel.setScrollable(false);
-        leftPanel.getLayout().setMargin(false);
-        leftPanel.setWidth("30%");
-        leftPanel.setHeight("82%");
-
+        leftPanel.setSizeFull();
+        VerticalLayout vlLeftPanel = new VerticalLayout();
+        vlLeftPanel.setSizeFull();
+        vlLeftPanel.setMargin(false);
+        leftPanel.setContent(vlLeftPanel);
         new DirectMember(router.getServiceLocation(), router, containerProxy.getId(), router.getMainWindow(),
             router.getRepositories(), leftPanel, ResourceType.CONTAINER.toString()).containerAsTree();
-        cssLayout.addComponent(leftPanel);
+        directMemberExperimentContainer.addComponent(leftPanel);
+        directMemberExperimentContainer.setExpandRatio(leftPanel, 3.0f);
     }
 
     /**

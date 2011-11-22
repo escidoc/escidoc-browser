@@ -29,7 +29,6 @@
 package org.escidoc.browser.controller;
 
 import org.escidoc.browser.layout.LayoutDesign;
-import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
@@ -45,18 +44,21 @@ public abstract class Controller {
 
     public abstract void init(
         final EscidocServiceLocation serviceLocation, final Repositories repositories, final Router mainSite,
-        final ResourceProxy resourceProxy, final Window mainWindow, final CurrentUser currentUser);
+        final ResourceProxy resourceProxy, final Window mainWindow);
 
     public void showView(final LayoutDesign layout) {
         layout.openView(this.view, this.getResourceName());
+    }
+
+    public void showViewByReloading(final LayoutDesign layout) {
+        layout.openViewByReloading(this.view, this.getResourceName());
     }
 
     public String getResourceName() {
         return resouceName;
     }
 
-    // FIX should be changed to: void setResourceName(String name)
-    public void getResourceName(String name) {
+    public void setResourceName(String name) {
         this.resouceName = name;
     }
 

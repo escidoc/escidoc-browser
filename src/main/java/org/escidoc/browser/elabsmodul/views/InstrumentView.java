@@ -56,6 +56,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.Runo;
 
 /**
  * Specific BWeLabsView for Instrument item-element.
@@ -100,8 +101,6 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
 
     private ItemProxy itemProxy;
 
-    private List<String> eSyncDaemonUrls;
-
     private EscidocServiceLocation serviceLocation;
 
     public InstrumentView(InstrumentBean sourceBean, ISaveAction controller, List<ResourceModel> breadCrumbModel,
@@ -111,7 +110,6 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
         this.controller = controller;
         this.breadCrumbModel = breadCrumbModel;
         itemProxy = (ItemProxy) resourceProxy;
-        this.eSyncDaemonUrls = eSyncDaemonUrls;
         this.serviceLocation = serviceLocation;
 
         initialisePanelComponents();
@@ -126,6 +124,7 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
     private void initialisePanelComponents() {
 
         mainLayout = new VerticalLayout();
+        mainLayout.setSizeFull();
         mainLayout.setSpacing(true);
         mainLayout.setMargin(true);
         dynamicLayout = new VerticalLayout();
@@ -135,6 +134,8 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
         pojoItem = new POJOItem<InstrumentBean>(instrumentBean, PROPERTIES);
         registeredComponents = new ArrayList<HorizontalLayout>(COMPONENT_COUNT);
 
+        this.setSizeFull();
+        this.setStyleName(Runo.PANEL_LIGHT);
         setContent(mainLayout);
         setScrollable(true);
     }
@@ -209,6 +210,7 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
         dynamicLayout.addComponent(new HorizontalLayout(), 9);
 
         mainLayout.addComponent(dynamicLayout);
+        mainLayout.setExpandRatio(dynamicLayout, 9.0f);
         mainLayout.attach();
         mainLayout.requestRepaintAll();
     }

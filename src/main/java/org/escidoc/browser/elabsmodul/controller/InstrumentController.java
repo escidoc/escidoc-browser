@@ -45,7 +45,6 @@ import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
 import org.escidoc.browser.elabsmodul.model.InstrumentBean;
 import org.escidoc.browser.elabsmodul.views.InstrumentView;
 import org.escidoc.browser.elabsmodul.views.YesNoDialog;
-import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.ResourceModel;
@@ -101,7 +100,7 @@ public final class InstrumentController extends Controller implements ISaveActio
     @Override
     public void init(
         EscidocServiceLocation serviceLocation, Repositories repositories, Router mainSite,
-        ResourceProxy resourceProxy, Window mainWindow, CurrentUser currentUser) {
+        ResourceProxy resourceProxy, Window mainWindow) {
         Preconditions.checkNotNull(repositories, "Repository ref is null");
         Preconditions.checkNotNull(serviceLocation, "ServiceLocation ref is null");
         this.serviceLocation = serviceLocation;
@@ -110,7 +109,7 @@ public final class InstrumentController extends Controller implements ISaveActio
         this.mainWindow = mainWindow;
         loadAdminDescriptorInfo();
         view = createView(resourceProxy);
-        this.getResourceName(resourceProxy.getName());
+        this.setResourceName(resourceProxy.getName());
     }
 
     /**
@@ -310,6 +309,11 @@ public final class InstrumentController extends Controller implements ISaveActio
         catch (EscidocClientException e) {
             LOG.debug("Error occurred. Could not load Admin Descriptors" + e.getLocalizedMessage());
             e.printStackTrace();
+        }
+        catch (NullPointerException e) {
+            mainWindow.showNotification(new Notification("Admin Description is null in the context "
+                + resourceProxy.getContext().getObjid(), Notification.TYPE_HUMANIZED_MESSAGE));
+            LOG.debug("Admin Description is null in the context " + resourceProxy.getContext().getObjid());
         }
 
     }

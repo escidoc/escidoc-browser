@@ -313,7 +313,7 @@ public class ItemAddView {
             if (treeDataSource != null) {
                 treeDataSource.addChild(parent, new ItemModel(createdItem));
             }
-            router.show(parent);
+            router.show(parent, true);
             subwindow.getParent().removeWindow(subwindow);
         }
         catch (final EscidocClientException e) {

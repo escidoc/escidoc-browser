@@ -107,6 +107,11 @@ public class AddNewStudyPublicationWindow extends Window implements Button.Click
         panel.setContent(rootLayout);
 
         panel.addActionHandler(new Action.Handler() {
+            /**
+             * 
+             */
+            private static final long serialVersionUID = 1L;
+
             private final Action action_ok = new ShortcutAction("Enter key", ShortcutAction.KeyCode.ENTER, null);
 
             private final Action action_esc = new ShortcutAction("Escape key", ShortcutAction.KeyCode.ESCAPE, null);

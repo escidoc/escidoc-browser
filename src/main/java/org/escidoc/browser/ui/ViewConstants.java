@@ -76,6 +76,8 @@ public class ViewConstants {
 
     public static final String CREATE_CONTAINER = "Create Container";
 
+    public static final String CREATE_RESOURCE = "Create Resource";
+
     public static final String EDIT_METADATA = "Edit MetaData";
 
     // ResourceAddViewImpl ContainerAddView
@@ -97,6 +99,9 @@ public class ViewConstants {
 
     public static final String ERROR_NO_RESOURCETYPE_IN_CONTENTMODEL =
         "Could not find a definition for the resource type in Content Model \"";
+
+    public static final String COULD_NOT_LOAD_CONSTANTS_METADATA_CLASS =
+        "Could not load the class containing the Metadata Constants for this module";
 
     public static final String ITEM_NAME = "Item name";
 

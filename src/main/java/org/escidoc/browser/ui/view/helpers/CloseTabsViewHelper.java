@@ -33,18 +33,19 @@ import org.escidoc.browser.ui.maincontent.ItemView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.themes.BaseTheme;
 
 public class CloseTabsViewHelper implements ClickListener {
 
-    private AbstractLayout layout;
+    private CssLayout layout;
 
     private static final Logger LOG = LoggerFactory.getLogger(ItemView.class);
 
@@ -52,17 +53,15 @@ public class CloseTabsViewHelper implements ClickListener {
 
     TabSheet ts = null;
 
-    public CloseTabsViewHelper(AbstractLayout layout) {
-        this.layout = layout;
-    }
-
-    public CloseTabsViewHelper(AbstractLayout layout, TabSheet mainContentTabs) {
+    public CloseTabsViewHelper(CssLayout pnlContent, TabSheet mainContentTabs) {
+        Preconditions.checkNotNull(pnlContent, "Layout is null");
+        Preconditions.checkNotNull(mainContentTabs, "mainContentTabs is null");
         this.ts = mainContentTabs;
-        this.layout = layout;
-        buildButton(layout);
+        this.layout = pnlContent;
+        buildButton();
     }
 
-    private void buildButton(AbstractLayout layout) {
+    private void buildButton() {
         Button btnRemoveTabs = new Button();
         ThemeResource icon = new ThemeResource("images/assets/close.gif");
         btnRemoveTabs.setStyleName(BaseTheme.BUTTON_LINK);
