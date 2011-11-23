@@ -33,7 +33,6 @@ import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
@@ -80,7 +79,7 @@ public class ContainerRepository implements Repository {
 
     private final Window mainWindow;
 
-    static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
+    static final Logger LOG = LoggerFactory.getLogger(ContainerRepository.class);
 
     ContainerRepository(final EscidocServiceLocation escidocServiceLocation, Window mainWindow) {
         Preconditions

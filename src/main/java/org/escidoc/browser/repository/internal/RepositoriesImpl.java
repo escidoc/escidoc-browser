@@ -56,6 +56,10 @@ public class RepositoriesImpl implements Repositories {
 
     private ContentModelRepository contentModelRepository;
 
+    private UserAccountRepository userAccountRepository;
+
+    private OrganizationUnitRepository organizationUnitRepository;
+
     private final Window mainWindow;
 
     public RepositoriesImpl(final EscidocServiceLocation serviceLocation, Window mainWindow)
@@ -72,6 +76,8 @@ public class RepositoriesImpl implements Repositories {
         stagingRepository = new StagingRepositoryImpl(serviceLocation);
         pdpRepository = new PdpRepositoryImpl(serviceLocation.getEscidocUrl());
         contentModelRepository = new ContentModelRepository(serviceLocation);
+        userAccountRepository = new UserAccountRepository(serviceLocation);
+        organizationUnitRepository = new OrganizationUnitRepository(serviceLocation);
         return this;
     }
 
@@ -82,6 +88,8 @@ public class RepositoriesImpl implements Repositories {
         itemRepository.loginWith(token);
         stagingRepository.loginWith(token);
         pdpRepository.loginWith(token);
+        userAccountRepository.loginWith(token);
+        organizationUnitRepository.loginWith(token);
     }
 
     @Override
@@ -119,5 +127,18 @@ public class RepositoriesImpl implements Repositories {
         Preconditions
             .checkNotNull(contentModelRepository, "contentModelRepository is null: %s", contentModelRepository);
         return contentModelRepository;
+    }
+
+    @Override
+    public OrganizationUnitRepository organization() {
+        Preconditions.checkNotNull(organizationUnitRepository, "organizationUnitRepository is null: %s",
+            organizationUnitRepository);
+        return organizationUnitRepository;
+    }
+
+    @Override
+    public UserAccountRepository user() {
+        Preconditions.checkNotNull(userAccountRepository, "userAccountRepository is null: %s", userAccountRepository);
+        return userAccountRepository;
     }
 }
