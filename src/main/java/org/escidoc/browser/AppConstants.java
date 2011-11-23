@@ -82,4 +82,6 @@ public final class AppConstants {
 
     public static final int TWO_HOURS = 7200;
 
+    public static final String MAX_RESULT_SIZE = "1000";
+
 }

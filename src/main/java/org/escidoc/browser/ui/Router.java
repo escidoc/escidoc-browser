@@ -405,4 +405,8 @@ public class Router {
         return repositories;
     }
 
+    public BrowserApplication getApp() {
+        return this.app;
+    }
+
 }

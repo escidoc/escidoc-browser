@@ -28,8 +28,12 @@
  */
 package org.escidoc.browser.elabsmodul.controller;
 
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
+
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,6 +41,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.axis.types.NonNegativeInteger;
+import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.controller.Controller;
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.exceptions.EscidocBrowserException;
@@ -47,6 +53,7 @@ import org.escidoc.browser.elabsmodul.views.InstrumentView;
 import org.escidoc.browser.elabsmodul.views.YesNoDialog;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
+import org.escidoc.browser.model.OrgUnitService;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
@@ -69,9 +76,15 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
+import de.escidoc.core.client.UserAccountHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.client.exceptions.EscidocException;
+import de.escidoc.core.client.exceptions.InternalClientException;
+import de.escidoc.core.client.exceptions.TransportException;
+import de.escidoc.core.resources.aa.useraccount.UserAccount;
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.om.item.Item;
+import de.escidoc.core.resources.oum.OrganizationalUnit;
 
 /**
  * 
@@ -97,16 +110,25 @@ public final class InstrumentController extends Controller implements ISaveActio
     // contains default deposit endpoint URLs
     private List<String> depositEndPointUrls = new ArrayList<String>();
 
+    private List<UserAccount> userAccounts = null;
+
+    private Collection<OrganizationalUnit> orgUnits = null;
+
+    private Router router;
+
     @Override
     public void init(
-        EscidocServiceLocation serviceLocation, Repositories repositories, Router mainSite,
-        ResourceProxy resourceProxy, Window mainWindow) {
+        EscidocServiceLocation serviceLocation, Repositories repositories, Router router, ResourceProxy resourceProxy,
+        Window mainWindow) {
         Preconditions.checkNotNull(repositories, "Repository ref is null");
         Preconditions.checkNotNull(serviceLocation, "ServiceLocation ref is null");
         this.serviceLocation = serviceLocation;
         this.resourceProxy = resourceProxy;
         this.repositories = repositories;
         this.mainWindow = mainWindow;
+        this.router = router;
+        getOrgUnits();
+        getUsers();
         loadAdminDescriptorInfo();
         view = createView(resourceProxy);
         this.setResourceName(resourceProxy.getName());
@@ -350,6 +372,63 @@ public final class InstrumentController extends Controller implements ISaveActio
             LOG.error("Fatal error, could not load BreadCrumb " + e.getLocalizedMessage());
         }
         return Collections.emptyList();
+    }
+
+    private void getUsers() {
+        LOG.debug("I am in the users");
+        try {
+            final SearchRetrieveRequestType request = new SearchRetrieveRequestType();
+            request.setMaximumRecords(new NonNegativeInteger(AppConstants.MAX_RESULT_SIZE));
+            UserAccountHandlerClient userAccHandler = new UserAccountHandlerClient(serviceLocation.getEscidocUrl());
+            userAccHandler.setHandle(router.getApp().getCurrentUser().getToken());
+            userAccounts = userAccHandler.retrieveUserAccountsAsList(request);
+            //
+            // for (UserAccount userAccount : userAccounts) {
+            //
+            // LOG.debug("USER ACCOUNT " + userAccount.getXLinkTitle() + userAccount.getObjid());
+            //
+            // }
+        }
+        catch (MalformedURLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch (EscidocException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch (InternalClientException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch (TransportException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    private void getOrgUnits() {
+        try {
+            OrgUnitService orgUnitService =
+                new OrgUnitService(serviceLocation.getEscidocUri(), router.getApp().getCurrentUser().getToken());
+            orgUnits = orgUnitService.findAll();
+            for (OrganizationalUnit organizationalUnit : orgUnits) {
+                LOG.debug(organizationalUnit.getObjid() + organizationalUnit.getXLinkTitle());
+
+            }
+        }
+        catch (InternalClientException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch (EscidocException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch (TransportException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     @Override
