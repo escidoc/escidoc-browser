@@ -211,7 +211,6 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction,
             public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
                 if (event.getButton().getCaption().equals("Save")) {
                     controller.saveAction(investigationBean);
-                    // FIXME why do we these methods?
                     InvestigationView.this.resetLayout();
                     dynamicLayout.requestRepaintAll();
                 }
@@ -226,7 +225,6 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction,
         }
     }
 
-    // FIXME needed?
     protected void resetLayout() {
         Preconditions.checkNotNull(dynamicLayout, "View's dynamiclayout is null.");
 
@@ -276,9 +274,9 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction,
                 pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_RIG));
 
         // set up specific listeners
-        h3.addListener(new DepositEndpointSelectionLayoutListener(this, h3));
-        h4.addListener(new DepositorSelectionLayoutListener(this.controller, this, h4));
-        h6.addListener(new RigSelectionLayoutListener(this.controller, this, h6));
+        h3.addListener(new DepositEndpointSelectionLayoutListener(this));
+        h4.addListener(new DepositorSelectionLayoutListener(this));
+        h6.addListener(new RigSelectionLayoutListener(this.controller, this));
 
         registeredComponents.add(h1);
         registeredComponents.add(h2);

@@ -64,16 +64,12 @@ public class RigSelectionLayoutListener implements LayoutClickListener {
 
     private final ILabsInvestigationAction labsInvestigationAction;
 
-    private HorizontalLayout layout = null;
-
     public RigSelectionLayoutListener(final IInvestigationAction controller,
-        final ILabsInvestigationAction labsInvestigationAction, final HorizontalLayout layout) {
+        final ILabsInvestigationAction labsInvestigationAction) {
         Preconditions.checkNotNull(controller, "Controller is null");
         Preconditions.checkNotNull(labsInvestigationAction, "LabsInvestigationAction is null");
-        Preconditions.checkNotNull(layout, "Layout is null");
         this.labsInvestigationAction = labsInvestigationAction;
         this.controller = controller;
-        this.layout = layout;
     }
 
     @Override

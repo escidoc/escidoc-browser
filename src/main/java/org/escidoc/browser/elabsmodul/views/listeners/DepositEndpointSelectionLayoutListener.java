@@ -57,14 +57,9 @@ public class DepositEndpointSelectionLayoutListener implements LayoutClickListen
 
     final ILabsInvestigationAction labsInvestigationAction;
 
-    private HorizontalLayout layout = null;
-
-    public DepositEndpointSelectionLayoutListener(final ILabsInvestigationAction labsInvestigationAction,
-        final HorizontalLayout layout) {
-        Preconditions.checkNotNull(layout, "Layout is null");
+    public DepositEndpointSelectionLayoutListener(final ILabsInvestigationAction labsInvestigationAction) {
         Preconditions.checkNotNull(labsInvestigationAction, "LabsInvestigationAction is null");
         this.labsInvestigationAction = labsInvestigationAction;
-        this.layout = layout;
     }
 
     @Override

@@ -268,7 +268,7 @@ public class InvestigationController extends Controller implements IInvestigatio
     private InvestigationBean loadBeanData(ContainerProxy containerProxy) throws EscidocBrowserException {
         final String URI_DC = "http://purl.org/dc/elements/1.1/";
         final String URI_EL = "http://escidoc.org/ontologies/bw-elabs/re#";
-        // final String URI_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+        final String URI_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
         if (containerProxy == null) {
             throw new NullPointerException("Container Proxy is null.");
@@ -284,8 +284,8 @@ public class InvestigationController extends Controller implements IInvestigatio
 
             investigationBean.setObjid(containerProxy.getId());
 
-            if (!(("Investigation".equals(e.getLocalName()) && "http://escidoc.org/ontologies/bw-elabs/re#".equals(e
-                .getNamespaceURI())) || "el:Investigation".equals(e.getTagName()))) {
+            if (!(("Investigation".equals(e.getLocalName()) && URI_EL.equals(e.getNamespaceURI())) || "el:Investigation"
+                .equals(e.getTagName()))) {
                 LOG.error("Container is not an eLabs Investigation");
                 return investigationBean;
             }
@@ -300,35 +300,32 @@ public class InvestigationController extends Controller implements IInvestigatio
                     continue;
                 }
 
-                if ("title".equals(nodeName) && "http://purl.org/dc/elements/1.1/".equals(nsUri)) {
+                if ("title".equals(nodeName) && URI_DC.equals(nsUri)) {
                     investigationBean.setName(node.getTextContent());
                 }
-                else if ("description".equals(nodeName) && "http://purl.org/dc/elements/1.1/".equals(nsUri)) {
+                else if ("description".equals(nodeName) && URI_DC.equals(nsUri)) {
                     investigationBean.setDescription(node.getTextContent());
                 }
-                else if ("max-runtime".equals(nodeName) && "http://escidoc.org/ontologies/bw-elabs/re#".equals(nsUri)) {
+                else if ("max-runtime".equals(nodeName) && URI_EL.equals(nsUri)) {
                     investigationBean.setMaxRuntime(Long.parseLong(node.getTextContent()));
                 }
-                else if ("deposit-endpoint".equals(nodeName)
-                    && "http://escidoc.org/ontologies/bw-elabs/re#".equals(nsUri)) {
+                else if ("deposit-endpoint".equals(nodeName) && URI_EL.equals(nsUri)) {
                     investigationBean.setDepositEndpoint(node.getTextContent());
                 }
-                else if ("investigator".equals(nodeName) && "http://escidoc.org/ontologies/bw-elabs/re#".equals(nsUri)) {
+                else if ("investigator".equals(nodeName) && URI_EL.equals(nsUri)) {
                     final String investigatorId =
-                        node.getAttributes().getNamedItemNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "resource")
-                            .getTextContent();
-
-                    for (Iterator<UserBean> iterator = ELabsCache.getUsers().iterator(); iterator.hasNext();) {
-                        UserBean user = iterator.next();
-                        if (user.getId().equals(investigatorId)) {
-                            investigationBean.setInvestigator(user.getComplexId());
+                        node.getAttributes().getNamedItemNS(URI_RDF, "resource").getTextContent();
+                    if (investigatorId != null) {
+                        for (Iterator<UserBean> iterator = ELabsCache.getUsers().iterator(); iterator.hasNext();) {
+                            UserBean user = iterator.next();
+                            if (user.getId().equals(investigatorId)) {
+                                investigationBean.setInvestigator(user.getComplexId());
+                            }
                         }
                     }
                 }
-                else if ("rig".equals(nodeName) && "http://escidoc.org/ontologies/bw-elabs/re#".equals(nsUri)) {
-                    String rigId =
-                        node.getAttributes().getNamedItemNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "resource")
-                            .getTextContent();
+                else if ("rig".equals(nodeName) && URI_EL.equals(nsUri)) {
+                    String rigId = node.getAttributes().getNamedItemNS(URI_RDF, "resource").getTextContent();
                     if (StringUtils.notEmpty(rigId)) {
                         RigBean rigBean = new RigBean();
 
@@ -376,10 +373,8 @@ public class InvestigationController extends Controller implements IInvestigatio
                         }
                     }
                 }
-                else if ("instrument".equals(nodeName) && "http://escidoc.org/ontologies/bw-elabs/re#".equals(nsUri)) {
-                    String instrument =
-                        node.getAttributes().getNamedItemNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "resource")
-                            .getTextContent();
+                else if ("instrument".equals(nodeName) && URI_EL.equals(nsUri)) {
+                    String instrument = node.getAttributes().getNamedItemNS(URI_RDF, "resource").getTextContent();
                     String folder = node.getTextContent().trim();
                     investigationBean.getInstrumentFolder().put(instrument, folder);
                 }
@@ -520,6 +515,7 @@ public class InvestigationController extends Controller implements IInvestigatio
         factory.setValidating(true);
         DocumentBuilder builder;
         final String NSURI_ELABS_RE = "http://escidoc.org/ontologies/bw-elabs/re#";
+        final String NSURI_ELABS_DC = "http://purl.org/dc/elements/1.1/";
         final String NSPREFIX_ELABS_RE = "el";
         final String NSURI_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
         final String NSPREFIX_RDF = "rdf";
@@ -532,7 +528,7 @@ public class InvestigationController extends Controller implements IInvestigatio
 
             // e.g. <dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">FRS
             // Instrument 01</dc:title>
-            final Element title = doc.createElementNS("http://purl.org/dc/elements/1.1/", "title");
+            final Element title = doc.createElementNS(NSURI_ELABS_DC, "title");
             title.setPrefix("dc");
             title.setTextContent(investigationBean.getName());
             investigation.appendChild(title);
@@ -540,7 +536,7 @@ public class InvestigationController extends Controller implements IInvestigatio
             // e.g. <dc:description
             // xmlns:dc="http://purl.org/dc/elements/1.1/">A
             // description.</dc:description>
-            final Element description = doc.createElementNS("http://purl.org/dc/elements/1.1/", "description");
+            final Element description = doc.createElementNS(NSURI_ELABS_DC, "description");
             description.setPrefix("dc");
             description.setTextContent(investigationBean.getDescription());
             investigation.appendChild(description);

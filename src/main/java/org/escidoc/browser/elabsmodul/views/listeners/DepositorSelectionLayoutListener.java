@@ -35,7 +35,6 @@ import java.util.Iterator;
 
 import org.escidoc.browser.elabsmodul.cache.ELabsCache;
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
-import org.escidoc.browser.elabsmodul.interfaces.IInvestigationAction;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsInvestigationAction;
 import org.escidoc.browser.elabsmodul.model.UserBean;
 import org.escidoc.browser.elabsmodul.views.helpers.LabsLayoutHelper;
@@ -58,20 +57,11 @@ public class DepositorSelectionLayoutListener implements LayoutClickListener {
 
     private Logger LOG = LoggerFactory.getLogger(DepositorSelectionLayoutListener.class);
 
-    private final IInvestigationAction controller;
-
     private final ILabsInvestigationAction labsInvestigationAction;
 
-    private HorizontalLayout layout = null;
-
-    public DepositorSelectionLayoutListener(final IInvestigationAction controller,
-        final ILabsInvestigationAction labsInvestigationAction, final HorizontalLayout layout) {
-        Preconditions.checkNotNull(controller, "Controller is null");
+    public DepositorSelectionLayoutListener(final ILabsInvestigationAction labsInvestigationAction) {
         Preconditions.checkNotNull(labsInvestigationAction, "LabsInvestigationAction is null");
-        Preconditions.checkNotNull(layout, "Layout is null");
         this.labsInvestigationAction = labsInvestigationAction;
-        this.controller = controller;
-        this.layout = layout;
     }
 
     @Override
