@@ -200,7 +200,9 @@ public class Router {
 
     /**
      * This method handles the open of a new tab on the right section of the mainWindow This is the perfect place to
-     * inject Views that represent objects
+     * inject Views that represent objects <br />
+     * The desired method for opening a View is by passing a controller as a reference to the Router. The Controller
+     * will be responsible for its view
      * 
      * @param cmp
      * @param tabname
@@ -270,6 +272,12 @@ public class Router {
         mainWindow.showNotification(msg, Notification.TYPE_ERROR_MESSAGE);
     }
 
+    /**
+     * 
+     * @param clickedResource
+     * @param doReloadView
+     * @throws EscidocClientException
+     */
     public void show(final ResourceModel clickedResource, Boolean doReloadView) throws EscidocClientException {
         String controllerId = getControllerId(clickedResource);
         Controller controller;
