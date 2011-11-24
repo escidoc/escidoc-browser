@@ -26,11 +26,41 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.elabsmodul.interfaces;
+package org.escidoc.browser.elabsmodul.model;
 
-public interface ILabsInstrumentAction {
+import java.io.Serializable;
 
-    void setDeviceSupervisor(final String deviceSupervisorId);
+public class OrgUnitBean implements Serializable {
 
-    void setInstitute(final String instituteId);
+    private static final long serialVersionUID = 2032896442988444295L;
+
+    private String id;
+
+    private String name;
+
+    private String complexId;
+
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getComplexId() {
+        return name + " - " + id;
+    }
+
+    public void setComplexId(String complexId) {
+        this.complexId = name + " - " + id;
+    }
 }

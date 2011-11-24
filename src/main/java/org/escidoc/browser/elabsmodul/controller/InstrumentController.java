@@ -46,6 +46,7 @@ import org.escidoc.browser.elabsmodul.exceptions.EscidocBrowserException;
 import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
 import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
 import org.escidoc.browser.elabsmodul.model.InstrumentBean;
+import org.escidoc.browser.elabsmodul.model.OrgUnitBean;
 import org.escidoc.browser.elabsmodul.model.UserBean;
 import org.escidoc.browser.elabsmodul.views.InstrumentView;
 import org.escidoc.browser.elabsmodul.views.YesNoDialog;
@@ -107,10 +108,6 @@ public final class InstrumentController extends Controller implements ISaveActio
 
     // contains default deposit endpoint URLs
     private List<String> depositEndPointUrls = new ArrayList<String>();
-
-    private List<UserAccount> userAccounts = null;
-
-    private Collection<OrganizationalUnit> orgUnits = null;
 
     private Router router;
 
@@ -203,21 +200,24 @@ public final class InstrumentController extends Controller implements ISaveActio
             else if ("responsible-person".equals(nodeName) && URI_EL.equals(nsUri)
                 && node.getAttributes().getNamedItem("rdf:resource") != null) {
                 final String supervisorId = node.getAttributes().getNamedItem("rdf:resource").getNodeValue();
-
-                if (supervisorId != null) {
-                    for (Iterator<UserBean> iterator = ELabsCache.getUsers().iterator(); iterator.hasNext();) {
-                        UserBean user = iterator.next();
-                        if (user.getId().equals(supervisorId)) {
-                            instrumentBean.setDeviceSupervisor(user.getComplexId());
-                        }
-                    }
-                }
+                instrumentBean.setDeviceSupervisor(supervisorId);
+                /*
+                 * if (supervisorId != null) { for (Iterator<UserBean> iterator = ELabsCache.getUsers().iterator();
+                 * iterator.hasNext();) { UserBean user = iterator.next(); if (user.getId().equals(supervisorId)) {
+                 * instrumentBean.setDeviceSupervisor(user.getComplexId()); break; } } }
+                 */
             }
             else if ("institution".equals(nodeName) && URI_EL.equals(nsUri)
                 && node.getAttributes().getNamedItem("rdf:resource") != null) {
-                instrumentBean.setInstitute(node.getAttributes().getNamedItem("rdf:resource").getNodeValue());
-            }
+                final String instituteId = node.getAttributes().getNamedItem("rdf:resource").getNodeValue();
+                instrumentBean.setInstitute(instituteId);
 
+                /*
+                 * if (instituteId != null) { for (Iterator<OrgUnitBean> iterator = ELabsCache.getOrgUnits().iterator();
+                 * iterator.hasNext();) { OrgUnitBean unit = iterator.next(); if (unit.getId().equals(instituteId)) {
+                 * instrumentBean.setInstitute(unit.getComplexId()); break; } } }
+                 */
+            }
         }
 
         return instrumentBean;
@@ -230,16 +230,21 @@ public final class InstrumentController extends Controller implements ISaveActio
         factory.setCoalescing(true);
         factory.setValidating(true);
         DocumentBuilder builder;
+
+        final String URI_DC = "http://purl.org/dc/elements/1.1/";
+        final String URI_EL = "http://escidoc.org/ontologies/bw-elabs/re#";
+        final String URI_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+
         try {
             builder = factory.newDocumentBuilder();
             final Document doc = builder.newDocument();
 
-            Element instrument = doc.createElementNS("http://escidoc.org/ontologies/bw-elabs/re#", "Instrument");
+            Element instrument = doc.createElementNS(URI_EL, "Instrument");
             instrument.setPrefix("el");
 
             // e.g. <dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">FRS
             // Instrument 01</dc:title>
-            final Element title = doc.createElementNS("http://purl.org/dc/elements/1.1/", "title");
+            final Element title = doc.createElementNS(URI_DC, "title");
             title.setPrefix("dc");
             title.setTextContent(instrumentBean.getName());
             instrument.appendChild(title);
@@ -247,7 +252,7 @@ public final class InstrumentController extends Controller implements ISaveActio
             // e.g. <dc:description
             // xmlns:dc="http://purl.org/dc/elements/1.1/">A
             // description.</dc:description>
-            final Element description = doc.createElementNS("http://purl.org/dc/elements/1.1/", "description");
+            final Element description = doc.createElementNS(URI_DC, "description");
             description.setPrefix("dc");
             description.setTextContent(instrumentBean.getDescription());
             instrument.appendChild(description);
@@ -281,16 +286,14 @@ public final class InstrumentController extends Controller implements ISaveActio
             // xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
             // rdf:resource="escidoc:42"></el:responsible-person>
             final Element responsiblePerson = doc.createElement("el:responsible-person");
-            responsiblePerson.setAttributeNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdf:resource",
-                instrumentBean.getDeviceSupervisor());
+            responsiblePerson.setAttributeNS(URI_RDF, "rdf:resource", instrumentBean.getDeviceSupervisor());
             instrument.appendChild(responsiblePerson);
 
             // <el:institution
             // xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
             // rdf:resource="escidoc:1001"></el:institution>
             final Element institution = doc.createElement("el:institution");
-            institution.setAttributeNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdf:resource",
-                instrumentBean.getInstitute());
+            institution.setAttributeNS(URI_RDF, "rdf:resource", instrumentBean.getInstitute());
             instrument.appendChild(institution);
             return instrument;
 
@@ -421,13 +424,28 @@ public final class InstrumentController extends Controller implements ISaveActio
     }
 
     private void getOrgUnits() {
+        if (!ELabsCache.getOrgUnits().isEmpty()) {
+            return;
+        }
+        Collection<OrganizationalUnit> orgUnits = null;
+        List<OrgUnitBean> orgUnitList = new ArrayList<OrgUnitBean>();
         try {
             OrgUnitService orgUnitService =
                 new OrgUnitService(serviceLocation.getEscidocUri(), router.getApp().getCurrentUser().getToken());
             orgUnits = orgUnitService.findAll();
-            for (OrganizationalUnit organizationalUnit : orgUnits) {
-                LOG.debug(organizationalUnit.getObjid() + organizationalUnit.getXLinkTitle());
+            OrgUnitBean bean = null;
+            for (Iterator<OrganizationalUnit> iterator = orgUnits.iterator(); iterator.hasNext();) {
+                OrganizationalUnit orgUnitBean = iterator.next();
+                bean = new OrgUnitBean();
+                bean.setId(orgUnitBean.getObjid());
+                bean.setName(orgUnitBean.getXLinkTitle());
+                orgUnitList.add(bean);
+            }
 
+            synchronized (ELabsCache.getOrgUnits()) {
+                if (!orgUnitList.isEmpty()) {
+                    ELabsCache.setOrgUnits(Collections.unmodifiableList(orgUnitList));
+                }
             }
         }
         catch (InternalClientException e) {

@@ -49,6 +49,7 @@ import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsInstrumentAction;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsInvestigationAction;
 import org.escidoc.browser.elabsmodul.interfaces.IRigAction;
+import org.escidoc.browser.elabsmodul.model.OrgUnitBean;
 import org.escidoc.browser.elabsmodul.model.RigBean;
 import org.escidoc.browser.elabsmodul.model.UserBean;
 import org.slf4j.Logger;
@@ -99,10 +100,40 @@ public final class LabsLayoutHelper {
         Label textLabel = new Label(dataProperty);
         textLabel.setWidth(TEXT_WIDTH);
         textLabel.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
-        if (dataProperty != null) {
-            horizontalLayout.setStyleName(STYLE_ELABS_HOR_PANEL);
-            textLabel.setStyleName(STYLE_ELABS_TEXT_AS_LABEL);
-        }
+        textLabel.setStyleName(STYLE_ELABS_TEXT_AS_LABEL);
+
+        horizontalLayout.setStyleName(STYLE_ELABS_HOR_PANEL);
+        horizontalLayout.addComponent(label, 0);
+        horizontalLayout.addComponent(textLabel, 1);
+        horizontalLayout.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
+        horizontalLayout.setComponentAlignment(textLabel, Alignment.MIDDLE_RIGHT);
+
+        return horizontalLayout;
+    }
+
+    public static synchronized HorizontalLayout createHorizontalLayoutWithELabsLabelAndLabelComplexData(
+        final String labelTxt, String dataTxt) {
+        Preconditions.checkNotNull(labelTxt, "Label is null");
+
+        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        horizontalLayout.setSizeUndefined();
+        horizontalLayout.setDescription(USER_DESCR_ON_HOR_LAYOUT_TO_EDIT);
+        horizontalLayout.setEnabled(true);
+        horizontalLayout.setSpacing(true);
+        horizontalLayout.setHeight(HOR_PANEL_HEIGHT);
+
+        Label label = new Label();
+        label.setWidth(LABEL_WIDTH);
+        label.setValue(DIV_ALIGN_RIGHT + labelTxt + DIV_END);
+        label.setContentMode(Label.CONTENT_XHTML);
+        label.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
+
+        Label textLabel = new Label(dataTxt);
+        textLabel.setWidth(TEXT_WIDTH);
+        textLabel.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
+        textLabel.setStyleName(STYLE_ELABS_TEXT_AS_LABEL);
+
+        horizontalLayout.setStyleName(STYLE_ELABS_HOR_PANEL);
         horizontalLayout.addComponent(label, 0);
         horizontalLayout.addComponent(textLabel, 1);
         horizontalLayout.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
@@ -233,6 +264,12 @@ public final class LabsLayoutHelper {
             }
             else if (((ComboBox) dataComponent).getValue() instanceof UserBean) {
                 label = new Label(((UserBean) ((ComboBox) dataComponent).getValue()).getComplexId());
+            }
+            else if (((ComboBox) dataComponent).getValue() instanceof OrgUnitBean) {
+                label = new Label(((OrgUnitBean) ((ComboBox) dataComponent).getValue()).getComplexId());
+            }
+            else {
+                LOG.error("Incorrect data type at the switch to label");
             }
         }
 
@@ -386,6 +423,9 @@ public final class LabsLayoutHelper {
                     }
                     else if (comboBox.getValue() instanceof UserBean) {
                         labsInstrumentAction.setDeviceSupervisor(((UserBean) comboBox.getValue()).getId());
+                    }
+                    else if (comboBox.getValue() instanceof OrgUnitBean) {
+                        labsInstrumentAction.setInstitute(((OrgUnitBean) comboBox.getValue()).getId());
                     }
                     else {
                         LOG.error("Wrong data type in combobox");

@@ -32,15 +32,19 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.escidoc.browser.elabsmodul.cache.ELabsCache;
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsAction;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsInstrumentAction;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsPanel;
 import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
 import org.escidoc.browser.elabsmodul.model.InstrumentBean;
+import org.escidoc.browser.elabsmodul.model.OrgUnitBean;
+import org.escidoc.browser.elabsmodul.model.UserBean;
 import org.escidoc.browser.elabsmodul.views.helpers.LabsLayoutHelper;
 import org.escidoc.browser.elabsmodul.views.helpers.ResourcePropertiesViewHelper;
 import org.escidoc.browser.elabsmodul.views.listeners.DeviceSupervisorSelectionLayoutListener;
+import org.escidoc.browser.elabsmodul.views.listeners.InstituteSelectionLayoutListener;
 import org.escidoc.browser.elabsmodul.views.listeners.LabsClientViewEventHandler;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
@@ -154,6 +158,31 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
      * Build the specific editable layout of the eLabsElement.
      */
     private void buildPanelGUI() {
+
+        final String supervisorId = instrumentBean.getDeviceSupervisor();
+        String supervisorText = null;
+        if (supervisorId != null) {
+            for (Iterator<UserBean> iterator = ELabsCache.getUsers().iterator(); iterator.hasNext();) {
+                UserBean user = iterator.next();
+                if (user.getId().equals(supervisorId)) {
+                    supervisorText = user.getComplexId();
+                    break;
+                }
+            }
+        }
+
+        final String instituteId = instrumentBean.getInstitute();
+        String instituteText = null;
+        if (instituteId != null) {
+            for (Iterator<OrgUnitBean> iterator = ELabsCache.getOrgUnits().iterator(); iterator.hasNext();) {
+                OrgUnitBean unit = iterator.next();
+                if (unit.getId().equals(instituteId)) {
+                    instituteText = unit.getComplexId();
+                    break;
+                }
+            }
+        }
+
         dynamicLayout.setStyleName(ELabsViewContants.STYLE_ELABS_FORM);
 
         buttonLayout = LabsLayoutHelper.createButtonLayout();
@@ -183,15 +212,15 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
                 ELabsViewContants.L_INSTRUMENT_FILE_FORMAT,
                 getPojoItem().getItemProperty(ELabsViewContants.P_INSTRUMENT_FILEFORMAT));
         HorizontalLayout h8 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(
-                ELabsViewContants.L_INSTRUMENT_DEVICE_SUPERVISOR,
-                getPojoItem().getItemProperty(ELabsViewContants.P_INSTRUMENT_DEVICESUPERVISOR));
+            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelComplexData(
+                ELabsViewContants.L_INSTRUMENT_DEVICE_SUPERVISOR, supervisorText);
         HorizontalLayout h9 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_INSTRUMENT_INSTITUTE,
-                getPojoItem().getItemProperty(ELabsViewContants.P_INSTRUMENT_INSTITUTE));
+            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelComplexData(
+                ELabsViewContants.L_INSTRUMENT_INSTITUTE, instituteText);
 
         // set up specific listeners
         h8.addListener(new DeviceSupervisorSelectionLayoutListener(this));
+        h9.addListener(new InstituteSelectionLayoutListener(this));
 
         registeredComponents.add(h1);
         registeredComponents.add(h2);
@@ -353,8 +382,14 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
     }
 
     @Override
-    public void setDeviceSupervisor(String deviceSupervisorId) {
+    public void setDeviceSupervisor(final String deviceSupervisorId) {
         Preconditions.checkNotNull(deviceSupervisorId, "input arg is null");
         instrumentBean.setDeviceSupervisor(deviceSupervisorId);
+    }
+
+    @Override
+    public void setInstitute(final String instituteId) {
+        Preconditions.checkNotNull(instituteId, "input arg is null");
+        instrumentBean.setInstitute(instituteId);
     }
 }

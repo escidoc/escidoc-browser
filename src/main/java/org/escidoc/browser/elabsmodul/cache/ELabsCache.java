@@ -31,6 +31,7 @@ package org.escidoc.browser.elabsmodul.cache;
 import java.util.Collections;
 import java.util.List;
 
+import org.escidoc.browser.elabsmodul.model.OrgUnitBean;
 import org.escidoc.browser.elabsmodul.model.UserBean;
 
 public class ELabsCache {
@@ -40,6 +41,8 @@ public class ELabsCache {
     private static List<String> esyncEndpoints;
 
     private static List<UserBean> users = Collections.emptyList();
+
+    private static List<OrgUnitBean> orgUnits = Collections.emptyList();
 
     /**
      * @return the depositEndpoints
@@ -84,5 +87,19 @@ public class ELabsCache {
      */
     public static void setUsers(List<UserBean> users) {
         ELabsCache.users = users;
+    }
+
+    /**
+     * @return the orgUnits
+     */
+    public static List<OrgUnitBean> getOrgUnits() {
+        return orgUnits;
+    }
+
+    /**
+     * @param orgUnits the orgUnits to set
+     */
+    public static void setOrgUnits(List<OrgUnitBean> orgUnits) {
+        ELabsCache.orgUnits = orgUnits;
     }
 }
