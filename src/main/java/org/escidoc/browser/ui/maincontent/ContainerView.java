@@ -264,6 +264,7 @@ public class ContainerView extends Panel {
 
         // directMembersPanel
         Panel directMembersPanel = buildDirectMembersPanel();
+        directMembersPanel.setStyleName("directmembers");
         vlLeftPanel.addComponent(directMembersPanel);
 
         return vlLeftPanel;

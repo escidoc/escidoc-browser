@@ -154,13 +154,12 @@ public class DirectMember {
 
         nameofPanel.setWidth("100%");
         panel.addComponent(nameofPanel);
+        panel.setStyleName("directmembers");
         // panel.setStyleName(Runo.PANEL_LIGHT);
         // the changes start here
         VerticalLayout panelLayout = (VerticalLayout) panel.getContent();
         panelLayout.setHeight("100%");
         panelLayout.setStyleName(Runo.PANEL_LIGHT);
-
-        // panelLayout.addStyleName("my-panel");
 
         if (resourceType == ResourceType.CONTAINER.toString()) {
             resourceProxy = new ContainerProxyImpl(router.getRepositories().container().findContainerById(parentId));

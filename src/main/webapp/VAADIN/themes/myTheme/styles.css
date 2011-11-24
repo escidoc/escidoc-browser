@@ -32,6 +32,7 @@
 .paddingtop30 {
 	padding-top: 60.0px;
 }
+
 .closeallTabs {
 	z-index: 10;
 	position: absolute;
@@ -39,6 +40,7 @@
 	top: 6px;
 	right: 0;
 }
+
 .paddingbottom10 {
 	padding-bottom: 10px;
 }
@@ -320,8 +322,7 @@ ul.horizontal_list li {
 	text-decoration: none;
 }
 
-.my-panel {
-	/*
+.my-panel { /*
 	margin-top: 5px;
 	margin-right: 5px;
 	margin-left: 5px;
@@ -330,31 +331,36 @@ ul.horizontal_list li {
 	padding-right: 10px;
 	padding-left: 10px;
 	*/
+	
 }
 
 .grey-label {
-	padding-left:5px;
-	border-bottom:1px solid black;
+	padding-left: 5px;
+	border-bottom: 1px solid black;
 	background-color: #eeeeee;
 }
 
 .button-layout {
-	border-bottom:1px solid black;
+	border-bottom: 1px solid black;
 	background: #eeeeee;
 }
-.v-loading-indicator, .v-loading-indicator-delay, .v-loading-indicator-wait {
-    position: fixed !important;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-position: 50%; /* Center the spinner inside the element */
-    background-color: #ccc; /* Choose whatever color you wish */
-    opacity: .5;
-    filter: alpha(opacity=50);
-    -ms-filter: alpha(opacity=50);
-    background-repeat: no-repeat; /* thanks to Marthin for pointing this out */
+
+.v-loading-indicator,.v-loading-indicator-delay,.v-loading-indicator-wait
+	{
+	position: fixed !important;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-position: 50%; /* Center the spinner inside the element */
+	background-color: #ccc; /* Choose whatever color you wish */
+	opacity: .5;
+	filter: alpha(opacity = 50);
+	-ms-filter: alpha(opacity = 50);
+	background-repeat: no-repeat;
+	/* thanks to Marthin for pointing this out */
 }
+
 .permanentLink {
 	z-index: 10;
 	position: absolute;
