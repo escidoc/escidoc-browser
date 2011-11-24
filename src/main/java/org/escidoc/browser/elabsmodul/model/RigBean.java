@@ -122,10 +122,10 @@ public class RigBean implements Serializable, IBeanModel {
     }
 
     public String getComplexId() {
-        return name + " - " + objectId;
+        return name + " (" + objectId + ")";
     }
 
     public void setComplexId(String complexId) {
-        this.complexId = name + " - " + objectId;
+        this.complexId = name + " (" + objectId + ")";
     }
 }

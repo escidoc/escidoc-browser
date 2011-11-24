@@ -57,10 +57,10 @@ public class OrgUnitBean implements Serializable {
     }
 
     public String getComplexId() {
-        return name + " - " + id;
+        return name + " (" + id + ")";
     }
 
     public void setComplexId(String complexId) {
-        this.complexId = name + " - " + id;
+        this.complexId = name + " (" + id + ")";
     }
 }
