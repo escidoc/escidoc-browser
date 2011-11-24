@@ -32,7 +32,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
@@ -315,14 +314,7 @@ public class InvestigationController extends Controller implements IInvestigatio
                 else if ("investigator".equals(nodeName) && URI_EL.equals(nsUri)) {
                     final String investigatorId =
                         node.getAttributes().getNamedItemNS(URI_RDF, "resource").getTextContent();
-                    if (investigatorId != null) {
-                        for (Iterator<UserBean> iterator = ELabsCache.getUsers().iterator(); iterator.hasNext();) {
-                            UserBean user = iterator.next();
-                            if (user.getId().equals(investigatorId)) {
-                                investigationBean.setInvestigator(user.getComplexId());
-                            }
-                        }
-                    }
+                    investigationBean.setInvestigator(investigatorId);
                 }
                 else if ("rig".equals(nodeName) && URI_EL.equals(nsUri)) {
                     String rigId = node.getAttributes().getNamedItemNS(URI_RDF, "resource").getTextContent();

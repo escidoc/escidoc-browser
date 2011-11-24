@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.escidoc.browser.elabsmodul.cache.ELabsCache;
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.interfaces.IInvestigationAction;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsAction;
@@ -39,6 +40,7 @@ import org.escidoc.browser.elabsmodul.interfaces.ILabsInvestigationAction;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsPanel;
 import org.escidoc.browser.elabsmodul.model.InvestigationBean;
 import org.escidoc.browser.elabsmodul.model.RigBean;
+import org.escidoc.browser.elabsmodul.model.UserBean;
 import org.escidoc.browser.elabsmodul.views.helpers.LabsLayoutHelper;
 import org.escidoc.browser.elabsmodul.views.helpers.ResourcePropertiesViewHelper;
 import org.escidoc.browser.elabsmodul.views.helpers.StartInvestigationViewHelper;
@@ -248,6 +250,18 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction,
      * Build the specific editable layout of the eLabsElement.
      */
     private void buildPanelGUI() {
+
+        final String investigatorId = investigationBean.getInvestigator();
+        String investigatorText = null;
+        if (investigatorId != null) {
+            for (Iterator<UserBean> iterator = ELabsCache.getUsers().iterator(); iterator.hasNext();) {
+                UserBean user = iterator.next();
+                if (user.getId().equals(investigatorId)) {
+                    investigatorText = user.getComplexId();
+                }
+            }
+        }
+
         this.dynamicLayout.setStyleName(ELabsViewContants.STYLE_ELABS_FORM);
 
         this.buttonLayout = LabsLayoutHelper.createButtonLayout();
@@ -262,9 +276,8 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction,
                 ELabsViewContants.L_INVESTIGATION_DEPOSIT_SERVICE,
                 pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_DEPOSIT_SERVICE));
         final HorizontalLayout h4 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(
-                ELabsViewContants.L_INVESTIGATION_INVESTIGATOR,
-                pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_INVESTIGATOR));
+            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelComplexData(
+                ELabsViewContants.L_INVESTIGATION_INVESTIGATOR, investigatorText);
         final HorizontalLayout h5 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(
                 ELabsViewContants.L_INVESTIGATION_DURATION,

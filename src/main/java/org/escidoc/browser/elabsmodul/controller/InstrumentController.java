@@ -201,22 +201,11 @@ public final class InstrumentController extends Controller implements ISaveActio
                 && node.getAttributes().getNamedItem("rdf:resource") != null) {
                 final String supervisorId = node.getAttributes().getNamedItem("rdf:resource").getNodeValue();
                 instrumentBean.setDeviceSupervisor(supervisorId);
-                /*
-                 * if (supervisorId != null) { for (Iterator<UserBean> iterator = ELabsCache.getUsers().iterator();
-                 * iterator.hasNext();) { UserBean user = iterator.next(); if (user.getId().equals(supervisorId)) {
-                 * instrumentBean.setDeviceSupervisor(user.getComplexId()); break; } } }
-                 */
             }
             else if ("institution".equals(nodeName) && URI_EL.equals(nsUri)
                 && node.getAttributes().getNamedItem("rdf:resource") != null) {
                 final String instituteId = node.getAttributes().getNamedItem("rdf:resource").getNodeValue();
                 instrumentBean.setInstitute(instituteId);
-
-                /*
-                 * if (instituteId != null) { for (Iterator<OrgUnitBean> iterator = ELabsCache.getOrgUnits().iterator();
-                 * iterator.hasNext();) { OrgUnitBean unit = iterator.next(); if (unit.getId().equals(instituteId)) {
-                 * instrumentBean.setInstitute(unit.getComplexId()); break; } } }
-                 */
             }
         }
 
