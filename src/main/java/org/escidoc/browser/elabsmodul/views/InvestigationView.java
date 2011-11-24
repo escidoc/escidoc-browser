@@ -162,6 +162,7 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction,
         rightpnl.addStyleName(Runo.PANEL_LIGHT);
         rightpnl.setSizeFull();
         rightpnl.getLayout().setMargin(false);
+
         rightpnl.addComponent(comptoBind);
         new StartInvestigationViewHelper(router).createStartButton(rightpnl);
         directMemberInvestigationContainer.addComponent(rightpnl);

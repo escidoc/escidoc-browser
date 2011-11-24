@@ -111,7 +111,7 @@ public class InvestigationSeriesView extends Panel implements ILabsPanel, ILabsA
         this.breadCrumb = breadCrumb;
         this.saveAction = saveAction;
         this.router = router;
-
+        setSizeFull();
         initPanelComponents();
         buildPropertiesView();
         buildContainerGUI();
@@ -187,14 +187,14 @@ public class InvestigationSeriesView extends Panel implements ILabsPanel, ILabsA
         mainLayout = new VerticalLayout();
         mainLayout.setSpacing(true);
         mainLayout.setMargin(true);
-
+        mainLayout.setSizeFull();
         dynamicLayout = new VerticalLayout();
         dynamicLayout.setSpacing(true);
         dynamicLayout.setMargin(true);
 
         beanItem = new BeanItem<InvestigationSeriesBean>(investigationSeriesBean, Arrays.asList(PROPERTIES));
         registeredComponents = new ArrayList<HorizontalLayout>(COMPONENT_COUNT);
-        setSizeFull();
+
         setStyleName(Runo.PANEL_LIGHT);
         setContent(mainLayout);
         setScrollable(true);

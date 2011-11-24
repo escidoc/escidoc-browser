@@ -154,7 +154,7 @@ public class DirectMember {
 
         nameofPanel.setWidth("100%");
         panel.addComponent(nameofPanel);
-        panel.setStyleName(Runo.PANEL_LIGHT);
+        // panel.setStyleName(Runo.PANEL_LIGHT);
         // the changes start here
         VerticalLayout panelLayout = (VerticalLayout) panel.getContent();
         panelLayout.setHeight("100%");
