@@ -66,6 +66,7 @@ import org.w3c.dom.NodeList;
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
@@ -113,17 +114,24 @@ public class StudyController extends Controller implements ISaveAction {
                 @Override
                 public void onDialogResult(boolean resultIsYes) {
                     if (resultIsYes) {
-                        StudyController.this.saveModel();
+                        try {
+                            saveModel();
+                        }
+                        catch (EscidocClientException e) {
+                            LOG.error(e.getMessage());
+                            mainWindow.showNotification("Error", e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+                        }
                     }
-                    else {
-                        ((StudyView) StudyController.this.view).hideButtonLayout();
-                    }
+                    ((StudyView) StudyController.this.view).hideButtonLayout();
                 }
             }));
     }
 
-    protected void saveModel() {
-
+    /**
+     * 
+     * @throws EscidocClientException
+     */
+    private synchronized void saveModel() throws EscidocClientException {
         Preconditions.checkNotNull(beanModel, "DataBean to store is NULL");
         ContainerRepository containerRepositories = repositories.container();
         final String ESCIDOC = "escidoc";

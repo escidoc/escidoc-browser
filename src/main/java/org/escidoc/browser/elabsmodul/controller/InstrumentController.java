@@ -438,16 +438,13 @@ public final class InstrumentController extends Controller implements ISaveActio
             }
         }
         catch (InternalClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error(e.getMessage());
         }
         catch (EscidocException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error(e.getMessage());
         }
         catch (TransportException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error(e.getMessage());
         }
     }
 
@@ -462,16 +459,24 @@ public final class InstrumentController extends Controller implements ISaveActio
                 @Override
                 public void onDialogResult(boolean resultIsYes) {
                     if (resultIsYes) {
-                        InstrumentController.this.saveModel();
+                        try {
+                            saveModel();
+                        }
+                        catch (EscidocClientException e) {
+                            LOG.error(e.getMessage());
+                            mainWindow.showNotification("Error", e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+                        }
                     }
-                    else {
-                        ((InstrumentView) InstrumentController.this.view).hideButtonLayout();
-                    }
+                    ((InstrumentView) InstrumentController.this.view).hideButtonLayout();
                 }
             }));
     }
 
-    private synchronized void saveModel() {
+    /**
+     * 
+     * @throws EscidocClientException
+     */
+    private synchronized void saveModel() throws EscidocClientException {
         Preconditions.checkNotNull(beanModel, "DataBean to store is NULL");
         ItemRepository itemRepositories = repositories.item();
         final String ESCIDOC = "escidoc";

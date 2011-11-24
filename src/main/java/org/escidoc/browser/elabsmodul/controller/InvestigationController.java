@@ -121,33 +121,6 @@ public class InvestigationController extends Controller implements IInvestigatio
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * org.escidoc.browser.elabsmodul.interfaces.ISaveAction#saveAction(org.escidoc.browser.elabsmodul.interfaces.IBeanModel
-     * )
-     */
-    @Override
-    public void saveAction(IBeanModel model) {
-        Preconditions.checkNotNull(model, "Model is null.");
-        this.model = model;
-
-        mainWindow.addWindow(new YesNoDialog(ELabsViewContants.DIALOG_SAVE_INVESTIGATION_HEADER,
-            ELabsViewContants.DIALOG_SAVE_INVESTIGATION_TEXT, new YesNoDialog.Callback() {
-
-                @Override
-                public void onDialogResult(boolean resultIsYes) {
-                    if (resultIsYes) {
-                        InvestigationController.this.saveModel();
-                    }
-                    else {
-                        ((InvestigationView) InvestigationController.this.view).hideButtonLayout();
-                    }
-                }
-            }));
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see org.escidoc.browser.controller.Controller#init(org.escidoc.browser.model.EscidocServiceLocation,
      * org.escidoc.browser.repository.Repositories, org.escidoc.browser.ui.Router,
      * org.escidoc.browser.model.ResourceProxy, com.vaadin.ui.Window, org.escidoc.browser.model.CurrentUser)
@@ -462,7 +435,42 @@ public class InvestigationController extends Controller implements IInvestigatio
         return Collections.emptyList();
     }
 
-    private synchronized void saveModel() {
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.escidoc.browser.elabsmodul.interfaces.ISaveAction#saveAction(org.escidoc.browser.elabsmodul.interfaces.IBeanModel
+     * )
+     */
+    @Override
+    public void saveAction(IBeanModel model) {
+        Preconditions.checkNotNull(model, "Model is null.");
+        this.model = model;
+
+        mainWindow.addWindow(new YesNoDialog(ELabsViewContants.DIALOG_SAVE_INVESTIGATION_HEADER,
+            ELabsViewContants.DIALOG_SAVE_INVESTIGATION_TEXT, new YesNoDialog.Callback() {
+
+                @Override
+                public void onDialogResult(boolean resultIsYes) {
+                    if (resultIsYes) {
+                        try {
+                            saveModel();
+                        }
+                        catch (EscidocClientException e) {
+                            LOG.error(e.getMessage());
+                            mainWindow.showNotification("Error", e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+                        }
+                    }
+                    ((InvestigationView) InvestigationController.this.view).hideButtonLayout();
+                }
+            }));
+    }
+
+    /**
+     * 
+     * @throws EscidocClientException
+     */
+    private synchronized void saveModel() throws EscidocClientException {
         Preconditions.checkNotNull(model, "Model is NULL. Can not save.");
         ContainerRepository containerRepository = repositories.container();
         final String ESCIDOC = "escidoc";

@@ -102,16 +102,16 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
                             mainWindow.showNotification("Error", e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
                         }
                     }
-                    else {
-                        ((InvestigationSeriesView) InvestigationSeriesController.this.view).hideButtonLayout();
-                    }
+                    ((InvestigationSeriesView) InvestigationSeriesController.this.view).hideButtonLayout();
                 }
-
             }));
-
     }
 
-    private void saveModel() throws EscidocClientException {
+    /**
+     * 
+     * @throws EscidocClientException
+     */
+    private synchronized void saveModel() throws EscidocClientException {
         Container container = repositories.container().findContainerById(resourceProxy.getId());
         MetadataRecord metadataRecord = container.getMetadataRecords().get("escidoc");
         metadataRecord.setContent(beanToDom(isb));
