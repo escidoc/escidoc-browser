@@ -197,4 +197,6 @@ public class ViewConstants {
 
     public static final String CANNOT_CREATE_BUTTONS = "CANNOT CREATE BUTTONS FOR THIS VIEW";
 
+    public static final String VIEW_ERROR_CANNOT_LOAD_VIEW = "Not able to load the view for this resource: ";
+
 }

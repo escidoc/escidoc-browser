@@ -272,77 +272,42 @@ public class Router {
 
     public void show(final ResourceModel clickedResource, Boolean doReloadView) throws EscidocClientException {
         String controllerId = getControllerId(clickedResource);
-        // Controller by controller-id
-        // TODO refactor ItemView, ContextView, COntainerView to have a Controller so this code can be refactored
         Controller controller;
-        if (controllerId.equals("org.escidoc.browser.Item")) {
-            Component viewComponent =
-                new ItemView(serviceLocation, repositories, this, layout, tryToFindResource(clickedResource),
-                    mainWindow);
-            if (!doReloadView) {
-                layout.openView(viewComponent, tryToFindResource(clickedResource).getName());
+        try {
+            String controllerClassName = browserProperties.getProperty(controllerId);
+            // TODO find a better solution for "controller ID not configured"
+            if (controllerClassName == null) {
+                LOG.error("Could not resolve controller ID. " + controllerId);
             }
             else {
-                layout.openViewByReloading(viewComponent, tryToFindResource(clickedResource).getName());
-            }
-        }
-        else if (controllerId.equals("org.escidoc.browser.Container")) {
-            Component viewComponent =
-                new ContainerView(serviceLocation, this, tryToFindResource(clickedResource), mainWindow, repositories);
-            if (!doReloadView) {
-                layout.openView(viewComponent, clickedResource.getName());
-            }
-            else {
-                layout.openViewByReloading(viewComponent, clickedResource.getName());
-            }
-        }
-        else if (controllerId.equals("org.escidoc.browser.Context")) {
-            Component viewComponent =
-                new ContextView(serviceLocation, this, tryToFindResource(clickedResource), mainWindow, repositories);
-            if (!doReloadView) {
-                layout.openView(viewComponent, tryToFindResource(clickedResource).getName());
-            }
-            else {
-                layout.openViewByReloading(viewComponent, tryToFindResource(clickedResource).getName());
-            }
-        }
-        else {
-            try {
-                String controllerClassName = browserProperties.getProperty(controllerId);
-                // TODO find a better solution for "controller ID not configured"
-                if (controllerClassName == null) {
-                    LOG.error("Could not resolve controller ID. " + controllerId);
+                LOG.debug(clickedResource.getId());
+                final Class<?> controllerClass = Class.forName(controllerClassName);
+                controller = (Controller) controllerClass.newInstance();
+                controller.init(serviceLocation, repositories, this, tryToFindResource(clickedResource), mainWindow);
+                if (!doReloadView) {
+                    controller.showView(layout);
                 }
                 else {
-                    LOG.debug(clickedResource.getId());
-                    final Class<?> controllerClass = Class.forName(controllerClassName);
-                    controller = (Controller) controllerClass.newInstance();
-                    controller
-                        .init(serviceLocation, repositories, this, tryToFindResource(clickedResource), mainWindow);
-                    if (!doReloadView) {
-                        controller.showView(layout);
-                    }
-                    else {
-                        controller.showViewByReloading(layout);
-                    }
+                    controller.showViewByReloading(layout);
                 }
             }
-            catch (ClassNotFoundException e) {
-                this.getMainWindow().showNotification(ViewConstants.CONTROLLER_ERR_CANNOT_FIND_CLASS,
-                    Notification.TYPE_ERROR_MESSAGE);
-                LOG.error(ViewConstants.CONTROLLER_ERR_CANNOT_FIND_CLASS + e.getLocalizedMessage());
-            }
-            catch (InstantiationException e) {
-                this.getMainWindow().showNotification(ViewConstants.CONTROLLER_ERR_INSTANTIATE_CLASS,
-                    Notification.TYPE_ERROR_MESSAGE);
-                LOG.error(ViewConstants.CONTROLLER_ERR_INSTANTIATE_CLASS + e.getLocalizedMessage());
-            }
-            catch (IllegalAccessException e) {
-                this.getMainWindow().showNotification(ViewConstants.CONTROLLER_ERR_ILLEG_EXEP,
-                    Notification.TYPE_ERROR_MESSAGE);
-                LOG.error(ViewConstants.CONTROLLER_ERR_ILLEG_EXEP + e.getLocalizedMessage());
-            }
         }
+        catch (ClassNotFoundException e) {
+            this.getMainWindow().showNotification(ViewConstants.CONTROLLER_ERR_CANNOT_FIND_CLASS,
+                Notification.TYPE_ERROR_MESSAGE);
+            LOG.error(ViewConstants.CONTROLLER_ERR_CANNOT_FIND_CLASS + e.getLocalizedMessage());
+        }
+        catch (InstantiationException e) {
+            this.getMainWindow().showNotification(ViewConstants.CONTROLLER_ERR_INSTANTIATE_CLASS,
+                Notification.TYPE_ERROR_MESSAGE);
+            LOG.error(ViewConstants.CONTROLLER_ERR_INSTANTIATE_CLASS + e.getLocalizedMessage());
+        }
+        catch (IllegalAccessException e) {
+            this.getMainWindow().showNotification(ViewConstants.CONTROLLER_ERR_ILLEG_EXEP,
+                Notification.TYPE_ERROR_MESSAGE);
+            LOG.error(ViewConstants.CONTROLLER_ERR_ILLEG_EXEP + e.getLocalizedMessage());
+        }
+
     }
 
     private String getControllerId(final ResourceModel clickedResource) throws EscidocClientException {

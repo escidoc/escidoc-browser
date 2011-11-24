@@ -43,7 +43,7 @@ public abstract class Controller {
     String resouceName;
 
     public abstract void init(
-        final EscidocServiceLocation serviceLocation, final Repositories repositories, final Router mainSite,
+        final EscidocServiceLocation serviceLocation, final Repositories repositories, final Router router,
         final ResourceProxy resourceProxy, final Window mainWindow);
 
     public void showView(final LayoutDesign layout) {
