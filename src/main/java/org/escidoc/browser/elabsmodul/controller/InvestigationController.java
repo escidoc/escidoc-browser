@@ -30,7 +30,9 @@ package org.escidoc.browser.elabsmodul.controller;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
@@ -52,6 +54,7 @@ import org.escidoc.browser.elabsmodul.interfaces.IInvestigationAction;
 import org.escidoc.browser.elabsmodul.model.InstrumentBean;
 import org.escidoc.browser.elabsmodul.model.InvestigationBean;
 import org.escidoc.browser.elabsmodul.model.RigBean;
+import org.escidoc.browser.elabsmodul.model.UserBean;
 import org.escidoc.browser.elabsmodul.views.InvestigationView;
 import org.escidoc.browser.elabsmodul.views.YesNoDialog;
 import org.escidoc.browser.model.ContainerProxy;
@@ -60,6 +63,7 @@ import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.UserService;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
@@ -81,6 +85,10 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.client.exceptions.EscidocException;
+import de.escidoc.core.client.exceptions.InternalClientException;
+import de.escidoc.core.client.exceptions.TransportException;
+import de.escidoc.core.resources.aa.useraccount.UserAccount;
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.om.container.Container;
 
@@ -157,6 +165,7 @@ public class InvestigationController extends Controller implements IInvestigatio
         this.mainWindow = mainWindow;
 
         loadAdminDescriptorInfo();
+        getUsers();
         view = createView(resourceProxy);
         this.setResourceName(resourceProxy.getName());
 
@@ -188,6 +197,45 @@ public class InvestigationController extends Controller implements IInvestigatio
         }
         catch (NullPointerException e) {
             LOG.debug("Admin Description is null in the context " + resourceProxy.getContext().getObjid());
+        }
+    }
+
+    private void getUsers() {
+
+        if (!ELabsCache.getUsers().isEmpty()) {
+            return;
+        }
+        List<UserBean> userAccountList = new ArrayList<UserBean>();
+        Collection<UserAccount> userAccounts = null;
+        try {
+            UserService userService =
+                new UserService(serviceLocation.getEscidocUri(), router.getApp().getCurrentUser().getToken());
+            userAccounts = userService.findAll();
+            UserBean bean = null;
+            for (UserAccount account : userAccounts) {
+                bean = new UserBean();
+                bean.setId(account.getObjid());
+                bean.setName(account.getXLinkTitle());
+                userAccountList.add(bean);
+            }
+
+            synchronized (ELabsCache.getUsers()) {
+                if (!userAccountList.isEmpty()) {
+                    ELabsCache.setUsers(Collections.unmodifiableList(userAccountList));
+                }
+            }
+        }
+        catch (InternalClientException e) {
+            LOG.error(e.getMessage());
+        }
+        catch (EscidocException e) {
+            LOG.error(e.getMessage());
+        }
+        catch (TransportException e) {
+            LOG.error(e.getMessage());
+        }
+        catch (EscidocClientException e) {
+            LOG.error(e.getMessage());
         }
     }
 
@@ -266,9 +314,16 @@ public class InvestigationController extends Controller implements IInvestigatio
                     investigationBean.setDepositEndpoint(node.getTextContent());
                 }
                 else if ("investigator".equals(nodeName) && "http://escidoc.org/ontologies/bw-elabs/re#".equals(nsUri)) {
-                    investigationBean.setInvestigator(node
-                        .getAttributes().getNamedItemNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "resource")
-                        .getTextContent());
+                    final String investigatorId =
+                        node.getAttributes().getNamedItemNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "resource")
+                            .getTextContent();
+
+                    for (Iterator<UserBean> iterator = ELabsCache.getUsers().iterator(); iterator.hasNext();) {
+                        UserBean user = iterator.next();
+                        if (user.getId().equals(investigatorId)) {
+                            investigationBean.setInvestigator(user.getComplexId());
+                        }
+                    }
                 }
                 else if ("rig".equals(nodeName) && "http://escidoc.org/ontologies/bw-elabs/re#".equals(nsUri)) {
                     String rigId =

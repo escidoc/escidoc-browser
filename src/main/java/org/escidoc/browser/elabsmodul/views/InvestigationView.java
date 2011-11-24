@@ -43,6 +43,7 @@ import org.escidoc.browser.elabsmodul.views.helpers.LabsLayoutHelper;
 import org.escidoc.browser.elabsmodul.views.helpers.ResourcePropertiesViewHelper;
 import org.escidoc.browser.elabsmodul.views.helpers.StartInvestigationViewHelper;
 import org.escidoc.browser.elabsmodul.views.listeners.DepositEndpointSelectionLayoutListener;
+import org.escidoc.browser.elabsmodul.views.listeners.DepositorSelectionLayoutListener;
 import org.escidoc.browser.elabsmodul.views.listeners.LabsClientViewEventHandler;
 import org.escidoc.browser.elabsmodul.views.listeners.RigSelectionLayoutListener;
 import org.escidoc.browser.model.ContainerProxy;
@@ -162,7 +163,6 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction,
         rightpnl.addStyleName(Runo.PANEL_LIGHT);
         rightpnl.setSizeFull();
         rightpnl.getLayout().setMargin(false);
-
         rightpnl.addComponent(comptoBind);
         new StartInvestigationViewHelper(router).createStartButton(rightpnl);
         directMemberInvestigationContainer.addComponent(rightpnl);
@@ -277,6 +277,7 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction,
 
         // set up specific listeners
         h3.addListener(new DepositEndpointSelectionLayoutListener(this, h3));
+        h4.addListener(new DepositorSelectionLayoutListener(this.controller, this, h4));
         h6.addListener(new RigSelectionLayoutListener(this.controller, this, h6));
 
         registeredComponents.add(h1);
@@ -386,8 +387,14 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction,
     }
 
     @Override
-    public synchronized void setRigBean(RigBean rigBean) {
+    public synchronized void setRigBean(final RigBean rigBean) {
         Preconditions.checkNotNull(rigBean, "input arg is null");
         investigationBean.setRigBean(rigBean);
+    }
+
+    @Override
+    public void setInvestigator(final String investigatorId) {
+        Preconditions.checkNotNull(investigatorId, "input arg is null");
+        investigationBean.setInvestigator(investigatorId);
     }
 }

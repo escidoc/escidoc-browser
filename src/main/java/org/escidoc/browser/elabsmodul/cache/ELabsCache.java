@@ -31,11 +31,15 @@ package org.escidoc.browser.elabsmodul.cache;
 import java.util.Collections;
 import java.util.List;
 
+import org.escidoc.browser.elabsmodul.model.UserBean;
+
 public class ELabsCache {
 
     private static List<String> depositEndpoints = Collections.emptyList();
 
     private static List<String> esyncEndpoints;
+
+    private static List<UserBean> users = Collections.emptyList();
 
     /**
      * @return the depositEndpoints
@@ -65,5 +69,20 @@ public class ELabsCache {
      */
     public static void setEsyncEndpoints(List<String> esyncEndpoints) {
         ELabsCache.esyncEndpoints = esyncEndpoints;
+    }
+
+    /**
+     * @return the users
+     */
+    public static List<UserBean> getUsers() {
+        return users;
+    }
+
+    /**
+     * @param users
+     *            the users to set
+     */
+    public static void setUsers(List<UserBean> users) {
+        ELabsCache.users = users;
     }
 }

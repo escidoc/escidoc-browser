@@ -49,6 +49,7 @@ import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsInvestigationAction;
 import org.escidoc.browser.elabsmodul.interfaces.IRigAction;
 import org.escidoc.browser.elabsmodul.model.RigBean;
+import org.escidoc.browser.elabsmodul.model.UserBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -229,6 +230,9 @@ public final class LabsLayoutHelper {
             else if (((ComboBox) dataComponent).getValue() instanceof RigBean) {
                 label = new Label(((RigBean) ((ComboBox) dataComponent).getValue()).getComplexId());
             }
+            else if (((ComboBox) dataComponent).getValue() instanceof UserBean) {
+                label = new Label(((UserBean) ((ComboBox) dataComponent).getValue()).getComplexId());
+            }
         }
 
         if (label == null) {
@@ -325,6 +329,9 @@ public final class LabsLayoutHelper {
                     }
                     else if (comboBox.getValue() instanceof RigBean) {
                         labsInvestigationAction.setRigBean((RigBean) comboBox.getValue());
+                    }
+                    else if (comboBox.getValue() instanceof UserBean) {
+                        labsInvestigationAction.setInvestigator(((UserBean) comboBox.getValue()).getId());
                     }
                     else {
                         LOG.error("Wrong data type in combobox");

@@ -28,9 +28,6 @@
  */
 package org.escidoc.browser.elabsmodul.controller;
 
-import gov.loc.www.zing.srw.SearchRetrieveRequestType;
-
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,14 +38,14 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.axis.types.NonNegativeInteger;
-import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.controller.Controller;
+import org.escidoc.browser.elabsmodul.cache.ELabsCache;
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.exceptions.EscidocBrowserException;
 import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
 import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
 import org.escidoc.browser.elabsmodul.model.InstrumentBean;
+import org.escidoc.browser.elabsmodul.model.UserBean;
 import org.escidoc.browser.elabsmodul.views.InstrumentView;
 import org.escidoc.browser.elabsmodul.views.YesNoDialog;
 import org.escidoc.browser.model.EscidocServiceLocation;
@@ -56,6 +53,7 @@ import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.OrgUnitService;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.UserService;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
@@ -76,7 +74,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
-import de.escidoc.core.client.UserAccountHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.EscidocException;
 import de.escidoc.core.client.exceptions.InternalClientException;
@@ -374,36 +371,74 @@ public final class InstrumentController extends Controller implements ISaveActio
         return Collections.emptyList();
     }
 
+    // private void getUsers() {
+    // LOG.debug("I am in the users");
+    // try {
+    // final SearchRetrieveRequestType request = new SearchRetrieveRequestType();
+    // request.setMaximumRecords(new NonNegativeInteger(AppConstants.MAX_RESULT_SIZE));
+    // UserAccountHandlerClient userAccHandler = new UserAccountHandlerClient(serviceLocation.getEscidocUrl());
+    // userAccHandler.setHandle(router.getApp().getCurrentUser().getToken());
+    // userAccounts = userAccHandler.retrieveUserAccountsAsList(request);
+    // //
+    // // for (UserAccount userAccount : userAccounts) {
+    // //
+    // // LOG.debug("USER ACCOUNT " + userAccount.getXLinkTitle() + userAccount.getObjid());
+    // //
+    // // }
+    // }
+    // catch (MalformedURLException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
+    // catch (EscidocException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
+    // catch (InternalClientException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
+    // catch (TransportException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
+
     private void getUsers() {
-        LOG.debug("I am in the users");
+
+        if (!ELabsCache.getUsers().isEmpty()) {
+            return;
+        }
+        List<UserBean> userAccountList = new ArrayList<UserBean>();
+        Collection<UserAccount> userAccounts = null;
         try {
-            final SearchRetrieveRequestType request = new SearchRetrieveRequestType();
-            request.setMaximumRecords(new NonNegativeInteger(AppConstants.MAX_RESULT_SIZE));
-            UserAccountHandlerClient userAccHandler = new UserAccountHandlerClient(serviceLocation.getEscidocUrl());
-            userAccHandler.setHandle(router.getApp().getCurrentUser().getToken());
-            userAccounts = userAccHandler.retrieveUserAccountsAsList(request);
-            //
-            // for (UserAccount userAccount : userAccounts) {
-            //
-            // LOG.debug("USER ACCOUNT " + userAccount.getXLinkTitle() + userAccount.getObjid());
-            //
-            // }
-        }
-        catch (MalformedURLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        catch (EscidocException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            UserService userService =
+                new UserService(serviceLocation.getEscidocUri(), router.getApp().getCurrentUser().getToken());
+            userAccounts = userService.findAll();
+            UserBean bean = null;
+            for (UserAccount account : userAccounts) {
+                bean = new UserBean();
+                bean.setId(account.getObjid());
+                bean.setName(account.getXLinkTitle());
+                userAccountList.add(bean);
+            }
+
+            synchronized (ELabsCache.getUsers()) {
+                if (!userAccountList.isEmpty()) {
+                    ELabsCache.setUsers(Collections.unmodifiableList(userAccountList));
+                }
+            }
         }
         catch (InternalClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error(e.getMessage());
+        }
+        catch (EscidocException e) {
+            LOG.error(e.getMessage());
         }
         catch (TransportException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error(e.getMessage());
+        }
+        catch (EscidocClientException e) {
+            LOG.error(e.getMessage());
         }
     }
 

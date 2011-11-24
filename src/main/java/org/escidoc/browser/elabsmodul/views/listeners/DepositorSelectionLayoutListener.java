@@ -33,10 +33,11 @@ import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DE
 
 import java.util.Iterator;
 
+import org.escidoc.browser.elabsmodul.cache.ELabsCache;
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.interfaces.IInvestigationAction;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsInvestigationAction;
-import org.escidoc.browser.elabsmodul.model.RigBean;
+import org.escidoc.browser.elabsmodul.model.UserBean;
 import org.escidoc.browser.elabsmodul.views.helpers.LabsLayoutHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,14 +52,11 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 
-/**
- * Layout listener for investigation view.
- */
-public class RigSelectionLayoutListener implements LayoutClickListener {
+public class DepositorSelectionLayoutListener implements LayoutClickListener {
 
-    private static final long serialVersionUID = -1787438522603054074L;
+    private static final long serialVersionUID = 4768887881612510191L;
 
-    private Logger LOG = LoggerFactory.getLogger(RigSelectionLayoutListener.class);
+    private Logger LOG = LoggerFactory.getLogger(DepositorSelectionLayoutListener.class);
 
     private final IInvestigationAction controller;
 
@@ -66,7 +64,7 @@ public class RigSelectionLayoutListener implements LayoutClickListener {
 
     private HorizontalLayout layout = null;
 
-    public RigSelectionLayoutListener(final IInvestigationAction controller,
+    public DepositorSelectionLayoutListener(final IInvestigationAction controller,
         final ILabsInvestigationAction labsInvestigationAction, final HorizontalLayout layout) {
         Preconditions.checkNotNull(controller, "Controller is null");
         Preconditions.checkNotNull(labsInvestigationAction, "LabsInvestigationAction is null");
@@ -91,10 +89,9 @@ public class RigSelectionLayoutListener implements LayoutClickListener {
                 return;
             }
             if (dataComponent instanceof Label) {
-
-                BeanItemContainer<RigBean> itemContainer = new BeanItemContainer<RigBean>(RigBean.class);
-                for (Iterator iterator = this.controller.getAvailableRigs().iterator(); iterator.hasNext();) {
-                    RigBean bean = (RigBean) iterator.next();
+                BeanItemContainer<UserBean> itemContainer = new BeanItemContainer<UserBean>(UserBean.class);
+                for (Iterator<UserBean> iterator = ELabsCache.getUsers().iterator(); iterator.hasNext();) {
+                    UserBean bean = iterator.next();
                     itemContainer.addItem(bean);
                 }
 

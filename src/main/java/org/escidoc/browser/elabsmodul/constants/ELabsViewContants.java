@@ -137,6 +137,9 @@ public class ELabsViewContants {
     public static final String L_INSTRUMENT_FOLDER_HELP =
         "The folder to which the instrument writes data. This folder will be monitored by the eSynch-Daemon.";
 
+    //
+    public static final String P_COMPLEX_ID = "complexId";
+
     // INSRUMENT_PROPERTIES PROPERTIES
     public static final String P_INSTRUMENT_TITLE = "name";
 
@@ -206,9 +209,7 @@ public class ELabsViewContants {
 
     public static final String P_RIG_CONTENT = "contentList";
 
-    public static final String P_RIG_COMPLEX_ID = "complexId";
-
-    public static final String[] RIG_PROPERTIES = { P_RIG_TITLE, P_RIG_DESC, P_RIG_CONTENT, P_RIG_COMPLEX_ID };
+    public static final String[] RIG_PROPERTIES = { P_RIG_TITLE, P_RIG_DESC, P_RIG_CONTENT, P_COMPLEX_ID };
 
     // eLabs Header Labels
     public static final String RESOURCE_RIG_NAME = "Rig item: ";
