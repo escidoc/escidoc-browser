@@ -32,6 +32,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -201,7 +202,16 @@ public final class InstrumentController extends Controller implements ISaveActio
             }
             else if ("responsible-person".equals(nodeName) && URI_EL.equals(nsUri)
                 && node.getAttributes().getNamedItem("rdf:resource") != null) {
-                instrumentBean.setDeviceSupervisor(node.getAttributes().getNamedItem("rdf:resource").getNodeValue());
+                final String supervisorId = node.getAttributes().getNamedItem("rdf:resource").getNodeValue();
+
+                if (supervisorId != null) {
+                    for (Iterator<UserBean> iterator = ELabsCache.getUsers().iterator(); iterator.hasNext();) {
+                        UserBean user = iterator.next();
+                        if (user.getId().equals(supervisorId)) {
+                            instrumentBean.setDeviceSupervisor(user.getComplexId());
+                        }
+                    }
+                }
             }
             else if ("institution".equals(nodeName) && URI_EL.equals(nsUri)
                 && node.getAttributes().getNamedItem("rdf:resource") != null) {
@@ -370,38 +380,6 @@ public final class InstrumentController extends Controller implements ISaveActio
         }
         return Collections.emptyList();
     }
-
-    // private void getUsers() {
-    // LOG.debug("I am in the users");
-    // try {
-    // final SearchRetrieveRequestType request = new SearchRetrieveRequestType();
-    // request.setMaximumRecords(new NonNegativeInteger(AppConstants.MAX_RESULT_SIZE));
-    // UserAccountHandlerClient userAccHandler = new UserAccountHandlerClient(serviceLocation.getEscidocUrl());
-    // userAccHandler.setHandle(router.getApp().getCurrentUser().getToken());
-    // userAccounts = userAccHandler.retrieveUserAccountsAsList(request);
-    // //
-    // // for (UserAccount userAccount : userAccounts) {
-    // //
-    // // LOG.debug("USER ACCOUNT " + userAccount.getXLinkTitle() + userAccount.getObjid());
-    // //
-    // // }
-    // }
-    // catch (MalformedURLException e) {
-    // // TODO Auto-generated catch block
-    // e.printStackTrace();
-    // }
-    // catch (EscidocException e) {
-    // // TODO Auto-generated catch block
-    // e.printStackTrace();
-    // }
-    // catch (InternalClientException e) {
-    // // TODO Auto-generated catch block
-    // e.printStackTrace();
-    // }
-    // catch (TransportException e) {
-    // // TODO Auto-generated catch block
-    // e.printStackTrace();
-    // }
 
     private void getUsers() {
 

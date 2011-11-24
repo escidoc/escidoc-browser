@@ -34,11 +34,13 @@ import java.util.List;
 
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsAction;
+import org.escidoc.browser.elabsmodul.interfaces.ILabsInstrumentAction;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsPanel;
 import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
 import org.escidoc.browser.elabsmodul.model.InstrumentBean;
 import org.escidoc.browser.elabsmodul.views.helpers.LabsLayoutHelper;
 import org.escidoc.browser.elabsmodul.views.helpers.ResourcePropertiesViewHelper;
+import org.escidoc.browser.elabsmodul.views.listeners.DeviceSupervisorSelectionLayoutListener;
 import org.escidoc.browser.elabsmodul.views.listeners.LabsClientViewEventHandler;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
@@ -61,7 +63,7 @@ import com.vaadin.ui.themes.Runo;
 /**
  * Specific BWeLabsView for Instrument item-element.
  */
-public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
+public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, ILabsInstrumentAction {
 
     private static final long serialVersionUID = -7601252311598579746L;
 
@@ -187,6 +189,9 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
         HorizontalLayout h9 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_INSTRUMENT_INSTITUTE,
                 getPojoItem().getItemProperty(ELabsViewContants.P_INSTRUMENT_INSTITUTE));
+
+        // set up specific listeners
+        h8.addListener(new DeviceSupervisorSelectionLayoutListener(this));
 
         registeredComponents.add(h1);
         registeredComponents.add(h2);
@@ -345,5 +350,11 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public void setDeviceSupervisor(String deviceSupervisorId) {
+        Preconditions.checkNotNull(deviceSupervisorId, "input arg is null");
+        instrumentBean.setDeviceSupervisor(deviceSupervisorId);
     }
 }

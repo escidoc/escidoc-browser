@@ -46,6 +46,7 @@ import java.util.Collection;
 
 import org.escidoc.browser.StringUtils;
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
+import org.escidoc.browser.elabsmodul.interfaces.ILabsInstrumentAction;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsInvestigationAction;
 import org.escidoc.browser.elabsmodul.interfaces.IRigAction;
 import org.escidoc.browser.elabsmodul.model.RigBean;
@@ -332,6 +333,59 @@ public final class LabsLayoutHelper {
                     }
                     else if (comboBox.getValue() instanceof UserBean) {
                         labsInvestigationAction.setInvestigator(((UserBean) comboBox.getValue()).getId());
+                    }
+                    else {
+                        LOG.error("Wrong data type in combobox");
+                    }
+                }
+            });
+            return comboBox;
+        }
+        catch (Exception e) {
+            LOG.error(e.getMessage());
+        }
+        return null;
+    }
+
+    /**
+     * @param property
+     * @return
+     */
+    @SuppressWarnings("serial")
+    public static synchronized AbstractComponent createDynamicComboBoxFieldForInstrument(
+        final ILabsInstrumentAction labsInstrumentAction, Property property, String itemCaptionProperty,
+        final Container itemContainer) {
+        Preconditions.checkNotNull(labsInstrumentAction, "LabsInstrumentAction is null");
+        Preconditions.checkNotNull(itemContainer, "ItemContainer is null");
+
+        try {
+            final ComboBox comboBox = new ComboBox(StringUtils.EMPTY_STRING, itemContainer);
+
+            if (property != null && itemCaptionProperty == null) {
+                comboBox.setPropertyDataSource(property);
+            }
+            else if (property == null && itemCaptionProperty != null) {
+                comboBox.setItemCaptionMode(ComboBox.ITEM_CAPTION_MODE_PROPERTY);
+                comboBox.setItemCaptionPropertyId(itemCaptionProperty);
+            }
+
+            comboBox.setEnabled(true);
+            comboBox.setVisible(true);
+            comboBox.setImmediate(true);
+            comboBox.setMultiSelect(false);
+            comboBox.setNullSelectionAllowed(false);
+            comboBox.setReadOnly(false);
+            comboBox.setWidth(COMBOBOX_WIDTH);
+            comboBox.setStyleName(STYLE_ELABS_TEXT_AS_LABEL);
+            comboBox.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
+
+            comboBox.addListener(new Property.ValueChangeListener() {
+                @Override
+                public void valueChange(ValueChangeEvent event) {
+                    if ((comboBox.getValue() instanceof String)) {
+                    }
+                    else if (comboBox.getValue() instanceof UserBean) {
+                        labsInstrumentAction.setDeviceSupervisor(((UserBean) comboBox.getValue()).getId());
                     }
                     else {
                         LOG.error("Wrong data type in combobox");
