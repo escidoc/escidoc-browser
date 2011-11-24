@@ -32,6 +32,8 @@ import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 import java.util.List;
 
+import org.apache.axis.types.NonNegativeInteger;
+import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
@@ -93,7 +95,9 @@ public class ItemRepository implements Repository {
 
     @Override
     public List<ResourceModel> findAll() throws EscidocClientException {
-        return ModelConverter.itemListToModel(client.retrieveItemsAsList(new SearchRetrieveRequestType()));
+        final SearchRetrieveRequestType request = new SearchRetrieveRequestType();
+        request.setMaximumRecords(new NonNegativeInteger(AppConstants.MAX_RESULT_SIZE));
+        return ModelConverter.itemListToModel(client.retrieveItemsAsList(request));
     }
 
     @Override
