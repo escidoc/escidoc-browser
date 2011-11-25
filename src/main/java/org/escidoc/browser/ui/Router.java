@@ -57,6 +57,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -166,6 +167,14 @@ public class Router {
                 LOG.error(ViewConstants.LAYOUT_ERR_ILLEG_EXEP + e.getLocalizedMessage());
             }
             catch (final EscidocClientException e) {
+                this.getMainWindow().showNotification(e.getLocalizedMessage(), Notification.TYPE_ERROR_MESSAGE);
+                LOG.error(e.getLocalizedMessage());
+            }
+            catch (UnsupportedOperationException e) {
+                this.getMainWindow().showNotification(e.getLocalizedMessage(), Notification.TYPE_ERROR_MESSAGE);
+                LOG.error(e.getLocalizedMessage());
+            }
+            catch (URISyntaxException e) {
                 this.getMainWindow().showNotification(e.getLocalizedMessage(), Notification.TYPE_ERROR_MESSAGE);
                 LOG.error(e.getLocalizedMessage());
             }
