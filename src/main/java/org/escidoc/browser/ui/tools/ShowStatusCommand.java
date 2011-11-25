@@ -26,26 +26,12 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.model;
+package org.escidoc.browser.ui.tools;
 
-import com.google.common.base.Preconditions;
+import de.escidoc.core.resources.adm.MessagesStatus;
 
-public enum ResourceType {
+public interface ShowStatusCommand {
 
-    CONTEXT("Context"), CONTAINER("Container"), ITEM("Item"), CONTENT_MODEL("Content Model");
+    void execute(MessagesStatus status);
 
-    private String label;
-
-    private ResourceType(final String label) {
-        Preconditions.checkNotNull(label, "value is null: %s", label);
-        this.label = label;
-    }
-
-    private ResourceType() {
-        label = "";
-    }
-
-    public String asLabel() {
-        return label;
-    }
 }

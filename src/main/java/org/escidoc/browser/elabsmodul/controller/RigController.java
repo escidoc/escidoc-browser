@@ -335,8 +335,7 @@ public final class RigController extends Controller implements IRigAction {
                         continue;
                     }
 
-                    final String cmmDescription =
-                        repositories.contentModel().findById(cmmId).getProperties().getDescription();
+                    final String cmmDescription = repositories.contentModel().findById(cmmId).getDescription();
                     if (cmmDescription != null) {
                         final Matcher controllerIdMatcher = controllerIdPattern.matcher(cmmDescription);
                         String controllerId = null;

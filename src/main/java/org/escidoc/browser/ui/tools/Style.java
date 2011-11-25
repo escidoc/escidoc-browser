@@ -26,26 +26,43 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.model;
+package org.escidoc.browser.ui.tools;
 
-import com.google.common.base.Preconditions;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.themes.Reindeer;
 
-public enum ResourceType {
+public class Style {
 
-    CONTEXT("Context"), CONTAINER("Container"), ITEM("Item"), CONTENT_MODEL("Content Model");
-
-    private String label;
-
-    private ResourceType(final String label) {
-        Preconditions.checkNotNull(label, "value is null: %s", label);
-        this.label = label;
+    private Style() {
+        // do not init.
     }
 
-    private ResourceType() {
-        label = "";
+    public static class Ruler extends Label {
+        private static final long serialVersionUID = -4909196895183387829L;
+
+        public Ruler() {
+            super("<hr />", Label.CONTENT_XHTML);
+        }
     }
 
-    public String asLabel() {
-        return label;
+    public static class H1 extends Label {
+        private static final long serialVersionUID = -2843233317747887008L;
+
+        public H1(final String caption) {
+            super(caption);
+            setSizeUndefined();
+            setStyleName(Reindeer.LABEL_H1);
+        }
     }
+
+    public static class H2 extends Label {
+        private static final long serialVersionUID = 1210257960304559971L;
+
+        public H2(final String caption) {
+            super(caption);
+            setSizeUndefined();
+            setStyleName(Reindeer.LABEL_H2);
+        }
+    }
+
 }

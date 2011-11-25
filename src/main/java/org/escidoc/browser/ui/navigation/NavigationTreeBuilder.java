@@ -57,8 +57,7 @@ public class NavigationTreeBuilder {
     }
 
     public NavigationTreeView buildNavigationTree(
-        final Router mainSite, final Window mainWindow, final TreeDataSource treeDataSource)
-        throws EscidocClientException {
+        final Router mainSite, final Window mainWindow, final TreeDataSource treeDataSource) {
 
         final NavigationTreeView navigationTreeView = createNavigationTreeView(mainSite, mainWindow, treeDataSource);
         navigationTreeView.addExpandListener(new TreeExpandListener(repositories, treeDataSource));

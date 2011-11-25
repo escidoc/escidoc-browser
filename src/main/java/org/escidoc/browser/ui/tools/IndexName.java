@@ -26,26 +26,38 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.model;
+package org.escidoc.browser.ui.tools;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.google.common.base.Preconditions;
 
-public enum ResourceType {
+public enum IndexName {
 
-    CONTEXT("Context"), CONTAINER("Container"), ITEM("Item"), CONTENT_MODEL("Content Model");
+    REINDEX_ALL("all"), CONTEXT_ADMIN("context_admin"), CONTENT_RELATION_ADMIN("content_relation_admin"), REINDEX_ESCIDOC_OU(
+        "escidocou_all"), OU_ADMIN("ou_admin"), ESCIDOCOAIPMH_ALL("escidocoaipmh_all"), ITEM_CONTAINER_ADMIN(
+        "item_container_admin"), REINDEX_ESCIDOC("escidoc_all"), CONTENT_MODEL_ADMIN("content_model_admin");
 
-    private String label;
+    private String internalName;
 
-    private ResourceType(final String label) {
-        Preconditions.checkNotNull(label, "value is null: %s", label);
-        this.label = label;
+    IndexName(String internalName) {
+        Preconditions.checkNotNull(internalName, "internalName is null: %s", internalName);
+        this.internalName = internalName;
     }
 
-    private ResourceType() {
-        label = "";
+    public String asInternalName() {
+        return internalName;
     }
 
-    public String asLabel() {
-        return label;
+    private final static Set<String> set = new HashSet<String>(values().length);
+
+    public static Collection<?> all() {
+        for (final IndexName indexName : values()) {
+            set.add(indexName.asInternalName());
+        }
+        return set;
     }
+
 }

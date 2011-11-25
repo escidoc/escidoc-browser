@@ -28,6 +28,9 @@
  */
 package org.escidoc.browser.repository.internal;
 
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
@@ -47,6 +50,7 @@ import de.escidoc.core.client.interfaces.ContextHandlerClientInterface;
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.Relations;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
+import de.escidoc.core.resources.om.context.Context;
 
 public class ContextRepository implements Repository {
 
@@ -103,6 +107,18 @@ public class ContextRepository implements Repository {
     @Override
     public void delete(final ResourceModel model) throws EscidocClientException {
         client.delete(model.getId());
+    }
+
+    @Override
+    public List<ResourceModel> filterUsingInput(String query) throws EscidocClientException {
+        final SearchRetrieveRequestType filter = new SearchRetrieveRequestType();
+        filter.setQuery(query);
+        List<Context> list = client.retrieveContextsAsList(filter);
+        List<ResourceModel> ret = new ArrayList<ResourceModel>(list.size());
+        for (Context resource : list) {
+            ret.add(new ContextProxyImpl(resource));
+        }
+        return ret;
     }
 
 }

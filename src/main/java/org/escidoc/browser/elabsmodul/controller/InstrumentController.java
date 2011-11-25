@@ -28,16 +28,11 @@
  */
 package org.escidoc.browser.elabsmodul.controller;
 
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import com.google.common.base.Preconditions;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import org.escidoc.browser.controller.Controller;
 import org.escidoc.browser.elabsmodul.cache.ELabsCache;
@@ -71,10 +66,15 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.EscidocException;
@@ -104,17 +104,17 @@ public final class InstrumentController extends Controller implements ISaveActio
     private IBeanModel beanModel = null;
 
     // contains default eSychDaemon URLs
-    private List<String> eSyncDaemonUrls = new ArrayList<String>();
+    private final List<String> eSyncDaemonUrls = new ArrayList<String>();
 
     // contains default deposit endpoint URLs
-    private List<String> depositEndPointUrls = new ArrayList<String>();
+    private final List<String> depositEndPointUrls = new ArrayList<String>();
 
     private Router router;
 
     @Override
     public void init(
-        EscidocServiceLocation serviceLocation, Repositories repositories, Router router, ResourceProxy resourceProxy,
-        Window mainWindow) {
+        final EscidocServiceLocation serviceLocation, final Repositories repositories, final Router router,
+        final ResourceProxy resourceProxy, final Window mainWindow) {
         Preconditions.checkNotNull(repositories, "Repository ref is null");
         Preconditions.checkNotNull(serviceLocation, "ServiceLocation ref is null");
         this.serviceLocation = serviceLocation;
@@ -207,8 +207,8 @@ public final class InstrumentController extends Controller implements ISaveActio
                 final String instituteId = node.getAttributes().getNamedItem("rdf:resource").getNodeValue();
                 instrumentBean.setInstitute(instituteId);
             }
+            return instrumentBean;
         }
-
         return instrumentBean;
     }
 
@@ -287,10 +287,10 @@ public final class InstrumentController extends Controller implements ISaveActio
             return instrument;
 
         }
-        catch (DOMException e) {
+        catch (final DOMException e) {
             LOG.error(e.getLocalizedMessage());
         }
-        catch (ParserConfigurationException e) {
+        catch (final ParserConfigurationException e) {
             LOG.error(e.getLocalizedMessage());
         }
 
@@ -302,7 +302,7 @@ public final class InstrumentController extends Controller implements ISaveActio
     }
 
     private static Element createDOMElementWithoutNamespace(
-        Document doc, Element instrument, String attributeValue, String value) {
+        final Document doc, final Element instrument, final String attributeValue, final String value) {
         final Element element = doc.createElementNS("http://escidoc.org/ontologies/bw-elabs/re#", attributeValue);
         element.setTextContent(value);
         element.setPrefix("el");
@@ -319,19 +319,19 @@ public final class InstrumentController extends Controller implements ISaveActio
         ContextProxyImpl context;
         try {
             context = (ContextProxyImpl) repositories.context().findById(resourceProxy.getContext().getObjid());
-            Element content = context.getAdminDescription().get("elabs").getContent();
-            NodeList nodeList = content.getElementsByTagName("el:esync-endpoint");
+            final Element content = context.getAdminDescription().get("elabs").getContent();
+            final NodeList nodeList = content.getElementsByTagName("el:esync-endpoint");
             for (int i = 0; i < nodeList.getLength(); i++) {
                 final Node node = nodeList.item(i);
                 eSyncDaemonUrls.add(node.getTextContent());
             }
 
         }
-        catch (EscidocClientException e) {
+        catch (final EscidocClientException e) {
             LOG.debug("Error occurred. Could not load Admin Descriptors" + e.getLocalizedMessage());
             e.printStackTrace();
         }
-        catch (NullPointerException e) {
+        catch (final NullPointerException e) {
             LOG.debug("Admin Description is null in the context " + resourceProxy.getContext().getObjid());
         }
 
@@ -367,7 +367,7 @@ public final class InstrumentController extends Controller implements ISaveActio
             hierarchy.add(resourceProxy);
             return hierarchy;
         }
-        catch (EscidocClientException e) {
+        catch (final EscidocClientException e) {
             LOG.error("Fatal error, could not load BreadCrumb " + e.getLocalizedMessage());
         }
         return Collections.emptyList();
@@ -378,14 +378,14 @@ public final class InstrumentController extends Controller implements ISaveActio
         if (!ELabsCache.getUsers().isEmpty()) {
             return;
         }
-        List<UserBean> userAccountList = new ArrayList<UserBean>();
+        final List<UserBean> userAccountList = new ArrayList<UserBean>();
         Collection<UserAccount> userAccounts = null;
         try {
-            UserService userService =
+            final UserService userService =
                 new UserService(serviceLocation.getEscidocUri(), router.getApp().getCurrentUser().getToken());
             userAccounts = userService.findAll();
             UserBean bean = null;
-            for (UserAccount account : userAccounts) {
+            for (final UserAccount account : userAccounts) {
                 bean = new UserBean();
                 bean.setId(account.getObjid());
                 bean.setName(account.getXLinkTitle());
@@ -398,16 +398,16 @@ public final class InstrumentController extends Controller implements ISaveActio
                 }
             }
         }
-        catch (InternalClientException e) {
+        catch (final InternalClientException e) {
             LOG.error(e.getMessage());
         }
-        catch (EscidocException e) {
+        catch (final EscidocException e) {
             LOG.error(e.getMessage());
         }
-        catch (TransportException e) {
+        catch (final TransportException e) {
             LOG.error(e.getMessage());
         }
-        catch (EscidocClientException e) {
+        catch (final EscidocClientException e) {
             LOG.error(e.getMessage());
         }
     }
@@ -417,14 +417,13 @@ public final class InstrumentController extends Controller implements ISaveActio
             return;
         }
         Collection<OrganizationalUnit> orgUnits = null;
-        List<OrgUnitBean> orgUnitList = new ArrayList<OrgUnitBean>();
+        final List<OrgUnitBean> orgUnitList = new ArrayList<OrgUnitBean>();
         try {
-            OrgUnitService orgUnitService =
+            final OrgUnitService orgUnitService =
                 new OrgUnitService(serviceLocation.getEscidocUri(), router.getApp().getCurrentUser().getToken());
             orgUnits = orgUnitService.findAll();
             OrgUnitBean bean = null;
-            for (Iterator<OrganizationalUnit> iterator = orgUnits.iterator(); iterator.hasNext();) {
-                OrganizationalUnit orgUnitBean = iterator.next();
+            for (final OrganizationalUnit orgUnitBean : orgUnits) {
                 bean = new OrgUnitBean();
                 bean.setId(orgUnitBean.getObjid());
                 bean.setName(orgUnitBean.getXLinkTitle());
@@ -437,13 +436,13 @@ public final class InstrumentController extends Controller implements ISaveActio
                 }
             }
         }
-        catch (InternalClientException e) {
+        catch (final InternalClientException e) {
             LOG.error(e.getMessage());
         }
-        catch (EscidocException e) {
+        catch (final EscidocException e) {
             LOG.error(e.getMessage());
         }
-        catch (TransportException e) {
+        catch (final TransportException e) {
             LOG.error(e.getMessage());
         }
     }
@@ -457,12 +456,12 @@ public final class InstrumentController extends Controller implements ISaveActio
             ELabsViewContants.DIALOG_SAVEINSTRUMENT_TEXT, new YesNoDialog.Callback() {
 
                 @Override
-                public void onDialogResult(boolean resultIsYes) {
+                public void onDialogResult(final boolean resultIsYes) {
                     if (resultIsYes) {
                         try {
                             saveModel();
                         }
-                        catch (EscidocClientException e) {
+                        catch (final EscidocClientException e) {
                             LOG.error(e.getMessage());
                             mainWindow.showNotification("Error", e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
                         }
@@ -478,23 +477,23 @@ public final class InstrumentController extends Controller implements ISaveActio
      */
     private synchronized void saveModel() throws EscidocClientException {
         Preconditions.checkNotNull(beanModel, "DataBean to store is NULL");
-        ItemRepository itemRepositories = repositories.item();
+        final ItemRepository itemRepositories = repositories.item();
         final String ESCIDOC = "escidoc";
 
         if (!(beanModel instanceof InstrumentBean)) {
             return;
         }
 
-        InstrumentBean instrumentBean = (InstrumentBean) beanModel;
+        final InstrumentBean instrumentBean = (InstrumentBean) beanModel;
         final Element metaDataContent = InstrumentController.createInstrumentDOMElementByBeanModel(instrumentBean);
 
         try {
-            Item item = itemRepositories.findItemById(instrumentBean.getObjectId());
-            MetadataRecord metadataRecord = item.getMetadataRecords().get(ESCIDOC);
+            final Item item = itemRepositories.findItemById(instrumentBean.getObjectId());
+            final MetadataRecord metadataRecord = item.getMetadataRecords().get(ESCIDOC);
             metadataRecord.setContent(metaDataContent);
             itemRepositories.update(item.getObjid(), item);
         }
-        catch (EscidocClientException e) {
+        catch (final EscidocClientException e) {
             LOG.error(e.getLocalizedMessage());
             // TODO show error message to user
         }
@@ -519,17 +518,17 @@ public final class InstrumentController extends Controller implements ISaveActio
                 .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_ITEM).forResource(resourceProxy.getId())
                 .permitted();
         }
-        catch (UnsupportedOperationException e) {
+        catch (final UnsupportedOperationException e) {
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
             LOG.error(e.getMessage());
             return false;
         }
-        catch (EscidocClientException e) {
+        catch (final EscidocClientException e) {
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
             LOG.error(e.getMessage());
             return false;
         }
-        catch (URISyntaxException e) {
+        catch (final URISyntaxException e) {
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
             LOG.error(e.getMessage());
             return false;

@@ -35,11 +35,12 @@ import org.escidoc.browser.repository.internal.ItemRepository;
 import org.escidoc.browser.repository.internal.OrganizationUnitRepository;
 import org.escidoc.browser.repository.internal.UserAccountRepository;
 
+import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.InternalClientException;
 
 public interface Repositories {
 
-    void loginWith(String token) throws InternalClientException;
+    void loginWith(String token) throws InternalClientException, EscidocClientException;
 
     ContextRepository context();
 
@@ -56,4 +57,5 @@ public interface Repositories {
     OrganizationUnitRepository organization();
 
     UserAccountRepository user();
+
 }

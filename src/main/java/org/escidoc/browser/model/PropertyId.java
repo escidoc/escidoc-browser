@@ -42,4 +42,6 @@ public final class PropertyId {
 
     public static final Object ICON = "icon";
 
+    public static final Object ID = "id";
+
 }

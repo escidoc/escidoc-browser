@@ -63,9 +63,9 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 @SuppressWarnings("serial")
 public class BrowserApplication extends Application implements HttpServletRequestListener {
 
-    static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
 
-    final Window mainWindow = new Window(ViewConstants.MAIN_WINDOW_TITLE);
+    private final Window mainWindow = new Window(ViewConstants.MAIN_WINDOW_TITLE);
 
     private EscidocServiceLocation serviceLocation = new EscidocServiceLocationImpl();
 
@@ -73,7 +73,7 @@ public class BrowserApplication extends Application implements HttpServletReques
 
     private WindowResizeListener windowResizeListener;
 
-    WindowResizeObserver observer;
+    private WindowResizeObserver observer;
 
     private Map<String, String[]> parameters;
 
@@ -133,7 +133,7 @@ public class BrowserApplication extends Application implements HttpServletReques
 
     private void setMainWindowContent(final EscidocServiceLocation serviceLocation) {
         try {
-            Router router = createRouter(serviceLocation, mainWindow, observer);
+            Router router = createRouter(serviceLocation, mainWindow);
             mainWindow.setContent(router.getLayout());
         }
         catch (final EscidocClientException e) {
@@ -146,8 +146,7 @@ public class BrowserApplication extends Application implements HttpServletReques
         }
     }
 
-    private Router createRouter(
-        final EscidocServiceLocation serviceLocation, final Window mainWindow, final WindowResizeObserver observer)
+    private Router createRouter(final EscidocServiceLocation serviceLocation, final Window mainWindow)
         throws EscidocClientException, MalformedURLException {
 
         final Repositories repositories = new RepositoriesImpl(serviceLocation, mainWindow).createAllRepositories();

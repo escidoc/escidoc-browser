@@ -54,4 +54,5 @@ public interface Repository {
 
     void delete(final ResourceModel model) throws EscidocClientException;
 
+    List<ResourceModel> filterUsingInput(String query) throws EscidocClientException;
 }

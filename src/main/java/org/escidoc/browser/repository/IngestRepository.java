@@ -26,26 +26,37 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.model;
+package org.escidoc.browser.repository;
 
-import com.google.common.base.Preconditions;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
-public enum ResourceType {
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.core.client.ingest.zip.ZipIngester;
 
-    CONTEXT("Context"), CONTAINER("Container"), ITEM("Item"), CONTENT_MODEL("Content Model");
+import de.escidoc.core.client.exceptions.EscidocException;
+import de.escidoc.core.client.exceptions.InternalClientException;
+import de.escidoc.core.client.exceptions.TransportException;
 
-    private String label;
+public class IngestRepository {
 
-    private ResourceType(final String label) {
-        Preconditions.checkNotNull(label, "value is null: %s", label);
-        this.label = label;
+    private ZipIngester zipIngester;
+
+    private URL serviceLocationUrl;
+
+    public IngestRepository(EscidocServiceLocation serviceLocation) throws MalformedURLException {
+        serviceLocationUrl = serviceLocation.getEscidocUrl();
     }
 
-    private ResourceType() {
-        label = "";
+    public void loginWith(String token) {
+        zipIngester = new ZipIngester(serviceLocationUrl, token);
     }
 
-    public String asLabel() {
-        return label;
+    public void ingestZip(InputStream inputStream) throws EscidocException, InternalClientException,
+        TransportException, UnsupportedEncodingException, IOException {
+        zipIngester.ingest(inputStream);
     }
 }

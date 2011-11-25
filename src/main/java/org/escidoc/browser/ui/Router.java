@@ -58,12 +58,12 @@ import org.escidoc.browser.ui.maincontent.SearchAdvancedView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.vaadin.Application;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
-import de.escidoc.core.resources.cmm.ContentModel;
 
 public class Router {
 
@@ -103,7 +103,7 @@ public class Router {
         init();
     }
 
-    private void init() throws EscidocClientException {
+    private void init() {
         initiatePlugins();
         createLayout();
         permanentURLelement();
@@ -332,9 +332,8 @@ public class Router {
             }
 
             final ResourceProxy resourceProxy = tryToFindResource(clickedResource);
-            final ContentModel contentModel =
-                repositories.contentModel().findById(resourceProxy.getContentModel().getObjid());
-            final String description = contentModel.getProperties().getDescription();
+            final String description =
+                repositories.contentModel().findById(resourceProxy.getContentModel().getObjid()).getDescription();
 
             if (description != null) {
                 final Pattern controllerIdPattern = Pattern.compile("org.escidoc.browser.Controller=([^;]*);");
@@ -382,4 +381,7 @@ public class Router {
         return this.app;
     }
 
+    public Application getApp() {
+        return app;
+    }
 }

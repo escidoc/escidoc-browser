@@ -43,8 +43,6 @@ import org.escidoc.browser.model.internal.HasNoNameResource;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.helper.Util;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Button;
@@ -80,7 +78,6 @@ public class ContainerRepository implements Repository {
     private final Window mainWindow;
 
     static final Logger LOG = LoggerFactory.getLogger(ContainerRepository.class);
-
     ContainerRepository(final EscidocServiceLocation escidocServiceLocation, Window mainWindow) {
         Preconditions
             .checkNotNull(escidocServiceLocation, "escidocServiceLocation is null: %s", escidocServiceLocation);
@@ -393,6 +390,18 @@ public class ContainerRepository implements Repository {
         containerMetadataList.add(metadata);
 
         client.update(container);
+    }
+
+    @Override
+    public List<ResourceModel> filterUsingInput(String query) throws EscidocClientException {
+        final SearchRetrieveRequestType filter = new SearchRetrieveRequestType();
+        filter.setQuery(query);
+        List<Container> list = client.retrieveContainersAsList(filter);
+        List<ResourceModel> ret = new ArrayList<ResourceModel>(list.size());
+        for (Container resource : list) {
+            ret.add(new ContainerProxyImpl(resource));
+        }
+        return ret;
     }
 
 }

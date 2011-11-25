@@ -28,12 +28,15 @@
  */
 package org.escidoc.browser;
 
-import org.w3c.dom.Document;
-
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.DecimalFormat;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
 
 public final class Utils {
 
@@ -53,5 +56,16 @@ public final class Utils {
         final int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
         return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " "
             + new String[] { "B", "KB", "MB", "GB", "TB" }[digitGroups];
+    }
+
+    public static void copy(InputStream in, OutputStream out) throws IOException {
+        byte[] buffer = new byte[1024];
+        while (true) {
+            int readCount = in.read(buffer);
+            if (readCount < 0) {
+                break;
+            }
+            out.write(buffer, 0, readCount);
+        }
     }
 }

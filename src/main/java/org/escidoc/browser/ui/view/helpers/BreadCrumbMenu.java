@@ -32,6 +32,7 @@ import java.net.MalformedURLException;
 import java.util.Collections;
 import java.util.List;
 
+import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
@@ -41,7 +42,6 @@ import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.escidoc.browser.ui.helper.ResourceHierarchy;
 
 import com.google.common.base.Preconditions;
-import com.vaadin.ui.AbstractComponentContainer;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
@@ -151,6 +151,7 @@ public class BreadCrumbMenu {
             buf.append("<li><a href='"
                 + this.generateLink(resourceModel.getId(), resourceModel.getType().asLabel().toUpperCase(),
                     escidocServiceLocation.getEscidocUri().toString()) + "'>" + resourceModel.getName() + "</a></li>");
+                + "'>" + resourceModel.getName() + "</a></li>");
         }
         ((ComponentContainer) component).addComponent(new Label(bCstring + buf.toString() + "<li></ul>",
             Label.CONTENT_RAW));
