@@ -28,10 +28,14 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import gov.loc.www.zing.srw.SearchRetrieveRequestType;
+import com.google.common.base.Preconditions;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.EscidocServiceLocation;
@@ -43,14 +47,11 @@ import org.escidoc.browser.model.internal.HasNoNameResource;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.helper.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.escidoc.core.client.ContainerHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -66,8 +67,11 @@ import de.escidoc.core.resources.common.TaskParam;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.sb.search.SearchResultRecord;
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 public class ContainerRepository implements Repository {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ContainerRepository.class);
 
     private static final String DELETE_RESOURCE_WND_NAME = "Do you really want to delete this item!?";
 
@@ -77,8 +81,7 @@ public class ContainerRepository implements Repository {
 
     private final Window mainWindow;
 
-    static final Logger LOG = LoggerFactory.getLogger(ContainerRepository.class);
-    ContainerRepository(final EscidocServiceLocation escidocServiceLocation, Window mainWindow) {
+    ContainerRepository(final EscidocServiceLocation escidocServiceLocation, final Window mainWindow) {
         Preconditions
             .checkNotNull(escidocServiceLocation, "escidocServiceLocation is null: %s", escidocServiceLocation);
         client = new ContainerHandlerClient(escidocServiceLocation.getEscidocUri());
@@ -203,7 +206,7 @@ public class ContainerRepository implements Repository {
                 mainWindow.showNotification(new Window.Notification(ViewConstants.SUBMITTED,
                     Notification.TYPE_TRAY_NOTIFICATION));
             }
-            catch (EscidocClientException e) {
+            catch (final EscidocClientException e) {
                 mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
                     Notification.TYPE_ERROR_MESSAGE));
             }
@@ -214,7 +217,7 @@ public class ContainerRepository implements Repository {
                 mainWindow.showNotification(new Window.Notification(ViewConstants.IN_REVISION,
                     Notification.TYPE_TRAY_NOTIFICATION));
             }
-            catch (EscidocClientException e) {
+            catch (final EscidocClientException e) {
                 mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
                     Notification.TYPE_ERROR_MESSAGE));
             }
@@ -225,7 +228,7 @@ public class ContainerRepository implements Repository {
                 mainWindow.showNotification(new Window.Notification(ViewConstants.RELEASED,
                     Notification.TYPE_TRAY_NOTIFICATION));
             }
-            catch (EscidocClientException e) {
+            catch (final EscidocClientException e) {
                 mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
                     Notification.TYPE_ERROR_MESSAGE));
             }
@@ -237,7 +240,7 @@ public class ContainerRepository implements Repository {
                 mainWindow.showNotification(new Window.Notification(ViewConstants.WITHDRAWN,
                     Notification.TYPE_TRAY_NOTIFICATION));
             }
-            catch (EscidocClientException e) {
+            catch (final EscidocClientException e) {
                 mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
                     Notification.TYPE_ERROR_MESSAGE));
             }
@@ -246,7 +249,7 @@ public class ContainerRepository implements Repository {
             try {
                 this.delete(container);
             }
-            catch (EscidocClientException e) {
+            catch (final EscidocClientException e) {
                 if (e.getMessage().toString().contains("An error occured removing member entries for container")) {
                     mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR,
                         "Cannot remove the resource as it belongs to a resource which is not deletable",
@@ -271,7 +274,7 @@ public class ContainerRepository implements Repository {
                 mainWindow.showNotification(new Window.Notification(ViewConstants.LOCKED,
                     Notification.TYPE_TRAY_NOTIFICATION));
             }
-            catch (EscidocClientException e) {
+            catch (final EscidocClientException e) {
                 mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
                     Notification.TYPE_ERROR_MESSAGE));
             }
@@ -282,7 +285,7 @@ public class ContainerRepository implements Repository {
                 mainWindow.showNotification(new Window.Notification(ViewConstants.UNLOCKED,
                     Notification.TYPE_TRAY_NOTIFICATION));
             }
-            catch (EscidocClientException e) {
+            catch (final EscidocClientException e) {
                 mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
                     Notification.TYPE_ERROR_MESSAGE));
             }
@@ -293,18 +296,18 @@ public class ContainerRepository implements Repository {
     public void delete(final ResourceModel model) throws EscidocClientException {
         final Window subwindow = new Window(DELETE_RESOURCE_WND_NAME);
         subwindow.setModal(true);
-        Label message = new Label(DELETE_RESOURCE);
+        final Label message = new Label(DELETE_RESOURCE);
         subwindow.addComponent(message);
 
         @SuppressWarnings("serial")
-        Button okConfirmed = new Button("Yes", new Button.ClickListener() {
+        final Button okConfirmed = new Button("Yes", new Button.ClickListener() {
             @Override
-            public void buttonClick(ClickEvent event) {
+            public void buttonClick(final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
                 try {
                     finalDelete(model);
                 }
-                catch (EscidocClientException e) {
+                catch (final EscidocClientException e) {
                     mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
                         Notification.TYPE_ERROR_MESSAGE));
                 }
@@ -312,13 +315,13 @@ public class ContainerRepository implements Repository {
 
         });
         @SuppressWarnings("serial")
-        Button cancel = new Button("Cancel", new Button.ClickListener() {
+        final Button cancel = new Button("Cancel", new Button.ClickListener() {
             @Override
-            public void buttonClick(ClickEvent event) {
+            public void buttonClick(final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
             }
         });
-        HorizontalLayout hl = new HorizontalLayout();
+        final HorizontalLayout hl = new HorizontalLayout();
         hl.addComponent(okConfirmed);
         hl.addComponent(cancel);
         subwindow.addComponent(hl);
@@ -334,18 +337,18 @@ public class ContainerRepository implements Repository {
     private void delete(final Container container) throws EscidocClientException {
         final Window subwindow = new Window(DELETE_RESOURCE_WND_NAME);
         subwindow.setModal(true);
-        Label message = new Label(DELETE_RESOURCE);
+        final Label message = new Label(DELETE_RESOURCE);
         subwindow.addComponent(message);
 
         @SuppressWarnings("serial")
-        Button okConfirmed = new Button("Yes", new Button.ClickListener() {
+        final Button okConfirmed = new Button("Yes", new Button.ClickListener() {
             @Override
-            public void buttonClick(ClickEvent event) {
+            public void buttonClick(final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
                 try {
                     finalDelete(container);
                 }
-                catch (EscidocClientException e) {
+                catch (final EscidocClientException e) {
                     mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
                         Notification.TYPE_ERROR_MESSAGE));
                 }
@@ -353,27 +356,27 @@ public class ContainerRepository implements Repository {
 
         });
         @SuppressWarnings("serial")
-        Button cancel = new Button("Cancel", new Button.ClickListener() {
+        final Button cancel = new Button("Cancel", new Button.ClickListener() {
             @Override
-            public void buttonClick(ClickEvent event) {
+            public void buttonClick(final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
             }
         });
-        HorizontalLayout hl = new HorizontalLayout();
+        final HorizontalLayout hl = new HorizontalLayout();
         hl.addComponent(okConfirmed);
         hl.addComponent(cancel);
         subwindow.addComponent(hl);
         mainWindow.addWindow(subwindow);
     }
 
-    private void finalDelete(Container container) throws EscidocClientException {
+    private void finalDelete(final Container container) throws EscidocClientException {
         client.delete(container.getObjid());
         mainWindow
             .showNotification(new Window.Notification(ViewConstants.DELETED, Notification.TYPE_TRAY_NOTIFICATION));
     }
 
-    public void updateMetaData(MetadataRecord metadata, Container container) throws EscidocClientException {
-        MetadataRecords containerMetadataList = container.getMetadataRecords();
+    public void updateMetaData(final MetadataRecord metadata, final Container container) throws EscidocClientException {
+        final MetadataRecords containerMetadataList = container.getMetadataRecords();
 
         containerMetadataList.del(metadata.getName());
         containerMetadataList.add(metadata);
@@ -382,23 +385,23 @@ public class ContainerRepository implements Repository {
         client.update(container);
     }
 
-    public void addMetaData(MetadataRecord metadata, Container container) throws EscidocClientException {
+    public void addMetaData(final MetadataRecord metadata, final Container container) throws EscidocClientException {
         final TaskParam taskParam = new TaskParam();
         taskParam.setLastModificationDate(container.getLastModificationDate());
         taskParam.setComment("Adding a new MetaData");
-        MetadataRecords containerMetadataList = container.getMetadataRecords();
+        final MetadataRecords containerMetadataList = container.getMetadataRecords();
         containerMetadataList.add(metadata);
 
         client.update(container);
     }
 
     @Override
-    public List<ResourceModel> filterUsingInput(String query) throws EscidocClientException {
+    public List<ResourceModel> filterUsingInput(final String query) throws EscidocClientException {
         final SearchRetrieveRequestType filter = new SearchRetrieveRequestType();
         filter.setQuery(query);
-        List<Container> list = client.retrieveContainersAsList(filter);
-        List<ResourceModel> ret = new ArrayList<ResourceModel>(list.size());
-        for (Container resource : list) {
+        final List<Container> list = client.retrieveContainersAsList(filter);
+        final List<ResourceModel> ret = new ArrayList<ResourceModel>(list.size());
+        for (final Container resource : list) {
             ret.add(new ContainerProxyImpl(resource));
         }
         return ret;

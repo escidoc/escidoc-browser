@@ -651,8 +651,7 @@ public class InvestigationController extends Controller implements IInvestigatio
                         continue;
                     }
 
-                    final String cmmDescription =
-                        repositories.contentModel().findById(cmmId).getProperties().getDescription();
+                    final String cmmDescription = repositories.contentModel().findById(cmmId).getDescription();
                     if (cmmDescription != null) {
                         final Matcher controllerIdMatcher = controllerIdPattern.matcher(cmmDescription);
                         String controllerId = null;

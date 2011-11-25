@@ -28,11 +28,25 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.validator.StringLengthValidator;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.NativeSelect;
+import com.vaadin.ui.ProgressIndicator;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.Upload;
+import com.vaadin.ui.Upload.FailedEvent;
+import com.vaadin.ui.Upload.FinishedEvent;
+import com.vaadin.ui.Upload.StartedEvent;
+import com.vaadin.ui.Upload.SucceededEvent;
+import com.vaadin.ui.Window;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ContainerModel;
@@ -52,24 +66,11 @@ import org.escidoc.browser.ui.listeners.MetadataFileReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.validator.StringLengthValidator;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.NativeSelect;
-import com.vaadin.ui.ProgressIndicator;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.Upload;
-import com.vaadin.ui.Upload.FailedEvent;
-import com.vaadin.ui.Upload.FinishedEvent;
-import com.vaadin.ui.Upload.StartedEvent;
-import com.vaadin.ui.Upload.SucceededEvent;
-import com.vaadin.ui.Window;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.EscidocException;
@@ -77,7 +78,6 @@ import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.client.exceptions.TransportException;
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.VersionableResource;
-import de.escidoc.core.resources.cmm.ContentModel;
 import de.escidoc.core.resources.common.reference.ContentModelRef;
 import de.escidoc.core.resources.common.reference.ContextRef;
 import de.escidoc.core.resources.om.container.Container;
@@ -326,21 +326,17 @@ public class ResourceAddViewImpl implements ResourceAddView {
 
     public String getContentModelType(String id) {
         try {
-            ContentModel contentModel = repositories.contentModel().findById(id);
-            String objectType = contentModel.getProperties().getDescription();
+            ResourceProxy contentModel = repositories.contentModel().findById(id);
+            String objectType = contentModel.getDescription();
             if ((objectType != null) && (objectType.contains("http://www.w3.org/1999/02/22-rdf-syntax-ns#type="))) {
                 final Pattern controllerIdPattern =
                     Pattern.compile("http://www.w3.org/1999/02/22-rdf-syntax-ns#type=org.escidoc.resources.([^;]*);");
-                final Matcher controllerIdMatcher =
-                    controllerIdPattern.matcher(contentModel.getProperties().getDescription());
+                final Matcher controllerIdMatcher = controllerIdPattern.matcher(contentModel.getDescription());
                 if (controllerIdMatcher.find()) {
                     objectType = controllerIdMatcher.group(1);
                 }
 
                 return objectType;
-            }
-            else {
-                return null;
             }
         }
         catch (EscidocClientException e) {

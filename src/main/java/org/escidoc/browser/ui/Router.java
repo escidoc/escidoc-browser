@@ -28,11 +28,9 @@
  */
 package org.escidoc.browser.ui;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.BrowserApplication;
@@ -58,10 +56,11 @@ import org.escidoc.browser.ui.maincontent.SearchAdvancedView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.Application;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
+import java.io.IOException;
+import java.util.Map;
+import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -146,27 +145,27 @@ public class Router {
             Class<?> layoutClass;
             try {
                 layoutClass = Class.forName(layoutClassName);
-                LayoutDesign layoutInstance = (LayoutDesign) layoutClass.newInstance();
+                final LayoutDesign layoutInstance = (LayoutDesign) layoutClass.newInstance();
                 layoutInstance.init(mainWindow, serviceLocation, app, repositories, this);
                 layout = layoutInstance;
 
             }
-            catch (ClassNotFoundException e) {
+            catch (final ClassNotFoundException e) {
                 this.getMainWindow().showNotification(ViewConstants.LAYOUT_ERR_CANNOT_FIND_CLASS,
                     Notification.TYPE_ERROR_MESSAGE);
                 LOG.error(ViewConstants.LAYOUT_ERR_CANNOT_FIND_CLASS + e.getLocalizedMessage());
             }
-            catch (InstantiationException e) {
+            catch (final InstantiationException e) {
                 this.getMainWindow().showNotification(ViewConstants.LAYOUT_ERR_INSTANTIATE_CLASS,
                     Notification.TYPE_ERROR_MESSAGE);
                 LOG.error(ViewConstants.LAYOUT_ERR_INSTANTIATE_CLASS + e.getLocalizedMessage());
             }
-            catch (IllegalAccessException e) {
+            catch (final IllegalAccessException e) {
                 this.getMainWindow().showNotification(ViewConstants.LAYOUT_ERR_ILLEG_EXEP,
                     Notification.TYPE_ERROR_MESSAGE);
                 LOG.error(ViewConstants.LAYOUT_ERR_ILLEG_EXEP + e.getLocalizedMessage());
             }
-            catch (EscidocClientException e) {
+            catch (final EscidocClientException e) {
                 this.getMainWindow().showNotification(e.getLocalizedMessage(), Notification.TYPE_ERROR_MESSAGE);
                 LOG.error(e.getLocalizedMessage());
             }
@@ -188,7 +187,7 @@ public class Router {
      * 
      * @param cnt
      */
-    public void openControllerView(Controller cnt, ResourceProxy resourceProxy, Boolean doReloadView) {
+    public void openControllerView(final Controller cnt, final ResourceProxy resourceProxy, final Boolean doReloadView) {
         cnt.init(serviceLocation, repositories, this, resourceProxy, mainWindow);
         if (!doReloadView) {
             cnt.showView(layout);
@@ -278,11 +277,11 @@ public class Router {
      * @param doReloadView
      * @throws EscidocClientException
      */
-    public void show(final ResourceModel clickedResource, Boolean doReloadView) throws EscidocClientException {
-        String controllerId = getControllerId(clickedResource);
+    public void show(final ResourceModel clickedResource, final Boolean doReloadView) throws EscidocClientException {
+        final String controllerId = getControllerId(clickedResource);
         Controller controller;
         try {
-            String controllerClassName = browserProperties.getProperty(controllerId);
+            final String controllerClassName = browserProperties.getProperty(controllerId);
             // TODO find a better solution for "controller ID not configured"
             if (controllerClassName == null) {
                 LOG.error("Could not resolve controller ID. " + controllerId);
@@ -300,17 +299,17 @@ public class Router {
                 }
             }
         }
-        catch (ClassNotFoundException e) {
+        catch (final ClassNotFoundException e) {
             this.getMainWindow().showNotification(ViewConstants.CONTROLLER_ERR_CANNOT_FIND_CLASS,
                 Notification.TYPE_ERROR_MESSAGE);
             LOG.error(ViewConstants.CONTROLLER_ERR_CANNOT_FIND_CLASS + e.getLocalizedMessage());
         }
-        catch (InstantiationException e) {
+        catch (final InstantiationException e) {
             this.getMainWindow().showNotification(ViewConstants.CONTROLLER_ERR_INSTANTIATE_CLASS,
                 Notification.TYPE_ERROR_MESSAGE);
             LOG.error(ViewConstants.CONTROLLER_ERR_INSTANTIATE_CLASS + e.getLocalizedMessage());
         }
-        catch (IllegalAccessException e) {
+        catch (final IllegalAccessException e) {
             this.getMainWindow().showNotification(ViewConstants.CONTROLLER_ERR_ILLEG_EXEP,
                 Notification.TYPE_ERROR_MESSAGE);
             LOG.error(ViewConstants.CONTROLLER_ERR_ILLEG_EXEP + e.getLocalizedMessage());
@@ -379,9 +378,5 @@ public class Router {
 
     public BrowserApplication getApp() {
         return this.app;
-    }
-
-    public Application getApp() {
-        return app;
     }
 }

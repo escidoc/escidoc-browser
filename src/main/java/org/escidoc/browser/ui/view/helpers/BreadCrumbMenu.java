@@ -28,11 +28,15 @@
  */
 package org.escidoc.browser.ui.view.helpers;
 
-import java.net.MalformedURLException;
-import java.util.Collections;
-import java.util.List;
+import com.google.common.base.Preconditions;
 
-import org.escidoc.browser.BrowserApplication;
+import com.vaadin.ui.AbstractComponentContainer;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Window;
+
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
@@ -41,12 +45,9 @@ import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.escidoc.browser.ui.helper.ResourceHierarchy;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.ComponentContainer;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Window;
+import java.net.MalformedURLException;
+import java.util.Collections;
+import java.util.List;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -96,7 +97,7 @@ public class BreadCrumbMenu {
                             escidocServiceLocation.getEscidocUrl().toString()) + "'>" + resourceModel.getName()
                         + "</a></li>");
                 }
-                catch (MalformedURLException e) {
+                catch (final MalformedURLException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
@@ -141,7 +142,7 @@ public class BreadCrumbMenu {
         cssLayout.addComponent(new Label(bCstring + buf.toString(), Label.CONTENT_RAW));
     }
 
-    public BreadCrumbMenu(Component component, List<ResourceModel> breadCrumbModel,
+    public BreadCrumbMenu(final Component component, final List<ResourceModel> breadCrumbModel,
         final EscidocServiceLocation escidocServiceLocation) {
         final StringBuffer buf = new StringBuffer();
         Preconditions.checkNotNull(component, "###BreadCrumbModel component is null");
@@ -151,13 +152,12 @@ public class BreadCrumbMenu {
             buf.append("<li><a href='"
                 + this.generateLink(resourceModel.getId(), resourceModel.getType().asLabel().toUpperCase(),
                     escidocServiceLocation.getEscidocUri().toString()) + "'>" + resourceModel.getName() + "</a></li>");
-                + "'>" + resourceModel.getName() + "</a></li>");
         }
         ((ComponentContainer) component).addComponent(new Label(bCstring + buf.toString() + "<li></ul>",
             Label.CONTENT_RAW));
     }
 
-    private String generateLink(String id, String type, String url) {
+    private String generateLink(final String id, final String type, final String url) {
         return "?id=" + id + "&type=" + type + "&escidocurl=" + url;
     }
 }

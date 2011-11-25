@@ -28,7 +28,9 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import java.net.MalformedURLException;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.ui.Window;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.repository.AdminRepository;
@@ -37,14 +39,15 @@ import org.escidoc.browser.repository.PdpRepository;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.StagingRepository;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.Window;
+import java.net.MalformedURLException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class RepositoriesImpl implements Repositories {
 
     private final EscidocServiceLocation serviceLocation;
+
+    private final Window mainWindow;
 
     private ContextRepository contextRepository;
 
@@ -62,9 +65,9 @@ public class RepositoriesImpl implements Repositories {
 
     private OrganizationUnitRepository organizationUnitRepository;
 
-    private final Window mainWindow;
-
     private AdminRepository adminRepository;
+
+    private IngestRepository ingestRepository;
 
     public RepositoriesImpl(final EscidocServiceLocation serviceLocation, Window mainWindow) {
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
@@ -98,7 +101,7 @@ public class RepositoriesImpl implements Repositories {
         adminRepository.loginWith(token);
         ingestRepository.loginWith(token);
     }
-        
+
     @Override
     public ContextRepository context() {
         Preconditions.checkNotNull(contextRepository, "contextRepository is null: %s", contextRepository);
@@ -148,8 +151,8 @@ public class RepositoriesImpl implements Repositories {
         Preconditions.checkNotNull(userAccountRepository, "userAccountRepository is null: %s", userAccountRepository);
         return userAccountRepository;
     }
-    
-     @Override
+
+    @Override
     public AdminRepository admin() {
         Preconditions.checkNotNull(adminRepository, "adminRepository is null: %s", adminRepository);
         return adminRepository;

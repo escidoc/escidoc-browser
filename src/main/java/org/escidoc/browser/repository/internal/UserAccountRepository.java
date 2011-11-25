@@ -28,7 +28,7 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import java.util.List;
+import com.google.common.base.Preconditions;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
@@ -37,7 +37,7 @@ import org.escidoc.browser.repository.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
+import java.util.List;
 
 import de.escidoc.core.client.ContainerHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -59,7 +59,7 @@ public class UserAccountRepository implements Repository {
     }
 
     @Override
-    public void loginWith(String handle) throws InternalClientException {
+    public void loginWith(final String handle) throws InternalClientException {
         // TODO Auto-generated method stub
 
     }
@@ -71,32 +71,37 @@ public class UserAccountRepository implements Repository {
     }
 
     @Override
-    public List<ResourceModel> findTopLevelMembersById(String id) throws EscidocClientException {
+    public List<ResourceModel> findTopLevelMembersById(final String id) throws EscidocClientException {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public ResourceProxy findById(String id) throws EscidocClientException {
+    public ResourceProxy findById(final String id) throws EscidocClientException {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public VersionHistory getVersionHistory(String id) throws EscidocClientException {
+    public VersionHistory getVersionHistory(final String id) throws EscidocClientException {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public Relations getRelations(String id) throws EscidocClientException {
+    public Relations getRelations(final String id) throws EscidocClientException {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public void delete(ResourceModel model) throws EscidocClientException {
+    public void delete(final ResourceModel model) throws EscidocClientException {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public List<ResourceModel> filterUsingInput(final String query) throws EscidocClientException {
+        throw new UnsupportedOperationException("not-yet-implemented.");
     }
 }

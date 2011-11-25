@@ -28,8 +28,6 @@
  */
 package org.escidoc.browser.layout;
 
-import com.google.common.base.Preconditions;
-
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Component;
@@ -55,12 +53,9 @@ import org.escidoc.browser.ui.mainpage.HeaderContainer;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.navigation.NavigationTreeView;
 import org.escidoc.browser.ui.navigation.RootNode;
-import org.escidoc.browser.ui.tools.ToolsTreeView;
 import org.escidoc.browser.ui.view.helpers.CloseTabsViewHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.URISyntaxException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -104,14 +99,8 @@ public class SimpleLayout extends LayoutDesign {
 
     @Override
     public void init(
-        final Window mainWindow, final EscidocServiceLocation serviceLocation, final BrowserApplication app,
-        final Repositories repositories, final Router router) throws EscidocClientException {
-        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
-        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
-        Preconditions.checkNotNull(app, "app is null: %s", app);
-        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
-        Preconditions.checkNotNull(router, "router is null: %s", router);
-
+        Window mainWindow, EscidocServiceLocation serviceLocation, BrowserApplication app, Repositories repositories,
+        Router router) throws EscidocClientException {
         this.serviceLocation = serviceLocation;
         this.app = app;
         this.mainWindow = mainWindow;
@@ -119,7 +108,6 @@ public class SimpleLayout extends LayoutDesign {
         this.repositories = repositories;
         this.router = router;
         buildMainLayout();
-        // FIXME: bad design, create a static class instead.
         addComponent(mainLayout);
     }
 
@@ -179,8 +167,7 @@ public class SimpleLayout extends LayoutDesign {
         return 0;
     }
 
-    private AbsoluteLayout buildMainLayout() throws EscidocClientException, UnsupportedOperationException,
-        URISyntaxException {
+    private AbsoluteLayout buildMainLayout() throws EscidocClientException {
         // common part: create layout
         mainLayout = new AbsoluteLayout();
         mainLayout.setImmediate(false);
@@ -196,14 +183,6 @@ public class SimpleLayout extends LayoutDesign {
         mainLayout.addComponent(headerContainer, "top:0.0px;right:0.0px;left:0.0px;");
         buildFooter();
         mainLayout.addComponent(footer, "right:0.0px;bottom:0.0px;left:0.0px;");
-        accordion.addTab(mainNavigationTree, ViewConstants.RESOURCES, null);
-
-        final ToolsTreeView toolsTreeView = new ToolsTreeView(router, repositories);
-        toolsTreeView.init();
-
-        accordion.addTab(toolsTreeView, ViewConstants.TOOLS, null);
-
-        mainNavigation.addComponent(accordion);
 
         // container
         container = buildContainer();

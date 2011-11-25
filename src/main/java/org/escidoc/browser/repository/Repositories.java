@@ -58,4 +58,8 @@ public interface Repositories {
 
     UserAccountRepository user();
 
+    AdminRepository admin();
+
+    IngestRepository ingest();
+
 }
