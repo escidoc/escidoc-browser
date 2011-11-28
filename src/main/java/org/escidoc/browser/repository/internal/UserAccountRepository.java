@@ -28,16 +28,17 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import com.google.common.base.Preconditions;
+import java.util.List;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.repository.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
+import com.google.common.base.Preconditions;
 
 import de.escidoc.core.client.ContainerHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -95,7 +96,7 @@ public class UserAccountRepository implements Repository {
     }
 
     @Override
-    public void delete(final ResourceModel model) throws EscidocClientException {
+    public void delete(final ResourceModel model, TreeDataSource tr) throws EscidocClientException {
         // TODO Auto-generated method stub
 
     }

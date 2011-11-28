@@ -32,6 +32,7 @@ import java.util.List;
 
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.TreeDataSource;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.InternalClientException;
@@ -52,7 +53,7 @@ public interface Repository {
 
     Relations getRelations(String id) throws EscidocClientException;
 
-    void delete(final ResourceModel model) throws EscidocClientException;
+    void delete(final ResourceModel model, TreeDataSource tr) throws EscidocClientException;
 
     List<ResourceModel> filterUsingInput(String query) throws EscidocClientException;
 }
