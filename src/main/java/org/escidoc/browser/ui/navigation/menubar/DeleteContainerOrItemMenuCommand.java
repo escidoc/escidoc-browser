@@ -132,16 +132,15 @@ final class DeleteContainerOrItemMenuCommand implements Command {
         try {
             switch (resourceModel.getType()) {
                 case CONTAINER:
-                    repositories.container().delete(resourceModel);
+                    repositories.container().delete(resourceModel, treeDataSource);
                     break;
                 case ITEM:
-                    repositories.item().delete(resourceModel);
+                    repositories.item().delete(resourceModel, treeDataSource);
                     break;
                 default:
                     mainWindow.showNotification("Deleting " + resourceModel.getType() + " is not yet implemented",
                         Window.Notification.TYPE_ERROR_MESSAGE);
             }
-            treeDataSource.remove(resourceModel);
         }
         catch (final EscidocClientException e) {
             mainWindow.showNotification("Can not delete " + resourceModel.getName(), e.getMessage(),

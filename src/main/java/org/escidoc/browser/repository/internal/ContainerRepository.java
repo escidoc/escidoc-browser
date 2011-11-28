@@ -28,14 +28,10 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import com.google.common.base.Preconditions;
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.EscidocServiceLocation;
@@ -43,6 +39,7 @@ import org.escidoc.browser.model.ModelConverter;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.HasNoNameResource;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.ViewConstants;
@@ -50,8 +47,13 @@ import org.escidoc.browser.ui.helper.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.base.Preconditions;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.ContainerHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -67,7 +69,6 @@ import de.escidoc.core.resources.common.TaskParam;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.sb.search.SearchResultRecord;
-import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 public class ContainerRepository implements Repository {
 
@@ -293,7 +294,7 @@ public class ContainerRepository implements Repository {
     }
 
     @Override
-    public void delete(final ResourceModel model) throws EscidocClientException {
+    public void delete(final ResourceModel model, final TreeDataSource treeDataSource) throws EscidocClientException {
         final Window subwindow = new Window(DELETE_RESOURCE_WND_NAME);
         subwindow.setModal(true);
         final Label message = new Label(DELETE_RESOURCE);
@@ -306,6 +307,7 @@ public class ContainerRepository implements Repository {
                 (subwindow.getParent()).removeWindow(subwindow);
                 try {
                     finalDelete(model);
+                    treeDataSource.remove(model);
                 }
                 catch (final EscidocClientException e) {
                     mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),

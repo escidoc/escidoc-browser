@@ -41,6 +41,7 @@ import org.escidoc.browser.model.ModelConverter;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.HasNoNameResource;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.ViewConstants;
@@ -261,7 +262,7 @@ public class ItemRepository implements Repository {
     }
 
     @Override
-    public void delete(final ResourceModel model) throws EscidocClientException {
+    public void delete(final ResourceModel model, final TreeDataSource tr) throws EscidocClientException {
         final Window subwindow = new Window(DELETE_RESOURCE_WND_NAME);
         subwindow.setModal(true);
         Label message = new Label(DELETE_RESOURCE);
@@ -274,6 +275,7 @@ public class ItemRepository implements Repository {
                 (subwindow.getParent()).removeWindow(subwindow);
                 try {
                     finalDelete(model);
+                    tr.remove(model);
                 }
                 catch (EscidocClientException e) {
                     mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),

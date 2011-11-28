@@ -37,6 +37,7 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.helper.Util;
@@ -105,7 +106,7 @@ public class ContextRepository implements Repository {
     }
 
     @Override
-    public void delete(final ResourceModel model) throws EscidocClientException {
+    public void delete(final ResourceModel model, TreeDataSource tr) throws EscidocClientException {
         client.delete(model.getId());
     }
 
