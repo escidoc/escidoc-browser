@@ -36,8 +36,10 @@ import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.TreeDataSourceImpl;
 import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.internal.ContainerProxyImpl;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.maincontent.ContainerView;
 import org.escidoc.browser.ui.mainpage.Footer;
 import org.escidoc.browser.ui.mainpage.HeaderContainer;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
@@ -63,6 +65,8 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.ResourceType;
+import de.escidoc.core.resources.om.container.Container;
 
 @SuppressWarnings("serial")
 public class SimpleLayout extends LayoutDesign {
@@ -129,7 +133,6 @@ public class SimpleLayout extends LayoutDesign {
 
     @Override
     public void openViewByReloading(Component cmp, String tabname) {
-        LOG.info("Opened and Reloaded" + tabname);
         if (tabname.length() > 50) {
             tabname = tabname.substring(0, 50) + "...";
         }
@@ -159,7 +162,22 @@ public class SimpleLayout extends LayoutDesign {
      */
     public void closeView(ResourceModel model) {
         // Remove it from the tabs
-        // mainContentTabs.removeTab(mainContentTabs.getTab(cmp));
+        Component cmp = null;
+        LOG.debug("The model type is : " + model.getType());
+        if (model.getType().toString() == ResourceType.CONTAINER.toString()) {
+            LOG.debug("We have a container here" + model.getId());
+            try {
+                cmp =
+                    new ContainerView(serviceLocation, router, new ContainerProxyImpl((Container) repositories
+                        .container().findById(model.getId())), mainWindow, repositories);
+                mainContentTabs.removeTab(mainContentTabs.getTab(cmp));
+            }
+            catch (EscidocClientException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
         treeDataSource.remove(model);
     }
 

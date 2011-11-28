@@ -224,7 +224,6 @@ public class BrowserApplication extends Application implements HttpServletReques
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals(AppConstants.COOKIE_NAME)) {
-                    LOG.debug("Cookie was found " + cookie.getValue());
                     return cookie.getValue();
                 }
             }
