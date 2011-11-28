@@ -12,7 +12,7 @@
 		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin</artifactId>
-			<version>6.7.1</version>
+			<version>6.7.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -51,7 +51,7 @@
 		<dependency>
 			<groupId>org.escidoc.core.client.ingest</groupId>
 			<artifactId>eSciDocDepositAPI</artifactId>
-			<version>0.9.1-SNAPSHOT</version>
+			<version>0.9.1</version>
 		</dependency>
 
 		<!-- Utils -->
