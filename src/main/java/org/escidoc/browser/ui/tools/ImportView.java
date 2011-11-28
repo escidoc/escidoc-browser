@@ -31,20 +31,19 @@ package org.escidoc.browser.ui.tools;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
-import java.net.Proxy;
-import java.net.ProxySelector;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLConnection;
 import java.util.List;
 
+import org.escidoc.browser.Utils;
 import org.escidoc.browser.repository.IngestRepository;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.tools.Style.H2;
+import org.escidoc.core.tme.IngestResult;
+import org.escidoc.core.tme.SucessfulIngestResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,10 +69,6 @@ public final class ImportView extends VerticalLayout {
 
     private static final Logger LOG = LoggerFactory.getLogger(ImportView.class);
 
-    private static final String HTTP_PROXY_HOST = "proxy.fiz-karlsruhe.de";
-
-    private static final int HTTP_PROXY_PORT = 8888;
-
     private IngestRepository ingestRepository;
 
     private Router router;
@@ -94,70 +89,66 @@ public final class ImportView extends VerticalLayout {
 
     private void addContent() {
         final Label urlLabel = new Label(ViewConstants.URL);
-        final TextField sourceUrl = new TextField();
-        sourceUrl.setWidth("400px");
-        sourceUrl.setValue(DEFAULT_CONTENT_MODEL_URI);
+        final TextField sourceUrlField = new TextField();
+        sourceUrlField.setWidth("400px");
+        sourceUrlField.setValue(DEFAULT_CONTENT_MODEL_URI);
         Button importButton = new Button(ViewConstants.IMPORT);
         importButton.addListener(new ClickListener() {
 
             @Override
             public void buttonClick(ClickEvent event) {
-                Object value = sourceUrl.getValue();
-                if (value instanceof String) {
-                    try {
-                        URLConnection connection = createConnection(new URI((String) value));
-                        if (isZipFile(connection)) {
-                            ingestZipFile(connection.getInputStream());
-                        }
-                        else {
-                            router.getMainWindow().showNotification(sourceUrl.getValue() + " is not a zip file.",
-                                Window.Notification.TYPE_WARNING_MESSAGE);
-                        }
+                if (sourceUrlField.getValue() instanceof String) {
+                    downloadAndIngestZipFile(sourceUrlField, (String) sourceUrlField.getValue());
+                }
+            }
+
+            private void downloadAndIngestZipFile(final TextField sourceUrl, String sourceUri) {
+                try {
+                    URLConnection connection = createConnection(new URI(sourceUri));
+                    if (isZipFile(connection)) {
+                        ingestZipFile(connection.getInputStream());
                     }
-                    catch (MalformedURLException e) {
-                        showErrorMessage(e);
+                    else {
+                        router.getMainWindow().showNotification(sourceUrl.getValue() + " is not a zip file.",
+                            Window.Notification.TYPE_WARNING_MESSAGE);
                     }
-                    catch (IOException e) {
-                        showErrorMessage(e);
-                    }
-                    catch (EscidocClientException e) {
-                        showErrorMessage(e);
-                    }
-                    catch (URISyntaxException e) {
-                        showErrorMessage(e);
-                    }
+                }
+                catch (MalformedURLException e) {
+                    showErrorMessage(e);
+                }
+                catch (IOException e) {
+                    showErrorMessage(e);
+                }
+                catch (EscidocClientException e) {
+                    showErrorMessage(e);
+                }
+                catch (URISyntaxException e) {
+                    showErrorMessage(e);
                 }
             }
 
             private boolean isZipFile(URLConnection connection) {
                 return connection.getContentType().equalsIgnoreCase("application/zip");
-
             }
 
-            private URLConnection createConnection(URI uri) throws MalformedURLException, IOException,
-                URISyntaxException {
-                return uri.toURL().openConnection(
-                    new Proxy(Proxy.Type.HTTP, new InetSocketAddress(findHttpProxyHost(), HTTP_PROXY_PORT)));
-
-            }
-
-            private InetAddress findHttpProxyHost() throws URISyntaxException {
-
-                java.util.Properties props = System.getProperties();
-                String message = props.getProperty("http.proxyHost", "NONE");
-                LOG.debug("proxyHost: " + message);
-
-                List<Proxy> list = ProxySelector.getDefault().select(new URI(DEFAULT_CONTENT_MODEL_URI));
-                for (Proxy proxy : list) {
-                    LOG.debug("proxy: " + proxy.address());
-                }
-                throw new UnsupportedOperationException("Not yet implemented");
-
+            private URLConnection createConnection(URI uri) throws MalformedURLException, IOException {
+                return uri.toURL().openConnection(Utils.createHttpProxy(uri));
             }
 
             private void ingestZipFile(InputStream is) throws EscidocException, InternalClientException,
                 TransportException, UnsupportedEncodingException, IOException {
-                ingestRepository.ingestZip(is);
+                // TODO: show spinner and message
+                List<IngestResult> list = ingestRepository.ingestZip(is);
+                StringBuilder builder = new StringBuilder();
+                for (IngestResult ingestResult : list) {
+                    if (ingestResult.isSuccesful()) {
+                        SucessfulIngestResult sir = (SucessfulIngestResult) ingestResult;
+                        builder.append(sir.getId()).append(" ,");
+                    }
+
+                }
+                router.getMainWindow().showNotification("Succesfully ingest content model set", builder.toString(),
+                    Window.Notification.POSITION_CENTERED_TOP);
             }
 
             private void showErrorMessage(Exception e) {
@@ -170,7 +161,7 @@ public final class ImportView extends VerticalLayout {
         HorizontalLayout hl = new HorizontalLayout();
         hl.setSpacing(true);
         hl.addComponent(urlLabel);
-        hl.addComponent(sourceUrl);
+        hl.addComponent(sourceUrlField);
         hl.addComponent(importButton);
         addComponent(hl);
     }

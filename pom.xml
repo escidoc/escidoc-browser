@@ -51,7 +51,7 @@
 		<dependency>
 			<groupId>org.escidoc.core.client.ingest</groupId>
 			<artifactId>eSciDocDepositAPI</artifactId>
-			<version>0.9.1</version>
+			<version>0.9.2-SNAPSHOT</version>
 		</dependency>
 
 		<!-- Utils -->

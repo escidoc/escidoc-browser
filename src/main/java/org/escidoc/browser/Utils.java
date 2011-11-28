@@ -31,12 +31,19 @@ package org.escidoc.browser;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.Proxy;
+import java.net.Proxy.Type;
+import java.net.ProxySelector;
+import java.net.SocketAddress;
+import java.net.URI;
 import java.text.DecimalFormat;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
+
+import com.google.common.base.Preconditions;
 
 public final class Utils {
 
@@ -67,5 +74,20 @@ public final class Utils {
             }
             out.write(buffer, 0, readCount);
         }
+    }
+
+    public static Proxy createHttpProxy(URI uri) {
+        Preconditions.checkNotNull(uri, "uri is null: %s", uri);
+        return new Proxy(Type.HTTP, findHttpProxy(uri));
+    }
+
+    private static SocketAddress findHttpProxy(final URI uri) {
+        for (Proxy proxy : ProxySelector.getDefault().select(uri)) {
+            if (proxy.address() == null) {
+                return Proxy.NO_PROXY.address();
+            }
+            return proxy.address();
+        }
+        return Proxy.NO_PROXY.address();
     }
 }
