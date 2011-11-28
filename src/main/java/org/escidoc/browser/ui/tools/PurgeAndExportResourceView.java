@@ -110,7 +110,6 @@ public class PurgeAndExportResourceView extends VerticalLayout {
                     LOG.error("Internal Server Error while purging resources. " + e);
                     showErrorMessage(e);
                 }
-
             }
 
             private void showPurgeStatus(MessagesStatus status) throws EscidocClientException {
