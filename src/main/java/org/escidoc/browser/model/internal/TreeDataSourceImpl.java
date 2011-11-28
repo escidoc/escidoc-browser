@@ -134,7 +134,6 @@ public class TreeDataSourceImpl implements TreeDataSource {
         for (final ResourceModel child : children) {
             addChild(parent, child);
         }
-        LOG.debug("All Chilren added");
     }
 
     @Override

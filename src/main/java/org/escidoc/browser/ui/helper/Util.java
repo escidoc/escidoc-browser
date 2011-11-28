@@ -51,9 +51,6 @@ import de.escidoc.core.resources.sb.search.SearchResult;
 
 public final class Util {
 
-    private static final String TOP_LEVEL_CONTAINERS_AND_ITEMS =
-        "(top-level-containers=true or top-level-items=true) and \"/properties/context/id\"=";
-
     private static final Logger LOG = LoggerFactory.getLogger(Util.class);
 
     /**
@@ -122,9 +119,12 @@ public final class Util {
     }
 
     private static String topLevelContainersAndItems(final String id) {
+
         final StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(TOP_LEVEL_CONTAINERS_AND_ITEMS);
+        stringBuilder.append("(top-level-containers=true or top-level-items=true) and \"/properties/context/id\"=");
         stringBuilder.append(id);
-        return stringBuilder.toString();
+        final String query = stringBuilder.toString();
+
+        return query;
     }
 }

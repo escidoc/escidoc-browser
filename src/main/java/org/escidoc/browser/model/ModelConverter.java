@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.escidoc.core.resources.Resource;
+import de.escidoc.core.resources.ResourceType;
 import de.escidoc.core.resources.VersionableResource;
 import de.escidoc.core.resources.cmm.ContentModel;
 import de.escidoc.core.resources.om.container.Container;
@@ -97,32 +98,23 @@ public final class ModelConverter {
     }
 
     private static void createModelBasedOnType(final List<ResourceModel> models, final Resource containerOrItem) {
-        models.add(new ResourceModel() {
+        if (isContainer(containerOrItem)) {
+            models.add(new ContainerModel(containerOrItem));
+        }
+        else if (isItem(containerOrItem)) {
+            models.add(new ItemModel(containerOrItem));
+        }
+        else {
+            LOG.error("Not yet implemented, if members of context other than Item or Container");
+        }
+    }
 
-            @Override
-            public org.escidoc.browser.model.ResourceType getType() {
-                switch (containerOrItem.getResourceType()) {
-                    case ITEM:
-                        return org.escidoc.browser.model.ResourceType.ITEM;
-                    case CONTAINER:
-                        return org.escidoc.browser.model.ResourceType.CONTAINER;
-                    case CONTEXT:
-                        return org.escidoc.browser.model.ResourceType.CONTAINER;
-                    default:
-                        throw new IllegalArgumentException("Unknown type: " + containerOrItem.getResourceType());
-                }
-            }
+    private static boolean isContainer(final Resource containerOrItem) {
+        return containerOrItem.getResourceType() == ResourceType.CONTAINER;
+    }
 
-            @Override
-            public String getName() {
-                return containerOrItem.getXLinkTitle();
-            }
-
-            @Override
-            public String getId() {
-                return containerOrItem.getObjid();
-            }
-        });
+    private static boolean isItem(final Resource containerOrItem) {
+        return containerOrItem.getResourceType() == ResourceType.ITEM;
     }
 
     public static List<ResourceModel> contentModelListToModel(List<ContentModel> list) {
