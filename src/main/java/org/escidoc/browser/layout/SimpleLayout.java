@@ -32,6 +32,7 @@ import java.net.URISyntaxException;
 
 import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.TreeDataSourceImpl;
 import org.escidoc.browser.repository.Repositories;
@@ -148,6 +149,18 @@ public class SimpleLayout extends LayoutDesign {
 
         mainContentTabs.setSelectedTab(cmp);
         tb.setClosable(true);
+    }
+
+    /**
+     * There are cases where we need to close views programatically. <br />
+     * Example close resource-views which are deleted.
+     * 
+     * @param cmp
+     */
+    public void closeView(ResourceModel model) {
+        // Remove it from the tabs
+        // mainContentTabs.removeTab(mainContentTabs.getTab(cmp));
+        treeDataSource.remove(model);
     }
 
     @Override
@@ -269,7 +282,6 @@ public class SimpleLayout extends LayoutDesign {
     }
 
     private NavigationTreeView addNavigationTree() throws EscidocClientException {
-
         treeDataSource = new TreeDataSourceImpl(repositories.context().findAllWithChildrenInfo());
         treeDataSource.init();
 

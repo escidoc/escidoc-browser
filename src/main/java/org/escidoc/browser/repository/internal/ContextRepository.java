@@ -40,6 +40,7 @@ import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.repository.Repository;
+import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.helper.Util;
 
 import com.google.common.base.Preconditions;
@@ -106,7 +107,7 @@ public class ContextRepository implements Repository {
     }
 
     @Override
-    public void delete(final ResourceModel model, TreeDataSource tr) throws EscidocClientException {
+    public void delete(final ResourceModel model, TreeDataSource tr, Router router) throws EscidocClientException {
         client.delete(model.getId());
     }
 

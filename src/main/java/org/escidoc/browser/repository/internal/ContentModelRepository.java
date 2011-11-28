@@ -43,6 +43,7 @@ import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.repository.Repository;
+import org.escidoc.browser.ui.Router;
 
 import com.google.common.base.Preconditions;
 
@@ -119,7 +120,7 @@ public class ContentModelRepository implements Repository {
     }
 
     @Override
-    public void delete(ResourceModel model, TreeDataSource tr) throws EscidocClientException {
+    public void delete(ResourceModel model, TreeDataSource tr, Router router) throws EscidocClientException {
         throw new UnsupportedOperationException("Not yet implemented");
 
     }

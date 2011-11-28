@@ -32,6 +32,7 @@ import java.net.URISyntaxException;
 
 import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.TreeDataSourceImpl;
 import org.escidoc.browser.repository.Repositories;
@@ -304,5 +305,11 @@ public class SimpleLayoutBackup extends LayoutDesign {
         mainContentTabs.setHeight("100.0%");
         new CloseTabsViewHelper(cssContent, mainContentTabs); // headerContainer
         return mainContentTabs;
+    }
+
+    @Override
+    public void closeView(ResourceModel model) {
+        // TODO Auto-generated method stub
+
     }
 }

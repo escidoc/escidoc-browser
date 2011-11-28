@@ -229,7 +229,7 @@ final class ActionHandlerImpl implements Action.Handler {
 
     private void deleteContainer(final ContainerModel selected) {
         try {
-            repositories.container().delete(selected, treeDataSource);
+            repositories.container().delete(selected, treeDataSource, router);
         }
         catch (final EscidocClientException e) {
             getWindow().showNotification("Can not delete " + selected.getName(), e.getMessage(),
@@ -283,6 +283,6 @@ final class ActionHandlerImpl implements Action.Handler {
     }
 
     private void deleteSelected(final ItemModel selected) throws EscidocClientException {
-        repositories.item().delete(selected, treeDataSource);
+        repositories.item().delete(selected, treeDataSource, router);
     }
 }

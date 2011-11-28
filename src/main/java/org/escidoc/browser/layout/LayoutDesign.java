@@ -31,16 +31,17 @@
  */
 package org.escidoc.browser.layout;
 
-import com.vaadin.ui.Component;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
+import java.net.URISyntaxException;
 
 import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 
-import java.net.URISyntaxException;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -56,6 +57,8 @@ public abstract class LayoutDesign extends VerticalLayout {
     public abstract void openView(Component cmp, String title);
 
     public abstract void openViewByReloading(Component cmp, String title);
+
+    public abstract void closeView(ResourceModel model);
 
     @Deprecated
     public abstract int getApplicationHeight();

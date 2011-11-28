@@ -35,6 +35,7 @@ import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.repository.Repository;
+import org.escidoc.browser.ui.Router;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,7 +97,7 @@ public class UserAccountRepository implements Repository {
     }
 
     @Override
-    public void delete(final ResourceModel model, TreeDataSource tr) throws EscidocClientException {
+    public void delete(final ResourceModel model, TreeDataSource tr, Router router) throws EscidocClientException {
         // TODO Auto-generated method stub
 
     }
