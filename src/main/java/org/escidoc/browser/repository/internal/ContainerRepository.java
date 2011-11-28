@@ -104,6 +104,7 @@ public class ContainerRepository implements Repository {
     public List<ResourceModel> findTopLevelMembersById(final String id) throws EscidocClientException {
         Preconditions.checkNotNull(id, "id is null: %s", id);
         Preconditions.checkArgument(!id.isEmpty(), "id is empty: %s", id);
+        LOG.debug("Finding top level members of container with the id: " + id);
         return findDirectMembers(id);
     }
 

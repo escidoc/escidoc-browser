@@ -272,4 +272,6 @@ public class ViewConstants {
     public static final String URL = "URL: ";
 
     public static final String IMPORT = "Import";
+
+    public static final String EXPORT = "Export";
 }

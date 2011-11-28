@@ -30,11 +30,8 @@ package org.escidoc.browser.ui.tools;
 
 import java.io.ByteArrayInputStream;
 import java.io.Closeable;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,6 +41,7 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.Utils;
 import org.escidoc.browser.model.PropertyId;
@@ -59,7 +57,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.terminal.FileResource;
+import com.vaadin.terminal.StreamResource;
+import com.vaadin.terminal.StreamResource.StreamSource;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -87,6 +86,8 @@ public class PurgeAndExportResourceView extends VerticalLayout {
 
     private final class FilterButtonListener implements ClickListener {
 
+        private static final String EXPORT_FILENAME = "escidoc-xml-export.zip";
+
         private final class PurgeButtonListener implements ClickListener {
             @Override
             public void buttonClick(ClickEvent event) {
@@ -109,7 +110,6 @@ public class PurgeAndExportResourceView extends VerticalLayout {
                     LOG.error("Internal Server Error while purging resources. " + e);
                     showErrorMessage(e);
                 }
-
             }
 
             private void showPurgeStatus(MessagesStatus status) throws EscidocClientException {
@@ -148,8 +148,6 @@ public class PurgeAndExportResourceView extends VerticalLayout {
 
         private static final boolean IS_EXPORT_PERMITTTED = true;
 
-        private final Logger LOG = LoggerFactory.getLogger(PurgeAndExportResourceView.FilterButtonListener.class);
-
         private VerticalLayout resultLayout = new VerticalLayout();
 
         private Table resultTable;
@@ -161,7 +159,7 @@ public class PurgeAndExportResourceView extends VerticalLayout {
                 if (isPurgePermitted()) {
                     showPurgeView();
                 }
-                if (isExportPermitted()) {
+                if (isContentModelSelected() && isExportPermitted()) {
                     showExportView();
                 }
             }
@@ -175,34 +173,42 @@ public class PurgeAndExportResourceView extends VerticalLayout {
             }
         }
 
+        private boolean isContentModelSelected() {
+            return getSelectedType().equals(ResourceType.CONTENT_MODEL);
+        }
+
         private void showExportView() {
-            Button exportButton = new Button("Export");
+            Button exportButton = new Button(ViewConstants.EXPORT);
+            exportButton.setStyleName(Reindeer.BUTTON_SMALL);
             resultLayout.addComponent(exportButton);
             exportButton.addListener(new ClickListener() {
 
                 @Override
                 public void buttonClick(ClickEvent event) {
-                    Set<ResourceModel> selectedResources = getSelectedResources();
-                    File zip;
-                    try {
-                        zip = zip(selectedResources);
-                        router.getMainWindow().open(new FileResource(zip, router.getApp()), "download");
-                    }
-                    catch (IOException e) {
-                        LOG.error("Error while exporting resources.", e);
-                        showErrorMessage(e);
-                    }
-                    catch (EscidocClientException e) {
-                        LOG.error("eSciDoc error while exporting resources.", e);
-                        showErrorMessage(e);
-                    }
+                    final Set<ResourceModel> selectedResources = getSelectedResources();
+                    router.getMainWindow().open(new StreamResource(new StreamSource() {
+
+                        @Override
+                        public InputStream getStream() {
+                            try {
+                                return zip(selectedResources);
+                            }
+                            catch (IOException e) {
+                                showErrorMessage(e);
+                            }
+                            catch (EscidocClientException e) {
+                                showErrorMessage(e);
+                            }
+                            return null;
+                        }
+
+                    }, EXPORT_FILENAME, router.getApp()), "download");
                 }
             });
         }
 
-        private File zip(Set<ResourceModel> set) throws IOException, EscidocClientException {
-            File zipfile = new File("escidoc-xml-export.zip");
-            OutputStream out = new FileOutputStream(zipfile);
+        private ByteArrayInputStream zip(Set<ResourceModel> set) throws IOException, EscidocClientException {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
             Closeable res = out;
             try {
                 ZipOutputStream zout = new ZipOutputStream(out);
@@ -210,16 +216,16 @@ public class PurgeAndExportResourceView extends VerticalLayout {
                 for (ResourceModel resourceModel : set) {
                     zout.putNextEntry(new ZipEntry(resourceModel.getId()));
                     String asString = repositories.contentModel().getAsXmlString(resourceModel.getId());
-                    InputStream stream = new ByteArrayInputStream(asString.getBytes("UTF-8"));
-
-                    Utils.copy(stream, zout);
+                    InputStream is = new ByteArrayInputStream(asString.getBytes("UTF-8"));
+                    Utils.copy(is, zout);
                     zout.closeEntry();
                 }
             }
             finally {
                 res.close();
             }
-            return zipfile;
+            return new ByteArrayInputStream(out.toByteArray());
+
         }
 
         private boolean isExportPermitted() {
@@ -247,6 +253,7 @@ public class PurgeAndExportResourceView extends VerticalLayout {
 
         private void addPurgeButton() {
             final Button purgeButton = new Button(ViewConstants.PURGE);
+            purgeButton.setStyleName(Reindeer.BUTTON_SMALL);
             resultLayout.addComponent(purgeButton);
             purgeButton.addListener(new PurgeButtonListener());
         }
@@ -349,13 +356,11 @@ public class PurgeAndExportResourceView extends VerticalLayout {
 
     private final AbstractSelect resourceOption = new NativeSelect();
 
-    private TextField textField = new TextField();
+    private final TextField textField = new TextField();
 
-    private HorizontalLayout filterLayout;
+    private final Router router;
 
-    private Router router;
-
-    private Repositories repositories;
+    private final Repositories repositories;
 
     public PurgeAndExportResourceView(Router router, Repositories repositories) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
@@ -379,7 +384,7 @@ public class PurgeAndExportResourceView extends VerticalLayout {
     }
 
     private void addContent() {
-        filterLayout = new HorizontalLayout();
+        HorizontalLayout filterLayout = new HorizontalLayout();
         filterLayout.setMargin(true);
         filterLayout.setSpacing(true);
         addResult();
@@ -392,31 +397,43 @@ public class PurgeAndExportResourceView extends VerticalLayout {
 
         textField.setWidth("100%");
 
-        final List<ResourceType> list = new ArrayList<ResourceType>();
-        list.add(ResourceType.CONTEXT);
-        list.add(ResourceType.CONTAINER);
-        list.add(ResourceType.ITEM);
-        list.add(ResourceType.CONTENT_MODEL);
-        resourceOption.setContainerDataSource(new BeanItemContainer<ResourceType>(ResourceType.class, list));
-        resourceOption.setNewItemsAllowed(false);
-        resourceOption.setNullSelectionAllowed(false);
-        resourceOption.select(ResourceType.ITEM);
-
-        final Label popUpContent = new Label(ViewConstants.FILTER_EXAMPLE_TOOLTIP_TEXT, Label.CONTENT_XHTML);
-        popUpContent.setWidth(400, UNITS_PIXELS);
-        final PopupView popup = new PopupView(ViewConstants.TIP, popUpContent);
+        createResourceOptions();
 
         Button filterButton = new Button("Filter");
         filterButton.setStyleName(Reindeer.BUTTON_SMALL);
         filterButton.addListener(new FilterButtonListener());
 
         horizontalLayout.addComponent(resourceOption);
-        horizontalLayout.addComponent(popup);
+        horizontalLayout.addComponent(createHelpView());
         horizontalLayout.addComponent(textField);
         horizontalLayout.addComponent(filterButton);
         horizontalLayout.setExpandRatio(textField, 1.0f);
 
         addComponent(horizontalLayout);
+    }
+
+    private PopupView createHelpView() {
+        final Label popUpContent = new Label(ViewConstants.FILTER_EXAMPLE_TOOLTIP_TEXT, Label.CONTENT_XHTML);
+        popUpContent.setWidth(400, UNITS_PIXELS);
+        final PopupView popup = new PopupView(ViewConstants.TIP, popUpContent);
+        return popup;
+    }
+
+    private void createResourceOptions() {
+        resourceOption.setContainerDataSource(new BeanItemContainer<ResourceType>(ResourceType.class,
+            createResourceTypeList()));
+        resourceOption.setNewItemsAllowed(false);
+        resourceOption.setNullSelectionAllowed(false);
+        resourceOption.select(ResourceType.ITEM);
+    }
+
+    private List<ResourceType> createResourceTypeList() {
+        final List<ResourceType> list = new ArrayList<ResourceType>();
+        list.add(ResourceType.CONTEXT);
+        list.add(ResourceType.CONTAINER);
+        list.add(ResourceType.ITEM);
+        list.add(ResourceType.CONTENT_MODEL);
+        return list;
     }
 
     private void addDescription() {

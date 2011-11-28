@@ -28,10 +28,8 @@
  */
 package org.escidoc.browser.ui.listeners;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.ui.Tree;
-import com.vaadin.ui.Tree.ExpandEvent;
+import java.util.Date;
+import java.util.List;
 
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
@@ -43,7 +41,9 @@ import org.escidoc.browser.repository.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
+import com.google.common.base.Preconditions;
+import com.vaadin.ui.Tree;
+import com.vaadin.ui.Tree.ExpandEvent;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -97,7 +97,12 @@ public final class TreeExpandListener implements Tree.ExpandListener {
 
     private void addContextChildren(final ResourceModel resource) {
         try {
+            LOG.debug("Adding top level members of context " + resource.getName());
+            long start = new Date().getTime();
             treeDataSource.addChildren(resource, contextRepository.findTopLevelMembersById(resource.getId()));
+            long end = new Date().getTime();
+            long duration = (end - start) / 1000;
+            LOG.debug("It took: " + duration + " ms for finding top level member of context: " + resource.getName());
         }
         catch (final EscidocClientException e) {
             showErrorMessageToUser(resource, e);

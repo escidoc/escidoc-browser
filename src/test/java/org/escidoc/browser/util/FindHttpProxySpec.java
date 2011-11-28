@@ -60,12 +60,8 @@ public class FindHttpProxySpec {
     void foo() throws URISyntaxException {
         List<Proxy> list = ProxySelector.getDefault().select(new URI(ImportView.DEFAULT_CONTENT_MODEL_URI));
         for (Proxy proxy : list) {
-            // LOG.debug("proxy: " + proxy.address());
-
-            System.out.println("proxy: " + proxy.address());
-
+            LOG.debug("proxy: " + proxy.address());
         }
-        throw new UnsupportedOperationException("Not yet implemented");
     }
 
 }
