@@ -28,23 +28,28 @@
  */
 package org.escidoc.browser.layout;
 
+import java.net.URISyntaxException;
+
 import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.TreeDataSourceImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.mainpage.Footer;
 import org.escidoc.browser.ui.mainpage.HeaderContainer;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.navigation.NavigationTreeView;
 import org.escidoc.browser.ui.navigation.RootNode;
+import org.escidoc.browser.ui.tools.ToolsTreeView;
 import org.escidoc.browser.ui.view.helpers.CloseTabsViewHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -58,6 +63,7 @@ import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
+@SuppressWarnings("serial")
 public class SimpleLayout extends LayoutDesign {
 
     private AbsoluteLayout mainLayout;
@@ -95,7 +101,7 @@ public class SimpleLayout extends LayoutDesign {
     @Override
     public void init(
         Window mainWindow, EscidocServiceLocation serviceLocation, BrowserApplication app, Repositories repositories,
-        Router router) throws EscidocClientException {
+        Router router) throws EscidocClientException, UnsupportedOperationException, URISyntaxException {
         this.serviceLocation = serviceLocation;
         this.app = app;
         this.mainWindow = mainWindow;
@@ -151,7 +157,8 @@ public class SimpleLayout extends LayoutDesign {
         return 0;
     }
 
-    private AbsoluteLayout buildMainLayout() throws EscidocClientException {
+    private AbsoluteLayout buildMainLayout() throws EscidocClientException, UnsupportedOperationException,
+        URISyntaxException {
         // common part: create layout
         mainLayout = new AbsoluteLayout();
         mainLayout.setImmediate(false);
@@ -197,7 +204,8 @@ public class SimpleLayout extends LayoutDesign {
 
     }
 
-    private HorizontalSplitPanel buildContainer() throws EscidocClientException {
+    private HorizontalSplitPanel buildContainer() throws EscidocClientException, UnsupportedOperationException,
+        URISyntaxException {
         // common part: create layout
         container = new HorizontalSplitPanel();
         container.setStyleName(Runo.SPLITPANEL_SMALL);
@@ -224,7 +232,8 @@ public class SimpleLayout extends LayoutDesign {
         return container;
     }
 
-    private Panel buildNavigationPanel() throws EscidocClientException {
+    private Panel buildNavigationPanel() throws EscidocClientException, UnsupportedOperationException,
+        URISyntaxException {
         // common part: create layout
         navigationPanel = new Panel();
         navigationPanel.setImmediate(false);
@@ -243,8 +252,16 @@ public class SimpleLayout extends LayoutDesign {
 
         // Binding the tree to the NavigationPanel
         mainNavigationTree = this.addNavigationTree();
-        vlNavigationPanel.addComponent(mainNavigationTree);
-        vlNavigationPanel.setExpandRatio(mainNavigationTree, 1.0f);
+
+        final Accordion accordion = new Accordion();
+        accordion.addTab(mainNavigationTree, ViewConstants.RESOURCES, null);
+
+        ToolsTreeView toolsTreeView = new ToolsTreeView(router, repositories);
+        toolsTreeView.init();
+        accordion.addTab(toolsTreeView, ViewConstants.TOOLS, null);
+
+        vlNavigationPanel.addComponent(accordion);
+        vlNavigationPanel.setExpandRatio(accordion, 1.0f);
 
         navigationPanel.setContent(vlNavigationPanel);
 
