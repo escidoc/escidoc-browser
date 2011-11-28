@@ -148,8 +148,6 @@ public class PurgeAndExportResourceView extends VerticalLayout {
 
         private static final boolean IS_EXPORT_PERMITTTED = true;
 
-        private final Logger LOG = LoggerFactory.getLogger(PurgeAndExportResourceView.FilterButtonListener.class);
-
         private VerticalLayout resultLayout = new VerticalLayout();
 
         private Table resultTable;
@@ -161,7 +159,7 @@ public class PurgeAndExportResourceView extends VerticalLayout {
                 if (isPurgePermitted()) {
                     showPurgeView();
                 }
-                if (isExportPermitted()) {
+                if (isContentModelSelected() && isExportPermitted()) {
                     showExportView();
                 }
             }
@@ -175,8 +173,13 @@ public class PurgeAndExportResourceView extends VerticalLayout {
             }
         }
 
+        private boolean isContentModelSelected() {
+            return getSelectedType().equals(ResourceType.CONTENT_MODEL);
+        }
+
         private void showExportView() {
-            Button exportButton = new Button("Export");
+            Button exportButton = new Button(ViewConstants.EXPORT);
+            exportButton.setStyleName(Reindeer.BUTTON_SMALL);
             resultLayout.addComponent(exportButton);
             exportButton.addListener(new ClickListener() {
 
@@ -247,6 +250,7 @@ public class PurgeAndExportResourceView extends VerticalLayout {
 
         private void addPurgeButton() {
             final Button purgeButton = new Button(ViewConstants.PURGE);
+            purgeButton.setStyleName(Reindeer.BUTTON_SMALL);
             resultLayout.addComponent(purgeButton);
             purgeButton.addListener(new PurgeButtonListener());
         }
@@ -349,13 +353,11 @@ public class PurgeAndExportResourceView extends VerticalLayout {
 
     private final AbstractSelect resourceOption = new NativeSelect();
 
-    private TextField textField = new TextField();
+    private final TextField textField = new TextField();
 
-    private HorizontalLayout filterLayout;
+    private final Router router;
 
-    private Router router;
-
-    private Repositories repositories;
+    private final Repositories repositories;
 
     public PurgeAndExportResourceView(Router router, Repositories repositories) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
@@ -379,7 +381,7 @@ public class PurgeAndExportResourceView extends VerticalLayout {
     }
 
     private void addContent() {
-        filterLayout = new HorizontalLayout();
+        HorizontalLayout filterLayout = new HorizontalLayout();
         filterLayout.setMargin(true);
         filterLayout.setSpacing(true);
         addResult();
@@ -392,31 +394,43 @@ public class PurgeAndExportResourceView extends VerticalLayout {
 
         textField.setWidth("100%");
 
-        final List<ResourceType> list = new ArrayList<ResourceType>();
-        list.add(ResourceType.CONTEXT);
-        list.add(ResourceType.CONTAINER);
-        list.add(ResourceType.ITEM);
-        list.add(ResourceType.CONTENT_MODEL);
-        resourceOption.setContainerDataSource(new BeanItemContainer<ResourceType>(ResourceType.class, list));
-        resourceOption.setNewItemsAllowed(false);
-        resourceOption.setNullSelectionAllowed(false);
-        resourceOption.select(ResourceType.ITEM);
-
-        final Label popUpContent = new Label(ViewConstants.FILTER_EXAMPLE_TOOLTIP_TEXT, Label.CONTENT_XHTML);
-        popUpContent.setWidth(400, UNITS_PIXELS);
-        final PopupView popup = new PopupView(ViewConstants.TIP, popUpContent);
+        createResourceOptions();
 
         Button filterButton = new Button("Filter");
         filterButton.setStyleName(Reindeer.BUTTON_SMALL);
         filterButton.addListener(new FilterButtonListener());
 
         horizontalLayout.addComponent(resourceOption);
-        horizontalLayout.addComponent(popup);
+        horizontalLayout.addComponent(createHelpView());
         horizontalLayout.addComponent(textField);
         horizontalLayout.addComponent(filterButton);
         horizontalLayout.setExpandRatio(textField, 1.0f);
 
         addComponent(horizontalLayout);
+    }
+
+    private PopupView createHelpView() {
+        final Label popUpContent = new Label(ViewConstants.FILTER_EXAMPLE_TOOLTIP_TEXT, Label.CONTENT_XHTML);
+        popUpContent.setWidth(400, UNITS_PIXELS);
+        final PopupView popup = new PopupView(ViewConstants.TIP, popUpContent);
+        return popup;
+    }
+
+    private void createResourceOptions() {
+        resourceOption.setContainerDataSource(new BeanItemContainer<ResourceType>(ResourceType.class,
+            createResourceTypeList()));
+        resourceOption.setNewItemsAllowed(false);
+        resourceOption.setNullSelectionAllowed(false);
+        resourceOption.select(ResourceType.ITEM);
+    }
+
+    private List<ResourceType> createResourceTypeList() {
+        final List<ResourceType> list = new ArrayList<ResourceType>();
+        list.add(ResourceType.CONTEXT);
+        list.add(ResourceType.CONTAINER);
+        list.add(ResourceType.ITEM);
+        list.add(ResourceType.CONTENT_MODEL);
+        return list;
     }
 
     private void addDescription() {

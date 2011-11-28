@@ -56,6 +56,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.Reindeer;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.EscidocException;
@@ -85,6 +86,11 @@ public final class ImportView extends VerticalLayout {
         addHeader();
         addRuler();
         addContent();
+        addSpace();
+    }
+
+    private void addSpace() {
+        addComponent(new Label("<br/>", Label.CONTENT_XHTML));
     }
 
     private void addContent() {
@@ -93,6 +99,7 @@ public final class ImportView extends VerticalLayout {
         sourceUrlField.setWidth("400px");
         sourceUrlField.setValue(DEFAULT_CONTENT_MODEL_URI);
         Button importButton = new Button(ViewConstants.IMPORT);
+        importButton.setStyleName(Reindeer.BUTTON_SMALL);
         importButton.addListener(new ClickListener() {
 
             @Override
