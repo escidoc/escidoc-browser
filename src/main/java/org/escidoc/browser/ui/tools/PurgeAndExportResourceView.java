@@ -30,11 +30,8 @@ package org.escidoc.browser.ui.tools;
 
 import java.io.ByteArrayInputStream;
 import java.io.Closeable;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,6 +41,7 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.Utils;
 import org.escidoc.browser.model.PropertyId;
@@ -59,7 +57,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.terminal.FileResource;
+import com.vaadin.terminal.StreamResource;
+import com.vaadin.terminal.StreamResource.StreamSource;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -86,6 +85,8 @@ public class PurgeAndExportResourceView extends VerticalLayout {
     private static final Logger LOG = LoggerFactory.getLogger(PurgeAndExportResourceView.class);
 
     private final class FilterButtonListener implements ClickListener {
+
+        private static final String EXPORT_FILENAME = "escidoc-xml-export.zip";
 
         private final class PurgeButtonListener implements ClickListener {
             @Override
@@ -185,27 +186,30 @@ public class PurgeAndExportResourceView extends VerticalLayout {
 
                 @Override
                 public void buttonClick(ClickEvent event) {
-                    Set<ResourceModel> selectedResources = getSelectedResources();
-                    File zip;
-                    try {
-                        zip = zip(selectedResources);
-                        router.getMainWindow().open(new FileResource(zip, router.getApp()), "download");
-                    }
-                    catch (IOException e) {
-                        LOG.error("Error while exporting resources.", e);
-                        showErrorMessage(e);
-                    }
-                    catch (EscidocClientException e) {
-                        LOG.error("eSciDoc error while exporting resources.", e);
-                        showErrorMessage(e);
-                    }
+                    final Set<ResourceModel> selectedResources = getSelectedResources();
+                    router.getMainWindow().open(new StreamResource(new StreamSource() {
+
+                        @Override
+                        public InputStream getStream() {
+                            try {
+                                return zip(selectedResources);
+                            }
+                            catch (IOException e) {
+                                showErrorMessage(e);
+                            }
+                            catch (EscidocClientException e) {
+                                showErrorMessage(e);
+                            }
+                            return null;
+                        }
+
+                    }, EXPORT_FILENAME, router.getApp()), "download");
                 }
             });
         }
 
-        private File zip(Set<ResourceModel> set) throws IOException, EscidocClientException {
-            File zipfile = new File("escidoc-xml-export.zip");
-            OutputStream out = new FileOutputStream(zipfile);
+        private ByteArrayInputStream zip(Set<ResourceModel> set) throws IOException, EscidocClientException {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
             Closeable res = out;
             try {
                 ZipOutputStream zout = new ZipOutputStream(out);
@@ -213,16 +217,16 @@ public class PurgeAndExportResourceView extends VerticalLayout {
                 for (ResourceModel resourceModel : set) {
                     zout.putNextEntry(new ZipEntry(resourceModel.getId()));
                     String asString = repositories.contentModel().getAsXmlString(resourceModel.getId());
-                    InputStream stream = new ByteArrayInputStream(asString.getBytes("UTF-8"));
-
-                    Utils.copy(stream, zout);
+                    InputStream is = new ByteArrayInputStream(asString.getBytes("UTF-8"));
+                    Utils.copy(is, zout);
                     zout.closeEntry();
                 }
             }
             finally {
                 res.close();
             }
-            return zipfile;
+            return new ByteArrayInputStream(out.toByteArray());
+
         }
 
         private boolean isExportPermitted() {
