@@ -31,12 +31,15 @@ package org.escidoc.browser.ui.tools;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.Proxy;
+import java.net.ProxySelector;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLConnection;
+import java.util.List;
 
 import org.escidoc.browser.repository.IngestRepository;
 import org.escidoc.browser.ui.Router;
@@ -63,6 +66,8 @@ import de.escidoc.core.client.exceptions.TransportException;
 @SuppressWarnings("serial")
 public final class ImportView extends VerticalLayout {
 
+    public static final String DEFAULT_CONTENT_MODEL_URI = "http://dl.dropbox.com/u/419140/eLab-Content-Models.zip";
+
     private static final Logger LOG = LoggerFactory.getLogger(ImportView.class);
 
     private static final String HTTP_PROXY_HOST = "proxy.fiz-karlsruhe.de";
@@ -79,7 +84,6 @@ public final class ImportView extends VerticalLayout {
         this.router = router;
         this.ingestRepository = ingestRepository;
         init();
-
     }
 
     private void init() {
@@ -92,7 +96,7 @@ public final class ImportView extends VerticalLayout {
         final Label urlLabel = new Label(ViewConstants.URL);
         final TextField sourceUrl = new TextField();
         sourceUrl.setWidth("400px");
-        sourceUrl.setValue("http://dl.dropbox.com/u/419140/eLab-Content-Models.zip");
+        sourceUrl.setValue(DEFAULT_CONTENT_MODEL_URI);
         Button importButton = new Button(ViewConstants.IMPORT);
         importButton.addListener(new ClickListener() {
 
@@ -130,9 +134,24 @@ public final class ImportView extends VerticalLayout {
 
             }
 
-            private URLConnection createConnection(URI uri) throws MalformedURLException, IOException {
+            private URLConnection createConnection(URI uri) throws MalformedURLException, IOException,
+                URISyntaxException {
                 return uri.toURL().openConnection(
-                    new Proxy(Proxy.Type.HTTP, new InetSocketAddress(HTTP_PROXY_HOST, HTTP_PROXY_PORT)));
+                    new Proxy(Proxy.Type.HTTP, new InetSocketAddress(findHttpProxyHost(), HTTP_PROXY_PORT)));
+
+            }
+
+            private InetAddress findHttpProxyHost() throws URISyntaxException {
+
+                java.util.Properties props = System.getProperties();
+                String message = props.getProperty("http.proxyHost", "NONE");
+                LOG.debug("proxyHost: " + message);
+
+                List<Proxy> list = ProxySelector.getDefault().select(new URI(DEFAULT_CONTENT_MODEL_URI));
+                for (Proxy proxy : list) {
+                    LOG.debug("proxy: " + proxy.address());
+                }
+                throw new UnsupportedOperationException("Not yet implemented");
 
             }
 
