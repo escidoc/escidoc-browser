@@ -28,9 +28,23 @@
  */
 package org.escidoc.browser.layout;
 
+import org.escidoc.browser.BrowserApplication;
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.TreeDataSource;
+import org.escidoc.browser.model.internal.TreeDataSourceImpl;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.mainpage.Footer;
+import org.escidoc.browser.ui.mainpage.HeaderContainer;
+import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
+import org.escidoc.browser.ui.navigation.NavigationTreeView;
+import org.escidoc.browser.ui.navigation.RootNode;
+import org.escidoc.browser.ui.view.helpers.CloseTabsViewHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -42,30 +56,9 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
 
-import org.escidoc.browser.BrowserApplication;
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.TreeDataSource;
-import org.escidoc.browser.model.internal.TreeDataSourceImpl;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.mainpage.Footer;
-import org.escidoc.browser.ui.mainpage.HeaderContainer;
-import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
-import org.escidoc.browser.ui.navigation.NavigationTreeView;
-import org.escidoc.browser.ui.navigation.RootNode;
-import org.escidoc.browser.ui.tools.ToolsTreeView;
-import org.escidoc.browser.ui.view.helpers.CloseTabsViewHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.net.URISyntaxException;
-
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class SimpleLayout extends LayoutDesign {
-
-    private static final Logger LOG = LoggerFactory.getLogger(SimpleLayout.class);
 
     private AbsoluteLayout mainLayout;
 
@@ -97,14 +90,12 @@ public class SimpleLayout extends LayoutDesign {
 
     private HorizontalLayout footer;
 
-    private TabSheet accordion;
-
-    private AbsoluteLayout mainNavigation;
+    private static final Logger LOG = LoggerFactory.getLogger(SimpleLayout.class);
 
     @Override
     public void init(
         Window mainWindow, EscidocServiceLocation serviceLocation, BrowserApplication app, Repositories repositories,
-        Router router) throws EscidocClientException, UnsupportedOperationException, URISyntaxException {
+        Router router) throws EscidocClientException {
         this.serviceLocation = serviceLocation;
         this.app = app;
         this.mainWindow = mainWindow;
@@ -116,7 +107,7 @@ public class SimpleLayout extends LayoutDesign {
     }
 
     @Override
-    public void openView(final Component cmp, String tabname) {
+    public void openView(Component cmp, String tabname) {
         if (tabname.length() > 50) {
             tabname = tabname.substring(0, 50) + "...";
         }
@@ -130,14 +121,14 @@ public class SimpleLayout extends LayoutDesign {
     }
 
     @Override
-    public void openViewByReloading(final Component cmp, String tabname) {
+    public void openViewByReloading(Component cmp, String tabname) {
         LOG.info("Opened and Reloaded" + tabname);
         if (tabname.length() > 50) {
             tabname = tabname.substring(0, 50) + "...";
         }
         int position = -1;
         if (mainContentTabs.getTab(cmp) != null) {
-            final Tab tmpTab = mainContentTabs.getTab(cmp);
+            Tab tmpTab = mainContentTabs.getTab(cmp);
             position = mainContentTabs.getTabPosition(tmpTab);
             mainContentTabs.removeTab(tmpTab);
         }
@@ -151,21 +142,6 @@ public class SimpleLayout extends LayoutDesign {
 
         mainContentTabs.setSelectedTab(cmp);
         tb.setClosable(true);
-        try {
-            mainLayout.addComponent(buildNavigationPanel());
-        }
-        catch (final UnsupportedOperationException e) {
-            LOG.error(e.getMessage());
-            mainWindow.showNotification(ViewConstants.ERROR, e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-        }
-        catch (final EscidocClientException e) {
-            LOG.error(e.getMessage());
-            mainWindow.showNotification(ViewConstants.ERROR, e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-        }
-        catch (URISyntaxException e) {
-            LOG.error(e.getMessage());
-            mainWindow.showNotification(ViewConstants.ERROR, e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-        }
     }
 
     @Override
@@ -175,8 +151,7 @@ public class SimpleLayout extends LayoutDesign {
         return 0;
     }
 
-    private AbsoluteLayout buildMainLayout() throws EscidocClientException, UnsupportedOperationException,
-        URISyntaxException {
+    private AbsoluteLayout buildMainLayout() throws EscidocClientException {
         // common part: create layout
         mainLayout = new AbsoluteLayout();
         mainLayout.setImmediate(false);
@@ -222,8 +197,7 @@ public class SimpleLayout extends LayoutDesign {
 
     }
 
-    private HorizontalSplitPanel buildContainer() throws EscidocClientException, UnsupportedOperationException,
-        URISyntaxException {
+    private HorizontalSplitPanel buildContainer() throws EscidocClientException {
         // common part: create layout
         container = new HorizontalSplitPanel();
         container.setStyleName(Runo.SPLITPANEL_SMALL);
@@ -250,8 +224,7 @@ public class SimpleLayout extends LayoutDesign {
         return container;
     }
 
-    private Panel buildNavigationPanel() throws EscidocClientException, UnsupportedOperationException,
-        URISyntaxException {
+    private Panel buildNavigationPanel() throws EscidocClientException {
         // common part: create layout
         navigationPanel = new Panel();
         navigationPanel.setImmediate(false);
@@ -270,16 +243,9 @@ public class SimpleLayout extends LayoutDesign {
 
         // Binding the tree to the NavigationPanel
         mainNavigationTree = this.addNavigationTree();
+        vlNavigationPanel.addComponent(mainNavigationTree);
+        vlNavigationPanel.setExpandRatio(mainNavigationTree, 1.0f);
 
-        final Accordion accordion = new Accordion();
-        accordion.addTab(mainNavigationTree, ViewConstants.RESOURCES, null);
-
-        ToolsTreeView toolsTreeView = new ToolsTreeView(router, repositories);
-        toolsTreeView.init();
-        accordion.addTab(toolsTreeView, ViewConstants.TOOLS, null);
-
-        vlNavigationPanel.addComponent(accordion);
-        vlNavigationPanel.setExpandRatio(accordion, 1.0f);
         navigationPanel.setContent(vlNavigationPanel);
 
         return navigationPanel;
