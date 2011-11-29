@@ -36,10 +36,8 @@ import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.TreeDataSourceImpl;
 import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.repository.internal.ContainerProxyImpl;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.ContainerView;
 import org.escidoc.browser.ui.mainpage.Footer;
 import org.escidoc.browser.ui.mainpage.HeaderContainer;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
@@ -65,8 +63,6 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
-import de.escidoc.core.resources.ResourceType;
-import de.escidoc.core.resources.om.container.Container;
 
 @SuppressWarnings("serial")
 public class SimpleLayout extends LayoutDesign {
@@ -119,20 +115,32 @@ public class SimpleLayout extends LayoutDesign {
 
     @Override
     public void openView(Component cmp, String tabname) {
+        String description = tabname;
+        int p = tabname.lastIndexOf('#');
+        if (p > 0) {
+            tabname = tabname.substring(0, p);
+        }
+
         if (tabname.length() > 50) {
             tabname = tabname.substring(0, 50) + "...";
         }
 
         final Tab tb = mainContentTabs.addTab(cmp);
-        tb.setDescription(tabname);
+        tb.setDescription(description);
         tb.setCaption(tabname);
-        tb.setDescription(tabname);
         mainContentTabs.setSelectedTab(cmp);
         tb.setClosable(true);
     }
 
     @Override
     public void openViewByReloading(Component cmp, String tabname) {
+        String description = tabname;
+
+        // use as tabname the name without the ID
+        int p = tabname.lastIndexOf('#');
+        if (p > 0) {
+            tabname = tabname.substring(0, p);
+        }
         if (tabname.length() > 50) {
             tabname = tabname.substring(0, 50) + "...";
         }
@@ -143,9 +151,8 @@ public class SimpleLayout extends LayoutDesign {
             mainContentTabs.removeTab(tmpTab);
         }
         final Tab tb = mainContentTabs.addTab(cmp);
-        tb.setDescription(tabname);
         tb.setCaption(tabname);
-        tb.setDescription(tabname);
+        tb.setDescription(description);
         if (position != -1) {
             mainContentTabs.setTabPosition(tb, position);
         }
@@ -161,23 +168,15 @@ public class SimpleLayout extends LayoutDesign {
      * @param cmp
      */
     public void closeView(ResourceModel model) {
-        // Remove it from the tabs
-        Component cmp = null;
-        LOG.debug("The model type is : " + model.getType());
-        if (model.getType().toString() == ResourceType.CONTAINER.toString()) {
-            LOG.debug("We have a container here" + model.getId());
-            try {
-                cmp =
-                    new ContainerView(serviceLocation, router, new ContainerProxyImpl((Container) repositories
-                        .container().findById(model.getId())), mainWindow, repositories);
-                mainContentTabs.removeTab(mainContentTabs.getTab(cmp));
-            }
-            catch (EscidocClientException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+        // Remove it from the tabs. An id is needed by the end of the description for this method to work
+        for (int i = mainContentTabs.getComponentCount() - 1; i >= 0; i--) {
+            if (mainContentTabs
+                .getTab(i).getDescription().substring(mainContentTabs.getTab(i).getDescription().lastIndexOf('#') + 1)
+                .toString().equals(model.getId().toString())) {
+                mainContentTabs.removeTab(mainContentTabs.getTab(i));
             }
         }
-
+        // remove it from the tree
         treeDataSource.remove(model);
     }
 

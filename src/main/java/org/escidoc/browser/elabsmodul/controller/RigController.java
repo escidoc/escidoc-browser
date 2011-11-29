@@ -107,7 +107,7 @@ public final class RigController extends Controller implements IRigAction {
         this.repositories = repositories;
         this.mainWindow = mainWindow;
         view = createView(resourceProxy);
-        this.setResourceName(resourceProxy.getName());
+        this.setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
     }
 
     /**

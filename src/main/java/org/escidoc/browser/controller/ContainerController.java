@@ -51,7 +51,7 @@ public class ContainerController extends Controller {
                 Notification.TYPE_ERROR_MESSAGE);
             LOG.error("Failed at: ", e.getStackTrace());
         }
-        this.setResourceName(resourceProxy.getName());
+        this.setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
 
     }
 

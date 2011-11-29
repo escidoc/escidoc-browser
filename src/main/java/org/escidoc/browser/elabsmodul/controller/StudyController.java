@@ -99,7 +99,7 @@ public class StudyController extends Controller implements ISaveAction {
         this.mainWindow = mainWindow;
         this.router = router;
         this.view = createView(resourceProxy);
-        this.setResourceName(resourceProxy.getName());
+        this.setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
 
     }
 

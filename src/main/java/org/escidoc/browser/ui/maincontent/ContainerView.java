@@ -333,57 +333,6 @@ public class ContainerView extends Panel {
         bindProperties(cssLayout);
     }
 
-    // private void init() throws EscidocClientException {
-    // // configureLayout();
-    // handleLayoutListeners();
-    // createBreadCrumb();
-    // new CreatePermanentLinkVH(mainWindow.getURL().toString(), resourceProxy.getId(), resourceProxy
-    // .getType().toString(), metadataContainer, serviceLocation);
-    // bindNameToHeader();
-    // bindDescription();
-    // addHorizontalRuler();
-    // bindProperties();
-    // leftCell();
-    // addMetadataRecords();
-    // addComponent(metadataContainer);
-    // }
-
-    // private void addMetadataRecords() {
-    // rightCell(new MetadataRecs(resourceProxy, 0, mainWindow, serviceLocation, repositories, router).asAccord());
-    // }
-
-    // /**
-    // * This is the inner Right Cell within a Context By default a set of Organizational Unit / Admin Description /
-    // * RelatedItem / Resources are bound
-    // *
-    // * @param comptoBind
-    // */
-    // @SuppressWarnings("deprecation")
-    // private void rightCell(final Component comptoBind) {
-    // final Panel rightpnl = new Panel();
-    // rightpnl.setDescription(RIGHT_PANEL);
-    // rightpnl.setStyleName("floatright");
-    // rightpnl.setSizeFull();
-    // rightpnl.getLayout().setMargin(false);
-    // rightpnl.addComponent(comptoBind);
-    // metadataContainer.addComponent(rightpnl);
-    // metadataContainer.setExpandRatio(rightpnl, 7.0f);
-    // }
-    //
-    // @SuppressWarnings("deprecation")
-    // private void leftCell() throws EscidocClientException {
-    // final Panel leftPanel = new Panel();
-    // leftPanel.setStyleName("directmembers floatleft");
-    // leftPanel.setScrollable(false);
-    // leftPanel.getLayout().setMargin(false);
-    // leftPanel.setSizeFull();
-    //
-    // new DirectMember(serviceLocation, router, resourceProxy.getId(), mainWindow, repositories, leftPanel,
-    // ResourceType.CONTAINER.toString()).containerAsTree();
-    // metadataContainer.addComponent(leftPanel);
-    // metadataContainer.setExpandRatio(leftPanel, 3.0f);
-    // }
-
     /**
      * Binding Context Properties 2 sets of labels in 2 rows
      * 
