@@ -41,10 +41,8 @@ import org.escidoc.browser.model.ModelConverter;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
-import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.HasNoNameResource;
 import org.escidoc.browser.repository.Repository;
-import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -262,51 +260,13 @@ public class ItemRepository implements Repository {
         return new ContextModel(resourceProxy.getContext());
     }
 
-    @Override
-    public void delete(final ResourceModel model, final TreeDataSource tr, final Router router)
-        throws EscidocClientException {
-        final Window subwindow = new Window(DELETE_RESOURCE_WND_NAME);
-        subwindow.setModal(true);
-        Label message = new Label(DELETE_RESOURCE);
-        subwindow.addComponent(message);
-
-        @SuppressWarnings("serial")
-        Button okConfirmed = new Button("Yes", new Button.ClickListener() {
-            @Override
-            public void buttonClick(ClickEvent event) {
-                (subwindow.getParent()).removeWindow(subwindow);
-                try {
-                    finalDelete(model);
-                    tr.remove(model);
-                    router.getLayout().closeView(model);
-                }
-                catch (EscidocClientException e) {
-                    mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
-                        Notification.TYPE_ERROR_MESSAGE));
-                }
-            }
-
-        });
-        @SuppressWarnings("serial")
-        Button cancel = new Button("Cancel", new Button.ClickListener() {
-            @Override
-            public void buttonClick(ClickEvent event) {
-                (subwindow.getParent()).removeWindow(subwindow);
-            }
-        });
-        HorizontalLayout hl = new HorizontalLayout();
-        hl.addComponent(okConfirmed);
-        hl.addComponent(cancel);
-        subwindow.addComponent(hl);
-        mainWindow.addWindow(subwindow);
-    }
-
     public void finalDelete(final ResourceModel model) throws EscidocClientException {
         client.delete(model.getId());
         mainWindow
             .showNotification(new Window.Notification(ViewConstants.DELETED, Notification.TYPE_TRAY_NOTIFICATION));
     }
 
+    // FIX THIS METHOD SHOULD MOVE AWAY FROM HERE - Probably in Controller of the ITEM
     private void delete(final Item item) throws EscidocClientException {
         final Window subwindow = new Window(DELETE_RESOURCE_WND_NAME);
         subwindow.setModal(true);
