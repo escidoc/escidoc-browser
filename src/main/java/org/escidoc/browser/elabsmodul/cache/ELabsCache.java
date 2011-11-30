@@ -31,6 +31,7 @@ package org.escidoc.browser.elabsmodul.cache;
 import java.util.Collections;
 import java.util.List;
 
+import org.escidoc.browser.elabsmodul.model.FileFormatBean;
 import org.escidoc.browser.elabsmodul.model.OrgUnitBean;
 import org.escidoc.browser.elabsmodul.model.UserBean;
 
@@ -38,11 +39,13 @@ public class ELabsCache {
 
     private static List<String> depositEndpoints = Collections.emptyList();
 
-    private static List<String> esyncEndpoints;
+    private static List<String> esyncEndpoints = Collections.emptyList();;
 
     private static List<UserBean> users = Collections.emptyList();
 
     private static List<OrgUnitBean> orgUnits = Collections.emptyList();
+
+    private static List<FileFormatBean> fileFormats = Collections.emptyList();
 
     /**
      * @return the depositEndpoints
@@ -97,9 +100,25 @@ public class ELabsCache {
     }
 
     /**
-     * @param orgUnits the orgUnits to set
+     * @param orgUnits
+     *            the orgUnits to set
      */
     public static void setOrgUnits(List<OrgUnitBean> orgUnits) {
         ELabsCache.orgUnits = orgUnits;
+    }
+
+    /**
+     * @return the fileFormats
+     */
+    public static List<FileFormatBean> getFileFormats() {
+        return fileFormats;
+    }
+
+    /**
+     * @param fileFormats
+     *            the fileFormats to set
+     */
+    public static void setFileFormats(List<FileFormatBean> fileFormats) {
+        ELabsCache.fileFormats = fileFormats;
     }
 }

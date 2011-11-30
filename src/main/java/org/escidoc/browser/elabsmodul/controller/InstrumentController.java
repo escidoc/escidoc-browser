@@ -44,6 +44,7 @@ import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.exceptions.EscidocBrowserException;
 import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
 import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
+import org.escidoc.browser.elabsmodul.model.FileFormatBean;
 import org.escidoc.browser.elabsmodul.model.InstrumentBean;
 import org.escidoc.browser.elabsmodul.model.OrgUnitBean;
 import org.escidoc.browser.elabsmodul.model.UserBean;
@@ -99,14 +100,7 @@ public final class InstrumentController extends Controller implements ISaveActio
 
     private Window mainWindow;
 
-    // the bean model to store
     private IBeanModel beanModel = null;
-
-    // contains default eSychDaemon URLs
-    private final List<String> eSyncDaemonUrls = new ArrayList<String>();
-
-    // contains default deposit endpoint URLs
-    private final List<String> depositEndPointUrls = new ArrayList<String>();
 
     private Router router;
 
@@ -314,17 +308,63 @@ public final class InstrumentController extends Controller implements ISaveActio
      * 
      * @throws EscidocClientException
      */
-    public void loadAdminDescriptorInfo() {
+    private void loadAdminDescriptorInfo() {
         ContextProxyImpl context;
         try {
             context = (ContextProxyImpl) repositories.context().findById(resourceProxy.getContext().getObjid());
             final Element content = context.getAdminDescription().get("elabs").getContent();
-            final NodeList nodeList = content.getElementsByTagName("el:esync-endpoint");
-            for (int i = 0; i < nodeList.getLength(); i++) {
-                final Node node = nodeList.item(i);
-                eSyncDaemonUrls.add(node.getTextContent());
+
+            List<String> eSychEndpoints = new ArrayList<String>();
+
+            if (ELabsCache.getEsyncEndpoints().isEmpty()) {
+                final NodeList nodeList = content.getElementsByTagName("el:esync-endpoint");
+                for (int i = 0; i < nodeList.getLength(); i++) {
+                    final Node node = nodeList.item(i);
+                    eSychEndpoints.add(node.getTextContent());
+                }
+                synchronized (ELabsCache.getEsyncEndpoints()) {
+                    if (!eSychEndpoints.isEmpty()) {
+                        ELabsCache.setEsyncEndpoints(Collections.unmodifiableList(eSychEndpoints));
+                    }
+                }
             }
 
+            if (ELabsCache.getFileFormats().isEmpty()) {
+                List<FileFormatBean> fileFormatList = new ArrayList<FileFormatBean>();
+                final String URI_DC = "http://purl.org/dc/elements/1.1/";
+                final String URI_EL = "http://escidoc.org/ontologies/bw-elabs.owl#";
+                final NodeList fileFormatNodeList = content.getElementsByTagName("el:FileFormat");
+                for (int i = 0; i < fileFormatNodeList.getLength(); i++) {
+                    final Node node = fileFormatNodeList.item(i);
+                    if (node.hasChildNodes()) {
+                        final NodeList interNodeList = node.getChildNodes();
+                        FileFormatBean bean = new FileFormatBean();
+                        for (int j = 0; j < interNodeList.getLength(); j++) {
+                            final Node formatNode = interNodeList.item(j);
+                            final String nodeName = formatNode.getLocalName();
+                            final String nsUri = formatNode.getNamespaceURI();
+
+                            if (nodeName == null || nsUri == null) {
+                                continue;
+                            }
+                            if ("title".equals(nodeName) && URI_DC.equals(nsUri)) {
+                                bean.setTitle(formatNode.getTextContent().trim());
+                            }
+                            else if ("mime-type".equals(nodeName) && URI_EL.equals(nsUri)) {
+                                bean.setMimeType(formatNode.getTextContent().trim());
+                            }
+                        }
+                        fileFormatList.add(bean);
+                        LOG.debug("Added to FileFormat Cache " + bean.getTitle() + " + " + bean.getMimeType());
+                    }
+                }
+
+                synchronized (ELabsCache.getFileFormats()) {
+                    if (ELabsCache.getFileFormats().isEmpty() && !fileFormatList.isEmpty()) {
+                        ELabsCache.setFileFormats(Collections.unmodifiableList(fileFormatList));
+                    }
+                }
+            }
         }
         catch (final EscidocClientException e) {
             LOG.debug("Error occurred. Could not load Admin Descriptors" + e.getLocalizedMessage());
@@ -353,8 +393,7 @@ public final class InstrumentController extends Controller implements ISaveActio
             mainWindow.showNotification(new Notification("Error", e.getMessage(), Notification.TYPE_ERROR_MESSAGE));
             LOG.error(e.getLocalizedMessage());
         }
-        return new InstrumentView(instumentBean, this, createBeadCrumbModel(), resourceProxy, eSyncDaemonUrls,
-            serviceLocation);
+        return new InstrumentView(instumentBean, this, createBeadCrumbModel(), resourceProxy, serviceLocation);
     }
 
     private List<ResourceModel> createBeadCrumbModel() {
@@ -500,14 +539,6 @@ public final class InstrumentController extends Controller implements ISaveActio
             beanModel = null;
         }
         LOG.info("Instument is successfully saved.");
-    }
-
-    public List<String> geteSyncDaemonUrls() {
-        return eSyncDaemonUrls;
-    }
-
-    public List<String> getDepositEndPointUrl() {
-        return depositEndPointUrls;
     }
 
     @Override

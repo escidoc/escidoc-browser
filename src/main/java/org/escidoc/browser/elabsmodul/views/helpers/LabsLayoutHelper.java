@@ -42,13 +42,13 @@ import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DE
 import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_LABEL_TO_EDIT;
 import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_TEXTFIELD_TO_SAVE_OR_CANCEL;
 
-import java.util.Collection;
-
 import org.escidoc.browser.StringUtils;
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
+import org.escidoc.browser.elabsmodul.enums.ELabsFileFormatsEnum;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsInstrumentAction;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsInvestigationAction;
 import org.escidoc.browser.elabsmodul.interfaces.IRigAction;
+import org.escidoc.browser.elabsmodul.model.FileFormatBean;
 import org.escidoc.browser.elabsmodul.model.OrgUnitBean;
 import org.escidoc.browser.elabsmodul.model.RigBean;
 import org.escidoc.browser.elabsmodul.model.UserBean;
@@ -268,9 +268,15 @@ public final class LabsLayoutHelper {
             else if (((ComboBox) dataComponent).getValue() instanceof OrgUnitBean) {
                 label = new Label(((OrgUnitBean) ((ComboBox) dataComponent).getValue()).getComplexId());
             }
+            else if (((ComboBox) dataComponent).getValue() instanceof FileFormatBean) {
+                label = new Label(((FileFormatBean) ((ComboBox) dataComponent).getValue()).getTitle());
+            }
             else {
                 LOG.error("Incorrect data type at the switch to label");
             }
+        }
+        else if (dataComponent instanceof Label) {
+            label = (Label) dataComponent;
         }
 
         if (label == null) {
@@ -309,11 +315,9 @@ public final class LabsLayoutHelper {
      * @param property
      * @return
      */
-    public static synchronized AbstractComponent createStaticComboBoxFieldFromLabel(
-        Property property, Collection<?> options) {
+    public static synchronized AbstractComponent createStaticComboBoxFieldFromLabel(Property property) {
         Preconditions.checkNotNull(property, "Datasource is null");
-        Preconditions.checkNotNull(options, "Options collection is null");
-        ComboBox comboBox = new ComboBox(null, options);
+        ComboBox comboBox = new ComboBox(null, ELabsFileFormatsEnum.toList());
         comboBox.setEnabled(true);
         comboBox.setVisible(true);
         comboBox.setImmediate(true);
@@ -426,6 +430,9 @@ public final class LabsLayoutHelper {
                     }
                     else if (comboBox.getValue() instanceof OrgUnitBean) {
                         labsInstrumentAction.setInstitute(((OrgUnitBean) comboBox.getValue()).getId());
+                    }
+                    else if (comboBox.getValue() instanceof FileFormatBean) {
+                        labsInstrumentAction.setFileFormat(((FileFormatBean) comboBox.getValue()).getMimeType());
                     }
                     else {
                         LOG.error("Wrong data type in combobox");
