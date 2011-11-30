@@ -32,7 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.net.SocketAddress;
+import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLConnection;
@@ -45,8 +45,6 @@ import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.tools.Style.H2;
 import org.escidoc.core.tme.IngestResult;
 import org.escidoc.core.tme.SucessfulIngestResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Button;
@@ -68,8 +66,6 @@ import de.escidoc.core.client.exceptions.TransportException;
 public final class ImportView extends VerticalLayout {
 
     public static final String DEFAULT_CONTENT_MODEL_URI = "http://dl.dropbox.com/u/419140/eLab-Content-Models.zip";
-
-    private static final Logger LOG = LoggerFactory.getLogger(ImportView.class);
 
     private IngestRepository ingestRepository;
 
@@ -113,6 +109,8 @@ public final class ImportView extends VerticalLayout {
             private void downloadAndIngestZipFile(final TextField sourceUrl, String sourceUri) {
                 try {
                     URLConnection connection = createConnection(new URI(sourceUri));
+                    connection.setConnectTimeout(5000);
+                    connection.connect();
                     if (isZipFile(connection)) {
                         ingestZipFile(connection.getInputStream());
                     }
@@ -120,6 +118,9 @@ public final class ImportView extends VerticalLayout {
                         router.getMainWindow().showNotification(sourceUrl.getValue() + " is not a zip file.",
                             Window.Notification.TYPE_WARNING_MESSAGE);
                     }
+                }
+                catch (SocketTimeoutException e) {
+                    showTimeoutWarning();
                 }
                 catch (MalformedURLException e) {
                     showErrorMessage(e);
@@ -133,6 +134,14 @@ public final class ImportView extends VerticalLayout {
                 catch (URISyntaxException e) {
                     showErrorMessage(e);
                 }
+            }
+
+            private void showTimeoutWarning() {
+                router
+                    .getApp()
+                    .getMainWindow()
+                    .showNotification("Connection Timeout", "Is HTTP Proxy properly configured?",
+                        Window.Notification.TYPE_WARNING_MESSAGE);
             }
 
             private boolean isZipFile(URLConnection connection) {
@@ -154,12 +163,11 @@ public final class ImportView extends VerticalLayout {
                 for (IngestResult ingestResult : list) {
                     if (ingestResult.isSuccesful()) {
                         SucessfulIngestResult sir = (SucessfulIngestResult) ingestResult;
-                        builder.append(sir.getId()).append(" ,");
+                        builder.append(sir.getId()).append(", ");
                     }
-
                 }
-                router.getMainWindow().showNotification("Succesfully ingest content model set", builder.toString(),
-                    Window.Notification.POSITION_CENTERED_TOP);
+                router.getMainWindow().showNotification("Succesfully ingested content model set", builder.toString(),
+                    Window.Notification.DELAY_FOREVER);
             }
 
             private void showErrorMessage(Exception e) {
