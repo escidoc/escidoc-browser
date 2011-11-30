@@ -201,13 +201,12 @@ public class ViewConstants {
     public static final String CANNOT_CREATE_BUTTONS = "CANNOT CREATE BUTTONS FOR THIS VIEW";
 
     public static final String VIEW_ERROR_CANNOT_LOAD_VIEW = "Not able to load the view for this resource: ";
-    
+
     public static final String RESOURCES = "Resources";
 
     public static final String TOOLS = "Tools";
 
     public static final String ORGANIZATIONAL_UNITS = "Organizational Units";
-
 
     public static final String USERS = "Users";
 
@@ -230,7 +229,7 @@ public class ViewConstants {
 
     public static final String USER_ACCOUNTS = "User Accounts";
 
-    public static final String PURGE_RESOURCES = "Purge Resources";
+    public static final String BULK_TASKS = "Bulk Tasks";
 
     public static final String FILTERING_RESOURCES_TITLE = "Filter and Purge Resources";
 
