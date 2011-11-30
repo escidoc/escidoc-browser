@@ -51,7 +51,7 @@ import com.vaadin.ui.themes.Runo;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
-public class ContextView extends Panel {
+public class ContextView extends View {
 
     private static final String CREATED_BY = "Created by";
 
@@ -71,19 +71,18 @@ public class ContextView extends Panel {
 
     private VerticalLayout vlResourceProperties;
 
-    public ContextView(final EscidocServiceLocation serviceLocation, final Router router,
-        final ResourceProxy resourceProxy, final Window mainWindow, final Repositories repositories)
+    public ContextView(final Router router, final ResourceProxy resourceProxy, final Repositories repositories)
         throws EscidocClientException {
 
-        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(router, "mainSite is null: %s", router);
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
 
-        this.serviceLocation = serviceLocation;
+        this.serviceLocation = router.getServiceLocation();
         this.router = router;
         this.resourceProxy = resourceProxy;
-        this.mainWindow = mainWindow;
+        this.setViewName(resourceProxy.getName());
+        this.mainWindow = router.getMainWindow();
         this.repositories = repositories;
         buildContentPanel();
     }
@@ -134,7 +133,7 @@ public class ContextView extends Panel {
      */
     private void bindProperties(AbstractComponentContainer componentContainer) {
         final Label descMetadata1 =
-            new Label("ID: " + resourceProxy.getId() + " <br /> " + resourceProxy.getType().asLabel() + " is "
+            new Label("ID: " + resourceProxy.getId() + " <br /> " + resourceProxy.getType().getLabel() + " is "
                 + resourceProxy.getStatus(), Label.CONTENT_RAW);
         descMetadata1.setWidth("35%");
         descMetadata1.setStyleName("floatleft columnheight50");

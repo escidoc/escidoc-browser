@@ -28,8 +28,6 @@
  */
 package org.escidoc.browser.ui.navigation;
 
-import java.util.Date;
-
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.TreeDataSourceImpl;
@@ -37,8 +35,6 @@ import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.listeners.TreeClickListener;
 import org.escidoc.browser.ui.listeners.TreeExpandListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Window;
@@ -47,7 +43,7 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class NavigationTreeBuilder {
 
-    private static final Logger LOG = LoggerFactory.getLogger(NavigationTreeBuilder.class);
+    // private final CurrentUser currentUser;
 
     private final EscidocServiceLocation serviceLocation;
 
@@ -82,16 +78,9 @@ public class NavigationTreeBuilder {
     public NavigationTreeView buildContextDirectMemberTree(
         final Router router, final String parentId, final Window mainWindow) throws EscidocClientException {
 
-        // FIXME: reuse the tree
-        LOG.debug("Building ");
-        long start = new Date().getTime();
-
         final TreeDataSource treeDataSource =
             new TreeDataSourceImpl(repositories.context().findTopLevelMembersById(parentId));
         treeDataSource.init();
-        long end = new Date().getTime();
-        long duration = (end - start) / 1000;
-        LOG.debug("It took: " + duration + " ms for building context direct member view: " + parentId);
 
         return createNavigationTreeView(router, mainWindow, treeDataSource);
     }

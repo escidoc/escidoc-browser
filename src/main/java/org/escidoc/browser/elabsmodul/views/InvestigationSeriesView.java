@@ -47,6 +47,7 @@ import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.maincontent.View;
 import org.escidoc.browser.ui.view.helpers.DirectMember;
 
 import com.google.common.base.Preconditions;
@@ -61,7 +62,7 @@ import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
-public class InvestigationSeriesView extends Panel implements ILabsPanel, ILabsAction {
+public class InvestigationSeriesView extends View implements ILabsPanel, ILabsAction {
 
     private static final long serialVersionUID = 8357388998587122127L;
 
@@ -107,6 +108,7 @@ public class InvestigationSeriesView extends Panel implements ILabsPanel, ILabsA
         Preconditions.checkNotNull(saveAction, "saveAction is null: %s", saveAction);
 
         this.containerProxy = containerProxy;
+        this.setViewName(containerProxy.getName());
         this.investigationSeriesBean = investigationSeriesBean;
         this.breadCrumb = breadCrumb;
         this.saveAction = saveAction;

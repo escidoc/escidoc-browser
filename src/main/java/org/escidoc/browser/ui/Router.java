@@ -28,9 +28,12 @@
  */
 package org.escidoc.browser.ui;
 
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Map;
+import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.BrowserApplication;
@@ -56,12 +59,9 @@ import org.escidoc.browser.ui.maincontent.SearchAdvancedView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.Map;
-import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -238,8 +238,7 @@ public class Router {
                 try {
                     final ContextProxyImpl context =
                         (ContextProxyImpl) resourceFactory.find(escidocID, ResourceType.CONTEXT);
-                    layout.openView(new ContextView(serviceLocation, this, context, mainWindow, repositories),
-                        context.getName());
+                    layout.openView(new ContextView(this, context, repositories), context.getName());
                 }
                 catch (final EscidocClientException e) {
                     showError(FAIL_RETRIEVING_RESOURCE);
@@ -249,8 +248,7 @@ public class Router {
                 try {
                     final ContainerProxy container =
                         (ContainerProxy) resourceFactory.find(escidocID, ResourceType.CONTAINER);
-                    layout.openView(new ContainerView(serviceLocation, this, container, mainWindow, repositories),
-                        container.getName());
+                    layout.openView(new ContainerView(this, container, repositories), container.getName());
                 }
                 catch (final EscidocClientException e) {
                     showError(FAIL_RETRIEVING_RESOURCE);
@@ -259,8 +257,7 @@ public class Router {
             else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("ITEM")) {
                 try {
                     final ItemProxy item = (ItemProxy) resourceFactory.find(escidocID, ResourceType.ITEM);
-                    layout.openView(new ItemView(serviceLocation, repositories, this, layout, item, mainWindow),
-                        item.getName());
+                    layout.openView(new ItemView(repositories, this, item), item.getName());
                 }
                 catch (final EscidocClientException e) {
                     showError(FAIL_RETRIEVING_RESOURCE);

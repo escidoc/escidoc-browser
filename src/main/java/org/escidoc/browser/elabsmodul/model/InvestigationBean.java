@@ -44,7 +44,9 @@ public class InvestigationBean implements Serializable, IBeanModel {
 
     private String description;
 
-    private long maxRuntime;
+    private String maxRuntime;
+
+    private int maxRuntimeInMin;
 
     private String depositEndpoint;
 
@@ -80,11 +82,11 @@ public class InvestigationBean implements Serializable, IBeanModel {
         this.description = description;
     }
 
-    public long getMaxRuntime() {
+    public String getMaxRuntime() {
         return maxRuntime;
     }
 
-    public void setMaxRuntime(long maxRuntime) {
+    public void setMaxRuntime(String maxRuntime) {
         this.maxRuntime = maxRuntime;
     }
 
@@ -126,5 +128,13 @@ public class InvestigationBean implements Serializable, IBeanModel {
 
     public void setRigComplexId(String rigComplexId) {
         this.rigComplexId = rigComplexId;
+    }
+
+    public int getMaxRuntimeInMin() {
+        return maxRuntimeInMin;
+    }
+
+    public void setMaxRuntimeInMin(int maxRuntimeInMin) {
+        this.maxRuntimeInMin = maxRuntimeInMin;
     }
 }

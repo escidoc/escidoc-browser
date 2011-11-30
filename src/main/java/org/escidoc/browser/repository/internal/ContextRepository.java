@@ -40,8 +40,6 @@ import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.helper.Util;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 
@@ -55,8 +53,6 @@ import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.om.context.Context;
 
 public class ContextRepository implements Repository {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ContextRepository.class);
 
     private final ContextHandlerClientInterface client;
 
@@ -73,14 +69,13 @@ public class ContextRepository implements Repository {
         return ModelConverter.contextListToModelWithChildInfo(client.retrieveContextsAsList(Util.createEmptyFilter()));
     }
 
-    private boolean hasChildren(final Resource context) throws EscidocClientException {
+    public boolean hasChildren(final Resource context) throws EscidocClientException {
         return !findTopLevelMembersById(context.getObjid()).isEmpty();
     }
 
     @Override
     public List<ResourceModel> findTopLevelMembersById(final String id) throws EscidocClientException {
         Preconditions.checkNotNull(id, "id is null: %s", id);
-        LOG.debug("Finding top level members of context with the id: " + id);
         return findTopLevelMemberList(id);
     }
 
@@ -107,11 +102,6 @@ public class ContextRepository implements Repository {
     @Override
     public void loginWith(final String handle) throws InternalClientException {
         client.setHandle(handle);
-    }
-
-    @Override
-    public void delete(final ResourceModel model) throws EscidocClientException {
-        client.delete(model.getId());
     }
 
     @Override

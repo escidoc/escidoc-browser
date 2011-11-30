@@ -32,11 +32,13 @@ import java.net.URISyntaxException;
 
 import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.TreeDataSourceImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.maincontent.View;
 import org.escidoc.browser.ui.mainpage.Footer;
 import org.escidoc.browser.ui.mainpage.HeaderContainer;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
@@ -114,21 +116,32 @@ public class SimpleLayout extends LayoutDesign {
 
     @Override
     public void openView(Component cmp, String tabname) {
+        String description = tabname;
+        int p = tabname.lastIndexOf('#');
+        if (p > 0) {
+            tabname = tabname.substring(0, p);
+        }
+
         if (tabname.length() > 50) {
             tabname = tabname.substring(0, 50) + "...";
         }
 
         final Tab tb = mainContentTabs.addTab(cmp);
-        tb.setDescription(tabname);
+        tb.setDescription(description);
         tb.setCaption(tabname);
-        tb.setDescription(tabname);
         mainContentTabs.setSelectedTab(cmp);
         tb.setClosable(true);
     }
 
     @Override
     public void openViewByReloading(Component cmp, String tabname) {
-        LOG.info("Opened and Reloaded" + tabname);
+        String description = tabname;
+
+        // use as tabname the name without the ID
+        int p = tabname.lastIndexOf('#');
+        if (p > 0) {
+            tabname = tabname.substring(0, p);
+        }
         if (tabname.length() > 50) {
             tabname = tabname.substring(0, 50) + "...";
         }
@@ -139,15 +152,52 @@ public class SimpleLayout extends LayoutDesign {
             mainContentTabs.removeTab(tmpTab);
         }
         final Tab tb = mainContentTabs.addTab(cmp);
-        tb.setDescription(tabname);
         tb.setCaption(tabname);
-        tb.setDescription(tabname);
+        tb.setDescription(description);
         if (position != -1) {
             mainContentTabs.setTabPosition(tb, position);
         }
 
         mainContentTabs.setSelectedTab(cmp);
         tb.setClosable(true);
+    }
+
+    /**
+     * There are cases where we need to close views programatically. <br />
+     * Example close resource-views which are deleted.
+     * 
+     * @param cmp
+     */
+    public void closeView(ResourceModel model, ResourceModel parent) {
+        // 1. Remove the tab for the resource to be deleted
+        // 2. Reload the parent Tab
+        // 3. Remove the element from the tree
+        for (int i = mainContentTabs.getComponentCount() - 1; i >= 0; i--) {
+            String tabDescription =
+                mainContentTabs
+                    .getTab(i).getDescription()
+                    .substring(mainContentTabs.getTab(i).getDescription().lastIndexOf('#') + 1).toString();
+            LOG.debug("############################ " + tabDescription);
+            // Remove the tab from the TabSheet
+            if (tabDescription.equals(model.getId().toString())) {
+                mainContentTabs.removeTab(mainContentTabs.getTab(i));
+            }
+
+            // this is the case when Deleting from DirectMember
+            if (parent != null) {
+                if (tabDescription.equals(parent.getId().toString())) {
+                    View tabView = (View) mainContentTabs.getTab(i).getComponent();
+                    openViewByReloading(tabView, tabView.getViewName());
+                }
+            }
+            else {
+                // Deleting from the tree, I know the parent and I reload it
+                View tab = (View) mainContentTabs.getSelectedTab();
+                openViewByReloading(mainContentTabs.getSelectedTab(), tab.getViewName());
+            }
+        }
+        // remove it from the tree
+        treeDataSource.remove(model);
     }
 
     @Override
@@ -269,7 +319,6 @@ public class SimpleLayout extends LayoutDesign {
     }
 
     private NavigationTreeView addNavigationTree() throws EscidocClientException {
-
         treeDataSource = new TreeDataSourceImpl(repositories.context().findAllWithChildrenInfo());
         treeDataSource.init();
 

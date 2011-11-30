@@ -81,7 +81,7 @@ public final class Utils {
         return new Proxy(Type.HTTP, findHttpProxy(uri));
     }
 
-    private static SocketAddress findHttpProxy(final URI uri) {
+    public static SocketAddress findHttpProxy(final URI uri) {
         for (Proxy proxy : ProxySelector.getDefault().select(uri)) {
             if (proxy.address() == null) {
                 return Proxy.NO_PROXY.address();

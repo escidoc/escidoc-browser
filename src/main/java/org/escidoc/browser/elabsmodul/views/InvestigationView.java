@@ -38,6 +38,7 @@ import org.escidoc.browser.elabsmodul.interfaces.IInvestigationAction;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsAction;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsInvestigationAction;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsPanel;
+import org.escidoc.browser.elabsmodul.model.DurationBean;
 import org.escidoc.browser.elabsmodul.model.InvestigationBean;
 import org.escidoc.browser.elabsmodul.model.RigBean;
 import org.escidoc.browser.elabsmodul.model.UserBean;
@@ -46,12 +47,14 @@ import org.escidoc.browser.elabsmodul.views.helpers.ResourcePropertiesViewHelper
 import org.escidoc.browser.elabsmodul.views.helpers.StartInvestigationViewHelper;
 import org.escidoc.browser.elabsmodul.views.listeners.DepositEndpointSelectionLayoutListener;
 import org.escidoc.browser.elabsmodul.views.listeners.DepositorSelectionLayoutListener;
+import org.escidoc.browser.elabsmodul.views.listeners.DurationSelectionLayoutListener;
 import org.escidoc.browser.elabsmodul.views.listeners.LabsClientViewEventHandler;
 import org.escidoc.browser.elabsmodul.views.listeners.RigSelectionLayoutListener;
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.maincontent.View;
 import org.escidoc.browser.ui.view.helpers.DirectMember;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,13 +66,14 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
-public class InvestigationView extends Panel implements ILabsPanel, ILabsAction, ILabsInvestigationAction {
+public class InvestigationView extends View implements ILabsPanel, ILabsAction, ILabsInvestigationAction {
 
     private static final long serialVersionUID = -5284506653803233585L;
 
@@ -103,6 +107,8 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction,
 
     private final Router router;
 
+    private DurationBean durationBean;
+
     public InvestigationView(final InvestigationBean sourceBean, final IInvestigationAction controller,
         final List<ResourceModel> breadCrumbModel, final ContainerProxy containerProxy, final Router router) {
 
@@ -110,6 +116,7 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction,
         this.controller = controller;
         this.breadCrumbModel = breadCrumbModel;
         this.containerProxy = containerProxy;
+        this.setViewName(containerProxy.getName());
         this.router = router;
 
         initialisePanelComponents();
@@ -289,6 +296,7 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction,
         // set up specific listeners
         h3.addListener(new DepositEndpointSelectionLayoutListener(this));
         h4.addListener(new DepositorSelectionLayoutListener(this));
+        h5.addListener(new DurationSelectionLayoutListener(this, this));
         h6.addListener(new RigSelectionLayoutListener(this.controller, this));
 
         registeredComponents.add(h1);
@@ -407,5 +415,24 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction,
     public void setInvestigator(final String investigatorId) {
         Preconditions.checkNotNull(investigatorId, "input arg is null");
         investigationBean.setInvestigator(investigatorId);
+    }
+
+    @Override
+    public void setDuration(DurationBean durationBean) {
+        Preconditions.checkNotNull(durationBean, "Duration is null");
+        this.durationBean = durationBean;
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(durationBean.getDays());
+        sb.append((durationBean.getDays() == 1) ? " day " : " days ");
+        sb.append(durationBean.getHours());
+        sb.append((durationBean.getHours() == 1) ? " hour " : " hours ");
+        sb.append(durationBean.getMinutes());
+        sb.append((durationBean.getMinutes() == 1) ? " minute" : " minutes");
+
+        this.investigationBean.setMaxRuntimeInMin(durationBean.getDays() * 1440 + durationBean.getHours() * 60
+            + durationBean.getMinutes());
+
+        ((Label) ((HorizontalLayout) this.dynamicLayout.getComponent(4)).getComponent(1)).setValue(sb.toString());
     }
 }

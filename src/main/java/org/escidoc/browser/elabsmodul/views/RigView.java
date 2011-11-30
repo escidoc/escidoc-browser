@@ -45,6 +45,7 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.ui.maincontent.View;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +63,7 @@ import com.vaadin.ui.themes.Runo;
 /**
  * Specific BWeLabsView for Rig item-element.
  */
-public class RigView extends Panel implements ILabsPanel, ILabsAction {
+public class RigView extends View implements ILabsPanel, ILabsAction {
 
     private static final long serialVersionUID = -6095498070313755653L;
 
@@ -110,6 +111,7 @@ public class RigView extends Panel implements ILabsPanel, ILabsAction {
         this.controller = controller;
         this.breadCrumbModel = breadCrumbModel;
         this.itemProxy = (ItemProxy) resourceProxy;
+        this.setViewName(resourceProxy.getName());
         this.serviceLocation = serviceLocation;
         this.rigTableHelper = new LabsRigTableHelper(this);
 

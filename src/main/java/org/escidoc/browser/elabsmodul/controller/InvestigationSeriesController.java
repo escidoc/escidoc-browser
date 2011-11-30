@@ -172,8 +172,7 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
         this.resourceProxy = (ContainerProxy) resourceProxy;
         this.mainWindow = mainWindow;
 
-        // FIXME a little bit weird
-        setResourceName(resourceProxy.getName());
+        setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
 
         isb = resourceToBean();
         view = createView();

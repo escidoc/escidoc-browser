@@ -50,7 +50,7 @@ import com.vaadin.ui.themes.Runo;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
-public final class ItemView extends Panel {
+public final class ItemView extends View {
 
     private static final Logger LOG = LoggerFactory.getLogger(ItemView.class);
 
@@ -66,22 +66,19 @@ public final class ItemView extends Panel {
 
     private LayoutDesign layout;
 
-    public ItemView(final EscidocServiceLocation serviceLocation, final Repositories repositories, final Router router,
-        final LayoutDesign layout, final ResourceProxy resourceProxy, final Window mainWindow)
+    public ItemView(final Repositories repositories, final Router router, final ResourceProxy resourceProxy)
         throws EscidocClientException {
-
-        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null.");
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(router, "mainSite is null.");
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null.");
-        Preconditions.checkNotNull(mainWindow, "mainWindow is null.");
 
         this.resourceProxy = (ItemProxyImpl) resourceProxy;
         this.repositories = repositories;
-        this.mainWindow = mainWindow;
+        this.setViewName(resourceProxy.getName());
+        this.mainWindow = router.getMainWindow();
         this.router = router;
-        this.layout = layout;
-        this.serviceLocation = serviceLocation;
+        this.layout = router.getLayout();
+        this.serviceLocation = router.getServiceLocation();
         buildContentPanel();
     }
 

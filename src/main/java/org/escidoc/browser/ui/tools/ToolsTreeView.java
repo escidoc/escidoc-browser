@@ -69,7 +69,7 @@ public class ToolsTreeView extends VerticalLayout {
     enum NODE_TYPE {
 
         LOAD_EXAMPLE(ViewConstants.LOAD_EXAMPLE), REPO_INFO(ViewConstants.REPOSITORY_INFORMATION), REINDEX(
-            ViewConstants.REINDEX), PURGE_RESOURCES(ViewConstants.PURGE_RESOURCES);
+            ViewConstants.REINDEX), BULK_TASKS(ViewConstants.BULK_TASKS);
 
         private String label;
 
@@ -127,7 +127,7 @@ public class ToolsTreeView extends VerticalLayout {
                         view.init();
                         router.openTab(view, getType(event).getLabel());
                         break;
-                    case PURGE_RESOURCES:
+                    case BULK_TASKS:
                         PurgeAndExportResourceView purgeView = new PurgeAndExportResourceView(router, repositories);
                         purgeView.init();
                         router.openTab(purgeView, getType(event).getLabel());
@@ -155,7 +155,7 @@ public class ToolsTreeView extends VerticalLayout {
         }
 
         if (hasGrantTo(ActionIdConstants.PURGE_RESOURCES)) {
-            tree.addItem(new Node(NODE_TYPE.PURGE_RESOURCES));
+            tree.addItem(new Node(NODE_TYPE.BULK_TASKS));
         }
 
         for (Object object : tree.getContainerDataSource().getItemIds()) {

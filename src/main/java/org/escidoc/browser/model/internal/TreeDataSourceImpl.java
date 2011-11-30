@@ -134,7 +134,6 @@ public class TreeDataSourceImpl implements TreeDataSource {
         for (final ResourceModel child : children) {
             addChild(parent, child);
         }
-        LOG.debug("All Chilren added");
     }
 
     @Override
@@ -147,6 +146,8 @@ public class TreeDataSourceImpl implements TreeDataSource {
         bind(addedItem, child);
         assignParent(parent, child);
 
+            boolean hasMember = true;
+            dataSource.setChildrenAllowed(child, hasMember);
         dataSource.setChildrenAllowed(child, isNotItem(child));
         sortByTypeAndNameAscending();
     }
@@ -172,14 +173,26 @@ public class TreeDataSourceImpl implements TreeDataSource {
         switch (resourceModel.getType()) {
             case ITEM:
                 isSuccessful = dataSource.removeItem(resourceModel);
-                Preconditions.checkArgument(isSuccessful, "Can not remove " + resourceModel + " from data source.");
                 break;
             case CONTAINER:
                 isSuccessful = dataSource.removeItem(resourceModel);
-                Preconditions.checkArgument(isSuccessful, "Can not remove " + resourceModel + " from data source.");
                 break;
             default:
                 throw new UnsupportedOperationException("Not yet implemented");
         }
     }
+
+    /**
+     * If no parent was found, return null
+     */
+    @Override
+    public ResourceModel getParent(ResourceModel child) {
+        Preconditions.checkNotNull(child, "Child must not be null.");
+        Object parent = dataSource.getParent(child);
+        if (parent != null) {
+            return (ResourceModel) parent;
+        }
+        return null;
+    }
+
 }

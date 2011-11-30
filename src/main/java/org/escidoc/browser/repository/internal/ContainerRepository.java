@@ -73,6 +73,7 @@ public class ContainerRepository implements Repository {
 
     private static final Logger LOG = LoggerFactory.getLogger(ContainerRepository.class);
 
+    //
     private static final String DELETE_RESOURCE_WND_NAME = "Do you really want to delete this item!?";
 
     private static final String DELETE_RESOURCE = "Are you confident to delete this resource!?";
@@ -102,7 +103,6 @@ public class ContainerRepository implements Repository {
     public List<ResourceModel> findTopLevelMembersById(final String id) throws EscidocClientException {
         Preconditions.checkNotNull(id, "id is null: %s", id);
         Preconditions.checkArgument(!id.isEmpty(), "id is empty: %s", id);
-        LOG.debug("Finding top level members of container with the id: " + id);
         return findDirectMembers(id);
     }
 
@@ -293,48 +293,13 @@ public class ContainerRepository implements Repository {
         }
     }
 
-    @Override
-    public void delete(final ResourceModel model) throws EscidocClientException {
-        final Window subwindow = new Window(DELETE_RESOURCE_WND_NAME);
-        subwindow.setModal(true);
-        final Label message = new Label(DELETE_RESOURCE);
-        subwindow.addComponent(message);
-
-        @SuppressWarnings("serial")
-        final Button okConfirmed = new Button("Yes", new Button.ClickListener() {
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                (subwindow.getParent()).removeWindow(subwindow);
-                try {
-                    finalDelete(model);
-                }
-                catch (final EscidocClientException e) {
-                    mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
-                        Notification.TYPE_ERROR_MESSAGE));
-                }
-            }
-
-        });
-        @SuppressWarnings("serial")
-        final Button cancel = new Button("Cancel", new Button.ClickListener() {
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                (subwindow.getParent()).removeWindow(subwindow);
-            }
-        });
-        final HorizontalLayout hl = new HorizontalLayout();
-        hl.addComponent(okConfirmed);
-        hl.addComponent(cancel);
-        subwindow.addComponent(hl);
-        mainWindow.addWindow(subwindow);
-    }
-
     public void finalDelete(final ResourceModel model) throws EscidocClientException {
         client.delete(model.getId());
         mainWindow
             .showNotification(new Window.Notification(ViewConstants.DELETED, Notification.TYPE_TRAY_NOTIFICATION));
     }
 
+    // FIX this method should be out-of-here
     private void delete(final Container container) throws EscidocClientException {
         final Window subwindow = new Window(DELETE_RESOURCE_WND_NAME);
         subwindow.setModal(true);
@@ -408,4 +373,14 @@ public class ContainerRepository implements Repository {
         return ret;
     }
 
+    public List<ResourceModel> findContainersByContentModel(String cmId) throws EscidocClientException {
+        Preconditions.checkNotNull(cmId, "cmId is null: %s", cmId);
+
+        return filterUsingInput(findByContentModelQuery(cmId));
+    }
+
+    private String findByContentModelQuery(String cmId) {
+        String query = "\"/properties/content-model/id\"=\"" + cmId + "\"";
+        return query;
+    }
 }

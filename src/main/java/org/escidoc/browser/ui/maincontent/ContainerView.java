@@ -70,7 +70,7 @@ import de.escidoc.core.resources.om.container.Container;
  * 
  */
 @SuppressWarnings("serial")
-public class ContainerView extends Panel {
+public class ContainerView extends View {
     private static final String DESC_LOCKSTATUS = "lockstatus";
 
     private static final String DESC_STATUS2 = "status";
@@ -117,22 +117,18 @@ public class ContainerView extends Panel {
 
     private static final Logger LOG = LoggerFactory.getLogger(ContainerView.class);
 
-    public ContainerView(final EscidocServiceLocation serviceLocation, final Router router,
-        final ResourceProxy resourceProxy, final Window mainWindow, final Repositories repositories)
+    public ContainerView(final Router router, final ResourceProxy resourceProxy, final Repositories repositories)
         throws EscidocClientException {
-        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(router, "Router is null: %s", router);
+        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
+        Preconditions.checkArgument(resourceProxy instanceof ContainerProxy, resourceProxy.getClass()
+            + " is not an instance of ContainerProxy.class");
+        this.serviceLocation = router.getServiceLocation();
 
-        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
-        Preconditions.checkArgument(resourceProxy instanceof ContainerProxy, resourceProxy.getClass()
-            + " is not an instance of ContainerProxy.class");
-        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
-        Preconditions.checkArgument(resourceProxy instanceof ContainerProxy, resourceProxy.getClass()
-            + " is not an instance of ContainerProxy.class");
-        this.serviceLocation = serviceLocation;
         this.router = router;
         this.resourceProxy = (ContainerProxy) resourceProxy;
-        this.mainWindow = mainWindow;
+        this.setViewName(resourceProxy.getName());
+        this.mainWindow = router.getMainWindow();
         this.repositories = repositories;
         handleLayoutListeners();
         buildContentPanel();
@@ -333,57 +329,6 @@ public class ContainerView extends Panel {
         bindProperties(cssLayout);
     }
 
-    // private void init() throws EscidocClientException {
-    // // configureLayout();
-    // handleLayoutListeners();
-    // createBreadCrumb();
-    // new CreatePermanentLinkVH(mainWindow.getURL().toString(), resourceProxy.getId(), resourceProxy
-    // .getType().toString(), metadataContainer, serviceLocation);
-    // bindNameToHeader();
-    // bindDescription();
-    // addHorizontalRuler();
-    // bindProperties();
-    // leftCell();
-    // addMetadataRecords();
-    // addComponent(metadataContainer);
-    // }
-
-    // private void addMetadataRecords() {
-    // rightCell(new MetadataRecs(resourceProxy, 0, mainWindow, serviceLocation, repositories, router).asAccord());
-    // }
-
-    // /**
-    // * This is the inner Right Cell within a Context By default a set of Organizational Unit / Admin Description /
-    // * RelatedItem / Resources are bound
-    // *
-    // * @param comptoBind
-    // */
-    // @SuppressWarnings("deprecation")
-    // private void rightCell(final Component comptoBind) {
-    // final Panel rightpnl = new Panel();
-    // rightpnl.setDescription(RIGHT_PANEL);
-    // rightpnl.setStyleName("floatright");
-    // rightpnl.setSizeFull();
-    // rightpnl.getLayout().setMargin(false);
-    // rightpnl.addComponent(comptoBind);
-    // metadataContainer.addComponent(rightpnl);
-    // metadataContainer.setExpandRatio(rightpnl, 7.0f);
-    // }
-    //
-    // @SuppressWarnings("deprecation")
-    // private void leftCell() throws EscidocClientException {
-    // final Panel leftPanel = new Panel();
-    // leftPanel.setStyleName("directmembers floatleft");
-    // leftPanel.setScrollable(false);
-    // leftPanel.getLayout().setMargin(false);
-    // leftPanel.setSizeFull();
-    //
-    // new DirectMember(serviceLocation, router, resourceProxy.getId(), mainWindow, repositories, leftPanel,
-    // ResourceType.CONTAINER.toString()).containerAsTree();
-    // metadataContainer.addComponent(leftPanel);
-    // metadataContainer.setExpandRatio(leftPanel, 3.0f);
-    // }
-
     /**
      * Binding Context Properties 2 sets of labels in 2 rows
      * 
@@ -395,7 +340,7 @@ public class ContainerView extends Panel {
 
         final Label descMetadata1 = new Label("ID: " + resourceProxy.getId());
 
-        status = resourceProxy.getType().asLabel() + " is ";
+        status = resourceProxy.getType().getLabel() + " is ";
         lockStatus = status;
         lblStatus = new Label(status + resourceProxy.getStatus(), Label.CONTENT_RAW);
         lblStatus.setDescription(DESC_STATUS2);

@@ -45,7 +45,7 @@ public enum ResourceType {
         label = "";
     }
 
-    public String asLabel() {
+    public String getLabel() {
         return label;
     }
 }

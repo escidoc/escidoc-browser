@@ -138,7 +138,7 @@ public class ItemPropertiesVH {
 
         final Label descMetadata1 = new Label("ID: " + resourceProxy.getId());
 
-        status = resourceProxy.getType().asLabel() + " is ";
+        status = resourceProxy.getType().getLabel() + " is ";
         lockStatus = status;
         lblStatus = new Label(status + resourceProxy.getStatus(), Label.CONTENT_RAW);
         lblStatus.setDescription(DESC_STATUS2);
@@ -409,7 +409,7 @@ public class ItemPropertiesVH {
                     mainWindow.addWindow(subwindow);
                 }
 
-                private void updatePublicStatus(final Item item, final String comment) throws EscidocClientException {
+                private void updatePublicStatus(final Item item, final String comment) {
                     Preconditions.checkNotNull(item, "Item is null");
                     Preconditions.checkNotNull(comment, "Comment is null");
                     // Update PublicStatus if there is a change
@@ -420,7 +420,7 @@ public class ItemPropertiesVH {
                     }
                 }
 
-                private void updateLockStatus(final Item item, final String comment) throws EscidocClientException {
+                private void updateLockStatus(final Item item, final String comment) {
                     if (!resourceProxy.getLockStatus().equals(
                         lblLockstatus.getValue().toString().replace(lockStatus, ""))) {
                         repositories.item().changeLockStatus(item,

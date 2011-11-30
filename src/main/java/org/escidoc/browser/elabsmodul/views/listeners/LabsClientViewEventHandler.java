@@ -120,7 +120,6 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
             if (childComponent instanceof HorizontalLayout) {
 
                 if (!registeredComponents.contains(childComponent)) {
-                    LOG.error("Action of an UnRegistered Component!");
                     return;
                 }
 
@@ -141,11 +140,17 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
                     final String queryTextforFileFormat =
                         ELabsViewContants.DIV_ALIGN_RIGHT + ELabsViewContants.L_INSTRUMENT_FILE_FORMAT
                             + ELabsViewContants.DIV_END;
+                    final String queryTextforDuration =
+                        ELabsViewContants.DIV_ALIGN_RIGHT + ELabsViewContants.L_INVESTIGATION_DURATION
+                            + ELabsViewContants.DIV_END;
                     Component newComponent = null;
                     if (queryTextforFileFormat.equals(((Label) labelComponent).getValue())) {
                         newComponent =
                             LabsLayoutHelper.createStaticComboBoxFieldFromLabel(
                                 ((Label) dataComponent).getPropertyDataSource(), ELabsFileFormatsEnum.toList());
+                    }
+                    else if (queryTextforDuration.equals(((Label) labelComponent).getValue())) {
+                        return;
                     }
                     else {
                         newComponent =
@@ -167,6 +172,7 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
                     }
                     else {
                         LabsLayoutHelper.switchToLabelFromEditedField((HorizontalLayout) childComponent);
+                        this.containerPanel.setModifiedComponent(null);
                     }
                 }
                 else if (dataComponent instanceof CheckBox) {

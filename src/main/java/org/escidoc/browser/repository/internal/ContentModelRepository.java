@@ -118,12 +118,6 @@ public class ContentModelRepository implements Repository {
     }
 
     @Override
-    public void delete(ResourceModel model) throws EscidocClientException {
-        throw new UnsupportedOperationException("Not yet implemented");
-
-    }
-
-    @Override
     public List<ResourceModel> filterUsingInput(String query) throws EscidocClientException {
         throw new UnsupportedOperationException("Not yet implemented");
 

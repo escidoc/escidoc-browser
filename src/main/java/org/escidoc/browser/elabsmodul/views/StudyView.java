@@ -46,6 +46,7 @@ import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.maincontent.View;
 import org.escidoc.browser.ui.view.helpers.DirectMember;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +63,7 @@ import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
-public class StudyView extends Panel implements ILabsPanel, ILabsAction {
+public class StudyView extends View implements ILabsPanel, ILabsAction {
 
     private static final long serialVersionUID = -6071621079544448578L;
 
@@ -114,6 +115,7 @@ public class StudyView extends Panel implements ILabsPanel, ILabsAction {
         this.controller = controller;
         this.breadCrumbModel = breadCrumbModel;
         containerProxy = (ContainerProxy) resourceProxy;
+        this.setViewName(resourceProxy.getName());
         this.router = router;
         this.studyTableHelper = new LabsStudyTableHelper(studyBean, this, this.controller.hasUpdateAccess());
 

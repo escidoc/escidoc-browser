@@ -255,28 +255,25 @@ public class SearchResultsView extends VerticalLayout {
             }
 
             private Component buildResourceView(final Object[] variablesForTheTab) {
-                if (variablesForTheTab[0].equals(ResourceType.CONTAINER.asLabel())) {
+                if (variablesForTheTab[0].equals(ResourceType.CONTAINER.getLabel())) {
                     try {
-                        return new ContainerView(serviceLocation, router, find(variablesForTheTab,
-                            ResourceType.CONTAINER), router.getMainWindow(), repositories);
+                        return new ContainerView(router, find(variablesForTheTab, ResourceType.CONTAINER), repositories);
                     }
                     catch (final EscidocClientException e) {
                         showerror();
                     }
                 }
-                else if (variablesForTheTab[0].equals(ResourceType.ITEM.asLabel())) {
+                else if (variablesForTheTab[0].equals(ResourceType.ITEM.getLabel())) {
                     try {
-                        return new ItemView(serviceLocation, repositories, router, layout, find(variablesForTheTab,
-                            ResourceType.ITEM), router.getMainWindow());
+                        return new ItemView(repositories, router, find(variablesForTheTab, ResourceType.ITEM));
                     }
                     catch (final EscidocClientException e) {
                         showerror();
                     }
                 }
-                else if (variablesForTheTab[0].equals(ResourceType.CONTEXT.asLabel())) {
+                else if (variablesForTheTab[0].equals(ResourceType.CONTEXT.getLabel())) {
                     try {
-                        return new ContextView(serviceLocation, router, find(variablesForTheTab, ResourceType.CONTEXT),
-                            router.getMainWindow(), repositories);
+                        return new ContextView(router, find(variablesForTheTab, ResourceType.CONTEXT), repositories);
                     }
                     catch (final EscidocClientException e) {
                         showerror();

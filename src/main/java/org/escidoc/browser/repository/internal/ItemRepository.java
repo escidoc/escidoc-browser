@@ -260,48 +260,13 @@ public class ItemRepository implements Repository {
         return new ContextModel(resourceProxy.getContext());
     }
 
-    @Override
-    public void delete(final ResourceModel model) throws EscidocClientException {
-        final Window subwindow = new Window(DELETE_RESOURCE_WND_NAME);
-        subwindow.setModal(true);
-        Label message = new Label(DELETE_RESOURCE);
-        subwindow.addComponent(message);
-
-        @SuppressWarnings("serial")
-        Button okConfirmed = new Button("Yes", new Button.ClickListener() {
-            @Override
-            public void buttonClick(ClickEvent event) {
-                (subwindow.getParent()).removeWindow(subwindow);
-                try {
-                    finalDelete(model);
-                }
-                catch (EscidocClientException e) {
-                    mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
-                        Notification.TYPE_ERROR_MESSAGE));
-                }
-            }
-
-        });
-        @SuppressWarnings("serial")
-        Button cancel = new Button("Cancel", new Button.ClickListener() {
-            @Override
-            public void buttonClick(ClickEvent event) {
-                (subwindow.getParent()).removeWindow(subwindow);
-            }
-        });
-        HorizontalLayout hl = new HorizontalLayout();
-        hl.addComponent(okConfirmed);
-        hl.addComponent(cancel);
-        subwindow.addComponent(hl);
-        mainWindow.addWindow(subwindow);
-    }
-
     public void finalDelete(final ResourceModel model) throws EscidocClientException {
         client.delete(model.getId());
         mainWindow
             .showNotification(new Window.Notification(ViewConstants.DELETED, Notification.TYPE_TRAY_NOTIFICATION));
     }
 
+    // FIX THIS METHOD SHOULD MOVE AWAY FROM HERE - Probably in Controller of the ITEM
     private void delete(final Item item) throws EscidocClientException {
         final Window subwindow = new Window(DELETE_RESOURCE_WND_NAME);
         subwindow.setModal(true);
@@ -370,4 +335,13 @@ public class ItemRepository implements Repository {
         return ret;
     }
 
+    public List<ResourceModel> findItemsByContentModel(String cmId) throws EscidocClientException {
+        Preconditions.checkNotNull(cmId, "cmId is null: %s", cmId);
+
+        return filterUsingInput(findByContentModelQuery(cmId));
+    }
+
+    private String findByContentModelQuery(String cmId) {
+        return "\"/properties/content-model/id\"=\"" + cmId + "\"";
+    }
 }
