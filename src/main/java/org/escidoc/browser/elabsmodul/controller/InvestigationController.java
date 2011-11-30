@@ -279,7 +279,13 @@ public class InvestigationController extends Controller implements IInvestigatio
                     investigationBean.setDescription(node.getTextContent());
                 }
                 else if ("max-runtime".equals(nodeName) && URI_EL.equals(nsUri)) {
-                    investigationBean.setMaxRuntime(Long.parseLong(node.getTextContent()));
+                    investigationBean.setMaxRuntime(setDurationLabel(node.getTextContent()));
+                    try {
+                        investigationBean.setMaxRuntimeInMin(new Integer(node.getTextContent()));
+                    }
+                    catch (NumberFormatException nfe) {
+                        investigationBean.setMaxRuntimeInMin(0);
+                    }
                 }
                 else if ("deposit-endpoint".equals(nodeName) && URI_EL.equals(nsUri)) {
                     investigationBean.setDepositEndpoint(node.getTextContent());
@@ -508,7 +514,6 @@ public class InvestigationController extends Controller implements IInvestigatio
 
     public synchronized static Element createInvestigationDOMElementByBeanModel(
         final InvestigationBean investigationBean) {
-
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         factory.setCoalescing(true);
@@ -526,34 +531,19 @@ public class InvestigationController extends Controller implements IInvestigatio
             final Element investigation = doc.createElementNS(NSURI_ELABS_RE, "Investigation");
             investigation.setPrefix(NSPREFIX_ELABS_RE);
 
-            // e.g. <dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">FRS
-            // Instrument 01</dc:title>
             final Element title = doc.createElementNS(NSURI_ELABS_DC, "title");
             title.setPrefix("dc");
             title.setTextContent(investigationBean.getName());
             investigation.appendChild(title);
 
-            // e.g. <dc:description
-            // xmlns:dc="http://purl.org/dc/elements/1.1/">A
-            // description.</dc:description>
             final Element description = doc.createElementNS(NSURI_ELABS_DC, "description");
             description.setPrefix("dc");
             description.setTextContent(investigationBean.getDescription());
             investigation.appendChild(description);
 
-            // private long maxRuntime;
-            //
-            // private String depositEndpoint;
-            //
-            // private String investigator;
-            //
-            // private String rig;
-            //
-            // private Map<String, String> instrumentFolder = new HashMap<String, String>();
-
             final Element maxRuntime = doc.createElementNS(NSURI_ELABS_RE, "max-runtime");
             maxRuntime.setPrefix(NSPREFIX_ELABS_RE);
-            maxRuntime.setTextContent("" + investigationBean.getMaxRuntime());
+            maxRuntime.setTextContent("" + investigationBean.getMaxRuntimeInMin());
             investigation.appendChild(maxRuntime);
 
             final Element depositEndpoint = doc.createElementNS(NSURI_ELABS_RE, "deposit-endpoint");
@@ -580,7 +570,6 @@ public class InvestigationController extends Controller implements IInvestigatio
                 folder.setPrefix(NSPREFIX_ELABS_RE);
                 folder.setTextContent(instrumentFolder.getValue());
                 instrument.appendChild(folder);
-
                 investigation.appendChild(instrument);
             }
 
@@ -594,9 +583,7 @@ public class InvestigationController extends Controller implements IInvestigatio
                 }
                 LOG.debug(xml);
             }
-
             return investigation;
-
         }
         catch (final DOMException e) {
             LOG.error(e.getLocalizedMessage());
@@ -604,7 +591,6 @@ public class InvestigationController extends Controller implements IInvestigatio
         catch (final ParserConfigurationException e) {
             LOG.error(e.getLocalizedMessage());
         }
-
         return null;
     }
 
@@ -649,7 +635,6 @@ public class InvestigationController extends Controller implements IInvestigatio
                         result.add(loadRelatedRigBeanData(itemProxy));
                         continue;
                     }
-
                     final String cmmDescription = repositories.contentModel().findById(cmmId).getDescription();
                     if (cmmDescription != null) {
                         final Matcher controllerIdMatcher = controllerIdPattern.matcher(cmmDescription);
@@ -670,5 +655,33 @@ public class InvestigationController extends Controller implements IInvestigatio
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
         }
         return result;
+    }
+
+    private String setDurationLabel(String storedDuration) {
+
+        try {
+            int minute = new Integer(storedDuration).intValue(), day, hour;
+
+            day = minute / 1440;
+            hour = (minute - day * 1440) / 60;
+            minute = (minute - day * 1440 - hour * 60);
+
+            StringBuilder sb = new StringBuilder();
+            sb.append(day);
+            sb.append((day == 1) ? " day " : " days ");
+            sb.append(hour);
+            sb.append((hour == 1) ? " hour " : " hours ");
+            sb.append(minute);
+            sb.append((minute == 1) ? " minute" : " minutes");
+
+            LOG.debug("setDurationLabel: " + day + "|" + hour + "|" + minute);
+
+            return sb.toString();
+        }
+        catch (NumberFormatException e) {
+            LOG.debug(e.getMessage());
+            return null;
+        }
+
     }
 }

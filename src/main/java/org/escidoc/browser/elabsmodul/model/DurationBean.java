@@ -26,16 +26,37 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.elabsmodul.interfaces;
+package org.escidoc.browser.elabsmodul.model;
 
-import org.escidoc.browser.elabsmodul.model.DurationBean;
-import org.escidoc.browser.elabsmodul.model.RigBean;
+public class DurationBean {
 
-public interface ILabsInvestigationAction {
+    private int days;
 
-    void setRigBean(final RigBean rigBean);
+    private int hours;
 
-    void setInvestigator(final String investigatorId);
+    private int minutes;
 
-    void setDuration(final DurationBean durationBean);
+    public int getDays() {
+        return days;
+    }
+
+    public int getHours() {
+        return hours;
+    }
+
+    public int getMinutes() {
+        return minutes;
+    }
+
+    public void setDays(int days) {
+        this.days = days;
+    }
+
+    public void setHours(int hours) {
+        this.hours = hours;
+    }
+
+    public void setMinutes(int minutes) {
+        this.minutes = minutes;
+    }
 }

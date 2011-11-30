@@ -262,7 +262,6 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
             public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
                 if (event.getButton().getCaption().equals("Save")) {
                     controller.saveAction(instrumentBean);
-                    // FIXME why do we these methods?
                     InstrumentView.this.resetLayout();
                     dynamicLayout.requestRepaintAll();
 
@@ -293,6 +292,9 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
             }
             if (LabsLayoutHelper.switchToLabelFromEditedField(tempParentLayout)) {
                 setModifiedComponent(null);
+            }
+            else {
+                LOG.error("Label change error, mod .component is not set to null");
             }
         }
     }
