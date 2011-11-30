@@ -281,7 +281,9 @@ final class ActionHandlerImpl implements Action.Handler {
                 return repositories.container().findById(containerModel.getId()).getContext().getObjid();
             }
             catch (final EscidocClientException e) {
-                getWindow().showNotification(ViewConstants.NOT_ABLE_TO_RETRIEVE_A_CONTEXT);
+                getWindow().showNotification(
+                    "Can not retrieve container " + containerModel.getId() + ". Reason: " + e.getMessage(),
+                    Window.Notification.TYPE_ERROR_MESSAGE);
             }
         }
         else if (isItem(target)) {
@@ -290,7 +292,9 @@ final class ActionHandlerImpl implements Action.Handler {
                 return repositories.item().findById(itemModel.getId()).getContext().getObjid();
             }
             catch (final EscidocClientException e) {
-                getWindow().showNotification(ViewConstants.NOT_ABLE_TO_RETRIEVE_A_CONTEXT);
+                getWindow().showNotification(
+                    "Unable to retrieve Item " + itemModel.getId() + ". Reason: " + e.getMessage(),
+                    Window.Notification.TYPE_ERROR_MESSAGE);
             }
         }
         return AppConstants.EMPTY_STRING;
