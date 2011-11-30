@@ -335,4 +335,13 @@ public class ItemRepository implements Repository {
         return ret;
     }
 
+    public List<ResourceModel> findItemsByContentModel(String cmId) throws EscidocClientException {
+        Preconditions.checkNotNull(cmId, "cmId is null: %s", cmId);
+
+        return filterUsingInput(findByContentModelQuery(cmId));
+    }
+
+    private String findByContentModelQuery(String cmId) {
+        return "\"/properties/content-model/id\"=\"" + cmId + "\"";
+    }
 }
