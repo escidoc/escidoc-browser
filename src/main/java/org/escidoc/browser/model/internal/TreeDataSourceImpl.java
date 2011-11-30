@@ -146,19 +146,10 @@ public class TreeDataSourceImpl implements TreeDataSource {
         bind(addedItem, child);
         assignParent(parent, child);
 
-        if (isContainer(child)) {
-            // this might confuse the user, because a memberless container always shown as hasMember.
             boolean hasMember = true;
             dataSource.setChildrenAllowed(child, hasMember);
-        }
-        else {
-            dataSource.setChildrenAllowed(child, isNotItem(child));
-        }
+        dataSource.setChildrenAllowed(child, isNotItem(child));
         sortByTypeAndNameAscending();
-    }
-
-    private static boolean isContainer(final ResourceModel child) {
-        return child.getType().equals(ResourceType.CONTAINER);
     }
 
     private static boolean isAlreadyAdded(final Item addedItem) {
