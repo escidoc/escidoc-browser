@@ -28,25 +28,11 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.validator.StringLengthValidator;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.NativeSelect;
-import com.vaadin.ui.ProgressIndicator;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.Upload;
-import com.vaadin.ui.Upload.FailedEvent;
-import com.vaadin.ui.Upload.FinishedEvent;
-import com.vaadin.ui.Upload.StartedEvent;
-import com.vaadin.ui.Upload.SucceededEvent;
-import com.vaadin.ui.Window;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ContainerModel;
@@ -66,11 +52,24 @@ import org.escidoc.browser.ui.listeners.MetadataFileReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.google.common.base.Preconditions;
+import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.validator.StringLengthValidator;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.NativeSelect;
+import com.vaadin.ui.ProgressIndicator;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.Upload;
+import com.vaadin.ui.Upload.FailedEvent;
+import com.vaadin.ui.Upload.FinishedEvent;
+import com.vaadin.ui.Upload.StartedEvent;
+import com.vaadin.ui.Upload.SucceededEvent;
+import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.EscidocException;
@@ -372,10 +371,6 @@ public class ResourceAddViewImpl implements ResourceAddView {
     @Override
     public void createResource() {
         String resourceType = getContentModelType(getContentModelId());
-        // A HOOK is needed here to check if the resource belongs to something external!!!
-        // if (getModuleName(getContentModelId()) != null) {
-        // updateMetaDataForSpecialModules();
-        // }
 
         try {
             if (resourceType == null) {
@@ -409,25 +404,28 @@ public class ResourceAddViewImpl implements ResourceAddView {
     }
 
     private void createNewResource(String resourceType) throws EscidocClientException {
-
-        VersionableResource createdResource = null;
-        if (resourceType.equals(ResourceType.CONTAINER.toString())) {
-            createdResource =
-                createContainerInRepository(buildContainer(getResourceName(), getContentModelId(), getContextId()));
-        }
-        else if (resourceType.equals(ResourceType.ITEM.toString())) {
-            createdResource = repositories.item().createWithParent(buildItem(), parent);
-        }
-        else {
-        }
+        VersionableResource createdResource = createResourceBasedOnType(resourceType);
 
         if (treeDataSource != null) {
             updateDataSource(createdResource, resourceType);
         }
+
         if (router != null) {
-            router.show(parent, true);
+            router.show(parent, Boolean.TRUE);
         }
+
         closeSubWindow();
+    }
+
+    private VersionableResource createResourceBasedOnType(String resourceType) throws EscidocClientException {
+
+        if (resourceType.equals(ResourceType.CONTAINER.toString())) {
+            return createContainerInRepository(buildContainer());
+        }
+        else if (resourceType.equals(ResourceType.ITEM.toString())) {
+            return repositories.item().createWithParent(buildItem(), parent);
+        }
+        return null;
     }
 
     private Item buildItem() {
@@ -435,11 +433,9 @@ public class ResourceAddViewImpl implements ResourceAddView {
             .build(getResourceName());
     }
 
-    private Container buildContainer(final String containerName, final String contentModelId, final String contextId) {
-        final Container tobeCreated =
-            new ContainerBuilder(new ContextRef(contextId), new ContentModelRef(contentModelId), getMetadata())
-                .build(containerName);
-        return tobeCreated;
+    private Container buildContainer() {
+        return new ContainerBuilder(new ContextRef(getContextId()), new ContentModelRef(getContentModelId()),
+            getMetadata()).build(getResourceName());
     }
 
     private Container createContainerInRepository(final Container newContainer) throws EscidocClientException {
