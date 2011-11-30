@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.SocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLConnection;
@@ -139,6 +140,9 @@ public final class ImportView extends VerticalLayout {
             }
 
             private URLConnection createConnection(URI uri) throws MalformedURLException, IOException {
+                if (Utils.findHttpProxy(uri) == null) {
+                    return uri.toURL().openConnection();
+                }
                 return uri.toURL().openConnection(Utils.createHttpProxy(uri));
             }
 
