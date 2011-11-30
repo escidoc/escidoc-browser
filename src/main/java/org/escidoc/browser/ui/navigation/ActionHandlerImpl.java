@@ -80,22 +80,23 @@ final class ActionHandlerImpl implements Action.Handler {
 
     @Override
     public Action[] getActions(final Object target, final Object sender) {
-        String contextID = findContextId(target);
-        Preconditions.checkNotNull(contextID, "Context ID is null");
+        if (target instanceof ResourceModel) {
+            ResourceModel rm = (ResourceModel) target;
+            ResourceType type = rm.getType();
+            switch (type) {
+                case CONTEXT:
+                    return new Action[] { ActionList.ACTION_ADD_RESOURCE };
 
-        // Original Browser tree element
-        if (isContext(target)) {
-            return new Action[] { ActionList.ACTION_ADD_RESOURCE };
+                case CONTAINER:
+                    return new Action[] { ActionList.ACTION_ADD_RESOURCE, ActionList.ACTION_DELETE_CONTAINER };
+
+                case ITEM:
+                    return new Action[] { ActionList.ACTION_DELETE_ITEM };
+                default:
+
+                    return new Action[] {};
+            }
         }
-
-        if (isContainer(target)) {
-            return new Action[] { ActionList.ACTION_ADD_RESOURCE, ActionList.ACTION_DELETE_CONTAINER };
-        }
-
-        if (isItem(target)) {
-            return new Action[] { ActionList.ACTION_DELETE_ITEM };
-        }
-
         return new Action[] {};
 
     }

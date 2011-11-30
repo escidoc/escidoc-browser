@@ -31,7 +31,6 @@ package org.escidoc.browser.model.internal;
 import java.util.Collection;
 import java.util.List;
 
-import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.PropertyId;
 import org.escidoc.browser.model.ResourceModel;
@@ -148,21 +147,8 @@ public class TreeDataSourceImpl implements TreeDataSource {
         bind(addedItem, child);
         assignParent(parent, child);
 
-        if (isContainer(child)) {
-            dataSource.setChildrenAllowed(child, hasMember(child));
-        }
-        else {
-            dataSource.setChildrenAllowed(child, isNotItem(child));
-        }
+        dataSource.setChildrenAllowed(child, isNotItem(child));
         sortByTypeAndNameAscending();
-    }
-
-    private boolean hasMember(final ResourceModel child) {
-        return ((ContainerModel) child).hasMember();
-    }
-
-    private static boolean isContainer(final ResourceModel child) {
-        return child.getType().equals(ResourceType.CONTAINER);
     }
 
     private static boolean isAlreadyAdded(final Item addedItem) {
