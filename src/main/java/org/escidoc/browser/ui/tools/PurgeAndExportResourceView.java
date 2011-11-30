@@ -150,14 +150,14 @@ public class PurgeAndExportResourceView extends VerticalLayout {
 
         private VerticalLayout resultLayout = new VerticalLayout();
 
-        private Table resultTable;
-
         private HorizontalLayout buttonLayout = new HorizontalLayout();
+
+        private Table resultTable;
 
         @Override
         public void buttonClick(ClickEvent event) {
             try {
-                showResult(getFilterResult());
+                showResult();
                 if (isPurgePermitted()) {
                     showPurgeView();
                 }
@@ -180,7 +180,6 @@ public class PurgeAndExportResourceView extends VerticalLayout {
         }
 
         private void showExportView() {
-            resultLayout.addComponent(buttonLayout);
             buttonLayout.setSpacing(true);
 
             Button exportButton = new Button(ViewConstants.EXPORT);
@@ -263,8 +262,8 @@ public class PurgeAndExportResourceView extends VerticalLayout {
             purgeButton.addListener(new PurgeButtonListener());
         }
 
-        private void showResult(List<ResourceModel> result) {
-            LOG.debug("Found: " + result.size());
+        private void showResult() throws EscidocClientException {
+            List<ResourceModel> result = getFilterResult();
             emptyPreviousResult();
             if (isEmpty(result)) {
                 showNoResult();
@@ -281,12 +280,13 @@ public class PurgeAndExportResourceView extends VerticalLayout {
 
         private void showFilterResultView(Table table) {
             resultLayout.addComponent(table);
+            buttonLayout.removeAllComponents();
+            resultLayout.addComponent(buttonLayout);
+
             addComponent(resultLayout);
         }
 
         private Table createFilterResultView(List<ResourceModel> result) {
-            LOG.debug("found filtered resources: " + result.size());
-
             resultTable =
                 new Table("Found: " + result.size() + " " + result.get(0).getType().getLabel() + "s",
                     new BeanItemContainer<ResourceModel>(ResourceModel.class, result));
