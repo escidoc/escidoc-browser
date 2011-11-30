@@ -32,8 +32,6 @@ import java.util.List;
 
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.model.TreeDataSource;
-import org.escidoc.browser.ui.Router;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.InternalClientException;
@@ -53,18 +51,6 @@ public interface Repository {
     VersionHistory getVersionHistory(String id) throws EscidocClientException;
 
     Relations getRelations(String id) throws EscidocClientException;
-
-    /**
-     * The TreeDataSource is neded to update the tree after the delete operation<br />
-     * The Router informs the Layout that a resource has been removed. The Layout should remove any instances from the
-     * views.
-     * 
-     * @param model
-     * @param tr
-     * @param router
-     * @throws EscidocClientException
-     */
-    void delete(final ResourceModel model, TreeDataSource tr, Router router) throws EscidocClientException;
 
     List<ResourceModel> filterUsingInput(String query) throws EscidocClientException;
 }
