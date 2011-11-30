@@ -85,7 +85,7 @@ public class ELabsViewContants {
 
     public static final String L_INVESTIGATION_DESC = "Description:";
 
-    public static final String L_INVESTIGATION_DURATION = "Duration (DD | HH | MM):";
+    public static final String L_INVESTIGATION_DURATION = "Duration:";
 
     public static final String L_INVESTIGATION_RIG = "Selected Rig:";
 
@@ -357,4 +357,6 @@ public class ELabsViewContants {
 
     public static final String ERROR_INVESTIGATION_VIEW_NO_RIG_SELECTED =
         "Cannot save without a Rig. Please select a RIG from the \"Select Rig\" drop-down!";
+
+    public static final String DATEPICKER_CAPTION = "Please select the finish time";
 }
