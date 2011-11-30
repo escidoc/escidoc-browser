@@ -71,8 +71,6 @@ public class DirectMember {
 
     private String resourceType;
 
-    private static final String DIRECT_MEMBERS = "Direct Members";
-
     private String contextId;
 
     private ResourceProxy resourceProxy;
@@ -149,14 +147,14 @@ public class DirectMember {
     protected void createButtons() throws EscidocClientException {
         final Label nameofPanel =
             new Label("<div class=\"v-accordion-item-caption\"><div class=\"v-caption\"><div class=\"v-captiontext\">"
-                + DIRECT_MEMBERS + "</div><div class=\"v-caption-clearelem\"></div></div></div>", Label.CONTENT_RAW);
+                + ViewConstants.DIRECT_MEMBERS + "</div><div class=\"v-caption-clearelem\"></div></div></div>",
+                Label.CONTENT_RAW);
         nameofPanel.setStyleName("accordion v-captiontext");
 
         nameofPanel.setWidth("100%");
         panel.addComponent(nameofPanel);
         panel.setStyleName("directmembers");
-        // panel.setStyleName(Runo.PANEL_LIGHT);
-        // the changes start here
+
         VerticalLayout panelLayout = (VerticalLayout) panel.getContent();
         panelLayout.setHeight("100%");
         panelLayout.setStyleName(Runo.PANEL_LIGHT);

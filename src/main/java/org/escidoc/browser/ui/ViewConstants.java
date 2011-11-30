@@ -275,4 +275,6 @@ public class ViewConstants {
     public static final String EXPORT = "Export";
 
     public static final String FILTER = "Filter";
+
+    public static final String DIRECT_MEMBERS = "Direct Members";
 }

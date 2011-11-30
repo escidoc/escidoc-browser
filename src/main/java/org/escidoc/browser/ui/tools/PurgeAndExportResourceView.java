@@ -152,6 +152,8 @@ public class PurgeAndExportResourceView extends VerticalLayout {
 
         private Table resultTable;
 
+        private HorizontalLayout buttonLayout = new HorizontalLayout();
+
         @Override
         public void buttonClick(ClickEvent event) {
             try {
@@ -178,9 +180,12 @@ public class PurgeAndExportResourceView extends VerticalLayout {
         }
 
         private void showExportView() {
+            resultLayout.addComponent(buttonLayout);
+            buttonLayout.setSpacing(true);
+
             Button exportButton = new Button(ViewConstants.EXPORT);
             exportButton.setStyleName(Reindeer.BUTTON_SMALL);
-            resultLayout.addComponent(exportButton);
+            buttonLayout.addComponent(exportButton);
             exportButton.addListener(new ClickListener() {
 
                 @Override
@@ -202,7 +207,7 @@ public class PurgeAndExportResourceView extends VerticalLayout {
                             return null;
                         }
 
-                    }, EXPORT_FILENAME, router.getApp()), "download");
+                    }, EXPORT_FILENAME, router.getApp()), "_new");
                 }
             });
         }
@@ -254,7 +259,7 @@ public class PurgeAndExportResourceView extends VerticalLayout {
         private void addPurgeButton() {
             final Button purgeButton = new Button(ViewConstants.PURGE);
             purgeButton.setStyleName(Reindeer.BUTTON_SMALL);
-            resultLayout.addComponent(purgeButton);
+            buttonLayout.addComponent(purgeButton);
             purgeButton.addListener(new PurgeButtonListener());
         }
 
