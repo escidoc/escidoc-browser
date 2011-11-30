@@ -183,15 +183,25 @@ public class SimpleLayout extends LayoutDesign {
                 mainContentTabs.removeTab(mainContentTabs.getTab(i));
             }
 
-            // this is the case when Deleting from DirectMember
+            // Deleting from the tree, I know the parent and I reload it
             if (parent != null) {
+                LOG.debug("############################ Parent is not null" + parent.getId());
                 if (tabDescription.equals(parent.getId().toString())) {
-                    View tabView = (View) mainContentTabs.getTab(i).getComponent();
-                    openViewByReloading(tabView, tabView.getViewName());
+                    try {
+                        router.show(parent, true);
+                    }
+                    catch (EscidocClientException e) {
+                        mainWindow.showNotification(ViewConstants.VIEW_ERROR_CANNOT_LOAD_VIEW,
+                            Window.Notification.TYPE_ERROR_MESSAGE);
+
+                    }
+                    // View tabView = (View) mainContentTabs.getTab(i).getComponent();
+                    // openViewByReloading(tabView, tabView.getViewName());
                 }
             }
             else {
-                // Deleting from the tree, I know the parent and I reload it
+                // this is the case when Deleting from DirectMember
+                LOG.debug("############################ Parent is null are you deleting from the DM?");
                 View tab = (View) mainContentTabs.getSelectedTab();
                 openViewByReloading(mainContentTabs.getSelectedTab(), tab.getViewName());
             }

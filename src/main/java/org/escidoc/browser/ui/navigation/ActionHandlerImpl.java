@@ -334,7 +334,6 @@ final class ActionHandlerImpl implements Action.Handler {
                 try {
                     repositories.item().finalDelete(model);
                     router.getLayout().closeView(model, treeDataSource.getParent(model));
-                    treeDataSource.remove(model);
                 }
                 catch (EscidocClientException e) {
                     mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
