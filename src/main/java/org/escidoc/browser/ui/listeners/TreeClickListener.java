@@ -47,8 +47,6 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
-import de.escidoc.core.common.exceptions.remote.application.notfound.ContentModelNotFoundException;
-import de.escidoc.core.resources.Resource;
 
 @SuppressWarnings("serial")
 public class TreeClickListener implements ItemClickListener {
@@ -115,7 +113,9 @@ public class TreeClickListener implements ItemClickListener {
                 return repositories.container().findById(containerModel.getId()).getContext().getObjid();
             }
             catch (final EscidocClientException e) {
-                router.getMainWindow().showNotification(ViewConstants.NOT_ABLE_TO_RETRIEVE_A_CONTEXT);
+                router.getMainWindow().showNotification(
+                    "Can not retrieve container " + containerModel.getId() + ". Reason: " + e.getMessage(),
+                    Window.Notification.TYPE_ERROR_MESSAGE);
             }
         }
         else if (clickedResource instanceof ItemModel) {
@@ -124,36 +124,11 @@ public class TreeClickListener implements ItemClickListener {
                 return repositories.item().findById(itemModel.getId()).getContext().getObjid();
             }
             catch (final EscidocClientException e) {
-                router.getMainWindow().showNotification(ViewConstants.NOT_ABLE_TO_RETRIEVE_A_CONTEXT);
+                router.getMainWindow().showNotification(
+                    "Unable to retrieve Item " + itemModel.getId() + ". Reason: " + e.getMessage(),
+                    Window.Notification.TYPE_ERROR_MESSAGE);
             }
         }
         return AppConstants.EMPTY_STRING;
-    }
-
-    private String findContentModelId(final ResourceModel clickedResource) throws ContentModelNotFoundException {
-        String contentModelId = "escidoc:";
-        Resource eSciDocResource = null;
-        try {
-            if (clickedResource instanceof ContextModel) {
-                contentModelId = AppConstants.EMPTY_STRING;
-            }
-            else if (clickedResource instanceof ContainerModel) {
-                eSciDocResource = repositories.container().findById(clickedResource.getId()).getContentModel();
-                contentModelId += (eSciDocResource.getXLinkHref().split(":"))[1];
-            }
-            else if (clickedResource instanceof ItemModel) {
-                eSciDocResource = repositories.item().findById(clickedResource.getId()).getContentModel();
-                contentModelId += (eSciDocResource.getXLinkHref().split(":"))[1];
-            }
-            else {
-                contentModelId = null;
-            }
-        }
-        catch (final EscidocClientException e) {
-            LOG.error("Unable to retreive ContentModel data from repository object", e);
-            contentModelId = null;
-            throw new ContentModelNotFoundException();
-        }
-        return contentModelId;
     }
 }
