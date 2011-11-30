@@ -38,6 +38,7 @@ import org.escidoc.browser.model.internal.TreeDataSourceImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.maincontent.View;
 import org.escidoc.browser.ui.mainpage.Footer;
 import org.escidoc.browser.ui.mainpage.HeaderContainer;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
@@ -168,8 +169,9 @@ public class SimpleLayout extends LayoutDesign {
      * @param cmp
      */
     public void closeView(ResourceModel model, ResourceModel parent) {
-
-        // Remove it from the tabs. An id is needed by the end of the description for this method to work
+        // 1. Remove the tab for the resource to be deleted
+        // 2. Reload the parent Tab
+        // 3. Remove the element from the tree
         for (int i = mainContentTabs.getComponentCount() - 1; i >= 0; i--) {
             String tabDescription =
                 mainContentTabs
@@ -181,15 +183,17 @@ public class SimpleLayout extends LayoutDesign {
                 mainContentTabs.removeTab(mainContentTabs.getTab(i));
             }
 
+            // this is the case when Deleting from DirectMember
             if (parent != null) {
                 if (tabDescription.equals(parent.getId().toString())) {
-                    LOG.error("Should do a reload here");
-
+                    View tabView = (View) mainContentTabs.getTab(i).getComponent();
+                    openViewByReloading(tabView, tabView.getViewName());
                 }
             }
             else {
-                Component tab = mainContentTabs.getSelectedTab();
-                openViewByReloading(mainContentTabs.getSelectedTab(), "Whatever");
+                // Deleting from the tree, I know the parent and I reload it
+                View tab = (View) mainContentTabs.getSelectedTab();
+                openViewByReloading(mainContentTabs.getSelectedTab(), tab.getViewName());
             }
         }
         // remove it from the tree

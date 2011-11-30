@@ -28,13 +28,16 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
+import com.vaadin.ui.Panel;
 
-public interface ResourceAddView {
+public class View extends Panel {
+    private String viewName;
 
-    void createResource();
+    public String getViewName() {
+        return viewName;
+    }
 
-    boolean validateFields();
-
-    void showRequiredMessage();
-
+    public void setViewName(String name) {
+        this.viewName = name;
+    }
 }
