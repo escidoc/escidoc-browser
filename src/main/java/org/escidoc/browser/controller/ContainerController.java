@@ -57,7 +57,7 @@ public class ContainerController extends Controller {
 
     private Component createView(ResourceProxy resourceProxy) throws EscidocClientException {
         Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
-        return new ContainerView(serviceLocation, router, resourceProxy, mainWindow, repositories);
+        return new ContainerView(router, resourceProxy, repositories);
     }
 
 }

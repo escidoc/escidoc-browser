@@ -190,4 +190,18 @@ public class TreeDataSourceImpl implements TreeDataSource {
                 throw new UnsupportedOperationException("Not yet implemented");
         }
     }
+
+    /**
+     * If no parent was found, return null
+     */
+    @Override
+    public ResourceModel getParent(ResourceModel child) {
+        Preconditions.checkNotNull(child, "Child must not be null.");
+        Object parent = dataSource.getParent(child);
+        if (parent != null) {
+            return (ResourceModel) parent;
+        }
+        return null;
+    }
+
 }

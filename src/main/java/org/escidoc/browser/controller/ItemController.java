@@ -58,7 +58,7 @@ public class ItemController extends Controller {
 
     private Component createView(ResourceProxy resourceProxy) throws EscidocClientException {
         Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
-        return new ItemView(serviceLocation, repositories, router, router.getLayout(), resourceProxy, mainWindow);
+        return new ItemView(repositories, router, resourceProxy);
     }
 
 }

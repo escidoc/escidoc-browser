@@ -242,15 +242,14 @@ final class ActionHandlerImpl implements Action.Handler {
         final Label message = new Label(DELETE_RESOURCE);
         subwindow.addComponent(message);
 
-        @SuppressWarnings("serial")
         final Button okConfirmed = new Button("Yes", new Button.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
                 try {
                     repositories.container().finalDelete(model);
+                    router.getLayout().closeView(model, treeDataSource.getParent(model));
                     treeDataSource.remove(model);
-                    router.getLayout().closeView(model);
                 }
                 catch (final EscidocClientException e) {
                     mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
@@ -259,7 +258,6 @@ final class ActionHandlerImpl implements Action.Handler {
             }
 
         });
-        @SuppressWarnings("serial")
         final Button cancel = new Button("Cancel", new Button.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
@@ -331,8 +329,8 @@ final class ActionHandlerImpl implements Action.Handler {
                 (subwindow.getParent()).removeWindow(subwindow);
                 try {
                     repositories.item().finalDelete(model);
+                    router.getLayout().closeView(model, treeDataSource.getParent(model));
                     treeDataSource.remove(model);
-                    router.getLayout().closeView(model);
                 }
                 catch (EscidocClientException e) {
                     mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),

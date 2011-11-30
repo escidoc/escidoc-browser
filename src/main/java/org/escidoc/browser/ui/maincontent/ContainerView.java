@@ -70,7 +70,7 @@ import de.escidoc.core.resources.om.container.Container;
  * 
  */
 @SuppressWarnings("serial")
-public class ContainerView extends Panel {
+public class ContainerView extends View {
     private static final String DESC_LOCKSTATUS = "lockstatus";
 
     private static final String DESC_STATUS2 = "status";
@@ -117,22 +117,18 @@ public class ContainerView extends Panel {
 
     private static final Logger LOG = LoggerFactory.getLogger(ContainerView.class);
 
-    public ContainerView(final EscidocServiceLocation serviceLocation, final Router router,
-        final ResourceProxy resourceProxy, final Window mainWindow, final Repositories repositories)
+    public ContainerView(final Router router, final ResourceProxy resourceProxy, final Repositories repositories)
         throws EscidocClientException {
-        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(router, "Router is null: %s", router);
+        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
+        Preconditions.checkArgument(resourceProxy instanceof ContainerProxy, resourceProxy.getClass()
+            + " is not an instance of ContainerProxy.class");
+        this.serviceLocation = router.getServiceLocation();
 
-        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
-        Preconditions.checkArgument(resourceProxy instanceof ContainerProxy, resourceProxy.getClass()
-            + " is not an instance of ContainerProxy.class");
-        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
-        Preconditions.checkArgument(resourceProxy instanceof ContainerProxy, resourceProxy.getClass()
-            + " is not an instance of ContainerProxy.class");
-        this.serviceLocation = serviceLocation;
         this.router = router;
         this.resourceProxy = (ContainerProxy) resourceProxy;
-        this.mainWindow = mainWindow;
+        this.setViewName(resourceProxy.getName());
+        this.mainWindow = router.getMainWindow();
         this.repositories = repositories;
         handleLayoutListeners();
         buildContentPanel();

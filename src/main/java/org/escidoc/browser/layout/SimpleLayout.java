@@ -167,13 +167,29 @@ public class SimpleLayout extends LayoutDesign {
      * 
      * @param cmp
      */
-    public void closeView(ResourceModel model) {
+    public void closeView(ResourceModel model, ResourceModel parent) {
+
         // Remove it from the tabs. An id is needed by the end of the description for this method to work
         for (int i = mainContentTabs.getComponentCount() - 1; i >= 0; i--) {
-            if (mainContentTabs
-                .getTab(i).getDescription().substring(mainContentTabs.getTab(i).getDescription().lastIndexOf('#') + 1)
-                .toString().equals(model.getId().toString())) {
+            String tabDescription =
+                mainContentTabs
+                    .getTab(i).getDescription()
+                    .substring(mainContentTabs.getTab(i).getDescription().lastIndexOf('#') + 1).toString();
+            LOG.debug("############################ " + tabDescription);
+            // Remove the tab from the TabSheet
+            if (tabDescription.equals(model.getId().toString())) {
                 mainContentTabs.removeTab(mainContentTabs.getTab(i));
+            }
+
+            if (parent != null) {
+                if (tabDescription.equals(parent.getId().toString())) {
+                    LOG.error("Should do a reload here");
+
+                }
+            }
+            else {
+                Component tab = mainContentTabs.getSelectedTab();
+                openViewByReloading(mainContentTabs.getSelectedTab(), "Whatever");
             }
         }
         // remove it from the tree

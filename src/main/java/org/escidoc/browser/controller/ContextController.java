@@ -59,7 +59,7 @@ public class ContextController extends Controller {
 
     private Component createView(ResourceProxy resourceProxy) throws EscidocClientException {
         Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
-        return new ContextView(serviceLocation, router, resourceProxy, mainWindow, repositories);
+        return new ContextView(router, resourceProxy, repositories);
     }
 
 }

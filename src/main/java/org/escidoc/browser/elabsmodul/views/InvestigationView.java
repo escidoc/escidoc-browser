@@ -54,6 +54,7 @@ import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.maincontent.View;
 import org.escidoc.browser.ui.view.helpers.DirectMember;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +73,7 @@ import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
-public class InvestigationView extends Panel implements ILabsPanel, ILabsAction, ILabsInvestigationAction {
+public class InvestigationView extends View implements ILabsPanel, ILabsAction, ILabsInvestigationAction {
 
     private static final long serialVersionUID = -5284506653803233585L;
 
@@ -115,6 +116,7 @@ public class InvestigationView extends Panel implements ILabsPanel, ILabsAction,
         this.controller = controller;
         this.breadCrumbModel = breadCrumbModel;
         this.containerProxy = containerProxy;
+        this.setViewName(containerProxy.getName());
         this.router = router;
 
         initialisePanelComponents();

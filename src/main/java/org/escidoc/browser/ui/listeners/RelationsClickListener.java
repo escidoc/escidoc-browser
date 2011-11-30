@@ -77,7 +77,7 @@ public class RelationsClickListener implements ClickListener {
 
     private Repositories repositories;
 
-    private Router mainSite;
+    private Router router;
 
     protected Component cmpView;
 
@@ -104,7 +104,7 @@ public class RelationsClickListener implements ClickListener {
         itemProxy = resourceProxy;
         Preconditions.checkNotNull(itemProxy, "resourceProxy is null: %s", itemProxy);
         this.mainWindow = mainWindow;
-        this.mainSite = mainSite;
+        this.router = mainSite;
         this.escidocServiceLocation = escidocServiceLocation;
         this.repositories = repositories;
         this.layout = layout;
@@ -128,7 +128,7 @@ public class RelationsClickListener implements ClickListener {
         containerProxy = resourceProxy;
         this.mainWindow = mainWindow;
         this.repositories = repositories;
-        this.mainSite = mainSite;
+        this.router = mainSite;
         itemOrContainerRepository = repositories.container();
     }
 
@@ -162,8 +162,8 @@ public class RelationsClickListener implements ClickListener {
                     if (type.name().equals("CONTAINER")) {
                         try {
                             cmpView =
-                                new ContainerView(escidocServiceLocation, mainSite, (ContainerProxy) repositories
-                                    .container().findById(relation.getObjid()), mainWindow, repositories);
+                                new ContainerView(router, (ContainerProxy) repositories.container().findById(
+                                    relation.getObjid()), repositories);
                         }
                         catch (EscidocClientException e) {
                             mainWindow.showNotification(e.getLocalizedMessage());
@@ -173,15 +173,15 @@ public class RelationsClickListener implements ClickListener {
                     else if (type.name().equals("ITEM")) {
                         try {
                             cmpView =
-                                new ItemView(escidocServiceLocation, repositories, mainSite, layout,
-                                    (ItemProxy) repositories.item().findById(relation.getObjid()), mainWindow);
+                                new ItemView(repositories, router, (ItemProxy) repositories.item().findById(
+                                    relation.getObjid()));
                         }
                         catch (EscidocClientException e) {
                             mainWindow.showNotification(e.getLocalizedMessage());
                         }
                     }
                     (subwindow.getParent()).removeWindow(subwindow);
-                    mainSite.openTab(cmpView, relation.getXLinkTitle());
+                    router.openTab(cmpView, relation.getXLinkTitle());
 
                 }
             });

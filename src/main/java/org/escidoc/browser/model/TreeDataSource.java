@@ -46,4 +46,6 @@ public interface TreeDataSource {
 
     void init();
 
+    ResourceModel getParent(ResourceModel child);
+
 }

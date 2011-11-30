@@ -34,6 +34,7 @@ package org.escidoc.browser.layout;
 import java.net.URISyntaxException;
 
 import org.escidoc.browser.BrowserApplication;
+import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.repository.Repositories;
@@ -58,8 +59,13 @@ public abstract class LayoutDesign extends VerticalLayout {
 
     public abstract void openViewByReloading(Component cmp, String title);
 
-    public abstract void closeView(ResourceModel model);
+    public abstract void closeView(ResourceModel model, ResourceModel parent);
 
     @Deprecated
     public abstract int getApplicationHeight();
+
+    public void closeView(ContainerModel model, ResourceModel parent) {
+        // TODO Auto-generated method stub
+
+    }
 }
