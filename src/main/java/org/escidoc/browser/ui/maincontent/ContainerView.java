@@ -344,7 +344,7 @@ public class ContainerView extends Panel {
 
         final Label descMetadata1 = new Label("ID: " + resourceProxy.getId());
 
-        status = resourceProxy.getType().asLabel() + " is ";
+        status = resourceProxy.getType().getLabel() + " is ";
         lockStatus = status;
         lblStatus = new Label(status + resourceProxy.getStatus(), Label.CONTENT_RAW);
         lblStatus.setDescription(DESC_STATUS2);

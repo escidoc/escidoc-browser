@@ -134,7 +134,7 @@ public class ContextView extends Panel {
      */
     private void bindProperties(AbstractComponentContainer componentContainer) {
         final Label descMetadata1 =
-            new Label("ID: " + resourceProxy.getId() + " <br /> " + resourceProxy.getType().asLabel() + " is "
+            new Label("ID: " + resourceProxy.getId() + " <br /> " + resourceProxy.getType().getLabel() + " is "
                 + resourceProxy.getStatus(), Label.CONTENT_RAW);
         descMetadata1.setWidth("35%");
         descMetadata1.setStyleName("floatleft columnheight50");

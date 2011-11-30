@@ -93,7 +93,7 @@ public class BreadCrumbMenu {
             for (final ResourceModel resourceModel : hierarchy) {
                 try {
                     buf.append("<li><a href='"
-                        + this.generateLink(resourceModel.getId(), resourceModel.getType().asLabel().toUpperCase(),
+                        + this.generateLink(resourceModel.getId(), resourceModel.getType().getLabel().toUpperCase(),
                             escidocServiceLocation.getEscidocUrl().toString()) + "'>" + resourceModel.getName()
                         + "</a></li>");
                 }
@@ -130,7 +130,7 @@ public class BreadCrumbMenu {
             Collections.reverse(hierarchy);
             for (final ResourceModel resourceModel : hierarchy) {
                 buf.append("<li><a href='"
-                    + this.generateLink(resourceModel.getId(), resourceModel.getType().asLabel().toUpperCase(),
+                    + this.generateLink(resourceModel.getId(), resourceModel.getType().getLabel().toUpperCase(),
                         escidocServiceLocation.getEscidocUrl().toString()) + "'>" + resourceModel.getName()
                     + "</a></li>");
             }
@@ -150,7 +150,7 @@ public class BreadCrumbMenu {
 
         for (final ResourceModel resourceModel : breadCrumbModel) {
             buf.append("<li><a href='"
-                + this.generateLink(resourceModel.getId(), resourceModel.getType().asLabel().toUpperCase(),
+                + this.generateLink(resourceModel.getId(), resourceModel.getType().getLabel().toUpperCase(),
                     escidocServiceLocation.getEscidocUri().toString()) + "'>" + resourceModel.getName() + "</a></li>");
         }
         ((ComponentContainer) component).addComponent(new Label(bCstring + buf.toString() + "<li></ul>",

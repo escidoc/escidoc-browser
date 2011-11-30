@@ -273,4 +273,6 @@ public class ViewConstants {
     public static final String IMPORT = "Import";
 
     public static final String EXPORT = "Export";
+
+    public static final String FILTER = "Filter";
 }

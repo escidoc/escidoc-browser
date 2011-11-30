@@ -46,6 +46,7 @@ import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.Utils;
 import org.escidoc.browser.model.PropertyId;
 import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
@@ -75,7 +76,6 @@ import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
-import de.escidoc.core.resources.ResourceType;
 import de.escidoc.core.resources.adm.AdminStatus;
 import de.escidoc.core.resources.adm.MessagesStatus;
 
@@ -283,7 +283,7 @@ public class PurgeAndExportResourceView extends VerticalLayout {
             LOG.debug("found filtered resources: " + result.size());
 
             resultTable =
-                new Table("Found: " + result.size() + " " + result.get(0).getType().asLabel() + "s",
+                new Table("Found: " + result.size() + " " + result.get(0).getType().getLabel() + "s",
                     new BeanItemContainer<ResourceModel>(ResourceModel.class, result));
             resultTable.setWidth("100%");
             resultTable.setHeight("100%");
@@ -399,7 +399,7 @@ public class PurgeAndExportResourceView extends VerticalLayout {
 
         createResourceOptions();
 
-        Button filterButton = new Button("Filter");
+        Button filterButton = new Button(ViewConstants.FILTER);
         filterButton.setStyleName(Reindeer.BUTTON_SMALL);
         filterButton.addListener(new FilterButtonListener());
 
@@ -420,11 +420,14 @@ public class PurgeAndExportResourceView extends VerticalLayout {
     }
 
     private void createResourceOptions() {
-        resourceOption.setContainerDataSource(new BeanItemContainer<ResourceType>(ResourceType.class,
-            createResourceTypeList()));
+        BeanItemContainer<ResourceType> dataSource =
+            new BeanItemContainer<ResourceType>(ResourceType.class, createResourceTypeList());
+        dataSource.addNestedContainerProperty("label");
+        resourceOption.setContainerDataSource(dataSource);
         resourceOption.setNewItemsAllowed(false);
         resourceOption.setNullSelectionAllowed(false);
         resourceOption.select(ResourceType.ITEM);
+        resourceOption.setItemCaptionPropertyId("label");
     }
 
     private List<ResourceType> createResourceTypeList() {
