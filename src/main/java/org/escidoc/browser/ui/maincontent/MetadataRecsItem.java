@@ -76,12 +76,12 @@ public class MetadataRecsItem {
 
     private VerticalLayout btnaddContainer = new VerticalLayout();
 
-    private final Router mainSite;
+    private final Router router;
 
     private LayoutDesign layout;
 
     MetadataRecsItem(final ItemProxy resourceProxy, final Window mainWindow,
-        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories, final Router mainSite,
+        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories, final Router router,
         LayoutDesign layout) {
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null.");
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
@@ -93,7 +93,7 @@ public class MetadataRecsItem {
         this.mainWindow = mainWindow;
         this.escidocServiceLocation = escidocServiceLocation;
         this.repositories = repositories;
-        this.mainSite = mainSite;
+        this.router = router;
         this.layout = layout;
     }
 
@@ -122,7 +122,7 @@ public class MetadataRecsItem {
 
         final Button btnContentRelation =
             new Button("Item Content Relations", new RelationsClickListener(resourceProxy, mainWindow,
-                escidocServiceLocation, repositories, mainSite, layout));
+                escidocServiceLocation, repositories, router, layout));
         btnContentRelation.setStyleName(BaseTheme.BUTTON_LINK);
         btnContentRelation.setDescription("Show Version history in a Pop-up");
 
