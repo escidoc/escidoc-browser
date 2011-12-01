@@ -275,4 +275,12 @@ public class ViewConstants {
     public static final String FILTER = "Filter";
 
     public static final String DIRECT_MEMBERS = "Direct Members";
+
+    /* ItemDeleteConfirmation */
+    public static final String DELETE_RESOURCE_WND_NAME = "Do you really want to delete this item!?";
+
+    public static final String QUESTION_DELETE_RESOURCE = "Are you confident to delete this resource!?";
+
+    public static final String ERR_BELONGS_TO_NONDELETABLE_PARENT =
+        "Cannot remove the resource as it belongs to a resource which is not deletable";
 }

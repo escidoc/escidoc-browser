@@ -43,14 +43,9 @@ import org.escidoc.browser.model.internal.HasNoNameResource;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.helper.Util;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.escidoc.browser.ui.listeners.ResourceDeleteConfirmation;
 
 import com.google.common.base.Preconditions;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
@@ -70,13 +65,6 @@ import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.sb.search.SearchResultRecord;
 
 public class ContainerRepository implements Repository {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ContainerRepository.class);
-
-    //
-    private static final String DELETE_RESOURCE_WND_NAME = "Do you really want to delete this item!?";
-
-    private static final String DELETE_RESOURCE = "Are you confident to delete this resource!?";
 
     private final ContainerHandlerClientInterface client;
 
@@ -247,20 +235,7 @@ public class ContainerRepository implements Repository {
             }
         }
         else if (publicStatus.equals("DELETE")) {
-            try {
-                this.delete(container);
-            }
-            catch (final EscidocClientException e) {
-                if (e.getMessage().toString().contains("An error occured removing member entries for container")) {
-                    mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR,
-                        "Cannot remove the resource as it belongs to a resource which is not deletable",
-                        Notification.TYPE_ERROR_MESSAGE));
-                }
-                else {
-                    mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
-                        Notification.TYPE_ERROR_MESSAGE));
-                }
-            }
+            new ResourceDeleteConfirmation(container, this, mainWindow);
 
         }
     }
@@ -299,46 +274,8 @@ public class ContainerRepository implements Repository {
             .showNotification(new Window.Notification(ViewConstants.DELETED, Notification.TYPE_TRAY_NOTIFICATION));
     }
 
-    // FIX this method should be out-of-here
-    private void delete(final Container container) throws EscidocClientException {
-        final Window subwindow = new Window(DELETE_RESOURCE_WND_NAME);
-        subwindow.setModal(true);
-        final Label message = new Label(DELETE_RESOURCE);
-        subwindow.addComponent(message);
-
-        @SuppressWarnings("serial")
-        final Button okConfirmed = new Button("Yes", new Button.ClickListener() {
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                (subwindow.getParent()).removeWindow(subwindow);
-                try {
-                    finalDelete(container);
-                }
-                catch (final EscidocClientException e) {
-                    mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
-                        Notification.TYPE_ERROR_MESSAGE));
-                }
-            }
-
-        });
-        @SuppressWarnings("serial")
-        final Button cancel = new Button("Cancel", new Button.ClickListener() {
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                (subwindow.getParent()).removeWindow(subwindow);
-            }
-        });
-        final HorizontalLayout hl = new HorizontalLayout();
-        hl.addComponent(okConfirmed);
-        hl.addComponent(cancel);
-        subwindow.addComponent(hl);
-        mainWindow.addWindow(subwindow);
-    }
-
-    private void finalDelete(final Container container) throws EscidocClientException {
+    public void finalDelete(final Container container) throws EscidocClientException {
         client.delete(container.getObjid());
-        mainWindow
-            .showNotification(new Window.Notification(ViewConstants.DELETED, Notification.TYPE_TRAY_NOTIFICATION));
     }
 
     public void updateMetaData(final MetadataRecord metadata, final Container container) throws EscidocClientException {
