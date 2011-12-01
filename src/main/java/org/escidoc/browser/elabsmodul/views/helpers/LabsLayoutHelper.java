@@ -68,6 +68,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
 
 /**
  * Utility class.
@@ -246,6 +247,7 @@ public final class LabsLayoutHelper {
             dataComponent = parentLayout.getComponent(1);
         }
         catch (IndexOutOfBoundsException e) {
+            LOG.error("This layout should contain only 2 components!");
             return false;
         }
         Property dataProperty = null;
@@ -278,8 +280,12 @@ public final class LabsLayoutHelper {
         else if (dataComponent instanceof Label) {
             label = (Label) dataComponent;
         }
+        else if (dataComponent instanceof CheckBox || dataComponent instanceof VerticalLayout) {
+            return true;
+        }
 
         if (label == null) {
+            LOG.debug("The wrong dataComponent is " + dataComponent.toString());
             return false;
         }
 

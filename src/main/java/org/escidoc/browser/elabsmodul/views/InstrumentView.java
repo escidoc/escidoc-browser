@@ -294,6 +294,11 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
                 LOG.error("DynamicLayout can contain only HorizontalLayouts as direct child element.");
                 break;
             }
+
+            if (tempParentLayout.getComponentCount() != 2) {
+                continue;
+            }
+
             if (LabsLayoutHelper.switchToLabelFromEditedField(tempParentLayout)) {
                 setModifiedComponent(null);
             }
