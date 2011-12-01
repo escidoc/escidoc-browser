@@ -30,13 +30,17 @@ package org.escidoc.browser.ui.maincontent;
 
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
+import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.ContextAdminDescriptorsClickListener;
 
 import com.google.common.base.Preconditions;
+import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Link;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
@@ -52,12 +56,15 @@ class MetadataRecsContext {
 
     private final Window mainWindow;
 
-    MetadataRecsContext(final ResourceProxy resourceProxy, final Window mainWindow) {
+    private Router router;
+
+    MetadataRecsContext(final ResourceProxy resourceProxy, final Window mainWindow, Router router) {
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         Preconditions.checkNotNull(mainWindow, "resource is null.");
 
         this.resourceProxy = (ContextProxyImpl) resourceProxy;
         this.mainWindow = mainWindow;
+        this.router = router;
     }
 
     public Accordion asAccord() {
@@ -96,14 +103,24 @@ class MetadataRecsContext {
         final Panel admDescriptors = new Panel();
         admDescriptors.setWidth("100%");
         admDescriptors.setHeight("100%");
+        HorizontalLayout hl = new HorizontalLayout();
+        hl.setSizeFull();
 
         final AdminDescriptors admDesc = resourceProxy.getAdminDescription();
         for (final AdminDescriptor adminDescriptor : admDesc) {
-            final Button button = new Button(adminDescriptor.getName());
-            button.setStyleName(BaseTheme.BUTTON_LINK);
-            button.addListener(new ContextAdminDescriptorsClickListener(adminDescriptor, mainWindow));
-            admDescriptors.addComponent(button);
+            // final Button button = new Button(adminDescriptor.getName());
+            // button.setStyleName(BaseTheme.BUTTON_LINK);
+            // button.addListener(new ContextAdminDescriptorsClickListener(adminDescriptor, mainWindow));
+            // admDescriptors.addComponent(button);
+            Link admDescBtn =
+                new Link(adminDescriptor.getXLinkTitle(), new ExternalResource(router
+                    .getServiceLocation().getEscidocUri() + adminDescriptor.getXLinkHref()));
+            admDescBtn.setTargetName("_blank");
+            admDescBtn.setStyleName(BaseTheme.BUTTON_LINK);
+            admDescBtn.setDescription("Show metadata information in a separate window");
+            hl.addComponent(admDescBtn);
         }
+        admDescriptors.setContent(hl);
         return admDescriptors;
     }
 

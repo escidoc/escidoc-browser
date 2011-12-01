@@ -237,41 +237,6 @@ final class ActionHandlerImpl implements Action.Handler {
             .withTypeAndInContext(ResourceType.CONTAINER, contextId).permitted();
     }
 
-    public void deleteContainer(final ContainerModel model) throws EscidocClientException {
-        final Window subwindow = new Window(DELETE_RESOURCE_WND_NAME);
-        subwindow.setModal(true);
-        final Label message = new Label(DELETE_RESOURCE);
-        subwindow.addComponent(message);
-
-        final Button okConfirmed = new Button("Yes", new Button.ClickListener() {
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                (subwindow.getParent()).removeWindow(subwindow);
-                try {
-                    repositories.container().finalDelete(model);
-                    router.getLayout().closeView(model, treeDataSource.getParent(model));
-                    treeDataSource.remove(model);
-                }
-                catch (final EscidocClientException e) {
-                    mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
-                        Notification.TYPE_ERROR_MESSAGE));
-                }
-            }
-
-        });
-        final Button cancel = new Button("Cancel", new Button.ClickListener() {
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                (subwindow.getParent()).removeWindow(subwindow);
-            }
-        });
-        final HorizontalLayout hl = new HorizontalLayout();
-        hl.addComponent(okConfirmed);
-        hl.addComponent(cancel);
-        subwindow.addComponent(hl);
-        mainWindow.addWindow(subwindow);
-    }
-
     private String findContextId(final Object target) {
         if (isContext(target)) {
             return ((ContextModel) target).getId();
@@ -335,7 +300,6 @@ final class ActionHandlerImpl implements Action.Handler {
                 try {
                     repositories.item().finalDelete(model);
                     router.getLayout().closeView(model, treeDataSource.getParent(model));
-                    treeDataSource.remove(model);
                 }
                 catch (EscidocClientException e) {
                     mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
@@ -352,6 +316,40 @@ final class ActionHandlerImpl implements Action.Handler {
             }
         });
         HorizontalLayout hl = new HorizontalLayout();
+        hl.addComponent(okConfirmed);
+        hl.addComponent(cancel);
+        subwindow.addComponent(hl);
+        mainWindow.addWindow(subwindow);
+    }
+
+    public void deleteContainer(final ContainerModel model) throws EscidocClientException {
+        final Window subwindow = new Window(DELETE_RESOURCE_WND_NAME);
+        subwindow.setModal(true);
+        final Label message = new Label(DELETE_RESOURCE);
+        subwindow.addComponent(message);
+
+        final Button okConfirmed = new Button("Yes", new Button.ClickListener() {
+            @Override
+            public void buttonClick(final ClickEvent event) {
+                (subwindow.getParent()).removeWindow(subwindow);
+                try {
+                    repositories.container().finalDelete(model);
+                    router.getLayout().closeView(model, treeDataSource.getParent(model));
+                }
+                catch (final EscidocClientException e) {
+                    mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
+                        Notification.TYPE_ERROR_MESSAGE));
+                }
+            }
+
+        });
+        final Button cancel = new Button("Cancel", new Button.ClickListener() {
+            @Override
+            public void buttonClick(final ClickEvent event) {
+                (subwindow.getParent()).removeWindow(subwindow);
+            }
+        });
+        final HorizontalLayout hl = new HorizontalLayout();
         hl.addComponent(okConfirmed);
         hl.addComponent(cancel);
         subwindow.addComponent(hl);

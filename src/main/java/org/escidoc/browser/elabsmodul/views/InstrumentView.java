@@ -44,6 +44,7 @@ import org.escidoc.browser.elabsmodul.model.UserBean;
 import org.escidoc.browser.elabsmodul.views.helpers.LabsLayoutHelper;
 import org.escidoc.browser.elabsmodul.views.helpers.ResourcePropertiesViewHelper;
 import org.escidoc.browser.elabsmodul.views.listeners.DeviceSupervisorSelectionLayoutListener;
+import org.escidoc.browser.elabsmodul.views.listeners.FileFormatSelectionLayoutListener;
 import org.escidoc.browser.elabsmodul.views.listeners.InstituteSelectionLayoutListener;
 import org.escidoc.browser.elabsmodul.views.listeners.LabsClientViewEventHandler;
 import org.escidoc.browser.model.EscidocServiceLocation;
@@ -110,7 +111,7 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
     private EscidocServiceLocation serviceLocation;
 
     public InstrumentView(InstrumentBean sourceBean, ISaveAction controller, List<ResourceModel> breadCrumbModel,
-        ResourceProxy resourceProxy, List<String> eSyncDaemonUrls, EscidocServiceLocation serviceLocation) {
+        ResourceProxy resourceProxy, EscidocServiceLocation serviceLocation) {
 
         instrumentBean = (sourceBean != null) ? sourceBean : new InstrumentBean();
         this.controller = controller;
@@ -219,6 +220,9 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
                 ELabsViewContants.L_INSTRUMENT_INSTITUTE, instituteText);
 
         // set up specific listeners
+        if (!ELabsCache.getFileFormats().isEmpty()) {
+            h7.addListener(new FileFormatSelectionLayoutListener(this));
+        }
         h8.addListener(new DeviceSupervisorSelectionLayoutListener(this));
         h9.addListener(new InstituteSelectionLayoutListener(this));
 
@@ -393,5 +397,11 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
     public void setInstitute(final String instituteId) {
         Preconditions.checkNotNull(instituteId, "input arg is null");
         instrumentBean.setInstitute(instituteId);
+    }
+
+    @Override
+    public void setFileFormat(String fileFormat) {
+        Preconditions.checkNotNull(fileFormat, "input arg is null");
+        instrumentBean.setFileFormat(fileFormat);
     }
 }

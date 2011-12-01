@@ -35,8 +35,8 @@ import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DE
 
 import java.util.List;
 
+import org.escidoc.browser.elabsmodul.cache.ELabsCache;
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
-import org.escidoc.browser.elabsmodul.enums.ELabsFileFormatsEnum;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsAction;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsPanel;
 import org.escidoc.browser.elabsmodul.views.helpers.LabsLayoutHelper;
@@ -144,10 +144,15 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
                         ELabsViewContants.DIV_ALIGN_RIGHT + ELabsViewContants.L_INVESTIGATION_DURATION
                             + ELabsViewContants.DIV_END;
                     Component newComponent = null;
-                    if (queryTextforFileFormat.equals(((Label) labelComponent).getValue())) {
+                    if (queryTextforFileFormat.equals(((Label) labelComponent).getValue())
+                        && ELabsCache.getFileFormats().isEmpty()) {
                         newComponent =
-                            LabsLayoutHelper.createStaticComboBoxFieldFromLabel(
-                                ((Label) dataComponent).getPropertyDataSource(), ELabsFileFormatsEnum.toList());
+                            LabsLayoutHelper.createStaticComboBoxFieldFromLabel(((Label) dataComponent)
+                                .getPropertyDataSource());
+                    }
+                    else if (queryTextforFileFormat.equals(((Label) labelComponent).getValue())
+                        && !ELabsCache.getFileFormats().isEmpty()) {
+                        return;
                     }
                     else if (queryTextforDuration.equals(((Label) labelComponent).getValue())) {
                         return;

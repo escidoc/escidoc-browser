@@ -229,7 +229,7 @@ public class ContextView extends View {
 
     private Accordion buildMetaDataRecsAcc() {
         // common part: create layout
-        Accordion metaDataRecsAcc = new MetadataRecsContext(resourceProxy, mainWindow).asAccord();
+        Accordion metaDataRecsAcc = new MetadataRecsContext(resourceProxy, mainWindow, router).asAccord();
         return metaDataRecsAcc;
     }
 

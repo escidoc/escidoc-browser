@@ -26,13 +26,41 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.elabsmodul.interfaces;
+package org.escidoc.browser.elabsmodul.model;
 
-public interface ILabsInstrumentAction {
+public class FileFormatBean {
 
-    void setDeviceSupervisor(final String deviceSupervisorId);
+    private String title;
 
-    void setInstitute(final String instituteId);
+    private String mimeType;
 
-    void setFileFormat(final String fileFormat);
+    /**
+     * @return the title
+     */
+    public String getTitle() {
+        return title;
+    }
+
+    /**
+     * @param title
+     *            the title to set
+     */
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    /**
+     * @return the mimeType
+     */
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    /**
+     * @param mimeType
+     *            the mimeType to set
+     */
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+    }
 }
