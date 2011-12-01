@@ -272,7 +272,7 @@ final class ActionHandlerImpl implements Action.Handler {
 
     private ShowAddViewCommand buildCommand(final Object target, final String contextId) {
         final ShowAddViewCommand showAddViewCommand =
-            new ShowAddViewCommand(repositories, getWindow(), contextId, treeDataSource, router);
+            new ShowAddViewCommand(repositories, contextId, treeDataSource, router);
         showAddViewCommand.withParent((ResourceModel) target);
         return showAddViewCommand;
     }

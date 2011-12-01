@@ -332,7 +332,7 @@ public class SimpleLayout extends LayoutDesign {
     private NavigationTreeView addNavigationTree() throws EscidocClientException {
         treeDataSource = new TreeDataSourceImpl(repositories.context().findAllWithChildrenInfo());
         treeDataSource.init();
-
+        setTreeDataSource(treeDataSource);
         mainNavigationTree =
             new NavigationTreeBuilder(serviceLocation, repositories).buildNavigationTree(router, mainWindow,
                 treeDataSource);
@@ -347,5 +347,13 @@ public class SimpleLayout extends LayoutDesign {
         mainContentTabs.setHeight("100.0%");
         new CloseTabsViewHelper(cssContent, mainContentTabs); // headerContainer
         return mainContentTabs;
+    }
+
+    public TreeDataSource getTreeDataSource() {
+        return treeDataSource;
+    }
+
+    void setTreeDataSource(TreeDataSource treeDataSource) {
+        this.treeDataSource = treeDataSource;
     }
 }

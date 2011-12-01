@@ -65,18 +65,17 @@ public final class ShowAddViewCommand implements Command {
 
     private Router router;
 
-    public ShowAddViewCommand(final Repositories repositories, final Window mainWindow, final String contextId,
+    public ShowAddViewCommand(final Repositories repositories, final String contextId,
         final TreeDataSource treeDataSource, Router router) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
-        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(contextId, "contextId is null: %s", contextId);
         Preconditions.checkNotNull(treeDataSource, "treeDataSource is null: %s", treeDataSource);
         Preconditions.checkNotNull(router, "router is null: %s", router);
         this.repositories = repositories;
-        this.mainWindow = mainWindow;
         this.contextId = contextId;
         this.treeDataSource = treeDataSource;
         this.router = router;
+        this.mainWindow = router.getMainWindow();
     }
 
     public void withParent(final ResourceModel parent) {
@@ -158,8 +157,7 @@ public final class ShowAddViewCommand implements Command {
     public void showResourceAddView() {
         Preconditions.checkNotNull(parent, "parent is null: %s", parent);
         try {
-            new ResourceAddViewImpl(repositories, mainWindow, parent, treeDataSource, contextId, router)
-                .openSubWindow();
+            new ResourceAddViewImpl(repositories, parent, treeDataSource, contextId, router).openSubWindow();
         }
         catch (final EscidocClientException e) {
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);

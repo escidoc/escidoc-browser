@@ -152,6 +152,7 @@ public class DirectMember {
         nameofPanel.setStyleName("accordion v-captiontext");
 
         nameofPanel.setWidth("100%");
+
         panel.addComponent(nameofPanel);
         panel.setStyleName("directmembers");
 
@@ -175,8 +176,7 @@ public class DirectMember {
             @Override
             public void buttonClick(ClickEvent event) {
                 try {
-                    new ResourceAddViewImpl(router.getRepositories(), router.getMainWindow(), resourceProxy, contextId,
-                        router).openSubWindow();
+                    new ResourceAddViewImpl(resourceProxy, contextId, router).openSubWindow();
                 }
                 catch (final EscidocClientException e) {
                     mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
