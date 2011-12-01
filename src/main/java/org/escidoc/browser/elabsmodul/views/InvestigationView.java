@@ -428,12 +428,16 @@ public class InvestigationView extends View implements ILabsPanel, ILabsAction, 
         this.durationBean = durationBean;
 
         StringBuilder sb = new StringBuilder();
-        sb.append(durationBean.getDays());
-        sb.append((durationBean.getDays() == 1) ? " day " : " days ");
-        sb.append(durationBean.getHours());
-        sb.append((durationBean.getHours() == 1) ? " hour " : " hours ");
+        if (durationBean.getDays() != 0) {
+            sb.append(durationBean.getDays());
+            sb.append((durationBean.getDays() == 1) ? " day " : " days ");
+        }
+        if (durationBean.getHours() != 0) {
+            sb.append(durationBean.getHours());
+            sb.append((durationBean.getHours() == 1) ? " hour " : " hours ");
+        }
         sb.append(durationBean.getMinutes());
-        sb.append((durationBean.getMinutes() == 1) ? " minute" : " minutes");
+        sb.append((durationBean.getMinutes() == 0 || durationBean.getMinutes() == 1) ? " minute" : " minutes");
 
         this.investigationBean.setMaxRuntimeInMin(durationBean.getDays() * 1440 + durationBean.getHours() * 60
             + durationBean.getMinutes());

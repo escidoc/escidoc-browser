@@ -661,19 +661,23 @@ public class InvestigationController extends Controller implements IInvestigatio
     private String setDurationLabel(String storedDuration) {
 
         try {
-            int minute = new Integer(storedDuration).intValue(), day, hour;
+            int minute = new Integer(storedDuration).intValue(), day = 0, hour = 0;
 
             day = minute / 1440;
             hour = (minute - day * 1440) / 60;
             minute = (minute - day * 1440 - hour * 60);
 
             StringBuilder sb = new StringBuilder();
-            sb.append(day);
-            sb.append((day == 1) ? " day " : " days ");
-            sb.append(hour);
-            sb.append((hour == 1) ? " hour " : " hours ");
+            if (day != 0) {
+                sb.append(day);
+                sb.append((day == 1) ? " day " : " days ");
+            }
+            if (hour != 0) {
+                sb.append(hour);
+                sb.append((hour == 1) ? " hour " : " hours ");
+            }
             sb.append(minute);
-            sb.append((minute == 1) ? " minute" : " minutes");
+            sb.append((minute == 0 || minute == 1) ? " minute" : " minutes");
 
             LOG.debug("setDurationLabel: " + day + "|" + hour + "|" + minute);
 
