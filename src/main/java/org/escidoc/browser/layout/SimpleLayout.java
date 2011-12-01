@@ -314,6 +314,7 @@ public class SimpleLayout extends LayoutDesign {
         mainNavigationTree = this.addNavigationTree();
 
         final Accordion accordion = new Accordion();
+        accordion.setSizeFull();
         accordion.addTab(mainNavigationTree, ViewConstants.RESOURCES, null);
 
         ToolsTreeView toolsTreeView = new ToolsTreeView(router, repositories);
