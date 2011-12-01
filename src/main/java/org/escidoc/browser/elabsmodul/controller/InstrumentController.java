@@ -151,6 +151,13 @@ public final class InstrumentController extends Controller implements ISaveActio
             final String nodeName = node.getLocalName();
             final String nsUri = node.getNamespaceURI();
 
+            if (nodeName == null || nodeName.equals("")) {
+                continue;
+            }
+            else if (nsUri == null || nsUri.equals("")) {
+                continue;
+            }
+
             if ("title".equals(nodeName) && URI_DC.equals(nsUri)) {
                 instrumentBean.setName((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
             }
@@ -159,7 +166,6 @@ public final class InstrumentController extends Controller implements ISaveActio
                 instrumentBean
                     .setDescription((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
             }
-
             else if ("requires-configuration".equals(nodeName) && URI_EL.equals(nsUri)) {
                 final String value = node.getFirstChild().getNodeValue();
                 if (value.equals("no")) {
@@ -200,7 +206,6 @@ public final class InstrumentController extends Controller implements ISaveActio
                 final String instituteId = node.getAttributes().getNamedItem("rdf:resource").getNodeValue();
                 instrumentBean.setInstitute(instituteId);
             }
-            return instrumentBean;
         }
         return instrumentBean;
     }
