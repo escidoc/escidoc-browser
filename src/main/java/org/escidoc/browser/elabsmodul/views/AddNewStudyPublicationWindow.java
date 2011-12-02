@@ -57,9 +57,12 @@ public class AddNewStudyPublicationWindow extends Window implements Button.Click
 
     private static final String HTTP = "http://", HTTPS = "https://";
 
-    public AddNewStudyPublicationWindow(final Callback callback) {
+    private final boolean isMotPub;
+
+    public AddNewStudyPublicationWindow(final Callback callback, boolean isMotPub) {
         Preconditions.checkNotNull(callback, "callback is null");
         this.callback = callback;
+        this.isMotPub = isMotPub;
 
         setModal(true);
         setWidth("550px");
@@ -68,12 +71,18 @@ public class AddNewStudyPublicationWindow extends Window implements Button.Click
         setResizable(true);
         setScrollable(false);
         addComponent(buildGUI());
+        if (isMotPub) {
+            setCaption("Motivating publication");
+        }
+        else {
+            setCaption("Resulting publication");
+        }
         center();
     }
 
+    @SuppressWarnings("serial")
     private Component buildGUI() {
         final VerticalLayout rootLayout = new VerticalLayout();
-
         final HorizontalLayout inputLayout = new HorizontalLayout();
         inputLayout.setSpacing(true);
         publicationTextField = new TextField();
@@ -87,7 +96,12 @@ public class AddNewStudyPublicationWindow extends Window implements Button.Click
         publicationTextField.setWidth("350px");
         publicationTextField.focus();
 
-        inputLayout.addComponent(new Label("New publication's URL:"), 0);
+        if (isMotPub) {
+            inputLayout.addComponent(new Label("New motivating publication's URL:"), 0);
+        }
+        else {
+            inputLayout.addComponent(new Label("New resulting publication's URL:"), 0);
+        }
         inputLayout.addComponent(publicationTextField, 1);
 
         final HorizontalLayout buttonLayout = new HorizontalLayout();
@@ -107,11 +121,6 @@ public class AddNewStudyPublicationWindow extends Window implements Button.Click
         panel.setContent(rootLayout);
 
         panel.addActionHandler(new Action.Handler() {
-            /**
-             * 
-             */
-            private static final long serialVersionUID = 1L;
-
             private final Action action_ok = new ShortcutAction("Enter key", ShortcutAction.KeyCode.ENTER, null);
 
             private final Action action_esc = new ShortcutAction("Escape key", ShortcutAction.KeyCode.ESCAPE, null);
@@ -157,7 +166,6 @@ public class AddNewStudyPublicationWindow extends Window implements Button.Click
                 callback.onAcceptAction(input);
             }
         }
-
     }
 
     private boolean validateURL(final String URL) {
