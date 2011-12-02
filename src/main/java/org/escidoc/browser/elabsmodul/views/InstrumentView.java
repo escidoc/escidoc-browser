@@ -44,6 +44,7 @@ import org.escidoc.browser.elabsmodul.model.UserBean;
 import org.escidoc.browser.elabsmodul.views.helpers.LabsLayoutHelper;
 import org.escidoc.browser.elabsmodul.views.helpers.ResourcePropertiesViewHelper;
 import org.escidoc.browser.elabsmodul.views.listeners.DeviceSupervisorSelectionLayoutListener;
+import org.escidoc.browser.elabsmodul.views.listeners.ESyncDaemonEndpointSelectionLayoutListener;
 import org.escidoc.browser.elabsmodul.views.listeners.FileFormatSelectionLayoutListener;
 import org.escidoc.browser.elabsmodul.views.listeners.InstituteSelectionLayoutListener;
 import org.escidoc.browser.elabsmodul.views.listeners.LabsClientViewEventHandler;
@@ -220,6 +221,7 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
                 ELabsViewContants.L_INSTRUMENT_INSTITUTE, instituteText);
 
         // set up specific listeners
+        h5.addListener(new ESyncDaemonEndpointSelectionLayoutListener(this));
         if (!ELabsCache.getFileFormats().isEmpty()) {
             h7.addListener(new FileFormatSelectionLayoutListener(this));
         }
@@ -294,6 +296,11 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
                 LOG.error("DynamicLayout can contain only HorizontalLayouts as direct child element.");
                 break;
             }
+
+            if (tempParentLayout.getComponentCount() != 2) {
+                continue;
+            }
+
             if (LabsLayoutHelper.switchToLabelFromEditedField(tempParentLayout)) {
                 setModifiedComponent(null);
             }

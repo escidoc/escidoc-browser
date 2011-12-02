@@ -269,14 +269,14 @@ public class ContainerView extends View {
     private Panel buildDirectMembersPanel() throws EscidocClientException {
         // common part: create layout
         Panel directMembersPanel = new Panel();
-        directMembersPanel.setImmediate(false);
-        directMembersPanel.setWidth("100.0%");
-        directMembersPanel.setHeight("100.0%");
+        directMembersPanel.setImmediate(true);
+        directMembersPanel.setSizeFull();
+        directMembersPanel.setScrollable(true);
         directMembersPanel.setStyleName(Runo.PANEL_LIGHT);
 
         // vlDirectMember
         VerticalLayout vlDirectMember = new VerticalLayout();
-        vlDirectMember.setImmediate(false);
+        vlDirectMember.setImmediate(true);
         vlDirectMember.setWidth("100.0%");
         vlDirectMember.setHeight("100.0%");
         vlDirectMember.setMargin(false);

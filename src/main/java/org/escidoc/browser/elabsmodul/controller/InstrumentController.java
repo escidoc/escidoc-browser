@@ -151,6 +151,13 @@ public final class InstrumentController extends Controller implements ISaveActio
             final String nodeName = node.getLocalName();
             final String nsUri = node.getNamespaceURI();
 
+            if (nodeName == null || nodeName.equals("")) {
+                continue;
+            }
+            else if (nsUri == null || nsUri.equals("")) {
+                continue;
+            }
+
             if ("title".equals(nodeName) && URI_DC.equals(nsUri)) {
                 instrumentBean.setName((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
             }
@@ -159,7 +166,6 @@ public final class InstrumentController extends Controller implements ISaveActio
                 instrumentBean
                     .setDescription((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
             }
-
             else if ("requires-configuration".equals(nodeName) && URI_EL.equals(nsUri)) {
                 final String value = node.getFirstChild().getNodeValue();
                 if (value.equals("no")) {
@@ -200,7 +206,6 @@ public final class InstrumentController extends Controller implements ISaveActio
                 final String instituteId = node.getAttributes().getNamedItem("rdf:resource").getNodeValue();
                 instrumentBean.setInstitute(instituteId);
             }
-            return instrumentBean;
         }
         return instrumentBean;
     }
@@ -365,6 +370,27 @@ public final class InstrumentController extends Controller implements ISaveActio
                     }
                 }
             }
+
+            if (ELabsCache.getEsyncEndpoints().isEmpty()) {
+                final List<String> eSycDaemonEndPointUrls = new ArrayList<String>();
+                try {
+
+                    final NodeList nodeList = content.getElementsByTagName("el:esync-endpoint");
+                    for (int i = 0; i < nodeList.getLength(); i++) {
+                        final Node node = nodeList.item(i);
+                        eSycDaemonEndPointUrls.add(node.getTextContent());
+                    }
+                    synchronized (ELabsCache.getDepositEndpoints()) {
+                        if (!eSycDaemonEndPointUrls.isEmpty()) {
+                            ELabsCache.setEsyncEndpoints(Collections.unmodifiableList(eSycDaemonEndPointUrls));
+                        }
+                    }
+                }
+                catch (final NullPointerException e) {
+                    LOG.debug("Admin Description is null in the context " + resourceProxy.getContext().getObjid());
+                }
+            }
+
         }
         catch (final EscidocClientException e) {
             LOG.debug("Error occurred. Could not load Admin Descriptors" + e.getLocalizedMessage());

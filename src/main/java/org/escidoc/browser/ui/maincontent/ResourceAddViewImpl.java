@@ -112,7 +112,7 @@ public class ResourceAddViewImpl implements ResourceAddView {
 
     private final ResourceModel parent;
 
-    private final TreeDataSource treeDataSource;
+    private TreeDataSource treeDataSource;
 
     private final String contextId;
 
@@ -120,39 +120,36 @@ public class ResourceAddViewImpl implements ResourceAddView {
 
     private String metaData = AppConstants.EMPTY_STRING;
 
-    public ResourceAddViewImpl(final Repositories repositories, final Window mainWindow, final ResourceModel parent,
+    public ResourceAddViewImpl(final Repositories repositories, final ResourceModel parent,
         final TreeDataSource treeDataSource, final String contextId, Router router) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
-        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(parent, "parent is null: %s", parent);
         Preconditions.checkNotNull(treeDataSource, "treeDataSource is null: %s", treeDataSource);
         Preconditions.checkNotNull(contextId, "contextId is null: %s", contextId);
         Preconditions.checkNotNull(router, "router is null: %s", router);
         this.repositories = repositories;
-        this.mainWindow = mainWindow;
+        this.router = router;
+        this.mainWindow = router.getMainWindow();
         this.parent = parent;
         this.treeDataSource = treeDataSource;
-        this.router = router;
+
         this.contextId = contextId;
     }
 
     /*
      * This is the case where the button is invoked from a button and not from a tree
      */
-    public ResourceAddViewImpl(Repositories repositories, Window mainWindow, ResourceProxy containerProxy,
-        String contextId, Router router) {
-        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
-        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
+    public ResourceAddViewImpl(ResourceProxy containerProxy, String contextId, Router router) {
         Preconditions.checkNotNull(containerProxy, "parent is null: %s", containerProxy);
         Preconditions.checkNotNull(contextId, "contextId is null: %s", contextId);
         Preconditions.checkNotNull(router, "router is null: %s", router);
 
-        this.repositories = repositories;
-        this.mainWindow = mainWindow;
-        parent = containerProxy;
+        this.router = router;
+        this.repositories = router.getRepositories();
+        this.mainWindow = router.getMainWindow();
+        parent = (ResourceModel) containerProxy;
         this.contextId = contextId;
         treeDataSource = null;
-        this.router = router;
     }
 
     private void buildContainerForm() throws EscidocClientException {
@@ -408,10 +405,13 @@ public class ResourceAddViewImpl implements ResourceAddView {
 
         if (treeDataSource != null) {
             updateDataSource(createdResource, resourceType);
+            router.show(parent, Boolean.TRUE);
         }
 
         if (router != null) {
             router.show(parent, Boolean.TRUE);
+            treeDataSource = router.getLayout().getTreeDataSource();
+            // updateDataSource(createdResource, resourceType);
         }
 
         closeSubWindow();
@@ -443,6 +443,9 @@ public class ResourceAddViewImpl implements ResourceAddView {
     }
 
     private void updateDataSource(final VersionableResource createdResource, String resourceType) {
+        Preconditions.checkNotNull(createdResource, "createdResource is null");
+        Preconditions.checkNotNull(resourceType, "resourceType is null");
+        Preconditions.checkNotNull(treeDataSource, "treeDataSource is null");
         if (resourceType.equals(ResourceType.CONTAINER.toString())) {
             treeDataSource.addChild(parent, new ContainerModel(createdResource));
         }

@@ -59,4 +59,8 @@ public class DurationBean {
     public void setMinutes(int minutes) {
         this.minutes = minutes;
     }
+
+    public int getSumMinutes() {
+        return days * 1440 + hours * 60 + minutes;
+    }
 }

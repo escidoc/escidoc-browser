@@ -220,6 +220,11 @@ public class RigView extends View implements ILabsPanel, ILabsAction {
                 LOG.error("DynamicLayout can contain only HorizontalLayouts as direct child element.");
                 break;
             }
+
+            if (tempParentLayout.getComponentCount() != 2) {
+                continue;
+            }
+
             if (LabsLayoutHelper.switchToLabelFromEditedField(tempParentLayout)) {
                 this.setModifiedComponent(null);
             }

@@ -36,6 +36,7 @@ import java.net.URISyntaxException;
 import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 
@@ -62,5 +63,7 @@ public abstract class LayoutDesign extends VerticalLayout {
 
     @Deprecated
     public abstract int getApplicationHeight();
+
+    public abstract TreeDataSource getTreeDataSource();
 
 }
