@@ -157,7 +157,6 @@ public final class LabsStudyTableHelper {
     }
 
     private void addMotPubButtonsToLayout(final VerticalLayout layout) {
-
         Button.ClickListener motPubButtonsListener = new Button.ClickListener() {
             private static final long serialVersionUID = 1586321256611542129L;
 
@@ -166,13 +165,10 @@ public final class LabsStudyTableHelper {
                 if (event.getButton().getCaption().equals(DELETE_BUTTON_TEXT)
                     || event.getButton().getCaption().equals(DELETES_BUTTON_TEXT)) {
                     LabsStudyTableHelper.this.labsAction.showButtonLayout();
-
                     @SuppressWarnings("unchecked")
                     Set<String> selectedIdSet = (Set<String>) motPubTable.getValue();
-
                     // delete motivationg publication relations from the model
                     LabsStudyTableHelper.this.synchronizeStudyModel(selectedIdSet, true);
-
                     // instant delete from table containerdatasource
                     for (String idToDelete : selectedIdSet) {
                         motPubTable.getContainerDataSource().removeItem(idToDelete);
@@ -181,7 +177,6 @@ public final class LabsStudyTableHelper {
                 }
                 else if (event.getButton().getCaption().equals(ADD_BUTTON)) {
                     LabsStudyTableHelper.this.labsAction.showButtonLayout();
-
                     motPubTable
                         .getApplication().getMainWindow()
                         .addWindow(new AddNewStudyPublicationWindow(new AddNewStudyPublicationWindow.Callback() {
@@ -193,11 +188,10 @@ public final class LabsStudyTableHelper {
                                 // add to model
                                 LabsStudyTableHelper.this.studyBean.getMotivatingPublication().add(newURL);
                             }
-                        }));
+                        }, true));
                 }
             }
         };
-
         motPubAddButton = new Button(ADD_BUTTON);
         motPubDeleteButton = new Button(DELETE_BUTTON_TEXT);
         if (hasUpdateAccess) {
@@ -224,12 +218,10 @@ public final class LabsStudyTableHelper {
     }
 
     public synchronized VerticalLayout createTableLayoutForResPublications() {
-
         final int RIG_TABLE_SIZE = 4;
         final Label selectedLabel = new Label("No selection");
         final VerticalLayout layout = new VerticalLayout();
         layout.setSizeUndefined();
-
         resPubTable = new Table();
         resPubTable.setSelectable(true);
         resPubTable.setMultiSelect(true);
@@ -237,14 +229,11 @@ public final class LabsStudyTableHelper {
         resPubTable.setImmediate(true);
         resPubTable.setPageLength(RIG_TABLE_SIZE);
         resPubTable.setWidth("450px");
-
         resPubTable.setColumnReorderingAllowed(false);
         resPubTable.setColumnCollapsingAllowed(false);
         resPubTable.setRowHeaderMode(Table.ROW_HEADER_MODE_ICON_ONLY);
-
         resPubTable.setContainerDataSource(fillResPubTableData(studyBean.getResultingPublication()));
         resPubTable.setColumnHeaders(new String[] { "Url" });
-
         resPubTable.addListener(new Table.ValueChangeListener() {
             private static final long serialVersionUID = 2000562132182698589L;
 
@@ -265,7 +254,6 @@ public final class LabsStudyTableHelper {
                     selSize = values.size();
                     selectedLabel.setValue("Selected: " + selSize + " document" + ((selSize > 1) ? "s" : ""));
                 }
-
                 if (selSize == 0) {
                     resPubDeleteButton.setEnabled(false);
                 }
@@ -295,13 +283,10 @@ public final class LabsStudyTableHelper {
                 if (event.getButton().getCaption().equals(DELETE_BUTTON_TEXT)
                     || event.getButton().getCaption().equals(DELETES_BUTTON_TEXT)) {
                     LabsStudyTableHelper.this.labsAction.showButtonLayout();
-
                     @SuppressWarnings("unchecked")
                     Set<String> selectedIdSet = (Set<String>) resPubTable.getValue();
-
                     // delete motivationg publication relations from the model
                     LabsStudyTableHelper.this.synchronizeStudyModel(selectedIdSet, false);
-
                     // instant delete from table containerdatasource
                     for (String idToDelete : selectedIdSet) {
                         resPubTable.getContainerDataSource().removeItem(idToDelete);
@@ -310,7 +295,6 @@ public final class LabsStudyTableHelper {
                 }
                 else if (event.getButton().getCaption().equals(ADD_BUTTON)) {
                     LabsStudyTableHelper.this.labsAction.showButtonLayout();
-
                     resPubTable
                         .getApplication().getMainWindow()
                         .addWindow(new AddNewStudyPublicationWindow(new AddNewStudyPublicationWindow.Callback() {
@@ -322,7 +306,7 @@ public final class LabsStudyTableHelper {
                                 // add to model
                                 LabsStudyTableHelper.this.studyBean.getResultingPublication().add(newURL);
                             }
-                        }));
+                        }, false));
                 }
             }
         };
