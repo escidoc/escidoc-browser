@@ -76,9 +76,6 @@ public class ItemRepository implements Repository {
 
     private static final String DELETE_RESOURCE = "Are you confident to delete this resource!?";
 
-    private static final String ERR_BELONGS_TO_NONDELETABLE_PARENT =
-        "Cannot remove the resource as it belongs to a resource which is not deletable";
-
     private static final Logger LOG = LoggerFactory.getLogger(ItemRepository.class);
 
     private final ItemHandlerClientInterface client;
@@ -208,21 +205,9 @@ public class ItemRepository implements Repository {
             }
         }
         else if (publicStatus.equals("DELETE")) {
-            try {
-                this.delete(item);
-                mainWindow.showNotification(new Window.Notification(ViewConstants.DELETED,
-                    Notification.TYPE_TRAY_NOTIFICATION));
-            }
-            catch (EscidocClientException e) {
-                if (e.getMessage().toString().contains("An error occured removing member entries for container")) {
-                    mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR,
-                        ERR_BELONGS_TO_NONDELETABLE_PARENT, Notification.TYPE_ERROR_MESSAGE));
-                }
-                else {
-                    mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
-                        Notification.TYPE_ERROR_MESSAGE));
-                }
-            }
+            this.delete(item);
+            mainWindow.showNotification(new Window.Notification(ViewConstants.DELETED,
+                Notification.TYPE_TRAY_NOTIFICATION));
         }
     }
 
@@ -267,7 +252,7 @@ public class ItemRepository implements Repository {
     }
 
     // FIX THIS METHOD SHOULD MOVE AWAY FROM HERE - Probably in Controller of the ITEM
-    private void delete(final Item item) throws EscidocClientException {
+    private void delete(final Item item) {
         final Window subwindow = new Window(DELETE_RESOURCE_WND_NAME);
         subwindow.setModal(true);
         Label message = new Label(DELETE_RESOURCE);
