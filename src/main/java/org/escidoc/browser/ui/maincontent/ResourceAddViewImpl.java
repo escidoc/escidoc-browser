@@ -156,7 +156,6 @@ public class ResourceAddViewImpl implements ResourceAddView {
     }
 
     private ResourceModel createParentModel(ResourceProxy resourceProxy) {
-        LOG.debug("######################## " + resourceProxy.getClass().toString() + resourceProxy.getType());
         ResourceModel contModel;
         if (resourceProxy.getType() == ResourceType.CONTEXT) {
             ContextProxyImpl contextProxy = (ContextProxyImpl) resourceProxy;
