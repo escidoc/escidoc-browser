@@ -84,4 +84,13 @@ public final class AppConstants {
 
     public static final String MAX_RESULT_SIZE = "1000";
 
+    public static final String CMM_DESCRIPTION_MATCHER = "org.escidoc.browser.Controller=([^;]*);";
+
+    public static final String CMM_DESCRIPTION_RIG = "org.escidoc.bwelabs.Rig";
+
+    public static final String CMM_DESCRIPTION_STUDY = "org.escidoc.bwelabs.Study";
+
+    public static final String CMM_DESCRIPTION_INSTRUMENT = "org.escidoc.bwelabs.Instrument";
+
+    public static final String CMM_DESCRIPTION_INVESTIGATION = "org.escidoc.bwelabs.Investigation";
 }

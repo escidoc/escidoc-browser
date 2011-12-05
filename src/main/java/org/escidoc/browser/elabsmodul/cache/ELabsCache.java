@@ -28,9 +28,14 @@
  */
 package org.escidoc.browser.elabsmodul.cache;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import org.escidoc.browser.elabsmodul.enums.ContentModelTypeEnum;
 import org.escidoc.browser.elabsmodul.model.FileFormatBean;
 import org.escidoc.browser.elabsmodul.model.OrgUnitBean;
 import org.escidoc.browser.elabsmodul.model.UserBean;
@@ -46,6 +51,8 @@ public class ELabsCache {
     private static List<OrgUnitBean> orgUnits = Collections.emptyList();
 
     private static List<FileFormatBean> fileFormats = Collections.emptyList();
+
+    private static Map<String, ContentModelTypeEnum> contentModels = new HashMap<String, ContentModelTypeEnum>();
 
     /**
      * @return the depositEndpoints
@@ -122,6 +129,10 @@ public class ELabsCache {
         ELabsCache.fileFormats = fileFormats;
     }
 
+    /**
+     * 
+     * @return
+     */
     public static String getDefaultEsyncDaemonEndpoint() {
         if (getEsyncEndpoints().isEmpty()) {
             return "no esynch endpoint exists";
@@ -131,6 +142,10 @@ public class ELabsCache {
         }
     }
 
+    /**
+     * 
+     * @return
+     */
     public static String getDefaultDepositEndpoint() {
         if (getDepositEndpoints().isEmpty()) {
             return "no deposit endpoint exists";
@@ -140,4 +155,62 @@ public class ELabsCache {
         }
     }
 
+    /**
+     * @return the contentModels
+     */
+    public static Map<String, ContentModelTypeEnum> getContentModels() {
+        return contentModels;
+    }
+
+    public static List<String> getRigCMMIds() {
+        List<String> list = new ArrayList<String>();
+        if (!ELabsCache.getContentModels().isEmpty()) {
+            for (Iterator<String> iterator = ELabsCache.getContentModels().keySet().iterator(); iterator.hasNext();) {
+                String key = iterator.next();
+                if (ELabsCache.getContentModels().get(key).isRig()) {
+                    list.add(key);
+                }
+            }
+        }
+        return list;
+    }
+
+    public static List<String> getInstrumentCMMIds() {
+        List<String> list = new ArrayList<String>();
+        if (!ELabsCache.getContentModels().isEmpty()) {
+            for (Iterator<String> iterator = ELabsCache.getContentModels().keySet().iterator(); iterator.hasNext();) {
+                String key = iterator.next();
+                if (ELabsCache.getContentModels().get(key).isInstrument()) {
+                    list.add(key);
+                }
+            }
+        }
+        return list;
+    }
+
+    public static List<String> getStudyCMMIds() {
+        List<String> list = new ArrayList<String>();
+        if (!ELabsCache.getContentModels().isEmpty()) {
+            for (Iterator<String> iterator = ELabsCache.getContentModels().keySet().iterator(); iterator.hasNext();) {
+                String key = iterator.next();
+                if (ELabsCache.getContentModels().get(key).isStudy()) {
+                    list.add(key);
+                }
+            }
+        }
+        return list;
+    }
+
+    public static List<String> getInvestigationCMMIds() {
+        List<String> list = new ArrayList<String>();
+        if (!ELabsCache.getContentModels().isEmpty()) {
+            for (Iterator<String> iterator = ELabsCache.getContentModels().keySet().iterator(); iterator.hasNext();) {
+                String key = iterator.next();
+                if (ELabsCache.getContentModels().get(key).isInvestigation()) {
+                    list.add(key);
+                }
+            }
+        }
+        return list;
+    }
 }
