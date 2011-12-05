@@ -36,12 +36,15 @@ import java.util.regex.Pattern;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ContainerModel;
+import org.escidoc.browser.model.ContainerProxy;
+import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.ContainerBuilder;
+import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.model.internal.ItemBuilder;
 import org.escidoc.browser.model.internal.ResourceDisplay;
 import org.escidoc.browser.repository.Repositories;
@@ -139,17 +142,32 @@ public class ResourceAddViewImpl implements ResourceAddView {
     /*
      * This is the case where the button is invoked from a button and not from a tree
      */
-    public ResourceAddViewImpl(ResourceProxy containerProxy, String contextId, Router router) {
-        Preconditions.checkNotNull(containerProxy, "parent is null: %s", containerProxy);
+    public ResourceAddViewImpl(ResourceProxy resourceProxy, String contextId, Router router) {
+        Preconditions.checkNotNull(resourceProxy, "parent is null: %s", resourceProxy);
         Preconditions.checkNotNull(contextId, "contextId is null: %s", contextId);
         Preconditions.checkNotNull(router, "router is null: %s", router);
 
         this.router = router;
         this.repositories = router.getRepositories();
         this.mainWindow = router.getMainWindow();
-        parent = (ResourceModel) containerProxy;
+        parent = createParentModel(resourceProxy);
         this.contextId = contextId;
         treeDataSource = null;
+    }
+
+    private ResourceModel createParentModel(ResourceProxy resourceProxy) {
+        ResourceModel contModel;
+        if (resourceProxy.getType() == ResourceType.CONTEXT) {
+            ContextProxyImpl contextProxy = (ContextProxyImpl) resourceProxy;
+            Resource context = contextProxy.getContext();
+            contModel = new ContextModel(context);
+        }
+        else {
+            ContainerProxy containerProxy = (ContainerProxy) resourceProxy;
+            Container container = containerProxy.getContainer();
+            contModel = new ContainerModel(container);
+        }
+        return contModel;
     }
 
     private void buildContainerForm() throws EscidocClientException {
@@ -411,7 +429,7 @@ public class ResourceAddViewImpl implements ResourceAddView {
         if (router != null) {
             router.show(parent, Boolean.TRUE);
             treeDataSource = router.getLayout().getTreeDataSource();
-            // updateDataSource(createdResource, resourceType);
+            updateDataSource(createdResource, resourceType);
         }
 
         closeSubWindow();

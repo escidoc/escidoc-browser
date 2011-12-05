@@ -121,4 +121,23 @@ public class ELabsCache {
     public static void setFileFormats(List<FileFormatBean> fileFormats) {
         ELabsCache.fileFormats = fileFormats;
     }
+
+    public static String getDefaultEsyncDaemonEndpoint() {
+        if (getEsyncEndpoints().isEmpty()) {
+            return "no esynch endpoint exists";
+        }
+        else {
+            return getEsyncEndpoints().get(0);
+        }
+    }
+
+    public static String getDefaultDepositEndpoint() {
+        if (getDepositEndpoints().isEmpty()) {
+            return "no deposit endpoint exists";
+        }
+        else {
+            return getDepositEndpoints().get(0);
+        }
+    }
+
 }

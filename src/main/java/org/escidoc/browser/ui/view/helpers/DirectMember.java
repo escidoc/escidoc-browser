@@ -155,9 +155,11 @@ public class DirectMember {
 
         panel.addComponent(nameofPanel);
         panel.setStyleName("directmembers");
+        panel.setScrollable(true);
 
         VerticalLayout panelLayout = (VerticalLayout) panel.getContent();
-        panelLayout.setHeight("100%");
+        panelLayout.setSizeUndefined();
+        panelLayout.setWidth("100%");
         panelLayout.setStyleName(Runo.PANEL_LIGHT);
 
         if (resourceType == ResourceType.CONTAINER.toString()) {

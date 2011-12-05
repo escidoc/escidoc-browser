@@ -219,9 +219,9 @@ public class InvestigationView extends View implements ILabsPanel, ILabsAction, 
             @Override
             public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
                 if (event.getButton().getCaption().equals("Save")) {
-                    controller.saveAction(investigationBean);
                     InvestigationView.this.resetLayout();
                     dynamicLayout.requestRepaintAll();
+                    controller.saveAction(investigationBean);
                 }
             }
         };
@@ -254,6 +254,12 @@ public class InvestigationView extends View implements ILabsPanel, ILabsAction, 
 
             if (LabsLayoutHelper.switchToLabelFromEditedField(tempParentLayout)) {
                 setModifiedComponent(null);
+
+                // get deposit url label for instant save
+                if (dynamicLayout.getComponentIndex(tempParentLayout) == 2) {
+                    investigationBean
+                        .setDepositEndpoint((String) ((Label) tempParentLayout.getComponent(1)).getValue());
+                }
             }
         }
     }
@@ -284,9 +290,8 @@ public class InvestigationView extends View implements ILabsPanel, ILabsAction, 
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_INVESTIGATION_DESC,
                 pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_DESC));
         final HorizontalLayout h3 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(
-                ELabsViewContants.L_INVESTIGATION_DEPOSIT_SERVICE,
-                pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_DEPOSIT_SERVICE));
+            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndStaticComboData(
+                ELabsViewContants.L_INVESTIGATION_DEPOSIT_SERVICE, investigationBean.getDepositEndpoint());
         final HorizontalLayout h4 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelComplexData(
                 ELabsViewContants.L_INVESTIGATION_INVESTIGATOR, investigatorText);
@@ -299,7 +304,7 @@ public class InvestigationView extends View implements ILabsPanel, ILabsAction, 
                 pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_RIG));
 
         // set up specific listeners
-        h3.addListener(new DepositEndpointSelectionLayoutListener(this));
+        h3.addListener(new DepositEndpointSelectionLayoutListener(this, this));
         h4.addListener(new DepositorSelectionLayoutListener(this));
         h5.addListener(new DurationSelectionLayoutListener(this, this));
         h6.addListener(new RigSelectionLayoutListener(this.controller, this));

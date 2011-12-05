@@ -32,6 +32,7 @@ import java.util.List;
 
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.MetadataRecords;
+import de.escidoc.core.resources.om.container.Container;
 
 public interface ContainerProxy extends ContentResourceProxy {
 
@@ -75,5 +76,7 @@ public interface ContainerProxy extends ContentResourceProxy {
     String getReleasedBy();
 
     String getLatestVersionModifiedOn();
+
+    Container getContainer();
 
 }
