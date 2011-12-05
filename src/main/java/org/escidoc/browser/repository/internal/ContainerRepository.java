@@ -41,13 +41,9 @@ import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.internal.HasNoNameResource;
 import org.escidoc.browser.repository.Repository;
-import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.helper.Util;
-import org.escidoc.browser.ui.listeners.ResourceDeleteConfirmation;
 
 import com.google.common.base.Preconditions;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.ContainerHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -68,13 +64,10 @@ public class ContainerRepository implements Repository {
 
     private final ContainerHandlerClientInterface client;
 
-    private final Window mainWindow;
-
-    ContainerRepository(final EscidocServiceLocation escidocServiceLocation, final Window mainWindow) {
+    ContainerRepository(final EscidocServiceLocation escidocServiceLocation) {
         Preconditions
             .checkNotNull(escidocServiceLocation, "escidocServiceLocation is null: %s", escidocServiceLocation);
         client = new ContainerHandlerClient(escidocServiceLocation.getEscidocUri());
-        this.mainWindow = mainWindow;
     }
 
     @Override
@@ -185,93 +178,41 @@ public class ContainerRepository implements Repository {
         client.addMembers(parent, taskParam);
     }
 
-    public void changePublicStatus(final Container container, final String publicStatus, final String comment) {
+    public void changePublicStatus(final Container container, final String publicStatus, final String comment)
+        throws EscidocClientException {
         final TaskParam taskParam = new TaskParam();
         taskParam.setLastModificationDate(container.getLastModificationDate());
         taskParam.setComment(comment);
         if (publicStatus.equals("SUBMITTED")) {
-            try {
-                client.submit(container, taskParam);
-                mainWindow.showNotification(new Window.Notification(ViewConstants.SUBMITTED,
-                    Notification.TYPE_TRAY_NOTIFICATION));
-            }
-            catch (final EscidocClientException e) {
-                mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
-                    Notification.TYPE_ERROR_MESSAGE));
-            }
+            client.submit(container, taskParam);
         }
         else if (publicStatus.equals("IN_REVISION")) {
-            try {
-                client.revise(container, taskParam);
-                mainWindow.showNotification(new Window.Notification(ViewConstants.IN_REVISION,
-                    Notification.TYPE_TRAY_NOTIFICATION));
-            }
-            catch (final EscidocClientException e) {
-                mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
-                    Notification.TYPE_ERROR_MESSAGE));
-            }
+            client.revise(container, taskParam);
         }
         else if (publicStatus.equals("RELEASED")) {
-            try {
-                client.release(container, taskParam);
-                mainWindow.showNotification(new Window.Notification(ViewConstants.RELEASED,
-                    Notification.TYPE_TRAY_NOTIFICATION));
-            }
-            catch (final EscidocClientException e) {
-                mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
-                    Notification.TYPE_ERROR_MESSAGE));
-            }
-
+            client.release(container, taskParam);
         }
         else if (publicStatus.equals("WITHDRAWN")) {
-            try {
-                client.withdraw(container, taskParam);
-                mainWindow.showNotification(new Window.Notification(ViewConstants.WITHDRAWN,
-                    Notification.TYPE_TRAY_NOTIFICATION));
-            }
-            catch (final EscidocClientException e) {
-                mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
-                    Notification.TYPE_ERROR_MESSAGE));
-            }
-        }
-        else if (publicStatus.equals("DELETE")) {
-            new ResourceDeleteConfirmation(container, this, mainWindow);
-
+            client.withdraw(container, taskParam);
         }
     }
 
-    public void changeLockStatus(final Container container, final String lockStatus, final String comment) {
+    public void lockResource(final Container container, final String comment) throws EscidocClientException {
         final TaskParam taskParam = new TaskParam();
         taskParam.setLastModificationDate(container.getLastModificationDate());
         taskParam.setComment(comment);
-        if (lockStatus.contains("LOCKED")) {
-            try {
-                client.lock(container.getObjid(), taskParam);
-                mainWindow.showNotification(new Window.Notification(ViewConstants.LOCKED,
-                    Notification.TYPE_TRAY_NOTIFICATION));
-            }
-            catch (final EscidocClientException e) {
-                mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
-                    Notification.TYPE_ERROR_MESSAGE));
-            }
-        }
-        else {
-            try {
-                client.unlock(container.getObjid(), taskParam);
-                mainWindow.showNotification(new Window.Notification(ViewConstants.UNLOCKED,
-                    Notification.TYPE_TRAY_NOTIFICATION));
-            }
-            catch (final EscidocClientException e) {
-                mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
-                    Notification.TYPE_ERROR_MESSAGE));
-            }
-        }
+        client.lock(container.getObjid(), taskParam);
+    }
+
+    public void unlockResource(final Container container, final String comment) throws EscidocClientException {
+        final TaskParam taskParam = new TaskParam();
+        taskParam.setLastModificationDate(container.getLastModificationDate());
+        taskParam.setComment(comment);
+        client.unlock(container.getObjid(), taskParam);
     }
 
     public void finalDelete(final ResourceModel model) throws EscidocClientException {
         client.delete(model.getId());
-        mainWindow
-            .showNotification(new Window.Notification(ViewConstants.DELETED, Notification.TYPE_TRAY_NOTIFICATION));
     }
 
     public void finalDelete(final Container container) throws EscidocClientException {

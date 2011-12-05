@@ -43,14 +43,10 @@ import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.internal.HasNoNameResource;
 import org.escidoc.browser.repository.Repository;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.listeners.ResourceDeleteConfirmation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.ContainerHandlerClient;
 import de.escidoc.core.client.ItemHandlerClient;
@@ -76,13 +72,10 @@ public class ItemRepository implements Repository {
 
     private final ContainerHandlerClientInterface clientContainer;
 
-    private final Window mainWindow;
-
-    public ItemRepository(final EscidocServiceLocation serviceLocation, final Window mainWindow) {
+    public ItemRepository(final EscidocServiceLocation serviceLocation) {
         Preconditions.checkNotNull(serviceLocation, "escidocServiceLocation is null: %s", serviceLocation);
         client = new ItemHandlerClient(serviceLocation.getEscidocUri());
         clientContainer = new ContainerHandlerClient(serviceLocation.getEscidocUri());
-        this.mainWindow = mainWindow;
     }
 
     @Override
@@ -150,88 +143,38 @@ public class ItemRepository implements Repository {
         clientContainer.addMembers(parent, taskParam);
     }
 
-    public void changePublicStatus(final Item item, final String publicStatus, final String comment) {
+    public void changePublicStatus(final Item item, final String publicStatus, final String comment)
+        throws EscidocClientException {
         final TaskParam taskParam = new TaskParam();
         taskParam.setLastModificationDate(item.getLastModificationDate());
         taskParam.setComment(comment);
         if (publicStatus.equals("SUBMITTED")) {
-            try {
-                client.submit(item, taskParam);
-                mainWindow.showNotification(new Window.Notification(ViewConstants.SUBMITTED,
-                    Notification.TYPE_TRAY_NOTIFICATION));
-            }
-            catch (EscidocClientException e) {
-                mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
-                    Notification.TYPE_ERROR_MESSAGE));
-            }
+            client.submit(item, taskParam);
         }
         else if (publicStatus.equals("IN_REVISION")) {
-            try {
-                client.revise(item, taskParam);
-                mainWindow.showNotification(new Window.Notification(ViewConstants.IN_REVISION,
-                    Notification.TYPE_TRAY_NOTIFICATION));
-            }
-            catch (EscidocClientException e) {
-                mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
-                    Notification.TYPE_ERROR_MESSAGE));
-            }
+            client.revise(item, taskParam);
         }
         else if (publicStatus.equals("RELEASED")) {
-            try {
-                client.release(item, taskParam);
-                mainWindow.showNotification(new Window.Notification(ViewConstants.RELEASED,
-                    Notification.TYPE_TRAY_NOTIFICATION));
-            }
-            catch (EscidocClientException e) {
-                mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
-                    Notification.TYPE_ERROR_MESSAGE));
-            }
+            client.release(item, taskParam);
         }
         else if (publicStatus.equals("WITHDRAWN")) {
-            try {
-                client.withdraw(item, taskParam);
-                mainWindow.showNotification(new Window.Notification(ViewConstants.WITHDRAWN,
-                    Notification.TYPE_TRAY_NOTIFICATION));
-            }
-            catch (EscidocClientException e) {
-                mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
-                    Notification.TYPE_ERROR_MESSAGE));
-            }
+            client.withdraw(item, taskParam);
         }
-        else if (publicStatus.equals("DELETE")) {
-            new ResourceDeleteConfirmation(item, this, mainWindow);
-            mainWindow.showNotification(new Window.Notification(ViewConstants.DELETED,
-                Notification.TYPE_TRAY_NOTIFICATION));
-        }
+
     }
 
-    public void changeLockStatus(final Item item, final String lockStatus, final String comment) {
+    public void lockResource(final Item item, final String comment) throws EscidocClientException {
         final TaskParam taskParam = new TaskParam();
         taskParam.setLastModificationDate(item.getLastModificationDate());
         taskParam.setComment(comment);
-        if (lockStatus.contains("LOCKED")) {
-            try {
-                client.lock(item.getObjid(), taskParam);
-                mainWindow.showNotification(new Window.Notification(ViewConstants.LOCKED,
-                    Notification.TYPE_TRAY_NOTIFICATION));
-            }
-            catch (EscidocClientException e) {
-                mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
-                    Notification.TYPE_ERROR_MESSAGE));
-            }
-        }
-        else {
-            try {
-                client.unlock(item.getObjid(), taskParam);
-                mainWindow.showNotification(new Window.Notification(ViewConstants.UNLOCKED,
-                    Notification.TYPE_TRAY_NOTIFICATION));
-            }
-            catch (EscidocClientException e) {
-                mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
-                    Notification.TYPE_ERROR_MESSAGE));
-            }
+        client.lock(item.getObjid(), taskParam);
+    }
 
-        }
+    public void unlockResource(final Item item, final String comment) throws EscidocClientException {
+        final TaskParam taskParam = new TaskParam();
+        taskParam.setLastModificationDate(item.getLastModificationDate());
+        taskParam.setComment(comment);
+        client.unlock(item.getObjid(), taskParam);
     }
 
     public ResourceModel findContext(final HasNoNameResource resource) throws EscidocClientException {
@@ -241,8 +184,6 @@ public class ItemRepository implements Repository {
 
     public void finalDelete(final ResourceModel model) throws EscidocClientException {
         client.delete(model.getId());
-        mainWindow
-            .showNotification(new Window.Notification(ViewConstants.DELETED, Notification.TYPE_TRAY_NOTIFICATION));
     }
 
     public void finalDelete(final Item item) throws EscidocClientException {

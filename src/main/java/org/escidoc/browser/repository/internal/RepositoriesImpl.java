@@ -28,9 +28,7 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.ui.Window;
+import java.net.MalformedURLException;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.repository.AdminRepository;
@@ -39,15 +37,13 @@ import org.escidoc.browser.repository.PdpRepository;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.StagingRepository;
 
-import java.net.MalformedURLException;
+import com.google.common.base.Preconditions;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class RepositoriesImpl implements Repositories {
 
     private final EscidocServiceLocation serviceLocation;
-
-    private final Window mainWindow;
 
     private ContextRepository contextRepository;
 
@@ -69,16 +65,15 @@ public class RepositoriesImpl implements Repositories {
 
     private IngestRepository ingestRepository;
 
-    public RepositoriesImpl(final EscidocServiceLocation serviceLocation, Window mainWindow) {
+    public RepositoriesImpl(final EscidocServiceLocation serviceLocation) {
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         this.serviceLocation = serviceLocation;
-        this.mainWindow = mainWindow;
     }
 
     public Repositories createAllRepositories() throws MalformedURLException {
         contextRepository = new ContextRepository(serviceLocation);
-        containerRepository = new ContainerRepository(serviceLocation, mainWindow);
-        itemRepository = new ItemRepository(serviceLocation, mainWindow);
+        containerRepository = new ContainerRepository(serviceLocation);
+        itemRepository = new ItemRepository(serviceLocation);
         stagingRepository = new StagingRepositoryImpl(serviceLocation);
         pdpRepository = new PdpRepositoryImpl(serviceLocation.getEscidocUrl());
         contentModelRepository = new ContentModelRepository(serviceLocation);

@@ -37,6 +37,8 @@ import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.listeners.ResourceDeleteConfirmation;
 import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
 import org.escidoc.browser.ui.view.helpers.CreatePermanentLinkVH;
 import org.escidoc.browser.ui.view.helpers.DirectMember;
@@ -58,6 +60,7 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -622,8 +625,39 @@ public class ContainerView extends View {
                     // Update PublicStatus if there is a change
                     if (!resourceProxy.getVersionStatus().equals(
                         lblCurrentVersionStatus.getValue().toString().replace(status, ""))) {
-                        repositories.container().changePublicStatus(container,
-                            lblCurrentVersionStatus.getValue().toString().replace(status, "").toUpperCase(), comment);
+
+                        String publicStatusTxt =
+                            lblCurrentVersionStatus.getValue().toString().replace(status, "").toUpperCase();
+                        if (publicStatusTxt.equals("DELETE")) {
+                            new ResourceDeleteConfirmation(container, repositories.container(), mainWindow);
+
+                        }
+                        try {
+                            repositories.container().changePublicStatus(container,
+                                lblCurrentVersionStatus.getValue().toString().replace(status, "").toUpperCase(),
+                                comment);
+                            if (publicStatusTxt.equals("SUBMITTED")) {
+                                mainWindow.showNotification(new Window.Notification(ViewConstants.SUBMITTED,
+                                    Notification.TYPE_TRAY_NOTIFICATION));
+                            }
+                            else if (publicStatusTxt.equals("IN_REVISION")) {
+                                mainWindow.showNotification(new Window.Notification(ViewConstants.IN_REVISION,
+                                    Notification.TYPE_TRAY_NOTIFICATION));
+                            }
+                            else if (publicStatusTxt.equals("RELEASED")) {
+                                mainWindow.showNotification(new Window.Notification(ViewConstants.RELEASED,
+                                    Notification.TYPE_TRAY_NOTIFICATION));
+
+                            }
+                            else if (publicStatusTxt.equals("WITHDRAWN")) {
+                                mainWindow.showNotification(new Window.Notification(ViewConstants.WITHDRAWN,
+                                    Notification.TYPE_TRAY_NOTIFICATION));
+                            }
+                        }
+                        catch (EscidocClientException e) {
+                            mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
+                                Notification.TYPE_ERROR_MESSAGE));
+                        }
                     }
                 }
 
@@ -631,8 +665,25 @@ public class ContainerView extends View {
                     // Update LockStatus if there is a change
                     if (!resourceProxy.getLockStatus().equals(
                         lblLockstatus.getValue().toString().replace(lockStatus, ""))) {
-                        repositories.container().changeLockStatus(container,
-                            lblLockstatus.getValue().toString().replace(lockStatus, "").toUpperCase(), comment);
+                        String lockStatusTxt =
+                            lblLockstatus.getValue().toString().replace(lockStatus, "").toUpperCase();
+                        try {
+                            if (lockStatusTxt.contains("LOCKED")) {
+                                repositories.container().unlockResource(container, comment);
+                                mainWindow.showNotification(new Window.Notification(ViewConstants.LOCKED,
+                                    Notification.TYPE_TRAY_NOTIFICATION));
+                            }
+                            else {
+                                repositories.container().lockResource(container, comment);
+                                mainWindow.showNotification(new Window.Notification(ViewConstants.UNLOCKED,
+                                    Notification.TYPE_TRAY_NOTIFICATION));
+                            }
+
+                        }
+                        catch (EscidocClientException e) {
+                            mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
+                                Notification.TYPE_ERROR_MESSAGE));
+                        }
                     }
                 }
 

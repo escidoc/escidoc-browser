@@ -300,6 +300,8 @@ final class ActionHandlerImpl implements Action.Handler {
                 try {
                     repositories.item().finalDelete(model);
                     router.getLayout().closeView(model, treeDataSource.getParent(model));
+                    mainWindow.showNotification(new Window.Notification(ViewConstants.DELETED,
+                        Notification.TYPE_TRAY_NOTIFICATION));
                 }
                 catch (EscidocClientException e) {
                     mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
@@ -335,6 +337,8 @@ final class ActionHandlerImpl implements Action.Handler {
                 try {
                     repositories.container().finalDelete(model);
                     router.getLayout().closeView(model, treeDataSource.getParent(model));
+                    mainWindow.showNotification(new Window.Notification(ViewConstants.DELETED,
+                        Notification.TYPE_TRAY_NOTIFICATION));
                 }
                 catch (final EscidocClientException e) {
                     mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
