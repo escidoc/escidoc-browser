@@ -112,6 +112,38 @@ public final class LabsLayoutHelper {
         return horizontalLayout;
     }
 
+    public static synchronized HorizontalLayout createHorizontalLayoutWithELabsLabelAndStaticComboData(
+        final String labelTxt, String value) {
+        Preconditions.checkNotNull(labelTxt, "Label is null");
+        Preconditions.checkNotNull(value, "Value is null");
+
+        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        horizontalLayout.setSizeUndefined();
+        horizontalLayout.setDescription(USER_DESCR_ON_HOR_LAYOUT_TO_EDIT);
+        horizontalLayout.setEnabled(true);
+        horizontalLayout.setSpacing(true);
+        horizontalLayout.setHeight(HOR_PANEL_HEIGHT);
+
+        Label label = new Label();
+        label.setWidth(LABEL_WIDTH);
+        label.setValue(DIV_ALIGN_RIGHT + labelTxt + DIV_END);
+        label.setContentMode(Label.CONTENT_XHTML);
+        label.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
+
+        Label textLabel = new Label(value);
+        textLabel.setWidth(TEXT_WIDTH);
+        textLabel.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
+        textLabel.setStyleName(STYLE_ELABS_TEXT_AS_LABEL);
+
+        horizontalLayout.setStyleName(STYLE_ELABS_HOR_PANEL);
+        horizontalLayout.addComponent(label, 0);
+        horizontalLayout.addComponent(textLabel, 1);
+        horizontalLayout.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
+        horizontalLayout.setComponentAlignment(textLabel, Alignment.MIDDLE_RIGHT);
+
+        return horizontalLayout;
+    }
+
     public static synchronized HorizontalLayout createHorizontalLayoutWithELabsLabelAndLabelComplexData(
         final String labelTxt, String dataTxt) {
         Preconditions.checkNotNull(labelTxt, "Label is null");
@@ -259,7 +291,12 @@ public final class LabsLayoutHelper {
         else if (dataComponent instanceof ComboBox) {
             if (((ComboBox) dataComponent).getValue() instanceof String) {
                 dataProperty = ((ComboBox) dataComponent).getPropertyDataSource();
-                label = new Label(dataProperty);
+                if (dataProperty == null) {
+                    label = new Label((String) ((ComboBox) dataComponent).getValue());
+                }
+                else {
+                    label = new Label(dataProperty);
+                }
             }
             else if (((ComboBox) dataComponent).getValue() instanceof RigBean) {
                 label = new Label(((RigBean) ((ComboBox) dataComponent).getValue()).getComplexId());
@@ -404,6 +441,10 @@ public final class LabsLayoutHelper {
         final Container itemContainer) {
         Preconditions.checkNotNull(labsInstrumentAction, "LabsInstrumentAction is null");
         Preconditions.checkNotNull(itemContainer, "ItemContainer is null");
+
+        if (property == null && itemCaptionProperty == null) {
+            LOG.debug("No given datasource at ComboBox!");
+        }
 
         try {
             final ComboBox comboBox = new ComboBox(StringUtils.EMPTY_STRING, itemContainer);

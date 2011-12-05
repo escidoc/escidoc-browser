@@ -62,6 +62,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
@@ -203,9 +204,8 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
                 ELabsViewContants.L_INSTRUMENT_CALIBRATION_KEY, ELabsViewContants.L_INSTRUMENT_CALIBRATION_VALUE,
                 getPojoItem().getItemProperty(ELabsViewContants.P_INSTRUMENT_CALIBRATION));
         HorizontalLayout h5 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(
-                ELabsViewContants.L_INSTRUMENT_ESYNC_DAEMON,
-                getPojoItem().getItemProperty(ELabsViewContants.P_INSTRUMENT_ESYNCDAEMON));
+            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndStaticComboData(
+                ELabsViewContants.L_INSTRUMENT_ESYNC_DAEMON, instrumentBean.getESyncDaemon());
         HorizontalLayout h6 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_INSTRUMENT_FOLDER,
                 getPojoItem().getItemProperty(ELabsViewContants.P_INSTRUMENT_FOLDER));
@@ -221,7 +221,7 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
                 ELabsViewContants.L_INSTRUMENT_INSTITUTE, instituteText);
 
         // set up specific listeners
-        h5.addListener(new ESyncDaemonEndpointSelectionLayoutListener(this));
+        h5.addListener(new ESyncDaemonEndpointSelectionLayoutListener(this, this));
         if (!ELabsCache.getFileFormats().isEmpty()) {
             h7.addListener(new FileFormatSelectionLayoutListener(this));
         }
@@ -267,9 +267,9 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
             @Override
             public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
                 if (event.getButton().getCaption().equals("Save")) {
-                    controller.saveAction(instrumentBean);
                     InstrumentView.this.resetLayout();
                     dynamicLayout.requestRepaintAll();
+                    controller.saveAction(instrumentBean);
 
                 }
             }
@@ -303,6 +303,11 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
 
             if (LabsLayoutHelper.switchToLabelFromEditedField(tempParentLayout)) {
                 setModifiedComponent(null);
+
+                // get esynch label for instant save
+                if (dynamicLayout.getComponentIndex(tempParentLayout) == 4) {
+                    instrumentBean.setESyncDaemon((String) ((Label) tempParentLayout.getComponent(1)).getValue());
+                }
             }
             else {
                 LOG.error("Label change error, mod .component is not set to null");

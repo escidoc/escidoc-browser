@@ -35,11 +35,15 @@ import java.util.Iterator;
 
 import org.escidoc.browser.elabsmodul.cache.ELabsCache;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsInvestigationAction;
+import org.escidoc.browser.elabsmodul.interfaces.ILabsPanel;
+import org.escidoc.browser.elabsmodul.views.AddNewEndpointURIWindow;
 import org.escidoc.browser.elabsmodul.views.helpers.LabsLayoutHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
@@ -48,6 +52,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Window;
 
 public class DepositEndpointSelectionLayoutListener implements LayoutClickListener {
 
@@ -57,14 +62,19 @@ public class DepositEndpointSelectionLayoutListener implements LayoutClickListen
 
     final ILabsInvestigationAction labsInvestigationAction;
 
-    public DepositEndpointSelectionLayoutListener(final ILabsInvestigationAction labsInvestigationAction) {
+    final ILabsPanel labsPanel;
+
+    public DepositEndpointSelectionLayoutListener(final ILabsInvestigationAction labsInvestigationAction,
+        final ILabsPanel labsPanel) {
         Preconditions.checkNotNull(labsInvestigationAction, "LabsInvestigationAction is null");
         this.labsInvestigationAction = labsInvestigationAction;
+        this.labsPanel = labsPanel;
     }
 
     @Override
     public void layoutClick(LayoutClickEvent event) {
         final Component component = event.getComponent();
+        final String addNewItemProperty = "Add new...";
 
         if (!(component instanceof HorizontalLayout)) {
             LOG.error("This listener is defined only for horizontalLayout");
@@ -78,15 +88,16 @@ public class DepositEndpointSelectionLayoutListener implements LayoutClickListen
             }
             if (dataComponent instanceof Label) {
 
-                BeanItemContainer<String> itemContainer = new BeanItemContainer<String>(String.class);
+                final BeanItemContainer<String> itemContainer = new BeanItemContainer<String>(String.class);
                 for (Iterator<String> iterator = ELabsCache.getDepositEndpoints().iterator(); iterator.hasNext();) {
                     String element = iterator.next();
                     itemContainer.addItem(element);
                 }
+                itemContainer.addItem(addNewItemProperty);
 
-                Component newComponent =
-                    LabsLayoutHelper.createDynamicComboBoxFieldForInvestigation(this.labsInvestigationAction,
-                        ((Label) dataComponent).getPropertyDataSource(), null, itemContainer);
+                final Component newComponent =
+                    LabsLayoutHelper.createDynamicComboBoxFieldForInvestigation(this.labsInvestigationAction, null,
+                        null, itemContainer);
                 if (newComponent != null) {
                     ((HorizontalLayout) component).replaceComponent(dataComponent, newComponent);
                     ((HorizontalLayout) component).setComponentAlignment(
@@ -94,6 +105,42 @@ public class DepositEndpointSelectionLayoutListener implements LayoutClickListen
                     ((HorizontalLayout) component).setDescription(USER_DESCR_ON_HOR_LAYOUT_TO_SAVE);
                     ((Label) ((HorizontalLayout) component).getComponent(0))
                         .setDescription(USER_DESCR_ON_LABEL_TO_SAVE);
+
+                    if (newComponent instanceof ComboBox) {
+                        ((ComboBox) newComponent).addListener(new Property.ValueChangeListener() {
+                            private static final long serialVersionUID = 310234702020385025L;
+
+                            private Window addOnWindow = null;
+
+                            @Override
+                            public void valueChange(ValueChangeEvent event) {
+                                if (event.getProperty().getValue().equals(addNewItemProperty) && addOnWindow == null) {
+                                    DepositEndpointSelectionLayoutListener.this.labsPanel
+                                        .getReference()
+                                        .getApplication()
+                                        .getMainWindow()
+                                        .addWindow(
+                                            addOnWindow =
+                                                new AddNewEndpointURIWindow(new AddNewEndpointURIWindow.Callback() {
+                                                    @Override
+                                                    public void onAcceptAction(String inputURLText) {
+                                                        itemContainer.removeItem(addNewItemProperty);
+                                                        itemContainer.addItem(inputURLText);
+                                                        itemContainer.addItem(addNewItemProperty);
+                                                        ((ComboBox) newComponent).select(inputURLText);
+                                                        addOnWindow = null;
+                                                    }
+
+                                                    @Override
+                                                    public void onRefuseAction() {
+                                                        ((ComboBox) newComponent).select(ELabsCache
+                                                            .getDefaultDepositEndpoint());
+                                                    }
+                                                }, true));
+                                }
+                            }
+                        });
+                    }
                 }
             }
             else if (dataComponent instanceof ComboBox) {
