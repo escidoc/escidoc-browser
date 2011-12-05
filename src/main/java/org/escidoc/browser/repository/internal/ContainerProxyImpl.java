@@ -292,4 +292,9 @@ public class ContainerProxyImpl implements ContainerProxy {
         return containerFromCore.getProperties().getContentModel();
     }
 
+    @Override
+    public Container getContainer() {
+        return containerFromCore;
+    }
+
 }
