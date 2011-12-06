@@ -32,10 +32,9 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -58,7 +57,6 @@ import org.escidoc.browser.elabsmodul.views.InvestigationView;
 import org.escidoc.browser.elabsmodul.views.YesNoDialog;
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
@@ -622,39 +620,25 @@ public class InvestigationController extends Controller implements IInvestigatio
     @Override
     public synchronized List<RigBean> getAvailableRigs() {
         final List<RigBean> result = new ArrayList<RigBean>();
-        List<ResourceModel> itemList = null;
-        final String SEARCH_STRING_IN_CMM = "org.escidoc.bwelabs.Rig";
-        final String SEARCH_STRING_FOR_MATCHER = "org.escidoc.browser.Controller=([^;]*);";
+
         try {
-            final Pattern controllerIdPattern = Pattern.compile(SEARCH_STRING_FOR_MATCHER);
-            itemList = repositories.item().findAll();
-            for (final ResourceModel resourceModel : itemList) {
-                if (ItemModel.isItem(resourceModel)) {
-                    final ItemProxy itemProxy = (ItemProxy) repositories.item().findById(resourceModel.getId());
-                    final String cmmId = itemProxy.getContentModel().getObjid();
-                    if (cmmIds4Rig.contains(cmmId)) {
+            List<ResourceModel> items = null;
+            for (Iterator<String> iterator = ELabsCache.getRigCMMIds().iterator(); iterator.hasNext();) {
+                String cmmId = iterator.next();
+                items = repositories.item().findItemsByContentModel(cmmId);
+                for (Iterator<ResourceModel> iterator2 = items.iterator(); iterator2.hasNext();) {
+                    ResourceModel itemModel = iterator2.next();
+                    if (itemModel instanceof ItemProxy) {
+                        ItemProxy itemProxy = (ItemProxy) itemModel;
                         result.add(loadRelatedRigBeanData(itemProxy));
-                        continue;
-                    }
-                    final String cmmDescription = repositories.contentModel().findById(cmmId).getDescription();
-                    if (cmmDescription != null) {
-                        final Matcher controllerIdMatcher = controllerIdPattern.matcher(cmmDescription);
-                        String controllerId = null;
-                        if (controllerIdMatcher.find()) {
-                            controllerId = controllerIdMatcher.group(1);
-                        }
-                        if (controllerId != null && controllerId.equals(SEARCH_STRING_IN_CMM)) {
-                            cmmIds4Rig.add(cmmId);
-                            result.add(loadRelatedRigBeanData(itemProxy));
-                        }
                     }
                 }
             }
         }
-        catch (final EscidocClientException e) {
+        catch (EscidocClientException e) {
             LOG.error(e.getMessage());
-            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
         }
+
         return result;
     }
 

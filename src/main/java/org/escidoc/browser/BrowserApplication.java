@@ -149,7 +149,7 @@ public class BrowserApplication extends Application implements HttpServletReques
     private Router createRouter(final EscidocServiceLocation serviceLocation, final Window mainWindow)
         throws EscidocClientException, MalformedURLException {
 
-        final Repositories repositories = new RepositoriesImpl(serviceLocation, mainWindow).createAllRepositories();
+        final Repositories repositories = new RepositoriesImpl(serviceLocation).createAllRepositories();
         repositories.loginWith(getCurrentUser().getToken());
         final Router router = new Router(mainWindow, serviceLocation, this, repositories);
 

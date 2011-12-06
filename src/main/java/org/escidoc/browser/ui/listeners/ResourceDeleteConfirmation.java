@@ -20,6 +20,8 @@ public class ResourceDeleteConfirmation {
     public ResourceDeleteConfirmation(Item item, ItemRepository itemRepository, Window mainWindow) {
         try {
             delete(item, itemRepository, mainWindow);
+            mainWindow.showNotification(new Window.Notification(ViewConstants.DELETED,
+                Notification.TYPE_TRAY_NOTIFICATION));
         }
         catch (EscidocClientException e) {
             if (e.getMessage().toString().contains("An error occured removing member entries for container")) {
@@ -73,18 +75,6 @@ public class ResourceDeleteConfirmation {
         hl.addComponent(cancel);
         subwindow.addComponent(hl);
         mainWindow.addWindow(subwindow);
-        // catch (final EscidocClientException e) {
-        // if (e.getMessage().toString().contains("An error occured removing member entries for container")) {
-        // mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR,
-        // "Cannot remove the resource as it belongs to a resource which is not deletable",
-        // Notification.TYPE_ERROR_MESSAGE));
-        // }
-        // else {
-        // mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
-        // Notification.TYPE_ERROR_MESSAGE));
-        // }
-        // }
-
     }
 
     private void delete(final Item item, final ItemRepository itemRepository, final Window mainWindow)

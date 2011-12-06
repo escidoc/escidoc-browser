@@ -30,6 +30,8 @@ package org.escidoc.browser.ui;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -38,9 +40,12 @@ import java.util.regex.Pattern;
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.controller.Controller;
+import org.escidoc.browser.elabsmodul.cache.ELabsCache;
+import org.escidoc.browser.elabsmodul.enums.ContentModelTypeEnum;
 import org.escidoc.browser.layout.LayoutDesign;
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContainerProxy;
+import org.escidoc.browser.model.ContentModelProxyImpl;
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemModel;
@@ -107,6 +112,7 @@ public class Router {
         initiatePlugins();
         createLayout();
         permanentURLelement();
+        cachePredefinedContentModels();
     }
 
     /**
@@ -368,6 +374,63 @@ public class Router {
             return repositories.context().findById(clickedResource.getId());
         }
         throw new UnsupportedOperationException(clickedResource + " is unsupported");
+    }
+
+    private void cachePredefinedContentModels() {
+        List<ResourceModel> contentModels = null;
+        try {
+            final String SEARCH_STRING_FOR_MATCHER = AppConstants.CMM_DESCRIPTION_MATCHER;
+            final Pattern controllerPattern = Pattern.compile(SEARCH_STRING_FOR_MATCHER);
+            contentModels = repositories.contentModel().findAll();
+
+            if (contentModels == null) {
+                return;
+            }
+
+            synchronized (ELabsCache.getContentModels()) {
+
+                for (Iterator<ResourceModel> iterator = contentModels.iterator(); iterator.hasNext();) {
+                    ResourceModel resourceModel = iterator.next();
+                    if (resourceModel instanceof ContentModelProxyImpl) {
+                        ContentModelProxyImpl contentModelProxy = (ContentModelProxyImpl) resourceModel;
+                        String description = contentModelProxy.getDescription();
+                        if (description == null || description.isEmpty()) {
+                            continue;
+                        }
+                        final Matcher controllerMatcher = controllerPattern.matcher(description);
+                        String controllerName = null;
+                        if (controllerMatcher.find()) {
+                            controllerName = controllerMatcher.group(1);
+                        }
+                        if (controllerName == null || controllerName.isEmpty()) {
+                            continue;
+                        }
+                        final String cmmId = contentModelProxy.getId();
+
+                        if (!ELabsCache.getContentModels().containsKey(cmmId)) {
+                            if (controllerName.equals(AppConstants.CMM_DESCRIPTION_INSTRUMENT)) {
+                                ELabsCache.getContentModels().put(cmmId, ContentModelTypeEnum.INSTRUMENT);
+                            }
+                            else if (controllerName.equals(AppConstants.CMM_DESCRIPTION_RIG)) {
+                                ELabsCache.getContentModels().put(cmmId, ContentModelTypeEnum.RIG);
+                            }
+                            else if (controllerName.equals(AppConstants.CMM_DESCRIPTION_INVESTIGATION)) {
+                                ELabsCache.getContentModels().put(cmmId, ContentModelTypeEnum.INVESTIGATION);
+                            }
+                            else if (controllerName.equals(AppConstants.CMM_DESCRIPTION_STUDY)) {
+                                ELabsCache.getContentModels().put(cmmId, ContentModelTypeEnum.STUDY);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        catch (ClassCastException e) {
+            LOG.error(e.getMessage());
+        }
+        catch (EscidocClientException e) {
+            LOG.error(e.getMessage());
+        }
     }
 
     public Window getMainWindow() {
