@@ -53,4 +53,6 @@ interface ContentResourceProxy extends ResourceProxy {
 
     String getLatestVersionModifiedOn();
 
+    Resource getResource();
+
 }

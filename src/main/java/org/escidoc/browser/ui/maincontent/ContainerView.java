@@ -233,8 +233,7 @@ public class ContainerView extends View {
         vlRightPanel.setMargin(false);
 
         // metaDataRecsAcc
-        Accordion metaDataRecsAcc =
-            new MetadataRecs(resourceProxy, mainWindow, serviceLocation, repositories, router).asAccord();
+        Accordion metaDataRecsAcc = new MetadataRecs(resourceProxy, repositories, router, this).asAccord();
         vlRightPanel.addComponent(metaDataRecsAcc);
         return vlRightPanel;
     }
@@ -711,6 +710,15 @@ public class ContainerView extends View {
             });
         }
 
+    }
+
+    public void reloadView() {
+        try {
+            router.show(resourceProxy, true);
+        }
+        catch (EscidocClientException e) {
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        }
     }
 
     private boolean hasAccess() {

@@ -108,24 +108,35 @@ public class ItemPropertiesVH {
 
     private EscidocServiceLocation serviceLocation;
 
-    public ItemPropertiesVH(ItemProxyImpl resourceProxy, Repositories repositories, CssLayout cssLayout,
-        Window mainWindow, EscidocServiceLocation serviceLocation) {
+    private Label nameLabel;
+
+    public ItemPropertiesVH(ItemProxyImpl resourceProxy, Repositories repositories, Window mainWindow,
+        EscidocServiceLocation serviceLocation) {
         this.resourceProxy = resourceProxy;
         this.repositories = repositories;
-        this.cssLayout = cssLayout;
         this.mainWindow = mainWindow;
         this.serviceLocation = serviceLocation;
-
+        buildViews();
     }
 
-    public void init() {
+    public void buildViews() {
+        createLayout();
         handleLayoutListeners();
         createBreadcrump();
         createPermanentLink();
         bindNametoHeader();
         bindHrRuler();
         bindProperties();
+    }
 
+    public CssLayout getContentLayout() {
+        return cssLayout;
+    }
+
+    public void createLayout() {
+        cssLayout = new CssLayout();
+        cssLayout.setWidth("100%");
+        cssLayout.setHeight("100%");
     }
 
     private void createPermanentLink() {
@@ -205,10 +216,10 @@ public class ItemPropertiesVH {
     }
 
     private void bindNametoHeader() {
-        final Label headerContext = new Label(ViewConstants.RESOURCE_NAME + resourceProxy.getName());
-        headerContext.setDescription("header");
-        headerContext.setStyleName("h2 fullwidth");
-        cssLayout.addComponent(headerContext);
+        nameLabel = new Label(ViewConstants.RESOURCE_NAME + resourceProxy.getName());
+        nameLabel.setDescription("header");
+        nameLabel.setStyleName("h2 fullwidth");
+        cssLayout.addComponent(nameLabel);
     }
 
     private void createBreadcrump() {
@@ -388,6 +399,9 @@ public class ItemPropertiesVH {
                     final HorizontalLayout hl = new HorizontalLayout();
 
                     final Button close = new Button("Update", new Button.ClickListener() {
+
+                        private static final long serialVersionUID = 1424933077274899865L;
+
                         // inline click-listener
                         @Override
                         public void buttonClick(final ClickEvent event) {
@@ -397,6 +411,9 @@ public class ItemPropertiesVH {
                         }
                     });
                     final Button cancel = new Button("Cancel", new Button.ClickListener() {
+
+                        private static final long serialVersionUID = 1L;
+
                         @Override
                         public void buttonClick(final ClickEvent event) {
                             (subwindow.getParent()).removeWindow(subwindow);

@@ -310,4 +310,9 @@ public class ContainerProxyImpl implements ContainerProxy {
 
     }
 
+    @Override
+    public Resource getResource() {
+        return containerFromCore;
+    }
+
 }

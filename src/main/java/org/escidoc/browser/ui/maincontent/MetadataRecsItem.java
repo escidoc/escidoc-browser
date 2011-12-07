@@ -77,7 +77,10 @@ public class MetadataRecsItem {
 
     private final Router router;
 
-    MetadataRecsItem(final ItemProxy resourceProxy, final Repositories repositories, final Router router) {
+    private ItemView itemView;
+
+    MetadataRecsItem(final ItemProxy resourceProxy, final Repositories repositories, final Router router,
+        ItemView itemView) {
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null.");
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         this.router = router;
@@ -85,6 +88,7 @@ public class MetadataRecsItem {
         this.mainWindow = router.getMainWindow();
         this.repositories = repositories;
         this.escidocServiceLocation = router.getServiceLocation();
+        this.itemView = itemView;
 
     }
 
@@ -166,7 +170,7 @@ public class MetadataRecsItem {
         if (hasAccess()) {
             final Button btnEditActualMetaData =
                 new Button("edit", new EditMetaDataFileItemBehaviour(metadataRecord, mainWindow, repositories,
-                    resourceProxy));
+                    resourceProxy, itemView));
             btnEditActualMetaData.setStyleName(BaseTheme.BUTTON_LINK);
             btnEditActualMetaData.setDescription("Replace the metadata with a new content file");
             // btnEditActualMetaData.setIcon(new ThemeResource("../myTheme/runo/icons/16/reload.png"));

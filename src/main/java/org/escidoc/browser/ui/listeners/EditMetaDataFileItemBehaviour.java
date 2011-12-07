@@ -28,8 +28,25 @@
  */
 package org.escidoc.browser.ui.listeners;
 
-import com.google.common.base.Preconditions;
+import java.io.IOException;
+import java.io.StringReader;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.maincontent.ItemView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
+import com.google.common.base.Preconditions;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -43,23 +60,6 @@ import com.vaadin.ui.Upload.FinishedEvent;
 import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Window;
-
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.ViewConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-import java.io.IOException;
-import java.io.StringReader;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
@@ -92,8 +92,10 @@ public class EditMetaDataFileItemBehaviour implements ClickListener {
 
     private Element metadataContent;
 
+    private ItemView itemView;
+
     public EditMetaDataFileItemBehaviour(final MetadataRecord metadataRecord, final Window mainWindow,
-        final Repositories repositories, final ResourceProxy resourceProxy) {
+        final Repositories repositories, final ResourceProxy resourceProxy, ItemView itemView) {
         Preconditions.checkNotNull(metadataRecord, "metadataRecord is null: %s", metadataRecord);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
@@ -102,6 +104,7 @@ public class EditMetaDataFileItemBehaviour implements ClickListener {
         this.mainWindow = mainWindow;
         this.repositories = repositories;
         this.resourceProxy = resourceProxy;
+        this.itemView = itemView;
 
     }
 
@@ -172,8 +175,7 @@ public class EditMetaDataFileItemBehaviour implements ClickListener {
         upload.addListener(new Upload.FinishedListener() {
             @Override
             public void uploadFinished(final FinishedEvent event) {
-                // This method gets called always when the upload finished,
-                // either succeeding or failing
+
                 progressLayout.setVisible(false);
                 upload.setVisible(true);
                 upload.setCaption("Select another file");
@@ -189,7 +191,7 @@ public class EditMetaDataFileItemBehaviour implements ClickListener {
                     item = repositories.item().findItemById(resourceProxy.getId());
                     metadataRecord.setContent(metadataContent);
                     repositories.item().updateMetaData(metadataRecord, item);
-                    status.setValue("");
+                    itemView.reloadView();
                     upload.setEnabled(true);
                 }
                 catch (final EscidocClientException e) {
