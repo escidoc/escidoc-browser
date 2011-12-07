@@ -28,35 +28,8 @@
  */
 package org.escidoc.browser.ui.tools;
 
-import java.io.ByteArrayInputStream;
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
-import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.escidoc.browser.AppConstants;
-import org.escidoc.browser.Utils;
-import org.escidoc.browser.model.PropertyId;
-import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.model.ResourceType;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.repository.Repository;
-import org.escidoc.browser.repository.internal.ActionIdConstants;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.tools.Style.H2;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.terminal.StreamResource;
 import com.vaadin.terminal.StreamResource.StreamSource;
@@ -74,6 +47,34 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
+
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.escidoc.browser.AppConstants;
+import org.escidoc.browser.Utils;
+import org.escidoc.browser.model.PropertyId;
+import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.Repository;
+import org.escidoc.browser.repository.internal.ActionIdConstants;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.tools.Style.H2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.ByteArrayInputStream;
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.adm.AdminStatus;
@@ -164,6 +165,7 @@ public class PurgeAndExportResourceView extends VerticalLayout {
                 if (isContentModelSelected() && isExportPermitted()) {
                     showExportView();
                 }
+                showDeleteView();
             }
             catch (EscidocClientException e) {
                 LOG.error(e.getMessage());
@@ -173,6 +175,21 @@ public class PurgeAndExportResourceView extends VerticalLayout {
                 LOG.error(e.getMessage());
                 showErrorMessage(e);
             }
+        }
+
+        private void showDeleteView() {
+            buttonLayout.setSpacing(true);
+            Button deleteButton = new Button(ViewConstants.DELETE);
+            deleteButton.setStyleName(Reindeer.BUTTON_SMALL);
+            buttonLayout.addComponent(deleteButton);
+            deleteButton.addListener(new ClickListener() {
+
+                @Override
+                public void buttonClick(ClickEvent event) {
+                    final Set<ResourceModel> selectedResources = getSelectedResources();
+                    throw new UnsupportedOperationException("nyi.");
+                }
+            });
         }
 
         private boolean isContentModelSelected() {
@@ -417,7 +434,7 @@ public class PurgeAndExportResourceView extends VerticalLayout {
         addComponent(horizontalLayout);
     }
 
-    private PopupView createHelpView() {
+    private static PopupView createHelpView() {
         final Label popUpContent = new Label(ViewConstants.FILTER_EXAMPLE_TOOLTIP_TEXT, Label.CONTENT_XHTML);
         popUpContent.setWidth(400, UNITS_PIXELS);
         final PopupView popup = new PopupView(ViewConstants.TIP, popUpContent);
@@ -435,7 +452,7 @@ public class PurgeAndExportResourceView extends VerticalLayout {
         resourceOption.setItemCaptionPropertyId("label");
     }
 
-    private List<ResourceType> createResourceTypeList() {
+    private static List<ResourceType> createResourceTypeList() {
         final List<ResourceType> list = new ArrayList<ResourceType>();
         list.add(ResourceType.CONTEXT);
         list.add(ResourceType.CONTAINER);
