@@ -65,7 +65,6 @@ import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.om.item.Item;
 
 public class ItemRepository implements Repository {
-
     private static final Logger LOG = LoggerFactory.getLogger(ItemRepository.class);
 
     private final ItemHandlerClientInterface client;
