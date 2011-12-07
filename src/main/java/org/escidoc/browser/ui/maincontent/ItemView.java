@@ -175,8 +175,7 @@ public final class ItemView extends View {
         vlRightPanel.setMargin(false);
 
         // metaDataRecsAcc
-        Accordion metaDataRecsAcc =
-            new MetadataRecsItem(resourceProxy, mainWindow, serviceLocation, repositories, router, layout).asAccord();
+        Accordion metaDataRecsAcc = new MetadataRecsItem(resourceProxy, repositories, router).asAccord();
         vlRightPanel.addComponent(metaDataRecsAcc);
         return vlRightPanel;
     }
