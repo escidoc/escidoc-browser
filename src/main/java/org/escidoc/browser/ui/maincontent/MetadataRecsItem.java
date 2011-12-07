@@ -31,7 +31,6 @@ package org.escidoc.browser.ui.maincontent;
 import java.net.URISyntaxException;
 
 import org.escidoc.browser.BrowserApplication;
-import org.escidoc.browser.layout.LayoutDesign;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.repository.Repositories;
@@ -78,23 +77,15 @@ public class MetadataRecsItem {
 
     private final Router router;
 
-    private LayoutDesign layout;
-
-    MetadataRecsItem(final ItemProxy resourceProxy, final Window mainWindow,
-        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories, final Router router,
-        LayoutDesign layout) {
+    MetadataRecsItem(final ItemProxy resourceProxy, final Repositories repositories, final Router router) {
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null.");
-        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
-        Preconditions
-            .checkNotNull(escidocServiceLocation, "escidocServiceLocation is null: %s", escidocServiceLocation);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
-
-        this.resourceProxy = resourceProxy;
-        this.mainWindow = mainWindow;
-        this.escidocServiceLocation = escidocServiceLocation;
-        this.repositories = repositories;
         this.router = router;
-        this.layout = layout;
+        this.resourceProxy = resourceProxy;
+        this.mainWindow = router.getMainWindow();
+        this.repositories = repositories;
+        this.escidocServiceLocation = router.getServiceLocation();
+
     }
 
     protected Accordion asAccord() {
@@ -121,8 +112,7 @@ public class MetadataRecsItem {
         btnVersionHistory.setDescription("Show Version history in a Pop-up");
 
         final Button btnContentRelation =
-            new Button("Item Content Relations", new RelationsClickListener(resourceProxy, mainWindow,
-                escidocServiceLocation, repositories, router, layout));
+            new Button("Item Content Relations", new RelationsClickListener(resourceProxy, repositories, router));
         btnContentRelation.setStyleName(BaseTheme.BUTTON_LINK);
         btnContentRelation.setDescription("Show Version history in a Pop-up");
 

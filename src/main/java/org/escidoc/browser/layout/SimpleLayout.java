@@ -38,7 +38,6 @@ import org.escidoc.browser.model.internal.TreeDataSourceImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.View;
 import org.escidoc.browser.ui.mainpage.Footer;
 import org.escidoc.browser.ui.mainpage.HeaderContainer;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
@@ -59,6 +58,7 @@ import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
@@ -168,7 +168,7 @@ public class SimpleLayout extends LayoutDesign {
      * 
      * @param cmp
      */
-    public void closeView(ResourceModel model, ResourceModel parent) {
+    public void closeView(ResourceModel model, ResourceModel parent, Object sender) {
         // 1. Remove the tab for the resource to be deleted
         // 2. Reload the parent Tab
         // 3. Remove the element from the tree
@@ -195,18 +195,13 @@ public class SimpleLayout extends LayoutDesign {
                             Window.Notification.TYPE_ERROR_MESSAGE);
 
                     }
-                    // View tabView = (View) mainContentTabs.getTab(i).getComponent();
-                    // openViewByReloading(tabView, tabView.getViewName());
                 }
             }
             else {
-                // this is the case when Deleting from DirectMember
-                LOG.debug("############################ Parent is null are you deleting from the DM?");
-                View tab = (View) mainContentTabs.getSelectedTab();
-                openViewByReloading(mainContentTabs.getSelectedTab(), tab.getViewName());
+                Tree dmTree = (Tree) sender;
+                dmTree.removeItem(model);
             }
         }
-        // remove it from the tree
         treeDataSource.remove(model);
     }
 
