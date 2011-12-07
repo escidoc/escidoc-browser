@@ -135,7 +135,7 @@ final class ActionHandlerImpl implements Action.Handler {
     public void handleAction(final Action action, final Object sender, final Object target) {
         final String contextId = findContextId(target);
         try {
-            doActionIfAllowed(action, target, contextId);
+            doActionIfAllowed(action, target, contextId, sender);
         }
         catch (final EscidocClientException e) {
             LOG.error(e.getMessage(), e);
@@ -149,18 +149,18 @@ final class ActionHandlerImpl implements Action.Handler {
         }
     }
 
-    private void doActionIfAllowed(final Action action, final Object selectedResource, final String contextId)
+    private void doActionIfAllowed(
+        final Action action, final Object selectedResource, final String contextId, Object sender)
         throws EscidocClientException, URISyntaxException {
-
         // original doActions
         if (action.equals(ActionList.ACTION_ADD_RESOURCE)) {
             tryShowCreateResourceView(selectedResource, contextId);
         }
         else if (action.equals(ActionList.ACTION_DELETE_CONTAINER)) {
-            tryDeleteContainer(selectedResource);
+            tryDeleteContainer(selectedResource, sender);
         }
         else if (action.equals(ActionList.ACTION_DELETE_ITEM)) {
-            tryDeleteItem(selectedResource);
+            tryDeleteItem(selectedResource, sender);
         }
         else {
             mainWindow.showNotification("Unknown Action: " + action.getCaption(),
@@ -168,10 +168,10 @@ final class ActionHandlerImpl implements Action.Handler {
         }
     }
 
-    private void tryDeleteItem(final Object target) throws EscidocClientException, URISyntaxException {
+    private void tryDeleteItem(final Object target, Object sender) throws EscidocClientException, URISyntaxException {
         final String itemId = ((ItemModel) target).getId();
         if (allowedToDeleteItem(itemId)) {
-            deleteItem((ItemModel) target);
+            deleteItem((ItemModel) target, sender);
         }
         else {
             mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
@@ -179,10 +179,11 @@ final class ActionHandlerImpl implements Action.Handler {
         }
     }
 
-    private void tryDeleteContainer(final Object target) throws EscidocClientException, URISyntaxException {
+    private void tryDeleteContainer(final Object target, Object sender) throws EscidocClientException,
+        URISyntaxException {
         final String containerId = ((ContainerModel) target).getId();
         if (allowedToDeleteContainer(containerId)) {
-            deleteContainer((ContainerModel) target);
+            deleteContainer((ContainerModel) target, sender);
         }
         else {
             mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
@@ -277,29 +278,28 @@ final class ActionHandlerImpl implements Action.Handler {
         return showAddViewCommand;
     }
 
-    private void deleteItem(final ItemModel selectedItem) {
+    private void deleteItem(final ItemModel selectedItem, Object sender) {
         try {
-            deleteSelected(selectedItem);
+            deleteSelected(selectedItem, sender);
         }
         catch (final EscidocClientException e) {
             getWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
         }
     }
 
-    public void deleteSelected(final ItemModel model) throws EscidocClientException {
+    public void deleteSelected(final ItemModel model, final Object sender) throws EscidocClientException {
         final Window subwindow = new Window(DELETE_RESOURCE_WND_NAME);
         subwindow.setModal(true);
         Label message = new Label(DELETE_RESOURCE);
         subwindow.addComponent(message);
 
-        @SuppressWarnings("serial")
         Button okConfirmed = new Button("Yes", new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
                 try {
                     repositories.item().finalDelete(model);
-                    router.getLayout().closeView(model, treeDataSource.getParent(model));
+                    router.getLayout().closeView(model, treeDataSource.getParent(model), sender);
                     mainWindow.showNotification(new Window.Notification(ViewConstants.DELETED,
                         Notification.TYPE_TRAY_NOTIFICATION));
                 }
@@ -310,7 +310,7 @@ final class ActionHandlerImpl implements Action.Handler {
             }
 
         });
-        @SuppressWarnings("serial")
+
         Button cancel = new Button("Cancel", new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
@@ -324,7 +324,7 @@ final class ActionHandlerImpl implements Action.Handler {
         mainWindow.addWindow(subwindow);
     }
 
-    public void deleteContainer(final ContainerModel model) throws EscidocClientException {
+    public void deleteContainer(final ContainerModel model, final Object sender) throws EscidocClientException {
         final Window subwindow = new Window(DELETE_RESOURCE_WND_NAME);
         subwindow.setModal(true);
         final Label message = new Label(DELETE_RESOURCE);
@@ -336,7 +336,7 @@ final class ActionHandlerImpl implements Action.Handler {
                 (subwindow.getParent()).removeWindow(subwindow);
                 try {
                     repositories.container().finalDelete(model);
-                    router.getLayout().closeView(model, treeDataSource.getParent(model));
+                    router.getLayout().closeView(model, treeDataSource.getParent(model), sender);
                     mainWindow.showNotification(new Window.Notification(ViewConstants.DELETED,
                         Notification.TYPE_TRAY_NOTIFICATION));
                 }
