@@ -28,8 +28,12 @@
  */
 package org.escidoc.browser.elabsmodul.views.helpers;
 
-import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.elabsmodul.interfaces.IInvestigationAction;
+import org.escidoc.browser.elabsmodul.interfaces.ILabsPanel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -37,28 +41,48 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 
 public class StartInvestigationViewHelper {
-    private Router router;
 
-    public StartInvestigationViewHelper(Router router) {
-        this.router = router;
+    private final ILabsPanel labsPanel;
+
+    private final IInvestigationAction investigationAction;
+
+    private static Logger LOG = LoggerFactory.getLogger(StartInvestigationViewHelper.class);
+
+    public StartInvestigationViewHelper(ILabsPanel labsPanel, IInvestigationAction investigationAction) {
+        Preconditions.checkNotNull(labsPanel, "labsPanel is null");
+        Preconditions.checkNotNull(investigationAction, "investigationAction is null");
+        this.labsPanel = labsPanel;
+        this.investigationAction = investigationAction;
     }
 
     public void createStartButton(Panel panel) {
         Button startBtn = new Button("Start Investigation");
         startBtn.setWidth("100%");
-        // startBtn.setStyleName(Runo.BUTTON_BIG);
-        startBtn.addListener(new Button.ClickListener() {
 
+        startBtn.addListener(new Button.ClickListener() {
             private static final long serialVersionUID = -7563393988056484131L;
 
             @Override
             public void buttonClick(ClickEvent event) {
                 if (event.getButton().getCaption().equals("Start Investigation")) {
-                    router.getMainWindow().getWindow().showNotification("Starting Process");
+                    labsPanel
+                        .getReference().getApplication().getMainWindow().getWindow()
+                        .showNotification("Starting Process...");
+                    try {
+                        Thread.sleep(500);
+                    }
+                    catch (InterruptedException e) {
+                        LOG.error(e.getMessage());
+                    }
+                    investigationAction.getLabsService().start();
                     event.getButton().setCaption("Stop Investigation");
                 }
                 else {
-                    router.getMainWindow().getWindow().showNotification("Halting Process");
+                    labsPanel
+                        .getReference().getApplication().getMainWindow().getWindow()
+                        .showNotification("Halting Process...");
+
+                    investigationAction.getLabsService().stop();
                     event.getButton().setCaption("Start Investigation");
                 }
             }

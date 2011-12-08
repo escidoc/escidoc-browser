@@ -420,6 +420,9 @@ public class Router {
                             else if (controllerName.equals(AppConstants.CMM_DESCRIPTION_STUDY)) {
                                 ELabsCache.getContentModels().put(cmmId, ContentModelTypeEnum.STUDY);
                             }
+                            else if (controllerName.equals(AppConstants.CMM_DESCRIPTION_INVESTIGATION_RESULTS)) {
+                                ELabsCache.getContentModels().put(cmmId, ContentModelTypeEnum.INVESTIGATION_RESULT);
+                            }
                         }
                     }
                 }

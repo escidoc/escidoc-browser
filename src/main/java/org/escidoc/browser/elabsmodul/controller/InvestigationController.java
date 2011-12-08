@@ -49,10 +49,12 @@ import org.escidoc.browser.elabsmodul.controller.utils.DOM2String;
 import org.escidoc.browser.elabsmodul.exceptions.EscidocBrowserException;
 import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
 import org.escidoc.browser.elabsmodul.interfaces.IInvestigationAction;
+import org.escidoc.browser.elabsmodul.interfaces.ILabsService;
 import org.escidoc.browser.elabsmodul.model.InstrumentBean;
 import org.escidoc.browser.elabsmodul.model.InvestigationBean;
 import org.escidoc.browser.elabsmodul.model.RigBean;
 import org.escidoc.browser.elabsmodul.model.UserBean;
+import org.escidoc.browser.elabsmodul.service.ELabsService;
 import org.escidoc.browser.elabsmodul.views.InvestigationView;
 import org.escidoc.browser.elabsmodul.views.YesNoDialog;
 import org.escidoc.browser.model.ContainerProxy;
@@ -108,13 +110,9 @@ public class InvestigationController extends Controller implements IInvestigatio
 
     private IBeanModel model;
 
+    private ILabsService labsService;
+
     private static Window mainWindow;
-
-    private static List<String> cmmIds4Rig = null;
-
-    static {
-        cmmIds4Rig = new ArrayList<String>();
-    }
 
     /*
      * (non-Javadoc)
@@ -133,6 +131,7 @@ public class InvestigationController extends Controller implements IInvestigatio
         this.router = router;
         this.resourceProxy = resourceProxy;
         this.mainWindow = mainWindow;
+        this.labsService = new ELabsService(repositories, router, resourceProxy.getId());
 
         loadAdminDescriptorInfo();
         getUsers();
@@ -672,5 +671,13 @@ public class InvestigationController extends Controller implements IInvestigatio
             return null;
         }
 
+    }
+
+    /**
+     * @return the labsService
+     */
+    @Override
+    public ILabsService getLabsService() {
+        return labsService;
     }
 }
