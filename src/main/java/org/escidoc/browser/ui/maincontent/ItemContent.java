@@ -57,7 +57,6 @@ import com.vaadin.ui.themes.BaseTheme;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.om.item.component.Component;
 
-@SuppressWarnings("serial")
 public class ItemContent extends VerticalLayout {
 
     private static final Logger LOG = LoggerFactory.getLogger(ItemContent.class);
@@ -143,6 +142,8 @@ public class ItemContent extends VerticalLayout {
         link.setStyleName(BaseTheme.BUTTON_LINK);
         link.setIcon(new ThemeResource("images/download.png"));
         link.addListener(new Button.ClickListener() {
+
+            private static final long serialVersionUID = 651483473875504715L;
 
             @Override
             public void buttonClick(final ClickEvent event) {

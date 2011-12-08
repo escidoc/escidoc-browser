@@ -100,7 +100,7 @@ public final class InstrumentController extends Controller implements ISaveActio
 
     private Window mainWindow;
 
-    private IBeanModel beanModel = null;
+    private IBeanModel beanModel;
 
     private Router router;
 
