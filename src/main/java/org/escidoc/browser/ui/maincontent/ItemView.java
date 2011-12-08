@@ -29,8 +29,10 @@
 package org.escidoc.browser.ui.maincontent;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.escidoc.browser.ui.Router;
@@ -40,7 +42,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Accordion;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
@@ -49,6 +50,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.om.item.Item;
 
 @SuppressWarnings("serial")
 public final class ItemView extends View {
@@ -300,15 +302,19 @@ public final class ItemView extends View {
         try {
             router.show(resourceProxy, true);
             // refresh tree
-            // TreeDataSource treeDS = router.getLayout().getTreeDataSource();
-            // ItemModel im = new ItemModel(resourceProxy.getResource());
-            // ResourceModel parentModel = treeDS.getParent(im);
-            //
-            // treeDS.remove(im);
-            // treeDS.addChild(parentModel, im);
+            TreeDataSource treeDS = router.getLayout().getTreeDataSource();
+            ItemModel im = new ItemModel(resourceProxy.getResource());
+            ResourceModel parentModel = treeDS.getParent(im);
+
+            boolean isSuccesful = treeDS.remove(im);
+            if (isSuccesful) {
+                // Need to reload again the item
+                Item itemP = repositories.item().findItemById(resourceProxy.getId());
+                treeDS.addChild(parentModel, new ItemModel(itemP));
+            }
             //
             // // Reload Parent
-            // reloadParent(parentModel);
+            reloadParent(parentModel);
 
         }
         catch (EscidocClientException e) {
@@ -317,7 +323,7 @@ public final class ItemView extends View {
     }
 
     private void reloadParent(ResourceModel parentModel) throws EscidocClientException {
-        TabSheet ts = (TabSheet) getParent(panelView);
+        TabSheet ts = (TabSheet) router.getLayout().getViewContainer();
         for (int i = ts.getComponentCount() - 1; i >= 0; i--) {
             String tabDescription =
                 ts.getTab(i).getDescription().substring(ts.getTab(i).getDescription().lastIndexOf('#') + 1).toString();
@@ -327,16 +333,5 @@ public final class ItemView extends View {
                 router.show(parentModel, true);
             }
         }
-    }
-
-    private Component getParent(Component son) throws NullPointerException {
-        Component father;
-        if (son.getParent().getClass().toString().equals("class com.vaadin.ui.TabSheet")) {
-            return (TabSheet) son.getParent();
-        }
-        else {
-            father = getParent(son.getParent());
-        }
-        return father;
     }
 }
