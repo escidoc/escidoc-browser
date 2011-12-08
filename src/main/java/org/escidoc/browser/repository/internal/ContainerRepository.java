@@ -261,4 +261,9 @@ public class ContainerRepository implements Repository {
         String query = "\"/properties/content-model/id\"=\"" + cmId + "\"";
         return query;
     }
+
+    @Override
+    public void delete(String id) throws EscidocClientException {
+        client.delete(id);
+    }
 }

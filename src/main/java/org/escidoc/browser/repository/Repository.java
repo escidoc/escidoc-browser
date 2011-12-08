@@ -53,4 +53,6 @@ public interface Repository {
     Relations getRelations(String id) throws EscidocClientException;
 
     List<ResourceModel> filterUsingInput(String query) throws EscidocClientException;
+
+    void delete(String id) throws EscidocClientException;
 }
