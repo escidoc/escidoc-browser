@@ -73,8 +73,6 @@ public class RelationsClickListener implements ClickListener {
 
     private ResourceType type;
 
-    private EscidocServiceLocation escidocServiceLocation;
-
     private Repositories repositories;
 
     private Router router;
@@ -91,23 +89,17 @@ public class RelationsClickListener implements ClickListener {
      * @param repositories
      * @param escidocServiceLocation
      */
-    public RelationsClickListener(final ItemProxy resourceProxy, final Window mainWindow,
-        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories, final Router mainSite,
-        LayoutDesign layout) {
+    public RelationsClickListener(final ItemProxy resourceProxy, final Repositories repositories, final Router router) {
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
-        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
-        Preconditions
-            .checkNotNull(escidocServiceLocation, "escidocServiceLocation is null: %s", escidocServiceLocation);
 
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
-        Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
+        Preconditions.checkNotNull(router, "mainSite is null: %s", router);
         itemProxy = resourceProxy;
         Preconditions.checkNotNull(itemProxy, "resourceProxy is null: %s", itemProxy);
-        this.mainWindow = mainWindow;
-        this.router = mainSite;
-        this.escidocServiceLocation = escidocServiceLocation;
+        this.router = router;
+        this.mainWindow = router.getMainWindow();
         this.repositories = repositories;
-        this.layout = layout;
+
         itemOrContainerRepository = repositories.item();
     }
 

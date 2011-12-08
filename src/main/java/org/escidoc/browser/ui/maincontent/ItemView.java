@@ -28,9 +28,11 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import org.escidoc.browser.layout.LayoutDesign;
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ItemModel;
+import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.escidoc.browser.ui.Router;
@@ -40,14 +42,15 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Accordion;
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.om.item.Item;
 
 @SuppressWarnings("serial")
 public final class ItemView extends View {
@@ -64,7 +67,9 @@ public final class ItemView extends View {
 
     private final Repositories repositories;
 
-    private LayoutDesign layout;
+    private ItemPropertiesVH itemPropertiesView;
+
+    private Panel panelView;
 
     public ItemView(final Repositories repositories, final Router router, final ResourceProxy resourceProxy)
         throws EscidocClientException {
@@ -77,9 +82,8 @@ public final class ItemView extends View {
         this.setViewName(resourceProxy.getName());
         this.mainWindow = router.getMainWindow();
         this.router = router;
-        this.layout = router.getLayout();
         this.serviceLocation = router.getServiceLocation();
-        buildContentPanel();
+        panelView = buildContentPanel();
     }
 
     public Panel buildContentPanel() throws EscidocClientException {
@@ -175,8 +179,7 @@ public final class ItemView extends View {
         vlRightPanel.setMargin(false);
 
         // metaDataRecsAcc
-        Accordion metaDataRecsAcc =
-            new MetadataRecsItem(resourceProxy, mainWindow, serviceLocation, repositories, router, layout).asAccord();
+        Accordion metaDataRecsAcc = new MetadataRecsItem(resourceProxy, repositories, router, this).asAccord();
         vlRightPanel.addComponent(metaDataRecsAcc);
         return vlRightPanel;
     }
@@ -254,19 +257,14 @@ public final class ItemView extends View {
         vlResourceProperties.setHeight("100.0%");
         vlResourceProperties.setMargin(false);
 
-        CssLayout cssLayout = new CssLayout();
-        cssLayout.setWidth("100%");
-        cssLayout.setHeight("100%");
-
         // creating the properties / without the breadcrump
-        createProperties(cssLayout);
-        vlResourceProperties.addComponent(cssLayout);
+        itemPropertiesView = new ItemPropertiesVH(resourceProxy, repositories, mainWindow, serviceLocation);
+        vlResourceProperties.addComponent(itemPropertiesView.getContentLayout());
         return vlResourceProperties;
     }
 
-    private void createProperties(CssLayout contentContainer) {
-        // Create Property fields. Probably not the best place for them to be
-        new ItemPropertiesVH(resourceProxy, repositories, contentContainer, mainWindow, serviceLocation).init();
+    public ItemPropertiesVH getItemPropertiesVH() {
+        return itemPropertiesView;
     }
 
     @Override
@@ -298,5 +296,42 @@ public final class ItemView extends View {
             return false;
         }
         return true;
+    }
+
+    public void reloadView() {
+        try {
+            router.show(resourceProxy, true);
+            // refresh tree
+            TreeDataSource treeDS = router.getLayout().getTreeDataSource();
+            ItemModel im = new ItemModel(resourceProxy.getResource());
+            ResourceModel parentModel = treeDS.getParent(im);
+
+            boolean isSuccesful = treeDS.remove(im);
+            if (isSuccesful) {
+                // Need to reload again the item
+                Item itemP = repositories.item().findItemById(resourceProxy.getId());
+                treeDS.addChild(parentModel, new ItemModel(itemP));
+            }
+            //
+            // // Reload Parent
+            reloadParent(parentModel);
+
+        }
+        catch (EscidocClientException e) {
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        }
+    }
+
+    private void reloadParent(ResourceModel parentModel) throws EscidocClientException {
+        TabSheet ts = (TabSheet) router.getLayout().getViewContainer();
+        for (int i = ts.getComponentCount() - 1; i >= 0; i--) {
+            String tabDescription =
+                ts.getTab(i).getDescription().substring(ts.getTab(i).getDescription().lastIndexOf('#') + 1).toString();
+            LOG.debug("############################ " + tabDescription);
+            // Remove the tab from the TabSheet
+            if (tabDescription.equals(parentModel.getId().toString())) {
+                router.show(parentModel, true);
+            }
+        }
     }
 }

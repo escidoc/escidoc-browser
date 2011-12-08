@@ -59,11 +59,13 @@ public abstract class LayoutDesign extends VerticalLayout {
 
     public abstract void openViewByReloading(Component cmp, String title);
 
-    public abstract void closeView(ResourceModel model, ResourceModel parent);
+    public abstract void closeView(ResourceModel model, ResourceModel parent, Object sender);
 
     @Deprecated
     public abstract int getApplicationHeight();
 
     public abstract TreeDataSource getTreeDataSource();
+
+    public abstract Component getViewContainer();
 
 }

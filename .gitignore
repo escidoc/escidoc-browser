@@ -5,6 +5,7 @@
 target/*
 reports/*
 build/*
+.idea
 bin
 bin/*
 log/*

@@ -79,21 +79,23 @@ public class MetadataRecs {
 
     VerticalLayout btnaddContainer = new VerticalLayout();
 
-    private final Router mainSite;
+    private final Router router;
 
-    public MetadataRecs(final ResourceProxy resourceProxy, final Window mainWindow,
-        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories, final Router mainSite) {
+    private ContainerView containerView;
+
+    public MetadataRecs(final ResourceProxy resourceProxy, final Repositories repositories, final Router router,
+        ContainerView containerView) {
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
-        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
-        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
-        Preconditions.checkNotNull(escidocServiceLocation, "escidocServiceLocation is null.");
-        Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
 
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        Preconditions.checkNotNull(router, "mainSite is null: %s", router);
+        this.router = router;
         this.resourceProxy = (ContainerProxy) resourceProxy;
-        this.mainWindow = mainWindow;
-        this.escidocServiceLocation = escidocServiceLocation;
+        this.mainWindow = router.getMainWindow();
+        this.escidocServiceLocation = router.getServiceLocation();
         this.repositories = repositories;
-        this.mainSite = mainSite;
+        this.containerView = containerView;
+
     }
 
     public Accordion asAccord() {
@@ -120,7 +122,7 @@ public class MetadataRecs {
 
         final Button btnContentRelation =
             new Button("Container Content Relations", new RelationsClickListener(resourceProxy, mainWindow,
-                escidocServiceLocation, repositories, mainSite));
+                escidocServiceLocation, repositories, router));
         btnContentRelation.setStyleName(BaseTheme.BUTTON_LINK);
         btnContentRelation.setDescription("Show Version history in a Pop-up");
 
@@ -170,8 +172,8 @@ public class MetadataRecs {
 
         if (hasAccess()) {
             final Button btnEditActualMetaData =
-                new Button("edit", new EditMetaDataFileContainerBehaviour(metadataRecord, mainWindow, repositories,
-                    resourceProxy));
+                new Button("edit", new EditMetaDataFileContainerBehaviour(metadataRecord, router, repositories,
+                    resourceProxy, containerView));
             btnEditActualMetaData.setStyleName(BaseTheme.BUTTON_LINK);
             btnEditActualMetaData.setDescription("Replace the metadata with a new content file");
             // btnEditActualMetaData.setIcon(new ThemeResource("../myTheme/runo/icons/16/reload.png"));

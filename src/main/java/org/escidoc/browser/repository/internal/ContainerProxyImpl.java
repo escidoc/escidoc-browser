@@ -28,6 +28,8 @@
  */
 package org.escidoc.browser.repository.internal;
 
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
+
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -294,6 +296,22 @@ public class ContainerProxyImpl implements ContainerProxy {
 
     @Override
     public Container getContainer() {
+        return containerFromCore;
+    }
+
+    public Resource getParent() {
+        final SearchRetrieveRequestType filter = new SearchRetrieveRequestType();
+        final StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("\"/struct-map/item/id\"= ");
+        stringBuilder.append(containerFromCore.getObjid());
+        final String query = stringBuilder.toString();
+        filter.setQuery(query);
+        return containerFromCore;
+
+    }
+
+    @Override
+    public Resource getResource() {
         return containerFromCore;
     }
 

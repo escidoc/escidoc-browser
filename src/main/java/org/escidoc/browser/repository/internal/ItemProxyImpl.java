@@ -219,4 +219,9 @@ public class ItemProxyImpl implements ItemProxy {
         }
         return false;
     }
+
+    @Override
+    public Resource getResource() {
+        return itemFromCore;
+    }
 }

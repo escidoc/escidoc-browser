@@ -65,8 +65,6 @@ import de.escidoc.core.client.exceptions.TransportException;
 @SuppressWarnings("serial")
 public final class ImportView extends VerticalLayout {
 
-    public static final String DEFAULT_CONTENT_MODEL_URI = "http://dl.dropbox.com/u/419140/eLab-Content-Models.zip";
-
     private IngestRepository ingestRepository;
 
     private Router router;
@@ -94,7 +92,7 @@ public final class ImportView extends VerticalLayout {
         final Label urlLabel = new Label(ViewConstants.URL);
         final TextField sourceUrlField = new TextField();
         sourceUrlField.setWidth("400px");
-        sourceUrlField.setValue(DEFAULT_CONTENT_MODEL_URI);
+        sourceUrlField.setValue(ViewConstants.DEFAULT_CONTENT_MODEL_URI);
         Button importButton = new Button(ViewConstants.IMPORT);
         importButton.setStyleName(Reindeer.BUTTON_SMALL);
         importButton.addListener(new ClickListener() {
