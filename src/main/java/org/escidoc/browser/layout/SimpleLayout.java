@@ -351,4 +351,9 @@ public class SimpleLayout extends LayoutDesign {
     void setTreeDataSource(TreeDataSource treeDataSource) {
         this.treeDataSource = treeDataSource;
     }
+
+    @Override
+    public Component getViewContainer() {
+        return mainContentTabs;
+    }
 }

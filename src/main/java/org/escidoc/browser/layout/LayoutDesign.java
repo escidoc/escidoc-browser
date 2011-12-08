@@ -66,4 +66,6 @@ public abstract class LayoutDesign extends VerticalLayout {
 
     public abstract TreeDataSource getTreeDataSource();
 
+    public abstract Component getViewContainer();
+
 }

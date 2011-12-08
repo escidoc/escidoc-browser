@@ -30,10 +30,13 @@ package org.escidoc.browser.ui.maincontent;
 
 import java.net.URISyntaxException;
 
+import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
@@ -715,6 +718,17 @@ public class ContainerView extends View {
     public void reloadView() {
         try {
             router.show(resourceProxy, true);
+            // refresh tree
+            TreeDataSource treeDS = router.getLayout().getTreeDataSource();
+            ContainerModel cnt = new ContainerModel(resourceProxy.getResource());
+            ResourceModel parentModel = treeDS.getParent(cnt);
+
+            boolean isSuccesful = treeDS.remove(cnt);
+            if (isSuccesful) {
+                // Need to reload again the item
+                Container containerT = repositories.container().findContainerById(resourceProxy.getId());
+                treeDS.addChild(parentModel, new ContainerModel(containerT));
+            }
         }
         catch (EscidocClientException e) {
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
