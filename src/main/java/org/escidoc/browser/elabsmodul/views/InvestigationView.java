@@ -173,7 +173,7 @@ public class InvestigationView extends View implements ILabsPanel, ILabsAction, 
         rightpnl.setSizeFull();
         rightpnl.getLayout().setMargin(false);
         rightpnl.addComponent(comptoBind);
-        new StartInvestigationViewHelper(router).createStartButton(rightpnl);
+        new StartInvestigationViewHelper(this, this.controller).createStartButton(rightpnl);
         directMemberInvestigationContainer.addComponent(rightpnl);
         directMemberInvestigationContainer.setExpandRatio(rightpnl, 7.0f);
     }
