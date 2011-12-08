@@ -283,4 +283,7 @@ public class ViewConstants {
 
     public static final String ERR_BELONGS_TO_NONDELETABLE_PARENT =
         "Cannot remove the resource as it belongs to a resource which is not deletable";
+
+    public static final String DEFAULT_CONTENT_MODEL_URI =
+        "https://www.escidoc.org/smw/images/b/be/ESciDoc-eLab-Content-Models.zip";
 }
