@@ -26,28 +26,11 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.elabsmodul.enums;
+package org.escidoc.browser.elabsmodul.interfaces;
 
-public enum ContentModelTypeEnum {
-    STUDY, INVESTIGATION, INSTRUMENT, RIG, INVESTIGATION_RESULT;
+public interface ILabsService {
 
-    public boolean isStudy() {
-        return this.equals(STUDY);
-    }
+    void start();
 
-    public boolean isInvestigation() {
-        return this.equals(INVESTIGATION);
-    }
-
-    public boolean isInstrument() {
-        return this.equals(INSTRUMENT);
-    }
-
-    public boolean isRig() {
-        return this.equals(RIG);
-    }
-
-    public boolean isGeneratedItem() {
-        return this.equals(INVESTIGATION_RESULT);
-    }
+    void stop();
 }

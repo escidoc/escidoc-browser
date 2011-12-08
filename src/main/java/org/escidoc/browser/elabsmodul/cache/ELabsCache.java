@@ -39,6 +39,8 @@ import org.escidoc.browser.elabsmodul.enums.ContentModelTypeEnum;
 import org.escidoc.browser.elabsmodul.model.FileFormatBean;
 import org.escidoc.browser.elabsmodul.model.OrgUnitBean;
 import org.escidoc.browser.elabsmodul.model.UserBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ELabsCache {
 
@@ -53,6 +55,8 @@ public class ELabsCache {
     private static List<FileFormatBean> fileFormats = Collections.emptyList();
 
     private static Map<String, ContentModelTypeEnum> contentModels = new HashMap<String, ContentModelTypeEnum>();
+
+    private static Logger LOG = LoggerFactory.getLogger(ELabsCache.class);
 
     /**
      * @return the depositEndpoints
@@ -208,6 +212,25 @@ public class ELabsCache {
                 String key = iterator.next();
                 if (ELabsCache.getContentModels().get(key).isInvestigation()) {
                     list.add(key);
+                }
+            }
+        }
+        return list;
+    }
+
+    public static List<String> getGeneratedItemCMMId() {
+        List<String> list = new ArrayList<String>();
+        if (!ELabsCache.getContentModels().isEmpty()) {
+            for (Iterator<String> iterator = ELabsCache.getContentModels().keySet().iterator(); iterator.hasNext();) {
+                String key = iterator.next();
+                if (ELabsCache.getContentModels().get(key).isGeneratedItem()) {
+                    if (list.isEmpty()) {
+                        list.add(key);
+                    }
+                    else {
+                        LOG.error("There are multiple contentmodels for generated items");
+                        break;
+                    }
                 }
             }
         }

@@ -38,4 +38,10 @@ public interface IInvestigationAction extends ISaveAction {
      * @return
      */
     List<RigBean> getAvailableRigs();
+
+    /**
+     * 
+     * @return
+     */
+    ILabsService getLabsService();
 }

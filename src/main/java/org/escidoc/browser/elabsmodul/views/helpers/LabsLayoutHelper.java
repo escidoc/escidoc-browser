@@ -115,7 +115,7 @@ public final class LabsLayoutHelper {
     public static synchronized HorizontalLayout createHorizontalLayoutWithELabsLabelAndStaticComboData(
         final String labelTxt, String value) {
         Preconditions.checkNotNull(labelTxt, "Label is null");
-        Preconditions.checkNotNull(value, "Value is null");
+        // Preconditions.checkNotNull(value, "Value is null");
 
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSizeUndefined();

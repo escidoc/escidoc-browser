@@ -34,7 +34,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import org.escidoc.browser.ui.tools.ImportView;
+import org.escidoc.browser.ui.ViewConstants;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +58,7 @@ public class FindHttpProxySpec {
     }
 
     void foo() throws URISyntaxException {
-        List<Proxy> list = ProxySelector.getDefault().select(new URI(ImportView.DEFAULT_CONTENT_MODEL_URI));
+        List<Proxy> list = ProxySelector.getDefault().select(new URI(ViewConstants.DEFAULT_CONTENT_MODEL_URI));
         for (Proxy proxy : list) {
             // LOG.debug("proxy: " + proxy.address());
 

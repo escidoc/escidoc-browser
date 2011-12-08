@@ -93,4 +93,6 @@ public final class AppConstants {
     public static final String CMM_DESCRIPTION_INSTRUMENT = "org.escidoc.bwelabs.Instrument";
 
     public static final String CMM_DESCRIPTION_INVESTIGATION = "org.escidoc.bwelabs.Investigation";
+
+    public static final String CMM_DESCRIPTION_INVESTIGATION_RESULTS = "org.escidoc.bwelabs.InvestigationResult";
 }

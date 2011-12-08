@@ -88,5 +88,4 @@ public class ItemController extends Controller {
         Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
         return new ItemView(repositories, router, resourceProxy);
     }
-
 }
