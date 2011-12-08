@@ -44,7 +44,6 @@ import com.google.common.base.Preconditions;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
@@ -311,10 +310,10 @@ public final class ItemView extends View {
                 // Need to reload again the item
                 Item itemP = repositories.item().findItemById(resourceProxy.getId());
                 treeDS.addChild(parentModel, new ItemModel(itemP));
+
+                // Reload Parent
+                // reloadParent(parentModel);
             }
-            //
-            // // Reload Parent
-            reloadParent(parentModel);
 
         }
         catch (EscidocClientException e) {
@@ -322,16 +321,16 @@ public final class ItemView extends View {
         }
     }
 
-    private void reloadParent(ResourceModel parentModel) throws EscidocClientException {
-        TabSheet ts = (TabSheet) router.getLayout().getViewContainer();
-        for (int i = ts.getComponentCount() - 1; i >= 0; i--) {
-            String tabDescription =
-                ts.getTab(i).getDescription().substring(ts.getTab(i).getDescription().lastIndexOf('#') + 1).toString();
-            LOG.debug("############################ " + tabDescription);
-            // Remove the tab from the TabSheet
-            if (tabDescription.equals(parentModel.getId().toString())) {
-                router.show(parentModel, true);
-            }
-        }
-    }
+    // private void reloadParent(ResourceModel parentModel) throws EscidocClientException {
+    // TabSheet ts = (TabSheet) router.getLayout().getViewContainer();
+    // for (int i = ts.getComponentCount() - 1; i >= 0; i--) {
+    // String tabDescription =
+    // ts.getTab(i).getDescription().substring(ts.getTab(i).getDescription().lastIndexOf('#') + 1).toString();
+    // LOG.debug("############################ " + tabDescription);
+    // // Remove the tab from the TabSheet
+    // if (tabDescription.equals(parentModel.getId().toString())) {
+    // router.show(parentModel, true);
+    // }
+    // }
+    // }
 }
