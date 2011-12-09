@@ -203,7 +203,7 @@ public class Router {
      * @param cnt
      */
     public void openControllerView(final Controller cnt, final ResourceProxy resourceProxy, final Boolean doReloadView) {
-        cnt.init(serviceLocation, repositories, this, resourceProxy, mainWindow);
+        cnt.init(repositories, this, resourceProxy);
         if (!doReloadView) {
             cnt.showView(layout);
         }
@@ -302,7 +302,7 @@ public class Router {
                 LOG.debug(clickedResource.getId());
                 final Class<?> controllerClass = Class.forName(controllerClassName);
                 controller = (Controller) controllerClass.newInstance();
-                controller.init(serviceLocation, repositories, this, tryToFindResource(clickedResource), mainWindow);
+                controller.init(repositories, this, tryToFindResource(clickedResource));
                 if (!doReloadView) {
                     controller.showView(layout);
                 }

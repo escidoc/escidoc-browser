@@ -59,19 +59,18 @@ public class ItemController extends Controller {
     private static Logger LOG = LoggerFactory.getLogger(ItemController.class);
 
     @Override
-    public void init(
-        EscidocServiceLocation serviceLocation, Repositories repositories, Router router, ResourceProxy resourceProxy,
-        Window mainWindow) {
+    public void init(Repositories repositories, Router router, ResourceProxy resourceProxy) {
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is NULL");
         Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
         Preconditions.checkNotNull(repositories, "repositories is NULL");
         Preconditions.checkNotNull(mainWindow, "mainWindow is NULL");
         Preconditions.checkNotNull(router, "Router is NULL");
-        this.serviceLocation = serviceLocation;
+        this.router = router;
+        this.serviceLocation = router.getServiceLocation();
         this.resourceProxy = resourceProxy;
         this.repositories = repositories;
-        this.mainWindow = mainWindow;
-        this.router = router;
+        this.mainWindow = router.getMainWindow();
+
         try {
             this.view = createView(resourceProxy);
         }
