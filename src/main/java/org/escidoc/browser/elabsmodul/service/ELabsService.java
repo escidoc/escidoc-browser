@@ -322,6 +322,7 @@ public class ELabsService implements ILabsService {
 
             try {
                 LOG.debug("Service> called HttpClient.");
+                // FIXME set proxy
                 final DefaultHttpClient httpClient = new DefaultHttpClient();
                 httpClient.setKeepAliveStrategy(null);
                 final HttpPut putMethod = new HttpPut(esyncEndpoint);
