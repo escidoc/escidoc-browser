@@ -116,4 +116,11 @@ public class ContextRepository implements Repository {
         return ret;
     }
 
+    @Override
+    public void delete(String id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Not yet implemented");
+
+    }
+
 }

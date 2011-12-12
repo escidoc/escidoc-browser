@@ -97,4 +97,11 @@ public class OrganizationUnitRepository implements Repository {
     public List<ResourceModel> filterUsingInput(String query) throws EscidocClientException {
         throw new UnsupportedOperationException("not-yet-implemented.");
     }
+
+    @Override
+    public void delete(String id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Not yet implemented");
+
+    }
 }

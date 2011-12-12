@@ -122,4 +122,9 @@ public class ContentModelRepository implements Repository {
         throw new UnsupportedOperationException("Not yet implemented");
 
     }
+
+    @Override
+    public void delete(String id) throws EscidocClientException {
+        client.delete(id);
+    }
 }

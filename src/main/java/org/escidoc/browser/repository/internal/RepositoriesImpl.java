@@ -32,6 +32,7 @@ import java.net.MalformedURLException;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.repository.AdminRepository;
+import org.escidoc.browser.repository.BulkRepository;
 import org.escidoc.browser.repository.IngestRepository;
 import org.escidoc.browser.repository.PdpRepository;
 import org.escidoc.browser.repository.Repositories;
@@ -65,6 +66,8 @@ public class RepositoriesImpl implements Repositories {
 
     private IngestRepository ingestRepository;
 
+    private BulkRepository bulkRepo;
+
     public RepositoriesImpl(final EscidocServiceLocation serviceLocation) {
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         this.serviceLocation = serviceLocation;
@@ -81,6 +84,7 @@ public class RepositoriesImpl implements Repositories {
         organizationUnitRepository = new OrganizationUnitRepository(serviceLocation);
         adminRepository = new AdminRepository(serviceLocation);
         ingestRepository = new IngestRepository(serviceLocation);
+        bulkRepo = new BulkRepository(contextRepository, containerRepository, itemRepository, contentModelRepository);
         return this;
     }
 
@@ -95,6 +99,7 @@ public class RepositoriesImpl implements Repositories {
         organizationUnitRepository.loginWith(token);
         adminRepository.loginWith(token);
         ingestRepository.loginWith(token);
+        contentModelRepository.loginWith(token);
     }
 
     @Override
@@ -157,6 +162,11 @@ public class RepositoriesImpl implements Repositories {
     public IngestRepository ingest() {
         Preconditions.checkNotNull(ingestRepository, "ingestRepository is null: %s", ingestRepository);
         return ingestRepository;
+    }
+
+    @Override
+    public BulkRepository bulkTasks() {
+        return bulkRepo;
     }
 
 }

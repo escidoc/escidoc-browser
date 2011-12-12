@@ -42,6 +42,7 @@ import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.internal.HasNoNameResource;
+import org.escidoc.browser.model.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -224,5 +225,10 @@ public class ItemRepository implements Repository {
 
     private String findByContentModelQuery(String cmId) {
         return "\"/properties/content-model/id\"=\"" + cmId + "\"";
+    }
+
+    @Override
+    public void delete(String id) throws EscidocClientException {
+        client.delete(id);
     }
 }

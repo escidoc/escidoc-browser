@@ -41,8 +41,8 @@ import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.escidoc.browser.ui.helper.ResourceHierarchy;
 
 import java.net.MalformedURLException;
