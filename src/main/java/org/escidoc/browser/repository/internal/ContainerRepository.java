@@ -39,9 +39,11 @@ import org.escidoc.browser.model.ModelConverter;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.model.internal.ContainerProxyImpl;
 import org.escidoc.browser.model.internal.HasNoNameResource;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.helper.Util;
+import org.escidoc.browser.util.Utils;
 
 import com.google.common.base.Preconditions;
 
@@ -77,7 +79,7 @@ public class ContainerRepository implements Repository {
 
     @Override
     public List<ResourceModel> findAll() throws EscidocClientException {
-        return ModelConverter.containerListToModel(client.retrieveContainersAsList(new SearchRetrieveRequestType()));
+        return ModelConverter.containerListToModel(client.retrieveContainersAsList(Util.createEmptyFilter()));
     }
 
     @Override
@@ -100,7 +102,7 @@ public class ContainerRepository implements Repository {
 
     private List<SearchResultRecord> findAllDirectMembers(final String id) throws EscidocException,
         InternalClientException, TransportException {
-        return client.retrieveMembers(id, new SearchRetrieveRequestType()).getRecords();
+        return client.retrieveMembers(id, Utils.createEmptyFilter()).getRecords();
     }
 
     @Override
@@ -120,11 +122,9 @@ public class ContainerRepository implements Repository {
     }
 
     public List<Container> findParents(final HasNoNameResource resource) throws EscidocClientException {
-        final SearchRetrieveRequestType requestType = new SearchRetrieveRequestType();
-
+        final SearchRetrieveRequestType requestType = Utils.createEmptyFilter();
         if (resource.getType().equals(ResourceType.ITEM)) {
             final String query = "\"/struct-map/item/id\"=\"" + resource.getId() + "\"";
-
             requestType.setQuery(query);
         }
         else if (resource.getType().equals(ResourceType.CONTAINER)) {
@@ -241,7 +241,7 @@ public class ContainerRepository implements Repository {
 
     @Override
     public List<ResourceModel> filterUsingInput(final String query) throws EscidocClientException {
-        final SearchRetrieveRequestType filter = new SearchRetrieveRequestType();
+        final SearchRetrieveRequestType filter = Utils.createEmptyFilter();
         filter.setQuery(query);
         final List<Container> list = client.retrieveContainersAsList(filter);
         final List<ResourceModel> ret = new ArrayList<ResourceModel>(list.size());
@@ -251,19 +251,19 @@ public class ContainerRepository implements Repository {
         return ret;
     }
 
-    public List<ResourceModel> findContainersByContentModel(String cmId) throws EscidocClientException {
+    public List<ResourceModel> findContainersByContentModel(final String cmId) throws EscidocClientException {
         Preconditions.checkNotNull(cmId, "cmId is null: %s", cmId);
 
         return filterUsingInput(findByContentModelQuery(cmId));
     }
 
-    private String findByContentModelQuery(String cmId) {
-        String query = "\"/properties/content-model/id\"=\"" + cmId + "\"";
+    private String findByContentModelQuery(final String cmId) {
+        final String query = "\"/properties/content-model/id\"=\"" + cmId + "\"";
         return query;
     }
 
     @Override
-    public void delete(String id) throws EscidocClientException {
+    public void delete(final String id) throws EscidocClientException {
         client.delete(id);
     }
 }

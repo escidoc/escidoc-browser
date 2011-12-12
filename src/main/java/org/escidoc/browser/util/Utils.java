@@ -28,6 +28,8 @@
  */
 package org.escidoc.browser.util;
 
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -41,6 +43,8 @@ import java.text.DecimalFormat;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.axis.types.NonNegativeInteger;
+import org.escidoc.browser.AppConstants;
 import org.w3c.dom.Document;
 
 import com.google.common.base.Preconditions;
@@ -65,10 +69,10 @@ public final class Utils {
             + new String[] { "B", "KB", "MB", "GB", "TB" }[digitGroups];
     }
 
-    public static void copy(InputStream in, OutputStream out) throws IOException {
-        byte[] buffer = new byte[1024];
+    public static void copy(final InputStream in, final OutputStream out) throws IOException {
+        final byte[] buffer = new byte[1024];
         while (true) {
-            int readCount = in.read(buffer);
+            final int readCount = in.read(buffer);
             if (readCount < 0) {
                 break;
             }
@@ -76,18 +80,24 @@ public final class Utils {
         }
     }
 
-    public static Proxy createHttpProxy(URI uri) {
+    public static Proxy createHttpProxy(final URI uri) {
         Preconditions.checkNotNull(uri, "uri is null: %s", uri);
         return new Proxy(Type.HTTP, findHttpProxy(uri));
     }
 
     public static SocketAddress findHttpProxy(final URI uri) {
-        for (Proxy proxy : ProxySelector.getDefault().select(uri)) {
+        for (final Proxy proxy : ProxySelector.getDefault().select(uri)) {
             if (proxy.address() == null) {
                 return Proxy.NO_PROXY.address();
             }
             return proxy.address();
         }
         return Proxy.NO_PROXY.address();
+    }
+
+    public final static SearchRetrieveRequestType createEmptyFilter() {
+        final SearchRetrieveRequestType srrt = new SearchRetrieveRequestType();
+        srrt.setMaximumRecords(new NonNegativeInteger(AppConstants.MAX_RESULT_SIZE));
+        return srrt;
     }
 }

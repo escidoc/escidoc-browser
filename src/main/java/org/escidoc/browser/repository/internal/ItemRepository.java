@@ -33,8 +33,6 @@ import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.axis.types.NonNegativeInteger;
-import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
@@ -44,6 +42,8 @@ import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.internal.HasNoNameResource;
 import org.escidoc.browser.model.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.Repository;
+import org.escidoc.browser.ui.helper.Util;
+import org.escidoc.browser.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,9 +80,7 @@ public class ItemRepository implements Repository {
 
     @Override
     public List<ResourceModel> findAll() throws EscidocClientException {
-        final SearchRetrieveRequestType request = new SearchRetrieveRequestType();
-        request.setMaximumRecords(new NonNegativeInteger(AppConstants.MAX_RESULT_SIZE));
-        return ModelConverter.itemListToModel(client.retrieveItemsAsList(request));
+        return ModelConverter.itemListToModel(client.retrieveItemsAsList(Util.createEmptyFilter()));
     }
 
     @Override
@@ -206,29 +204,29 @@ public class ItemRepository implements Repository {
     }
 
     @Override
-    public List<ResourceModel> filterUsingInput(String query) throws EscidocClientException {
-        final SearchRetrieveRequestType filter = new SearchRetrieveRequestType();
+    public List<ResourceModel> filterUsingInput(final String query) throws EscidocClientException {
+        final SearchRetrieveRequestType filter = Utils.createEmptyFilter();
         filter.setQuery(query);
-        List<Item> list = client.retrieveItemsAsList(filter);
-        List<ResourceModel> ret = new ArrayList<ResourceModel>(list.size());
-        for (Item item : list) {
+        final List<Item> list = client.retrieveItemsAsList(filter);
+        final List<ResourceModel> ret = new ArrayList<ResourceModel>(list.size());
+        for (final Item item : list) {
             ret.add(new ItemProxyImpl(item));
         }
         return ret;
     }
 
-    public List<ResourceModel> findItemsByContentModel(String cmId) throws EscidocClientException {
+    public List<ResourceModel> findItemsByContentModel(final String cmId) throws EscidocClientException {
         Preconditions.checkNotNull(cmId, "cmId is null: %s", cmId);
 
         return filterUsingInput(findByContentModelQuery(cmId));
     }
 
-    private String findByContentModelQuery(String cmId) {
+    private String findByContentModelQuery(final String cmId) {
         return "\"/properties/content-model/id\"=\"" + cmId + "\"";
     }
 
     @Override
-    public void delete(String id) throws EscidocClientException {
+    public void delete(final String id) throws EscidocClientException {
         client.delete(id);
     }
 }

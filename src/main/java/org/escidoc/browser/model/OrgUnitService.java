@@ -39,8 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.axis.types.NonNegativeInteger;
-import org.escidoc.browser.AppConstants;
+import org.escidoc.browser.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -129,9 +128,7 @@ public class OrgUnitService {
     }
 
     private SearchRetrieveRequestType withEmptyFilter() {
-        final SearchRetrieveRequestType request = new SearchRetrieveRequestType();
-        request.setMaximumRecords(new NonNegativeInteger(AppConstants.MAX_RESULT_SIZE));
-        return request;
+        return Utils.createEmptyFilter();
     }
 
     public OrganizationalUnit create(final OrganizationalUnit orgUnit) throws EscidocException,
@@ -251,7 +248,7 @@ public class OrgUnitService {
 
     public List<OrganizationalUnit> retrieveTopLevelOrgUnits() throws EscidocException, InternalClientException,
         TransportException {
-        final SearchRetrieveRequestType searchRequest = new SearchRetrieveRequestType();
+        final SearchRetrieveRequestType searchRequest = Utils.createEmptyFilter();
         searchRequest.setQuery("\"top-level-organizational-units\"=true");
         return client.retrieveOrganizationalUnitsAsList(searchRequest);
     }

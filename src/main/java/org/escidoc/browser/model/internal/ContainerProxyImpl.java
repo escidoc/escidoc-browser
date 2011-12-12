@@ -26,7 +26,7 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.repository.internal;
+package org.escidoc.browser.model.internal;
 
 import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 

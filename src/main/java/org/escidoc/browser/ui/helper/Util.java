@@ -35,11 +35,11 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.axis.types.NonNegativeInteger;
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,7 +85,7 @@ public final class Util {
     }
 
     public final static SearchRetrieveRequestType createEmptyFilter() {
-        return new SearchRetrieveRequestType();
+        return Utils.createEmptyFilter();
     }
 
     public static final void addToResults(final List<ResourceModel> results, final SearchResult searchResult) {
@@ -112,9 +112,8 @@ public final class Util {
     public static SearchRetrieveRequestType createQueryForTopLevelContainersAndItems(final String id) {
         Preconditions.checkNotNull(id, "id is null: %s", id);
         Preconditions.checkArgument(!id.isEmpty(), "id is empty: %s", id);
-        final SearchRetrieveRequestType filter = new SearchRetrieveRequestType();
+        final SearchRetrieveRequestType filter = Utils.createEmptyFilter();
         filter.setQuery(topLevelContainersAndItems(id));
-        filter.setMaximumRecords(new NonNegativeInteger("1000"));
         return filter;
     }
 

@@ -35,10 +35,10 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModelFactory;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.model.internal.ContainerProxyImpl;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.model.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.repository.internal.ContainerProxyImpl;
 import org.escidoc.browser.repository.internal.SearchRepositoryImpl;
 import org.escidoc.browser.ui.Router;
 

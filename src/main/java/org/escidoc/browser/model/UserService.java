@@ -39,6 +39,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.axis.types.NonNegativeInteger;
 import org.escidoc.browser.AppConstants;
+import org.escidoc.browser.util.Utils;
 import org.joda.time.DateTime;
 
 import com.google.common.base.Preconditions;
@@ -97,9 +98,7 @@ public class UserService {
     }
 
     private SearchRetrieveRequestType withEmptyFilter() {
-        final SearchRetrieveRequestType request = new SearchRetrieveRequestType();
-        request.setMaximumRecords(new NonNegativeInteger(AppConstants.MAX_RESULT_SIZE));
-        return request;
+        return Utils.createEmptyFilter();
     }
 
     private void putInMap() {

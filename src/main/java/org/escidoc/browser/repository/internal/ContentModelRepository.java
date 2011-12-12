@@ -35,13 +35,14 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.axis.types.NonNegativeInteger;
 import org.escidoc.browser.model.ContentModelProxyImpl;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repository;
+import org.escidoc.browser.ui.helper.Util;
+import org.escidoc.browser.util.Utils;
 
 import com.google.common.base.Preconditions;
 
@@ -68,13 +69,11 @@ public class ContentModelRepository implements Repository {
 
     public Collection<? extends Resource> findPublicOrReleasedResources() throws EscidocException,
         InternalClientException, TransportException {
-        final SearchRetrieveRequestType request = new SearchRetrieveRequestType();
-        request.setMaximumRecords(new NonNegativeInteger("1000"));
-        return client.retrieveContentModelsAsList(request);
+        return client.retrieveContentModelsAsList(Utils.createEmptyFilter());
     }
 
     protected SearchRetrieveRequestType userInputToFilter(final String query) {
-        final SearchRetrieveRequestType filter = new SearchRetrieveRequestType();
+        final SearchRetrieveRequestType filter = Utils.createEmptyFilter();
         filter.setQuery(query);
         return filter;
     }
@@ -84,47 +83,46 @@ public class ContentModelRepository implements Repository {
         return new ContentModelProxyImpl(client.retrieve(id));
     }
 
-    public String getAsXmlString(String id) throws EscidocClientException {
+    public String getAsXmlString(final String id) throws EscidocClientException {
         return new RestContentModelHandlerClient(client.getServiceAddress()).retrieve(id);
     }
 
     @Override
-    public void loginWith(String handle) throws InternalClientException {
+    public void loginWith(final String handle) throws InternalClientException {
         client.setHandle(handle);
     }
 
     @Override
     public List<ResourceModel> findAll() throws EscidocClientException {
-        return ModelConverter.contentModelListToModel(client
-            .retrieveContentModelsAsList(new SearchRetrieveRequestType()));
+        return ModelConverter.contentModelListToModel(client.retrieveContentModelsAsList(Util.createEmptyFilter()));
     }
 
     @Override
-    public List<ResourceModel> findTopLevelMembersById(String id) throws EscidocClientException {
+    public List<ResourceModel> findTopLevelMembersById(final String id) throws EscidocClientException {
         throw new UnsupportedOperationException("Not yet implemented");
 
     }
 
     @Override
-    public VersionHistory getVersionHistory(String id) throws EscidocClientException {
+    public VersionHistory getVersionHistory(final String id) throws EscidocClientException {
         throw new UnsupportedOperationException("Not yet implemented");
 
     }
 
     @Override
-    public Relations getRelations(String id) throws EscidocClientException {
+    public Relations getRelations(final String id) throws EscidocClientException {
         throw new UnsupportedOperationException("Not yet implemented");
 
     }
 
     @Override
-    public List<ResourceModel> filterUsingInput(String query) throws EscidocClientException {
+    public List<ResourceModel> filterUsingInput(final String query) throws EscidocClientException {
         throw new UnsupportedOperationException("Not yet implemented");
 
     }
 
     @Override
-    public void delete(String id) throws EscidocClientException {
+    public void delete(final String id) throws EscidocClientException {
         client.delete(id);
     }
 }

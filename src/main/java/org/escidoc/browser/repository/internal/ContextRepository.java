@@ -40,6 +40,7 @@ import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.helper.Util;
+import org.escidoc.browser.util.Utils;
 
 import com.google.common.base.Preconditions;
 
@@ -105,19 +106,19 @@ public class ContextRepository implements Repository {
     }
 
     @Override
-    public List<ResourceModel> filterUsingInput(String query) throws EscidocClientException {
-        final SearchRetrieveRequestType filter = new SearchRetrieveRequestType();
+    public List<ResourceModel> filterUsingInput(final String query) throws EscidocClientException {
+        final SearchRetrieveRequestType filter = Utils.createEmptyFilter();
         filter.setQuery(query);
-        List<Context> list = client.retrieveContextsAsList(filter);
-        List<ResourceModel> ret = new ArrayList<ResourceModel>(list.size());
-        for (Context resource : list) {
+        final List<Context> list = client.retrieveContextsAsList(filter);
+        final List<ResourceModel> ret = new ArrayList<ResourceModel>(list.size());
+        for (final Context resource : list) {
             ret.add(new ContextProxyImpl(resource));
         }
         return ret;
     }
 
     @Override
-    public void delete(String id) {
+    public void delete(final String id) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Not yet implemented");
 
