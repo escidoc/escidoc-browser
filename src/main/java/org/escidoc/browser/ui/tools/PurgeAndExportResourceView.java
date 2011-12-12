@@ -36,8 +36,6 @@ import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.tools.Style.H2;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.data.util.BeanItemContainer;
@@ -58,8 +56,6 @@ import de.escidoc.core.resources.adm.MessagesStatus;
 @SuppressWarnings("serial")
 public class PurgeAndExportResourceView extends VerticalLayout {
 
-    static final Logger LOG = LoggerFactory.getLogger(PurgeAndExportResourceView.class);
-
     final AbstractSelect resourceOption = new NativeSelect();
 
     final TextField textField = new TextField();
@@ -71,6 +67,7 @@ public class PurgeAndExportResourceView extends VerticalLayout {
     public PurgeAndExportResourceView(Router router, Repositories repositories) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+
         this.router = router;
         this.repositories = repositories;
     }
@@ -107,7 +104,7 @@ public class PurgeAndExportResourceView extends VerticalLayout {
 
         Button filterButton = new Button(ViewConstants.FILTER);
         filterButton.setStyleName(Reindeer.BUTTON_SMALL);
-        filterButton.addListener(new FilterButtonListener(this));
+        filterButton.addListener(new FilterButtonListener(this, router.getMainWindow()));
 
         horizontalLayout.addComponent(resourceOption);
         horizontalLayout.addComponent(createHelpView());

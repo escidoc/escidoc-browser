@@ -52,8 +52,6 @@ import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.AddResourceListener;
 import org.escidoc.browser.ui.listeners.MetadataFileReceiver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.data.util.BeanItemContainer;
@@ -86,8 +84,6 @@ import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.om.item.Item;
 
 public class ResourceAddViewImpl implements ResourceAddView {
-
-    private final static Logger LOG = LoggerFactory.getLogger(ResourceAddViewImpl.class);
 
     private final FormLayout addResourceForm = new FormLayout();
 

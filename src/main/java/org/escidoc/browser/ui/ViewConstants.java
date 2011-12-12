@@ -286,4 +286,13 @@ public class ViewConstants {
 
     public static final String DEFAULT_CONTENT_MODEL_URI =
         "https://www.escidoc.org/smw/images/b/be/ESciDoc-eLab-Content-Models.zip";
+
+    public static final String PURGE_WARNING_MESSAGE =
+        "Purging resources can cause inconsitencies in the repository. Please use delete instead of purge. Continue with purging?";
+
+    public static final String WARNING = "Warning";
+
+    public static final String YES = "Yes";
+
+    public static final String NO = "No";
 }

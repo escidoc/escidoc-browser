@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -51,7 +50,10 @@ import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.util.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.terminal.StreamResource;
 import com.vaadin.terminal.StreamResource.StreamSource;
@@ -63,76 +65,31 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
-import de.escidoc.core.resources.adm.AdminStatus;
-import de.escidoc.core.resources.adm.MessagesStatus;
 
 @SuppressWarnings("serial")
 public final class FilterButtonListener implements ClickListener {
 
-    private final PurgeAndExportResourceView purgeAndExportResourceView;
+    private static final Logger LOG = LoggerFactory.getLogger(FilterButtonListener.class);
 
-    public FilterButtonListener(PurgeAndExportResourceView purgeAndExportResourceView) {
+    final PurgeAndExportResourceView purgeAndExportResourceView;
+
+    private Window mainWindow;
+
+    public FilterButtonListener(PurgeAndExportResourceView purgeAndExportResourceView, Window mainWindow) {
+        Preconditions.checkNotNull(purgeAndExportResourceView, "purgeAndExportResourceView is null: %s",
+            purgeAndExportResourceView);
+        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         this.purgeAndExportResourceView = purgeAndExportResourceView;
+        this.mainWindow = mainWindow;
     }
 
     private static final String EXPORT_FILENAME = "escidoc-xml-export.zip";
 
-    private final class PurgeButtonListener implements ClickListener {
-        @Override
-        public void buttonClick(ClickEvent event) {
-            tryPurge(getSelectedResourceIds(getSelectedResources()));
-        }
-
-        private Set<String> getSelectedResourceIds(Set<ResourceModel> selectedResources) {
-            final Set<String> objectIds = new HashSet<String>(selectedResources.size());
-            for (final ResourceModel resource : selectedResources) {
-                objectIds.add(resource.getId());
-            }
-            return objectIds;
-        }
-
-        private void tryPurge(Set<String> objectIds) {
-            try {
-                showPurgeStatus(startPurging(objectIds));
-            }
-            catch (final EscidocClientException e) {
-                PurgeAndExportResourceView.LOG.error("Internal Server Error while purging resources. " + e);
-                FilterButtonListener.this.purgeAndExportResourceView.showErrorMessage(e);
-            }
-        }
-
-        private void showPurgeStatus(MessagesStatus status) throws EscidocClientException {
-            if (status.getStatusCode() == AdminStatus.STATUS_INVALID_RESULT) {
-                FilterButtonListener.this.purgeAndExportResourceView.showErrorMessage(status);
-            }
-            if (status.getStatusCode() == AdminStatus.STATUS_FINISHED) {
-                showSucess(status);
-            }
-            else if (status.getStatusCode() == AdminStatus.STATUS_IN_PROGRESS) {
-                showPurgeStatus(FilterButtonListener.this.purgeAndExportResourceView.repositories
-                    .admin().retrievePurgeStatus());
-            }
-            else {
-                FilterButtonListener.this.purgeAndExportResourceView.showErrorMessage(status);
-            }
-        }
-
-        private void showSucess(MessagesStatus status) {
-            FilterButtonListener.this.purgeAndExportResourceView.router.getMainWindow().showNotification(
-                ViewConstants.INFO, status.getStatusMessage(), Notification.TYPE_TRAY_NOTIFICATION);
-        }
-
-        private MessagesStatus startPurging(Set<String> objectIds) throws EscidocClientException {
-            return FilterButtonListener.this.purgeAndExportResourceView.repositories.admin().purge(objectIds);
-        }
-    }
-
     @SuppressWarnings("unchecked")
-    private Set<ResourceModel> getSelectedResources() {
+    Set<ResourceModel> getSelectedResources() {
         Object object = resultTable.getValue();
         if (object instanceof Set) {
             return (Set<ResourceModel>) object;
@@ -163,11 +120,11 @@ public final class FilterButtonListener implements ClickListener {
             showDeleteView();
         }
         catch (EscidocClientException e) {
-            PurgeAndExportResourceView.LOG.error(e.getMessage());
+            LOG.error(e.getMessage());
             this.purgeAndExportResourceView.showErrorMessage(e);
         }
         catch (URISyntaxException e) {
-            PurgeAndExportResourceView.LOG.error(e.getMessage());
+            LOG.error(e.getMessage());
             this.purgeAndExportResourceView.showErrorMessage(e);
         }
     }
@@ -186,7 +143,7 @@ public final class FilterButtonListener implements ClickListener {
                         getSelectedResources());
 
                 for (ResourceModel rM : result.getSuccess()) {
-                    PurgeAndExportResourceView.LOG.debug("Succesfully delete " + rM);
+                    LOG.debug("Succesfully delete " + rM);
                     resultDataSource.removeItem(rM);
                 }
 
@@ -198,7 +155,7 @@ public final class FilterButtonListener implements ClickListener {
                     builder.append(". Reason: ");
                     builder.append(map.get(rM));
                     String msg = builder.toString();
-                    PurgeAndExportResourceView.LOG.debug(msg);
+                    LOG.debug(msg);
                     FilterButtonListener.this.purgeAndExportResourceView.showWarningMessage(msg);
                 }
             }
@@ -280,9 +237,9 @@ public final class FilterButtonListener implements ClickListener {
 
     private void addHintForSelection() {
         final Label hintText =
-            new Label("<div><em>Hint: </em>"
-                + "To select multiple resources, hold down the CONTROL key while you click on the resource.</br></div>"
-                + "<strong>Warning:</strong> Purging resources can cause inconsitencies in the repository.</div>",
+            new Label(
+                "<div><em>Hint: </em>"
+                    + "To select multiple resources, hold down the CONTROL key while you click on the resource.</br></div>",
                 Label.CONTENT_XHTML);
         resultLayout.addComponent(hintText);
     }
@@ -291,7 +248,7 @@ public final class FilterButtonListener implements ClickListener {
         final Button purgeButton = new Button(ViewConstants.PURGE);
         purgeButton.setStyleName(Reindeer.BUTTON_SMALL);
         buttonLayout.addComponent(purgeButton);
-        purgeButton.addListener(new PurgeButtonListener());
+        purgeButton.addListener(new PurgeButtonListener(this, mainWindow, resultDataSource));
     }
 
     private void showResult() throws EscidocClientException {
