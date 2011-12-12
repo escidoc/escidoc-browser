@@ -42,7 +42,6 @@ import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DE
 import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_LABEL_TO_EDIT;
 import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_TEXTFIELD_TO_SAVE_OR_CANCEL;
 
-import org.escidoc.browser.StringUtils;
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.elabsmodul.enums.ELabsFileFormatsEnum;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsInstrumentAction;
@@ -52,6 +51,7 @@ import org.escidoc.browser.elabsmodul.model.FileFormatBean;
 import org.escidoc.browser.elabsmodul.model.OrgUnitBean;
 import org.escidoc.browser.elabsmodul.model.RigBean;
 import org.escidoc.browser.elabsmodul.model.UserBean;
+import org.escidoc.browser.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

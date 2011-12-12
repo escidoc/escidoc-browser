@@ -31,7 +31,7 @@ package org.escidoc.browser.model.internal;
 import com.google.common.base.Preconditions;
 
 import org.escidoc.browser.AppConstants;
-import org.escidoc.browser.Utils;
+import org.escidoc.browser.util.Utils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 

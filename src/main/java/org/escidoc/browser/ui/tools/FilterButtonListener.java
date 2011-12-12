@@ -43,7 +43,6 @@ import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.escidoc.browser.AppConstants;
-import org.escidoc.browser.Utils;
 import org.escidoc.browser.model.PropertyId;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceType;
@@ -51,6 +50,7 @@ import org.escidoc.browser.repository.BulkRepository.DeleteResult;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.util.Utils;
 
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.terminal.StreamResource;

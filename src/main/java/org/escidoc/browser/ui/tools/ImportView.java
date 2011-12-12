@@ -38,11 +38,11 @@ import java.net.URISyntaxException;
 import java.net.URLConnection;
 import java.util.List;
 
-import org.escidoc.browser.Utils;
 import org.escidoc.browser.repository.IngestRepository;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.tools.Style.H2;
+import org.escidoc.browser.util.Utils;
 import org.escidoc.core.tme.IngestResult;
 import org.escidoc.core.tme.SucessfulIngestResult;
 

@@ -41,7 +41,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import org.escidoc.browser.StringUtils;
 import org.escidoc.browser.controller.Controller;
 import org.escidoc.browser.elabsmodul.cache.ELabsCache;
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
@@ -70,6 +69,7 @@ import org.escidoc.browser.repository.internal.ContainerProxyImpl;
 import org.escidoc.browser.repository.internal.ContainerRepository;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.helper.ResourceHierarchy;
+import org.escidoc.browser.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMException;
