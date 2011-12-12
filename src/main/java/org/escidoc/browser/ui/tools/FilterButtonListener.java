@@ -151,7 +151,9 @@ public final class FilterButtonListener implements ClickListener {
                 for (ResourceModel rM : map.keySet()) {
                     StringBuilder builder = new StringBuilder();
                     builder.append("fail to delete ");
-                    builder.append(rM);
+                    builder.append(rM.getType().getLabel());
+                    builder.append(" ");
+                    builder.append(rM.getId());
                     builder.append(". Reason: ");
                     builder.append(map.get(rM));
                     String msg = builder.toString();
