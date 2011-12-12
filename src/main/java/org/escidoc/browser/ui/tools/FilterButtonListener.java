@@ -71,11 +71,11 @@ import de.escidoc.core.resources.adm.AdminStatus;
 import de.escidoc.core.resources.adm.MessagesStatus;
 
 @SuppressWarnings("serial")
-final class FilterButtonListener implements ClickListener {
+public final class FilterButtonListener implements ClickListener {
 
     private final PurgeAndExportResourceView purgeAndExportResourceView;
 
-    FilterButtonListener(PurgeAndExportResourceView purgeAndExportResourceView) {
+    public FilterButtonListener(PurgeAndExportResourceView purgeAndExportResourceView) {
         this.purgeAndExportResourceView = purgeAndExportResourceView;
     }
 
@@ -148,6 +148,8 @@ final class FilterButtonListener implements ClickListener {
 
     private Table resultTable;
 
+    private BeanItemContainer<ResourceModel> resultDataSource;
+
     @Override
     public void buttonClick(ClickEvent event) {
         try {
@@ -185,13 +187,20 @@ final class FilterButtonListener implements ClickListener {
 
                 for (ResourceModel rM : result.getSuccess()) {
                     PurgeAndExportResourceView.LOG.debug("Succesfully delete " + rM);
+                    resultDataSource.removeItem(rM);
                 }
 
                 Map<ResourceModel, String> map = result.getFail();
                 for (ResourceModel rM : map.keySet()) {
-                    PurgeAndExportResourceView.LOG.debug("fail to delete " + rM + ". Reason: " + map.get(rM));
+                    StringBuilder builder = new StringBuilder();
+                    builder.append("fail to delete ");
+                    builder.append(rM);
+                    builder.append(". Reason: ");
+                    builder.append(map.get(rM));
+                    String msg = builder.toString();
+                    PurgeAndExportResourceView.LOG.debug(msg);
+                    FilterButtonListener.this.purgeAndExportResourceView.showWarningMessage(msg);
                 }
-
             }
         });
     }
@@ -310,9 +319,9 @@ final class FilterButtonListener implements ClickListener {
     }
 
     private Table createFilterResultView(List<ResourceModel> result) {
+        resultDataSource = new BeanItemContainer<ResourceModel>(ResourceModel.class, result);
         resultTable =
-            new Table("Found: " + result.size() + " " + result.get(0).getType().getLabel() + "s",
-                new BeanItemContainer<ResourceModel>(ResourceModel.class, result));
+            new Table("Found: " + result.size() + " " + result.get(0).getType().getLabel() + "s", resultDataSource);
         resultTable.setWidth("100%");
         resultTable.setHeight("100%");
         resultTable.setSizeFull();

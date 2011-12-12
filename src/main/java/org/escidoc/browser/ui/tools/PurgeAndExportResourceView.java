@@ -169,4 +169,9 @@ public class PurgeAndExportResourceView extends VerticalLayout {
         router.getMainWindow().showNotification(
             new Notification("Error", status.getStatusMessage(), Notification.TYPE_ERROR_MESSAGE));
     }
+
+    void showWarningMessage(String message) {
+        router
+            .getMainWindow().showNotification(new Notification("Warning", message, Notification.TYPE_WARNING_MESSAGE));
+    }
 }
