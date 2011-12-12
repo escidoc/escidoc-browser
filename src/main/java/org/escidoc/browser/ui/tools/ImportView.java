@@ -38,11 +38,11 @@ import java.net.URISyntaxException;
 import java.net.URLConnection;
 import java.util.List;
 
-import org.escidoc.browser.Utils;
 import org.escidoc.browser.repository.IngestRepository;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.tools.Style.H2;
+import org.escidoc.browser.util.Utils;
 import org.escidoc.core.tme.IngestResult;
 import org.escidoc.core.tme.SucessfulIngestResult;
 
@@ -65,11 +65,96 @@ import de.escidoc.core.client.exceptions.TransportException;
 @SuppressWarnings("serial")
 public final class ImportView extends VerticalLayout {
 
-    private IngestRepository ingestRepository;
+    private final class ImportListener implements ClickListener {
+        private final TextField sourceUrlField;
 
-    private Router router;
+        private ImportListener(TextField sourceUrlField) {
+            this.sourceUrlField = sourceUrlField;
+        }
 
-    public ImportView(Router router, IngestRepository ingestRepository) {
+        @Override
+        public void buttonClick(final ClickEvent event) {
+            if (sourceUrlField.getValue() instanceof String) {
+                downloadAndIngestZipFile(sourceUrlField, (String) sourceUrlField.getValue());
+            }
+        }
+
+        private void downloadAndIngestZipFile(final TextField sourceUrl, final String sourceUri) {
+            try {
+                final URLConnection connection = createConnection(new URI(sourceUri));
+                connection.setConnectTimeout(5000);
+                connection.connect();
+                if (isZipFile(connection)) {
+                    ingestZipFile(connection.getInputStream());
+                }
+                else {
+                    router.getMainWindow().showNotification(sourceUrl.getValue() + " is not a zip file.",
+                        Window.Notification.TYPE_WARNING_MESSAGE);
+                }
+            }
+            catch (final SocketTimeoutException e) {
+                showTimeoutWarning();
+            }
+            catch (final MalformedURLException e) {
+                showErrorMessage(e);
+            }
+            catch (final IOException e) {
+                showErrorMessage(e);
+            }
+            catch (final EscidocClientException e) {
+                showErrorMessage(e);
+            }
+            catch (final URISyntaxException e) {
+                showErrorMessage(e);
+            }
+        }
+
+        private void showTimeoutWarning() {
+            router
+                .getApp()
+                .getMainWindow()
+                .showNotification("Connection Timeout", "Is HTTP Proxy properly configured?",
+                    Window.Notification.TYPE_WARNING_MESSAGE);
+        }
+
+        private boolean isZipFile(final URLConnection connection) {
+            return connection.getContentType().equalsIgnoreCase("application/zip");
+        }
+
+        private URLConnection createConnection(final URI uri) throws MalformedURLException, IOException {
+            if (Utils.findHttpProxy(uri) == null) {
+                return uri.toURL().openConnection();
+            }
+            return uri.toURL().openConnection(Utils.createHttpProxy(uri));
+        }
+
+        private void ingestZipFile(final InputStream is) throws EscidocException, InternalClientException,
+            TransportException, UnsupportedEncodingException, IOException {
+            // TODO: show spinner and message
+            final List<IngestResult> list = ingestRepository.ingestZip(is);
+            final StringBuilder builder = new StringBuilder();
+            for (final IngestResult ingestResult : list) {
+                if (ingestResult.isSuccesful()) {
+                    final SucessfulIngestResult sir = (SucessfulIngestResult) ingestResult;
+                    builder.append(sir.getId()).append(", ");
+                }
+            }
+            router.getMainWindow().showNotification("Succesfully ingested content model set", builder.toString(),
+                Window.Notification.DELAY_FOREVER);
+        }
+
+        private void showErrorMessage(final Exception e) {
+            router
+                .getApp().getMainWindow()
+                .showNotification(ViewConstants.ERROR, e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        }
+    }
+
+    private final IngestRepository ingestRepository;
+
+    private final Router router;
+
+    public ImportView(final Router router, final IngestRepository ingestRepository) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
         Preconditions.checkNotNull(ingestRepository, "iRepository is null: %s", ingestRepository);
         this.router = router;
@@ -93,89 +178,11 @@ public final class ImportView extends VerticalLayout {
         final TextField sourceUrlField = new TextField();
         sourceUrlField.setWidth("400px");
         sourceUrlField.setValue(ViewConstants.DEFAULT_CONTENT_MODEL_URI);
-        Button importButton = new Button(ViewConstants.IMPORT);
+        final Button importButton = new Button(ViewConstants.IMPORT);
         importButton.setStyleName(Reindeer.BUTTON_SMALL);
-        importButton.addListener(new ClickListener() {
+        importButton.addListener(new ImportListener(sourceUrlField));
 
-            @Override
-            public void buttonClick(ClickEvent event) {
-                if (sourceUrlField.getValue() instanceof String) {
-                    downloadAndIngestZipFile(sourceUrlField, (String) sourceUrlField.getValue());
-                }
-            }
-
-            private void downloadAndIngestZipFile(final TextField sourceUrl, String sourceUri) {
-                try {
-                    URLConnection connection = createConnection(new URI(sourceUri));
-                    connection.setConnectTimeout(5000);
-                    connection.connect();
-                    if (isZipFile(connection)) {
-                        ingestZipFile(connection.getInputStream());
-                    }
-                    else {
-                        router.getMainWindow().showNotification(sourceUrl.getValue() + " is not a zip file.",
-                            Window.Notification.TYPE_WARNING_MESSAGE);
-                    }
-                }
-                catch (SocketTimeoutException e) {
-                    showTimeoutWarning();
-                }
-                catch (MalformedURLException e) {
-                    showErrorMessage(e);
-                }
-                catch (IOException e) {
-                    showErrorMessage(e);
-                }
-                catch (EscidocClientException e) {
-                    showErrorMessage(e);
-                }
-                catch (URISyntaxException e) {
-                    showErrorMessage(e);
-                }
-            }
-
-            private void showTimeoutWarning() {
-                router
-                    .getApp()
-                    .getMainWindow()
-                    .showNotification("Connection Timeout", "Is HTTP Proxy properly configured?",
-                        Window.Notification.TYPE_WARNING_MESSAGE);
-            }
-
-            private boolean isZipFile(URLConnection connection) {
-                return connection.getContentType().equalsIgnoreCase("application/zip");
-            }
-
-            private URLConnection createConnection(URI uri) throws MalformedURLException, IOException {
-                if (Utils.findHttpProxy(uri) == null) {
-                    return uri.toURL().openConnection();
-                }
-                return uri.toURL().openConnection(Utils.createHttpProxy(uri));
-            }
-
-            private void ingestZipFile(InputStream is) throws EscidocException, InternalClientException,
-                TransportException, UnsupportedEncodingException, IOException {
-                // TODO: show spinner and message
-                List<IngestResult> list = ingestRepository.ingestZip(is);
-                StringBuilder builder = new StringBuilder();
-                for (IngestResult ingestResult : list) {
-                    if (ingestResult.isSuccesful()) {
-                        SucessfulIngestResult sir = (SucessfulIngestResult) ingestResult;
-                        builder.append(sir.getId()).append(", ");
-                    }
-                }
-                router.getMainWindow().showNotification("Succesfully ingested content model set", builder.toString(),
-                    Window.Notification.DELAY_FOREVER);
-            }
-
-            private void showErrorMessage(Exception e) {
-                router
-                    .getApp().getMainWindow()
-                    .showNotification(ViewConstants.ERROR, e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-            }
-        });
-
-        HorizontalLayout hl = new HorizontalLayout();
+        final HorizontalLayout hl = new HorizontalLayout();
         hl.setSpacing(true);
         hl.addComponent(urlLabel);
         hl.addComponent(sourceUrlField);

@@ -31,9 +31,9 @@ package org.escidoc.browser.ui.view.helpers;
 import java.net.URISyntaxException;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
-import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.ResourceDeleteConfirmation;
 import org.escidoc.browser.ui.maincontent.ItemView;

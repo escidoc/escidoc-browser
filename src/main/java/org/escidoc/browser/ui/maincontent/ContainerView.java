@@ -471,11 +471,11 @@ public class ContainerView extends View {
                                 vlPropertiesLeft.replaceComponent(oldComponent, swapComponent);
                             }
                         }
-                        else {
-                            // getWindow().showNotification(
-                            // "The click was over a " + event.getChildComponent().getClass().getCanonicalName()
-                            // + event.getChildComponent().getStyleName());
-                        }
+                        // else {
+                        // // getWindow().showNotification(
+                        // // "The click was over a " + event.getChildComponent().getClass().getCanonicalName()
+                        // // + event.getChildComponent().getStyleName());
+                        // }
                     }
                     else {
                         reSwapComponents();

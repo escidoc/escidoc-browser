@@ -28,28 +28,28 @@
  */
 package org.escidoc.browser.ui.tools;
 
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
+import java.util.Map.Entry;
 
 import org.escidoc.browser.repository.AdminRepository;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.tools.Style.H2;
 import org.escidoc.browser.ui.tools.Style.Ruler;
 
-import java.util.Map.Entry;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
 public class RepositoryInfoView extends VerticalLayout {
 
-    private FormLayout formLayout = new FormLayout();
+    private final FormLayout formLayout = new FormLayout();
 
-    private AdminRepository adminRepository;
+    private final AdminRepository adminRepository;
 
-    public RepositoryInfoView(AdminRepository adminRepository) {
+    public RepositoryInfoView(final AdminRepository adminRepository) {
         this.adminRepository = adminRepository;
     }
 
@@ -57,7 +57,7 @@ public class RepositoryInfoView extends VerticalLayout {
         addHeader();
         addRuler();
         setMargin(true);
-        for (Entry<String, String> entry : adminRepository.getRepositoryInfo().entrySet()) {
+        for (final Entry<String, String> entry : adminRepository.getRepositoryInfo().entrySet()) {
             formLayout.addComponent(createReadOnlyField(entry));
         }
         addComponent(formLayout);
@@ -68,7 +68,7 @@ public class RepositoryInfoView extends VerticalLayout {
     }
 
     private void addHeader() {
-        Label text = new H2(ViewConstants.REPOSITORY_INFORMATION);
+        final Label text = new H2(ViewConstants.REPOSITORY_INFORMATION);
         text.setContentMode(Label.CONTENT_XHTML);
         addComponent(text);
     }

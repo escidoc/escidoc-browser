@@ -28,8 +28,13 @@
  */
 package org.escidoc.browser.ui.tools;
 
-import com.google.common.base.Preconditions;
+import org.escidoc.browser.repository.AdminRepository;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.tools.Style.H2;
+import org.escidoc.browser.ui.tools.Style.Ruler;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
@@ -38,12 +43,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.ProgressIndicator;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
-
-import org.escidoc.browser.repository.AdminRepository;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.tools.Style.H2;
-import org.escidoc.browser.ui.tools.Style.Ruler;
 
 @SuppressWarnings("serial")
 public class ReindexView extends VerticalLayout {
@@ -58,11 +57,11 @@ public class ReindexView extends VerticalLayout {
 
     private final ProgressIndicator progressIndicator = new ProgressIndicator(new Float(0f));
 
-    private Router router;
+    private final Router router;
 
-    private AdminRepository adminRepository;
+    private final AdminRepository adminRepository;
 
-    public ReindexView(Router router, AdminRepository adminRepository) {
+    public ReindexView(final Router router, final AdminRepository adminRepository) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
         Preconditions.checkNotNull(adminRepository, "adminRepository is null: %s", adminRepository);
         this.router = router;
@@ -88,7 +87,7 @@ public class ReindexView extends VerticalLayout {
     }
 
     private void addDescription() {
-        Label text = new Label("<p>" + ViewConstants.REINDEX_TEXT + "</p>", Label.CONTENT_XHTML);
+        final Label text = new Label("<p>" + ViewConstants.REINDEX_TEXT + "</p>", Label.CONTENT_XHTML);
         addComponent(text);
     }
 
@@ -97,7 +96,7 @@ public class ReindexView extends VerticalLayout {
     }
 
     private void addHeader() {
-        Label text = new H2(ViewConstants.REINDEX);
+        final Label text = new H2(ViewConstants.REINDEX);
         text.setContentMode(Label.CONTENT_XHTML);
         addComponent(text);
     }

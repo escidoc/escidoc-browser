@@ -57,9 +57,9 @@ import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.UserService;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
+import org.escidoc.browser.model.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
-import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.internal.ItemRepository;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.helper.ResourceHierarchy;
@@ -100,21 +100,20 @@ public final class InstrumentController extends Controller implements ISaveActio
 
     private Window mainWindow;
 
-    private IBeanModel beanModel = null;
+    private IBeanModel beanModel;
 
     private Router router;
 
     @Override
-    public void init(
-        final EscidocServiceLocation serviceLocation, final Repositories repositories, final Router router,
-        final ResourceProxy resourceProxy, final Window mainWindow) {
+    public void init(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
         Preconditions.checkNotNull(repositories, "Repository ref is null");
-        Preconditions.checkNotNull(serviceLocation, "ServiceLocation ref is null");
-        this.serviceLocation = serviceLocation;
+        Preconditions.checkNotNull(router, "Router ref is null");
+        this.router = router;
+
+        this.serviceLocation = router.getServiceLocation();
         this.resourceProxy = resourceProxy;
         this.repositories = repositories;
-        this.mainWindow = mainWindow;
-        this.router = router;
+        this.mainWindow = router.getMainWindow();
         getOrgUnits();
         getUsers();
         loadAdminDescriptorInfo();

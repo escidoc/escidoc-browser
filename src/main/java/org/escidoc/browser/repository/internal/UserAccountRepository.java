@@ -98,4 +98,11 @@ public class UserAccountRepository implements Repository {
     public List<ResourceModel> filterUsingInput(final String query) throws EscidocClientException {
         throw new UnsupportedOperationException("not-yet-implemented.");
     }
+
+    @Override
+    public void delete(String id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Not yet implemented");
+
+    }
 }

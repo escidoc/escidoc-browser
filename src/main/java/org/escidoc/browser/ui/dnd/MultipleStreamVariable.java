@@ -37,8 +37,8 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.internal.ComponentBuilder;
+import org.escidoc.browser.model.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.escidoc.browser.ui.maincontent.ItemContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

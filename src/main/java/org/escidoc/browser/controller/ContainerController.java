@@ -58,19 +58,16 @@ public class ContainerController extends Controller {
 
     private static Logger LOG = LoggerFactory.getLogger(ContainerController.class);
 
-    public void init(
-        EscidocServiceLocation serviceLocation, Repositories repositories, Router router, ResourceProxy resourceProxy,
-        Window mainWindow) {
-        Preconditions.checkNotNull(serviceLocation, "serviceLocation is NULL");
+    public void init(Repositories repositories, Router router, ResourceProxy resourceProxy) {
         Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
         Preconditions.checkNotNull(repositories, "repositories is NULL");
-        Preconditions.checkNotNull(mainWindow, "mainWindow is NULL");
         Preconditions.checkNotNull(router, "Router is NULL");
-        this.serviceLocation = serviceLocation;
+        this.router = router;
+        this.serviceLocation = router.getServiceLocation();
         this.resourceProxy = resourceProxy;
         this.repositories = repositories;
-        this.mainWindow = mainWindow;
-        this.router = router;
+        this.mainWindow = router.getMainWindow();
+
         try {
             this.view = createView(resourceProxy);
         }
@@ -87,5 +84,4 @@ public class ContainerController extends Controller {
         Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
         return new ContainerView(router, resourceProxy, repositories);
     }
-
 }

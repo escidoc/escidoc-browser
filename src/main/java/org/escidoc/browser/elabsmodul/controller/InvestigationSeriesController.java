@@ -156,21 +156,16 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
     }
 
     @Override
-    public void init(
-        EscidocServiceLocation serviceLocation, Repositories repositories, Router router, ResourceProxy resourceProxy,
-        Window mainWindow) {
-        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
+    public void init(Repositories repositories, Router router, ResourceProxy resourceProxy) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(router, "mainSite is null: %s", router);
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
-        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkArgument(resourceProxy instanceof ContainerProxy, "resourceProxy is not container proxy");
-
-        this.serviceLocation = serviceLocation;
-        this.repositories = repositories;
         this.router = router;
+        this.serviceLocation = router.getServiceLocation();
+        this.repositories = repositories;
         this.resourceProxy = (ContainerProxy) resourceProxy;
-        this.mainWindow = mainWindow;
+        this.mainWindow = router.getMainWindow();
 
         setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
 

@@ -62,4 +62,6 @@ public interface Repositories {
 
     IngestRepository ingest();
 
+    BulkRepository bulkTasks();
+
 }

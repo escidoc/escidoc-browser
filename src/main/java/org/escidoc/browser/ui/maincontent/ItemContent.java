@@ -34,9 +34,9 @@ import java.net.URISyntaxException;
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
+import org.escidoc.browser.model.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
-import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.dnd.DragAndDropFileUpload;
 import org.slf4j.Logger;
@@ -57,7 +57,6 @@ import com.vaadin.ui.themes.BaseTheme;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.om.item.component.Component;
 
-@SuppressWarnings("serial")
 public class ItemContent extends VerticalLayout {
 
     private static final Logger LOG = LoggerFactory.getLogger(ItemContent.class);
@@ -143,6 +142,8 @@ public class ItemContent extends VerticalLayout {
         link.setStyleName(BaseTheme.BUTTON_LINK);
         link.setIcon(new ThemeResource("images/download.png"));
         link.addListener(new Button.ClickListener() {
+
+            private static final long serialVersionUID = 651483473875504715L;
 
             @Override
             public void buttonClick(final ClickEvent event) {

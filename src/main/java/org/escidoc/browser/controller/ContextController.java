@@ -28,7 +28,6 @@
  */
 package org.escidoc.browser.controller;
 
-import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
@@ -39,7 +38,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -53,9 +51,7 @@ public class ContextController extends Controller {
     private static Logger LOG = LoggerFactory.getLogger(ContextController.class);
 
     @Override
-    public void init(
-        EscidocServiceLocation serviceLocation, Repositories repositories, Router router, ResourceProxy resourceProxy,
-        Window mainWindow) {
+    public void init(Repositories repositories, Router router, ResourceProxy resourceProxy) {
 
         Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
         Preconditions.checkNotNull(repositories, "repositories is NULL");
@@ -67,8 +63,8 @@ public class ContextController extends Controller {
             this.view = createView(resourceProxy);
         }
         catch (EscidocClientException e) {
-            mainWindow.showNotification(ViewConstants.VIEW_ERROR_CANNOT_LOAD_VIEW + e.getLocalizedMessage(),
-                Notification.TYPE_ERROR_MESSAGE);
+            router.getMainWindow().showNotification(
+                ViewConstants.VIEW_ERROR_CANNOT_LOAD_VIEW + e.getLocalizedMessage(), Notification.TYPE_ERROR_MESSAGE);
             LOG.error("Failed at: ", e.getStackTrace());
         }
         this.setResourceName(resourceProxy.getName());

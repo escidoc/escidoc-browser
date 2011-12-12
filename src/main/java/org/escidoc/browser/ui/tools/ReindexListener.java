@@ -52,42 +52,43 @@ import de.escidoc.core.resources.adm.MessagesStatus;
 
 @SuppressWarnings("serial")
 final class ReindexListener implements ClickListener {
+
     private final VerticalLayout statusLayout = new VerticalLayout();
 
-    private AbstractField indexNameSelect;
+    private final AbstractField indexNameSelect;
 
-    private AdminRepository adminRepository;
+    private final AdminRepository adminRepository;
 
-    private Application application;
+    private final Application application;
 
-    private CheckBox clearIndexBox;
+    private final CheckBox clearIndexBox;
 
-    private Button reindexResourceBtn;
+    private final Button reindexResourceBtn;
 
-    private ProgressIndicator progressIndicator;
+    private final ProgressIndicator progressIndicator;
 
-    private ReindexView reindexView;
+    private final ReindexView reindexView;
 
     public ReindexListener(final Application application, final CheckBox clearIndexBox,
-        final AbstractField indexNameSelect, final Button reindexResourceBtn,
-        final ProgressIndicator progressIndicator, ReindexView reindexView, AdminRepository adminRepository) {
+        final AbstractField indexNameSelect, final Button reindexButton, final ProgressIndicator progressIndicator,
+        final ReindexView reindexView, final AdminRepository adminRepository) {
         Preconditions.checkNotNull(application, "app is null: %s", application);
         Preconditions.checkNotNull(clearIndexBox, "clearIndexBox is null: %s", clearIndexBox);
         Preconditions.checkNotNull(indexNameSelect, "indexNameSelect is null: %s", indexNameSelect);
-        Preconditions.checkNotNull(reindexResourceBtn, "reindexResourceBtn is null: %s", reindexResourceBtn);
+        Preconditions.checkNotNull(reindexButton, "reindexResourceBtn is null: %s", reindexButton);
         Preconditions.checkNotNull(progressIndicator, "progressIndicator is null: %s", progressIndicator);
 
         this.application = application;
         this.clearIndexBox = clearIndexBox;
         this.indexNameSelect = indexNameSelect;
-        this.reindexResourceBtn = reindexResourceBtn;
+        this.reindexResourceBtn = reindexButton;
         this.progressIndicator = progressIndicator;
         this.reindexView = reindexView;
         this.adminRepository = adminRepository;
     }
 
     @Override
-    public void buttonClick(ClickEvent event) {
+    public void buttonClick(final ClickEvent event) {
         checkPreconditions();
         tryReindex();
     }

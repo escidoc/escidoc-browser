@@ -50,9 +50,9 @@ public class ToolsTreeView extends VerticalLayout {
 
     private static class Node {
 
-        private NODE_TYPE type;
+        private final NODE_TYPE type;
 
-        Node(NODE_TYPE type) {
+        Node(final NODE_TYPE type) {
             this.type = type;
         }
 
@@ -73,7 +73,7 @@ public class ToolsTreeView extends VerticalLayout {
 
         private String label;
 
-        private NODE_TYPE(String label) {
+        private NODE_TYPE(final String label) {
             this.label = label;
         }
 
@@ -84,11 +84,11 @@ public class ToolsTreeView extends VerticalLayout {
 
     private final Tree tree = new Tree();
 
-    private Router router;
+    private final Router router;
 
-    private Repositories repositories;
+    private final Repositories repositories;
 
-    public ToolsTreeView(Router router, Repositories repositories) {
+    public ToolsTreeView(final Router router, final Repositories repositories) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         this.router = router;
@@ -106,29 +106,30 @@ public class ToolsTreeView extends VerticalLayout {
 
             @SuppressWarnings("deprecation")
             @Override
-            public void itemClick(ItemClickEvent event) {
+            public void itemClick(final ItemClickEvent event) {
                 switch (getType(event)) {
                     case LOAD_EXAMPLE:
                         router.openTab(new LoadExampleView(router, repositories.admin()), getType(event).getLabel());
                         break;
                     case REPO_INFO:
-                        RepositoryInfoView infoView = new RepositoryInfoView(repositories.admin());
+                        final RepositoryInfoView infoView = new RepositoryInfoView(repositories.admin());
                         try {
                             infoView.init();
                             router.openTab(infoView, getType(event).getLabel());
                         }
-                        catch (EscidocClientException e) {
+                        catch (final EscidocClientException e) {
                             router.getMainWindow().showNotification(ViewConstants.ERROR, e.getMessage(),
                                 Window.Notification.TYPE_ERROR_MESSAGE);
                         }
                         break;
                     case REINDEX:
-                        ReindexView view = new ReindexView(router, repositories.admin());
+                        final ReindexView view = new ReindexView(router, repositories.admin());
                         view.init();
                         router.openTab(view, getType(event).getLabel());
                         break;
                     case BULK_TASKS:
-                        PurgeAndExportResourceView purgeView = new PurgeAndExportResourceView(router, repositories);
+                        final PurgeAndExportResourceView purgeView =
+                            new PurgeAndExportResourceView(router, repositories);
                         purgeView.init();
                         router.openTab(purgeView, getType(event).getLabel());
                         break;
@@ -137,7 +138,7 @@ public class ToolsTreeView extends VerticalLayout {
                 }
             }
 
-            private NODE_TYPE getType(ItemClickEvent event) {
+            private NODE_TYPE getType(final ItemClickEvent event) {
                 return ((Node) event.getItemId()).getType();
             }
         });
@@ -158,12 +159,12 @@ public class ToolsTreeView extends VerticalLayout {
             tree.addItem(new Node(NODE_TYPE.BULK_TASKS));
         }
 
-        for (Object object : tree.getContainerDataSource().getItemIds()) {
+        for (final Object object : tree.getContainerDataSource().getItemIds()) {
             tree.setChildrenAllowed(object, false);
         }
     }
 
-    private boolean hasGrantTo(String actionId) throws EscidocClientException, URISyntaxException {
+    private boolean hasGrantTo(final String actionId) throws EscidocClientException, URISyntaxException {
         return repositories
             .pdp().forCurrentUser().isAction(actionId).forResource(AppConstants.EMPTY_STRING).permitted();
     }

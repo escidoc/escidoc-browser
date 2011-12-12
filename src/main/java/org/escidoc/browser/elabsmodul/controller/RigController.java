@@ -51,9 +51,9 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
-import org.escidoc.browser.repository.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.internal.ItemRepository;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.helper.ResourceHierarchy;
@@ -88,6 +88,8 @@ public final class RigController extends Controller implements IRigAction {
 
     private IBeanModel beanModel = null;
 
+    private Router router;
+
     private static List<String> cmmIds4Instrument = null, cmmIds4Rig = null;
 
     static {
@@ -96,15 +98,14 @@ public final class RigController extends Controller implements IRigAction {
     }
 
     @Override
-    public void init(
-        EscidocServiceLocation serviceLocation, Repositories repositories, Router mainSite,
-        ResourceProxy resourceProxy, Window mainWindow) {
+    public void init(Repositories repositories, Router router, ResourceProxy resourceProxy) {
         Preconditions.checkNotNull(repositories, "Repository ref is null");
-        Preconditions.checkNotNull(serviceLocation, "ServiceLocation ref is null");
-        this.serviceLocation = serviceLocation;
+        Preconditions.checkNotNull(router, "Router ref is null");
+        this.router = router;
+        this.serviceLocation = router.getServiceLocation();
         this.resourceProxy = resourceProxy;
         this.repositories = repositories;
-        this.mainWindow = mainWindow;
+        this.mainWindow = router.getMainWindow();
         view = createView(resourceProxy);
         this.setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
     }

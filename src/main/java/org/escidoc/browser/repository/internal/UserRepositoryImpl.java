@@ -28,6 +28,8 @@
  */
 package org.escidoc.browser.repository.internal;
 
+import com.google.common.base.Preconditions;
+
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.internal.GuestUser;
@@ -35,8 +37,6 @@ import org.escidoc.browser.model.internal.LoggedInUser;
 import org.escidoc.browser.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
 
 import de.escidoc.core.client.UserAccountHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -69,7 +69,7 @@ public class UserRepositoryImpl implements UserRepository {
             return new LoggedInUser(client.retrieveCurrentUser(), token);
         }
         catch (final EscidocClientException e) {
-            LOG.error("The user is not logged in");
+            LOG.debug("The user is not logged in");
             return new GuestUser();
         }
         catch (Throwable t) {

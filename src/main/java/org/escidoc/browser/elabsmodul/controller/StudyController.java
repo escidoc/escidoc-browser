@@ -90,14 +90,13 @@ public class StudyController extends Controller implements ISaveAction {
     private static Logger LOG = LoggerFactory.getLogger(InstrumentController.class);
 
     @Override
-    public void init(
-        EscidocServiceLocation serviceLocation, Repositories repositories, Router router, ResourceProxy resourceProxy,
-        Window mainWindow) {
-        this.serviceLocation = serviceLocation;
+    public void init(Repositories repositories, Router router, ResourceProxy resourceProxy) {
+        this.router = router;
+        this.serviceLocation = router.getServiceLocation();
         this.resourceProxy = resourceProxy;
         this.repositories = repositories;
-        this.mainWindow = mainWindow;
-        this.router = router;
+        this.mainWindow = router.getMainWindow();
+
         this.view = createView(resourceProxy);
         this.setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
 

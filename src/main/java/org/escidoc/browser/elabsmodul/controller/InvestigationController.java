@@ -41,7 +41,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import org.escidoc.browser.StringUtils;
 import org.escidoc.browser.controller.Controller;
 import org.escidoc.browser.elabsmodul.cache.ELabsCache;
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
@@ -70,6 +69,7 @@ import org.escidoc.browser.repository.internal.ContainerProxyImpl;
 import org.escidoc.browser.repository.internal.ContainerRepository;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.helper.ResourceHierarchy;
+import org.escidoc.browser.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMException;
@@ -122,15 +122,14 @@ public class InvestigationController extends Controller implements IInvestigatio
      * org.escidoc.browser.model.ResourceProxy, com.vaadin.ui.Window, org.escidoc.browser.model.CurrentUser)
      */
     @Override
-    public void init(
-        final EscidocServiceLocation serviceLocation, final Repositories repositories, final Router router,
-        final ResourceProxy resourceProxy, final Window mainWindow) {
+    public void init(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
         Preconditions.checkNotNull(repositories, "Repository ref is null");
-        this.serviceLocation = serviceLocation;
-        this.repositories = repositories;
+        Preconditions.checkNotNull(resourceProxy, "ResourceProxy ref is null");
         this.router = router;
+        this.serviceLocation = router.getServiceLocation();
+        this.repositories = repositories;
         this.resourceProxy = resourceProxy;
-        this.mainWindow = mainWindow;
+        this.mainWindow = router.getMainWindow();
         this.labsService = new ELabsService(repositories, router, resourceProxy.getId());
 
         loadAdminDescriptorInfo();
