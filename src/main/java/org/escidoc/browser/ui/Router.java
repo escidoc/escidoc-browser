@@ -119,8 +119,7 @@ public class Router {
      * Read the Plugins from a directory
      */
     private void initiatePlugins() {
-        // Determine here the Layout and additional Controllers that have to be
-        // used
+        // Determine here the Layout and additional Controllers that have to be used
         try {
             browserProperties = new Properties();
             browserProperties.load(this.getClass().getClassLoader().getResourceAsStream("browser.properties"));
@@ -132,7 +131,7 @@ public class Router {
             }
         }
         catch (final IOException e) {
-            e.printStackTrace();
+            mainWindow.showNotification(ViewConstants.LAYOUT_ERR_CANNOT_FIND_CLASS, Notification.TYPE_ERROR_MESSAGE);
         }
 
     }

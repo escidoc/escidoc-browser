@@ -67,7 +67,7 @@ public class ContextController extends Controller {
                 ViewConstants.VIEW_ERROR_CANNOT_LOAD_VIEW + e.getLocalizedMessage(), Notification.TYPE_ERROR_MESSAGE);
             LOG.error("Failed at: ", e.getStackTrace());
         }
-        this.setResourceName(resourceProxy.getName());
+        this.setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
 
     }
 
