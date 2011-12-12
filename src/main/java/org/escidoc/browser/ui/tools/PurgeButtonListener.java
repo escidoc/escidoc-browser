@@ -57,12 +57,12 @@ final class PurgeButtonListener implements ClickListener {
 
     private final FilterButtonListener filterButtonListener;
 
-    private Window mainWindow;
+    private final Window mainWindow;
 
-    private BeanItemContainer<ResourceModel> dataSource;
+    private final BeanItemContainer<ResourceModel> dataSource;
 
-    PurgeButtonListener(FilterButtonListener filterButtonListener, Window mainWindow,
-        BeanItemContainer<ResourceModel> dataSource) {
+    PurgeButtonListener(final FilterButtonListener filterButtonListener, final Window mainWindow,
+        final BeanItemContainer<ResourceModel> dataSource) {
         Preconditions.checkNotNull(filterButtonListener, "filterButtonListener is null: %s", filterButtonListener);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(dataSource, "dataSource is null: %s", dataSource);
@@ -87,13 +87,13 @@ final class PurgeButtonListener implements ClickListener {
         subWindow.setModal(true);
 
         subWindow.addComponent(new Label(ViewConstants.PURGE_WARNING_MESSAGE, Label.CONTENT_XHTML));
-        HorizontalLayout buttonLayout = new HorizontalLayout();
+        final HorizontalLayout buttonLayout = new HorizontalLayout();
         subWindow.addComponent(buttonLayout);
         buttonLayout.setSpacing(true);
         buttonLayout.addComponent(new Button(ViewConstants.YES, new ClickListener() {
 
             @Override
-            public void buttonClick(ClickEvent event) {
+            public void buttonClick(final ClickEvent event) {
                 closeDialog(subWindow);
                 tryPurge(getSelectedResourceIds(filterButtonListener.getSelectedResources()));
             }
@@ -102,7 +102,7 @@ final class PurgeButtonListener implements ClickListener {
         buttonLayout.addComponent(new Button(ViewConstants.NO, new ClickListener() {
 
             @Override
-            public void buttonClick(ClickEvent event) {
+            public void buttonClick(final ClickEvent event) {
                 closeDialog(subWindow);
             }
 
@@ -150,7 +150,7 @@ final class PurgeButtonListener implements ClickListener {
     }
 
     private void removeFromDataSource() {
-        for (ResourceModel rm : this.filterButtonListener.getSelectedResources()) {
+        for (final ResourceModel rm : this.filterButtonListener.getSelectedResources()) {
             dataSource.removeItem(rm);
         }
 

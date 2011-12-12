@@ -64,7 +64,7 @@ public class PurgeAndExportResourceView extends VerticalLayout {
 
     final Repositories repositories;
 
-    public PurgeAndExportResourceView(Router router, Repositories repositories) {
+    public PurgeAndExportResourceView(final Router router, final Repositories repositories) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
 
@@ -87,14 +87,14 @@ public class PurgeAndExportResourceView extends VerticalLayout {
     }
 
     private void addContent() {
-        HorizontalLayout filterLayout = new HorizontalLayout();
+        final HorizontalLayout filterLayout = new HorizontalLayout();
         filterLayout.setMargin(true);
         filterLayout.setSpacing(true);
         addResult();
     }
 
     private void addResult() {
-        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        final HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setWidth("100%");
         horizontalLayout.setSpacing(true);
 
@@ -102,7 +102,7 @@ public class PurgeAndExportResourceView extends VerticalLayout {
 
         createResourceOptions();
 
-        Button filterButton = new Button(ViewConstants.FILTER);
+        final Button filterButton = new Button(ViewConstants.FILTER);
         filterButton.setStyleName(Reindeer.BUTTON_SMALL);
         filterButton.addListener(new FilterButtonListener(this, router.getMainWindow()));
 
@@ -123,7 +123,7 @@ public class PurgeAndExportResourceView extends VerticalLayout {
     }
 
     private void createResourceOptions() {
-        BeanItemContainer<ResourceType> dataSource =
+        final BeanItemContainer<ResourceType> dataSource =
             new BeanItemContainer<ResourceType>(ResourceType.class, createResourceTypeList());
         dataSource.addNestedContainerProperty("label");
         resourceOption.setContainerDataSource(dataSource);
@@ -162,12 +162,12 @@ public class PurgeAndExportResourceView extends VerticalLayout {
             .showNotification(ViewConstants.ERROR, e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
     }
 
-    void showErrorMessage(MessagesStatus status) {
+    void showErrorMessage(final MessagesStatus status) {
         router.getMainWindow().showNotification(
             new Notification("Error", status.getStatusMessage(), Notification.TYPE_ERROR_MESSAGE));
     }
 
-    void showWarningMessage(String message) {
+    void showWarningMessage(final String message) {
         router
             .getMainWindow().showNotification(new Notification("Warning", message, Notification.TYPE_WARNING_MESSAGE));
     }

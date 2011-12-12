@@ -76,9 +76,9 @@ public final class FilterButtonListener implements ClickListener {
 
     final PurgeAndExportResourceView purgeAndExportResourceView;
 
-    private Window mainWindow;
+    private final Window mainWindow;
 
-    public FilterButtonListener(PurgeAndExportResourceView purgeAndExportResourceView, Window mainWindow) {
+    public FilterButtonListener(final PurgeAndExportResourceView purgeAndExportResourceView, final Window mainWindow) {
         Preconditions.checkNotNull(purgeAndExportResourceView, "purgeAndExportResourceView is null: %s",
             purgeAndExportResourceView);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
@@ -90,7 +90,7 @@ public final class FilterButtonListener implements ClickListener {
 
     @SuppressWarnings("unchecked")
     Set<ResourceModel> getSelectedResources() {
-        Object object = resultTable.getValue();
+        final Object object = resultTable.getValue();
         if (object instanceof Set) {
             return (Set<ResourceModel>) object;
         }
@@ -99,16 +99,16 @@ public final class FilterButtonListener implements ClickListener {
 
     private static final boolean IS_EXPORT_PERMITTTED = true;
 
-    private VerticalLayout resultLayout = new VerticalLayout();
+    private final VerticalLayout resultLayout = new VerticalLayout();
 
-    private HorizontalLayout buttonLayout = new HorizontalLayout();
+    private final HorizontalLayout buttonLayout = new HorizontalLayout();
 
     private Table resultTable;
 
     private BeanItemContainer<ResourceModel> resultDataSource;
 
     @Override
-    public void buttonClick(ClickEvent event) {
+    public void buttonClick(final ClickEvent event) {
         try {
             showResult();
             if (isPurgePermitted()) {
@@ -119,11 +119,11 @@ public final class FilterButtonListener implements ClickListener {
             }
             showDeleteView();
         }
-        catch (EscidocClientException e) {
+        catch (final EscidocClientException e) {
             LOG.error(e.getMessage());
             this.purgeAndExportResourceView.showErrorMessage(e);
         }
-        catch (URISyntaxException e) {
+        catch (final URISyntaxException e) {
             LOG.error(e.getMessage());
             this.purgeAndExportResourceView.showErrorMessage(e);
         }
@@ -131,32 +131,32 @@ public final class FilterButtonListener implements ClickListener {
 
     private void showDeleteView() {
         buttonLayout.setSpacing(true);
-        Button deleteButton = new Button(ViewConstants.DELETE);
+        final Button deleteButton = new Button(ViewConstants.DELETE);
         deleteButton.setStyleName(Reindeer.BUTTON_SMALL);
         buttonLayout.addComponent(deleteButton);
         deleteButton.addListener(new ClickListener() {
 
             @Override
-            public void buttonClick(ClickEvent event) {
-                DeleteResult result =
+            public void buttonClick(final ClickEvent event) {
+                final DeleteResult result =
                     FilterButtonListener.this.purgeAndExportResourceView.repositories.bulkTasks().delete(
                         getSelectedResources());
 
-                for (ResourceModel rM : result.getSuccess()) {
+                for (final ResourceModel rM : result.getSuccess()) {
                     LOG.debug("Succesfully delete " + rM);
                     resultDataSource.removeItem(rM);
                 }
 
-                Map<ResourceModel, String> map = result.getFail();
-                for (ResourceModel rM : map.keySet()) {
-                    StringBuilder builder = new StringBuilder();
+                final Map<ResourceModel, String> map = result.getFail();
+                for (final ResourceModel rM : map.keySet()) {
+                    final StringBuilder builder = new StringBuilder();
                     builder.append("fail to delete ");
                     builder.append(rM.getType().getLabel());
                     builder.append(" ");
                     builder.append(rM.getId());
                     builder.append(". Reason: ");
                     builder.append(map.get(rM));
-                    String msg = builder.toString();
+                    final String msg = builder.toString();
                     LOG.debug(msg);
                     FilterButtonListener.this.purgeAndExportResourceView.showWarningMessage(msg);
                 }
@@ -171,13 +171,13 @@ public final class FilterButtonListener implements ClickListener {
     private void showExportView() {
         buttonLayout.setSpacing(true);
 
-        Button exportButton = new Button(ViewConstants.EXPORT);
+        final Button exportButton = new Button(ViewConstants.EXPORT);
         exportButton.setStyleName(Reindeer.BUTTON_SMALL);
         buttonLayout.addComponent(exportButton);
         exportButton.addListener(new ClickListener() {
 
             @Override
-            public void buttonClick(ClickEvent event) {
+            public void buttonClick(final ClickEvent event) {
                 final Set<ResourceModel> selectedResources = getSelectedResources();
                 FilterButtonListener.this.purgeAndExportResourceView.router.getMainWindow().open(
                     new StreamResource(new StreamSource() {
@@ -187,10 +187,10 @@ public final class FilterButtonListener implements ClickListener {
                             try {
                                 return zip(selectedResources);
                             }
-                            catch (IOException e) {
+                            catch (final IOException e) {
                                 FilterButtonListener.this.purgeAndExportResourceView.showErrorMessage(e);
                             }
-                            catch (EscidocClientException e) {
+                            catch (final EscidocClientException e) {
                                 FilterButtonListener.this.purgeAndExportResourceView.showErrorMessage(e);
                             }
                             return null;
@@ -201,17 +201,17 @@ public final class FilterButtonListener implements ClickListener {
         });
     }
 
-    private ByteArrayInputStream zip(Set<ResourceModel> set) throws IOException, EscidocClientException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+    private ByteArrayInputStream zip(final Set<ResourceModel> set) throws IOException, EscidocClientException {
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         Closeable res = out;
         try {
-            ZipOutputStream zout = new ZipOutputStream(out);
+            final ZipOutputStream zout = new ZipOutputStream(out);
             res = zout;
-            for (ResourceModel resourceModel : set) {
+            for (final ResourceModel resourceModel : set) {
                 zout.putNextEntry(new ZipEntry(resourceModel.getId()));
-                String asString =
+                final String asString =
                     this.purgeAndExportResourceView.repositories.contentModel().getAsXmlString(resourceModel.getId());
-                InputStream is = new ByteArrayInputStream(asString.getBytes("UTF-8"));
+                final InputStream is = new ByteArrayInputStream(asString.getBytes("UTF-8"));
                 Utils.copy(is, zout);
                 zout.closeEntry();
             }
@@ -254,7 +254,7 @@ public final class FilterButtonListener implements ClickListener {
     }
 
     private void showResult() throws EscidocClientException {
-        List<ResourceModel> result = getFilterResult();
+        final List<ResourceModel> result = getFilterResult();
         emptyPreviousResult();
         if (isEmpty(result)) {
             showNoResult();
@@ -269,7 +269,7 @@ public final class FilterButtonListener implements ClickListener {
         resultLayout.addComponent(new Style.Ruler());
     }
 
-    private void showFilterResultView(Table table) {
+    private void showFilterResultView(final Table table) {
         resultLayout.addComponent(table);
         buttonLayout.removeAllComponents();
         resultLayout.addComponent(buttonLayout);
@@ -277,7 +277,7 @@ public final class FilterButtonListener implements ClickListener {
         this.purgeAndExportResourceView.addComponent(resultLayout);
     }
 
-    private Table createFilterResultView(List<ResourceModel> result) {
+    private Table createFilterResultView(final List<ResourceModel> result) {
         resultDataSource = new BeanItemContainer<ResourceModel>(ResourceModel.class, result);
         resultTable =
             new Table("Found: " + result.size() + " " + result.get(0).getType().getLabel() + "s", resultDataSource);
@@ -299,7 +299,7 @@ public final class FilterButtonListener implements ClickListener {
         this.purgeAndExportResourceView.addComponent(resultLayout);
     }
 
-    private boolean isEmpty(List<ResourceModel> result) {
+    private boolean isEmpty(final List<ResourceModel> result) {
         return result.isEmpty();
 
     }

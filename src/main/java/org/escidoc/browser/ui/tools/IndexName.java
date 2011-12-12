@@ -42,7 +42,7 @@ public enum IndexName {
 
     private String internalName;
 
-    IndexName(String internalName) {
+    IndexName(final String internalName) {
         Preconditions.checkNotNull(internalName, "internalName is null: %s", internalName);
         this.internalName = internalName;
     }
@@ -51,13 +51,13 @@ public enum IndexName {
         return internalName;
     }
 
-    private final static Set<String> set = new HashSet<String>(values().length);
+    private final static Set<String> SET = new HashSet<String>(values().length);
 
     public static Collection<?> all() {
         for (final IndexName indexName : values()) {
-            set.add(indexName.asInternalName());
+            SET.add(indexName.asInternalName());
         }
-        return set;
+        return SET;
     }
 
 }
