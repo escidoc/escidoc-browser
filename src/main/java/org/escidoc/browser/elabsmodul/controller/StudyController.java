@@ -318,4 +318,10 @@ public class StudyController extends Controller implements ISaveAction {
             return false;
         }
     }
+
+    @Override
+    public boolean isValidBean(IBeanModel dataBean) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 }

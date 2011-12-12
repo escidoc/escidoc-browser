@@ -359,4 +359,6 @@ public class ELabsViewContants {
         "Cannot save without a Rig. Please select a RIG from the \"Select Rig\" drop-down!";
 
     public static final String DATEPICKER_CAPTION = "Please select the finish time";
+
+    public static final String REQUIRED_SIGN = "<font color=\"red\"><b>&nbsp;*&nbsp;</b></font>";
 }

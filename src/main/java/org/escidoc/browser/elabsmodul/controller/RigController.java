@@ -360,4 +360,10 @@ public final class RigController extends Controller implements IRigAction {
             return false;
         }
     }
+
+    @Override
+    public boolean isValidBean(IBeanModel dataBean) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 }

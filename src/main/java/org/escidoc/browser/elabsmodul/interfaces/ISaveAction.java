@@ -40,5 +40,16 @@ public interface ISaveAction {
      */
     void saveAction(final IBeanModel dataBean);
 
+    /**
+     * 
+     * @param dataBean
+     * @return
+     */
+    boolean isValidBean(final IBeanModel dataBean);
+
+    /**
+     * 
+     * @return
+     */
     boolean hasUpdateAccess();
 }

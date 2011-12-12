@@ -234,4 +234,10 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
             return false;
         }
     }
+
+    @Override
+    public boolean isValidBean(IBeanModel dataBean) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 }

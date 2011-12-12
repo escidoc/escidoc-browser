@@ -81,7 +81,7 @@ public final class LabsLayoutHelper {
     }
 
     public static synchronized HorizontalLayout createHorizontalLayoutWithELabsLabelAndLabelData(
-        final String labelTxt, Property dataProperty) {
+        final String labelTxt, Property dataProperty, boolean required) {
         Preconditions.checkNotNull(labelTxt, "Label is null");
         Preconditions.checkNotNull(dataProperty, "DataSource is null");
 
@@ -94,7 +94,7 @@ public final class LabsLayoutHelper {
 
         Label label = new Label();
         label.setWidth(LABEL_WIDTH);
-        label.setValue(DIV_ALIGN_RIGHT + labelTxt + DIV_END);
+        label.setValue(DIV_ALIGN_RIGHT + (required ? ELabsViewContants.REQUIRED_SIGN : "") + labelTxt + DIV_END);
         label.setContentMode(Label.CONTENT_XHTML);
         label.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
 
@@ -113,7 +113,7 @@ public final class LabsLayoutHelper {
     }
 
     public static synchronized HorizontalLayout createHorizontalLayoutWithELabsLabelAndStaticComboData(
-        final String labelTxt, String value) {
+        final String labelTxt, String value, boolean required) {
         Preconditions.checkNotNull(labelTxt, "Label is null");
         // Preconditions.checkNotNull(value, "Value is null");
 
@@ -126,7 +126,7 @@ public final class LabsLayoutHelper {
 
         Label label = new Label();
         label.setWidth(LABEL_WIDTH);
-        label.setValue(DIV_ALIGN_RIGHT + labelTxt + DIV_END);
+        label.setValue(DIV_ALIGN_RIGHT + (required ? ELabsViewContants.REQUIRED_SIGN : "") + labelTxt + DIV_END);
         label.setContentMode(Label.CONTENT_XHTML);
         label.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
 
@@ -145,7 +145,7 @@ public final class LabsLayoutHelper {
     }
 
     public static synchronized HorizontalLayout createHorizontalLayoutWithELabsLabelAndLabelComplexData(
-        final String labelTxt, String dataTxt) {
+        final String labelTxt, String dataTxt, boolean required) {
         Preconditions.checkNotNull(labelTxt, "Label is null");
 
         HorizontalLayout horizontalLayout = new HorizontalLayout();
@@ -157,7 +157,7 @@ public final class LabsLayoutHelper {
 
         Label label = new Label();
         label.setWidth(LABEL_WIDTH);
-        label.setValue(DIV_ALIGN_RIGHT + labelTxt + DIV_END);
+        label.setValue(DIV_ALIGN_RIGHT + (required ? ELabsViewContants.REQUIRED_SIGN : "") + labelTxt + DIV_END);
         label.setContentMode(Label.CONTENT_XHTML);
         label.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
 
@@ -177,7 +177,7 @@ public final class LabsLayoutHelper {
 
     public static synchronized HorizontalLayout createHorizontalLayoutWithELabsLabelAndRelatedDataForRig(
         final String labelTxt, Property dataProperty, RigBean rigBean, final IRigAction controller,
-        LabsRigTableHelper helper) {
+        LabsRigTableHelper helper, boolean required) {
         Preconditions.checkNotNull(labelTxt, "Label is null");
         Preconditions.checkNotNull(dataProperty, "DataSource is null");
         Preconditions.checkNotNull(rigBean, "RigBean is null");
@@ -192,7 +192,7 @@ public final class LabsLayoutHelper {
 
         Label label = new Label();
         label.setWidth(LABEL_WIDTH);
-        label.setValue(DIV_ALIGN_RIGHT + labelTxt + DIV_END);
+        label.setValue(DIV_ALIGN_RIGHT + (required ? ELabsViewContants.REQUIRED_SIGN : "") + labelTxt + DIV_END);
         label.setContentMode(Label.CONTENT_XHTML);
         label.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
         label.setStyleName(STYLE_ELABS_HOR_PANEL);
@@ -205,7 +205,8 @@ public final class LabsLayoutHelper {
     }
 
     public static synchronized HorizontalLayout createHorizontalLayoutWithPublicationDataForStudy(
-        final String labelTxt, Property dataProperty, boolean isMotNotResPublication, LabsStudyTableHelper helper) {
+        final String labelTxt, Property dataProperty, boolean isMotNotResPublication, LabsStudyTableHelper helper,
+        boolean required) {
         Preconditions.checkNotNull(labelTxt, "Label is null");
         Preconditions.checkNotNull(dataProperty, "DataSource is null");
         Preconditions.checkNotNull(helper, "Helper is null");
@@ -218,7 +219,7 @@ public final class LabsLayoutHelper {
 
         Label label = new Label();
         label.setWidth(LABEL_WIDTH);
-        label.setValue(DIV_ALIGN_RIGHT + labelTxt + DIV_END);
+        label.setValue(DIV_ALIGN_RIGHT + (required ? ELabsViewContants.REQUIRED_SIGN : "") + labelTxt + DIV_END);
         label.setContentMode(Label.CONTENT_XHTML);
         label.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
         label.setStyleName(STYLE_ELABS_HOR_PANEL);
@@ -235,7 +236,7 @@ public final class LabsLayoutHelper {
     }
 
     public static synchronized HorizontalLayout createHorizontalLayoutWithELabsLabelAndCheckBoxData(
-        final String labelTxt, final String checkBoxDescription, Property dataProperty) {
+        final String labelTxt, final String checkBoxDescription, Property dataProperty, boolean required) {
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSizeUndefined();
         horizontalLayout.setDescription(USER_DESCR_ON_HOR_LAYOUT_TO_EDIT);
@@ -246,7 +247,7 @@ public final class LabsLayoutHelper {
 
         Label label = new Label();
         label.setWidth(LABEL_WIDTH);
-        label.setValue(DIV_ALIGN_RIGHT + labelTxt + DIV_END);
+        label.setValue(DIV_ALIGN_RIGHT + (required ? ELabsViewContants.REQUIRED_SIGN : "") + labelTxt + DIV_END);
         label.setContentMode(Label.CONTENT_XHTML);
         label.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
 

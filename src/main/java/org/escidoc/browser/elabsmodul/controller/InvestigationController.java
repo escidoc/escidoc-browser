@@ -679,4 +679,10 @@ public class InvestigationController extends Controller implements IInvestigatio
     public ILabsService getLabsService() {
         return labsService;
     }
+
+    @Override
+    public boolean isValidBean(IBeanModel dataBean) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 }
