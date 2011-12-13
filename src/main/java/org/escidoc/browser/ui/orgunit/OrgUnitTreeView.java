@@ -26,51 +26,60 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.ui.navigation;
+package org.escidoc.browser.ui.orgunit;
 
+import org.escidoc.browser.layout.OrgUnitDataSource;
 import org.escidoc.browser.model.PropertyId;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.navigation.NavigationTreeView;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.event.Action.Handler;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.AbstractSelect;
-import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.ExpandListener;
+import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
-public class NavigationTreeViewImpl extends CustomComponent implements NavigationTreeView {
-
+public class OrgUnitTreeView extends VerticalLayout implements NavigationTreeView {
     private final Tree tree = new Tree();
 
-    private ItemClickListener itemClickListener;
+    private final OrgUnitDataSource dataSource;
 
-    public NavigationTreeViewImpl() {
-        setCompositionRoot(tree);
+    public OrgUnitTreeView(final OrgUnitDataSource dataSource) {
+        Preconditions.checkNotNull(dataSource, "dataSource is null: %s", dataSource);
+        this.dataSource = dataSource;
+        addComponent(tree);
         tree.setImmediate(true);
+        tree.setContainerDataSource(dataSource.getContainer());
+        tree.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
+        tree.setItemCaptionPropertyId(PropertyId.NAME);
+        tree.setItemIconPropertyId(PropertyId.ICON);
+        tree.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
     }
 
     @Override
     public void addClickListener(final ItemClickListener clickListener) {
-        itemClickListener = clickListener;
-        tree.addListener(clickListener);
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     @Override
-    public void addExpandListener(final ExpandListener expandListener) {
-        tree.addListener(expandListener);
+    public void addExpandListener(final ExpandListener clickListener) {
+        throw new UnsupportedOperationException("Not yet implemented");
+
     }
 
     @Override
     public ResourceModel getSelected() {
-        return (ResourceModel) tree.getValue();
+        throw new UnsupportedOperationException("Not yet implemented");
+
     }
 
     @Override
-    public void setDataSource(final TreeDataSource dataSource, final Router router) {
+    public void setDataSource(final TreeDataSource container, final Router router) {
         tree.setContainerDataSource(dataSource.getContainer());
         tree.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
         tree.setItemCaptionPropertyId(PropertyId.NAME);
@@ -80,47 +89,6 @@ public class NavigationTreeViewImpl extends CustomComponent implements Navigatio
 
     @Override
     public void addActionHandler(final Handler handler) {
-        Preconditions.checkNotNull(handler, "handler is null: %s", handler);
-        tree.addActionHandler(handler);
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((itemClickListener == null) ? 0 : itemClickListener.hashCode());
-        result = prime * result + ((tree == null) ? 0 : tree.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        NavigationTreeViewImpl other = (NavigationTreeViewImpl) obj;
-        if (itemClickListener == null) {
-            if (other.itemClickListener != null) {
-                return false;
-            }
-        }
-        else if (!itemClickListener.equals(other.itemClickListener)) {
-            return false;
-        }
-        if (tree == null) {
-            if (other.tree != null) {
-                return false;
-            }
-        }
-        else if (!tree.equals(other.tree)) {
-            return false;
-        }
-        return true;
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 }

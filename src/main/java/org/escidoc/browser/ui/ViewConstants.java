@@ -310,4 +310,6 @@ public class ViewConstants {
     public static final String OK = "Ok";
 
     public static final String ERROR_CREATING_RESOURCE = "Error creating resource";
+    
+    public static final String ORG_UNITS = "Organizational Units";
 }

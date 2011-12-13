@@ -43,6 +43,7 @@ import org.escidoc.browser.ui.mainpage.HeaderContainer;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.navigation.NavigationTreeView;
 import org.escidoc.browser.ui.navigation.RootNode;
+import org.escidoc.browser.ui.orgunit.OrgUnitTreeView;
 import org.escidoc.browser.ui.tools.ToolsTreeView;
 import org.escidoc.browser.ui.view.helpers.CloseTabsViewHelper;
 import org.slf4j.Logger;
@@ -102,8 +103,9 @@ public class SimpleLayout extends LayoutDesign {
 
     @Override
     public void init(
-        Window mainWindow, EscidocServiceLocation serviceLocation, BrowserApplication app, Repositories repositories,
-        Router router) throws EscidocClientException, UnsupportedOperationException, URISyntaxException {
+        final Window mainWindow, final EscidocServiceLocation serviceLocation, final BrowserApplication app,
+        final Repositories repositories, final Router router) throws EscidocClientException,
+        UnsupportedOperationException, URISyntaxException {
         this.serviceLocation = serviceLocation;
         this.app = app;
         this.mainWindow = mainWindow;
@@ -115,9 +117,9 @@ public class SimpleLayout extends LayoutDesign {
     }
 
     @Override
-    public void openView(Component cmp, String tabname) {
-        String description = tabname;
-        int p = tabname.lastIndexOf('#');
+    public void openView(final Component cmp, String tabname) {
+        final String description = tabname;
+        final int p = tabname.lastIndexOf('#');
         if (p > 0) {
             tabname = tabname.substring(0, p);
         }
@@ -134,11 +136,11 @@ public class SimpleLayout extends LayoutDesign {
     }
 
     @Override
-    public void openViewByReloading(Component cmp, String tabname) {
-        String description = tabname;
+    public void openViewByReloading(final Component cmp, String tabname) {
+        final String description = tabname;
 
         // use as tabname the name without the ID
-        int p = tabname.lastIndexOf('#');
+        final int p = tabname.lastIndexOf('#');
         if (p > 0) {
             tabname = tabname.substring(0, p);
         }
@@ -147,7 +149,7 @@ public class SimpleLayout extends LayoutDesign {
         }
         int position = -1;
         if (mainContentTabs.getTab(cmp) != null) {
-            Tab tmpTab = mainContentTabs.getTab(cmp);
+            final Tab tmpTab = mainContentTabs.getTab(cmp);
             position = mainContentTabs.getTabPosition(tmpTab);
             mainContentTabs.removeTab(tmpTab);
         }
@@ -168,12 +170,13 @@ public class SimpleLayout extends LayoutDesign {
      * 
      * @param cmp
      */
-    public void closeView(ResourceModel model, ResourceModel parent, Object sender) {
+    @Override
+    public void closeView(final ResourceModel model, final ResourceModel parent, final Object sender) {
         // 1. Remove the tab for the resource to be deleted
         // 2. Reload the parent Tab
         // 3. Remove the element from the tree
         for (int i = mainContentTabs.getComponentCount() - 1; i >= 0; i--) {
-            String tabDescription =
+            final String tabDescription =
                 mainContentTabs
                     .getTab(i).getDescription()
                     .substring(mainContentTabs.getTab(i).getDescription().lastIndexOf('#') + 1).toString();
@@ -190,7 +193,7 @@ public class SimpleLayout extends LayoutDesign {
                     try {
                         router.show(parent, true);
                     }
-                    catch (EscidocClientException e) {
+                    catch (final EscidocClientException e) {
                         mainWindow.showNotification(ViewConstants.VIEW_ERROR_CANNOT_LOAD_VIEW,
                             Window.Notification.TYPE_ERROR_MESSAGE);
 
@@ -198,7 +201,7 @@ public class SimpleLayout extends LayoutDesign {
                 }
             }
             else {
-                Tree dmTree = (Tree) sender;
+                final Tree dmTree = (Tree) sender;
                 dmTree.removeItem(model);
             }
         }
@@ -310,11 +313,10 @@ public class SimpleLayout extends LayoutDesign {
 
         final Accordion accordion = new Accordion();
         accordion.setSizeFull();
-        accordion.addTab(mainNavigationTree, ViewConstants.RESOURCES, null);
 
-        ToolsTreeView toolsTreeView = new ToolsTreeView(router, repositories);
-        toolsTreeView.init();
-        accordion.addTab(toolsTreeView, ViewConstants.TOOLS, null);
+        addResourcesTab(accordion);
+        addOrgUnitTab(accordion);
+        addToolsTab(accordion);
 
         vlNavigationPanel.addComponent(accordion);
         vlNavigationPanel.setExpandRatio(accordion, 1.0f);
@@ -322,6 +324,22 @@ public class SimpleLayout extends LayoutDesign {
         navigationPanel.setContent(vlNavigationPanel);
 
         return navigationPanel;
+    }
+
+    private void addOrgUnitTab(final Accordion accordion) {
+        final OrgUnitDataSource orgUnitDataSource = new OrgUnitDataSource(repositories.organization());
+        orgUnitDataSource.init();
+        accordion.addTab(new OrgUnitTreeView(orgUnitDataSource), ViewConstants.ORG_UNITS, null);
+    }
+
+    private void addResourcesTab(final Accordion accordion) {
+        accordion.addTab(mainNavigationTree, ViewConstants.RESOURCES, null);
+    }
+
+    private void addToolsTab(final Accordion accordion) throws EscidocClientException, URISyntaxException {
+        final ToolsTreeView toolsTreeView = new ToolsTreeView(router, repositories);
+        toolsTreeView.init();
+        accordion.addTab(toolsTreeView, ViewConstants.TOOLS, null);
     }
 
     private NavigationTreeView addNavigationTree() throws EscidocClientException {
@@ -344,11 +362,12 @@ public class SimpleLayout extends LayoutDesign {
         return mainContentTabs;
     }
 
+    @Override
     public TreeDataSource getTreeDataSource() {
         return treeDataSource;
     }
 
-    void setTreeDataSource(TreeDataSource treeDataSource) {
+    void setTreeDataSource(final TreeDataSource treeDataSource) {
         this.treeDataSource = treeDataSource;
     }
 

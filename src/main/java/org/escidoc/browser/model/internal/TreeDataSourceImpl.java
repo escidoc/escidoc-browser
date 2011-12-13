@@ -73,10 +73,6 @@ public class TreeDataSourceImpl implements TreeDataSource {
         dataSource.addContainerProperty(PropertyId.TYPE, ResourceType.class, null);
     }
 
-    private void sortByTypeAndNameAscending() {
-        dataSource.sort(new String[] { PropertyId.TYPE, PropertyId.NAME }, new boolean[] { true, true });
-    }
-
     private void addTopLevel() {
         for (final ResourceModel topLevel : topLevelResources) {
             final Item addedItem = add(topLevel);
@@ -91,13 +87,13 @@ public class TreeDataSourceImpl implements TreeDataSource {
         }
     }
 
-    private boolean isChildless(final ContextModel topLevel) {
-        return !topLevel.hasChildren();
-    }
-
     private Item add(final ResourceModel resource) {
         Preconditions.checkNotNull(resource, "resource is null: %s", resource);
         return dataSource.addItem(resource);
+    }
+
+    private void sortByTypeAndNameAscending() {
+        dataSource.sort(new String[] { PropertyId.TYPE, PropertyId.NAME }, new boolean[] { true, true });
     }
 
     private void bind(final Item item, final ResourceModel resource) {
@@ -109,6 +105,10 @@ public class TreeDataSourceImpl implements TreeDataSource {
         item.getItemProperty(PropertyId.ICON).setValue(
             new ThemeResource("images/resources/" + resource.getType().toString().toLowerCase() + ".png"));
         item.getItemProperty(PropertyId.TYPE).setValue(resource.getType());
+    }
+
+    private boolean isChildless(final ContextModel topLevel) {
+        return !topLevel.hasChildren();
     }
 
     @Override
@@ -146,7 +146,7 @@ public class TreeDataSourceImpl implements TreeDataSource {
         bind(addedItem, child);
         assignParent(parent, child);
 
-        boolean hasMember = true;
+        final boolean hasMember = true;
         dataSource.setChildrenAllowed(child, hasMember);
         dataSource.setChildrenAllowed(child, isNotItem(child));
         sortByTypeAndNameAscending();
@@ -183,9 +183,9 @@ public class TreeDataSourceImpl implements TreeDataSource {
      * If no parent was found, return null
      */
     @Override
-    public ResourceModel getParent(ResourceModel child) {
+    public ResourceModel getParent(final ResourceModel child) {
         Preconditions.checkNotNull(child, "Child must not be null.");
-        Object parent = dataSource.getParent(child);
+        final Object parent = dataSource.getParent(child);
         if (parent != null) {
             return (ResourceModel) parent;
         }

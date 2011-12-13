@@ -43,8 +43,6 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class NavigationTreeBuilder {
 
-    // private final CurrentUser currentUser;
-
     private final EscidocServiceLocation serviceLocation;
 
     private final Repositories repositories;
