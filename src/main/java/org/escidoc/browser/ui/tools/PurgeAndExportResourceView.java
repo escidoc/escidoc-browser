@@ -118,8 +118,7 @@ public class PurgeAndExportResourceView extends VerticalLayout {
     private static PopupView createHelpView() {
         final Label popUpContent = new Label(ViewConstants.FILTER_EXAMPLE_TOOLTIP_TEXT, Label.CONTENT_XHTML);
         popUpContent.setWidth(400, UNITS_PIXELS);
-        final PopupView popup = new PopupView(ViewConstants.TIP, popUpContent);
-        return popup;
+        return new PopupView(ViewConstants.TIP, popUpContent);
     }
 
     private void createResourceOptions() {

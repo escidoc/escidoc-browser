@@ -74,9 +74,19 @@ public final class FilterButtonListener implements ClickListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(FilterButtonListener.class);
 
+    private static final boolean IS_EXPORT_PERMITTTED = true;
+
+    private final VerticalLayout resultLayout = new VerticalLayout();
+
+    private final HorizontalLayout buttonLayout = new HorizontalLayout();
+
+    private Table resultTable;
+
     final PurgeAndExportResourceView purgeAndExportResourceView;
 
     private final Window mainWindow;
+
+    private BeanItemContainer<ResourceModel> resultDataSource;
 
     public FilterButtonListener(final PurgeAndExportResourceView purgeAndExportResourceView, final Window mainWindow) {
         Preconditions.checkNotNull(purgeAndExportResourceView, "purgeAndExportResourceView is null: %s",
@@ -96,16 +106,6 @@ public final class FilterButtonListener implements ClickListener {
         }
         return Collections.emptySet();
     }
-
-    private static final boolean IS_EXPORT_PERMITTTED = true;
-
-    private final VerticalLayout resultLayout = new VerticalLayout();
-
-    private final HorizontalLayout buttonLayout = new HorizontalLayout();
-
-    private Table resultTable;
-
-    private BeanItemContainer<ResourceModel> resultDataSource;
 
     @Override
     public void buttonClick(final ClickEvent event) {
@@ -134,19 +134,22 @@ public final class FilterButtonListener implements ClickListener {
         final Button deleteButton = new Button(ViewConstants.DELETE);
         deleteButton.setStyleName(Reindeer.BUTTON_SMALL);
         buttonLayout.addComponent(deleteButton);
+
         deleteButton.addListener(new ClickListener() {
 
             @Override
             public void buttonClick(final ClickEvent event) {
-                final DeleteResult result =
-                    FilterButtonListener.this.purgeAndExportResourceView.repositories.bulkTasks().delete(
-                        getSelectedResources());
+                final DeleteResult result = deleteSelectedResources();
+                handleSuccesful(result);
+                handleFailed(result);
+            }
 
-                for (final ResourceModel rM : result.getSuccess()) {
-                    LOG.debug("Succesfully delete " + rM);
-                    resultDataSource.removeItem(rM);
-                }
+            private DeleteResult deleteSelectedResources() {
+                return FilterButtonListener.this.purgeAndExportResourceView.repositories.bulkTasks().delete(
+                    getSelectedResources());
+            }
 
+            private void handleFailed(final DeleteResult result) {
                 final Map<ResourceModel, String> map = result.getFail();
                 for (final ResourceModel rM : map.keySet()) {
                     final StringBuilder builder = new StringBuilder();
@@ -159,6 +162,13 @@ public final class FilterButtonListener implements ClickListener {
                     final String msg = builder.toString();
                     LOG.debug(msg);
                     FilterButtonListener.this.purgeAndExportResourceView.showWarningMessage(msg);
+                }
+            }
+
+            private void handleSuccesful(final DeleteResult result) {
+                for (final ResourceModel rM : result.getSuccess()) {
+                    LOG.debug("Succesfully delete " + rM);
+                    resultDataSource.removeItem(rM);
                 }
             }
         });
@@ -179,24 +189,23 @@ public final class FilterButtonListener implements ClickListener {
             @Override
             public void buttonClick(final ClickEvent event) {
                 final Set<ResourceModel> selectedResources = getSelectedResources();
-                FilterButtonListener.this.purgeAndExportResourceView.router.getMainWindow().open(
-                    new StreamResource(new StreamSource() {
+                mainWindow.open(new StreamResource(new StreamSource() {
 
-                        @Override
-                        public InputStream getStream() {
-                            try {
-                                return zip(selectedResources);
-                            }
-                            catch (final IOException e) {
-                                FilterButtonListener.this.purgeAndExportResourceView.showErrorMessage(e);
-                            }
-                            catch (final EscidocClientException e) {
-                                FilterButtonListener.this.purgeAndExportResourceView.showErrorMessage(e);
-                            }
-                            return null;
+                    @Override
+                    public InputStream getStream() {
+                        try {
+                            return zip(selectedResources);
                         }
+                        catch (final IOException e) {
+                            FilterButtonListener.this.purgeAndExportResourceView.showErrorMessage(e);
+                        }
+                        catch (final EscidocClientException e) {
+                            FilterButtonListener.this.purgeAndExportResourceView.showErrorMessage(e);
+                        }
+                        return null;
+                    }
 
-                    }, EXPORT_FILENAME, FilterButtonListener.this.purgeAndExportResourceView.router.getApp()), "_new");
+                }, EXPORT_FILENAME, FilterButtonListener.this.purgeAndExportResourceView.router.getApp()), "_blank  ");
             }
         });
     }
