@@ -104,7 +104,7 @@ public class PurgeAndExportResourceView extends VerticalLayout {
 
         final Button filterButton = new Button(ViewConstants.FILTER);
         filterButton.setStyleName(Reindeer.BUTTON_SMALL);
-        filterButton.addListener(new FilterButtonListener(this, router.getMainWindow()));
+        filterButton.addListener(new FilterButtonListener(this, router.getMainWindow(), repositories));
 
         horizontalLayout.addComponent(resourceOption);
         horizontalLayout.addComponent(createHelpView());

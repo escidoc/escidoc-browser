@@ -35,7 +35,6 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -45,7 +44,7 @@ import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.PropertyId;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceType;
-import org.escidoc.browser.repository.BulkRepository.DeleteResult;
+import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.ViewConstants;
@@ -72,6 +71,8 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 @SuppressWarnings("serial")
 public final class FilterButtonListener implements ClickListener {
 
+    final PurgeAndExportResourceView purgeAndExportResourceView;
+
     private static final Logger LOG = LoggerFactory.getLogger(FilterButtonListener.class);
 
     private static final boolean IS_EXPORT_PERMITTTED = true;
@@ -80,20 +81,23 @@ public final class FilterButtonListener implements ClickListener {
 
     private final HorizontalLayout buttonLayout = new HorizontalLayout();
 
-    private Table resultTable;
-
-    final PurgeAndExportResourceView purgeAndExportResourceView;
-
     private final Window mainWindow;
 
     private BeanItemContainer<ResourceModel> resultDataSource;
 
-    public FilterButtonListener(final PurgeAndExportResourceView purgeAndExportResourceView, final Window mainWindow) {
+    private final Repositories repositories;
+
+    private Table resultTable;
+
+    public FilterButtonListener(final PurgeAndExportResourceView purgeAndExportResourceView, final Window mainWindow,
+        final Repositories repositories) {
         Preconditions.checkNotNull(purgeAndExportResourceView, "purgeAndExportResourceView is null: %s",
             purgeAndExportResourceView);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         this.purgeAndExportResourceView = purgeAndExportResourceView;
         this.mainWindow = mainWindow;
+        this.repositories = repositories;
     }
 
     private static final String EXPORT_FILENAME = "escidoc-xml-export.zip";
@@ -135,43 +139,7 @@ public final class FilterButtonListener implements ClickListener {
         deleteButton.setStyleName(Reindeer.BUTTON_SMALL);
         buttonLayout.addComponent(deleteButton);
 
-        deleteButton.addListener(new ClickListener() {
-
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                final DeleteResult result = deleteSelectedResources();
-                handleSuccesful(result);
-                handleFailed(result);
-            }
-
-            private DeleteResult deleteSelectedResources() {
-                return FilterButtonListener.this.purgeAndExportResourceView.repositories.bulkTasks().delete(
-                    getSelectedResources());
-            }
-
-            private void handleFailed(final DeleteResult result) {
-                final Map<ResourceModel, String> map = result.getFail();
-                for (final ResourceModel rM : map.keySet()) {
-                    final StringBuilder builder = new StringBuilder();
-                    builder.append("fail to delete ");
-                    builder.append(rM.getType().getLabel());
-                    builder.append(" ");
-                    builder.append(rM.getId());
-                    builder.append(". Reason: ");
-                    builder.append(map.get(rM));
-                    final String msg = builder.toString();
-                    LOG.debug(msg);
-                    FilterButtonListener.this.purgeAndExportResourceView.showWarningMessage(msg);
-                }
-            }
-
-            private void handleSuccesful(final DeleteResult result) {
-                for (final ResourceModel rM : result.getSuccess()) {
-                    LOG.debug("Succesfully delete " + rM);
-                    resultDataSource.removeItem(rM);
-                }
-            }
-        });
+        deleteButton.addListener(new BulkDeleteListener(this, repositories, mainWindow, resultDataSource));
     }
 
     private boolean isContentModelSelected() {

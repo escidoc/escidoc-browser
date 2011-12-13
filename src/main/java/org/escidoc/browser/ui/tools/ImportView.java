@@ -68,7 +68,7 @@ public final class ImportView extends VerticalLayout {
     private final class ImportListener implements ClickListener {
         private final TextField sourceUrlField;
 
-        private ImportListener(TextField sourceUrlField) {
+        private ImportListener(final TextField sourceUrlField) {
             this.sourceUrlField = sourceUrlField;
         }
 
@@ -170,7 +170,7 @@ public final class ImportView extends VerticalLayout {
     }
 
     private void addSpace() {
-        addComponent(new Label("<br/>", Label.CONTENT_XHTML));
+        addComponent(Utils.createSpace());
     }
 
     private void addContent() {
