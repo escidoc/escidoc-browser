@@ -329,16 +329,13 @@ public class Router {
             LOG.error(ViewConstants.CONTROLLER_ERR_ILLEG_EXEP + e.getLocalizedMessage());
         }
         catch (SecurityException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error(ViewConstants.CONTROLLER_ERR_SECU_EXEP + e.getLocalizedMessage());
         }
         catch (InvocationTargetException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error(ViewConstants.CONTROLLER_ERR_INVOKE_EXEP + e.getLocalizedMessage());
         }
         catch (NoSuchMethodException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error(ViewConstants.CONTROLLER_ERR_NOSUCHMETH_EXEP + e.getLocalizedMessage());
         }
 
     }
