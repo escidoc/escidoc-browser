@@ -97,8 +97,8 @@ public final class RigController extends Controller implements IRigAction {
         cmmIds4Rig = new ArrayList<String>();
     }
 
-    @Override
-    public void init(Repositories repositories, Router router, ResourceProxy resourceProxy) {
+    public RigController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
+        super(repositories, router, resourceProxy);
         Preconditions.checkNotNull(repositories, "Repository ref is null");
         Preconditions.checkNotNull(router, "Router ref is null");
         this.router = router;

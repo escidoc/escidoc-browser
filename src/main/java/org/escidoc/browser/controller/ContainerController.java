@@ -58,10 +58,8 @@ public class ContainerController extends Controller {
 
     private static Logger LOG = LoggerFactory.getLogger(ContainerController.class);
 
-    public void init(Repositories repositories, Router router, ResourceProxy resourceProxy) {
-        Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
-        Preconditions.checkNotNull(repositories, "repositories is NULL");
-        Preconditions.checkNotNull(router, "Router is NULL");
+    public ContainerController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
+        super(repositories, router, resourceProxy);
         this.router = router;
         this.serviceLocation = router.getServiceLocation();
         this.resourceProxy = resourceProxy;
@@ -77,7 +75,6 @@ public class ContainerController extends Controller {
             LOG.error("Failed at: ", e.getStackTrace());
         }
         this.setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
-
     }
 
     private Component createView(ResourceProxy resourceProxy) throws EscidocClientException {
