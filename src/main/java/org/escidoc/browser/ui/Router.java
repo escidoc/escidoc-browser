@@ -29,6 +29,7 @@
 package org.escidoc.browser.ui;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.List;
@@ -119,8 +120,7 @@ public class Router {
      * Read the Plugins from a directory
      */
     private void initiatePlugins() {
-        // Determine here the Layout and additional Controllers that have to be
-        // used
+        // Determine here the Layout and additional Controllers that have to be used
         try {
             browserProperties = new Properties();
             browserProperties.load(this.getClass().getClassLoader().getResourceAsStream("browser.properties"));
@@ -132,7 +132,7 @@ public class Router {
             }
         }
         catch (final IOException e) {
-            e.printStackTrace();
+            mainWindow.showNotification(ViewConstants.LAYOUT_ERR_CANNOT_FIND_CLASS, Notification.TYPE_ERROR_MESSAGE);
         }
 
     }
@@ -203,7 +203,7 @@ public class Router {
      * @param cnt
      */
     public void openControllerView(final Controller cnt, final ResourceProxy resourceProxy, final Boolean doReloadView) {
-        cnt.init(repositories, this, resourceProxy);
+        // cnt.init(repositories, this, resourceProxy);
         if (!doReloadView) {
             cnt.showView(layout);
         }
@@ -301,8 +301,10 @@ public class Router {
             else {
                 LOG.debug(clickedResource.getId());
                 final Class<?> controllerClass = Class.forName(controllerClassName);
-                controller = (Controller) controllerClass.newInstance();
-                controller.init(repositories, this, tryToFindResource(clickedResource));
+                controller =
+                    (Controller) controllerClass
+                        .getConstructor(Repositories.class, Router.class, ResourceProxy.class).newInstance(
+                            repositories, this, tryToFindResource(clickedResource));
                 if (!doReloadView) {
                     controller.showView(layout);
                 }
@@ -325,6 +327,15 @@ public class Router {
             this.getMainWindow().showNotification(ViewConstants.CONTROLLER_ERR_ILLEG_EXEP,
                 Notification.TYPE_ERROR_MESSAGE);
             LOG.error(ViewConstants.CONTROLLER_ERR_ILLEG_EXEP + e.getLocalizedMessage());
+        }
+        catch (SecurityException e) {
+            LOG.error(ViewConstants.CONTROLLER_ERR_SECU_EXEP + e.getLocalizedMessage());
+        }
+        catch (InvocationTargetException e) {
+            LOG.error(ViewConstants.CONTROLLER_ERR_INVOKE_EXEP + e.getLocalizedMessage());
+        }
+        catch (NoSuchMethodException e) {
+            LOG.error(ViewConstants.CONTROLLER_ERR_NOSUCHMETH_EXEP + e.getLocalizedMessage());
         }
 
     }

@@ -285,23 +285,23 @@ public class InvestigationView extends View implements ILabsPanel, ILabsAction, 
         this.buttonLayout = LabsLayoutHelper.createButtonLayout();
         final HorizontalLayout h1 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_INVESTIGATION_TITLE,
-                pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_TITLE));
+                pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_TITLE), true);
         final HorizontalLayout h2 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_INVESTIGATION_DESC,
-                pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_DESC));
+                pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_DESC), true);
         final HorizontalLayout h3 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndStaticComboData(
-                ELabsViewContants.L_INVESTIGATION_DEPOSIT_SERVICE, investigationBean.getDepositEndpoint());
+                ELabsViewContants.L_INVESTIGATION_DEPOSIT_SERVICE, investigationBean.getDepositEndpoint(), true);
         final HorizontalLayout h4 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelComplexData(
-                ELabsViewContants.L_INVESTIGATION_INVESTIGATOR, investigatorText);
+                ELabsViewContants.L_INVESTIGATION_INVESTIGATOR, investigatorText, false);
         final HorizontalLayout h5 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(
                 ELabsViewContants.L_INVESTIGATION_DURATION,
-                pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_DURATION));
+                pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_DURATION), true);
         final HorizontalLayout h6 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_INVESTIGATION_RIG,
-                pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_RIG));
+                pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_RIG), true);
 
         // set up specific listeners
         h3.addListener(new DepositEndpointSelectionLayoutListener(this, this));

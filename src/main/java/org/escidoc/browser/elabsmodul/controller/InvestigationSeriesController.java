@@ -70,6 +70,7 @@ import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.om.container.Container;
 
 public class InvestigationSeriesController extends Controller implements ISaveAction {
+
     private static final Logger LOG = LoggerFactory.getLogger(InvestigationSeriesController.class);
 
     private EscidocServiceLocation serviceLocation;
@@ -155,8 +156,8 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
 
     }
 
-    @Override
-    public void init(Repositories repositories, Router router, ResourceProxy resourceProxy) {
+    public InvestigationSeriesController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
+        super(repositories, router, resourceProxy);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(router, "mainSite is null: %s", router);
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
@@ -233,5 +234,11 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
             LOG.error(e.getMessage());
             return false;
         }
+    }
+
+    @Override
+    public String checkBeanDataBeforeSave(IBeanModel dataBean) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

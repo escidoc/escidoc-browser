@@ -58,8 +58,8 @@ public class ItemController extends Controller {
 
     private static Logger LOG = LoggerFactory.getLogger(ItemController.class);
 
-    @Override
-    public void init(Repositories repositories, Router router, ResourceProxy resourceProxy) {
+    public ItemController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
+        super(repositories, router, resourceProxy);
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is NULL");
         Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
         Preconditions.checkNotNull(repositories, "repositories is NULL");

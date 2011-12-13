@@ -202,16 +202,16 @@ public class StudyView extends View implements ILabsPanel, ILabsAction {
         buttonLayout = LabsLayoutHelper.createButtonLayout();
         final HorizontalLayout h1 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_STUDY_TITLE,
-                pojoItem.getItemProperty(ELabsViewContants.P_STUDY_TITLE));
+                pojoItem.getItemProperty(ELabsViewContants.P_STUDY_TITLE), true);
         final HorizontalLayout h2 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_STUDY_DESC,
-                getPojoItem().getItemProperty(ELabsViewContants.P_STUDY_DESC));
+                getPojoItem().getItemProperty(ELabsViewContants.P_STUDY_DESC), true);
         final HorizontalLayout h3 =
             LabsLayoutHelper.createHorizontalLayoutWithPublicationDataForStudy(ELabsViewContants.L_STUDY_MOT_PUB,
-                getPojoItem().getItemProperty(ELabsViewContants.P_STUDY_MOT_PUB), true, studyTableHelper);
+                getPojoItem().getItemProperty(ELabsViewContants.P_STUDY_MOT_PUB), true, studyTableHelper, false);
         final HorizontalLayout h4 =
             LabsLayoutHelper.createHorizontalLayoutWithPublicationDataForStudy(ELabsViewContants.L_STUDY_RES_PUB,
-                getPojoItem().getItemProperty(ELabsViewContants.P_STUDY_RES_PUB), false, studyTableHelper);
+                getPojoItem().getItemProperty(ELabsViewContants.P_STUDY_RES_PUB), false, studyTableHelper, false);
 
         registeredComponents.add(h1);
         registeredComponents.add(h2);

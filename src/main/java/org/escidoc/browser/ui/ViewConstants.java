@@ -184,6 +184,15 @@ public class ViewConstants {
     public static final String CONTROLLER_ERR_ILLEG_EXEP =
         "Could not load the controller because of an Illegal Exception ";
 
+    public static final String CONTROLLER_ERR_SECU_EXEP =
+        "Could not load the controller because of an Security Exception ";
+
+    public static final String CONTROLLER_ERR_INVOKE_EXEP =
+        "Could not load the controller because of an Invocation Exception ";
+
+    public static final String CONTROLLER_ERR_NOSUCHMETH_EXEP =
+        "Could not load the controller because no such method exists ";
+
     public static final String LAYOUT_ERR_CANNOT_LOAD_CLASS = "Could not load Layout Name from the properties ";
 
     // /End Router

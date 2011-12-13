@@ -41,6 +41,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.controller.Controller;
 import org.escidoc.browser.elabsmodul.cache.ELabsCache;
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
@@ -121,8 +122,8 @@ public class InvestigationController extends Controller implements IInvestigatio
      * org.escidoc.browser.repository.Repositories, org.escidoc.browser.ui.Router,
      * org.escidoc.browser.model.ResourceProxy, com.vaadin.ui.Window, org.escidoc.browser.model.CurrentUser)
      */
-    @Override
-    public void init(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
+    public InvestigationController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
+        super(repositories, router, resourceProxy);
         Preconditions.checkNotNull(repositories, "Repository ref is null");
         Preconditions.checkNotNull(resourceProxy, "ResourceProxy ref is null");
         this.router = router;
@@ -255,8 +256,8 @@ public class InvestigationController extends Controller implements IInvestigatio
 
             if (!(("Investigation".equals(e.getLocalName()) && URI_EL.equals(e.getNamespaceURI())) || "el:Investigation"
                 .equals(e.getTagName()))) {
-                LOG.error("Container is not an eLabs Investigation");
-                return investigationBean;
+                LOG.warn("Container is not an eLabs Investigation");
+                // return investigationBean;
             }
 
             final NodeList nodeList = e.getChildNodes();
@@ -449,6 +450,8 @@ public class InvestigationController extends Controller implements IInvestigatio
     public void saveAction(final IBeanModel model) {
         Preconditions.checkNotNull(model, "Model is null.");
         this.model = model;
+
+        final String checkErrorText = checkBeanDataBeforeSave(model);
 
         mainWindow.addWindow(new YesNoDialog(ELabsViewContants.DIALOG_SAVE_INVESTIGATION_HEADER,
             ELabsViewContants.DIALOG_SAVE_INVESTIGATION_TEXT, new YesNoDialog.Callback() {
@@ -678,5 +681,16 @@ public class InvestigationController extends Controller implements IInvestigatio
     @Override
     public ILabsService getLabsService() {
         return labsService;
+    }
+
+    @Override
+    public synchronized String checkBeanDataBeforeSave(IBeanModel dataBean) {
+
+        return AppConstants.EMPTY_STRING;
+    }
+
+    private void addNewErrorRecord(StringBuilder stringBuilder, String newContent) {
+        Preconditions.checkNotNull(stringBuilder, "StringBuilder is null");
+
     }
 }

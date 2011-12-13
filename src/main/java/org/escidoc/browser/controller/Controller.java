@@ -36,11 +36,22 @@ import org.escidoc.browser.ui.Router;
 import com.vaadin.ui.Component;
 
 public abstract class Controller {
+    private Repositories repositories;
+
+    private Router router;
+
+    private ResourceProxy resourProxy;
+
+    public Controller(Repositories repositories, Router router, ResourceProxy resourceProxy) {
+        this.repositories = repositories;
+        this.router = router;
+        this.resourProxy = resourceProxy;
+
+    }
+
     protected Component view;
 
     String resouceName;
-
-    public abstract void init(final Repositories repositories, final Router router, final ResourceProxy resourceProxy);
 
     public void showView(final LayoutDesign layout) {
         layout.openView(this.view, this.getResourceName());
