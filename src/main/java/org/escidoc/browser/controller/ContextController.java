@@ -44,15 +44,8 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class ContextController extends Controller {
 
-    private Repositories repositories;
-
-    private Router router;
-
-    private static Logger LOG = LoggerFactory.getLogger(ContextController.class);
-
-    @Override
-    public void init(Repositories repositories, Router router, ResourceProxy resourceProxy) {
-
+    public ContextController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
+        super(repositories, router, resourceProxy);
         Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
         Preconditions.checkNotNull(repositories, "repositories is NULL");
         Preconditions.checkNotNull(router, "Router is NULL");
@@ -68,8 +61,13 @@ public class ContextController extends Controller {
             LOG.error("Failed at: ", e.getStackTrace());
         }
         this.setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
-
     }
+
+    private Repositories repositories;
+
+    private Router router;
+
+    private static Logger LOG = LoggerFactory.getLogger(ContextController.class);
 
     private Component createView(ResourceProxy resourceProxy) throws EscidocClientException {
         Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");

@@ -121,8 +121,8 @@ public class InvestigationController extends Controller implements IInvestigatio
      * org.escidoc.browser.repository.Repositories, org.escidoc.browser.ui.Router,
      * org.escidoc.browser.model.ResourceProxy, com.vaadin.ui.Window, org.escidoc.browser.model.CurrentUser)
      */
-    @Override
-    public void init(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
+    public InvestigationController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
+        super(repositories, router, resourceProxy);
         Preconditions.checkNotNull(repositories, "Repository ref is null");
         Preconditions.checkNotNull(resourceProxy, "ResourceProxy ref is null");
         this.router = router;

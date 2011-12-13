@@ -29,6 +29,7 @@
 package org.escidoc.browser.ui;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.List;
@@ -202,7 +203,7 @@ public class Router {
      * @param cnt
      */
     public void openControllerView(final Controller cnt, final ResourceProxy resourceProxy, final Boolean doReloadView) {
-        cnt.init(repositories, this, resourceProxy);
+        // cnt.init(repositories, this, resourceProxy);
         if (!doReloadView) {
             cnt.showView(layout);
         }
@@ -300,8 +301,10 @@ public class Router {
             else {
                 LOG.debug(clickedResource.getId());
                 final Class<?> controllerClass = Class.forName(controllerClassName);
-                controller = (Controller) controllerClass.newInstance();
-                controller.init(repositories, this, tryToFindResource(clickedResource));
+                controller =
+                    (Controller) controllerClass
+                        .getConstructor(Repositories.class, Router.class, ResourceProxy.class).newInstance(
+                            repositories, this, tryToFindResource(clickedResource));
                 if (!doReloadView) {
                     controller.showView(layout);
                 }
@@ -324,6 +327,18 @@ public class Router {
             this.getMainWindow().showNotification(ViewConstants.CONTROLLER_ERR_ILLEG_EXEP,
                 Notification.TYPE_ERROR_MESSAGE);
             LOG.error(ViewConstants.CONTROLLER_ERR_ILLEG_EXEP + e.getLocalizedMessage());
+        }
+        catch (SecurityException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch (InvocationTargetException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch (NoSuchMethodException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
 
     }

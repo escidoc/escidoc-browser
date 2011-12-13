@@ -104,8 +104,8 @@ public final class InstrumentController extends Controller implements ISaveActio
 
     private Router router;
 
-    @Override
-    public void init(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
+    public InstrumentController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
+        super(repositories, router, resourceProxy);
         Preconditions.checkNotNull(repositories, "Repository ref is null");
         Preconditions.checkNotNull(router, "Router ref is null");
         this.router = router;

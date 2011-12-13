@@ -89,8 +89,8 @@ public class StudyController extends Controller implements ISaveAction {
 
     private static Logger LOG = LoggerFactory.getLogger(InstrumentController.class);
 
-    @Override
-    public void init(Repositories repositories, Router router, ResourceProxy resourceProxy) {
+    public StudyController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
+        super(repositories, router, resourceProxy);
         this.router = router;
         this.serviceLocation = router.getServiceLocation();
         this.resourceProxy = resourceProxy;
