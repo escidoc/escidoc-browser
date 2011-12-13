@@ -589,4 +589,10 @@ public final class InstrumentController extends Controller implements ISaveActio
             return false;
         }
     }
+
+    @Override
+    public String checkBeanDataBeforeSave(IBeanModel dataBean) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

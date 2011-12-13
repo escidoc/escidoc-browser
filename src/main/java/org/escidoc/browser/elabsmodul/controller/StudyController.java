@@ -318,4 +318,10 @@ public class StudyController extends Controller implements ISaveAction {
             return false;
         }
     }
+
+    @Override
+    public String checkBeanDataBeforeSave(IBeanModel dataBean) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

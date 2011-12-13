@@ -191,34 +191,34 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
         buttonLayout = LabsLayoutHelper.createButtonLayout();
         HorizontalLayout h1 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_INSTRUMENT_TITLE,
-                pojoItem.getItemProperty(ELabsViewContants.P_INSTRUMENT_TITLE));
+                pojoItem.getItemProperty(ELabsViewContants.P_INSTRUMENT_TITLE), true);
         HorizontalLayout h2 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_INSTRUMENT_DESC,
-                getPojoItem().getItemProperty(ELabsViewContants.P_INSTRUMENT_DESC));
+                getPojoItem().getItemProperty(ELabsViewContants.P_INSTRUMENT_DESC), true);
         HorizontalLayout h3 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndCheckBoxData(
                 ELabsViewContants.L_INSTRUMENT_CONFIGURATION_KEY, ELabsViewContants.L_INSTRUMENT_CONFIGURATION_VALUE,
-                getPojoItem().getItemProperty(ELabsViewContants.P_INSTRUMENT_CONFIGURATION));
+                getPojoItem().getItemProperty(ELabsViewContants.P_INSTRUMENT_CONFIGURATION), false);
         HorizontalLayout h4 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndCheckBoxData(
                 ELabsViewContants.L_INSTRUMENT_CALIBRATION_KEY, ELabsViewContants.L_INSTRUMENT_CALIBRATION_VALUE,
-                getPojoItem().getItemProperty(ELabsViewContants.P_INSTRUMENT_CALIBRATION));
+                getPojoItem().getItemProperty(ELabsViewContants.P_INSTRUMENT_CALIBRATION), false);
         HorizontalLayout h5 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndStaticComboData(
-                ELabsViewContants.L_INSTRUMENT_ESYNC_DAEMON, instrumentBean.getESyncDaemon());
+                ELabsViewContants.L_INSTRUMENT_ESYNC_DAEMON, instrumentBean.getESyncDaemon(), true);
         HorizontalLayout h6 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_INSTRUMENT_FOLDER,
-                getPojoItem().getItemProperty(ELabsViewContants.P_INSTRUMENT_FOLDER));
+                getPojoItem().getItemProperty(ELabsViewContants.P_INSTRUMENT_FOLDER), true);
         HorizontalLayout h7 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(
                 ELabsViewContants.L_INSTRUMENT_FILE_FORMAT,
-                getPojoItem().getItemProperty(ELabsViewContants.P_INSTRUMENT_FILEFORMAT));
+                getPojoItem().getItemProperty(ELabsViewContants.P_INSTRUMENT_FILEFORMAT), false);
         HorizontalLayout h8 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelComplexData(
-                ELabsViewContants.L_INSTRUMENT_DEVICE_SUPERVISOR, supervisorText);
+                ELabsViewContants.L_INSTRUMENT_DEVICE_SUPERVISOR, supervisorText, false);
         HorizontalLayout h9 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelComplexData(
-                ELabsViewContants.L_INSTRUMENT_INSTITUTE, instituteText);
+                ELabsViewContants.L_INSTRUMENT_INSTITUTE, instituteText, false);
 
         // set up specific listeners
         h5.addListener(new ESyncDaemonEndpointSelectionLayoutListener(this, this));

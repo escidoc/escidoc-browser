@@ -235,4 +235,10 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
             return false;
         }
     }
+
+    @Override
+    public String checkBeanDataBeforeSave(IBeanModel dataBean) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
