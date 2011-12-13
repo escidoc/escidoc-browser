@@ -54,7 +54,7 @@ import com.vaadin.ui.themes.Reindeer;
 import de.escidoc.core.resources.adm.MessagesStatus;
 
 @SuppressWarnings("serial")
-public class PurgeAndExportResourceView extends VerticalLayout {
+public class BulkTasksView extends VerticalLayout {
 
     final AbstractSelect resourceOption = new NativeSelect();
 
@@ -64,7 +64,7 @@ public class PurgeAndExportResourceView extends VerticalLayout {
 
     final Repositories repositories;
 
-    public PurgeAndExportResourceView(final Router router, final Repositories repositories) {
+    public BulkTasksView(final Router router, final Repositories repositories) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
 

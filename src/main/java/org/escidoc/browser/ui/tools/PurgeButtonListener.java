@@ -128,24 +128,24 @@ final class PurgeButtonListener implements ClickListener {
         }
         catch (final EscidocClientException e) {
             LOG.error("Internal Server Error while purging resources. " + e);
-            this.filterButtonListener.purgeAndExportResourceView.showErrorMessage(e);
+            this.filterButtonListener.bulkTasksView.showErrorMessage(e);
         }
     }
 
     private void showPurgeStatus(final MessagesStatus status) throws EscidocClientException {
         if (status.getStatusCode() == AdminStatus.STATUS_INVALID_RESULT) {
-            this.filterButtonListener.purgeAndExportResourceView.showErrorMessage(status);
+            this.filterButtonListener.bulkTasksView.showErrorMessage(status);
         }
         if (status.getStatusCode() == AdminStatus.STATUS_FINISHED) {
             removeFromDataSource();
             showSucess(status);
         }
         else if (status.getStatusCode() == AdminStatus.STATUS_IN_PROGRESS) {
-            showPurgeStatus(this.filterButtonListener.purgeAndExportResourceView.repositories
+            showPurgeStatus(this.filterButtonListener.bulkTasksView.repositories
                 .admin().retrievePurgeStatus());
         }
         else {
-            this.filterButtonListener.purgeAndExportResourceView.showErrorMessage(status);
+            this.filterButtonListener.bulkTasksView.showErrorMessage(status);
         }
     }
 
@@ -157,11 +157,11 @@ final class PurgeButtonListener implements ClickListener {
     }
 
     private void showSucess(final MessagesStatus status) {
-        this.filterButtonListener.purgeAndExportResourceView.router.getMainWindow().showNotification(
+        this.filterButtonListener.bulkTasksView.router.getMainWindow().showNotification(
             ViewConstants.INFO, status.getStatusMessage(), Notification.TYPE_TRAY_NOTIFICATION);
     }
 
     private MessagesStatus startPurging(final Set<String> objectIds) throws EscidocClientException {
-        return this.filterButtonListener.purgeAndExportResourceView.repositories.admin().purge(objectIds);
+        return this.filterButtonListener.bulkTasksView.repositories.admin().purge(objectIds);
     }
 }
