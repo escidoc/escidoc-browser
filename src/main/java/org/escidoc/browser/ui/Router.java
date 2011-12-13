@@ -213,7 +213,8 @@ public class Router {
     }
 
     /**
-     * This method handles the open of a new tab on the right section of the mainWindow This is the perfect place to
+     * This method handles the open of a new tab on the right section of the mainWindow <br />
+     * If you have a controller for the view, please use the method @openControllerView which is the perfect place to
      * inject Views that represent objects <br />
      * The desired method for opening a View is by passing a controller as a reference to the Router. The Controller
      * will be responsible for its view
@@ -221,10 +222,8 @@ public class Router {
      * @param cmp
      * @param tabname
      */
-    @Deprecated
     public void openTab(final Component cmp, final String tabname) {
         layout.openView(cmp, tabname);
-
     }
 
     /**
