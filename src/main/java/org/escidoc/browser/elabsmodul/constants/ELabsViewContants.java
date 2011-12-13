@@ -361,4 +361,18 @@ public class ELabsViewContants {
     public static final String DATEPICKER_CAPTION = "Please select the finish time";
 
     public static final String REQUIRED_SIGN = "<font color=\"red\"><b>&nbsp;*&nbsp;</b></font>";
+
+    public static final String REQUIRED_TITLE = "The title is required!";
+
+    public static final String REQUIRED_DESC = "The description is required!";
+
+    public static final String REQUIRED_ESYNC = "The eSynchDaemon endpoint is required!";
+
+    public static final String REQUIRED_DEPOSIT = "The deposit endpoint is required!";
+
+    public static final String REQUIRED_FOLDER = "The lookup folder is required!";
+
+    public static final String REQUIRED_DURATION = "The duration is required!";
+
+    public static final String REQUIRED_RIG = "The rig is required!";
 }

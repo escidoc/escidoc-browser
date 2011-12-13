@@ -362,8 +362,8 @@ public final class RigController extends Controller implements IRigAction {
     }
 
     @Override
-    public boolean isValidBean(IBeanModel dataBean) {
+    public String checkBeanDataBeforeSave(IBeanModel dataBean) {
         // TODO Auto-generated method stub
-        return false;
+        return null;
     }
 }

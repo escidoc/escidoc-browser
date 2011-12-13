@@ -236,8 +236,8 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
     }
 
     @Override
-    public boolean isValidBean(IBeanModel dataBean) {
+    public String checkBeanDataBeforeSave(IBeanModel dataBean) {
         // TODO Auto-generated method stub
-        return false;
+        return null;
     }
 }

@@ -45,7 +45,7 @@ public interface ISaveAction {
      * @param dataBean
      * @return
      */
-    boolean isValidBean(final IBeanModel dataBean);
+    String checkBeanDataBeforeSave(final IBeanModel dataBean);
 
     /**
      * 
