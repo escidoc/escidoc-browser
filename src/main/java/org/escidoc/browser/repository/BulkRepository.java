@@ -114,9 +114,8 @@ public class BulkRepository {
         DeleteResult result = new DeleteResult();
 
         for (ResourceModel rm : selectedResources) {
-            Repository repo = getRepoByType(rm.getType());
             try {
-                repo.delete(rm.getId());
+                getRepoByType(rm.getType()).delete(rm.getId());
                 result.addSuccess(rm);
             }
             catch (EscidocClientException e) {

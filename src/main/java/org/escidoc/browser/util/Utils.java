@@ -48,6 +48,8 @@ import org.escidoc.browser.AppConstants;
 import org.w3c.dom.Document;
 
 import com.google.common.base.Preconditions;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Label;
 
 public final class Utils {
 
@@ -99,5 +101,9 @@ public final class Utils {
         final SearchRetrieveRequestType srrt = new SearchRetrieveRequestType();
         srrt.setMaximumRecords(new NonNegativeInteger(AppConstants.MAX_RESULT_SIZE));
         return srrt;
+    }
+
+    public static Component createSpace() {
+        return new Label("<br/>", Label.CONTENT_XHTML);
     }
 }

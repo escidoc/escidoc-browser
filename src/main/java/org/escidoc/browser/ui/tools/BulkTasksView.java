@@ -54,7 +54,7 @@ import com.vaadin.ui.themes.Reindeer;
 import de.escidoc.core.resources.adm.MessagesStatus;
 
 @SuppressWarnings("serial")
-public class PurgeAndExportResourceView extends VerticalLayout {
+public class BulkTasksView extends VerticalLayout {
 
     final AbstractSelect resourceOption = new NativeSelect();
 
@@ -64,7 +64,7 @@ public class PurgeAndExportResourceView extends VerticalLayout {
 
     final Repositories repositories;
 
-    public PurgeAndExportResourceView(final Router router, final Repositories repositories) {
+    public BulkTasksView(final Router router, final Repositories repositories) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
 
@@ -104,7 +104,7 @@ public class PurgeAndExportResourceView extends VerticalLayout {
 
         final Button filterButton = new Button(ViewConstants.FILTER);
         filterButton.setStyleName(Reindeer.BUTTON_SMALL);
-        filterButton.addListener(new FilterButtonListener(this, router.getMainWindow()));
+        filterButton.addListener(new FilterButtonListener(this, router.getMainWindow(), repositories));
 
         horizontalLayout.addComponent(resourceOption);
         horizontalLayout.addComponent(createHelpView());
@@ -118,8 +118,7 @@ public class PurgeAndExportResourceView extends VerticalLayout {
     private static PopupView createHelpView() {
         final Label popUpContent = new Label(ViewConstants.FILTER_EXAMPLE_TOOLTIP_TEXT, Label.CONTENT_XHTML);
         popUpContent.setWidth(400, UNITS_PIXELS);
-        final PopupView popup = new PopupView(ViewConstants.TIP, popUpContent);
-        return popup;
+        return new PopupView(ViewConstants.TIP, popUpContent);
     }
 
     private void createResourceOptions() {

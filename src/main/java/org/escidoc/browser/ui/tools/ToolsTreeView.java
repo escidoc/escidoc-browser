@@ -128,8 +128,8 @@ public class ToolsTreeView extends VerticalLayout {
                         router.openTab(view, getType(event).getLabel());
                         break;
                     case BULK_TASKS:
-                        final PurgeAndExportResourceView purgeView =
-                            new PurgeAndExportResourceView(router, repositories);
+                        final BulkTasksView purgeView =
+                            new BulkTasksView(router, repositories);
                         purgeView.init();
                         router.openTab(purgeView, getType(event).getLabel());
                         break;

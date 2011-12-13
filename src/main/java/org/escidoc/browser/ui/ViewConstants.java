@@ -305,4 +305,5 @@ public class ViewConstants {
 
     public static final String NO = "No";
 
+    public static final String OK = "Ok";
 }
