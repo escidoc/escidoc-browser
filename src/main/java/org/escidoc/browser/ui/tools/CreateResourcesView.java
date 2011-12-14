@@ -1,17 +1,27 @@
 package org.escidoc.browser.ui.tools;
 
+import java.util.Collection;
+
+import org.escidoc.browser.model.OrgUnitService;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.listeners.CreateResourceAddContextListener;
 import org.escidoc.browser.ui.maincontent.View;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Form;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
+
+import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.oum.OrganizationalUnit;
 
 public class CreateResourcesView extends View {
 
@@ -114,43 +124,16 @@ public class CreateResourcesView extends View {
         vlAccCreateContext.setSpacing(true);
 
         // AddContext Form
-        formAddContext(vlAccCreateContext);
+        try {
+            formAddContext(vlAccCreateContext);
+        }
+        catch (EscidocClientException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         accCreateContext.addTab(vlAccCreateContext, "Create Context");
 
         return accCreateContext;
-    }
-
-    private void formAddContext(VerticalLayout vlAccCreateContext) {
-        // Name
-        TextField txtNameContext = new TextField();
-        txtNameContext.setCaption("Name");
-        txtNameContext.setImmediate(false);
-        txtNameContext.setWidth("-1px");
-        txtNameContext.setHeight("-1px");
-        txtNameContext.setInvalidAllowed(false);
-        txtNameContext.setRequired(true);
-        vlAccCreateContext.addComponent(txtNameContext);
-
-        // Description
-        TextField txtDescContext = new TextField("Description");
-        txtDescContext.setImmediate(false);
-        txtDescContext.setWidth("-1px");
-        txtDescContext.setHeight("-1px");
-        vlAccCreateContext.addComponent(txtDescContext);
-
-        // OrgUnit
-        NativeSelect slOrgUnit = new NativeSelect("Pick your Organizational Unit");
-        slOrgUnit.setImmediate(false);
-        slOrgUnit.setWidth("-1px");
-        slOrgUnit.setHeight("-1px");
-        vlAccCreateContext.addComponent(slOrgUnit);
-
-        // button_1
-        Button btnAddContext = new Button("Submit");
-        btnAddContext.setImmediate(false);
-        btnAddContext.setWidth("-1px");
-        btnAddContext.setHeight("-1px");
-        vlAccCreateContext.addComponent(btnAddContext);
     }
 
     private Accordion buildCreateContentModel() {
@@ -189,4 +172,87 @@ public class CreateResourcesView extends View {
         return accCreateOrgUnit;
     }
 
+    private void formAddContext(VerticalLayout vlAccCreateContext) throws EscidocClientException {
+        final Form frm = new Form();
+        frm.setImmediate(true);
+        // Name
+        final TextField txtNameContext = new TextField();
+        txtNameContext.setCaption("Name");
+        txtNameContext.setImmediate(false);
+        txtNameContext.setWidth("-1px");
+        txtNameContext.setHeight("-1px");
+        txtNameContext.setInvalidAllowed(false);
+        txtNameContext.setRequired(true);
+        frm.addField("txtNameContext", txtNameContext);
+
+        // Description
+        final TextField txtDescContext = new TextField("Description");
+        txtDescContext.setImmediate(false);
+        txtDescContext.setWidth("-1px");
+        txtDescContext.setHeight("-1px");
+        frm.addField("txtDescContext", txtDescContext);
+
+        // Description
+        final TextField txtType = new TextField("Type");
+        txtType.setImmediate(false);
+        txtType.setWidth("-1px");
+        txtType.setHeight("-1px");
+        frm.addField("txtType", txtType);
+
+        // OrgUnit
+        final NativeSelect slOrgUnit = new NativeSelect("Pick your Organizational Unit");
+        slOrgUnit.setImmediate(true);
+        slOrgUnit.setWidth("-1px");
+        slOrgUnit.setHeight("-1px");
+        slOrgUnit.setRequired(true);
+        slOrgUnit.setNullSelectionAllowed(false);
+        frm.addField("slOrgUnit", slOrgUnit);
+
+        final OrgUnitService orgUnitService =
+            new OrgUnitService(router.getServiceLocation().getEscidocUri(), router.getApp().getCurrentUser().getToken());
+        Collection<OrganizationalUnit> orgUnits = orgUnitService.findAll();
+        for (OrganizationalUnit organizationalUnit : orgUnits) {
+            slOrgUnit.addItem(organizationalUnit.getObjid());
+            slOrgUnit.setItemCaption(organizationalUnit.getObjid(), organizationalUnit.getXLinkTitle());
+        }
+        frm.getLayout().addComponent(slOrgUnit);
+
+        // btnAddContext
+        Button btnAddContext = new Button("Submit", new Button.ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                try {
+                    frm.commit();
+                    new CreateResourceAddContextListener(txtNameContext.getValue().toString(), txtDescContext
+                        .getValue().toString(), txtType.getValue().toString(), slOrgUnit.getValue().toString(),
+                        repositories, router.getServiceLocation());
+                    router.getMainWindow().showNotification(
+                        "Context " + txtNameContext.getValue().toString() + " created successfully ",
+                        Window.Notification.TYPE_TRAY_NOTIFICATION);
+                }
+                catch (EscidocClientException e) {
+                    router.getMainWindow().showNotification("Please fill in all the required elements in the form",
+                        Window.Notification.TYPE_TRAY_NOTIFICATION);
+                }
+            }
+        });
+
+        btnAddContext.setWidth("-1px");
+        btnAddContext.setHeight("-1px");
+        frm.getLayout().addComponent(btnAddContext);
+
+        frm.getField("txtNameContext").setRequired(true);
+        frm.getField("txtNameContext").setRequiredError("Name is missing");
+
+        frm.getField("txtDescContext").setRequired(true);
+        frm.getField("txtDescContext").setRequiredError("Description is missing");
+
+        frm.getField("txtType").setRequired(true);
+        frm.getField("txtType").setRequiredError("Context Type is missing");
+
+        frm.getField("slOrgUnit").setRequired(true);
+        frm.getField("slOrgUnit").setRequiredError("Organizazional Unit is required");
+
+        vlAccCreateContext.addComponent(frm);
+    }
 }
