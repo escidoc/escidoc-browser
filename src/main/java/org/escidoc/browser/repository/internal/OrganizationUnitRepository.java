@@ -28,26 +28,30 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.base.Preconditions;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.model.internal.OrgUnitModel;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.escidoc.core.client.OrganizationalUnitHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.client.interfaces.OrganizationalUnitHandlerClientInterface;
+import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.Relations;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.oum.OrganizationalUnit;
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 public class OrganizationUnitRepository implements Repository {
 
@@ -66,6 +70,17 @@ public class OrganizationUnitRepository implements Repository {
         client.setHandle(handle);
     }
 
+    public List<ResourceModel> findTopLevel() throws EscidocClientException {
+        final SearchRetrieveRequestType searchRequest = Utils.createEmptyFilter();
+        searchRequest.setQuery("\"top-level-organizational-units\"=true");
+        final List<OrganizationalUnit> children = client.retrieveOrganizationalUnitsAsList(searchRequest);
+        final List<ResourceModel> list = new ArrayList<ResourceModel>(children.size());
+        for (final OrganizationalUnit ou : children) {
+            list.add(new OrgUnitModel(ou));
+        }
+        return list;
+    }
+
     @Override
     public List<ResourceModel> findAll() throws EscidocClientException {
         final List<OrganizationalUnit> list = client.retrieveOrganizationalUnitsAsList(Utils.createEmptyFilter());
@@ -77,14 +92,90 @@ public class OrganizationUnitRepository implements Repository {
     }
 
     @Override
-    public List<ResourceModel> findTopLevelMembersById(final String id) throws EscidocClientException {
-        throw new UnsupportedOperationException("not-yet-implemented.");
+    public List<ResourceModel> findTopLevelMembersById(final String parentId) throws EscidocClientException {
+        final List<OrganizationalUnit> children = client.retrieveChildObjectsAsList(parentId);
+        final List<ResourceModel> list = new ArrayList<ResourceModel>(children.size());
+        for (final OrganizationalUnit ou : children) {
+            list.add(new OrgUnitModel(ou));
+        }
+        return list;
     }
 
     @Override
     public ResourceProxy findById(final String id) throws EscidocClientException {
+        final OrganizationalUnit organizationalUnit = client.retrieve(id);
+        return new ResourceProxy() {
 
-        throw new UnsupportedOperationException("not-yet-implemented.");
+            @Override
+            public ResourceType getType() {
+                throw new UnsupportedOperationException("not-yet-implemented.");
+            }
+
+            @Override
+            public String getName() {
+                throw new UnsupportedOperationException("not-yet-implemented.");
+            }
+
+            @Override
+            public String getId() {
+                throw new UnsupportedOperationException("not-yet-implemented.");
+            }
+
+            @Override
+            public String getVersionStatus() {
+                throw new UnsupportedOperationException("not-yet-implemented.");
+            }
+
+            @Override
+            public String getStatus() {
+                throw new UnsupportedOperationException("not-yet-implemented.");
+            }
+
+            @Override
+            public List<String> getRelations() {
+                throw new UnsupportedOperationException("not-yet-implemented.");
+            }
+
+            @Override
+            public String getModifier() {
+                throw new UnsupportedOperationException("not-yet-implemented.");
+            }
+
+            @Override
+            public String getModifiedOn() {
+                throw new UnsupportedOperationException("not-yet-implemented.");
+            }
+
+            @Override
+            public String getLockStatus() {
+                throw new UnsupportedOperationException("not-yet-implemented.");
+            }
+
+            @Override
+            public String getDescription() {
+                throw new UnsupportedOperationException("not-yet-implemented.");
+            }
+
+            @Override
+            public String getCreator() {
+                throw new UnsupportedOperationException("not-yet-implemented.");
+            }
+
+            @Override
+            public String getCreatedOn() {
+                throw new UnsupportedOperationException("not-yet-implemented.");
+            }
+
+            @Override
+            public Resource getContext() {
+                throw new UnsupportedOperationException("not-yet-implemented.");
+            }
+
+            @Override
+            public Resource getContentModel() {
+                throw new UnsupportedOperationException("not-yet-implemented.");
+            }
+        };
     }
 
     @Override
@@ -105,5 +196,10 @@ public class OrganizationUnitRepository implements Repository {
     @Override
     public void delete(final String id) {
         throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    public OrgUnitModel create(final OrganizationalUnit ou) throws EscidocClientException {
+        final OrganizationalUnit createdOrgUnit = client.create(ou);
+        return new OrgUnitModel(createdOrgUnit);
     }
 }

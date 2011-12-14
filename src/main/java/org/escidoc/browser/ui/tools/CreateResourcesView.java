@@ -158,21 +158,22 @@ public class CreateResourcesView extends View {
         vlAccCreateOrgUnit.setWidth("100.0%");
         vlAccCreateOrgUnit.setHeight("100.0%");
         vlAccCreateOrgUnit.setMargin(false);
-        try {
-            formAddOrgUnit(vlAccCreateOrgUnit);
-        }
-        catch (EscidocClientException e) {
-            router.getMainWindow().showNotification(ViewConstants.ERROR_CREATING_RESOURCE + e.getLocalizedMessage(),
-                Window.Notification.TYPE_ERROR_MESSAGE);
-        }
+        formAddOrgUnit(vlAccCreateOrgUnit);
         accCreateOrgUnit.addTab(vlAccCreateOrgUnit, "Create Organizational Units");
 
         return accCreateOrgUnit;
     }
 
     private void formAddOrgUnit(VerticalLayout vlAccCreateOrgUnit) throws EscidocClientException {
-        final Form frm = new Form();
-        frm.setImmediate(true);
+        final Form frm = buildCreateOrgUnitForm();
+
+        vlAccCreateOrgUnit.addComponent(frm);
+    }
+
+    private Form buildCreateOrgUnitForm() {
+        final Form form = new Form();
+        form.setImmediate(true);
+
         // Name
         final TextField txtNameContext = new TextField();
         txtNameContext.setCaption("Name");
@@ -181,28 +182,28 @@ public class CreateResourcesView extends View {
         txtNameContext.setHeight("-1px");
         txtNameContext.setInvalidAllowed(false);
         txtNameContext.setRequired(true);
-        frm.addField("txtNameContext", txtNameContext);
+        form.addField("txtNameContext", txtNameContext);
 
         // Description
         final TextField txtDescContext = new TextField("Description");
         txtDescContext.setImmediate(false);
         txtDescContext.setWidth("-1px");
         txtDescContext.setHeight("-1px");
-        frm.addField("txtDescContext", txtDescContext);
+        form.addField("txtDescContext", txtDescContext);
 
         // btnAddContext
         Button btnAddContext = new Button("Submit", new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
                 try {
-                    frm.commit();
+                    form.commit();
                     controller.createResourceAddOrgUnit(txtNameContext.getValue().toString(), txtDescContext
                         .getValue().toString(), router, router.getServiceLocation());
                     router.getMainWindow().showNotification(
                         "Organizational Unit " + txtNameContext.getValue().toString() + " created successfully ",
                         Window.Notification.TYPE_TRAY_NOTIFICATION);
-                    frm.getField("txtNameContext").setValue("");
-                    frm.getField("txtDescContext").setValue("");
+                    form.getField("txtNameContext").setValue("");
+                    form.getField("txtDescContext").setValue("");
                 }
                 catch (EmptyValueException e) {
                     router.getMainWindow().showNotification("Please fill in all the required elements in the form",
@@ -218,15 +219,14 @@ public class CreateResourcesView extends View {
 
         btnAddContext.setWidth("-1px");
         btnAddContext.setHeight("-1px");
-        frm.getLayout().addComponent(btnAddContext);
+        form.getLayout().addComponent(btnAddContext);
 
-        frm.getField("txtNameContext").setRequired(true);
-        frm.getField("txtNameContext").setRequiredError("Name is missing");
+        form.getField("txtNameContext").setRequired(true);
+        form.getField("txtNameContext").setRequiredError("Name is missing");
 
-        frm.getField("txtDescContext").setRequired(true);
-        frm.getField("txtDescContext").setRequiredError("Description is missing");
-
-        vlAccCreateOrgUnit.addComponent(frm);
+        form.getField("txtDescContext").setRequired(true);
+        form.getField("txtDescContext").setRequiredError("Description is missing");
+        return form;
     }
 
     private void formAddContentModel(VerticalLayout vlAccCreateContentModel) throws EscidocClientException {

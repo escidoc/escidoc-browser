@@ -28,10 +28,14 @@
  */
 package org.escidoc.browser.model.internal;
 
-import java.util.Collection;
-import java.util.List;
+import com.google.common.base.Preconditions;
 
-import org.escidoc.browser.model.ContextModel;
+import com.vaadin.data.Container;
+import com.vaadin.data.Item;
+import com.vaadin.data.util.HierarchicalContainer;
+import com.vaadin.terminal.Resource;
+import com.vaadin.terminal.ThemeResource;
+
 import org.escidoc.browser.model.PropertyId;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceType;
@@ -39,12 +43,8 @@ import org.escidoc.browser.model.TreeDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.data.Container;
-import com.vaadin.data.Item;
-import com.vaadin.data.util.HierarchicalContainer;
-import com.vaadin.terminal.Resource;
-import com.vaadin.terminal.ThemeResource;
+import java.util.Collection;
+import java.util.List;
 
 public class TreeDataSourceImpl implements TreeDataSource {
 
@@ -96,18 +96,26 @@ public class TreeDataSourceImpl implements TreeDataSource {
         dataSource.sort(new String[] { PropertyId.TYPE, PropertyId.NAME }, new boolean[] { true, true });
     }
 
-    private void bind(final Item item, final ResourceModel resource) {
+    private static void bind(final Item item, final ResourceModel resource) {
         Preconditions.checkNotNull(item, "item is null: %s", item);
         Preconditions.checkNotNull(resource, "resource is null: %s", resource);
 
         item.getItemProperty(PropertyId.OBJECT_ID).setValue(resource.getId());
         item.getItemProperty(PropertyId.NAME).setValue(resource.getName());
-        item.getItemProperty(PropertyId.ICON).setValue(
-            new ThemeResource("images/resources/" + resource.getType().toString().toLowerCase() + ".png"));
+
+        // FIXME add org unit icon
+        if (notOrgUnit(resource)) {
+            item.getItemProperty(PropertyId.ICON).setValue(
+                new ThemeResource("images/resources/" + resource.getType().toString().toLowerCase() + ".png"));
+        }
         item.getItemProperty(PropertyId.TYPE).setValue(resource.getType());
     }
 
-    private boolean isChildless(final ContextModel topLevel) {
+    private static boolean notOrgUnit(final ResourceModel resource) {
+        return !resource.getType().equals(ResourceType.ORG_UNIT);
+    }
+
+    private static boolean isChildless(final ContextModel topLevel) {
         return !topLevel.hasChildren();
     }
 
@@ -134,10 +142,15 @@ public class TreeDataSourceImpl implements TreeDataSource {
         for (final ResourceModel child : children) {
             addChild(parent, child);
         }
+
+        sortByTypeAndNameAscending();
     }
 
     @Override
     public void addChild(final ResourceModel parent, final ResourceModel child) {
+        Preconditions.checkNotNull(parent, "parent is null: %s", parent);
+        Preconditions.checkNotNull(child, "child is null: %s", child);
+        // removeAllChildren(parent);
         final Item addedItem = add(child);
         if (isAlreadyAdded(addedItem)) {
             LOG.debug("Resource: " + child + " already added to the tree.");
@@ -149,7 +162,19 @@ public class TreeDataSourceImpl implements TreeDataSource {
         final boolean hasMember = true;
         dataSource.setChildrenAllowed(child, hasMember);
         dataSource.setChildrenAllowed(child, isNotItem(child));
-        sortByTypeAndNameAscending();
+    }
+
+    private void removeAllChildren(final ResourceModel parent) {
+        // dataSource.removeItemRecursively(parent);
+        // dataSource.addItem(parent);
+        final Collection<?> children = dataSource.getChildren(parent);
+        if (children == null || children.isEmpty()) {
+            return;
+        }
+        for (final Object object : children) {
+            dataSource.removeItemRecursively(object);
+
+        }
     }
 
     private static boolean isAlreadyAdded(final Item addedItem) {

@@ -28,11 +28,12 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
+import com.google.common.base.Preconditions;
+
+import com.sun.xacml.attr.StringAttribute;
+import com.sun.xacml.ctx.Attribute;
+import com.sun.xacml.ctx.RequestCtx;
+import com.sun.xacml.ctx.Subject;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ResourceType;
@@ -40,11 +41,11 @@ import org.escidoc.browser.repository.PdpRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.sun.xacml.attr.StringAttribute;
-import com.sun.xacml.ctx.Attribute;
-import com.sun.xacml.ctx.RequestCtx;
-import com.sun.xacml.ctx.Subject;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 
 import de.escidoc.core.client.PolicyDecisionPointHandlerClient;
 import de.escidoc.core.client.UserAccountHandlerClient;
@@ -66,8 +67,6 @@ public class PdpRepositoryImpl implements PdpRepository {
     private Set<Attribute> resourceAttrs = new HashSet<Attribute>();
 
     private Set<Subject> subjects = new HashSet<Subject>();
-
-    private String loggedInUserId = null;
 
     private String currentUser;
 
@@ -158,13 +157,14 @@ public class PdpRepositoryImpl implements PdpRepository {
                 LOG.info("The user is not logged in");
             }
         }
-        catch (EscidocClientException e) {
+        catch (final EscidocClientException e) {
             LOG.info("The user is not logged in.", e);
         }
     }
 
     @Override
-    public PdpRepository withTypeAndInContext(ResourceType type, String contextId) throws URISyntaxException {
+    public PdpRepository withTypeAndInContext(final ResourceType type, final String contextId)
+        throws URISyntaxException {
         if (resourceAttrs == null) {
             resourceAttrs = new HashSet<Attribute>();
         }

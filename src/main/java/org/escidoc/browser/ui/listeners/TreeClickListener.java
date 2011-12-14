@@ -28,23 +28,19 @@
  */
 package org.escidoc.browser.ui.listeners;
 
-import org.escidoc.browser.AppConstants;
-import org.escidoc.browser.model.ContainerModel;
-import org.escidoc.browser.model.ContextModel;
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.ItemModel;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.event.MouseEvents.ClickEvent;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
+
 import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -53,82 +49,38 @@ public class TreeClickListener implements ItemClickListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(TreeClickListener.class);
 
-    private final EscidocServiceLocation serviceLocation;
-
     private final Router router;
 
     private final Window mainWindow;
 
-    private final Repositories repositories;
-
-    public TreeClickListener(final EscidocServiceLocation serviceLocation, final Repositories repositories,
-        final Window mainWindow, final Router mainSite) {
-
-        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
+    public TreeClickListener(final Window mainWindow, final Router router) {
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
-        Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
-        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        Preconditions.checkNotNull(router, "mainSite is null: %s", router);
 
-        this.repositories = repositories;
         this.mainWindow = mainWindow;
-        router = mainSite;
-        this.serviceLocation = serviceLocation;
+        this.router = router;
     }
 
     @Override
     public void itemClick(final ItemClickEvent event) {
-        if (event.getButton() == ItemClickEvent.BUTTON_RIGHT) {
+        if (event.getButton() == ClickEvent.BUTTON_RIGHT) {
             return;
         }
-        openClickedResourceInNewTab((ResourceModel) event.getItemId());
+        // openClickedResourceInNewTab((ResourceModel) event.getItemId());
     }
 
     private void openClickedResourceInNewTab(final ResourceModel clickedResource) {
         try {
-            createView(clickedResource);
+            router.show(clickedResource, true);
         }
         catch (final EscidocClientException e) {
             LOG.error(e.getMessage());
-            showErrorMessageToUser(clickedResource, e);
+            showErrorMessageToUser(e);
         }
     }
 
-    private void createView(final ResourceModel clickedResource) throws EscidocClientException {
-        router.show(clickedResource, true);
-    }
-
-    private void showErrorMessageToUser(final ResourceModel hasChildrenResource, final EscidocClientException e) {
-        LOG.error("Can not find member of: " + hasChildrenResource.getId(), e);
+    private void showErrorMessageToUser(final EscidocClientException e) {
         mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
             Notification.TYPE_ERROR_MESSAGE));
-    }
-
-    private String findContextId(final ResourceModel clickedResource) {
-        if (clickedResource instanceof ContextModel) {
-            return ((ContextModel) clickedResource).getId();
-        }
-        else if (clickedResource instanceof ContainerModel) {
-            final ContainerModel containerModel = (ContainerModel) clickedResource;
-            try {
-                return repositories.container().findById(containerModel.getId()).getContext().getObjid();
-            }
-            catch (final EscidocClientException e) {
-                router.getMainWindow().showNotification(
-                    "Can not retrieve container " + containerModel.getId() + ". Reason: " + e.getMessage(),
-                    Window.Notification.TYPE_ERROR_MESSAGE);
-            }
-        }
-        else if (clickedResource instanceof ItemModel) {
-            final ItemModel itemModel = (ItemModel) clickedResource;
-            try {
-                return repositories.item().findById(itemModel.getId()).getContext().getObjid();
-            }
-            catch (final EscidocClientException e) {
-                router.getMainWindow().showNotification(
-                    "Unable to retrieve Item " + itemModel.getId() + ". Reason: " + e.getMessage(),
-                    Window.Notification.TYPE_ERROR_MESSAGE);
-            }
-        }
-        return AppConstants.EMPTY_STRING;
     }
 }

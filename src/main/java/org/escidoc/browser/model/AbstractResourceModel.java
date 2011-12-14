@@ -61,6 +61,7 @@ public abstract class AbstractResourceModel implements ResourceModel {
         return name;
     }
 
+    @Override
     public abstract ResourceType getType();
 
     @Override

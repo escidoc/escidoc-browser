@@ -31,12 +31,12 @@ package org.escidoc.browser.repository.internal;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceModelFactory;
 import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.model.internal.ContainerModel;
 import org.escidoc.browser.model.internal.HasNoNameResource;
 import org.escidoc.browser.model.internal.HasNoNameResourceImpl;
 import org.escidoc.browser.repository.Repositories;

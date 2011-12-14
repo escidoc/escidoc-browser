@@ -26,7 +26,7 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.repository.internal;
+package org.escidoc.browser.model.internal;
 
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceType;
@@ -35,10 +35,10 @@ import com.google.common.base.Preconditions;
 
 import de.escidoc.core.resources.oum.OrganizationalUnit;
 
-final class OrgUnitModel implements ResourceModel {
+public final class OrgUnitModel implements ResourceModel {
     private final OrganizationalUnit ou;
 
-    OrgUnitModel(final OrganizationalUnit ou) {
+    public OrgUnitModel(final OrganizationalUnit ou) {
         Preconditions.checkNotNull(ou, "ou is null: %s", ou);
         this.ou = ou;
     }
@@ -104,6 +104,10 @@ final class OrgUnitModel implements ResourceModel {
             return false;
         }
         return true;
+    }
+
+    public static boolean isOrgUnit(final ResourceModel clickedResource) {
+        return clickedResource.getType().equals(ResourceType.ORG_UNIT);
     }
 
 }

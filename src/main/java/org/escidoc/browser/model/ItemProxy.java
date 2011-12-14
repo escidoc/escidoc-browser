@@ -28,43 +28,9 @@
  */
 package org.escidoc.browser.model;
 
-import java.util.List;
-
-import de.escidoc.core.resources.Resource;
-import de.escidoc.core.resources.common.MetadataRecords;
 import de.escidoc.core.resources.om.item.component.Components;
 
 public interface ItemProxy extends ContentResourceProxy {
-
-    @Override
-    String getDescription();
-
-    @Override
-    String getStatus();
-
-    @Override
-    String getCreator();
-
-    @Override
-    String getCreatedOn();
-
-    @Override
-    String getModifier();
-
-    @Override
-    String getModifiedOn();
-
-    @Override
-    List<String> getRelations();
-
-    MetadataRecords getMedataRecords();
-
-    Boolean hasPreviousVersion();
-
-    String getContentUrl();
-
-    @Override
-    Resource getContext();
 
     Boolean hasComponents();
 
@@ -72,5 +38,6 @@ public interface ItemProxy extends ContentResourceProxy {
 
     Components getElements();
 
-    String getReleasedBy();
+    String getContentUrl();
+
 }

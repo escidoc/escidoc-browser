@@ -44,7 +44,7 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class ContextController extends Controller {
 
-    public ContextController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
+    public ContextController(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
         Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
         Preconditions.checkNotNull(repositories, "repositories is NULL");
@@ -55,7 +55,7 @@ public class ContextController extends Controller {
         try {
             this.view = createView(resourceProxy);
         }
-        catch (EscidocClientException e) {
+        catch (final EscidocClientException e) {
             router.getMainWindow().showNotification(
                 ViewConstants.VIEW_ERROR_CANNOT_LOAD_VIEW + e.getLocalizedMessage(), Notification.TYPE_ERROR_MESSAGE);
             LOG.error("Failed at: ", e.getStackTrace());
@@ -63,13 +63,13 @@ public class ContextController extends Controller {
         this.setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
     }
 
-    private Repositories repositories;
+    private final Repositories repositories;
 
-    private Router router;
+    private final Router router;
 
     private static Logger LOG = LoggerFactory.getLogger(ContextController.class);
 
-    private Component createView(ResourceProxy resourceProxy) throws EscidocClientException {
+    private Component createView(final ResourceProxy resourceProxy) throws EscidocClientException {
         Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
         return new ContextView(router, resourceProxy, repositories);
     }

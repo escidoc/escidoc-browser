@@ -30,13 +30,13 @@ package org.escidoc.browser.ui.maincontent;
 
 import java.net.URISyntaxException;
 
-import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.TreeDataSource;
+import org.escidoc.browser.model.internal.ContainerModel;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;

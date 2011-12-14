@@ -26,14 +26,16 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.model;
+package org.escidoc.browser.controller;
 
-import de.escidoc.core.resources.om.container.Container;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.Router;
 
-public interface ContainerProxy extends ContentResourceProxy {
+public class OrgUnitController extends Controller {
 
-    void setName(String name);
-
-    Container getContainer();
+    public OrgUnitController(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
+        super(repositories, router, resourceProxy);
+    }
 
 }

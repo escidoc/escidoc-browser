@@ -38,17 +38,11 @@ public class CreateResourcesController extends Controller {
         this.repositories = repositories;
         this.router = router;
 
-        try {
-            this.view = createView();
-        }
-        catch (EscidocClientException e) {
-            router.getMainWindow().showNotification(
-                ViewConstants.VIEW_ERROR_CANNOT_LOAD_VIEW + e.getLocalizedMessage(), Notification.TYPE_ERROR_MESSAGE);
-        }
+        this.view = createView();
         this.setResourceName(ViewConstants.CREATE_RESOURCES);
     }
 
-    private Component createView() throws EscidocClientException {
+    private Component createView() {
         return new CreateResourcesView(router, repositories, this);
     }
 

@@ -35,11 +35,11 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 
-import org.escidoc.browser.model.ContentModelProxyImpl;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.internal.ContentModelProxyImpl;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.helper.Util;
 import org.escidoc.browser.util.Utils;

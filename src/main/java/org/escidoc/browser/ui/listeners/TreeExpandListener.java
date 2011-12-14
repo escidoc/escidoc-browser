@@ -33,11 +33,11 @@ import com.google.common.base.Preconditions;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.ExpandEvent;
 
-import org.escidoc.browser.model.ContainerModel;
-import org.escidoc.browser.model.ContextModel;
-import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.TreeDataSource;
+import org.escidoc.browser.model.internal.ContainerModel;
+import org.escidoc.browser.model.internal.ContextModel;
+import org.escidoc.browser.model.internal.ItemModel;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.Repository;
 import org.slf4j.Logger;

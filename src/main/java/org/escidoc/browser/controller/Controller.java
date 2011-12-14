@@ -38,22 +38,22 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Window.Notification;
 
 public abstract class Controller {
-    private Repositories repositories;
-
-    private Router router;
-
-    private ResourceProxy resourProxy;
-
-    public Controller(Repositories repositories, Router router, ResourceProxy resourceProxy) {
-        this.repositories = repositories;
-        this.router = router;
-        this.resourProxy = resourceProxy;
-
-    }
 
     protected Component view;
 
-    String resouceName;
+    private String resouceName;
+
+    private final Repositories repositories;
+
+    private final Router router;
+
+    private final ResourceProxy resourProxy;
+
+    public Controller(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
+        this.repositories = repositories;
+        this.router = router;
+        this.resourProxy = resourceProxy;
+    }
 
     public void showView(final LayoutDesign layout) {
         layout.openView(this.view, this.getResourceName());
@@ -67,10 +67,9 @@ public abstract class Controller {
         return resouceName;
     }
 
-    public void setResourceName(String name) {
+    public void setResourceName(final String name) {
         this.resouceName = name;
     }
-
     /**
      * Show error message to the user
      * 

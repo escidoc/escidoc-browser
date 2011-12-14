@@ -31,7 +31,6 @@ package org.escidoc.browser.ui.navigation;
 import org.escidoc.browser.model.PropertyId;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.TreeDataSource;
-import org.escidoc.browser.ui.Router;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.event.Action.Handler;
@@ -42,13 +41,13 @@ import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.ExpandListener;
 
 @SuppressWarnings("serial")
-public class NavigationTreeViewImpl extends CustomComponent implements NavigationTreeView {
+public class ResourceTreeView extends CustomComponent implements NavigationTreeView {
 
     private final Tree tree = new Tree();
 
     private ItemClickListener itemClickListener;
 
-    public NavigationTreeViewImpl() {
+    public ResourceTreeView() {
         setCompositionRoot(tree);
         tree.setImmediate(true);
     }
@@ -70,7 +69,7 @@ public class NavigationTreeViewImpl extends CustomComponent implements Navigatio
     }
 
     @Override
-    public void setDataSource(final TreeDataSource dataSource, final Router router) {
+    public void setDataSource(final TreeDataSource dataSource) {
         tree.setContainerDataSource(dataSource.getContainer());
         tree.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
         tree.setItemCaptionPropertyId(PropertyId.NAME);
@@ -94,7 +93,7 @@ public class NavigationTreeViewImpl extends CustomComponent implements Navigatio
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
@@ -104,7 +103,7 @@ public class NavigationTreeViewImpl extends CustomComponent implements Navigatio
         if (getClass() != obj.getClass()) {
             return false;
         }
-        NavigationTreeViewImpl other = (NavigationTreeViewImpl) obj;
+        final ResourceTreeView other = (ResourceTreeView) obj;
         if (itemClickListener == null) {
             if (other.itemClickListener != null) {
                 return false;

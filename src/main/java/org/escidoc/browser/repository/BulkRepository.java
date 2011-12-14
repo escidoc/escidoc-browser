@@ -49,7 +49,7 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class BulkRepository {
 
-    private final static Logger LOG = LoggerFactory.getLogger(BulkRepository.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BulkRepository.class);
 
     public class DeleteResult {
 
