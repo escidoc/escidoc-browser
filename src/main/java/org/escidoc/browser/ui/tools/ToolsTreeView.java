@@ -69,7 +69,8 @@ public class ToolsTreeView extends VerticalLayout {
     enum NODE_TYPE {
 
         LOAD_EXAMPLE(ViewConstants.LOAD_EXAMPLE), REPO_INFO(ViewConstants.REPOSITORY_INFORMATION), REINDEX(
-            ViewConstants.REINDEX), BULK_TASKS(ViewConstants.BULK_TASKS);
+            ViewConstants.REINDEX), BULK_TASKS(ViewConstants.BULK_TASKS), CREATE_RESOURCES(
+            ViewConstants.CREATE_RESOURCES);
 
         private String label;
 
@@ -104,7 +105,6 @@ public class ToolsTreeView extends VerticalLayout {
     private void addListener() {
         tree.addListener(new ItemClickListener() {
 
-            @SuppressWarnings("deprecation")
             @Override
             public void itemClick(final ItemClickEvent event) {
                 switch (getType(event)) {
@@ -128,10 +128,14 @@ public class ToolsTreeView extends VerticalLayout {
                         router.openTab(view, getType(event).getLabel());
                         break;
                     case BULK_TASKS:
-                        final BulkTasksView purgeView =
-                            new BulkTasksView(router, repositories);
+                        final BulkTasksView purgeView = new BulkTasksView(router, repositories);
                         purgeView.init();
                         router.openTab(purgeView, getType(event).getLabel());
+                        break;
+                    case CREATE_RESOURCES:
+                        final CreateResourcesView createResourcesView = new CreateResourcesView(router, repositories);
+                        createResourcesView.init();
+                        router.openTab(createResourcesView, getType(event).getLabel());
                         break;
                     default:
                         break;
@@ -158,7 +162,9 @@ public class ToolsTreeView extends VerticalLayout {
         if (hasGrantTo(ActionIdConstants.PURGE_RESOURCES)) {
             tree.addItem(new Node(NODE_TYPE.BULK_TASKS));
         }
-
+        if (hasGrantTo(ActionIdConstants.CREATE_CONTEXT)) {
+            tree.addItem(new Node(NODE_TYPE.CREATE_RESOURCES));
+        }
         for (final Object object : tree.getContainerDataSource().getItemIds()) {
             tree.setChildrenAllowed(object, false);
         }
