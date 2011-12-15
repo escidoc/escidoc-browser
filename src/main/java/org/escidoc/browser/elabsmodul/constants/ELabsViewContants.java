@@ -227,9 +227,9 @@ public class ELabsViewContants {
     public static final String MAINPANEL_PROPERTIES_LABEL = "Properties";
 
     // eLabs Buttons
-    public static final String BTN_START = "Start";
+    public static final String BTN_START = "Start Investigation";
 
-    public static final String BTN_STOP = "Stop";
+    public static final String BTN_STOP = "Stop Investigation";
 
     public static final String BTN_SAVE = "Save";
 

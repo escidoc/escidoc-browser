@@ -621,7 +621,6 @@ public class InvestigationController extends Controller implements IInvestigatio
     @Override
     public synchronized List<RigBean> getAvailableRigs() {
         final List<RigBean> result = new ArrayList<RigBean>();
-
         try {
             List<ResourceModel> items = null;
             for (Iterator<String> iterator = ELabsCache.getRigCMMIds().iterator(); iterator.hasNext();) {
@@ -639,12 +638,10 @@ public class InvestigationController extends Controller implements IInvestigatio
         catch (EscidocClientException e) {
             LOG.error(e.getMessage());
         }
-
         return result;
     }
 
     private String setDurationLabel(String storedDuration) {
-
         try {
             int minute = new Integer(storedDuration).intValue(), day = 0, hour = 0;
 
@@ -672,7 +669,6 @@ public class InvestigationController extends Controller implements IInvestigatio
             LOG.debug(e.getMessage());
             return null;
         }
-
     }
 
     /**
@@ -685,7 +681,6 @@ public class InvestigationController extends Controller implements IInvestigatio
 
     @Override
     public synchronized String checkBeanDataBeforeSave(IBeanModel dataBean) {
-
         return AppConstants.EMPTY_STRING;
     }
 
