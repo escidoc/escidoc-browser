@@ -338,10 +338,9 @@ public class CreateResourcesView extends View {
             public void buttonClick(ClickEvent event) {
                 try {
                     frm.commit();
-                    CreateResourceAddContextListener cntxCreator =
-                        new CreateResourceAddContextListener(txtNameContext.getValue().toString(), txtDescContext
-                            .getValue().toString(), txtType.getValue().toString(), slOrgUnit.getValue().toString(),
-                            repositories, router.getServiceLocation());
+                    new CreateResourceAddContextListener(txtNameContext.getValue().toString(), txtDescContext
+                        .getValue().toString(), txtType.getValue().toString(), slOrgUnit.getValue().toString(),
+                        repositories, router.getServiceLocation());
                     router.getMainWindow().showNotification(
                         "Context " + txtNameContext.getValue().toString() + " created successfully ",
                         Window.Notification.TYPE_TRAY_NOTIFICATION);
