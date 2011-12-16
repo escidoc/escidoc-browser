@@ -36,6 +36,13 @@ public final class StringUtils {
         if (string == null) {
             return false;
         }
-        return !string.isEmpty();
+        return !string.trim().isEmpty();
+    }
+
+    public static boolean isEmpty(final String string) {
+        if (string == null) {
+            return true;
+        }
+        return string.trim().equals(EMPTY_STRING);
     }
 }

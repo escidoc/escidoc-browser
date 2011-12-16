@@ -55,6 +55,7 @@ import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.repository.internal.ContainerRepository;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.helper.ResourceHierarchy;
+import org.escidoc.browser.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMException;
@@ -66,7 +67,6 @@ import org.w3c.dom.NodeList;
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
@@ -113,13 +113,7 @@ public class StudyController extends Controller implements ISaveAction {
                 @Override
                 public void onDialogResult(boolean resultIsYes) {
                     if (resultIsYes) {
-                        try {
-                            saveModel();
-                        }
-                        catch (EscidocClientException e) {
-                            LOG.error(e.getMessage());
-                            mainWindow.showNotification("Error", e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
-                        }
+                        saveModel();
                     }
                     ((StudyView) StudyController.this.view).hideButtonLayout();
                 }
@@ -130,12 +124,16 @@ public class StudyController extends Controller implements ISaveAction {
      * 
      * @throws EscidocClientException
      */
-    private synchronized void saveModel() throws EscidocClientException {
+    private synchronized void saveModel() {
         Preconditions.checkNotNull(beanModel, "DataBean to store is NULL");
         ContainerRepository containerRepositories = repositories.container();
         final String ESCIDOC = "escidoc";
 
-        if (!(beanModel instanceof StudyBean)) {
+        try {
+            validateBean(this.beanModel);
+        }
+        catch (EscidocBrowserException e) {
+            LOG.error(e.getMessage());
             return;
         }
 
@@ -150,12 +148,13 @@ public class StudyController extends Controller implements ISaveAction {
         }
         catch (EscidocClientException e) {
             LOG.error(e.getLocalizedMessage());
-            // TODO show error to user.
+            showError(e.getLocalizedMessage());
         }
         finally {
             beanModel = null;
         }
         LOG.info("Study is successfully saved.");
+        showTrayMessage("Success", "Study is saved.");
 
     }
 
@@ -290,7 +289,7 @@ public class StudyController extends Controller implements ISaveAction {
         }
         catch (EscidocClientException e) {
             LOG.error("Fatal error, could not load BreadCrumb " + e.getLocalizedMessage());
-            // TODO show error to the user
+            showError(e.getLocalizedMessage());
         }
         return Collections.emptyList();
     }
@@ -320,8 +319,20 @@ public class StudyController extends Controller implements ISaveAction {
     }
 
     @Override
-    public String checkBeanDataBeforeSave(IBeanModel dataBean) {
-        // TODO Auto-generated method stub
-        return null;
+    protected void validateBean(IBeanModel beanModel) throws EscidocBrowserException {
+        Preconditions.checkNotNull(beanModel, "Input is null");
+        StudyBean studyBean = null;
+        try {
+            studyBean = (StudyBean) beanModel;
+        }
+        catch (ClassCastException e) {
+            showError("Internal error");
+            throw new EscidocBrowserException("Wrong type of model", e);
+        }
+
+        if (StringUtils.isEmpty(studyBean.getName()) || StringUtils.isEmpty(studyBean.getDescription())) {
+            showError("Please fill out all of the requried fields!");
+            throw new EscidocBrowserException("Some required field is null");
+        }
     }
 }

@@ -41,6 +41,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.escidoc.browser.controller.Controller;
 import org.escidoc.browser.elabsmodul.cache.ELabsCache;
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
+import org.escidoc.browser.elabsmodul.exceptions.EscidocBrowserException;
 import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
 import org.escidoc.browser.elabsmodul.interfaces.IRigAction;
 import org.escidoc.browser.elabsmodul.model.InstrumentBean;
@@ -57,6 +58,7 @@ import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.repository.internal.ItemRepository;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.helper.ResourceHierarchy;
+import org.escidoc.browser.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMException;
@@ -68,7 +70,6 @@ import org.w3c.dom.NodeList;
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
@@ -253,6 +254,7 @@ public final class RigController extends Controller implements IRigAction {
         }
         catch (EscidocClientException e) {
             LOG.error("Fatal error, could not load BreadCrumb " + e.getLocalizedMessage());
+            showError(e.getLocalizedMessage());
         }
         return Collections.emptyList();
     }
@@ -268,13 +270,7 @@ public final class RigController extends Controller implements IRigAction {
                 @Override
                 public void onDialogResult(boolean resultIsYes) {
                     if (resultIsYes) {
-                        try {
-                            saveModel();
-                        }
-                        catch (EscidocClientException e) {
-                            LOG.error(e.getMessage());
-                            mainWindow.showNotification("Error", e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
-                        }
+                        saveModel();
                     }
                     ((RigView) RigController.this.view).hideButtonLayout();
                 }
@@ -285,12 +281,16 @@ public final class RigController extends Controller implements IRigAction {
      * 
      * @throws EscidocClientException
      */
-    private synchronized void saveModel() throws EscidocClientException {
+    private synchronized void saveModel() {
         Preconditions.checkNotNull(beanModel, "DataBean to store is NULL");
         ItemRepository itemRepositories = repositories.item();
         final String ESCIDOC = "escidoc";
 
-        if (!(this.beanModel instanceof RigBean)) {
+        try {
+            validateBean(this.beanModel);
+        }
+        catch (EscidocBrowserException e) {
+            LOG.error(e.getMessage());
             return;
         }
 
@@ -305,11 +305,13 @@ public final class RigController extends Controller implements IRigAction {
         }
         catch (EscidocClientException e) {
             LOG.error(e.getLocalizedMessage());
+            showError(e.getLocalizedMessage());
         }
         finally {
             beanModel = null;
         }
         LOG.info("Rig is successfully saved.");
+        showTrayMessage("Success", "Rig is saved.");
     }
 
     @Override
@@ -362,8 +364,21 @@ public final class RigController extends Controller implements IRigAction {
     }
 
     @Override
-    public String checkBeanDataBeforeSave(IBeanModel dataBean) {
-        // TODO Auto-generated method stub
-        return null;
+    protected void validateBean(IBeanModel beanModel) throws EscidocBrowserException {
+        Preconditions.checkNotNull(beanModel, "Input is null");
+        RigBean rigBean = null;
+        try {
+            rigBean = (RigBean) beanModel;
+        }
+        catch (ClassCastException e) {
+            showError("Internal error");
+            throw new EscidocBrowserException("Wrong type of model", e);
+        }
+
+        if (StringUtils.isEmpty(rigBean.getName()) || StringUtils.isEmpty(rigBean.getDescription())
+            || rigBean.getContentList().isEmpty()) {
+            showError("Please fill out all of the requried fields!");
+            throw new EscidocBrowserException("Some required field is null or the instrument's list is empty");
+        }
     }
 }

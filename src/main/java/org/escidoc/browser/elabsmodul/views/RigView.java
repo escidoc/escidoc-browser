@@ -164,7 +164,7 @@ public class RigView extends View implements ILabsPanel, ILabsAction {
         HorizontalLayout h3 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndRelatedDataForRig(ELabsViewContants.L_RIG_CONTENT,
                 getPojoItem().getItemProperty(ELabsViewContants.P_RIG_CONTENT), this.rigBean, this.controller,
-                this.rigTableHelper, false);
+                this.rigTableHelper, true);
 
         registeredComponents.add(h1);
         registeredComponents.add(h2);

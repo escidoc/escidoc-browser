@@ -41,7 +41,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.controller.Controller;
 import org.escidoc.browser.elabsmodul.cache.ELabsCache;
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
@@ -82,7 +81,6 @@ import org.w3c.dom.NodeList;
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.EscidocException;
@@ -160,7 +158,6 @@ public class InvestigationController extends Controller implements IInvestigatio
                     }
                 }
             }
-
         }
         catch (final EscidocClientException e) {
             LOG.error("Could not load Admin Descriptor 'elabs'. " + e.getMessage(), e);
@@ -435,6 +432,7 @@ public class InvestigationController extends Controller implements IInvestigatio
         }
         catch (final EscidocClientException e) {
             LOG.error("Fatal error, could not load BreadCrumb " + e.getLocalizedMessage());
+            showError(e.getLocalizedMessage());
         }
         return Collections.emptyList();
     }
@@ -450,22 +448,13 @@ public class InvestigationController extends Controller implements IInvestigatio
     public void saveAction(final IBeanModel model) {
         Preconditions.checkNotNull(model, "Model is null.");
         this.model = model;
-
-        final String checkErrorText = checkBeanDataBeforeSave(model);
-
         mainWindow.addWindow(new YesNoDialog(ELabsViewContants.DIALOG_SAVE_INVESTIGATION_HEADER,
             ELabsViewContants.DIALOG_SAVE_INVESTIGATION_TEXT, new YesNoDialog.Callback() {
 
                 @Override
                 public void onDialogResult(final boolean resultIsYes) {
                     if (resultIsYes) {
-                        try {
-                            saveModel();
-                        }
-                        catch (final EscidocClientException e) {
-                            LOG.error(e.getMessage());
-                            mainWindow.showNotification("Error", e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
-                        }
+                        saveModel();
                     }
                     ((InvestigationView) InvestigationController.this.view).hideButtonLayout();
                 }
@@ -476,39 +465,37 @@ public class InvestigationController extends Controller implements IInvestigatio
      * 
      * @throws EscidocClientException
      */
-    private synchronized void saveModel() throws EscidocClientException {
+    private synchronized void saveModel() {
         Preconditions.checkNotNull(model, "Model is NULL. Can not save.");
         final ContainerRepository containerRepository = repositories.container();
         final String ESCIDOC = "escidoc";
 
-        if (!(model instanceof InvestigationBean)) {
+        try {
+            validateBean(this.model);
+        }
+        catch (EscidocBrowserException e) {
+            LOG.error(e.getMessage());
             return;
         }
 
         final InvestigationBean investigationBean = (InvestigationBean) model;
-        // The first try checks if the bean can be created Correctly. Maybe the RIG selection is empty
+        final Element metaDataContent =
+            InvestigationController.createInvestigationDOMElementByBeanModel(investigationBean);
         try {
-            final Element metaDataContent =
-                InvestigationController.createInvestigationDOMElementByBeanModel(investigationBean);
-            try {
-                final Container container = containerRepository.findContainerById(investigationBean.getObjid());
-                final MetadataRecord metadataRecord = container.getMetadataRecords().get(ESCIDOC);
-                metadataRecord.setContent(metaDataContent);
-                containerRepository.update(container);
-            }
-            catch (final EscidocClientException e) {
-                LOG.error(e.getLocalizedMessage());
-                this.mainWindow.showNotification("Error", "Element not found!", Notification.TYPE_ERROR_MESSAGE);
-            }
-            finally {
-                model = null;
-            }
-            LOG.info("Investigation is successfully saved.");
+            final Container container = containerRepository.findContainerById(investigationBean.getObjid());
+            final MetadataRecord metadataRecord = container.getMetadataRecords().get(ESCIDOC);
+            metadataRecord.setContent(metaDataContent);
+            containerRepository.update(container);
         }
-        catch (final Exception e) {
-            mainWindow.showNotification(ELabsViewContants.ERROR_INVESTIGATION_VIEW_NO_RIG_SELECTED,
-                Window.Notification.TYPE_WARNING_MESSAGE);
+        catch (final EscidocClientException e) {
+            LOG.error(e.getLocalizedMessage());
+            showError(e.getLocalizedMessage());
         }
+        finally {
+            model = null;
+        }
+        LOG.info("Investigation is successfully saved.");
+        showTrayMessage("Success", "Investigation is saved.");
 
     }
 
@@ -680,12 +667,22 @@ public class InvestigationController extends Controller implements IInvestigatio
     }
 
     @Override
-    public synchronized String checkBeanDataBeforeSave(IBeanModel dataBean) {
-        return AppConstants.EMPTY_STRING;
-    }
+    protected void validateBean(IBeanModel beanModel) throws EscidocBrowserException {
+        Preconditions.checkNotNull(beanModel, "Input is null");
+        InvestigationBean investigationBean = null;
+        try {
+            investigationBean = (InvestigationBean) beanModel;
+        }
+        catch (ClassCastException e) {
+            showError("Internal error");
+            throw new EscidocBrowserException("Wrong type of model", e);
+        }
 
-    private void addNewErrorRecord(StringBuilder stringBuilder, String newContent) {
-        Preconditions.checkNotNull(stringBuilder, "StringBuilder is null");
-
+        if (StringUtils.isEmpty(investigationBean.getName()) || StringUtils.isEmpty(investigationBean.getDescription())
+            || StringUtils.isEmpty(investigationBean.getDepositEndpoint()) || investigationBean.getRigBean() == null
+            || investigationBean.getMaxRuntimeInMin() == 0) {
+            showError("Please fill out all of the requried fields!");
+            throw new EscidocBrowserException("Some required field is null");
+        }
     }
 }

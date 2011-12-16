@@ -32,6 +32,7 @@ import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.LABEL_W
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
@@ -49,6 +50,8 @@ import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.maincontent.View;
 import org.escidoc.browser.ui.view.helpers.DirectMember;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.data.util.BeanItem;
@@ -86,7 +89,7 @@ public class InvestigationSeriesView extends View implements ILabsPanel, ILabsAc
 
     private Component modifiedComponent;
 
-    private ISaveAction saveAction;
+    private ISaveAction controller;
 
     private Component buttonLayout;
 
@@ -97,6 +100,8 @@ public class InvestigationSeriesView extends View implements ILabsPanel, ILabsAc
     private HorizontalLayout directMemberInvSeriesContainer = new HorizontalLayout();
 
     private Router router;
+
+    private static Logger LOG = LoggerFactory.getLogger(InvestigationSeriesView.class);
 
     public InvestigationSeriesView(ContainerProxy containerProxy, InvestigationSeriesBean investigationSeriesBean,
         List<ResourceModel> breadCrumb, ISaveAction saveAction, Router router) {
@@ -111,7 +116,7 @@ public class InvestigationSeriesView extends View implements ILabsPanel, ILabsAc
         this.setViewName(containerProxy.getName());
         this.investigationSeriesBean = investigationSeriesBean;
         this.breadCrumb = breadCrumb;
-        this.saveAction = saveAction;
+        this.controller = saveAction;
         this.router = router;
         setSizeFull();
         initPanelComponents();
@@ -123,19 +128,18 @@ public class InvestigationSeriesView extends View implements ILabsPanel, ILabsAc
     }
 
     private void createClickListener() {
-
         saveButton.addListener(new Button.ClickListener() {
-
             private static final long serialVersionUID = 6314520686584942778L;
 
             @Override
             public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
                 if (event.getButton().equals(saveButton)) {
-                    saveAction.saveAction(investigationSeriesBean);
+                    InvestigationSeriesView.this.resetLayout();
+                    dynamicLayout.requestRepaintAll();
+                    controller.saveAction(investigationSeriesBean);
                 }
             }
         });
-
     }
 
     private void createPanelListener() {
@@ -307,4 +311,27 @@ public class InvestigationSeriesView extends View implements ILabsPanel, ILabsAc
         return true;
     }
 
+    protected void resetLayout() {
+        Preconditions.checkNotNull(dynamicLayout, "View's dynamiclayout is null.");
+
+        HorizontalLayout tempParentLayout = null;
+        for (final Iterator<Component> iterator = dynamicLayout.getComponentIterator(); iterator.hasNext();) {
+            final Component component = iterator.next();
+            if (component instanceof HorizontalLayout) {
+                tempParentLayout = (HorizontalLayout) component;
+            }
+            else {
+                LOG.error("DynamicLayout can contain only HorizontalLayouts as direct child element.");
+                break;
+            }
+
+            if (tempParentLayout.getComponentCount() != 2) {
+                continue;
+            }
+
+            if (LabsLayoutHelper.switchToLabelFromEditedField(tempParentLayout)) {
+                setModifiedComponent(null);
+            }
+        }
+    }
 }

@@ -28,6 +28,8 @@
  */
 package org.escidoc.browser.controller;
 
+import org.escidoc.browser.elabsmodul.exceptions.EscidocBrowserException;
+import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
@@ -80,5 +82,10 @@ public class ContainerController extends Controller {
     private Component createView(ResourceProxy resourceProxy) throws EscidocClientException {
         Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
         return new ContainerView(router, resourceProxy, repositories);
+    }
+
+    @Override
+    protected void validateBean(IBeanModel beanModel) throws EscidocBrowserException {
+        // there is no bean to validate
     }
 }

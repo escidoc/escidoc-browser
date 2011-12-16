@@ -46,7 +46,7 @@ public class InvestigationBean implements Serializable, IBeanModel {
 
     private String maxRuntime;
 
-    private int maxRuntimeInMin;
+    private int maxRuntimeInMin = 0;
 
     private String depositEndpoint;
 

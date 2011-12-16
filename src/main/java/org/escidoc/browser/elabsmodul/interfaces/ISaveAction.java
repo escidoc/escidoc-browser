@@ -42,13 +42,6 @@ public interface ISaveAction {
 
     /**
      * 
-     * @param dataBean
-     * @return
-     */
-    String checkBeanDataBeforeSave(final IBeanModel dataBean);
-
-    /**
-     * 
      * @return
      */
     boolean hasUpdateAccess();
