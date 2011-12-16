@@ -308,4 +308,6 @@ public class ViewConstants {
     public static final String NO = "No";
 
     public static final String OK = "Ok";
+
+    public static final String ERROR_CREATING_RESOURCE = "Error creating resource";
 }

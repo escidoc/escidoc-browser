@@ -124,8 +124,8 @@ public class ContextRepository implements Repository {
 
     }
 
-    public void create(Context context) throws EscidocClientException {
-        client.create(context);
+    public Context create(Context context) throws EscidocClientException {
+        return client.create(context);
 
     }
 

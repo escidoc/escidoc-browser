@@ -17,6 +17,8 @@ import de.escidoc.core.resources.om.context.OrganizationalUnitRefs;
 public class CreateResourceAddContextListener {
     private static final Logger LOG = LoggerFactory.getLogger(ItemView.class);
 
+    private Context createdContext;
+
     public CreateResourceAddContextListener(String name, String description, String type, String orgUnit,
         Repositories repositories, EscidocServiceLocation serviceLocation) throws EscidocClientException {
         Preconditions.checkNotNull(name, "Name of Context is Null");
@@ -31,7 +33,11 @@ public class CreateResourceAddContextListener {
         OrganizationalUnitRefs orgRefs = new OrganizationalUnitRefs();
         orgRefs.add(new OrganizationalUnitRef(orgUnit));
         cntx.orgUnits(orgRefs);
-        repositories.context().create(cntx.build());
+        createdContext = repositories.context().create(cntx.build());
+    }
+
+    public Context getCreatedContext() {
+        return createdContext;
     }
 
 }

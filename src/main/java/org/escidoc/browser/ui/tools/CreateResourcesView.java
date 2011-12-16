@@ -5,8 +5,10 @@ import java.util.Collection;
 import org.escidoc.browser.model.OrgUnitService;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.CreateResourceAddContentModel;
 import org.escidoc.browser.ui.listeners.CreateResourceAddContextListener;
+import org.escidoc.browser.ui.listeners.CreateResourceAddOrgUnit;
 import org.escidoc.browser.ui.maincontent.View;
 
 import com.google.common.base.Preconditions;
@@ -109,8 +111,8 @@ public class CreateResourcesView extends View {
             formAddContext(vlAccCreateContext);
         }
         catch (EscidocClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            router.getMainWindow().showNotification(ViewConstants.ERROR_CREATING_RESOURCE + e.getLocalizedMessage(),
+                Window.Notification.TYPE_ERROR_MESSAGE);
         }
         accCreateContext.addTab(vlAccCreateContext, "Create Context");
 
@@ -134,8 +136,8 @@ public class CreateResourcesView extends View {
             formAddContentModel(vlAccCreate);
         }
         catch (EscidocClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            router.getMainWindow().showNotification(ViewConstants.ERROR_CREATING_RESOURCE + e.getLocalizedMessage(),
+                Window.Notification.TYPE_ERROR_MESSAGE);
         }
         accCreateContentModel.addTab(vlAccCreate, "Create Content Model");
 
@@ -155,9 +157,75 @@ public class CreateResourcesView extends View {
         vlAccCreateOrgUnit.setWidth("100.0%");
         vlAccCreateOrgUnit.setHeight("100.0%");
         vlAccCreateOrgUnit.setMargin(false);
+        try {
+            formAddOrgUnit(vlAccCreateOrgUnit);
+        }
+        catch (EscidocClientException e) {
+            router.getMainWindow().showNotification(ViewConstants.ERROR_CREATING_RESOURCE + e.getLocalizedMessage(),
+                Window.Notification.TYPE_ERROR_MESSAGE);
+        }
         accCreateOrgUnit.addTab(vlAccCreateOrgUnit, "Create Organizational Units");
 
         return accCreateOrgUnit;
+    }
+
+    private void formAddOrgUnit(VerticalLayout vlAccCreateOrgUnit) throws EscidocClientException {
+        final Form frm = new Form();
+        frm.setImmediate(true);
+        // Name
+        final TextField txtNameContext = new TextField();
+        txtNameContext.setCaption("Name");
+        txtNameContext.setImmediate(false);
+        txtNameContext.setWidth("-1px");
+        txtNameContext.setHeight("-1px");
+        txtNameContext.setInvalidAllowed(false);
+        txtNameContext.setRequired(true);
+        frm.addField("txtNameContext", txtNameContext);
+
+        // Description
+        final TextField txtDescContext = new TextField("Description");
+        txtDescContext.setImmediate(false);
+        txtDescContext.setWidth("-1px");
+        txtDescContext.setHeight("-1px");
+        frm.addField("txtDescContext", txtDescContext);
+
+        // btnAddContext
+        Button btnAddContext = new Button("Submit", new Button.ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                try {
+                    frm.commit();
+                    new CreateResourceAddOrgUnit(txtNameContext.getValue().toString(), txtDescContext
+                        .getValue().toString(), router, router.getServiceLocation());
+                    router.getMainWindow().showNotification(
+                        "Organizational Unit " + txtNameContext.getValue().toString() + " created successfully ",
+                        Window.Notification.TYPE_TRAY_NOTIFICATION);
+                    frm.getField("txtNameContext").setValue("");
+                    frm.getField("txtDescContext").setValue("");
+                }
+                catch (EmptyValueException e) {
+                    router.getMainWindow().showNotification("Please fill in all the required elements in the form",
+                        Window.Notification.TYPE_TRAY_NOTIFICATION);
+                }
+                catch (Exception e) {
+                    router.getMainWindow().showNotification(
+                        ViewConstants.ERROR_CREATING_RESOURCE + e.getLocalizedMessage(),
+                        Window.Notification.TYPE_ERROR_MESSAGE);
+                }
+            }
+        });
+
+        btnAddContext.setWidth("-1px");
+        btnAddContext.setHeight("-1px");
+        frm.getLayout().addComponent(btnAddContext);
+
+        frm.getField("txtNameContext").setRequired(true);
+        frm.getField("txtNameContext").setRequiredError("Name is missing");
+
+        frm.getField("txtDescContext").setRequired(true);
+        frm.getField("txtDescContext").setRequiredError("Description is missing");
+
+        vlAccCreateOrgUnit.addComponent(frm);
     }
 
     private void formAddContentModel(VerticalLayout vlAccCreateContentModel) throws EscidocClientException {
@@ -193,15 +261,15 @@ public class CreateResourcesView extends View {
                         Window.Notification.TYPE_TRAY_NOTIFICATION);
                     frm.getField("txtNameContext").setValue("");
                     frm.getField("txtDescContext").setValue("");
-                    // Ideally here should be a sync method to sync the tree
                 }
                 catch (EmptyValueException e) {
                     router.getMainWindow().showNotification("Please fill in all the required elements in the form",
                         Window.Notification.TYPE_TRAY_NOTIFICATION);
                 }
                 catch (EscidocClientException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    router.getMainWindow().showNotification(
+                        ViewConstants.ERROR_CREATING_RESOURCE + e.getLocalizedMessage(),
+                        Window.Notification.TYPE_ERROR_MESSAGE);
                 }
             }
         });
@@ -247,7 +315,7 @@ public class CreateResourcesView extends View {
         frm.addField("txtType", txtType);
 
         // OrgUnit
-        final NativeSelect slOrgUnit = new NativeSelect("Pick your Organizational Unit");
+        final NativeSelect slOrgUnit = new NativeSelect("Organizational Unit");
         slOrgUnit.setImmediate(true);
         slOrgUnit.setWidth("-1px");
         slOrgUnit.setHeight("-1px");
@@ -270,9 +338,10 @@ public class CreateResourcesView extends View {
             public void buttonClick(ClickEvent event) {
                 try {
                     frm.commit();
-                    new CreateResourceAddContextListener(txtNameContext.getValue().toString(), txtDescContext
-                        .getValue().toString(), txtType.getValue().toString(), slOrgUnit.getValue().toString(),
-                        repositories, router.getServiceLocation());
+                    CreateResourceAddContextListener cntxCreator =
+                        new CreateResourceAddContextListener(txtNameContext.getValue().toString(), txtDescContext
+                            .getValue().toString(), txtType.getValue().toString(), slOrgUnit.getValue().toString(),
+                            repositories, router.getServiceLocation());
                     router.getMainWindow().showNotification(
                         "Context " + txtNameContext.getValue().toString() + " created successfully ",
                         Window.Notification.TYPE_TRAY_NOTIFICATION);
@@ -281,14 +350,16 @@ public class CreateResourcesView extends View {
                     frm.getField("txtType").setValue("");
                     frm.getField("slOrgUnit").setValue(null);
                     // Ideally here should be a sync method to sync the tree
+
                 }
                 catch (EmptyValueException e) {
                     router.getMainWindow().showNotification("Please fill in all the required elements in the form",
                         Window.Notification.TYPE_TRAY_NOTIFICATION);
                 }
                 catch (EscidocClientException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    router.getMainWindow().showNotification(
+                        ViewConstants.ERROR_CREATING_RESOURCE + e.getLocalizedMessage(),
+                        Window.Notification.TYPE_ERROR_MESSAGE);
                 }
             }
         });
