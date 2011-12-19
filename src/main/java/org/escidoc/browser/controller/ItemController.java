@@ -60,10 +60,8 @@ public class ItemController extends Controller {
 
     public ItemController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
-        Preconditions.checkNotNull(serviceLocation, "serviceLocation is NULL");
         Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
         Preconditions.checkNotNull(repositories, "repositories is NULL");
-        Preconditions.checkNotNull(mainWindow, "mainWindow is NULL");
         Preconditions.checkNotNull(router, "Router is NULL");
         this.router = router;
         this.serviceLocation = router.getServiceLocation();
@@ -87,4 +85,5 @@ public class ItemController extends Controller {
         Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
         return new ItemView(repositories, router, resourceProxy);
     }
+
 }

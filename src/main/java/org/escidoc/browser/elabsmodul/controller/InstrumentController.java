@@ -63,6 +63,7 @@ import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.repository.internal.ItemRepository;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.helper.ResourceHierarchy;
+import org.escidoc.browser.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMException;
@@ -432,6 +433,7 @@ public final class InstrumentController extends Controller implements ISaveActio
         }
         catch (final EscidocClientException e) {
             LOG.error("Fatal error, could not load BreadCrumb " + e.getLocalizedMessage());
+            showError(e.getLocalizedMessage());
         }
         return Collections.emptyList();
     }
@@ -521,13 +523,7 @@ public final class InstrumentController extends Controller implements ISaveActio
                 @Override
                 public void onDialogResult(final boolean resultIsYes) {
                     if (resultIsYes) {
-                        try {
-                            saveModel();
-                        }
-                        catch (final EscidocClientException e) {
-                            LOG.error(e.getMessage());
-                            mainWindow.showNotification("Error", e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
-                        }
+                        saveModel();
                     }
                     ((InstrumentView) InstrumentController.this.view).hideButtonLayout();
                 }
@@ -538,12 +534,16 @@ public final class InstrumentController extends Controller implements ISaveActio
      * 
      * @throws EscidocClientException
      */
-    private synchronized void saveModel() throws EscidocClientException {
+    private synchronized void saveModel() {
         Preconditions.checkNotNull(beanModel, "DataBean to store is NULL");
         final ItemRepository itemRepositories = repositories.item();
         final String ESCIDOC = "escidoc";
 
-        if (!(beanModel instanceof InstrumentBean)) {
+        try {
+            validateBean(this.beanModel);
+        }
+        catch (EscidocBrowserException e) {
+            LOG.error(e.getMessage());
             return;
         }
 
@@ -558,12 +558,13 @@ public final class InstrumentController extends Controller implements ISaveActio
         }
         catch (final EscidocClientException e) {
             LOG.error(e.getLocalizedMessage());
-            // TODO show error message to user
+            showError(e.getLocalizedMessage());
         }
         finally {
             beanModel = null;
         }
         LOG.info("Instument is successfully saved.");
+        showTrayMessage("Success", "Instrument is saved.");
     }
 
     @Override
@@ -590,9 +591,21 @@ public final class InstrumentController extends Controller implements ISaveActio
         }
     }
 
-    @Override
-    public String checkBeanDataBeforeSave(IBeanModel dataBean) {
-        // TODO Auto-generated method stub
-        return null;
+    protected void validateBean(IBeanModel beanModel) throws EscidocBrowserException {
+        Preconditions.checkNotNull(beanModel, "Input is null");
+        InstrumentBean instrumentBean = null;
+        try {
+            instrumentBean = (InstrumentBean) beanModel;
+        }
+        catch (ClassCastException e) {
+            showError("Internal error");
+            throw new EscidocBrowserException("Wrong type of model", e);
+        }
+
+        if (StringUtils.isEmpty(instrumentBean.getName()) || StringUtils.isEmpty(instrumentBean.getDescription())
+            || StringUtils.isEmpty(instrumentBean.getESyncDaemon()) || StringUtils.isEmpty(instrumentBean.getFolder())) {
+            showError("Please fill out all of the requried fields!");
+            throw new EscidocBrowserException("Some required field is null");
+        }
     }
 }

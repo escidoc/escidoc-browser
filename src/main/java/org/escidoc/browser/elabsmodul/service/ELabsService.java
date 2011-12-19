@@ -46,7 +46,6 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.HTTP;
-import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.elabsmodul.cache.ELabsCache;
 import org.escidoc.browser.elabsmodul.constants.ELabsServiceConstants;
 import org.escidoc.browser.elabsmodul.exceptions.EscidocBrowserException;
@@ -93,19 +92,23 @@ public class ELabsService implements ILabsService {
     }
 
     private List<Map<String, String>> gatherConfigurationDataFromInfrastructure() throws EscidocBrowserException {
-
         List<Map<String, String>> result = new ArrayList<Map<String, String>>();
         Map<String, String> configurationMap;
         ContainerProxy investigationProxy = null;
+        StringBuilder errorStrings = new StringBuilder();
+        StringBuilder warningStrings = new StringBuilder();
+
         try {
             investigationProxy = (ContainerProxy) repositories.container().findById(investigationId);
             if (investigationProxy == null) {
                 LOG.error("InvestigationProxy is null");
+                showError("Internal error: Investigation is not found");
                 return null;
             }
         }
         catch (EscidocClientException e) {
             LOG.error(e.getMessage());
+            showError("Internal error: Exceptionfound");
         }
         catch (ClassCastException e) {
             LOG.error(e.getMessage());
@@ -116,6 +119,7 @@ public class ELabsService implements ILabsService {
             investigationBean = resolveInvestigation(investigationProxy);
             if (investigationBean == null) {
                 LOG.error("InvestigationBean is null");
+                showError("Internal error");
                 return null;
             }
         }
@@ -125,6 +129,7 @@ public class ELabsService implements ILabsService {
 
         if (investigationBean.getRigBean() == null) {
             LOG.error("RigBean is null");
+            showError("Internal error");
             return null;
         }
 
@@ -134,90 +139,106 @@ public class ELabsService implements ILabsService {
             rigProxy = (ItemProxy) repositories.item().findById(investigationBean.getRigBean().getObjectId());
             if (rigProxy == null) {
                 LOG.error("RigProxy is null");
+                showError("Internal error");
                 return null;
             }
             rigBean = resolveRig(rigProxy);
         }
         catch (EscidocClientException e) {
             LOG.error(e.getMessage());
+            showError("Internal error");
+            return null;
         }
         catch (ClassCastException e) {
             LOG.error(e.getMessage());
+            showError("Internal error");
+            return null;
         }
 
-        if (rigBean == null) {
-            LOG.error("RigBean is null");
-            return null;
-        }
-        else if (rigBean.getContentList().isEmpty()) {
-            LOG.error("There is not instrument related to the rig available");
-            return null;
+        if (rigBean == null || rigBean.getContentList().isEmpty()) {
+            final String error = "Rig is not set or does not contain any instruments at all";
+            LOG.error(error);
+            errorStrings.append(error + "<br/>");
         }
 
         final String workspaceId = investigationProxy.getContext().getObjid();
         if (workspaceId == null || workspaceId.isEmpty()) {
-            LOG.error("WorkSpace Id is null");
-            return null;
+            String error = "Contenxt id is not available";
+            LOG.error(error);
+            errorStrings.append(error + "<br/>");
         }
 
         final String userHandle = router.getApp().getCurrentUser().getToken();
         if (userHandle == null || userHandle.isEmpty()) {
-            LOG.error("UserHandle is null");
-            return null;
+            String error = "Usertoken is not available";
+            LOG.error(error);
+            errorStrings.append(error + "<br/>");
         }
 
         final String infrastructureEndpoint = router.getServiceLocation().getEscidocUri();
         if (infrastructureEndpoint == null || infrastructureEndpoint.isEmpty()) {
-            LOG.error("InfrastructureEndpoint is null");
-            return null;
+            String error = "Infrastructure's endpoint is not set";
+            LOG.error(error);
+            errorStrings.append(error + "<br/>");
         }
 
         final String email = router.getApp().getCurrentUser().getLoginName() + "@fiz-karlsruhe.de";
         if (email == null || email.isEmpty()) {
-            LOG.error("Email is null");
-            return null;
+            String error = "User's email address is not set";
+            LOG.error(error);
+            warningStrings.append(error + "<br/>");
         }
 
         final String contentModelId = ELabsCache.getGeneratedItemCMMId().get(0);
         if (contentModelId == null || contentModelId.isEmpty()) {
-            LOG.error("ConfigurationId is null");
-            return null;
+            String error = "Contentmodel's id is not available";
+            LOG.error(error);
+            errorStrings.append(error + "<br/>");
         }
 
         final String checkSumType = "MD5";
-
         final String experimentId = investigationBean.getObjid();
         final String experimentTitle = investigationBean.getName();
-        String experimentDescr = investigationBean.getDescription();
+        final String experimentDescr = investigationBean.getDescription();
 
         if (experimentId == null || experimentId.isEmpty()) {
-            LOG.error("ExperimentId is null");
-            return null;
+            String error = "Experiment's id is not available";
+            LOG.error(error);
+            errorStrings.append(error + "<br/>");
         }
 
         if (experimentTitle == null || experimentTitle.isEmpty()) {
-            LOG.error("Experiment Title is null");
-            return null;
+            String error = "Experiment's title is not set";
+            LOG.error(error);
+            errorStrings.append(error + "<br/>");
         }
 
         if (experimentDescr == null || experimentDescr.isEmpty()) {
-            LOG.warn("Experiment Descr should not be null");
-            experimentDescr = AppConstants.EMPTY_STRING;
+            String error = "Experiment's description is not set";
+            LOG.warn(error);
+            warningStrings.append(error + "<br/>");
         }
 
         final int duration = investigationBean.getMaxRuntimeInMin();
         if (duration <= 0) {
-            LOG.error("Duration should be at least 1 minute");
-            return null;
+            String error = "Investigation's duration is not set correctly";
+            LOG.error(error);
+            errorStrings.append(error + "<br/>");
         }
 
         final String depositEndpoint = investigationBean.getDepositEndpoint();
         if (depositEndpoint == null || depositEndpoint.isEmpty()) {
-            LOG.error("DepositEndpoint is null");
-            return null;
+            String error = "Deposit endpoint is not set";
+            LOG.error(error);
+            errorStrings.append(error + "<br/>");
         }
 
+        final String investigationErrors = errorStrings.toString();
+        String investigationWarnings = warningStrings.toString();
+        String instrumentsErrors = "";
+
         for (Iterator<InstrumentBean> iterator = rigBean.getContentList().iterator(); iterator.hasNext();) {
+            StringBuilder instrumentsError = new StringBuilder();
             InstrumentBean instrumentBean = iterator.next();
             configurationMap = new HashMap<String, String>();
 
@@ -226,22 +247,30 @@ public class ELabsService implements ILabsService {
             final String esyncDaemonEndpoint = instrumentBean.getESyncDaemon();
 
             if (fileFormat == null || fileFormat.isEmpty()) {
-                LOG.error("FileFormat is null");
-                return null;
+                String error = "FileFormat is not set for instrument (id: " + instrumentBean.getObjectId() + ")";
+                LOG.error(error);
+                instrumentsError.append(error + "<br/>");
             }
             if (monitoredFolder == null || monitoredFolder.isEmpty()) {
-                LOG.error("MonitoredFolder is null");
-                return null;
+                String error = "Monitoredfolder is not set for instrument (id: " + instrumentBean.getObjectId() + ")";
+                LOG.error(error);
+                instrumentsError.append(error + "<br/>");
             }
             if (esyncDaemonEndpoint == null || esyncDaemonEndpoint.isEmpty()) {
-                LOG.error("EsyncDaemonEndpoint is null");
-                return null;
+                String error =
+                    "EsyncDaemonEndpoint is not set for instrument (id: " + instrumentBean.getObjectId() + ")";
+                LOG.error(error);
+                instrumentsError.append(error + "<br/>");
             }
 
             final String configurationId = UUID.randomUUID().toString();
             if (configurationId == null || configurationId.isEmpty()) {
                 LOG.error("ConfigurationId is null");
-                return null;
+            }
+
+            if (!instrumentsError.toString().isEmpty()) {
+                instrumentsErrors += instrumentsError.toString();
+                continue;
             }
 
             configurationMap.put(ELabsServiceConstants.WORKSPACE_ID, workspaceId);
@@ -254,7 +283,7 @@ public class ELabsService implements ILabsService {
             configurationMap.put(ELabsServiceConstants.EXPERIMENT_NAME, experimentTitle);
             configurationMap.put(ELabsServiceConstants.EXPERIMENT_DESCRIPTION, experimentDescr);
             configurationMap.put(ELabsServiceConstants.MONITORING_DURATION, "" + duration);
-            configurationMap.put(ELabsServiceConstants.DEPOSIT_SERVER_ENDPOINT, investigationBean.getDepositEndpoint());
+            configurationMap.put(ELabsServiceConstants.DEPOSIT_SERVER_ENDPOINT, depositEndpoint);
 
             configurationMap.put(ELabsServiceConstants.FILETYPE, fileFormat);
             configurationMap.put(ELabsServiceConstants.MONITORED_FOLDER, monitoredFolder);
@@ -263,6 +292,26 @@ public class ELabsService implements ILabsService {
 
             result.add(configurationMap);
         }
+
+        if (!investigationErrors.isEmpty() || !instrumentsErrors.isEmpty()) {
+            String errorMessage = "<hr/>";
+            if (!investigationErrors.isEmpty()) {
+                errorMessage += "<b>Investigation errors:</b><br/>";
+                errorMessage += investigationErrors;
+                errorMessage += "<br/>";
+            }
+            if (!instrumentsErrors.isEmpty()) {
+                errorMessage += "<b>Instrument errors:</b><br/>";
+                errorMessage += instrumentsErrors;
+            }
+            showError(errorMessage);
+            return null;
+        }
+
+        if (!investigationWarnings.isEmpty()) {
+            showWarning("<hr/>" + investigationWarnings);
+        }
+
         return result;
     }
 
@@ -361,41 +410,40 @@ public class ELabsService implements ILabsService {
     }
 
     @Override
-    public synchronized void start() {
+    public synchronized void start() throws EscidocBrowserException {
         LOG.info("Investigation's process is started.");
         try {
             this.configurationPropertyList = null;
             final List<Map<String, String>> configMapList = gatherConfigurationDataFromInfrastructure();
             if (configMapList == null || configMapList.isEmpty()) {
                 LOG.error("Config is not available to process");
-                return;
+                throw new EscidocBrowserException();
             }
 
             final List<String[]> configurationPropertyList = buildConfiguration(configMapList);
             if (configurationPropertyList == null || configurationPropertyList.isEmpty()) {
                 LOG.error("Config is not available to process");
-                return;
+                throw new EscidocBrowserException();
             }
             this.configurationPropertyList = configurationPropertyList;
             if (sendStartRequest(configurationPropertyList)) {
-                this.router
-                    .getApp().getMainWindow()
-                    .showNotification("Error", "Communication error", Notification.TYPE_WARNING_MESSAGE);
+                showError("Communication error");
+                throw new EscidocBrowserException();
             }
             else {
                 this.router
                     .getApp().getMainWindow()
-                    .showNotification("Success", "Configuration is sent", Notification.TYPE_HUMANIZED_MESSAGE);
-
+                    .showNotification("Success", "Configuration is sent!", Notification.TYPE_TRAY_NOTIFICATION);
             }
         }
         catch (EscidocBrowserException e) {
             LOG.error(e.getMessage());
+            throw new EscidocBrowserException(e);
         }
     }
 
     @Override
-    public synchronized void stop() {
+    public synchronized void stop() throws EscidocBrowserException {
         LOG.info("Investigation is stopped.");
 
         sendStopRequest();
@@ -410,9 +458,7 @@ public class ELabsService implements ILabsService {
             throw new NullPointerException("Container Proxy is null.");
         }
         final InvestigationBean investigationBean = new InvestigationBean();
-
         final Element e = containerProxy.getMedataRecords().get("escidoc").getContent();
-
         investigationBean.setObjid(containerProxy.getId());
 
         if (!(("Investigation".equals(e.getLocalName()) && URI_EL.equals(e.getNamespaceURI())) || "el:Investigation"
@@ -490,7 +536,6 @@ public class ELabsService implements ILabsService {
             if ("title".equals(nodeName) && URI_DC.equals(nsUri)) {
                 rigBean.setName((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
             }
-
             else if ("description".equals(nodeName) && URI_DC.equals(nsUri)) {
                 rigBean.setDescription((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
             }
@@ -517,14 +562,12 @@ public class ELabsService implements ILabsService {
         if (resourceProxy == null || !(resourceProxy instanceof ItemProxy)) {
             throw new EscidocBrowserException("NOT an ItemProxy", null);
         }
+
         final ItemProxy itemProxy = (ItemProxy) resourceProxy;
         final InstrumentBean instrumentBean = new InstrumentBean();
-
+        instrumentBean.setObjectId(itemProxy.getId());
         final Element e = itemProxy.getMedataRecords().get("escidoc").getContent();
         final NodeList nodeList = e.getChildNodes();
-
-        instrumentBean.setObjectId(itemProxy.getId());
-
         final String URI_DC = "http://purl.org/dc/elements/1.1/";
         final String URI_EL = "http://escidoc.org/ontologies/bw-elabs/re#";
         for (int i = 0; i < nodeList.getLength(); i++) {
@@ -542,7 +585,6 @@ public class ELabsService implements ILabsService {
             if ("title".equals(nodeName) && URI_DC.equals(nsUri)) {
                 instrumentBean.setName((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
             }
-
             else if ("description".equals(nodeName) && URI_DC.equals(nsUri)) {
                 instrumentBean
                     .setDescription((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
@@ -592,5 +634,16 @@ public class ELabsService implements ILabsService {
 
     private static boolean isNotSuccessful(final int statusCode) {
         return statusCode / 100 != 2;
+    }
+
+    private void showError(final String errorMessage) {
+        Preconditions.checkNotNull(errorMessage, "ErrorMessage is null");
+        this.router.getApp().getMainWindow().showNotification("Error", errorMessage, Notification.TYPE_ERROR_MESSAGE);
+    }
+
+    private void showWarning(final String warningMessage) {
+        Preconditions.checkNotNull(warningMessage, "Warningmessage is null");
+        this.router
+            .getApp().getMainWindow().showNotification("Warning", warningMessage, Notification.TYPE_WARNING_MESSAGE);
     }
 }

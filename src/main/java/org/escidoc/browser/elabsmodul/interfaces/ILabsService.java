@@ -28,9 +28,11 @@
  */
 package org.escidoc.browser.elabsmodul.interfaces;
 
+import org.escidoc.browser.elabsmodul.exceptions.EscidocBrowserException;
+
 public interface ILabsService {
 
-    void start();
+    void start() throws EscidocBrowserException;
 
-    void stop();
+    void stop() throws EscidocBrowserException;
 }

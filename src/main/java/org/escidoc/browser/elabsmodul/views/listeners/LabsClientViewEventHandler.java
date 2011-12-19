@@ -141,8 +141,8 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
                         ELabsViewContants.DIV_ALIGN_RIGHT + ELabsViewContants.L_INSTRUMENT_FILE_FORMAT
                             + ELabsViewContants.DIV_END;
                     final String queryTextforDuration =
-                        ELabsViewContants.DIV_ALIGN_RIGHT + ELabsViewContants.L_INVESTIGATION_DURATION
-                            + ELabsViewContants.DIV_END;
+                        ELabsViewContants.DIV_ALIGN_RIGHT + ELabsViewContants.REQUIRED_SIGN
+                            + ELabsViewContants.L_INVESTIGATION_DURATION + ELabsViewContants.DIV_END;
                     Component newComponent = null;
                     if (queryTextforFileFormat.equals(((Label) labelComponent).getValue())
                         && ELabsCache.getFileFormats().isEmpty()) {

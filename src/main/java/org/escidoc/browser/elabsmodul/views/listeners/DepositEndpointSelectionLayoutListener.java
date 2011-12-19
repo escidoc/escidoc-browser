@@ -136,7 +136,7 @@ public class DepositEndpointSelectionLayoutListener implements LayoutClickListen
                                                         ((ComboBox) newComponent).select(ELabsCache
                                                             .getDefaultDepositEndpoint());
                                                     }
-                                                }, true));
+                                                }, false));
                                 }
                             }
                         });

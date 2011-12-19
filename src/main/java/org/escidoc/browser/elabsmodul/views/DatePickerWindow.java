@@ -73,11 +73,10 @@ public class DatePickerWindow extends Window implements Button.ClickListener {
 
     private final String propDuration = "Duration", propFinishingTime = "Finishing time";
 
-    private Label lDay = new Label("day"), lHour = new Label("hour"), lMinutes = new Label("minute");
+    private Label lDay = new Label("days"), lHour = new Label("hours"), lMinutes = new Label("minutes");
 
     private OptionGroup optionGroup = null;
 
-    @SuppressWarnings("serial")
     public DatePickerWindow(String caption, Callback callback) {
         super(caption);
         this.callback = callback;
@@ -121,6 +120,9 @@ public class DatePickerWindow extends Window implements Button.ClickListener {
         tfDays.setValue(0);
         tfHours.setValue(0);
         tfMinutes.setValue(0);
+        lDay.setImmediate(true);
+        lHour.setImmediate(true);
+        lMinutes.setImmediate(true);
 
         HorizontalLayout inputFieldLayout = new HorizontalLayout();
         inputFieldLayout.setSpacing(true);
@@ -131,8 +133,9 @@ public class DatePickerWindow extends Window implements Button.ClickListener {
         inputFieldLayout.addComponent(tfMinutes);
         inputFieldLayout.addComponent(lMinutes);
 
-        @SuppressWarnings("serial")
         final FieldEvents.TextChangeListener dayTextChangeListener = new FieldEvents.TextChangeListener() {
+
+            private static final long serialVersionUID = 2177375588542658659L;
 
             @Override
             public void textChange(TextChangeEvent event) {
@@ -158,7 +161,7 @@ public class DatePickerWindow extends Window implements Button.ClickListener {
                                     .getMainWindow()
                                     .showNotification("Wrong input", "Should be between 0 and 14",
                                         Notification.TYPE_WARNING_MESSAGE);
-                                lDay.setValue((days == 1) ? "day" : "days");
+                                lDay.setValue((days == 0 || days == 1) ? "day" : "days");
                             }
                             tfMinutes.commit();
                         }
@@ -168,18 +171,17 @@ public class DatePickerWindow extends Window implements Button.ClickListener {
                     LOG.error(e.getMessage());
                 }
                 catch (NumberFormatException e) {
-                    String oldText = null;
                     DatePickerWindow.this
                         .getApplication().getMainWindow()
                         .showNotification("Only Number", "Only numbers are allowed", Notification.TYPE_WARNING_MESSAGE);
                     ((TextField) event.getSource()).setValue(0);
-                    ((TextField) event.getSource()).setInputPrompt("Only number...");
+                    ((TextField) event.getSource()).setInputPrompt("!");
                 }
             }
         };
 
-        @SuppressWarnings("serial")
         final FieldEvents.TextChangeListener hourTextChangeListener = new FieldEvents.TextChangeListener() {
+            private static final long serialVersionUID = 5790627391829914023L;
 
             @Override
             public void textChange(TextChangeEvent event) {
@@ -205,7 +207,7 @@ public class DatePickerWindow extends Window implements Button.ClickListener {
                                     .getMainWindow()
                                     .showNotification("Wrong input", "Should be between 0 and 23",
                                         Notification.TYPE_WARNING_MESSAGE);
-                                lHour.setValue((hours == 1) ? "hour" : "hours");
+                                lHour.setValue((hours == 0 || hours == 1) ? "hour" : "hours");
                             }
                             tfMinutes.commit();
                         }
@@ -215,18 +217,17 @@ public class DatePickerWindow extends Window implements Button.ClickListener {
                     LOG.error(e.getMessage());
                 }
                 catch (NumberFormatException e) {
-                    String oldText = null;
                     DatePickerWindow.this
                         .getApplication().getMainWindow()
                         .showNotification("Only Number", "Only numbers are allowed", Notification.TYPE_WARNING_MESSAGE);
                     ((TextField) event.getSource()).setValue(0);
-                    ((TextField) event.getSource()).setInputPrompt("Only number...");
+                    ((TextField) event.getSource()).setInputPrompt("!");
                 }
             }
         };
 
-        @SuppressWarnings("serial")
         final FieldEvents.TextChangeListener minuteTextChangeListener = new FieldEvents.TextChangeListener() {
+            private static final long serialVersionUID = 1311566388273024875L;
 
             @Override
             public void textChange(TextChangeEvent event) {
@@ -251,7 +252,7 @@ public class DatePickerWindow extends Window implements Button.ClickListener {
                                     .getMainWindow()
                                     .showNotification("Wrong input", "Should be between 0 and 59",
                                         Notification.TYPE_WARNING_MESSAGE);
-                                lMinutes.setValue((minutes == 1) ? "minute" : "minutes");
+                                lMinutes.setValue((minutes == 0 || minutes == 1) ? "minute" : "minutes");
                             }
                             tfMinutes.commit();
                         }
@@ -261,12 +262,11 @@ public class DatePickerWindow extends Window implements Button.ClickListener {
                     LOG.error(e.getMessage());
                 }
                 catch (NumberFormatException e) {
-                    String oldText = null;
                     DatePickerWindow.this
                         .getApplication().getMainWindow()
                         .showNotification("Only Number", "Only numbers are allowed", Notification.TYPE_WARNING_MESSAGE);
                     ((TextField) event.getSource()).setValue(0);
-                    ((TextField) event.getSource()).setInputPrompt("Only number...");
+                    ((TextField) event.getSource()).setInputPrompt("!");
                 }
             }
         };
@@ -277,7 +277,6 @@ public class DatePickerWindow extends Window implements Button.ClickListener {
         return inputFieldLayout;
     }
 
-    @SuppressWarnings("serial")
     private OptionGroup createOptionGroup() {
         optionGroup = new OptionGroup("Choose type:");
         optionGroup.addItem(propDuration);
@@ -290,11 +289,11 @@ public class DatePickerWindow extends Window implements Button.ClickListener {
         optionGroup.select(propDuration);
 
         optionGroup.addListener(new Property.ValueChangeListener() {
+            private static final long serialVersionUID = 8998287008424355278L;
 
             @Override
             public void valueChange(ValueChangeEvent event) {
                 boolean isDuration = (((OptionGroup) event.getProperty()).getValue()).equals(propDuration);
-
                 tfDays.setEnabled(isDuration);
                 tfHours.setEnabled(isDuration);
                 tfMinutes.setEnabled(isDuration);
@@ -319,7 +318,6 @@ public class DatePickerWindow extends Window implements Button.ClickListener {
         return buttonLayout;
     }
 
-    @SuppressWarnings("serial")
     private InlineDateField createContent() {
         final InlineDateField dateField =
             new InlineDateField(ELabsViewContants.DATEPICKER_CAPTION, Calendar.getInstance(TimeZone.getDefault(),
@@ -333,6 +331,8 @@ public class DatePickerWindow extends Window implements Button.ClickListener {
         dateField.setEnabled(false);
 
         dateField.addListener(new Property.ValueChangeListener() {
+            private static final long serialVersionUID = -2403060484955547831L;
+
             @Override
             public void valueChange(ValueChangeEvent event) {
                 LOG.debug("DataPicker's value changed to: " + dateField.getValue().toString());

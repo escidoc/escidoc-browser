@@ -223,6 +223,8 @@ public class ViewConstants {
 
     public static final String LOAD_EXAMPLE = "Load Example";
 
+    public static final String CREATE_RESOURCES = "Create Resources";
+
     public static final String LOAD_EXAMPLE_TEXT = "<p>Loads a set of example objects into the framework.</p>";
 
     public static final String CLEAR_INDEX = "Clear Index?";
@@ -306,4 +308,6 @@ public class ViewConstants {
     public static final String NO = "No";
 
     public static final String OK = "Ok";
+
+    public static final String ERROR_CREATING_RESOURCE = "Error creating resource";
 }

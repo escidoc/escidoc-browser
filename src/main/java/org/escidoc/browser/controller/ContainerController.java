@@ -81,4 +81,5 @@ public class ContainerController extends Controller {
         Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
         return new ContainerView(router, resourceProxy, repositories);
     }
+
 }

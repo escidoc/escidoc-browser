@@ -60,8 +60,6 @@ public class RepositoriesImpl implements Repositories {
 
     private UserAccountRepository userAccountRepository;
 
-    private OrganizationUnitRepository organizationUnitRepository;
-
     private AdminRepository adminRepository;
 
     private IngestRepository ingestRepository;
@@ -81,7 +79,6 @@ public class RepositoriesImpl implements Repositories {
         pdpRepository = new PdpRepositoryImpl(serviceLocation.getEscidocUrl());
         contentModelRepository = new ContentModelRepository(serviceLocation);
         userAccountRepository = new UserAccountRepository(serviceLocation);
-        organizationUnitRepository = new OrganizationUnitRepository(serviceLocation);
         adminRepository = new AdminRepository(serviceLocation);
         ingestRepository = new IngestRepository(serviceLocation);
         bulkRepo = new BulkRepository(contextRepository, containerRepository, itemRepository, contentModelRepository);
@@ -96,7 +93,6 @@ public class RepositoriesImpl implements Repositories {
         stagingRepository.loginWith(token);
         pdpRepository.loginWith(token);
         userAccountRepository.loginWith(token);
-        organizationUnitRepository.loginWith(token);
         adminRepository.loginWith(token);
         ingestRepository.loginWith(token);
         contentModelRepository.loginWith(token);
@@ -137,13 +133,6 @@ public class RepositoriesImpl implements Repositories {
         Preconditions
             .checkNotNull(contentModelRepository, "contentModelRepository is null: %s", contentModelRepository);
         return contentModelRepository;
-    }
-
-    @Override
-    public OrganizationUnitRepository organization() {
-        Preconditions.checkNotNull(organizationUnitRepository, "organizationUnitRepository is null: %s",
-            organizationUnitRepository);
-        return organizationUnitRepository;
     }
 
     @Override

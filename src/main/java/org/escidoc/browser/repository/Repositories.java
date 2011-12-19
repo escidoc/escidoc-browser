@@ -32,7 +32,6 @@ import org.escidoc.browser.repository.internal.ContainerRepository;
 import org.escidoc.browser.repository.internal.ContentModelRepository;
 import org.escidoc.browser.repository.internal.ContextRepository;
 import org.escidoc.browser.repository.internal.ItemRepository;
-import org.escidoc.browser.repository.internal.OrganizationUnitRepository;
 import org.escidoc.browser.repository.internal.UserAccountRepository;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -53,8 +52,6 @@ public interface Repositories {
     PdpRepository pdp();
 
     ContentModelRepository contentModel();
-
-    OrganizationUnitRepository organization();
 
     UserAccountRepository user();
 

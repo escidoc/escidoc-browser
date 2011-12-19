@@ -135,9 +135,9 @@ public class StudyView extends View implements ILabsPanel, ILabsAction {
             @Override
             public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
                 if (event.getButton().getCaption().equals("Save")) {
-                    controller.saveAction(studyBean);
                     StudyView.this.resetLayout();
                     dynamicLayout.requestRepaintAll();
+                    controller.saveAction(studyBean);
                 }
             }
         };
@@ -173,7 +173,6 @@ public class StudyView extends View implements ILabsPanel, ILabsAction {
                 setModifiedComponent(null);
             }
         }
-
     }
 
     private void initialisePanelComponents() {

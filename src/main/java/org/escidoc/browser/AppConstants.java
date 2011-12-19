@@ -80,6 +80,8 @@ public final class AppConstants {
 
     public static final String COOKIE_PATH = "/browser";
 
+    public static final String ESCIDOC_METADATA_TERMS_NS = "http://purl.org/escidoc/metadata/terms/0.1/";
+
     public static final int TWO_HOURS = 7200;
 
     public static final String MAX_RESULT_SIZE = "1000";
@@ -95,4 +97,6 @@ public final class AppConstants {
     public static final String CMM_DESCRIPTION_INVESTIGATION = "org.escidoc.bwelabs.Investigation";
 
     public static final String CMM_DESCRIPTION_INVESTIGATION_RESULTS = "org.escidoc.bwelabs.InvestigationResult";
+
+    public static final String ESCIDOC_DEFAULT_METADATA_NAME = "escidoc";
 }
