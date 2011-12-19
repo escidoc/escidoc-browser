@@ -168,6 +168,7 @@ public class SimpleLayout extends LayoutDesign {
      * 
      * @param cmp
      */
+    @Override
     public void closeView(ResourceModel model, ResourceModel parent, Object sender) {
         // 1. Remove the tab for the resource to be deleted
         // 2. Reload the parent Tab
@@ -268,7 +269,7 @@ public class SimpleLayout extends LayoutDesign {
 
         container.setMargin(false);
 
-        container.setSplitPosition(30, Sizeable.UNITS_PERCENTAGE);
+        container.setSplitPosition(20, Sizeable.UNITS_PERCENTAGE);
         container.setSizeFull();
         container.setLocked(false);
 
@@ -344,6 +345,7 @@ public class SimpleLayout extends LayoutDesign {
         return mainContentTabs;
     }
 
+    @Override
     public TreeDataSource getTreeDataSource() {
         return treeDataSource;
     }
