@@ -2,13 +2,11 @@ package org.escidoc.browser.ui.tools;
 
 import java.util.Collection;
 
+import org.escidoc.browser.controller.CreateResourcesController;
 import org.escidoc.browser.model.OrgUnitService;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.listeners.CreateResourceAddContentModel;
-import org.escidoc.browser.ui.listeners.CreateResourceAddContextListener;
-import org.escidoc.browser.ui.listeners.CreateResourceAddOrgUnit;
 import org.escidoc.browser.ui.maincontent.View;
 
 import com.google.common.base.Preconditions;
@@ -33,12 +31,15 @@ public class CreateResourcesView extends View {
 
     private Repositories repositories;
 
-    public CreateResourcesView(Router router, Repositories repositories) {
+    private CreateResourcesController controller;
+
+    public CreateResourcesView(Router router, Repositories repositories, CreateResourcesController controller) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         this.router = router;
         this.repositories = repositories;
-
+        this.controller = controller;
+        init();
     }
 
     public void init() {
@@ -195,7 +196,7 @@ public class CreateResourcesView extends View {
             public void buttonClick(ClickEvent event) {
                 try {
                     frm.commit();
-                    new CreateResourceAddOrgUnit(txtNameContext.getValue().toString(), txtDescContext
+                    controller.createResourceAddOrgUnit(txtNameContext.getValue().toString(), txtDescContext
                         .getValue().toString(), router, router.getServiceLocation());
                     router.getMainWindow().showNotification(
                         "Organizational Unit " + txtNameContext.getValue().toString() + " created successfully ",
@@ -254,7 +255,7 @@ public class CreateResourcesView extends View {
             public void buttonClick(ClickEvent event) {
                 try {
                     frm.commit();
-                    new CreateResourceAddContentModel(txtNameContext.getValue().toString(), txtDescContext
+                    controller.createResourceAddContentModel(txtNameContext.getValue().toString(), txtDescContext
                         .getValue().toString(), router, router.getServiceLocation());
                     router.getMainWindow().showNotification(
                         "ContentModel " + txtNameContext.getValue().toString() + " created successfully ",
@@ -338,7 +339,7 @@ public class CreateResourcesView extends View {
             public void buttonClick(ClickEvent event) {
                 try {
                     frm.commit();
-                    new CreateResourceAddContextListener(txtNameContext.getValue().toString(), txtDescContext
+                    controller.createResourceAddContextListener(txtNameContext.getValue().toString(), txtDescContext
                         .getValue().toString(), txtType.getValue().toString(), slOrgUnit.getValue().toString(),
                         repositories, router.getServiceLocation());
                     router.getMainWindow().showNotification(

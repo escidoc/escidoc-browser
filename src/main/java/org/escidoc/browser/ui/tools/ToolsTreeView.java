@@ -31,6 +31,7 @@ package org.escidoc.browser.ui.tools;
 import java.net.URISyntaxException;
 
 import org.escidoc.browser.AppConstants;
+import org.escidoc.browser.controller.CreateResourcesController;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
@@ -133,9 +134,7 @@ public class ToolsTreeView extends VerticalLayout {
                         router.openTab(purgeView, getType(event).getLabel());
                         break;
                     case CREATE_RESOURCES:
-                        final CreateResourcesView createResourcesView = new CreateResourcesView(router, repositories);
-                        createResourcesView.init();
-                        router.openTab(createResourcesView, getType(event).getLabel());
+                        router.openControllerView(new CreateResourcesController(repositories, router, null), true);
                         break;
                     default:
                         break;
