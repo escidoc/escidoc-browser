@@ -91,13 +91,6 @@ public final class RigController extends Controller implements IRigAction {
 
     private Router router;
 
-    private static List<String> cmmIds4Instrument = null, cmmIds4Rig = null;
-
-    static {
-        cmmIds4Instrument = new ArrayList<String>();
-        cmmIds4Rig = new ArrayList<String>();
-    }
-
     public RigController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
         Preconditions.checkNotNull(repositories, "Repository ref is null");
@@ -119,15 +112,13 @@ public final class RigController extends Controller implements IRigAction {
      */
     private synchronized RigBean loadBeanData(final ItemProxy itemProxy) {
         Preconditions.checkNotNull(itemProxy, "Resource is null");
-
-        RigBean rigBean = new RigBean();
         final String URI_DC = "http://purl.org/dc/elements/1.1/";
         final String URI_EL = "http://escidoc.org/ontologies/bw-elabs/re#";
         final String URI_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-
         final NodeList nodeList = itemProxy.getMedataRecords().get("escidoc").getContent().getChildNodes();
-
+        RigBean rigBean = new RigBean();
         rigBean.setObjectId(itemProxy.getId());
+
         for (int i = 0; i < nodeList.getLength(); i++) {
             final Node node = nodeList.item(i);
             final String nodeName = node.getLocalName();
@@ -136,7 +127,6 @@ public final class RigController extends Controller implements IRigAction {
             if ("title".equals(nodeName) && URI_DC.equals(nsUri)) {
                 rigBean.setName((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
             }
-
             else if ("description".equals(nodeName) && URI_DC.equals(nsUri)) {
                 rigBean.setDescription((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
             }
@@ -144,7 +134,6 @@ public final class RigController extends Controller implements IRigAction {
                 if (node.getAttributes() != null && node.getAttributes().getNamedItemNS(URI_RDF, "resource") != null) {
                     Node attributeNode = node.getAttributes().getNamedItemNS(URI_RDF, "resource");
                     String instrumentID = attributeNode.getNodeValue();
-
                     try {
                         ItemProxy instrumentProxy = (ItemProxy) repositories.item().findById(instrumentID);
                         rigBean.getContentList().add(loadRelatedInstrumentBeanData(instrumentProxy));
@@ -164,7 +153,6 @@ public final class RigController extends Controller implements IRigAction {
      */
     private static synchronized InstrumentBean loadRelatedInstrumentBeanData(final ItemProxy instrumentItem) {
         Preconditions.checkNotNull(instrumentItem, "Resource is null");
-
         final InstrumentBean instrumentBean = new InstrumentBean();
         final String URI_DC = "http://purl.org/dc/elements/1.1/";
         final NodeList nodeList = instrumentItem.getMedataRecords().get("escidoc").getContent().getChildNodes();
@@ -230,7 +218,6 @@ public final class RigController extends Controller implements IRigAction {
 
     private Component createView(final ResourceProxy resourceProxy) {
         Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
-
         ItemProxyImpl itemProxyImpl = null;
         RigBean rigBean = null;
 
@@ -238,9 +225,7 @@ public final class RigController extends Controller implements IRigAction {
             itemProxyImpl = (ItemProxyImpl) resourceProxy;
             rigBean = loadBeanData(itemProxyImpl);
         }
-
         return new RigView(rigBean, this, createBeadCrumbModel(), resourceProxy, serviceLocation);
-
     }
 
     private List<ResourceModel> createBeadCrumbModel() {

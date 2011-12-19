@@ -110,7 +110,6 @@ public final class InstrumentController extends Controller implements ISaveActio
         Preconditions.checkNotNull(repositories, "Repository ref is null");
         Preconditions.checkNotNull(router, "Router ref is null");
         this.router = router;
-
         this.serviceLocation = router.getServiceLocation();
         this.resourceProxy = resourceProxy;
         this.repositories = repositories;
@@ -131,21 +130,19 @@ public final class InstrumentController extends Controller implements ISaveActio
      *             exception
      */
     private synchronized InstrumentBean loadBeanData(final ResourceProxy resourceProxy) throws EscidocBrowserException {
-
+        Preconditions.checkNotNull(resourceProxy, "Resource is null");
         if (resourceProxy == null || !(resourceProxy instanceof ItemProxy)) {
             throw new EscidocBrowserException("NOT an ItemProxy", null);
         }
 
         final ItemProxy itemProxy = (ItemProxy) resourceProxy;
         final InstrumentBean instrumentBean = new InstrumentBean();
-
+        instrumentBean.setObjectId(itemProxy.getId());
         final Element e = itemProxy.getMedataRecords().get("escidoc").getContent();
         final NodeList nodeList = e.getChildNodes();
-
-        instrumentBean.setObjectId(itemProxy.getId());
-
         final String URI_DC = "http://purl.org/dc/elements/1.1/";
         final String URI_EL = "http://escidoc.org/ontologies/bw-elabs/re#";
+
         for (int i = 0; i < nodeList.getLength(); i++) {
             final Node node = nodeList.item(i);
             final String nodeName = node.getLocalName();
@@ -161,7 +158,6 @@ public final class InstrumentController extends Controller implements ISaveActio
             if ("title".equals(nodeName) && URI_DC.equals(nsUri)) {
                 instrumentBean.setName((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
             }
-
             else if ("description".equals(nodeName) && URI_DC.equals(nsUri)) {
                 instrumentBean
                     .setDescription((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
@@ -211,7 +207,6 @@ public final class InstrumentController extends Controller implements ISaveActio
     }
 
     private synchronized static Element createInstrumentDOMElementByBeanModel(final InstrumentBean instrumentBean) {
-
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         factory.setCoalescing(true);

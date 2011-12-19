@@ -113,9 +113,9 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
                 LabsLayoutHelper.switchToLabelFromEditedField((HorizontalLayout) modifiedComponent);
                 this.containerPanel.setModifiedComponent(null);
             }
-            else {
-                LOG.debug("Nothing was modified");
-            }
+            // else {
+            // LOG.debug("Nothing was modified");
+            // }
 
             if (childComponent instanceof HorizontalLayout) {
 

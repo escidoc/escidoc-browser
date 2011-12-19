@@ -35,11 +35,9 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 
 import org.escidoc.browser.controller.Controller;
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
-import org.escidoc.browser.elabsmodul.controller.utils.DOM2String;
 import org.escidoc.browser.elabsmodul.exceptions.EscidocBrowserException;
 import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
 import org.escidoc.browser.elabsmodul.interfaces.ISaveAction;
@@ -236,16 +234,14 @@ public class StudyController extends Controller implements ISaveAction {
 
         final ContainerProxy containerProxy1 = (ContainerProxy) resourceProxy;
         final StudyBean studyBean = new StudyBean();
+        studyBean.setObjectId(containerProxy1.getId());
 
         try {
             final Element e = containerProxy1.getMedataRecords().get("escidoc").getContent();
-            final String xml = DOM2String.convertDom2String(e);
-
             final NodeList nodeList = e.getChildNodes();
-
-            studyBean.setObjectId(containerProxy1.getId());
             final String URI_DC = "http://purl.org/dc/elements/1.1/";
             final String URI_EL = "http://escidoc.org/ontologies/bw-elabs/re#";
+
             for (int i = 0; i < nodeList.getLength(); i++) {
                 final Node node = nodeList.item(i);
                 final String nodeName = node.getLocalName();
@@ -254,7 +250,6 @@ public class StudyController extends Controller implements ISaveAction {
                 if ("title".equals(nodeName) && URI_DC.equals(nsUri)) {
                     studyBean.setName((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
                 }
-
                 else if ("description".equals(nodeName) && URI_DC.equals(nsUri)) {
                     studyBean
                         .setDescription((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
@@ -268,12 +263,8 @@ public class StudyController extends Controller implements ISaveAction {
                         node.getAttributes().getNamedItem("rdf:resource").getNodeValue());
                 }
             }
-            LOG.debug(xml); // TODO delete
         }
         catch (NullPointerException e) {
-            LOG.error(e.getLocalizedMessage());
-        }
-        catch (final TransformerException e) {
             LOG.error(e.getLocalizedMessage());
         }
         return studyBean;
