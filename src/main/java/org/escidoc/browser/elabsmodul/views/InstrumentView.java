@@ -79,14 +79,6 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
 
     private final String[] PROPERTIES = ELabsViewContants.INSTRUMENT_PROPERTIES;
 
-    final String VIEWCAPTION = "Instument View";
-
-    final String LAST_MODIFIED_BY = "Last modification by ";
-
-    final String FLOAT_LEFT = "floatleft";
-
-    final String FLOAT_RIGHT = "floatright";
-
     private final int COMPONENT_COUNT = 9;
 
     private POJOItem<InstrumentBean> pojoItem = null;

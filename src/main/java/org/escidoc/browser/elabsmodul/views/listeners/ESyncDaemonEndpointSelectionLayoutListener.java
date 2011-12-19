@@ -60,9 +60,9 @@ public class ESyncDaemonEndpointSelectionLayoutListener implements LayoutClickLi
 
     private Logger LOG = LoggerFactory.getLogger(ESyncDaemonEndpointSelectionLayoutListener.class);
 
-    final ILabsInstrumentAction labsInstrumentAction;
+    private final ILabsInstrumentAction labsInstrumentAction;
 
-    final ILabsPanel labsPanel;
+    private final ILabsPanel labsPanel;
 
     public ESyncDaemonEndpointSelectionLayoutListener(final ILabsInstrumentAction labsInstrumentAction,
         final ILabsPanel labsPanel) {

@@ -91,14 +91,12 @@ import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.om.container.Container;
 
 /**
- * @author frs
  * 
  */
 public class InvestigationController extends Controller implements IInvestigationAction {
 
     private static Logger LOG = LoggerFactory.getLogger(InstrumentController.class);
 
-    // FIXME move to Repositories
     private EscidocServiceLocation serviceLocation;
 
     private Repositories repositories;

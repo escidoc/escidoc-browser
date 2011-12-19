@@ -60,9 +60,9 @@ public class DepositEndpointSelectionLayoutListener implements LayoutClickListen
 
     private Logger LOG = LoggerFactory.getLogger(DepositEndpointSelectionLayoutListener.class);
 
-    final ILabsInvestigationAction labsInvestigationAction;
+    private final ILabsInvestigationAction labsInvestigationAction;
 
-    final ILabsPanel labsPanel;
+    private final ILabsPanel labsPanel;
 
     public DepositEndpointSelectionLayoutListener(final ILabsInvestigationAction labsInvestigationAction,
         final ILabsPanel labsPanel) {

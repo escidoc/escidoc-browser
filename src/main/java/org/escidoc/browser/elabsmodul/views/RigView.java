@@ -71,12 +71,6 @@ public class RigView extends View implements ILabsPanel, ILabsAction {
 
     private final String[] PROPERTIES = ELabsViewContants.RIG_PROPERTIES;
 
-    final String LAST_MODIFIED_BY = "Last modification by ";
-
-    final String FLOAT_LEFT = "floatleft";
-
-    final String FLOAT_RIGHT = "floatright";
-
     private final int COMPONENT_COUNT = 3;
 
     private POJOItem<RigBean> pojoItem = null;

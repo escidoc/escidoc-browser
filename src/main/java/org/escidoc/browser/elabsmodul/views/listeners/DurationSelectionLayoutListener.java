@@ -47,9 +47,9 @@ public class DurationSelectionLayoutListener implements LayoutClickListener {
 
     private Logger LOG = LoggerFactory.getLogger(DurationSelectionLayoutListener.class);
 
-    final ILabsPanel labsPanel;
+    private final ILabsPanel labsPanel;
 
-    final ILabsInvestigationAction labsInvestigationAction;
+    private final ILabsInvestigationAction labsInvestigationAction;
 
     public DurationSelectionLayoutListener(ILabsPanel labsPanel, ILabsInvestigationAction labsInvestigationAction) {
         Preconditions.checkNotNull(labsPanel, "LabsPanel is null");
