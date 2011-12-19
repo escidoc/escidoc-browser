@@ -192,6 +192,8 @@ public class CreateResourcesView extends View {
 
         // btnAddContext
         Button btnAddContext = new Button("Submit", new Button.ClickListener() {
+            private static final long serialVersionUID = -1373866726572059290L;
+
             @Override
             public void buttonClick(ClickEvent event) {
                 try {
@@ -251,6 +253,8 @@ public class CreateResourcesView extends View {
 
         // btnAddContext
         Button btnAddContext = new Button("Submit", new Button.ClickListener() {
+            private static final long serialVersionUID = -6461338505705399082L;
+
             @Override
             public void buttonClick(ClickEvent event) {
                 try {
@@ -335,6 +339,8 @@ public class CreateResourcesView extends View {
 
         // btnAddContext
         Button btnAddContext = new Button("Submit", new Button.ClickListener() {
+            private static final long serialVersionUID = -4696167135894721166L;
+
             @Override
             public void buttonClick(ClickEvent event) {
                 try {

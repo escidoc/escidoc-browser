@@ -50,6 +50,7 @@ import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.client.interfaces.ContextHandlerClientInterface;
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.Relations;
+import de.escidoc.core.resources.common.TaskParam;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.om.context.Context;
 
@@ -126,6 +127,13 @@ public class ContextRepository implements Repository {
 
     public Context create(Context context) throws EscidocClientException {
         return client.create(context);
+    }
+
+    public void open(final Context context) throws EscidocClientException {
+        final TaskParam taskParam = new TaskParam();
+        taskParam.setLastModificationDate(context.getLastModificationDate());
+        taskParam.setComment("Initially Open");
+        client.open(context, taskParam);
 
     }
 

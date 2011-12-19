@@ -107,6 +107,9 @@ public class CreateResourcesController extends Controller {
         orgRefs.add(new OrganizationalUnitRef(orgUnit));
         cntx.orgUnits(orgRefs);
         Context newContext = repositories.context().create(cntx.build());
+
+        // Open Context for Public
+        repositories.context().open(newContext);
         // Updating the tree
         router.getLayout().getTreeDataSource().addTopLevelResource(new ContextModel(newContext));
     }
