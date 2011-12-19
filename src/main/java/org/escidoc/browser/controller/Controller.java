@@ -28,8 +28,6 @@
  */
 package org.escidoc.browser.controller;
 
-import org.escidoc.browser.elabsmodul.exceptions.EscidocBrowserException;
-import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
 import org.escidoc.browser.layout.LayoutDesign;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
@@ -110,6 +108,4 @@ public abstract class Controller {
         this.router
             .getApp().getMainWindow().showNotification(trayTitle, trayMessage, Notification.TYPE_TRAY_NOTIFICATION);
     }
-
-    protected abstract void validateBean(IBeanModel beanModel) throws EscidocBrowserException;
 }

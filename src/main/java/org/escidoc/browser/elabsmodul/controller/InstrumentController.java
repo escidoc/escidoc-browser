@@ -591,7 +591,6 @@ public final class InstrumentController extends Controller implements ISaveActio
         }
     }
 
-    @Override
     protected void validateBean(IBeanModel beanModel) throws EscidocBrowserException {
         Preconditions.checkNotNull(beanModel, "Input is null");
         InstrumentBean instrumentBean = null;

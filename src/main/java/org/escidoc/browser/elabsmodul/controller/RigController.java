@@ -363,7 +363,6 @@ public final class RigController extends Controller implements IRigAction {
         }
     }
 
-    @Override
     protected void validateBean(IBeanModel beanModel) throws EscidocBrowserException {
         Preconditions.checkNotNull(beanModel, "Input is null");
         RigBean rigBean = null;

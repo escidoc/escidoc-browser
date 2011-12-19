@@ -666,7 +666,6 @@ public class InvestigationController extends Controller implements IInvestigatio
         return labsService;
     }
 
-    @Override
     protected void validateBean(IBeanModel beanModel) throws EscidocBrowserException {
         Preconditions.checkNotNull(beanModel, "Input is null");
         InvestigationBean investigationBean = null;

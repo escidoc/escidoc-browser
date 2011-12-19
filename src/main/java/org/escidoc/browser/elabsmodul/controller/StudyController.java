@@ -318,7 +318,6 @@ public class StudyController extends Controller implements ISaveAction {
         }
     }
 
-    @Override
     protected void validateBean(IBeanModel beanModel) throws EscidocBrowserException {
         Preconditions.checkNotNull(beanModel, "Input is null");
         StudyBean studyBean = null;

@@ -258,7 +258,6 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
         }
     }
 
-    @Override
     protected void validateBean(IBeanModel beanModel) throws EscidocBrowserException {
         Preconditions.checkNotNull(beanModel, "Input is null");
         InvestigationSeriesBean investigationSeriesBean = null;
