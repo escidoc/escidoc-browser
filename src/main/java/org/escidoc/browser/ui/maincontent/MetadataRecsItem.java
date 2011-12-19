@@ -154,7 +154,7 @@ public class MetadataRecsItem {
         hl.setStyleName("metadata");
 
         Link btnmdRec =
-            new Link(metadataRecord.getName(), new ExternalResource("http://esfedrep1.fiz-karlsruhe.de:8080"
+            new Link(metadataRecord.getName(), new ExternalResource(escidocServiceLocation.getEscidocUri()
                 + metadataRecord.getXLinkHref()));
         btnmdRec.setTargetName("_blank");
 

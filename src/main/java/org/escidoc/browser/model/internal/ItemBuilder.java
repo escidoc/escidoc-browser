@@ -52,11 +52,7 @@ import de.escidoc.core.resources.common.reference.ContentModelRef;
 import de.escidoc.core.resources.common.reference.ContextRef;
 import de.escidoc.core.resources.om.item.Item;
 import de.escidoc.core.resources.om.item.ItemProperties;
-import de.escidoc.core.resources.om.item.StorageType;
-import de.escidoc.core.resources.om.item.component.Component;
-import de.escidoc.core.resources.om.item.component.ComponentContent;
 import de.escidoc.core.resources.om.item.component.ComponentProperties;
-import de.escidoc.core.resources.om.item.component.Components;
 
 public class ItemBuilder {
 
@@ -64,25 +60,15 @@ public class ItemBuilder {
 
     private final Item item = new Item();
 
-    private final MetadataRecords metadataList = new MetadataRecords();
-
     private final MetadataRecord itemMetadata = new MetadataRecord(AppConstants.ESCIDOC);
 
     private final ItemProperties itemProps = new ItemProperties();
-
-    private final Components componentList = new Components();
-
-    private final Component component = new Component();
-
-    private final ComponentContent content = new ComponentContent();
 
     private final ComponentProperties componentProps = new ComponentProperties();
 
     private final ContextRef contextRef;
 
     private final ContentModelRef contentModelRef;
-
-    private URL contentUrl;
 
     private final String strMedataData;
 
@@ -96,7 +82,6 @@ public class ItemBuilder {
 
     public ItemBuilder withContent(final URL contentUrl) {
         Preconditions.checkNotNull(contentUrl, "contentUrl is null: %s", contentUrl);
-        this.contentUrl = contentUrl;
         return this;
     }
 
@@ -166,39 +151,6 @@ public class ItemBuilder {
         titleElmt.setTextContent(itemName);
         element.appendChild(titleElmt);
         return element;
-    }
-
-    private void addComponents(final Item item, final URL contentRef, String itemName)
-        throws ParserConfigurationException {
-        setComponentProperties(component, contentRef);
-        setComponentContent(component, contentRef);
-        setComponentTitle(component, itemName);
-        componentList.add(component);
-        item.setComponents(componentList);
-    }
-
-    private void setComponentTitle(Component component, String itemName) throws ParserConfigurationException {
-        final Document doc = createNewDocument();
-        itemMetadata.setName(AppConstants.ESCIDOC);
-        final Element element = buildContentForItemMetadata(doc, itemName);
-        itemMetadata.setContent(element);
-        metadataList.add(itemMetadata);
-        component.setMetadataRecords(metadataList);
-    }
-
-    private void setComponentContent(final Component component, final URL contentRef) {
-        content.setXLinkHref(contentRef.toString());
-        content.setStorage(StorageType.INTERNAL_MANAGED);
-        component.setContent(content);
-    }
-
-    private void setComponentProperties(final Component component, final URL contentRef) {
-        componentProps.setDescription("Description?");
-        // TODO FIx this so the name is dynamic
-        componentProps.setFileName("ComponentName");
-        componentProps.setVisibility("isVisible?");
-        componentProps.setContentCategory("which one?");
-        component.setProperties(componentProps);
     }
 
     private Element buildContentForItemMetadataFromUploadedFile() {
