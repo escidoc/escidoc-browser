@@ -28,11 +28,7 @@
  */
 package org.escidoc.browser.repository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.google.common.base.Preconditions;
 
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceType;
@@ -40,25 +36,32 @@ import org.escidoc.browser.repository.internal.ContainerRepository;
 import org.escidoc.browser.repository.internal.ContentModelRepository;
 import org.escidoc.browser.repository.internal.ContextRepository;
 import org.escidoc.browser.repository.internal.ItemRepository;
-import org.jfree.util.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class BulkRepository {
 
+    private final static Logger LOG = LoggerFactory.getLogger(BulkRepository.class);
+
     public class DeleteResult {
 
-        private List<ResourceModel> success = new ArrayList<ResourceModel>();
+        private final List<ResourceModel> success = new ArrayList<ResourceModel>();
 
-        private Map<ResourceModel, String> fail = new HashMap<ResourceModel, String>();
+        private final Map<ResourceModel, String> fail = new HashMap<ResourceModel, String>();
 
-        public void addSuccess(ResourceModel rm) {
+        public void addSuccess(final ResourceModel rm) {
             success.add(rm);
         }
 
-        public void addFail(ResourceModel rm, String msg) {
+        public void addFail(final ResourceModel rm, final String msg) {
             fail.put(rm, msg);
         }
 
@@ -72,7 +75,7 @@ public class BulkRepository {
 
         @Override
         public String toString() {
-            StringBuilder builder = new StringBuilder();
+            final StringBuilder builder = new StringBuilder();
             builder.append("DeleteResult [");
             if (success != null) {
                 builder.append("success=").append(success).append(", ");
@@ -86,16 +89,16 @@ public class BulkRepository {
 
     }
 
-    private ItemRepository itemRepository;
+    private final ItemRepository itemRepository;
 
-    private ContainerRepository containerRepository;
+    private final ContainerRepository containerRepository;
 
-    private ContextRepository contextRepository;
+    private final ContextRepository contextRepository;
 
-    private Repository contentModelRepository;
+    private final Repository contentModelRepository;
 
-    public BulkRepository(ContextRepository contextRepository, ContainerRepository containerRepository,
-        ItemRepository itemRepository, ContentModelRepository contentModelRepository) {
+    public BulkRepository(final ContextRepository contextRepository, final ContainerRepository containerRepository,
+        final ItemRepository itemRepository, final ContentModelRepository contentModelRepository) {
         Preconditions.checkNotNull(contextRepository, "contextRepository is null: %s", contextRepository);
         Preconditions.checkNotNull(containerRepository, "containerRepository is null: %s", containerRepository);
         Preconditions.checkNotNull(itemRepository, "itemRepository is null: %s", itemRepository);
@@ -108,25 +111,25 @@ public class BulkRepository {
         this.contentModelRepository = contentModelRepository;
     }
 
-    public DeleteResult delete(Set<ResourceModel> selectedResources) {
+    public DeleteResult delete(final Set<ResourceModel> selectedResources) {
         Preconditions.checkNotNull(selectedResources, "selectedResources is null: %s", selectedResources);
 
-        DeleteResult result = new DeleteResult();
+        final DeleteResult result = new DeleteResult();
 
-        for (ResourceModel rm : selectedResources) {
+        for (final ResourceModel rm : selectedResources) {
             try {
                 getRepoByType(rm.getType()).delete(rm.getId());
                 result.addSuccess(rm);
             }
-            catch (EscidocClientException e) {
-                Log.warn("Can not delete " + rm + ". Message: " + e.getMessage(), e);
+            catch (final EscidocClientException e) {
+                LOG.warn("Can not delete " + rm + ". Message: " + e.getMessage(), e);
                 result.addFail(rm, e.getMessage());
             }
         }
         return result;
     }
 
-    private Repository getRepoByType(ResourceType type) {
+    private Repository getRepoByType(final ResourceType type) {
         switch (type) {
             case CONTEXT:
                 return contextRepository;
