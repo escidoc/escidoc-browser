@@ -173,9 +173,7 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
         catch (ParserConfigurationException e) {
             LOG.error(e.getLocalizedMessage());
         }
-
         return null;
-
     }
 
     public InvestigationSeriesController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
