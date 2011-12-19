@@ -397,7 +397,6 @@ public final class LabsLayoutHelper {
                 comboBox.setItemCaptionMode(ComboBox.ITEM_CAPTION_MODE_PROPERTY);
                 comboBox.setItemCaptionPropertyId(itemCaptionProperty);
             }
-
             comboBox.setEnabled(true);
             comboBox.setVisible(true);
             comboBox.setImmediate(true);
@@ -412,6 +411,7 @@ public final class LabsLayoutHelper {
                 @Override
                 public void valueChange(ValueChangeEvent event) {
                     if ((comboBox.getValue() instanceof String)) {
+                        return;
                     }
                     else if (comboBox.getValue() instanceof RigBean) {
                         labsInvestigationAction.setRigBean((RigBean) comboBox.getValue());

@@ -93,7 +93,7 @@ public class RigView extends View implements ILabsPanel, ILabsAction {
 
     private List<ResourceModel> breadCrumbModel;
 
-    private ItemProxy itemProxy;
+    private final ItemProxy itemProxy;
 
     private EscidocServiceLocation serviceLocation;
 
@@ -104,7 +104,14 @@ public class RigView extends View implements ILabsPanel, ILabsAction {
         this.rigBean = (sourceBean != null) ? sourceBean : new RigBean();
         this.controller = controller;
         this.breadCrumbModel = breadCrumbModel;
-        this.itemProxy = (ItemProxy) resourceProxy;
+        if (resourceProxy instanceof ItemProxy) {
+            this.itemProxy = (ItemProxy) resourceProxy;
+        }
+        else {
+            LOG.error("ResourceProxy is not ItemProxy");
+            this.itemProxy = null;
+            return;
+        }
         this.setViewName(resourceProxy.getName());
         this.serviceLocation = serviceLocation;
         this.rigTableHelper = new LabsRigTableHelper(this);
@@ -261,11 +268,16 @@ public class RigView extends View implements ILabsPanel, ILabsAction {
 
     @Override
     public void setModifiedComponent(Component modifiedComponent) {
-        try {
+        if (modifiedComponent == null) {
+            this.modifiedComponent = null;
+            return;
+        }
+
+        if (modifiedComponent instanceof HorizontalLayout) {
             this.modifiedComponent = (HorizontalLayout) modifiedComponent;
         }
-        catch (ClassCastException e) {
-            LOG.error(e.getMessage());
+        else {
+            LOG.error("Wrong class type!");
         }
     }
 

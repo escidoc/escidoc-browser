@@ -92,7 +92,6 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
     public void layoutClick(LayoutClickEvent event) {
         final Component component = event.getComponent();
         final Component childComponent = event.getChildComponent();
-        final Object source = event.getSource();
 
         synchronized (component) {
             if (!(component instanceof VerticalLayout)) {

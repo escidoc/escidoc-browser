@@ -111,13 +111,21 @@ public class StudyView extends View implements ILabsPanel, ILabsAction {
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         Preconditions.checkNotNull(router, "router is null: %s", router);
 
-        studyBean = (sourceBean != null) ? sourceBean : new StudyBean();
+        this.studyBean = (sourceBean != null) ? sourceBean : new StudyBean();
         this.controller = controller;
         this.breadCrumbModel = breadCrumbModel;
-        containerProxy = (ContainerProxy) resourceProxy;
-        this.setViewName(resourceProxy.getName());
         this.router = router;
-        this.studyTableHelper = new LabsStudyTableHelper(studyBean, this, this.controller.hasUpdateAccess());
+
+        if (resourceProxy instanceof ContainerProxy) {
+            this.containerProxy = (ContainerProxy) resourceProxy;
+        }
+        else {
+            LOG.error("ResourceProxy is not ItemProxy");
+            this.containerProxy = null;
+            return;
+        }
+        this.setViewName(resourceProxy.getName());
+        this.studyTableHelper = new LabsStudyTableHelper(this.studyBean, this, this.controller.hasUpdateAccess());
 
         initialisePanelComponents();
         buildContainerGUI();
@@ -325,12 +333,16 @@ public class StudyView extends View implements ILabsPanel, ILabsAction {
 
     @Override
     public void setModifiedComponent(final Component modifiedComponent) {
-        try {
+        if (modifiedComponent == null) {
+            this.modifiedComponent = null;
+            return;
+        }
+
+        if (modifiedComponent instanceof HorizontalLayout) {
             this.modifiedComponent = (HorizontalLayout) modifiedComponent;
         }
-        catch (final ClassCastException e) {
-            // TODO tell the user something going wrong
-            LOG.error(e.getMessage());
+        else {
+            LOG.error("Wrong class type!");
         }
     }
 
