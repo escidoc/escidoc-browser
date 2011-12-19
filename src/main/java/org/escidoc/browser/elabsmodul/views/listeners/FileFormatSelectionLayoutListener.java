@@ -91,7 +91,7 @@ public class FileFormatSelectionLayoutListener implements LayoutClickListener {
                 if (newComponent != null) {
                     ((HorizontalLayout) component).replaceComponent(dataComponent, newComponent);
                     ((HorizontalLayout) component).setComponentAlignment(
-                        ((HorizontalLayout) component).getComponent(1), Alignment.MIDDLE_LEFT);
+                        ((HorizontalLayout) component).getComponent(1), Alignment.TOP_RIGHT);
                     ((HorizontalLayout) component).setDescription(USER_DESCR_ON_HOR_LAYOUT_TO_SAVE);
                     ((Label) ((HorizontalLayout) component).getComponent(0))
                         .setDescription(USER_DESCR_ON_LABEL_TO_SAVE);

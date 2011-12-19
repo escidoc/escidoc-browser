@@ -241,8 +241,9 @@ ul.horizontal_list li {
 .elabsForm {
 	background: #FFFFFF;
 	color: #000000;
-	-moz-border-radius: 1em 1em 1em 1em;
-	border-radius: 1em 1em 1em 1em;
+	border-radius: 1em;
+	-moz-border-radius:1em;
+	-webkit-border-radius: 1em;
 }
 
 .elabsForm:active {

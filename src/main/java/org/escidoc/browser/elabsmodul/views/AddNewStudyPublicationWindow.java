@@ -65,7 +65,7 @@ public class AddNewStudyPublicationWindow extends Window implements Button.Click
         this.isMotPub = isMotPub;
 
         setModal(true);
-        setWidth("550px");
+        setWidth("600px");
         setHeight("100px");
         setClosable(true);
         setResizable(true);

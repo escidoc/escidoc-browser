@@ -93,7 +93,7 @@ public class ELabsViewContants {
 
     public static final String L_INVESTIGATION_INVESTIGATOR = "Investigator:";
 
-    public static final String L_INVESTIGATION_DEPOSIT_SERVICE = "Deposit Service URL:";
+    public static final String L_INVESTIGATION_DEPOSIT_SERVICE = "Deposit Service:";
 
     // eLabs Rig View
 
@@ -127,7 +127,7 @@ public class ELabsViewContants {
 
     public static final String L_INSTRUMENT_DEVICE_SUPERVISOR = "Device Supervisor:";
 
-    public static final String L_INSTRUMENT_INSTITUTE = "Institute / Organizational Unit:";
+    public static final String L_INSTRUMENT_INSTITUTE = "Organizational Unit:";
 
     public static final String L_INSTRUMENT_ESYNC_DAEMON_HELP =
         "http://hostname:port<br>The hostname of the computer to which the instrument writes data and the port to which the daemon listens.";
@@ -243,20 +243,6 @@ public class ELabsViewContants {
 
     public static final String BTN_CANCEL_TOOLTIP = "Cancel modification";
 
-    // eLabs Tab positiions
-    public static final int TAB_DETAILS_POSITION = 0;
-
-    public static final int TAB_INVESTIGATION_SERIES_POSITION = 1;
-
-    public static final int TAB_INVESTIGATION_POSITION = 2;
-
-    public static final int TAB_HISTORY_POSITION = 3;
-
-    public static final int TAB_RIGHTS_POSITION = 4;
-
-    public static final int TAB_RESULTS_POSITION = 5;
-
-    //
     public static final String USER_DESCR_ON_HOR_LAYOUT_TO_EDIT = "Please click on the panel to edit the value";
 
     public static final String USER_DESCR_ON_HOR_LAYOUT_TO_SAVE = "Please click on the panel to save the value";
@@ -270,15 +256,13 @@ public class ELabsViewContants {
     public static final String USER_DESCR_ON_TEXTFIELD_TO_SAVE_OR_CANCEL =
         "Please click ENTER to save the value or ESC to cancel the edit";
 
-    public static final String HOR_PANEL_HEIGHT = "30px";
+    public static final String HOR_PANEL_HEIGHT = "40px";
 
-    public static final String HOR_LABEL_HEIGHT = "30px";
+    public static final String LABEL_WIDTH = "120px";
 
-    public static final String LABEL_WIDTH = "200px";
+    public static final String TEXT_WIDTH = "250px";
 
-    public static final String TEXT_WIDTH = "400px";
-
-    public static final String COMBOBOX_WIDTH = "300px";
+    public static final String COMBOBOX_WIDTH = "250px";
 
     public static final String DIV_ALIGN_RIGHT = "<div align=\"right\">";
 

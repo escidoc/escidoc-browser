@@ -130,7 +130,7 @@ public class RigView extends View implements ILabsPanel, ILabsAction {
         this.mainLayout.setMargin(true);
         this.dynamicLayout = new VerticalLayout();
         this.dynamicLayout.setSpacing(true);
-        this.dynamicLayout.setMargin(true);
+        // this.dynamicLayout.setMargin(true);
         this.pojoItem = new POJOItem<RigBean>(this.rigBean, PROPERTIES);
         this.registeredComponents = new ArrayList<HorizontalLayout>(COMPONENT_COUNT);
         this.setContent(mainLayout);

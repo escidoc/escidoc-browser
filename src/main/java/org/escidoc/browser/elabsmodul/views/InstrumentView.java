@@ -58,6 +58,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Preconditions;
 import com.vaadin.data.util.POJOItem;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
@@ -138,7 +139,7 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
         mainLayout.setMargin(true);
         dynamicLayout = new VerticalLayout();
         dynamicLayout.setSpacing(true);
-        dynamicLayout.setMargin(true);
+        // dynamicLayout.setMargin(true);
 
         pojoItem = new POJOItem<InstrumentBean>(instrumentBean, PROPERTIES);
         registeredComponents = new ArrayList<HorizontalLayout>(COMPONENT_COUNT);
@@ -248,6 +249,16 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
         dynamicLayout.addComponent(h8, 7);
         dynamicLayout.addComponent(h9, 8);
         dynamicLayout.addComponent(new HorizontalLayout(), 9);
+
+        dynamicLayout.setComponentAlignment(h1, Alignment.MIDDLE_LEFT);
+        dynamicLayout.setComponentAlignment(h2, Alignment.MIDDLE_LEFT);
+        dynamicLayout.setComponentAlignment(h3, Alignment.MIDDLE_LEFT);
+        dynamicLayout.setComponentAlignment(h4, Alignment.MIDDLE_LEFT);
+        dynamicLayout.setComponentAlignment(h5, Alignment.MIDDLE_LEFT);
+        dynamicLayout.setComponentAlignment(h6, Alignment.MIDDLE_LEFT);
+        dynamicLayout.setComponentAlignment(h7, Alignment.MIDDLE_LEFT);
+        dynamicLayout.setComponentAlignment(h8, Alignment.MIDDLE_LEFT);
+        dynamicLayout.setComponentAlignment(h9, Alignment.MIDDLE_LEFT);
 
         mainLayout.addComponent(dynamicLayout);
         mainLayout.setExpandRatio(dynamicLayout, 9.0f);
