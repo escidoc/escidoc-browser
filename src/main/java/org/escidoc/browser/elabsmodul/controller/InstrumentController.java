@@ -466,12 +466,6 @@ public final class InstrumentController extends Controller implements ISaveActio
         catch (final InternalClientException e) {
             LOG.error(e.getMessage());
         }
-        catch (final EscidocException e) {
-            LOG.error(e.getMessage());
-        }
-        catch (final TransportException e) {
-            LOG.error(e.getMessage());
-        }
         catch (final EscidocClientException e) {
             LOG.error(e.getMessage());
         }

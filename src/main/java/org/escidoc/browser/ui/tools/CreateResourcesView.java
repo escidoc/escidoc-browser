@@ -339,7 +339,7 @@ public class CreateResourcesView extends View {
             public void buttonClick(ClickEvent event) {
                 try {
                     frm.commit();
-                    controller.createResourceAddContextListener(txtNameContext.getValue().toString(), txtDescContext
+                    controller.createResourceAddContext(txtNameContext.getValue().toString(), txtDescContext
                         .getValue().toString(), txtType.getValue().toString(), slOrgUnit.getValue().toString(),
                         repositories, router.getServiceLocation());
                     router.getMainWindow().showNotification(

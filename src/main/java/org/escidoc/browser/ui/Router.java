@@ -203,7 +203,6 @@ public class Router {
      * @param cnt
      */
     public void openControllerView(final Controller cnt, final Boolean doReloadView) {
-        // cnt.init(repositories, this, resourceProxy);
         if (!doReloadView) {
             cnt.showView(layout);
         }

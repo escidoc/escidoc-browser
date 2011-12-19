@@ -48,7 +48,6 @@ public abstract class Controller {
         this.repositories = repositories;
         this.router = router;
         this.resourProxy = resourceProxy;
-
     }
 
     protected Component view;

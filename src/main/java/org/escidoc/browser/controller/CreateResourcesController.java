@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.escidoc.browser.model.ContentModelService;
+import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.OrgUnitService;
 import org.escidoc.browser.model.ResourceProxy;
@@ -13,7 +14,10 @@ import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ContextBuilder;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.maincontent.ItemView;
 import org.escidoc.browser.ui.tools.CreateResourcesView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import com.google.common.base.Preconditions;
@@ -32,6 +36,8 @@ public class CreateResourcesController extends Controller {
     private Repositories repositories;
 
     private Router router;
+
+    private static final Logger LOG = LoggerFactory.getLogger(ItemView.class);
 
     public CreateResourcesController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
@@ -84,13 +90,14 @@ public class CreateResourcesController extends Controller {
 
     }
 
-    public void createResourceAddContextListener(
+    public void createResourceAddContext(
         String name, String description, String type, String orgUnit, Repositories repositories,
         EscidocServiceLocation serviceLocation) throws EscidocClientException {
         Preconditions.checkNotNull(name, "Name of Context is Null");
         Preconditions.checkNotNull(orgUnit, "Organizational Unit is null is Null");
         Preconditions.checkNotNull(description, "txtDescContext is Null");
         Preconditions.checkNotNull(type, "Type is Null");
+
         ContextBuilder cntx = new ContextBuilder(new Context());
         cntx.name(name);
         cntx.description(name);
@@ -99,7 +106,8 @@ public class CreateResourcesController extends Controller {
         OrganizationalUnitRefs orgRefs = new OrganizationalUnitRefs();
         orgRefs.add(new OrganizationalUnitRef(orgUnit));
         cntx.orgUnits(orgRefs);
-        repositories.context().create(cntx.build());
+        Context newContext = repositories.context().create(cntx.build());
+        // Updating the tree
+        router.getLayout().getTreeDataSource().addTopLevelResource(new ContextModel(newContext));
     }
-
 }

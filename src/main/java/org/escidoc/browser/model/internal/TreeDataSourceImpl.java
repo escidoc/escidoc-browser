@@ -62,7 +62,7 @@ public class TreeDataSourceImpl implements TreeDataSource {
     @Override
     public void init() {
         addProperties();
-        addTopLevel();
+        addTopLevelResources();
         sortByTypeAndNameAscending();
     }
 
@@ -77,19 +77,28 @@ public class TreeDataSourceImpl implements TreeDataSource {
         dataSource.sort(new String[] { PropertyId.TYPE, PropertyId.NAME }, new boolean[] { true, true });
     }
 
-    private void addTopLevel() {
+    private void addTopLevelResources() {
         for (final ResourceModel topLevel : topLevelResources) {
-            final Item addedItem = add(topLevel);
-            if (isAlreadyAdded(addedItem)) {
-                return;
-            }
-            bind(addedItem, topLevel);
-
-            if (topLevel.getType() == ResourceType.CONTEXT && isChildless((ContextModel) topLevel)) {
-                dataSource.setChildrenAllowed(topLevel, false);
-            }
+            addTopLevelResource(topLevel);
         }
     }
+
+    @Override
+    public void addTopLevelResource(final ResourceModel topLevel) {
+        final Item addedItem = add(topLevel);
+        if (isAlreadyAdded(addedItem)) {
+            return;
+        }
+        bind(addedItem, topLevel);
+
+        if (topLevel.getType() == ResourceType.CONTEXT && isChildless((ContextModel) topLevel)) {
+            dataSource.setChildrenAllowed(topLevel, false);
+        }
+    }
+
+    // public void addTopLevel(ResourceModel topLevelItem) {
+    // dataSource.addItem(topLevelItem);
+    // }
 
     private boolean isChildless(final ContextModel topLevel) {
         return !topLevel.hasChildren();
