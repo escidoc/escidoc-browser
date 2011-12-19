@@ -196,7 +196,7 @@ public class InvestigationSeriesView extends View implements ILabsPanel, ILabsAc
         mainLayout.setSizeFull();
         dynamicLayout = new VerticalLayout();
         dynamicLayout.setSpacing(true);
-        dynamicLayout.setMargin(true);
+        // dynamicLayout.setMargin(true);
 
         beanItem = new BeanItem<InvestigationSeriesBean>(investigationSeriesBean, Arrays.asList(PROPERTIES));
         registeredComponents = new ArrayList<HorizontalLayout>(COMPONENT_COUNT);

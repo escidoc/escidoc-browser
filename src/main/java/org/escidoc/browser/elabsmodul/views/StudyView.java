@@ -182,8 +182,8 @@ public class StudyView extends View implements ILabsPanel, ILabsAction {
         mainLayout.setSizeFull();
         dynamicLayout = new VerticalLayout();
         dynamicLayout.setSpacing(true);
-        dynamicLayout.setMargin(true);
-        dynamicLayout.setSizeFull();
+        // dynamicLayout.setMargin(true);
+        // dynamicLayout.setSizeFull();
 
         pojoItem = new POJOItem<StudyBean>(studyBean, PROPERTIES);
         registeredComponents = new ArrayList<HorizontalLayout>(COMPONENT_COUNT);

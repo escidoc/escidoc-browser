@@ -185,7 +185,7 @@ public class InvestigationView extends View implements ILabsPanel, ILabsAction, 
         mainLayout.setSizeFull();
         this.dynamicLayout = new VerticalLayout();
         this.dynamicLayout.setSpacing(true);
-        this.dynamicLayout.setMargin(true);
+        // this.dynamicLayout.setMargin(true);
 
         this.pojoItem =
             new POJOItem<InvestigationBean>(this.investigationBean, ELabsViewContants.INVESTIGATION_PROPERTIES);

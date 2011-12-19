@@ -162,7 +162,7 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
                             LabsLayoutHelper.createTextFieldFromLabel(((Label) dataComponent).getPropertyDataSource());
                     }
                     ((HorizontalLayout) childComponent).replaceComponent(dataComponent, newComponent);
-                    ((HorizontalLayout) childComponent).setComponentAlignment(newComponent, Alignment.MIDDLE_LEFT);
+                    ((HorizontalLayout) childComponent).setComponentAlignment(newComponent, Alignment.MIDDLE_RIGHT);
                     ((Label) ((HorizontalLayout) childComponent).getComponent(0))
                         .setDescription(USER_DESCR_ON_LABEL_TO_SAVE);
                     ((HorizontalLayout) childComponent).setDescription(USER_DESCR_ON_HOR_LAYOUT_TO_SAVE);
