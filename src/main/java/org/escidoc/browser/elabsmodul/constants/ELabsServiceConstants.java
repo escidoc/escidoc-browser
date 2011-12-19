@@ -28,7 +28,7 @@
  */
 package org.escidoc.browser.elabsmodul.constants;
 
-public class ELabsServiceConstants {
+final public class ELabsServiceConstants {
 
     private ELabsServiceConstants() {
     }

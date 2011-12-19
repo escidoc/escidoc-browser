@@ -153,10 +153,10 @@ public class InvestigationSeriesView extends View implements ILabsPanel, ILabsAc
         buttonLayout = createButtonLayout();
 
         HorizontalLayout name =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_INSTRUMENT_TITLE,
+            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_TITLE,
                 beanItem.getItemProperty("name"), true);
         HorizontalLayout description =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_INSTRUMENT_DESC,
+            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_DESCRIPTION,
                 beanItem.getItemProperty("description"), true);
 
         registeredComponents.add(name);

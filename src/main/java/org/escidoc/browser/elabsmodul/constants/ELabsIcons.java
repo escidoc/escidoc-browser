@@ -31,7 +31,7 @@ package org.escidoc.browser.elabsmodul.constants;
 import com.vaadin.terminal.Resource;
 import com.vaadin.terminal.ThemeResource;
 
-public class ELabsIcons {
+final public class ELabsIcons {
 
     private ELabsIcons() {
     }

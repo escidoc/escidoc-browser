@@ -34,7 +34,7 @@ import org.escidoc.browser.ui.ViewConstants;
 
 import com.vaadin.event.Action;
 
-public class ActionList {
+class ActionList {
 
     // original browser Actions
     static final Action ACTION_ADD_CONTAINER = new Action(ViewConstants.ADD_CONTAINER);

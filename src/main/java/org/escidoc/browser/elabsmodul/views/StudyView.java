@@ -200,10 +200,10 @@ public class StudyView extends View implements ILabsPanel, ILabsAction {
 
         buttonLayout = LabsLayoutHelper.createButtonLayout();
         final HorizontalLayout h1 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_STUDY_TITLE,
+            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_TITLE,
                 pojoItem.getItemProperty(ELabsViewContants.P_STUDY_TITLE), true);
         final HorizontalLayout h2 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_STUDY_DESC,
+            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_DESCRIPTION,
                 getPojoItem().getItemProperty(ELabsViewContants.P_STUDY_DESC), true);
         final HorizontalLayout h3 =
             LabsLayoutHelper.createHorizontalLayoutWithPublicationDataForStudy(ELabsViewContants.L_STUDY_MOT_PUB,

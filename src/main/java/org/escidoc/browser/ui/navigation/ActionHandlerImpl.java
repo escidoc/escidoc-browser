@@ -56,8 +56,9 @@ import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
-@SuppressWarnings("serial")
 final class ActionHandlerImpl implements Action.Handler {
+
+    private static final long serialVersionUID = 1L;
 
     private final static Logger LOG = LoggerFactory.getLogger(ActionHandlerImpl.class);
 
@@ -294,6 +295,9 @@ final class ActionHandlerImpl implements Action.Handler {
         subwindow.addComponent(message);
 
         Button okConfirmed = new Button("Yes", new Button.ClickListener() {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             public void buttonClick(ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
@@ -312,6 +316,9 @@ final class ActionHandlerImpl implements Action.Handler {
         });
 
         Button cancel = new Button("Cancel", new Button.ClickListener() {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             public void buttonClick(ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
@@ -331,6 +338,9 @@ final class ActionHandlerImpl implements Action.Handler {
         subwindow.addComponent(message);
 
         final Button okConfirmed = new Button("Yes", new Button.ClickListener() {
+
+            private static final long serialVersionUID = 3919074540805378986L;
+
             @Override
             public void buttonClick(final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
@@ -348,6 +358,8 @@ final class ActionHandlerImpl implements Action.Handler {
 
         });
         final Button cancel = new Button("Cancel", new Button.ClickListener() {
+            private static final long serialVersionUID = 3919074540805378986L;
+
             @Override
             public void buttonClick(final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);

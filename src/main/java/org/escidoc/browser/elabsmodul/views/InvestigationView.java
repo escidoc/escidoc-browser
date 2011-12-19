@@ -284,10 +284,10 @@ public class InvestigationView extends View implements ILabsPanel, ILabsAction, 
 
         this.buttonLayout = LabsLayoutHelper.createButtonLayout();
         final HorizontalLayout h1 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_INVESTIGATION_TITLE,
+            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_TITLE,
                 pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_TITLE), true);
         final HorizontalLayout h2 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_INVESTIGATION_DESC,
+            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_DESCRIPTION,
                 pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_DESC), true);
         final HorizontalLayout h3 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndStaticComboData(

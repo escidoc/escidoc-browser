@@ -31,7 +31,7 @@ package org.escidoc.browser.elabsmodul.constants;
 import com.vaadin.terminal.Resource;
 import com.vaadin.terminal.ThemeResource;
 
-public class ELabsViewContants {
+final public class ELabsViewContants {
 
     private ELabsViewContants() {
     }
@@ -72,18 +72,15 @@ public class ELabsViewContants {
     // TODO add content
 
     // eLabs Study View
-    public static final String L_STUDY_TITLE = "Title:";
+    public static final String L_TITLE = "Title:";
 
-    public static final String L_STUDY_DESC = "Description:";
+    public static final String L_DESCRIPTION = "Description:";
 
     public static final String L_STUDY_MOT_PUB = "Motivating Publications:";
 
     public static final String L_STUDY_RES_PUB = "Resulting Publications:";
 
     // eLabs Investigation View
-    public static final String L_INVESTIGATION_TITLE = "Title:";
-
-    public static final String L_INVESTIGATION_DESC = "Description:";
 
     public static final String L_INVESTIGATION_DURATION = "Duration:";
 
@@ -97,19 +94,11 @@ public class ELabsViewContants {
 
     // eLabs Rig View
 
-    public static final String L_RIG_TITLE = "Title:";
-
-    public static final String L_RIG_DESC = "Description:";
-
     public static final String L_RIG_CONTENT = "Instruments:";
 
     public static final String RIG_NO_DESCRIPTION_BY_INSTR = "<no description available>";
 
     // eLabs Instrument View
-
-    public static final String L_INSTRUMENT_TITLE = "Title:";
-
-    public static final String L_INSTRUMENT_DESC = "Description:";
 
     public static final String L_INSTRUMENT_CONFIGURATION_KEY = "Configuration:";
 
