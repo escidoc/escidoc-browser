@@ -28,10 +28,7 @@
  */
 package org.escidoc.browser.ui.listeners;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.ui.Tree;
-import com.vaadin.ui.Tree.ExpandEvent;
+import java.util.List;
 
 import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContextModel;
@@ -43,12 +40,15 @@ import org.escidoc.browser.repository.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
+import com.google.common.base.Preconditions;
+import com.vaadin.ui.Tree;
+import com.vaadin.ui.Tree.ExpandEvent;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
-@SuppressWarnings("serial")
 public final class TreeExpandListener implements Tree.ExpandListener {
+
+    private static final long serialVersionUID = 1L;
 
     private static final Logger LOG = LoggerFactory.getLogger(TreeExpandListener.class);
 

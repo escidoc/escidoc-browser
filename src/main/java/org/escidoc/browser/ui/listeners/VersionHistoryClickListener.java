@@ -49,7 +49,6 @@ import de.escidoc.core.resources.common.versionhistory.Event;
 import de.escidoc.core.resources.common.versionhistory.Version;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 
-@SuppressWarnings("serial")
 public class VersionHistoryClickListener implements ClickListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(VersionHistoryClickListener.class);
@@ -64,8 +63,6 @@ public class VersionHistoryClickListener implements ClickListener {
 
     final private Repository repository;
 
-    private final EscidocServiceLocation escidocServiceLocation;
-
     /**
      * Container for the ItemProxy case
      * 
@@ -75,16 +72,13 @@ public class VersionHistoryClickListener implements ClickListener {
      * @param escidocServiceLocation2
      */
     public VersionHistoryClickListener(final ItemProxy resourceProxy, final Window mainWindow,
-        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories) {
+        final Repositories repositories) {
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
-        Preconditions.checkNotNull(escidocServiceLocation, "escidocServiceLocation is null.");
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
-
         itemProxy = resourceProxy;
         this.mainWindow = mainWindow;
         repository = repositories.item();
-        this.escidocServiceLocation = escidocServiceLocation;
     }
 
     /**
@@ -99,12 +93,10 @@ public class VersionHistoryClickListener implements ClickListener {
         final EscidocServiceLocation escidocServiceLocation, final Repositories repositories) {
         Preconditions.checkNotNull(resourceProxy, "resource is null.");
         Preconditions.checkNotNull(mainWindow, "mainWindow is null.");
-        Preconditions.checkNotNull(escidocServiceLocation, "escidocServiceLocation is null.");
         Preconditions.checkNotNull(repositories, "repositories is null.");
         containerProxy = resourceProxy;
         this.mainWindow = mainWindow;
         repository = repositories.container();
-        this.escidocServiceLocation = escidocServiceLocation;
     }
 
     public String getVersionHistory(final Repository cr, final String id) throws EscidocClientException {

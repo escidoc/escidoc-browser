@@ -96,7 +96,6 @@ public class MetadataRecsItem {
         final Accordion metadataRecs = new Accordion();
         metadataRecs.setSizeFull();
 
-        // TODO use meaningful variable, class, method name
         final Panel pnlMetadataRecs = lblMetadaRecs();
         final Panel pnlAdditionalResources = lblAddtionalResources();
 
@@ -110,8 +109,7 @@ public class MetadataRecsItem {
     private Panel lblAddtionalResources() {
 
         final Button btnVersionHistory =
-            new Button("Item Version History", new VersionHistoryClickListener(resourceProxy, mainWindow,
-                escidocServiceLocation, repositories));
+            new Button("Item Version History", new VersionHistoryClickListener(resourceProxy, mainWindow, repositories));
         btnVersionHistory.setStyleName(BaseTheme.BUTTON_LINK);
         btnVersionHistory.setDescription("Show Version history in a Pop-up");
 
@@ -138,8 +136,6 @@ public class MetadataRecsItem {
                 new Button("Add New Metadata", new AddMetaDataFileItemBehaviour(mainWindow, repositories,
                     resourceProxy, this));
             btnAddNew.setStyleName(BaseTheme.BUTTON_LINK);
-
-            // btnAddNew.setIcon(new ThemeResource("../myTheme/runo/icons/16/note.png"));
             pnl.addComponent(btnAddNew);
         }
         pnl.addComponent(new Label("&nbsp;", Label.CONTENT_RAW));
@@ -156,10 +152,9 @@ public class MetadataRecsItem {
     private void buildMDButtons(final VerticalLayout btnaddContainer, final MetadataRecord metadataRecord) {
         final HorizontalLayout hl = new HorizontalLayout();
         hl.setStyleName("metadata");
-        // final Button btnmdRec =
-        // new Button(metadataRecord.getName(), new MetadataRecBehavour(metadataRecord, mainWindow));
+
         Link btnmdRec =
-            new Link(metadataRecord.getName(), new ExternalResource(escidocServiceLocation.getEscidocUri()
+            new Link(metadataRecord.getName(), new ExternalResource("http://esfedrep1.fiz-karlsruhe.de:8080"
                 + metadataRecord.getXLinkHref()));
         btnmdRec.setTargetName("_blank");
 
