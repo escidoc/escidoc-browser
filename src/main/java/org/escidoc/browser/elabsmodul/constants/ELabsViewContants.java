@@ -256,7 +256,7 @@ public class ELabsViewContants {
     public static final String USER_DESCR_ON_TEXTFIELD_TO_SAVE_OR_CANCEL =
         "Please click ENTER to save the value or ESC to cancel the edit";
 
-    public static final String HOR_PANEL_HEIGHT = "50px";
+    public static final String HOR_PANEL_HEIGHT = "40px";
 
     public static final String LABEL_WIDTH = "120px";
 
