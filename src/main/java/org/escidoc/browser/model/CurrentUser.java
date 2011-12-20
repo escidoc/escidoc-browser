@@ -37,4 +37,6 @@ public interface CurrentUser {
     String getLoginName();
 
     String getUserId();
+
+    String getRealName();
 }

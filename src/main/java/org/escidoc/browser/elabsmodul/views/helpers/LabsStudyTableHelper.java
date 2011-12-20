@@ -113,7 +113,7 @@ public final class LabsStudyTableHelper {
         motPubTable.setColumnCollapsingAllowed(false);
         motPubTable.setRowHeaderMode(Table.ROW_HEADER_MODE_ICON_ONLY);
 
-        motPubTable.setContainerDataSource(fillMotPubTableData(studyBean.getMotivatingPublication()));
+        motPubTable.setContainerDataSource(fillMotPubTableData());
         motPubTable.setColumnHeaders(new String[] { "Url" });
 
         motPubTable.addListener(new Table.ValueChangeListener() {
@@ -232,7 +232,7 @@ public final class LabsStudyTableHelper {
         resPubTable.setColumnReorderingAllowed(false);
         resPubTable.setColumnCollapsingAllowed(false);
         resPubTable.setRowHeaderMode(Table.ROW_HEADER_MODE_ICON_ONLY);
-        resPubTable.setContainerDataSource(fillResPubTableData(studyBean.getResultingPublication()));
+        resPubTable.setContainerDataSource(fillResPubTableData());
         resPubTable.setColumnHeaders(new String[] { "Url" });
         resPubTable.addListener(new Table.ValueChangeListener() {
             private static final long serialVersionUID = 2000562132182698589L;
@@ -274,7 +274,6 @@ public final class LabsStudyTableHelper {
     }
 
     private void addResPubButtonsToLayout(final VerticalLayout layout) {
-
         Button.ClickListener resPubButtonsListener = new Button.ClickListener() {
             private static final long serialVersionUID = 1586321256611542129L;
 
@@ -357,7 +356,7 @@ public final class LabsStudyTableHelper {
         }
     }
 
-    private IndexedContainer fillMotPubTableData(final List<String> motivationPublications) {
+    private IndexedContainer fillMotPubTableData() {
         motPubContainer = new IndexedContainer();
         motPubContainer.addContainerProperty(motPubProperty1, Link.class, null);
         for (String publicationURL : this.studyBean.getMotivatingPublication()) {
@@ -371,7 +370,7 @@ public final class LabsStudyTableHelper {
         return motPubContainer;
     }
 
-    private IndexedContainer fillResPubTableData(final List<String> motivationPublications) {
+    private IndexedContainer fillResPubTableData() {
         resPubContainer = new IndexedContainer();
         resPubContainer.addContainerProperty(resPubProperty1, Link.class, null);
         for (String publicationURL : this.studyBean.getResultingPublication()) {
@@ -408,9 +407,9 @@ public final class LabsStudyTableHelper {
         return link.getCaption();
     }
 
-    private static Link createLinkByResourcePath(String urlString) {
-        Preconditions.checkNotNull(urlString, "URL is null");
-        urlString = urlString.trim();
+    private static Link createLinkByResourcePath(String inputUrl) {
+        Preconditions.checkNotNull(inputUrl, "URL is null");
+        String urlString = inputUrl.trim();
 
         if (!urlString.toLowerCase().startsWith(HTTP) && !urlString.toLowerCase().startsWith(HTTPS)) {
             urlString = HTTP + urlString;

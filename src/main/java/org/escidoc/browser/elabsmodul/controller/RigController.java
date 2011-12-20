@@ -79,23 +79,20 @@ public final class RigController extends Controller implements IRigAction {
 
     private static Logger LOG = LoggerFactory.getLogger(RigController.class);
 
-    private Repositories repositories;
+    private final Repositories repositories;
 
-    private EscidocServiceLocation serviceLocation;
+    private final EscidocServiceLocation serviceLocation;
 
-    private ResourceProxy resourceProxy;
+    private final ResourceProxy resourceProxy;
 
-    private Window mainWindow;
+    private final Window mainWindow;
 
     private IBeanModel beanModel = null;
-
-    private Router router;
 
     public RigController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
         Preconditions.checkNotNull(repositories, "Repository ref is null");
         Preconditions.checkNotNull(router, "Router ref is null");
-        this.router = router;
         this.serviceLocation = router.getServiceLocation();
         this.resourceProxy = resourceProxy;
         this.repositories = repositories;
@@ -110,7 +107,7 @@ public final class RigController extends Controller implements IRigAction {
      *            resource ref
      * @return controlled bean exception
      */
-    private synchronized RigBean loadBeanData(final ItemProxy itemProxy) {
+    private RigBean loadBeanData(final ItemProxy itemProxy) {
         Preconditions.checkNotNull(itemProxy, "Resource is null");
         final String URI_DC = "http://purl.org/dc/elements/1.1/";
         final String URI_EL = "http://escidoc.org/ontologies/bw-elabs/re#";
@@ -151,7 +148,7 @@ public final class RigController extends Controller implements IRigAction {
      * @param resourceProxy
      * @return
      */
-    private static synchronized InstrumentBean loadRelatedInstrumentBeanData(final ItemProxy instrumentItem) {
+    private static InstrumentBean loadRelatedInstrumentBeanData(final ItemProxy instrumentItem) {
         Preconditions.checkNotNull(instrumentItem, "Resource is null");
         final InstrumentBean instrumentBean = new InstrumentBean();
         final String URI_DC = "http://purl.org/dc/elements/1.1/";
@@ -174,7 +171,7 @@ public final class RigController extends Controller implements IRigAction {
         return instrumentBean;
     }
 
-    private synchronized static Element createRigDOMElementByBeanModel(final RigBean rigBean) {
+    private static Element createRigDOMElementByBeanModel(final RigBean rigBean) {
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         factory.setCoalescing(true);

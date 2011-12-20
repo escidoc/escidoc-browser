@@ -369,3 +369,10 @@ ul.horizontal_list li {
 	top: 0px;
 	right: 0;
 }
+.userformpadding{
+	padding-left:30px;
+	padding-top:20px;
+}
+.userformlblLoginpadding{
+	padding-left:10px;
+}

@@ -72,17 +72,17 @@ import de.escidoc.core.resources.om.container.Container;
 
 public class StudyController extends Controller implements ISaveAction {
 
-    private EscidocServiceLocation serviceLocation;
+    private final EscidocServiceLocation serviceLocation;
 
-    private ResourceProxy resourceProxy;
+    private final ResourceProxy resourceProxy;
 
-    private Repositories repositories;
+    private final Repositories repositories;
 
-    private Window mainWindow;
+    private final Window mainWindow;
+
+    private final Router router;
 
     private IBeanModel beanModel = null;
-
-    private Router router;
 
     private static Logger LOG = LoggerFactory.getLogger(InstrumentController.class);
 
@@ -219,7 +219,7 @@ public class StudyController extends Controller implements ISaveAction {
         return new StudyView(studyBean, this, this.createBeadCrumbModel(), resourceProxy, router);
     }
 
-    private synchronized StudyBean loadBeanData() throws EscidocBrowserException {
+    private StudyBean loadBeanData() throws EscidocBrowserException {
         if (resourceProxy == null || !(resourceProxy instanceof ContainerProxy)) {
             throw new EscidocBrowserException("NOT an ContainerProxy", null);
         }
@@ -228,8 +228,8 @@ public class StudyController extends Controller implements ISaveAction {
         final StudyBean studyBean = new StudyBean();
         studyBean.setObjectId(containerProxy1.getId());
 
-        try {
-            final Element e = containerProxy1.getMedataRecords().get("escidoc").getContent();
+        final Element e = containerProxy1.getMedataRecords().get("escidoc").getContent();
+        if (e != null && e.getChildNodes() != null) {
             final NodeList nodeList = e.getChildNodes();
             final String URI_DC = "http://purl.org/dc/elements/1.1/";
             final String URI_EL = "http://escidoc.org/ontologies/bw-elabs/re#";
@@ -238,6 +238,10 @@ public class StudyController extends Controller implements ISaveAction {
                 final Node node = nodeList.item(i);
                 final String nodeName = node.getLocalName();
                 final String nsUri = node.getNamespaceURI();
+
+                if (nodeName == null || nodeName.equals("")) {
+                    continue;
+                }
 
                 if ("title".equals(nodeName) && URI_DC.equals(nsUri)) {
                     studyBean.setName((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
@@ -255,9 +259,6 @@ public class StudyController extends Controller implements ISaveAction {
                         node.getAttributes().getNamedItem("rdf:resource").getNodeValue());
                 }
             }
-        }
-        catch (NullPointerException e) {
-            LOG.error(e.getLocalizedMessage());
         }
         return studyBean;
     }

@@ -31,14 +31,13 @@ package org.escidoc.browser.elabsmodul.constants;
 import com.vaadin.terminal.Resource;
 import com.vaadin.terminal.ThemeResource;
 
+/**
+ * Final String variables of the BWeLabs Views
+ */
 final public class ELabsViewContants {
 
     private ELabsViewContants() {
     }
-
-    /*
-     * ### View contants of eLabs Modul ###
-     */
 
     public static final String ADD_STUDY = "Add Study to Context";
 
@@ -68,10 +67,6 @@ final public class ELabsViewContants {
 
     public static final String DEPOSITOR_DEFAULT_URI_VALUE = "http://localhost:8080/configuration/configuration";
 
-    // eLabs Context View
-    // TODO add content
-
-    // eLabs Study View
     public static final String L_TITLE = "Title:";
 
     public static final String L_DESCRIPTION = "Description:";
@@ -79,8 +74,6 @@ final public class ELabsViewContants {
     public static final String L_STUDY_MOT_PUB = "Motivating Publications:";
 
     public static final String L_STUDY_RES_PUB = "Resulting Publications:";
-
-    // eLabs Investigation View
 
     public static final String L_INVESTIGATION_DURATION = "Duration:";
 
@@ -92,13 +85,9 @@ final public class ELabsViewContants {
 
     public static final String L_INVESTIGATION_DEPOSIT_SERVICE = "Deposit Service:";
 
-    // eLabs Rig View
-
     public static final String L_RIG_CONTENT = "Instruments:";
 
     public static final String RIG_NO_DESCRIPTION_BY_INSTR = "<no description available>";
-
-    // eLabs Instrument View
 
     public static final String L_INSTRUMENT_CONFIGURATION_KEY = "Configuration:";
 
@@ -126,10 +115,8 @@ final public class ELabsViewContants {
     public static final String L_INSTRUMENT_FOLDER_HELP =
         "The folder to which the instrument writes data. This folder will be monitored by the eSynch-Daemon.";
 
-    //
     public static final String P_COMPLEX_ID = "complexId";
 
-    // INSRUMENT_PROPERTIES PROPERTIES
     public static final String P_INSTRUMENT_TITLE = "name";
 
     public static final String P_INSTRUMENT_DESC = "description";
@@ -163,7 +150,6 @@ final public class ELabsViewContants {
         P_INSTRUMENT_CALIBRATION, P_INSTRUMENT_ESYNCDAEMON, P_INSTRUMENT_FOLDER, P_INSTRUMENT_FILEFORMAT,
         P_INSTRUMENT_CONTEXT, P_INSTRUMENT_CONTENTMODEL, P_INSTRUMENT_DEVICESUPERVISOR, P_INSTRUMENT_INSTITUTE };
 
-    // Investigation Properties
     public static final String P_INVESTIGATION_TITLE = "name";
 
     public static final String P_INVESTIGATION_DESC = "description";
@@ -179,7 +165,6 @@ final public class ELabsViewContants {
     public static final String[] INVESTIGATION_PROPERTIES = { P_INVESTIGATION_TITLE, P_INVESTIGATION_DESC,
         P_INVESTIGATION_DEPOSIT_SERVICE, P_INVESTIGATION_INVESTIGATOR, P_INVESTIGATION_DURATION, P_INVESTIGATION_RIG };
 
-    // Study Properties
     public static final String P_STUDY_TITLE = "name";
 
     public static final String P_STUDY_DESC = "description";
@@ -190,8 +175,6 @@ final public class ELabsViewContants {
 
     public static final String[] STUDY_PROPERTIES = { P_STUDY_TITLE, P_STUDY_DESC, P_STUDY_MOT_PUB, P_STUDY_RES_PUB };
 
-    // Rig Properties
-
     public static final String P_RIG_TITLE = "name";
 
     public static final String P_RIG_DESC = "description";
@@ -200,7 +183,6 @@ final public class ELabsViewContants {
 
     public static final String[] RIG_PROPERTIES = { P_RIG_TITLE, P_RIG_DESC, P_RIG_CONTENT, P_COMPLEX_ID };
 
-    // eLabs Header Labels
     public static final String RESOURCE_RIG_NAME = "Rig item: ";
 
     public static final String RESOURCE_INSTRUMENT_NAME = "Instrument item: ";
@@ -215,7 +197,6 @@ final public class ELabsViewContants {
 
     public static final String MAINPANEL_PROPERTIES_LABEL = "Properties";
 
-    // eLabs Buttons
     public static final String BTN_START = "Start Investigation";
 
     public static final String BTN_STOP = "Stop Investigation";
@@ -287,7 +268,6 @@ final public class ELabsViewContants {
 
     public static final String[] INVESTIGATION_SERIES_PROPERTIES = { "name", "description" };
 
-    // ICONs
     public static final Resource ICON_16_OK = new ThemeResource("runo/icons/16/ok.png");
 
     public static final Resource ICON_16_CANCEL = new ThemeResource("runo/icons/16/cancel.png");
@@ -318,7 +298,6 @@ final public class ELabsViewContants {
 
     public static final Resource ICON_16_DOC_WEB = new ThemeResource("runo/icons/16/document-web.png");
 
-    // Additional Caption names
     public static final String BWELABS_STUDY = "BW-eLabs Study";
 
     public static final String BWELABS_INVSERIES = "BW-eLabs Investigation Series";

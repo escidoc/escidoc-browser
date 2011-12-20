@@ -208,7 +208,8 @@ public class RigView extends View implements ILabsPanel, ILabsAction {
         }
     }
 
-    protected void resetLayout() {
+    @Override
+    public void resetLayout() {
         Preconditions.checkNotNull(this.dynamicLayout, "View's dynamiclayout is null.");
 
         HorizontalLayout tempParentLayout = null;

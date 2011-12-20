@@ -39,12 +39,10 @@ import java.util.Map.Entry;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 
 import org.escidoc.browser.controller.Controller;
 import org.escidoc.browser.elabsmodul.cache.ELabsCache;
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
-import org.escidoc.browser.elabsmodul.controller.utils.DOM2String;
 import org.escidoc.browser.elabsmodul.exceptions.EscidocBrowserException;
 import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
 import org.escidoc.browser.elabsmodul.interfaces.IInvestigationAction;
@@ -97,19 +95,19 @@ public class InvestigationController extends Controller implements IInvestigatio
 
     private static Logger LOG = LoggerFactory.getLogger(InstrumentController.class);
 
-    private EscidocServiceLocation serviceLocation;
+    private final EscidocServiceLocation serviceLocation;
 
-    private Repositories repositories;
+    private final Repositories repositories;
 
-    private Router router;
+    private final Router router;
 
-    private ResourceProxy resourceProxy;
+    private final ResourceProxy resourceProxy;
+
+    private final Window mainWindow;
+
+    private final ILabsService labsService;
 
     private IBeanModel model;
-
-    private ILabsService labsService;
-
-    private Window mainWindow;
 
     /*
      * (non-Javadoc)
@@ -142,26 +140,32 @@ public class InvestigationController extends Controller implements IInvestigatio
         final List<String> depositEndPointUrls = new ArrayList<String>();
         try {
             context = (ContextProxyImpl) repositories.context().findById(resourceProxy.getContext().getObjid());
-            final Element content = context.getAdminDescription().get("elabs").getContent();
+            if (context == null) {
+                LOG.error("Context is null");
+                showError("Internal error");
+                return;
+            }
 
-            if (ELabsCache.getDepositEndpoints().isEmpty()) {
-                final NodeList nodeList = content.getElementsByTagName("el:deposit-endpoint");
-                for (int i = 0; i < nodeList.getLength(); i++) {
-                    final Node node = nodeList.item(i);
-                    depositEndPointUrls.add(node.getTextContent());
-                }
-                synchronized (ELabsCache.getDepositEndpoints()) {
-                    if (!depositEndPointUrls.isEmpty()) {
-                        ELabsCache.setDepositEndpoints(Collections.unmodifiableList(depositEndPointUrls));
+            final Element content = context.getAdminDescription().get("elabs").getContent();
+            if (content != null) {
+                if (ELabsCache.getDepositEndpoints().isEmpty()) {
+                    final NodeList nodeList = content.getElementsByTagName("el:deposit-endpoint");
+                    if (nodeList != null) {
+                        for (int i = 0; i < nodeList.getLength(); i++) {
+                            final Node node = nodeList.item(i);
+                            depositEndPointUrls.add(node.getTextContent());
+                        }
+                    }
+                    synchronized (ELabsCache.getDepositEndpoints()) {
+                        if (!depositEndPointUrls.isEmpty()) {
+                            ELabsCache.setDepositEndpoints(Collections.unmodifiableList(depositEndPointUrls));
+                        }
                     }
                 }
             }
         }
         catch (final EscidocClientException e) {
             LOG.error("Could not load Admin Descriptor 'elabs'. " + e.getMessage(), e);
-        }
-        catch (final NullPointerException e) {
-            LOG.debug("Admin Description is null in the context " + resourceProxy.getContext().getObjid());
         }
     }
 
@@ -232,13 +236,9 @@ public class InvestigationController extends Controller implements IInvestigatio
         final String URI_EL = "http://escidoc.org/ontologies/bw-elabs/re#";
         final String URI_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
-        if (containerProxy == null) {
-            throw new NullPointerException("Container Proxy is null.");
-        }
-        final InvestigationBean investigationBean = new InvestigationBean();
+        InvestigationBean investigationBean = new InvestigationBean();
         investigationBean.setObjid(containerProxy.getId());
         final Element e = containerProxy.getMedataRecords().get("escidoc").getContent();
-
         final NodeList nodeList = e.getChildNodes();
 
         for (int i = 0; i < nodeList.getLength(); i++) {
@@ -259,7 +259,7 @@ public class InvestigationController extends Controller implements IInvestigatio
             else if ("max-runtime".equals(nodeName) && URI_EL.equals(nsUri)) {
                 investigationBean.setMaxRuntime(setDurationLabel(node.getTextContent()));
                 try {
-                    investigationBean.setMaxRuntimeInMin(new Integer(node.getTextContent()));
+                    investigationBean.setMaxRuntimeInMin(Integer.valueOf(node.getTextContent()));
                 }
                 catch (NumberFormatException nfe) {
                     investigationBean.setMaxRuntimeInMin(0);
@@ -332,7 +332,7 @@ public class InvestigationController extends Controller implements IInvestigatio
      * @param resourceProxy
      * @return
      */
-    private synchronized RigBean loadRelatedRigBeanData(final ItemProxy rigItem) {
+    private RigBean loadRelatedRigBeanData(final ItemProxy rigItem) {
         Preconditions.checkNotNull(rigItem, "Resource is null");
 
         final RigBean rigBean = new RigBean();
@@ -371,7 +371,7 @@ public class InvestigationController extends Controller implements IInvestigatio
         return rigBean;
     }
 
-    private static synchronized InstrumentBean loadRelatedInstrumentBeanData(final ItemProxy instrumentItem) {
+    private static InstrumentBean loadRelatedInstrumentBeanData(final ItemProxy instrumentItem) {
         Preconditions.checkNotNull(instrumentItem, "Resource is null");
 
         final InstrumentBean instrumentBean = new InstrumentBean();
@@ -473,8 +473,7 @@ public class InvestigationController extends Controller implements IInvestigatio
 
     }
 
-    public synchronized static Element createInvestigationDOMElementByBeanModel(
-        final InvestigationBean investigationBean) {
+    public static Element createInvestigationDOMElementByBeanModel(final InvestigationBean investigationBean) {
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         factory.setCoalescing(true);
@@ -532,17 +531,6 @@ public class InvestigationController extends Controller implements IInvestigatio
                 folder.setTextContent(instrumentFolder.getValue());
                 instrument.appendChild(folder);
                 investigation.appendChild(instrument);
-            }
-
-            if (LOG.isDebugEnabled()) {
-                String xml = null;
-                try {
-                    xml = DOM2String.convertDom2String(investigation);
-                }
-                catch (final TransformerException e) {
-                    e.printStackTrace();
-                }
-                LOG.debug(xml);
             }
             return investigation;
         }
@@ -604,8 +592,7 @@ public class InvestigationController extends Controller implements IInvestigatio
 
     private String setDurationLabel(String storedDuration) {
         try {
-            int minute = new Integer(storedDuration).intValue(), day = 0, hour = 0;
-
+            int minute = Integer.valueOf(storedDuration).intValue(), day = 0, hour = 0;
             day = minute / 1440;
             hour = (minute - day * 1440) / 60;
             minute = (minute - day * 1440 - hour * 60);
@@ -621,9 +608,7 @@ public class InvestigationController extends Controller implements IInvestigatio
             }
             sb.append(minute);
             sb.append((minute == 0 || minute == 1) ? " minute" : " minutes");
-
             LOG.debug("setDurationLabel: " + day + "|" + hour + "|" + minute);
-
             return sb.toString();
         }
         catch (NumberFormatException e) {

@@ -93,17 +93,17 @@ public final class InstrumentController extends Controller implements ISaveActio
 
     private static Logger LOG = LoggerFactory.getLogger(InstrumentController.class);
 
-    private Repositories repositories;
+    private final Repositories repositories;
 
-    private EscidocServiceLocation serviceLocation;
+    private final EscidocServiceLocation serviceLocation;
 
-    private ResourceProxy resourceProxy;
+    private final ResourceProxy resourceProxy;
 
-    private Window mainWindow;
+    private final Window mainWindow;
+
+    private final Router router;
 
     private IBeanModel beanModel;
-
-    private Router router;
 
     public InstrumentController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
@@ -129,7 +129,7 @@ public final class InstrumentController extends Controller implements ISaveActio
      * @throws EscidocBrowserException
      *             exception
      */
-    private synchronized InstrumentBean loadBeanData(final ResourceProxy resourceProxy) throws EscidocBrowserException {
+    private InstrumentBean loadBeanData(final ResourceProxy resourceProxy) throws EscidocBrowserException {
         Preconditions.checkNotNull(resourceProxy, "Resource is null");
         if (resourceProxy == null || !(resourceProxy instanceof ItemProxy)) {
             throw new EscidocBrowserException("NOT an ItemProxy", null);
@@ -206,7 +206,7 @@ public final class InstrumentController extends Controller implements ISaveActio
         return instrumentBean;
     }
 
-    private synchronized static Element createInstrumentDOMElementByBeanModel(final InstrumentBean instrumentBean) {
+    private static Element createInstrumentDOMElementByBeanModel(final InstrumentBean instrumentBean) {
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         factory.setCoalescing(true);
@@ -312,15 +312,27 @@ public final class InstrumentController extends Controller implements ISaveActio
         ContextProxyImpl context;
         try {
             context = (ContextProxyImpl) repositories.context().findById(resourceProxy.getContext().getObjid());
+            if (context == null) {
+                LOG.error("Context is null");
+                showError("Internal error");
+                return;
+            }
+
             final Element content = context.getAdminDescription().get("elabs").getContent();
+            if (content == null) {
+                LOG.error("Context's admin descriptor is null");
+                showError("Internal error");
+                return;
+            }
 
             List<String> eSychEndpoints = new ArrayList<String>();
-
             if (ELabsCache.getEsyncEndpoints().isEmpty()) {
                 final NodeList nodeList = content.getElementsByTagName("el:esync-endpoint");
-                for (int i = 0; i < nodeList.getLength(); i++) {
-                    final Node node = nodeList.item(i);
-                    eSychEndpoints.add(node.getTextContent());
+                if (nodeList != null) {
+                    for (int i = 0; i < nodeList.getLength(); i++) {
+                        final Node node = nodeList.item(i);
+                        eSychEndpoints.add(node.getTextContent());
+                    }
                 }
                 synchronized (ELabsCache.getEsyncEndpoints()) {
                     if (!eSychEndpoints.isEmpty()) {
@@ -334,31 +346,32 @@ public final class InstrumentController extends Controller implements ISaveActio
                 final String URI_DC = "http://purl.org/dc/elements/1.1/";
                 final String URI_EL = "http://escidoc.org/ontologies/bw-elabs.owl#";
                 final NodeList fileFormatNodeList = content.getElementsByTagName("el:FileFormat");
-                for (int i = 0; i < fileFormatNodeList.getLength(); i++) {
-                    final Node node = fileFormatNodeList.item(i);
-                    if (node.hasChildNodes()) {
-                        final NodeList interNodeList = node.getChildNodes();
-                        FileFormatBean bean = new FileFormatBean();
-                        for (int j = 0; j < interNodeList.getLength(); j++) {
-                            final Node formatNode = interNodeList.item(j);
-                            final String nodeName = formatNode.getLocalName();
-                            final String nsUri = formatNode.getNamespaceURI();
+                if (fileFormatNodeList != null) {
+                    for (int i = 0; i < fileFormatNodeList.getLength(); i++) {
+                        final Node node = fileFormatNodeList.item(i);
+                        if (node.hasChildNodes()) {
+                            final NodeList interNodeList = node.getChildNodes();
+                            FileFormatBean bean = new FileFormatBean();
+                            for (int j = 0; j < interNodeList.getLength(); j++) {
+                                final Node formatNode = interNodeList.item(j);
+                                final String nodeName = formatNode.getLocalName();
+                                final String nsUri = formatNode.getNamespaceURI();
 
-                            if (nodeName == null || nsUri == null) {
-                                continue;
+                                if (nodeName == null || nsUri == null) {
+                                    continue;
+                                }
+                                if ("title".equals(nodeName) && URI_DC.equals(nsUri)) {
+                                    bean.setTitle(formatNode.getTextContent().trim());
+                                }
+                                else if ("mime-type".equals(nodeName) && URI_EL.equals(nsUri)) {
+                                    bean.setMimeType(formatNode.getTextContent().trim());
+                                }
                             }
-                            if ("title".equals(nodeName) && URI_DC.equals(nsUri)) {
-                                bean.setTitle(formatNode.getTextContent().trim());
-                            }
-                            else if ("mime-type".equals(nodeName) && URI_EL.equals(nsUri)) {
-                                bean.setMimeType(formatNode.getTextContent().trim());
-                            }
+                            fileFormatList.add(bean);
+                            LOG.debug("Added to FileFormat Cache " + bean.getTitle() + " + " + bean.getMimeType());
                         }
-                        fileFormatList.add(bean);
-                        LOG.debug("Added to FileFormat Cache " + bean.getTitle() + " + " + bean.getMimeType());
                     }
                 }
-
                 synchronized (ELabsCache.getFileFormats()) {
                     if (ELabsCache.getFileFormats().isEmpty() && !fileFormatList.isEmpty()) {
                         ELabsCache.setFileFormats(Collections.unmodifiableList(fileFormatList));
@@ -368,33 +381,23 @@ public final class InstrumentController extends Controller implements ISaveActio
 
             if (ELabsCache.getEsyncEndpoints().isEmpty()) {
                 final List<String> eSycDaemonEndPointUrls = new ArrayList<String>();
-                try {
-
-                    final NodeList nodeList = content.getElementsByTagName("el:esync-endpoint");
+                final NodeList nodeList = content.getElementsByTagName("el:esync-endpoint");
+                if (nodeList != null) {
                     for (int i = 0; i < nodeList.getLength(); i++) {
                         final Node node = nodeList.item(i);
                         eSycDaemonEndPointUrls.add(node.getTextContent());
                     }
-                    synchronized (ELabsCache.getDepositEndpoints()) {
-                        if (!eSycDaemonEndPointUrls.isEmpty()) {
-                            ELabsCache.setEsyncEndpoints(Collections.unmodifiableList(eSycDaemonEndPointUrls));
-                        }
+                }
+                synchronized (ELabsCache.getDepositEndpoints()) {
+                    if (!eSycDaemonEndPointUrls.isEmpty()) {
+                        ELabsCache.setEsyncEndpoints(Collections.unmodifiableList(eSycDaemonEndPointUrls));
                     }
                 }
-                catch (final NullPointerException e) {
-                    LOG.debug("Admin Description is null in the context " + resourceProxy.getContext().getObjid());
-                }
             }
-
         }
         catch (final EscidocClientException e) {
-            LOG.debug("Error occurred. Could not load Admin Descriptors" + e.getLocalizedMessage());
-            e.printStackTrace();
+            LOG.debug("Error occurred. Could not load Admin Descriptors" + e.getMessage());
         }
-        catch (final NullPointerException e) {
-            LOG.debug("Admin Description is null in the context " + resourceProxy.getContext().getObjid());
-        }
-
     }
 
     private Component createView(final ResourceProxy resourceProxy) {

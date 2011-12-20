@@ -42,7 +42,7 @@ import org.escidoc.browser.elabsmodul.model.UserBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ELabsCache {
+public final class ELabsCache {
 
     private static List<String> depositEndpoints = Collections.emptyList();
 
@@ -57,6 +57,9 @@ public class ELabsCache {
     private static Map<String, ContentModelTypeEnum> contentModels = new HashMap<String, ContentModelTypeEnum>();
 
     private static Logger LOG = LoggerFactory.getLogger(ELabsCache.class);
+
+    private ELabsCache() {
+    }
 
     /**
      * @return the depositEndpoints

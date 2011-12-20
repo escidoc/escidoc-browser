@@ -75,28 +75,42 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
 
     private static final Logger LOG = LoggerFactory.getLogger(InvestigationSeriesController.class);
 
-    private EscidocServiceLocation serviceLocation;
+    private final EscidocServiceLocation serviceLocation;
 
-    private Repositories repositories;
+    private final Repositories repositories;
 
-    private Router router;
+    private final Router router;
 
-    private ContainerProxy resourceProxy;
+    private final ContainerProxy resourceProxy;
 
-    private Window mainWindow;
+    private final Window mainWindow;
 
     private InvestigationSeriesBean isb;
 
     private IBeanModel beanModel;
 
+    public InvestigationSeriesController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
+        super(repositories, router, resourceProxy);
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        Preconditions.checkNotNull(router, "mainSite is null: %s", router);
+        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
+        Preconditions.checkArgument(resourceProxy instanceof ContainerProxy, "resourceProxy is not container proxy");
+        this.router = router;
+        this.mainWindow = router.getMainWindow();
+        this.serviceLocation = router.getServiceLocation();
+        this.repositories = repositories;
+        this.resourceProxy = (ContainerProxy) resourceProxy;
+        setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
+        resourceToBean();
+        view = createView();
+    }
+
     @Override
     public void saveAction(IBeanModel beanModel) {
         Preconditions.checkNotNull(beanModel, "DataBean to store is NULL");
         this.beanModel = beanModel;
-
         mainWindow.addWindow(new YesNoDialog(ELabsViewContants.DIALOG_SAVE_INVESTIGATION_SERIES_HEADER,
             ELabsViewContants.DIALOG_SAVE_INVESTIGATION_SERIES_TEXT, new YesNoDialog.Callback() {
-
                 @Override
                 public void onDialogResult(boolean resultIsYes) {
                     if (resultIsYes) {
@@ -176,26 +190,8 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
         return null;
     }
 
-    public InvestigationSeriesController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
-        super(repositories, router, resourceProxy);
-        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
-        Preconditions.checkNotNull(router, "mainSite is null: %s", router);
-        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
-        Preconditions.checkArgument(resourceProxy instanceof ContainerProxy, "resourceProxy is not container proxy");
-        this.router = router;
-        this.serviceLocation = router.getServiceLocation();
-        this.repositories = repositories;
-        this.resourceProxy = (ContainerProxy) resourceProxy;
-        this.mainWindow = router.getMainWindow();
-
-        setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
-
-        isb = resourceToBean();
-        view = createView();
-    }
-
-    private InvestigationSeriesBean resourceToBean() {
-        InvestigationSeriesBean isb = new InvestigationSeriesBean();
+    private void resourceToBean() {
+        this.isb = new InvestigationSeriesBean();
 
         final NodeList nodeList = resourceProxy.getMedataRecords().get("escidoc").getContent().getChildNodes();
 
@@ -203,15 +199,13 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
 
             final Node node = nodeList.item(i);
             if ("title".equals(node.getLocalName()) && AppConstants.DC_NAMESPACE.equals(node.getNamespaceURI())) {
-                isb.setName((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
+                this.isb.setName((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
             }
             else if ("description".equals(node.getLocalName())
                 && AppConstants.DC_NAMESPACE.equals(node.getNamespaceURI())) {
-                isb.setDescription((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
+                this.isb.setDescription((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
             }
         }
-
-        return isb;
     }
 
     private Component createView() {

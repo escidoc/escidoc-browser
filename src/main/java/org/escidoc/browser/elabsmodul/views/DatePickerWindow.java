@@ -38,6 +38,7 @@ import org.escidoc.browser.elabsmodul.model.DurationBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.event.FieldEvents;
@@ -63,7 +64,7 @@ public class DatePickerWindow extends Window implements Button.ClickListener {
 
     private Button cancel = new Button("Cancel", this);
 
-    private final InlineDateField dateField = createContent();
+    private InlineDateField dateField = null;
 
     private final String INPUT_WIDTH = "30px";
 
@@ -80,6 +81,8 @@ public class DatePickerWindow extends Window implements Button.ClickListener {
     public DatePickerWindow(String caption, Callback callback) {
         super(caption);
         this.callback = callback;
+        createInLineDateField();
+        Preconditions.checkNotNull(this.dateField, "InlineDateField is null");
 
         final VerticalLayout verticalLayout = new VerticalLayout();
         HorizontalLayout buttonLayout;
@@ -87,7 +90,7 @@ public class DatePickerWindow extends Window implements Button.ClickListener {
         verticalLayout.addComponent(new Label("<p/>", Label.CONTENT_XHTML));
         verticalLayout.addComponent(createInputField());
         verticalLayout.addComponent(new Label("<hr/>", Label.CONTENT_XHTML));
-        verticalLayout.addComponent(dateField);
+        verticalLayout.addComponent(this.dateField);
         verticalLayout.addComponent(new Label("<p/>", Label.CONTENT_XHTML));
         verticalLayout.addComponent(buttonLayout = createButtonLayout());
         verticalLayout.setComponentAlignment(buttonLayout, Alignment.BOTTOM_CENTER);
@@ -142,15 +145,15 @@ public class DatePickerWindow extends Window implements Button.ClickListener {
                 try {
                     synchronized (event) {
                         if (!event.getText().trim().isEmpty()) {
-                            new Integer(event.getText().trim());
+                            Integer.valueOf(event.getText().trim());
 
                             if (tfDays.getValue() instanceof String) {
                                 throw new NumberFormatException();
                             }
 
                             final int days =
-                                (event.getText() != null && (!event.getText().isEmpty())) ? new Integer(event.getText())
-                                    .intValue() : 0;
+                                (event.getText() != null && (!event.getText().isEmpty())) ? Integer.valueOf(
+                                    event.getText().trim()).intValue() : 0;
 
                             if (days < 0 || days > 14) {
                                 tfDays.setValue(0);
@@ -188,15 +191,15 @@ public class DatePickerWindow extends Window implements Button.ClickListener {
                 try {
                     synchronized (event) {
                         if (!event.getText().trim().isEmpty()) {
-                            new Integer(event.getText().trim());
+                            Integer.valueOf(event.getText().trim());
 
                             if (tfHours.getValue() instanceof String) {
                                 throw new NumberFormatException();
                             }
 
                             final int hours =
-                                (event.getText() != null && (!event.getText().isEmpty())) ? new Integer(event.getText())
-                                    .intValue() : 0;
+                                (event.getText() != null && (!event.getText().isEmpty())) ? Integer.valueOf(
+                                    event.getText().trim()).intValue() : 0;
 
                             if (hours < 0 || hours > 23) {
                                 tfHours.setValue(0);
@@ -234,14 +237,14 @@ public class DatePickerWindow extends Window implements Button.ClickListener {
                 try {
                     synchronized (event) {
                         if (!event.getText().trim().isEmpty()) {
-                            new Integer(event.getText().trim());
+                            Integer.valueOf(event.getText().trim());
 
                             if (tfMinutes.getValue() instanceof String) {
                                 throw new NumberFormatException();
                             }
                             final int minutes =
-                                (event.getText() != null && (!event.getText().isEmpty())) ? new Integer(event.getText())
-                                    .intValue() : 0;
+                                (event.getText() != null && (!event.getText().isEmpty())) ? Integer.valueOf(
+                                    event.getText().trim()).intValue() : 0;
 
                             if (minutes < 0 || minutes > 59) {
                                 tfMinutes.setValue(0);
@@ -318,19 +321,18 @@ public class DatePickerWindow extends Window implements Button.ClickListener {
         return buttonLayout;
     }
 
-    private InlineDateField createContent() {
-        final InlineDateField dateField =
+    private void createInLineDateField() {
+        this.dateField =
             new InlineDateField(ELabsViewContants.DATEPICKER_CAPTION, Calendar.getInstance(TimeZone.getDefault(),
                 Locale.getDefault()).getTime());
+        this.dateField.setResolution(InlineDateField.RESOLUTION_MIN);
+        this.dateField.setImmediate(true);
+        this.dateField.setShowISOWeekNumbers(true);
+        this.dateField.setLocale(Locale.getDefault());
+        this.dateField.setTimeZone(TimeZone.getDefault());
+        this.dateField.setEnabled(false);
 
-        dateField.setResolution(InlineDateField.RESOLUTION_MIN);
-        dateField.setImmediate(true);
-        dateField.setShowISOWeekNumbers(true);
-        dateField.setLocale(Locale.getDefault());
-        dateField.setTimeZone(TimeZone.getDefault());
-        dateField.setEnabled(false);
-
-        dateField.addListener(new Property.ValueChangeListener() {
+        this.dateField.addListener(new Property.ValueChangeListener() {
             private static final long serialVersionUID = -2403060484955547831L;
 
             @Override
@@ -350,7 +352,6 @@ public class DatePickerWindow extends Window implements Button.ClickListener {
                 }
             }
         });
-        return dateField;
     }
 
     @Override
@@ -362,21 +363,21 @@ public class DatePickerWindow extends Window implements Button.ClickListener {
 
         if (optionGroup.getValue().toString().equals(propDuration)) {
             if (tfDays.getValue() instanceof String) {
-                day = new Integer((String) tfDays.getValue()).intValue();
+                day = Integer.valueOf((String) tfDays.getValue()).intValue();
             }
             else if (tfDays.getValue() instanceof Integer) {
                 day = (Integer) tfDays.getValue();
             }
 
             if (tfHours.getValue() instanceof String) {
-                hour = new Integer((String) tfHours.getValue()).intValue();
+                hour = Integer.valueOf((String) tfHours.getValue()).intValue();
             }
             else if (tfHours.getValue() instanceof Integer) {
                 hour = (Integer) tfHours.getValue();
             }
 
             if (tfMinutes.getValue() instanceof String) {
-                minute = new Integer((String) tfMinutes.getValue()).intValue();
+                minute = Integer.valueOf((String) tfMinutes.getValue()).intValue();
             }
             else if (tfMinutes.getValue() instanceof Integer) {
                 minute = (Integer) tfMinutes.getValue();

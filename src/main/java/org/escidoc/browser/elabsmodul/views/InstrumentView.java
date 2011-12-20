@@ -291,7 +291,8 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
         }
     }
 
-    protected void resetLayout() {
+    @Override
+    public void resetLayout() {
         Preconditions.checkNotNull(dynamicLayout, "View's dynamiclayout is null.");
 
         HorizontalLayout tempParentLayout = null;

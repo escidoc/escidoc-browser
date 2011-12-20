@@ -78,8 +78,6 @@ public class ELabsService implements ILabsService {
 
     private final Router router;
 
-    private List<String[]> configurationPropertyList;
-
     private static final Logger LOG = LoggerFactory.getLogger(ELabsService.class);
 
     public ELabsService(Repositories repositories, Router router, String investigationId) {
@@ -413,7 +411,6 @@ public class ELabsService implements ILabsService {
     public synchronized void start() throws EscidocBrowserException {
         LOG.info("Investigation's process is started.");
         try {
-            this.configurationPropertyList = null;
             final List<Map<String, String>> configMapList = gatherConfigurationDataFromInfrastructure();
             if (configMapList == null || configMapList.isEmpty()) {
                 LOG.error("Config is not available to process");
@@ -425,7 +422,6 @@ public class ELabsService implements ILabsService {
                 LOG.error("Config is not available to process");
                 throw new EscidocBrowserException();
             }
-            this.configurationPropertyList = configurationPropertyList;
             if (sendStartRequest(configurationPropertyList)) {
                 showError("Communication error");
                 throw new EscidocBrowserException();
@@ -486,7 +482,7 @@ public class ELabsService implements ILabsService {
             else if ("max-runtime".equals(nodeName) && URI_EL.equals(nsUri)) {
                 investigationBean.setMaxRuntime("<<not used>>");
                 try {
-                    investigationBean.setMaxRuntimeInMin(new Integer(node.getTextContent()));
+                    investigationBean.setMaxRuntimeInMin(Integer.valueOf(node.getTextContent()));
                 }
                 catch (NumberFormatException nfe) {
                     LOG.error(nfe.getMessage());

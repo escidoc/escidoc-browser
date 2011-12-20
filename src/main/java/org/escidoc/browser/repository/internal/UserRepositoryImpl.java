@@ -28,8 +28,6 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import com.google.common.base.Preconditions;
-
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.internal.GuestUser;
@@ -38,9 +36,14 @@ import org.escidoc.browser.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
+
 import de.escidoc.core.client.UserAccountHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.InternalClientException;
+import de.escidoc.core.resources.aa.useraccount.UserAccount;
+import de.escidoc.core.resources.aa.useraccount.UserAccountProperties;
+import de.escidoc.core.resources.common.TaskParam;
 
 public class UserRepositoryImpl implements UserRepository {
 
@@ -87,5 +90,30 @@ public class UserRepositoryImpl implements UserRepository {
         }
         builder.append("]");
         return builder.toString();
+    }
+
+    public String getUserRealName() throws EscidocClientException {
+        return client.retrieveCurrentUser().getProperties().getName();
+    }
+
+    public UserAccount getCurrentUser() throws EscidocClientException {
+        return client.retrieveCurrentUser();
+    }
+
+    public void updateName(String newName) throws EscidocClientException {
+        UserAccount usr = client.retrieveCurrentUser();
+        UserAccountProperties prop = new UserAccountProperties();
+        prop = usr.getProperties();
+        prop.setName(newName);
+        usr.setProperties(prop);
+        client.update(usr);
+    }
+
+    public void updatePassword(final String newPassword) throws EscidocClientException {
+        UserAccount user = client.retrieveCurrentUser();
+        final TaskParam taskParam = new TaskParam();
+        taskParam.setLastModificationDate(user.getLastModificationDate());
+        taskParam.setPassword(newPassword);
+        client.updatePassword(user.getObjid(), taskParam);
     }
 }

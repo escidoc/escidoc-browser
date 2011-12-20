@@ -42,11 +42,11 @@ import com.vaadin.ui.themes.Runo;
 
 public class ResourcePropertiesViewHelper {
 
-    private final String LAST_MODIFIED_BY = "Last modification by ";
+    private static final String LAST_MODIFIED_BY = "Last modification by ";
 
-    private final String FLOAT_LEFT = "floatleft";
+    private static final String FLOAT_LEFT = "floatleft";
 
-    private final String FLOAT_RIGHT = "floatright";
+    private static final String FLOAT_RIGHT = "floatright";
 
     private ResourceProxy resourceProxy;
 

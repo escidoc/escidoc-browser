@@ -28,25 +28,11 @@
  */
 package org.escidoc.browser.ui.mainpage;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.Application.UserChangeEvent;
-import com.vaadin.Application.UserChangeListener;
-import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.terminal.ExternalResource;
-import com.vaadin.terminal.UserError;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.Form;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.PopupView;
-import com.vaadin.ui.PopupView.PopupVisibilityEvent;
-import com.vaadin.ui.PopupView.PopupVisibilityListener;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.BaseTheme;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.escidoc.browser.BrowserApplication;
+import org.escidoc.browser.controller.UserProfileController;
 import org.escidoc.browser.layout.LayoutDesign;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
@@ -56,8 +42,24 @@ import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.LogoutListener;
 import org.escidoc.browser.ui.maincontent.SearchResultsView;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.google.common.base.Preconditions;
+import com.vaadin.Application.UserChangeEvent;
+import com.vaadin.Application.UserChangeListener;
+import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.terminal.ExternalResource;
+import com.vaadin.terminal.UserError;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.Form;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.PopupView;
+import com.vaadin.ui.PopupView.PopupVisibilityEvent;
+import com.vaadin.ui.PopupView.PopupVisibilityListener;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.BaseTheme;
 
 /**
  * This is the Header of the page. Main Search comes here, also the login ability
@@ -116,9 +118,24 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
     }
 
     public void setUser(final CurrentUser user) {
-        custom.addComponent(new Label("<b>" + ViewConstants.CURRENT_USER + user.getLoginName() + "</b>",
-            Label.CONTENT_XHTML), "login-name");
+        Component name;
+        if (user.getLoginName().equals("Guest")) {
+            name = new Label("Guest");
+        }
+        else {
+            name = new Button(user.getLoginName());
+            name.setStyleName(BaseTheme.BUTTON_LINK);
+            ((Button) name).addListener(new Button.ClickListener() {
+                @Override
+                public void buttonClick(ClickEvent event) {
+                    router.openControllerView(new UserProfileController(repositories, router, null), false);
+                }
+            });
+        }
 
+        custom.addComponent(new Label("<b>" + ViewConstants.CURRENT_USER + "</b>", Label.CONTENT_XHTML), "login-name");
+
+        custom.addComponent(name, "username");
         if (user.isGuest()) {
             custom.removeComponent(logout);
             custom.addComponent(login, "login");

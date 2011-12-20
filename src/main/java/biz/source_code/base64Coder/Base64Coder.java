@@ -34,12 +34,15 @@ public class Base64Coder {
     private static char[] map1 = new char[64];
     static {
         int i = 0;
-        for (char c = 'A'; c <= 'Z'; c++)
+        for (char c = 'A'; c <= 'Z'; c++) {
             map1[i++] = c;
-        for (char c = 'a'; c <= 'z'; c++)
+        }
+        for (char c = 'a'; c <= 'z'; c++) {
             map1[i++] = c;
-        for (char c = '0'; c <= '9'; c++)
+        }
+        for (char c = '0'; c <= '9'; c++) {
             map1[i++] = c;
+        }
         map1[i++] = '+';
         map1[i++] = '/';
     }
@@ -47,10 +50,12 @@ public class Base64Coder {
     // Mapping table from Base64 characters to 6-bit nibbles.
     private static byte[] map2 = new byte[128];
     static {
-        for (int i = 0; i < map2.length; i++)
+        for (int i = 0; i < map2.length; i++) {
             map2[i] = -1;
-        for (int i = 0; i < 64; i++)
+        }
+        for (int i = 0; i < 64; i++) {
             map2[map1[i]] = (byte) i;
+        }
     }
 
     /**
@@ -94,8 +99,9 @@ public class Base64Coder {
     public static String encodeLines(
         final byte[] in, final int iOff, final int iLen, final int lineLen, final String lineSeparator) {
         final int blockLen = (lineLen * 3) / 4;
-        if (blockLen <= 0)
+        if (blockLen <= 0) {
             throw new IllegalArgumentException();
+        }
         final int lines = (iLen + blockLen - 1) / blockLen;
         final int bufLen = ((iLen + 2) / 3) * 4 + lines * lineSeparator.length();
         final StringBuilder buf = new StringBuilder(bufLen);
@@ -200,8 +206,9 @@ public class Base64Coder {
         int p = 0;
         for (int ip = 0; ip < s.length(); ip++) {
             final char c = s.charAt(ip);
-            if (c != ' ' && c != '\r' && c != '\n' && c != '\t')
+            if (c != ' ' && c != '\r' && c != '\n' && c != '\t') {
                 buf[p++] = c;
+            }
         }
         return decode(buf, 0, p);
     }
@@ -249,10 +256,12 @@ public class Base64Coder {
      *             If the input is not valid Base64 encoded data.
      */
     public static byte[] decode(final char[] in, final int iOff, int iLen) {
-        if (iLen % 4 != 0)
+        if (iLen % 4 != 0) {
             throw new IllegalArgumentException("Length of Base64 encoded input string is not a multiple of 4.");
-        while (iLen > 0 && in[iOff + iLen - 1] == '=')
+        }
+        while (iLen > 0 && in[iOff + iLen - 1] == '=') {
             iLen--;
+        }
         final int oLen = (iLen * 3) / 4;
         final byte[] out = new byte[oLen];
         int ip = iOff;
@@ -263,22 +272,26 @@ public class Base64Coder {
             final int i1 = in[ip++];
             final int i2 = ip < iEnd ? in[ip++] : 'A';
             final int i3 = ip < iEnd ? in[ip++] : 'A';
-            if (i0 > 127 || i1 > 127 || i2 > 127 || i3 > 127)
+            if (i0 > 127 || i1 > 127 || i2 > 127 || i3 > 127) {
                 throw new IllegalArgumentException("Illegal character in Base64 encoded data.");
+            }
             final int b0 = map2[i0];
             final int b1 = map2[i1];
             final int b2 = map2[i2];
             final int b3 = map2[i3];
-            if (b0 < 0 || b1 < 0 || b2 < 0 || b3 < 0)
+            if (b0 < 0 || b1 < 0 || b2 < 0 || b3 < 0) {
                 throw new IllegalArgumentException("Illegal character in Base64 encoded data.");
+            }
             final int o0 = (b0 << 2) | (b1 >>> 4);
             final int o1 = ((b1 & 0xf) << 4) | (b2 >>> 2);
             final int o2 = ((b2 & 3) << 6) | b3;
             out[op++] = (byte) o0;
-            if (op < oLen)
+            if (op < oLen) {
                 out[op++] = (byte) o1;
-            if (op < oLen)
+            }
+            if (op < oLen) {
                 out[op++] = (byte) o2;
+            }
         }
         return out;
     }

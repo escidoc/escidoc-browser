@@ -154,6 +154,7 @@ public final class LabsClientViewEventHandler implements LayoutClickListener {
                         return;
                     }
                     else if (queryTextforDuration.equals(((Label) labelComponent).getValue())) {
+                        this.containerPanel.setModifiedComponent(null);
                         return;
                     }
                     else {

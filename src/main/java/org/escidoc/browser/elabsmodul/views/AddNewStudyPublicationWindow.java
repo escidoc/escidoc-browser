@@ -53,7 +53,7 @@ public class AddNewStudyPublicationWindow extends Window implements Button.Click
 
     private TextField publicationTextField;
 
-    private final String OK_BUTTON_TEXT = "Ok", CANCEL_BUTTON_TEXT = "Cancel";
+    private static final String OK_BUTTON_TEXT = "Ok", CANCEL_BUTTON_TEXT = "Cancel";
 
     private static final String HTTP = "http://", HTTPS = "https://";
 

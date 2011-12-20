@@ -38,12 +38,9 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Element;
 
-/**
- * 
- * @author ASP
- * 
- */
-public class DOM2String {
+public final class DOM2String {
+    private DOM2String() {
+    }
 
     /**
      * Converts a DOM to a String
@@ -54,13 +51,10 @@ public class DOM2String {
      * @throws TransformerException
      */
     public static synchronized String convertDom2String(Element e) throws TransformerException {
-
         StringWriter stringWriter = new StringWriter();
         TransformerFactory factory = TransformerFactory.newInstance();
         Transformer transformer = factory.newTransformer();
         transformer.transform(new DOMSource(e), new StreamResult(stringWriter));
         return stringWriter.getBuffer().toString();
-
     }
-
 }

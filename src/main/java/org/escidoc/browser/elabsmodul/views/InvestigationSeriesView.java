@@ -321,7 +321,8 @@ public class InvestigationSeriesView extends View implements ILabsPanel, ILabsAc
         return true;
     }
 
-    protected void resetLayout() {
+    @Override
+    public void resetLayout() {
         Preconditions.checkNotNull(dynamicLayout, "View's dynamiclayout is null.");
 
         HorizontalLayout tempParentLayout = null;

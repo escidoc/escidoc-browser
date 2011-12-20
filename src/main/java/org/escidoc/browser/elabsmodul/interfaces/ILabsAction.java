@@ -33,4 +33,6 @@ public interface ILabsAction {
     void showButtonLayout();
 
     void hideButtonLayout();
+
+    void resetLayout();
 }

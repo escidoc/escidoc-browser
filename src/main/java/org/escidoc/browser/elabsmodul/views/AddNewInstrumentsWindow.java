@@ -69,9 +69,9 @@ public class AddNewInstrumentsWindow extends Window implements Button.ClickListe
 
     private List<InstrumentBean> assignableInstruments = null;
 
-    private final String property1 = "title", property2 = "description", property3 = "id";
+    private static final String property1 = "title", property2 = "description", property3 = "id";
 
-    private final String ADD_BUTTON_TEXT = "Add element", ADD_ALL_BUTTON_TEXT = "Add selected elements",
+    private static final String ADD_BUTTON_TEXT = "Add element", ADD_ALL_BUTTON_TEXT = "Add selected elements",
         CANCEL_BUTTON_TEXT = "Cancel";
 
     public AddNewInstrumentsWindow(RigBean rigBean, final IRigAction controller, final Callback callback) {
