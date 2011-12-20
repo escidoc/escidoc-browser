@@ -54,7 +54,6 @@ import com.vaadin.ui.Label;
 public final class Utils {
 
     private Utils() {
-        // Utility class
     }
 
     public static Document createNewDocument() throws ParserConfigurationException {
