@@ -15,8 +15,6 @@ import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Form;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
@@ -82,7 +80,7 @@ public class UserProfileView extends View {
         // pnlCreateContext
         Accordion pnlCreateContext = buildPnlCreateContext();
         vlContentPanel.addComponent(pnlCreateContext);
-        // vlContentPanel.setExpandRatio(pnlCreateContext, 0.4f);
+        vlContentPanel.setExpandRatio(pnlCreateContext, 1f);
 
         return vlContentPanel;
     }
@@ -101,7 +99,6 @@ public class UserProfileView extends View {
         vlAccCreateContext.setHeight("100.0%");
         vlAccCreateContext.setMargin(false);
         vlAccCreateContext.setSpacing(false);
-        vlAccCreateContext.setSizeUndefined();
 
         // AddContext Form
         try {
@@ -120,17 +117,21 @@ public class UserProfileView extends View {
         final Form frm = new Form();
         frm.setImmediate(true);
 
-        HorizontalLayout hl = new HorizontalLayout();
-        hl.setStyleName("userformpadding");
-        hl.addComponent(new Label("Login name: "));
-        Label lblLogin = new Label(currentUser.getLoginName());
-        lblLogin.setStyleName("userformlblLoginpadding");
-        hl.addComponent(lblLogin);
-        vlAccCreateContext.addComponent(hl);
+        // Name
+        final TextField txtLoginName = new TextField();
+        txtLoginName.setCaption("Login Name");
+        txtLoginName.setValue(currentUser.getLoginName());
+        txtLoginName.setEnabled(false);
+        txtLoginName.setImmediate(false);
+        txtLoginName.setWidth("-1px");
+        txtLoginName.setHeight("-1px");
+        txtLoginName.setInvalidAllowed(false);
+        txtLoginName.setRequired(true);
+        frm.addField("txtLoginName", txtLoginName);
 
         // Name
         final TextField txtNameContext = new TextField();
-        txtNameContext.setCaption("Name");
+        txtNameContext.setCaption("Real Name");
         txtNameContext.setValue(currentUser.getRealName());
         txtNameContext.setImmediate(false);
         txtNameContext.setWidth("-1px");
