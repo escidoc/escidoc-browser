@@ -28,16 +28,9 @@
  */
 package org.escidoc.browser.elabsmodul.service;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.UUID;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.ui.Window.Notification;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -65,8 +58,15 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.Window.Notification;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.UUID;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -82,7 +82,7 @@ public class ELabsService implements ILabsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ELabsService.class);
 
-    public ELabsService(Repositories repositories, Router router, String investigationId) {
+    public ELabsService(final Repositories repositories, final Router router, final String investigationId) {
         Preconditions.checkNotNull(investigationId, "Investigation ID is null");
         Preconditions.checkNotNull(repositories, "Repository is null");
         Preconditions.checkNotNull(router, "Router is null");
@@ -92,11 +92,11 @@ public class ELabsService implements ILabsService {
     }
 
     private List<Map<String, String>> gatherConfigurationDataFromInfrastructure() throws EscidocBrowserException {
-        List<Map<String, String>> result = new ArrayList<Map<String, String>>();
+        final List<Map<String, String>> result = new ArrayList<Map<String, String>>();
         Map<String, String> configurationMap;
         ContainerProxy investigationProxy = null;
-        StringBuilder errorStrings = new StringBuilder();
-        StringBuilder warningStrings = new StringBuilder();
+        final StringBuilder errorStrings = new StringBuilder();
+        final StringBuilder warningStrings = new StringBuilder();
 
         try {
             investigationProxy = (ContainerProxy) repositories.container().findById(investigationId);
@@ -106,11 +106,11 @@ public class ELabsService implements ILabsService {
                 return null;
             }
         }
-        catch (EscidocClientException e) {
+        catch (final EscidocClientException e) {
             LOG.error(e.getMessage());
             showError("Internal error: Exceptionfound");
         }
-        catch (ClassCastException e) {
+        catch (final ClassCastException e) {
             LOG.error(e.getMessage());
         }
 
@@ -123,7 +123,7 @@ public class ELabsService implements ILabsService {
                 return null;
             }
         }
-        catch (EscidocBrowserException e) {
+        catch (final EscidocBrowserException e) {
             LOG.error(e.getMessage());
         }
 
@@ -144,12 +144,12 @@ public class ELabsService implements ILabsService {
             }
             rigBean = resolveRig(rigProxy);
         }
-        catch (EscidocClientException e) {
+        catch (final EscidocClientException e) {
             LOG.error(e.getMessage());
             showError("Internal error");
             return null;
         }
-        catch (ClassCastException e) {
+        catch (final ClassCastException e) {
             LOG.error(e.getMessage());
             showError("Internal error");
             return null;
@@ -163,35 +163,35 @@ public class ELabsService implements ILabsService {
 
         final String workspaceId = investigationProxy.getContext().getObjid();
         if (workspaceId == null || workspaceId.isEmpty()) {
-            String error = "Contenxt id is not available";
+            final String error = "Contenxt id is not available";
             LOG.error(error);
             errorStrings.append(error + "<br/>");
         }
 
         final String userHandle = router.getApp().getCurrentUser().getToken();
         if (userHandle == null || userHandle.isEmpty()) {
-            String error = "Usertoken is not available";
+            final String error = "Usertoken is not available";
             LOG.error(error);
             errorStrings.append(error + "<br/>");
         }
 
         final String infrastructureEndpoint = router.getServiceLocation().getEscidocUri();
         if (infrastructureEndpoint == null || infrastructureEndpoint.isEmpty()) {
-            String error = "Infrastructure's endpoint is not set";
+            final String error = "Infrastructure's endpoint is not set";
             LOG.error(error);
             errorStrings.append(error + "<br/>");
         }
 
         final String email = router.getApp().getCurrentUser().getLoginName() + "@fiz-karlsruhe.de";
         if (email == null || email.isEmpty()) {
-            String error = "User's email address is not set";
+            final String error = "User's email address is not set";
             LOG.error(error);
             warningStrings.append(error + "<br/>");
         }
 
         final String contentModelId = ELabsCache.getGeneratedItemCMMId().get(0);
         if (contentModelId == null || contentModelId.isEmpty()) {
-            String error = "Contentmodel's id is not available";
+            final String error = "Contentmodel's id is not available";
             LOG.error(error);
             errorStrings.append(error + "<br/>");
         }
@@ -202,44 +202,43 @@ public class ELabsService implements ILabsService {
         final String experimentDescr = investigationBean.getDescription();
 
         if (experimentId == null || experimentId.isEmpty()) {
-            String error = "Experiment's id is not available";
+            final String error = "Experiment's id is not available";
             LOG.error(error);
             errorStrings.append(error + "<br/>");
         }
 
         if (experimentTitle == null || experimentTitle.isEmpty()) {
-            String error = "Experiment's title is not set";
+            final String error = "Experiment's title is not set";
             LOG.error(error);
             errorStrings.append(error + "<br/>");
         }
 
         if (experimentDescr == null || experimentDescr.isEmpty()) {
-            String error = "Experiment's description is not set";
+            final String error = "Experiment's description is not set";
             LOG.warn(error);
             warningStrings.append(error + "<br/>");
         }
 
         final int duration = investigationBean.getMaxRuntimeInMin();
         if (duration <= 0) {
-            String error = "Investigation's duration is not set correctly";
+            final String error = "Investigation's duration is not set correctly";
             LOG.error(error);
             errorStrings.append(error + "<br/>");
         }
 
         final String depositEndpoint = investigationBean.getDepositEndpoint();
         if (depositEndpoint == null || depositEndpoint.isEmpty()) {
-            String error = "Deposit endpoint is not set";
+            final String error = "Deposit endpoint is not set";
             LOG.error(error);
             errorStrings.append(error + "<br/>");
         }
 
         final String investigationErrors = errorStrings.toString();
-        String investigationWarnings = warningStrings.toString();
+        final String investigationWarnings = warningStrings.toString();
         String instrumentsErrors = "";
 
-        for (Iterator<InstrumentBean> iterator = rigBean.getContentList().iterator(); iterator.hasNext();) {
-            StringBuilder instrumentsError = new StringBuilder();
-            InstrumentBean instrumentBean = iterator.next();
+        for (final InstrumentBean instrumentBean : rigBean.getContentList()) {
+            final StringBuilder instrumentsError = new StringBuilder();
             configurationMap = new HashMap<String, String>();
 
             final String fileFormat = instrumentBean.getFileFormat();
@@ -247,17 +246,18 @@ public class ELabsService implements ILabsService {
             final String esyncDaemonEndpoint = instrumentBean.getESyncDaemon();
 
             if (fileFormat == null || fileFormat.isEmpty()) {
-                String error = "FileFormat is not set for instrument (id: " + instrumentBean.getObjectId() + ")";
+                final String error = "FileFormat is not set for instrument (id: " + instrumentBean.getObjectId() + ")";
                 LOG.error(error);
                 instrumentsError.append(error + "<br/>");
             }
             if (monitoredFolder == null || monitoredFolder.isEmpty()) {
-                String error = "Monitoredfolder is not set for instrument (id: " + instrumentBean.getObjectId() + ")";
+                final String error =
+                    "Monitoredfolder is not set for instrument (id: " + instrumentBean.getObjectId() + ")";
                 LOG.error(error);
                 instrumentsError.append(error + "<br/>");
             }
             if (esyncDaemonEndpoint == null || esyncDaemonEndpoint.isEmpty()) {
-                String error =
+                final String error =
                     "EsyncDaemonEndpoint is not set for instrument (id: " + instrumentBean.getObjectId() + ")";
                 LOG.error(error);
                 instrumentsError.append(error + "<br/>");
@@ -315,28 +315,27 @@ public class ELabsService implements ILabsService {
         return result;
     }
 
-    private List<String[]> buildConfiguration(List<Map<String, String>> list) {
+    private List<String[]> buildConfiguration(final List<Map<String, String>> list) {
         Preconditions.checkNotNull(list, "Config list is null");
-        List<String[]> result = new ArrayList<String[]>();
+        final List<String[]> result = new ArrayList<String[]>();
 
         if (list.isEmpty()) {
             LOG.error("There is not ConfigMap to process!");
             return null;
         }
 
-        for (Iterator<Map<String, String>> iterator = list.iterator(); iterator.hasNext();) {
-            Map<String, String> map = iterator.next();
-            Properties config = new Properties();
+        for (final Map<String, String> map : list) {
+            final Properties config = new Properties();
             config.putAll(map);
 
             if (!config.isEmpty()) {
                 LOG.debug(config.toString());
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                final ByteArrayOutputStream out = new ByteArrayOutputStream();
                 try {
                     config.storeToXML(out, "");
                     LOG.debug("Configuration Properties XML \n" + out.toString());
                 }
-                catch (IOException e) {
+                catch (final IOException e) {
                     LOG.error(e.getMessage());
                 }
                 result.add(new String[] { config.getProperty(ELabsServiceConstants.E_SYNC_DAEMON_ENDPOINT),
@@ -357,8 +356,7 @@ public class ELabsService implements ILabsService {
         Preconditions.checkNotNull(propertyList, "Config list is null");
         final String configURLPart = "/configuration";
 
-        for (Iterator<String[]> iterator = propertyList.iterator(); iterator.hasNext();) {
-            String[] configurationArray = iterator.next();
+        for (final String[] configurationArray : propertyList) {
             String esyncEndpoint = configurationArray[0];
             LOG.debug("Service> sending start request for " + esyncEndpoint);
             while (esyncEndpoint.endsWith("/")) {
@@ -386,17 +384,17 @@ public class ELabsService implements ILabsService {
                     LOG.info("Service> configuration is successfully sent!");
                 }
             }
-            catch (UnsupportedEncodingException e) {
+            catch (final UnsupportedEncodingException e) {
                 LOG.error("Service> UnsupportedEncodingException: " + e.getMessage());
                 hasError = true;
                 continue;
             }
-            catch (ClientProtocolException e) {
+            catch (final ClientProtocolException e) {
                 LOG.error("Service> ClientProtocolException: " + e.getMessage());
                 hasError = true;
                 continue;
             }
-            catch (IOException e) {
+            catch (final IOException e) {
                 LOG.error("Service> IOException: " + e.getMessage());
                 hasError = true;
                 continue;
@@ -436,7 +434,7 @@ public class ELabsService implements ILabsService {
                     .showNotification("Success", "Configuration is sent!", Notification.TYPE_TRAY_NOTIFICATION);
             }
         }
-        catch (EscidocBrowserException e) {
+        catch (final EscidocBrowserException e) {
             LOG.error(e.getMessage());
             throw new EscidocBrowserException(e);
         }
@@ -488,7 +486,7 @@ public class ELabsService implements ILabsService {
                 try {
                     investigationBean.setMaxRuntimeInMin(new Integer(node.getTextContent()));
                 }
-                catch (NumberFormatException nfe) {
+                catch (final NumberFormatException nfe) {
                     LOG.error(nfe.getMessage());
                     investigationBean.setMaxRuntimeInMin(0);
                 }
@@ -520,7 +518,7 @@ public class ELabsService implements ILabsService {
     private RigBean resolveRig(final ItemProxy itemProxy) throws EscidocBrowserException {
         Preconditions.checkNotNull(itemProxy, "Resource is null");
 
-        RigBean rigBean = new RigBean();
+        final RigBean rigBean = new RigBean();
         final String URI_DC = "http://purl.org/dc/elements/1.1/";
         final String URI_EL = "http://escidoc.org/ontologies/bw-elabs/re#";
         final String URI_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
@@ -541,14 +539,14 @@ public class ELabsService implements ILabsService {
             }
             else if ("instrument".equals(nodeName) && URI_EL.equals(nsUri)) {
                 if (node.getAttributes() != null && node.getAttributes().getNamedItemNS(URI_RDF, "resource") != null) {
-                    Node attributeNode = node.getAttributes().getNamedItemNS(URI_RDF, "resource");
-                    String instrumentID = attributeNode.getNodeValue();
+                    final Node attributeNode = node.getAttributes().getNamedItemNS(URI_RDF, "resource");
+                    final String instrumentID = attributeNode.getNodeValue();
 
                     try {
-                        ItemProxy instrumentProxy = (ItemProxy) repositories.item().findById(instrumentID);
+                        final ItemProxy instrumentProxy = (ItemProxy) repositories.item().findById(instrumentID);
                         rigBean.getContentList().add(resolveInstrument(instrumentProxy));
                     }
-                    catch (EscidocClientException e) {
+                    catch (final EscidocClientException e) {
                         LOG.error(e.getLocalizedMessage());
                     }
                 }

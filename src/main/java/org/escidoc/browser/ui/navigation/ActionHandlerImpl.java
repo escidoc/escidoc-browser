@@ -228,7 +228,7 @@ final class ActionHandlerImpl implements Action.Handler {
     }
 
     private void showAddChildOrgUnitView(final ResourceModel selectedOrgUnit) {
-        new CreateOrgUnitView(mainWindow, repositories.organization(), selectedOrgUnit).show();
+        new CreateOrgUnitView(mainWindow, repositories.organization(), selectedOrgUnit, treeDataSource).show();
     }
 
     // FIXME ask pdp if add child allowed

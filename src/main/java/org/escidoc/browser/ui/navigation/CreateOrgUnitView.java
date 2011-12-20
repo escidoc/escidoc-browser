@@ -10,6 +10,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
 
 import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.OrgUnitBuilder;
 import org.escidoc.browser.model.internal.OrgUnitModel;
 import org.escidoc.browser.repository.internal.OrganizationUnitRepository;
@@ -30,18 +31,22 @@ public class CreateOrgUnitView {
 
     private final OrganizationUnitRepository repo;
 
-    private final ResourceModel om;
+    private final ResourceModel parent;
 
     private final Window subwindow = new Window();
 
+    private final TreeDataSource dataSource;
+
     public CreateOrgUnitView(final Window mainWindow, final OrganizationUnitRepository repo,
-        final ResourceModel selectedOrgUnit) {
+        final ResourceModel parent, final TreeDataSource oUDS) {
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(repo, "repo is null: %s", repo);
-        Preconditions.checkNotNull(selectedOrgUnit, "selectedOrgUnit is null: %s", selectedOrgUnit);
+        Preconditions.checkNotNull(parent, "selectedOrgUnit is null: %s", parent);
+        Preconditions.checkNotNull(oUDS, "oUDS is null: %s", oUDS);
         this.repo = repo;
         this.mainWindow = mainWindow;
-        this.om = selectedOrgUnit;
+        this.parent = parent;
+        this.dataSource = oUDS;
     }
 
     public void show() {
@@ -82,13 +87,11 @@ public class CreateOrgUnitView {
             @Override
             public void buttonClick(final ClickEvent event) {
                 try {
-                    form.commit();
-
                     final OrgUnitModel child = storeInRepository(txtNameContext, txtDescContext);
-                    mainWindow.showNotification("Organizational Unit " + txtNameContext.getValue().toString()
-                        + " created successfully ", Window.Notification.TYPE_TRAY_NOTIFICATION);
-                    form.getField("txtNameContext").setValue("");
-                    form.getField("txtDescContext").setValue("");
+                    updateTree(child);
+                    form.commit();
+                    resetFields();
+                    showSuccesfullMessage(txtNameContext);
                 }
                 catch (final EmptyValueException e) {
                     mainWindow.showNotification("Please fill in all the required elements in the form",
@@ -101,6 +104,24 @@ public class CreateOrgUnitView {
                 finally {
                     closeSubWindow();
                 }
+            }
+
+            private void updateTree(final OrgUnitModel child) {
+                dataSource.addChild(parent, child);
+            }
+
+            private void showSuccesfullMessage(final TextField txtNameContext) {
+                mainWindow.showNotification("Organizational Unit " + txtNameContext.getValue().toString()
+                    + " created successfully ", Window.Notification.TYPE_TRAY_NOTIFICATION);
+            }
+
+            private void resetFields() {
+                form.getField("txtNameContext").setValue("");
+                form.getField("txtDescContext").setValue("");
+            }
+
+            private void closeSubWindow() {
+                mainWindow.removeWindow(subwindow);
             }
 
             private OrgUnitModel storeInRepository(final TextField txtNameContext, final TextField txtDescContext)
@@ -122,5 +143,4 @@ public class CreateOrgUnitView {
         form.getField("txtDescContext").setRequired(true);
         form.getField("txtDescContext").setRequiredError("Description is missing");
     }
-
 }
