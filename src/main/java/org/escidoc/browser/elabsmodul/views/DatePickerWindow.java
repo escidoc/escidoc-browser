@@ -390,7 +390,7 @@ public class DatePickerWindow extends Window implements Button.ClickListener {
 
             if (date.after(now)) {
                 long sec = (date.getTime() - now.getTime()) / 1000;
-                int seconds = new Long(sec).intValue();
+                int seconds = Long.valueOf(sec).intValue();
                 day = seconds / 86400;
                 hour = (seconds - day * 86400) / 3600;
                 minute = (seconds - day * 86400 - hour * 3600) / 60;

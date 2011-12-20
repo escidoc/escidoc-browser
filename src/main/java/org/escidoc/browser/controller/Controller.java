@@ -52,7 +52,7 @@ public abstract class Controller {
 
     protected Component view;
 
-    String resouceName;
+    private String resourceName;
 
     public void showView(final LayoutDesign layout) {
         layout.openView(this.view, this.getResourceName());
@@ -63,11 +63,11 @@ public abstract class Controller {
     }
 
     public String getResourceName() {
-        return resouceName;
+        return resourceName;
     }
 
     public void setResourceName(String name) {
-        this.resouceName = name;
+        this.resourceName = name;
     }
 
     /**

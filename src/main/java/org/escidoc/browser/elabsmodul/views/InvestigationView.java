@@ -367,11 +367,16 @@ public class InvestigationView extends View implements ILabsPanel, ILabsAction, 
 
     @Override
     public void setModifiedComponent(final Component modifiedComponent) {
-        try {
+        if (modifiedComponent == null) {
+            this.modifiedComponent = null;
+            return;
+        }
+
+        if (modifiedComponent instanceof HorizontalLayout) {
             this.modifiedComponent = (HorizontalLayout) modifiedComponent;
         }
-        catch (final ClassCastException e) {
-            LOG.error(e.getMessage());
+        else {
+            LOG.error("Wrong class type!");
         }
     }
 

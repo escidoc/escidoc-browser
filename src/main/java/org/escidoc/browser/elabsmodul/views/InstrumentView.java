@@ -79,14 +79,6 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
 
     private final String[] PROPERTIES = ELabsViewContants.INSTRUMENT_PROPERTIES;
 
-    final String VIEWCAPTION = "Instument View";
-
-    final String LAST_MODIFIED_BY = "Last modification by ";
-
-    final String FLOAT_LEFT = "floatleft";
-
-    final String FLOAT_RIGHT = "floatright";
-
     private final int COMPONENT_COUNT = 9;
 
     private POJOItem<InstrumentBean> pojoItem = null;
@@ -109,19 +101,24 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
 
     private List<ResourceModel> breadCrumbModel;
 
-    private ItemProxy itemProxy;
+    private final ItemProxy itemProxy;
 
     private EscidocServiceLocation serviceLocation;
 
     public InstrumentView(InstrumentBean sourceBean, ISaveAction controller, List<ResourceModel> breadCrumbModel,
         ResourceProxy resourceProxy, EscidocServiceLocation serviceLocation) {
-
-        instrumentBean = (sourceBean != null) ? sourceBean : new InstrumentBean();
+        this.instrumentBean = (sourceBean != null) ? sourceBean : new InstrumentBean();
         this.controller = controller;
-        this.breadCrumbModel = breadCrumbModel;
-        itemProxy = (ItemProxy) resourceProxy;
         this.serviceLocation = serviceLocation;
-
+        this.breadCrumbModel = breadCrumbModel;
+        if (resourceProxy instanceof ItemProxy) {
+            this.itemProxy = (ItemProxy) resourceProxy;
+        }
+        else {
+            LOG.error("ResourceProxy is not ItemProxy");
+            this.itemProxy = null;
+            return;
+        }
         initialisePanelComponents();
         buildPropertiesGUI();
         buildPanelGUI();
@@ -362,11 +359,16 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
 
     @Override
     public void setModifiedComponent(Component modifiedComponent) {
-        try {
+        if (modifiedComponent == null) {
+            this.modifiedComponent = null;
+            return;
+        }
+
+        if (modifiedComponent instanceof HorizontalLayout) {
             this.modifiedComponent = (HorizontalLayout) modifiedComponent;
         }
-        catch (ClassCastException e) {
-            LOG.error(e.getMessage());
+        else {
+            LOG.error("Wrong class type!");
         }
     }
 

@@ -32,6 +32,4 @@ package org.escidoc.browser.elabsmodul.interfaces;
  * marker interface for the beans.
  */
 public interface IBeanModel {
-    // FIXME is a marker interface necassary?
-
 }

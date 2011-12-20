@@ -91,14 +91,12 @@ import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.om.container.Container;
 
 /**
- * @author frs
  * 
  */
 public class InvestigationController extends Controller implements IInvestigationAction {
 
     private static Logger LOG = LoggerFactory.getLogger(InstrumentController.class);
 
-    // FIXME move to Repositories
     private EscidocServiceLocation serviceLocation;
 
     private Repositories repositories;
@@ -208,7 +206,6 @@ public class InvestigationController extends Controller implements IInvestigatio
 
     private Component createView(final ResourceProxy resourceProxy) {
         Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
-
         ContainerProxyImpl containerProxy = null;
         InvestigationBean investigationBean = null;
         List<ResourceModel> breadCrumbModel = null;
@@ -224,12 +221,9 @@ public class InvestigationController extends Controller implements IInvestigatio
             LOG.error(e.getLocalizedMessage());
             investigationBean = null;
         }
-
         breadCrumbModel = createBreadCrumbModel();
 
-        final Component investigationView =
-            new InvestigationView(investigationBean, this, breadCrumbModel, containerProxy, router);
-        return investigationView;
+        return new InvestigationView(investigationBean, this, breadCrumbModel, containerProxy, router);
     }
 
     private InvestigationBean loadBeanData(final ContainerProxy containerProxy) throws EscidocBrowserException {

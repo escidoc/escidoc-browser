@@ -28,11 +28,7 @@
  */
 package org.escidoc.browser.ui.listeners;
 
-import org.escidoc.browser.AppConstants;
-import org.escidoc.browser.model.ContainerModel;
-import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
@@ -101,34 +97,5 @@ public class TreeClickListener implements ItemClickListener {
         LOG.error("Can not find member of: " + hasChildrenResource.getId(), e);
         mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
             Notification.TYPE_ERROR_MESSAGE));
-    }
-
-    private String findContextId(final ResourceModel clickedResource) {
-        if (clickedResource instanceof ContextModel) {
-            return ((ContextModel) clickedResource).getId();
-        }
-        else if (clickedResource instanceof ContainerModel) {
-            final ContainerModel containerModel = (ContainerModel) clickedResource;
-            try {
-                return repositories.container().findById(containerModel.getId()).getContext().getObjid();
-            }
-            catch (final EscidocClientException e) {
-                router.getMainWindow().showNotification(
-                    "Can not retrieve container " + containerModel.getId() + ". Reason: " + e.getMessage(),
-                    Window.Notification.TYPE_ERROR_MESSAGE);
-            }
-        }
-        else if (clickedResource instanceof ItemModel) {
-            final ItemModel itemModel = (ItemModel) clickedResource;
-            try {
-                return repositories.item().findById(itemModel.getId()).getContext().getObjid();
-            }
-            catch (final EscidocClientException e) {
-                router.getMainWindow().showNotification(
-                    "Unable to retrieve Item " + itemModel.getId() + ". Reason: " + e.getMessage(),
-                    Window.Notification.TYPE_ERROR_MESSAGE);
-            }
-        }
-        return AppConstants.EMPTY_STRING;
     }
 }

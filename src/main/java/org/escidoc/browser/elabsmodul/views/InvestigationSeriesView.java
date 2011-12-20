@@ -272,7 +272,17 @@ public class InvestigationSeriesView extends View implements ILabsPanel, ILabsAc
 
     @Override
     public void setModifiedComponent(Component modifiedComponent) {
-        this.modifiedComponent = modifiedComponent;
+        if (modifiedComponent == null) {
+            this.modifiedComponent = null;
+            return;
+        }
+
+        if (modifiedComponent instanceof HorizontalLayout) {
+            this.modifiedComponent = modifiedComponent;
+        }
+        else {
+            LOG.error("Wrong class type!");
+        }
     }
 
     @Override

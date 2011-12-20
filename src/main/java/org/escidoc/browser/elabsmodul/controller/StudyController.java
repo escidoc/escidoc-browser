@@ -80,7 +80,6 @@ public class StudyController extends Controller implements ISaveAction {
 
     private Window mainWindow;
 
-    // the bean model to store
     private IBeanModel beanModel = null;
 
     private Router router;
@@ -94,10 +93,8 @@ public class StudyController extends Controller implements ISaveAction {
         this.resourceProxy = resourceProxy;
         this.repositories = repositories;
         this.mainWindow = router.getMainWindow();
-
         this.view = createView(resourceProxy);
         this.setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
-
     }
 
     @Override
@@ -119,7 +116,6 @@ public class StudyController extends Controller implements ISaveAction {
     }
 
     /**
-     * 
      * @throws EscidocClientException
      */
     private synchronized void saveModel() {
@@ -209,14 +205,10 @@ public class StudyController extends Controller implements ISaveAction {
 
     private Component createView(ResourceProxy resourceProxy) {
         Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
-
-        ContainerProxy containerProxy = null;
         StudyBean studyBean = null;
-
-        if (resourceProxy instanceof ContainerProxy) {
-            containerProxy = (ContainerProxy) resourceProxy;
+        if (!(resourceProxy instanceof ContainerProxy)) {
+            LOG.error("Wrong item type!");
         }
-
         try {
             studyBean = loadBeanData();
         }
