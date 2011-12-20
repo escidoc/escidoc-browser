@@ -54,4 +54,9 @@ public class GuestUser implements CurrentUser {
         return " ";
     }
 
+    @Override
+    public String getRealName() {
+        return ViewConstants.GUEST;
+    }
+
 }

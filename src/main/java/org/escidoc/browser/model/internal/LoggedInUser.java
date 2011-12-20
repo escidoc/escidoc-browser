@@ -121,4 +121,9 @@ public class LoggedInUser implements CurrentUser {
         return currentUser.getObjid();
     }
 
+    @Override
+    public String getRealName() {
+        return currentUser.getProperties().getName();
+    }
+
 }

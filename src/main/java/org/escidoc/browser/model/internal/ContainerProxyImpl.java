@@ -86,7 +86,7 @@ public class ContainerProxyImpl implements ContainerProxy {
         try {
             doc = createNewDocument();
             for (final MetadataRecord metadataRecord : mdRecs) {
-                if (metadataRecord.getName() == "escidoc") {
+                if (metadataRecord.getName().equals("escidoc")) {
                     final Element element = doc.createElementNS(AppConstants.DC_NAMESPACE, "dc");
                     final Element titleElmt = doc.createElementNS(AppConstants.DC_NAMESPACE, "title");
                     titleElmt.setPrefix("dc");

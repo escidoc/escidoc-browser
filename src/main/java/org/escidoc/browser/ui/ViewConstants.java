@@ -310,4 +310,8 @@ public class ViewConstants {
     public static final String OK = "Ok";
 
     public static final String ERROR_CREATING_RESOURCE = "Error creating resource";
+
+    public static final String EDIT_PROFILE = "Edit personal profile";
+
+    public static final String ERROR_UPDATING_USER = "Error updating user profile";
 }

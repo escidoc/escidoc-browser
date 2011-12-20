@@ -137,9 +137,7 @@ public class EscidocParameterHandlerImpl implements EscidocParameterHandler {
         app.setUser(currentUser);
         app.setCookie(AppConstants.COOKIE_NAME, findEscidocToken(parameters));
         try {
-            LOG.debug("Forwarded");
             app.getResponse().sendRedirect(app.getURL() + "?escidocurl=" + serviceLocation.getEscidocUri());
-
         }
         catch (IOException e) {
             // TODO Auto-generated catch block
