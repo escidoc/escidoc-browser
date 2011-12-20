@@ -40,6 +40,8 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
+import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
@@ -72,6 +74,8 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 @SuppressWarnings("serial")
 public class SimpleLayout extends LayoutDesign {
 
+    private static final Logger LOG = LoggerFactory.getLogger(SimpleLayout.class);
+
     private Resource NO_ICON;
 
     private AbsoluteLayout mainLayout;
@@ -103,8 +107,6 @@ public class SimpleLayout extends LayoutDesign {
     private CssLayout cssContent;
 
     private HorizontalLayout footer;
-
-    private static final Logger LOG = LoggerFactory.getLogger(SimpleLayout.class);
 
     private NavigationTreeBuilder treeBuilder;
 
@@ -150,8 +152,8 @@ public class SimpleLayout extends LayoutDesign {
     }
 
     @Override
-    public void openViewByReloading(final Component cmp, String tabname) {
-        Preconditions.checkNotNull(cmp, "cmp is null: %s", cmp);
+    public void openViewByReloading(final Component component, String tabname) {
+        Preconditions.checkNotNull(component, "component is null: %s", component);
         Preconditions.checkNotNull(tabname, "tabname is null: %s", tabname);
 
         final String description = tabname;
@@ -167,19 +169,19 @@ public class SimpleLayout extends LayoutDesign {
             tabname = tabname.substring(0, 50) + "...";
         }
         int position = -1;
-        if (mainContentTabs.getTab(cmp) != null) {
-            final Tab tmpTab = mainContentTabs.getTab(cmp);
+        if (mainContentTabs.getTab(component) != null) {
+            final Tab tmpTab = mainContentTabs.getTab(component);
             position = mainContentTabs.getTabPosition(tmpTab);
             mainContentTabs.removeTab(tmpTab);
         }
-        final Tab tb = mainContentTabs.addTab(cmp);
+        final Tab tb = mainContentTabs.addTab(component);
         tb.setCaption(tabname);
         tb.setDescription(description);
         if (position != -1) {
             mainContentTabs.setTabPosition(tb, position);
         }
 
-        mainContentTabs.setSelectedTab(cmp);
+        mainContentTabs.setSelectedTab(component);
         tb.setClosable(true);
     }
 
@@ -331,12 +333,7 @@ public class SimpleLayout extends LayoutDesign {
         // Binding the tree to the NavigationPanel
         mainNavigationTree = addNavigationTree();
 
-        final Accordion accordion = new Accordion();
-        accordion.setSizeFull();
-
-        addResourcesTab(accordion);
-        addOrgUnitTab(accordion);
-        addToolsTab(accordion);
+        final Accordion accordion = buildAccordion();
 
         vlNavigationPanel.addComponent(accordion);
         vlNavigationPanel.setExpandRatio(accordion, 1.0f);
@@ -344,6 +341,24 @@ public class SimpleLayout extends LayoutDesign {
         navigationPanel.setContent(vlNavigationPanel);
 
         return navigationPanel;
+    }
+
+    private Accordion buildAccordion() throws EscidocClientException, URISyntaxException {
+        final Accordion accordion = new Accordion();
+        accordion.setSizeFull();
+        accordion.addListener(new SelectedTabChangeListener() {
+
+            @Override
+            public void selectedTabChange(final SelectedTabChangeEvent event) {
+                LOG.debug("Tab change: " + event.getSource());
+                LOG.debug("Tab change: " + event.getComponent());
+            }
+        });
+
+        addResourcesTab(accordion);
+        addOrgUnitTab(accordion);
+        addToolsTab(accordion);
+        return accordion;
     }
 
     private void addOrgUnitTab(final Accordion accordion) throws EscidocClientException {

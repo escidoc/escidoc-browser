@@ -103,22 +103,24 @@ public class OrganizationUnitRepository implements Repository {
 
     @Override
     public ResourceProxy findById(final String id) throws EscidocClientException {
-        final OrganizationalUnit organizationalUnit = client.retrieve(id);
+
+        final OrganizationalUnit o = client.retrieve(id);
+
         return new ResourceProxy() {
 
             @Override
             public ResourceType getType() {
-                throw new UnsupportedOperationException("not-yet-implemented.");
+                return ResourceType.ORG_UNIT;
             }
 
             @Override
             public String getName() {
-                throw new UnsupportedOperationException("not-yet-implemented.");
+                return o.getXLinkTitle();
             }
 
             @Override
             public String getId() {
-                throw new UnsupportedOperationException("not-yet-implemented.");
+                return o.getObjid();
             }
 
             @Override

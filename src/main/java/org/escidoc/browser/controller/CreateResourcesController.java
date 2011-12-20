@@ -96,4 +96,8 @@ public class CreateResourcesController extends Controller {
         repositories.context().create(cntx.build());
     }
 
+    @Override
+    protected Component createView(final ResourceProxy resourceProxy) throws EscidocClientException {
+        throw new UnsupportedOperationException("not-yet-implemented.");
+    }
 }

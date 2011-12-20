@@ -149,7 +149,6 @@ public class Router {
     /**
      * Initiate Layout / Default or another one
      * 
-     * @return
      */
     private void createLayout() {
         final String layoutClassName = browserProperties.getProperty("design");
@@ -291,6 +290,7 @@ public class Router {
 
         final Controller controller = buildController(clickedResource);
         Preconditions.checkNotNull(controller, "controller is null: %s", controller);
+
         if (shouldReloadView) {
             controller.showViewByReloading(layout);
         }

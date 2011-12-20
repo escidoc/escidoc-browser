@@ -28,6 +28,18 @@
  */
 package org.escidoc.browser.ui.listeners;
 
+import com.google.common.base.Preconditions;
+
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Layout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.BaseTheme;
+
 import org.escidoc.browser.layout.LayoutDesign;
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.EscidocServiceLocation;
@@ -39,17 +51,6 @@ import org.escidoc.browser.ui.maincontent.ContainerView;
 import org.escidoc.browser.ui.maincontent.ItemView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Layout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.BaseTheme;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.ResourceType;
@@ -73,9 +74,9 @@ public class RelationsClickListener implements ClickListener {
 
     private ResourceType type;
 
-    private Repositories repositories;
+    private final Repositories repositories;
 
-    private Router router;
+    private final Router router;
 
     protected Component cmpView;
 
@@ -113,7 +114,7 @@ public class RelationsClickListener implements ClickListener {
      * @param mainSite
      */
     public RelationsClickListener(final ContainerProxy resourceProxy, final Window mainWindow,
-        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories, Router mainSite) {
+        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories, final Router mainSite) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null.");
 
@@ -128,7 +129,7 @@ public class RelationsClickListener implements ClickListener {
         throws EscidocClientException {
 
         final Relations relations = cr.getRelations(id);
-        HorizontalLayout hl = new HorizontalLayout();
+        final HorizontalLayout hl = new HorizontalLayout();
 
         for (final Relation relation : relations) {
             String predicate;
@@ -141,23 +142,23 @@ public class RelationsClickListener implements ClickListener {
                 predicate = relation.getPredicate();
             }
 
-            String prefixPath = relation.getXLinkHref().substring(0, relation.getXLinkHref().lastIndexOf('/'));
+            final String prefixPath = relation.getXLinkHref().substring(0, relation.getXLinkHref().lastIndexOf('/'));
             type = ResourceType.getValue(prefixPath);
 
-            Button btnRelation =
+            final Button btnRelation =
                 new Button(itemProxy.getName() + " relation as " + predicate + " of " + relation.getXLinkTitle());
             btnRelation.setStyleName(BaseTheme.BUTTON_LINK);
             btnRelation.addListener(new ClickListener() {
 
                 @Override
-                public void buttonClick(ClickEvent event) {
+                public void buttonClick(final ClickEvent event) {
                     if (type.name().equals("CONTAINER")) {
                         try {
                             cmpView =
-                                new ContainerView(router, (ContainerProxy) repositories.container().findById(
-                                    relation.getObjid()), repositories);
+                                new ContainerView(router, repositories.container().findById(relation.getObjid()),
+                                    repositories);
                         }
-                        catch (EscidocClientException e) {
+                        catch (final EscidocClientException e) {
                             mainWindow.showNotification(e.getLocalizedMessage());
                             e.printStackTrace();
                         }
@@ -165,10 +166,9 @@ public class RelationsClickListener implements ClickListener {
                     else if (type.name().equals("ITEM")) {
                         try {
                             cmpView =
-                                new ItemView(repositories, router, (ItemProxy) repositories.item().findById(
-                                    relation.getObjid()));
+                                new ItemView(repositories, router, repositories.item().findById(relation.getObjid()));
                         }
-                        catch (EscidocClientException e) {
+                        catch (final EscidocClientException e) {
                             mainWindow.showNotification(e.getLocalizedMessage());
                         }
                     }

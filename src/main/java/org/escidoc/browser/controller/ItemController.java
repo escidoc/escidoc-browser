@@ -28,55 +28,27 @@
  */
 package org.escidoc.browser.controller;
 
+import com.google.common.base.Preconditions;
+
+import com.vaadin.ui.Component;
+
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.ItemView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class ItemController extends Controller {
 
-    private final Repositories repositories;
-
-    private final Window mainWindow;
-
-    private final Router router;
-
-    private static Logger LOG = LoggerFactory.getLogger(ItemController.class);
-
     public ItemController(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
-        Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
-        Preconditions.checkNotNull(repositories, "repositories is NULL");
-        Preconditions.checkNotNull(router, "Router is NULL");
-        this.router = router;
-        this.repositories = repositories;
-        this.mainWindow = router.getMainWindow();
-
-        try {
-            this.view = createView(resourceProxy);
-        }
-        catch (final EscidocClientException e) {
-            mainWindow.showNotification(ViewConstants.VIEW_ERROR_CANNOT_LOAD_VIEW + e.getLocalizedMessage(),
-                Notification.TYPE_ERROR_MESSAGE);
-            LOG.error("Failed at: ", e.getStackTrace());
-        }
-        this.setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
-
     }
 
-    private Component createView(final ResourceProxy resourceProxy) throws EscidocClientException {
-        Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
-        return new ItemView(repositories, router, resourceProxy);
+    @Override
+    protected Component createView(final ResourceProxy resourceProxy) throws EscidocClientException {
+        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
+        return new ItemView(getRepositories(), getRouter(), resourceProxy);
     }
 
 }

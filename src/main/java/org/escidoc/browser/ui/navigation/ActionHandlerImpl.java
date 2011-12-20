@@ -49,6 +49,7 @@ import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.maincontent.CreateOrgUnitView;
 import org.escidoc.browser.ui.navigation.menubar.ShowAddViewCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,8 +86,7 @@ final class ActionHandlerImpl implements Action.Handler {
     }
 
     @Override
-    public Action[] getActions(final Object target, final Object sender) {
-        LOG.debug("Sender: " + sender);
+    public Action[] getActions(final Object target, @SuppressWarnings("unused") final Object sender) {
 
         if (!(target instanceof ResourceModel)) {
             return new Action[] {};

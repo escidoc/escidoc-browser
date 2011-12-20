@@ -28,39 +28,77 @@
  */
 package org.escidoc.browser.controller;
 
+import com.google.common.base.Preconditions;
+
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Window.Notification;
+
 import org.escidoc.browser.layout.LayoutDesign;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Window.Notification;
+import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public abstract class Controller {
 
-    protected Component view;
+    private final static Logger LOG = LoggerFactory.getLogger(Controller.class);
 
-    private String resouceName;
+    protected Component view;
 
     private final Repositories repositories;
 
+    private final ResourceProxy resourceProxy;
+
     private final Router router;
 
-    private final ResourceProxy resourProxy;
+    private String resouceName;
 
     public Controller(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        Preconditions.checkNotNull(router, "router is null: %s", router);
+        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
+
         this.repositories = repositories;
         this.router = router;
-        this.resourProxy = resourceProxy;
+        this.resourceProxy = resourceProxy;
+
+        try {
+            this.view = createView(resourceProxy);
+            this.setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
+        }
+        catch (final EscidocClientException e) {
+            router.getMainWindow().showNotification(
+                ViewConstants.VIEW_ERROR_CANNOT_LOAD_VIEW + e.getLocalizedMessage(), Notification.TYPE_ERROR_MESSAGE);
+            LOG.error("Failed at: ", e.getStackTrace());
+        }
+    }
+
+    protected abstract Component createView(final ResourceProxy resourceProxy) throws EscidocClientException;
+
+    protected Repositories getRepositories() {
+        return repositories;
+    }
+
+    protected Router getRouter() {
+        return router;
+    }
+
+    protected ResourceProxy getResourceProxy() {
+        return resourceProxy;
     }
 
     public void showView(final LayoutDesign layout) {
-        layout.openView(this.view, this.getResourceName());
+        layout.openView(view, this.getResourceName());
     }
 
     public void showViewByReloading(final LayoutDesign layout) {
-        layout.openViewByReloading(this.view, this.getResourceName());
+        Preconditions.checkNotNull(view, "view is null: %s", view);
+        Preconditions.checkNotNull(layout, "layout is null: %s", layout);
+        layout.openViewByReloading(view, getResourceName());
     }
 
     public String getResourceName() {
@@ -70,6 +108,7 @@ public abstract class Controller {
     public void setResourceName(final String name) {
         this.resouceName = name;
     }
+
     /**
      * Show error message to the user
      * 

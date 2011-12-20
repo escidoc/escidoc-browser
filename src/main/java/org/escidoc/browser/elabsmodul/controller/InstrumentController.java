@@ -28,15 +28,11 @@
  */
 package org.escidoc.browser.elabsmodul.controller;
 
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import com.google.common.base.Preconditions;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import org.escidoc.browser.controller.Controller;
 import org.escidoc.browser.elabsmodul.cache.ELabsCache;
@@ -72,10 +68,15 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.EscidocException;
@@ -93,19 +94,19 @@ public final class InstrumentController extends Controller implements ISaveActio
 
     private static Logger LOG = LoggerFactory.getLogger(InstrumentController.class);
 
-    private Repositories repositories;
+    private final Repositories repositories;
 
-    private EscidocServiceLocation serviceLocation;
+    private final EscidocServiceLocation serviceLocation;
 
-    private ResourceProxy resourceProxy;
+    private final ResourceProxy resourceProxy;
 
-    private Window mainWindow;
+    private final Window mainWindow;
 
     private IBeanModel beanModel;
 
-    private Router router;
+    private final Router router;
 
-    public InstrumentController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
+    public InstrumentController(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
         Preconditions.checkNotNull(repositories, "Repository ref is null");
         Preconditions.checkNotNull(router, "Router ref is null");
@@ -319,7 +320,7 @@ public final class InstrumentController extends Controller implements ISaveActio
             context = (ContextProxyImpl) repositories.context().findById(resourceProxy.getContext().getObjid());
             final Element content = context.getAdminDescription().get("elabs").getContent();
 
-            List<String> eSychEndpoints = new ArrayList<String>();
+            final List<String> eSychEndpoints = new ArrayList<String>();
 
             if (ELabsCache.getEsyncEndpoints().isEmpty()) {
                 final NodeList nodeList = content.getElementsByTagName("el:esync-endpoint");
@@ -335,7 +336,7 @@ public final class InstrumentController extends Controller implements ISaveActio
             }
 
             if (ELabsCache.getFileFormats().isEmpty()) {
-                List<FileFormatBean> fileFormatList = new ArrayList<FileFormatBean>();
+                final List<FileFormatBean> fileFormatList = new ArrayList<FileFormatBean>();
                 final String URI_DC = "http://purl.org/dc/elements/1.1/";
                 final String URI_EL = "http://escidoc.org/ontologies/bw-elabs.owl#";
                 final NodeList fileFormatNodeList = content.getElementsByTagName("el:FileFormat");
@@ -343,7 +344,7 @@ public final class InstrumentController extends Controller implements ISaveActio
                     final Node node = fileFormatNodeList.item(i);
                     if (node.hasChildNodes()) {
                         final NodeList interNodeList = node.getChildNodes();
-                        FileFormatBean bean = new FileFormatBean();
+                        final FileFormatBean bean = new FileFormatBean();
                         for (int j = 0; j < interNodeList.getLength(); j++) {
                             final Node formatNode = interNodeList.item(j);
                             final String nodeName = formatNode.getLocalName();
@@ -402,7 +403,8 @@ public final class InstrumentController extends Controller implements ISaveActio
 
     }
 
-    private Component createView(final ResourceProxy resourceProxy) {
+    @Override
+    protected Component createView(final ResourceProxy resourceProxy) {
         Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
 
         ItemProxyImpl itemProxyImpl = null;
@@ -542,7 +544,7 @@ public final class InstrumentController extends Controller implements ISaveActio
         try {
             validateBean(this.beanModel);
         }
-        catch (EscidocBrowserException e) {
+        catch (final EscidocBrowserException e) {
             LOG.error(e.getMessage());
             return;
         }
@@ -591,13 +593,13 @@ public final class InstrumentController extends Controller implements ISaveActio
         }
     }
 
-    protected void validateBean(IBeanModel beanModel) throws EscidocBrowserException {
+    protected void validateBean(final IBeanModel beanModel) throws EscidocBrowserException {
         Preconditions.checkNotNull(beanModel, "Input is null");
         InstrumentBean instrumentBean = null;
         try {
             instrumentBean = (InstrumentBean) beanModel;
         }
-        catch (ClassCastException e) {
+        catch (final ClassCastException e) {
             showError("Internal error");
             throw new EscidocBrowserException("Wrong type of model", e);
         }

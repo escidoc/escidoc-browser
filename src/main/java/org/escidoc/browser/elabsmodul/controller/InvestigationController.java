@@ -28,18 +28,10 @@
  */
 package org.escidoc.browser.elabsmodul.controller;
 
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map.Entry;
+import com.google.common.base.Preconditions;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Window;
 
 import org.escidoc.browser.controller.Controller;
 import org.escidoc.browser.elabsmodul.cache.ELabsCache;
@@ -78,9 +70,17 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Window;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map.Entry;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.EscidocException;
@@ -99,17 +99,17 @@ public class InvestigationController extends Controller implements IInvestigatio
     private static Logger LOG = LoggerFactory.getLogger(InstrumentController.class);
 
     // FIXME move to Repositories
-    private EscidocServiceLocation serviceLocation;
+    private final EscidocServiceLocation serviceLocation;
 
-    private Repositories repositories;
+    private final Repositories repositories;
 
-    private Router router;
+    private final Router router;
 
-    private ResourceProxy resourceProxy;
+    private final ResourceProxy resourceProxy;
 
     private IBeanModel model;
 
-    private ILabsService labsService;
+    private final ILabsService labsService;
 
     private static Window mainWindow;
 
@@ -120,7 +120,8 @@ public class InvestigationController extends Controller implements IInvestigatio
      * org.escidoc.browser.repository.Repositories, org.escidoc.browser.ui.Router,
      * org.escidoc.browser.model.ResourceProxy, com.vaadin.ui.Window, org.escidoc.browser.model.CurrentUser)
      */
-    public InvestigationController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
+    public InvestigationController(final Repositories repositories, final Router router,
+        final ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
         Preconditions.checkNotNull(repositories, "Repository ref is null");
         Preconditions.checkNotNull(resourceProxy, "ResourceProxy ref is null");
@@ -206,7 +207,8 @@ public class InvestigationController extends Controller implements IInvestigatio
         }
     }
 
-    private Component createView(final ResourceProxy resourceProxy) {
+    @Override
+    protected Component createView(final ResourceProxy resourceProxy) {
         Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
 
         ContainerProxyImpl containerProxy = null;
@@ -278,7 +280,7 @@ public class InvestigationController extends Controller implements IInvestigatio
                     try {
                         investigationBean.setMaxRuntimeInMin(new Integer(node.getTextContent()));
                     }
-                    catch (NumberFormatException nfe) {
+                    catch (final NumberFormatException nfe) {
                         investigationBean.setMaxRuntimeInMin(0);
                     }
                 }
@@ -473,7 +475,7 @@ public class InvestigationController extends Controller implements IInvestigatio
         try {
             validateBean(this.model);
         }
-        catch (EscidocBrowserException e) {
+        catch (final EscidocBrowserException e) {
             LOG.error(e.getMessage());
             return;
         }
@@ -610,25 +612,23 @@ public class InvestigationController extends Controller implements IInvestigatio
         final List<RigBean> result = new ArrayList<RigBean>();
         try {
             List<ResourceModel> items = null;
-            for (Iterator<String> iterator = ELabsCache.getRigCMMIds().iterator(); iterator.hasNext();) {
-                String cmmId = iterator.next();
+            for (final String cmmId : ELabsCache.getRigCMMIds()) {
                 items = repositories.item().findItemsByContentModel(cmmId);
-                for (Iterator<ResourceModel> iterator2 = items.iterator(); iterator2.hasNext();) {
-                    ResourceModel itemModel = iterator2.next();
+                for (final ResourceModel itemModel : items) {
                     if (itemModel instanceof ItemProxy) {
-                        ItemProxy itemProxy = (ItemProxy) itemModel;
+                        final ItemProxy itemProxy = (ItemProxy) itemModel;
                         result.add(loadRelatedRigBeanData(itemProxy));
                     }
                 }
             }
         }
-        catch (EscidocClientException e) {
+        catch (final EscidocClientException e) {
             LOG.error(e.getMessage());
         }
         return result;
     }
 
-    private String setDurationLabel(String storedDuration) {
+    private String setDurationLabel(final String storedDuration) {
         try {
             int minute = new Integer(storedDuration).intValue(), day = 0, hour = 0;
 
@@ -636,7 +636,7 @@ public class InvestigationController extends Controller implements IInvestigatio
             hour = (minute - day * 1440) / 60;
             minute = (minute - day * 1440 - hour * 60);
 
-            StringBuilder sb = new StringBuilder();
+            final StringBuilder sb = new StringBuilder();
             if (day != 0) {
                 sb.append(day);
                 sb.append((day == 1) ? " day " : " days ");
@@ -652,7 +652,7 @@ public class InvestigationController extends Controller implements IInvestigatio
 
             return sb.toString();
         }
-        catch (NumberFormatException e) {
+        catch (final NumberFormatException e) {
             LOG.debug(e.getMessage());
             return null;
         }
@@ -666,13 +666,13 @@ public class InvestigationController extends Controller implements IInvestigatio
         return labsService;
     }
 
-    protected void validateBean(IBeanModel beanModel) throws EscidocBrowserException {
+    protected void validateBean(final IBeanModel beanModel) throws EscidocBrowserException {
         Preconditions.checkNotNull(beanModel, "Input is null");
         InvestigationBean investigationBean = null;
         try {
             investigationBean = (InvestigationBean) beanModel;
         }
-        catch (ClassCastException e) {
+        catch (final ClassCastException e) {
             showError("Internal error");
             throw new EscidocBrowserException("Wrong type of model", e);
         }

@@ -1,4 +1,4 @@
-package org.escidoc.browser.ui.navigation;
+package org.escidoc.browser.ui.maincontent;
 
 import com.google.common.base.Preconditions;
 
