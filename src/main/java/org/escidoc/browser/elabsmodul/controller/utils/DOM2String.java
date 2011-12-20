@@ -38,6 +38,9 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Element;
 
+/**
+ * Utility class to serialize any DOM element
+ */
 public final class DOM2String {
     private DOM2String() {
     }
