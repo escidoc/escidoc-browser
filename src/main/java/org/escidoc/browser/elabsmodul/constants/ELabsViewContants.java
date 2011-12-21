@@ -250,17 +250,17 @@ final public class ELabsViewContants {
 
     public static final String STYLE_ELABS_TEXT_AS_LABEL = "elabsLabel";
 
-    public static final String DIALOG_SAVEINSTRUMENT_HEADER = "Saving Instrument";
+    public static final String DIALOG_SAVE_INSTRUMENT_HEADER = "Saving Instrument";
 
-    public static final String DIALOG_SAVEINSTRUMENT_TEXT = "Are you sure to save this Instrument?";
+    public static final String DIALOG_SAVE_INSTRUMENT_TEXT = "Are you sure to save this Instrument?";
 
-    public static final String DIALOG_SAVERIG_HEADER = "Saving Rig";
+    public static final String DIALOG_SAVE_RIG_HEADER = "Saving Rig";
 
-    public static final String DIALOG_SAVERIG_TEXT = "Are you sure to save this Rig?";
+    public static final String DIALOG_SAVE_RIG_TEXT = "Are you sure to save this Rig?";
 
-    public static final String DIALOG_SAVESTUDY_HEADER = "Saving Study";
+    public static final String DIALOG_SAVE_STUDY_HEADER = "Saving Study";
 
-    public static final String DIALOG_SAVESTUDY_TEXT = "Are you sure to save this Study?";
+    public static final String DIALOG_SAVE_STUDY_TEXT = "Are you sure to save this Study?";
 
     public static final String DIALOG_SAVE_INVESTIGATION_HEADER = "Saving Investigation";
 

@@ -72,6 +72,16 @@ import de.escidoc.core.resources.om.container.Container;
 
 public class StudyController extends Controller implements ISaveAction {
 
+    private static final Logger LOG = LoggerFactory.getLogger(InstrumentController.class);
+
+    private static final String ESCIDOC = "escidoc";
+
+    private static final String URI_DC = "http://purl.org/dc/elements/1.1/";
+
+    private static final String URI_EL = "http://escidoc.org/ontologies/bw-elabs/re#";
+
+    private static final String URI_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+
     private final EscidocServiceLocation serviceLocation;
 
     private final ResourceProxy resourceProxy;
@@ -82,15 +92,17 @@ public class StudyController extends Controller implements ISaveAction {
 
     private final Router router;
 
-    private IBeanModel beanModel = null;
+    private IBeanModel beanModel;
 
     private final Object LOCK = new Object() {
     };
 
-    private static final Logger LOG = LoggerFactory.getLogger(InstrumentController.class);
-
     public StudyController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
+        Preconditions.checkNotNull(repositories, "Repositories is NULL");
+        Preconditions.checkNotNull(router, "Router is NULL");
+        Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
+        Preconditions.checkArgument(resourceProxy instanceof ContainerProxy, "ResourceProxy is not a ContainerProxy");
         this.router = router;
         this.serviceLocation = router.getServiceLocation();
         this.resourceProxy = resourceProxy;
@@ -104,10 +116,8 @@ public class StudyController extends Controller implements ISaveAction {
     public void saveAction(IBeanModel beanModel) {
         Preconditions.checkNotNull(beanModel, "DataBean to store is NULL");
         this.beanModel = beanModel;
-
-        mainWindow.addWindow(new YesNoDialog(ELabsViewContants.DIALOG_SAVESTUDY_HEADER,
-            ELabsViewContants.DIALOG_SAVESTUDY_TEXT, new YesNoDialog.Callback() {
-
+        this.mainWindow.addWindow(new YesNoDialog(ELabsViewContants.DIALOG_SAVE_STUDY_HEADER,
+            ELabsViewContants.DIALOG_SAVE_STUDY_TEXT, new YesNoDialog.Callback() {
                 @Override
                 public void onDialogResult(boolean resultIsYes) {
                     if (resultIsYes) {
@@ -123,9 +133,8 @@ public class StudyController extends Controller implements ISaveAction {
      */
     private void saveModel() {
         synchronized (LOCK) {
-            Preconditions.checkNotNull(beanModel, "DataBean to store is NULL");
-            ContainerRepository containerRepositories = repositories.container();
-            final String ESCIDOC = "escidoc";
+            Preconditions.checkNotNull(this.beanModel, "DataBean to store is NULL");
+            ContainerRepository containerRepositories = this.repositories.container();
 
             try {
                 validateBean(this.beanModel);
@@ -134,7 +143,7 @@ public class StudyController extends Controller implements ISaveAction {
                 LOG.error(e.getMessage());
                 return;
             }
-            StudyBean studyBean = (StudyBean) beanModel;
+            StudyBean studyBean = (StudyBean) this.beanModel;
             final Element metaDataContent = StudyController.createInstrumentDOMElementByBeanModel(studyBean);
 
             try {
@@ -148,7 +157,7 @@ public class StudyController extends Controller implements ISaveAction {
                 showError(e.getLocalizedMessage());
             }
             finally {
-                beanModel = null;
+                this.beanModel = null;
             }
             LOG.info("Study is successfully saved.");
             showTrayMessage("Success", "Study is saved.");
@@ -164,16 +173,15 @@ public class StudyController extends Controller implements ISaveAction {
         try {
             builder = factory.newDocumentBuilder();
             final Document doc = builder.newDocument();
-
-            Element study = doc.createElementNS("http://escidoc.org/ontologies/bw-elabs/re#", "Study");
+            final Element study = doc.createElementNS("http://escidoc.org/ontologies/bw-elabs/re#", "Study");
             study.setPrefix("el");
 
-            final Element title = doc.createElementNS("http://purl.org/dc/elements/1.1/", "title");
+            final Element title = doc.createElementNS(URI_DC, "title");
             title.setPrefix("dc");
             title.setTextContent(studyBean.getName());
             study.appendChild(title);
 
-            final Element description = doc.createElementNS("http://purl.org/dc/elements/1.1/", "description");
+            final Element description = doc.createElementNS(URI_DC, "description");
             description.setPrefix("dc");
             description.setTextContent(studyBean.getDescription());
             study.appendChild(description);
@@ -181,8 +189,7 @@ public class StudyController extends Controller implements ISaveAction {
             for (String publicationPath : studyBean.getResultingPublication()) {
                 if (publicationPath != null && !publicationPath.equals("")) {
                     final Element resultingPublication = doc.createElement("el:resulting-publication");
-                    resultingPublication.setAttributeNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdf:resource",
-                        publicationPath);
+                    resultingPublication.setAttributeNS(URI_RDF, "rdf:resource", publicationPath);
                     study.appendChild(resultingPublication);
                 }
             }
@@ -190,8 +197,7 @@ public class StudyController extends Controller implements ISaveAction {
             for (String publicationPath : studyBean.getMotivatingPublication()) {
                 if (publicationPath != null && !publicationPath.equals("")) {
                     final Element motivatingPublication = doc.createElement("el:motivating-publication");
-                    motivatingPublication.setAttributeNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdf:resource",
-                        publicationPath);
+                    motivatingPublication.setAttributeNS(URI_RDF, "rdf:resource", publicationPath);
                     study.appendChild(motivatingPublication);
                 }
             }
@@ -207,35 +213,25 @@ public class StudyController extends Controller implements ISaveAction {
     }
 
     private Component createView(ResourceProxy resourceProxy) {
-        Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
         StudyBean studyBean = null;
-        if (!(resourceProxy instanceof ContainerProxy)) {
-            LOG.error("Wrong item type!");
-        }
         try {
-            studyBean = loadBeanData();
+            studyBean = loadBeanData(resourceProxy);
         }
         catch (final EscidocBrowserException e) {
-            LOG.error(e.getLocalizedMessage());
-            // TODO show error to the user
+            LOG.error(e.getMessage());
+            showError("Internal error");
         }
-        return new StudyView(studyBean, this, this.createBeadCrumbModel(), resourceProxy, router);
+        return new StudyView(studyBean, this, this.createBeadCrumbModel(), resourceProxy, this.router);
     }
 
-    private StudyBean loadBeanData() throws EscidocBrowserException {
-        if (resourceProxy == null || !(resourceProxy instanceof ContainerProxy)) {
-            throw new EscidocBrowserException("NOT an ContainerProxy", null);
-        }
-
+    private StudyBean loadBeanData(final ResourceProxy resourceProxy) throws EscidocBrowserException {
         final ContainerProxy containerProxy1 = (ContainerProxy) resourceProxy;
         final StudyBean studyBean = new StudyBean();
         studyBean.setObjectId(containerProxy1.getId());
 
-        final Element e = containerProxy1.getMedataRecords().get("escidoc").getContent();
+        final Element e = containerProxy1.getMedataRecords().get(ESCIDOC).getContent();
         if (e != null && e.getChildNodes() != null) {
             final NodeList nodeList = e.getChildNodes();
-            final String URI_DC = "http://purl.org/dc/elements/1.1/";
-            final String URI_EL = "http://escidoc.org/ontologies/bw-elabs/re#";
 
             for (int i = 0; i < nodeList.getLength(); i++) {
                 final Node node = nodeList.item(i);
@@ -269,9 +265,9 @@ public class StudyController extends Controller implements ISaveAction {
     private List<ResourceModel> createBeadCrumbModel() {
         try {
             List<ResourceModel> hierarchy =
-                new ResourceHierarchy(serviceLocation, repositories).getHierarchy(resourceProxy);
+                new ResourceHierarchy(this.serviceLocation, this.repositories).getHierarchy(this.resourceProxy);
             Collections.reverse(hierarchy);
-            hierarchy.add(resourceProxy);
+            hierarchy.add(this.resourceProxy);
             return hierarchy;
         }
         catch (EscidocClientException e) {
@@ -284,22 +280,22 @@ public class StudyController extends Controller implements ISaveAction {
     @Override
     public boolean hasUpdateAccess() {
         try {
-            return repositories
-                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER).forResource(resourceProxy.getId())
-                .permitted();
+            return this.repositories
+                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER)
+                .forResource(this.resourceProxy.getId()).permitted();
         }
         catch (UnsupportedOperationException e) {
-            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            showError("Internal error");
             LOG.error(e.getMessage());
             return false;
         }
         catch (EscidocClientException e) {
-            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            showError("Internal error");
             LOG.error(e.getMessage());
             return false;
         }
         catch (URISyntaxException e) {
-            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            showError("Internal error");
             LOG.error(e.getMessage());
             return false;
         }
