@@ -101,21 +101,18 @@ public class RigView extends View implements ILabsPanel, ILabsAction {
 
     public RigView(RigBean sourceBean, final IRigAction controller, List<ResourceModel> breadCrumbModel,
         final ResourceProxy resourceProxy, EscidocServiceLocation serviceLocation) {
+        Preconditions.checkNotNull(sourceBean, "sourceBean is null: %s", sourceBean);
+        Preconditions.checkNotNull(controller, "saveComponent is null: %s", controller);
+        Preconditions.checkNotNull(breadCrumbModel, "breadCrumbModel is null: %s", breadCrumbModel);
+        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
+        Preconditions.checkArgument(resourceProxy instanceof ItemProxy, "resourceProxy is not an ItemProxy");
         this.serviceLocation = serviceLocation;
         this.rigBean = (sourceBean != null) ? sourceBean : new RigBean();
         this.controller = controller;
         this.breadCrumbModel = breadCrumbModel;
         this.rigTableHelper = new LabsRigTableHelper(this);
         this.setViewName(resourceProxy.getName());
-
-        if (resourceProxy instanceof ItemProxy) {
-            this.itemProxy = (ItemProxy) resourceProxy;
-        }
-        else {
-            LOG.error("ResourceProxy is not ItemProxy");
-            this.itemProxy = null;
-            return;
-        }
+        this.itemProxy = (ItemProxy) resourceProxy;
         initialisePanelComponents();
         buildPropertiesGUI();
         buildPanelGUI();

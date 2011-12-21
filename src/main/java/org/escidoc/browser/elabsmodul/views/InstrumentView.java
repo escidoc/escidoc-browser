@@ -107,18 +107,16 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
 
     public InstrumentView(InstrumentBean sourceBean, ISaveAction controller, List<ResourceModel> breadCrumbModel,
         ResourceProxy resourceProxy, EscidocServiceLocation serviceLocation) {
+        Preconditions.checkNotNull(sourceBean, "sourceBean is null: %s", sourceBean);
+        Preconditions.checkNotNull(controller, "saveComponent is null: %s", controller);
+        Preconditions.checkNotNull(breadCrumbModel, "breadCrumbModel is null: %s", breadCrumbModel);
+        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
+        Preconditions.checkArgument(resourceProxy instanceof ItemProxy, "resourceProxy is not an ItemProxy");
         this.instrumentBean = (sourceBean != null) ? sourceBean : new InstrumentBean();
         this.controller = controller;
         this.serviceLocation = serviceLocation;
         this.breadCrumbModel = breadCrumbModel;
-        if (resourceProxy instanceof ItemProxy) {
-            this.itemProxy = (ItemProxy) resourceProxy;
-        }
-        else {
-            LOG.error("ResourceProxy is not ItemProxy");
-            this.itemProxy = null;
-            return;
-        }
+        this.itemProxy = (ItemProxy) resourceProxy;
         initialisePanelComponents();
         buildPropertiesGUI();
         buildPanelGUI();

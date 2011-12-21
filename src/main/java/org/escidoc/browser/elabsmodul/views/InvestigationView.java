@@ -109,6 +109,11 @@ public class InvestigationView extends View implements ILabsPanel, ILabsAction, 
 
     public InvestigationView(final InvestigationBean sourceBean, final IInvestigationAction controller,
         final List<ResourceModel> breadCrumbModel, final ContainerProxy containerProxy, final Router router) {
+        Preconditions.checkNotNull(sourceBean, "sourceBean is null: %s", sourceBean);
+        Preconditions.checkNotNull(controller, "saveComponent is null: %s", controller);
+        Preconditions.checkNotNull(breadCrumbModel, "breadCrumbModel is null: %s", breadCrumbModel);
+        Preconditions.checkNotNull(containerProxy, "resourceProxy is null: %s", containerProxy);
+        Preconditions.checkNotNull(router, "router is null: %s", router);
         this.investigationBean = (sourceBean != null) ? sourceBean : new InvestigationBean();
         this.controller = controller;
         this.breadCrumbModel = breadCrumbModel;
