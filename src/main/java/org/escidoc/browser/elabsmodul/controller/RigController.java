@@ -89,6 +89,12 @@ public final class RigController extends Controller implements IRigAction {
 
     private IBeanModel beanModel = null;
 
+    private final Object LOCK_1 = new Object() {
+    };
+
+    private final Object LOCK_2 = new Object() {
+    };
+
     public RigController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
         Preconditions.checkNotNull(repositories, "Repository ref is null");
@@ -263,62 +269,65 @@ public final class RigController extends Controller implements IRigAction {
      * 
      * @throws EscidocClientException
      */
-    private synchronized void saveModel() {
-        Preconditions.checkNotNull(beanModel, "DataBean to store is NULL");
-        ItemRepository itemRepositories = repositories.item();
-        final String ESCIDOC = "escidoc";
+    private void saveModel() {
+        synchronized (LOCK_1) {
+            Preconditions.checkNotNull(beanModel, "DataBean to store is NULL");
+            ItemRepository itemRepositories = repositories.item();
+            final String ESCIDOC = "escidoc";
 
-        try {
-            validateBean(this.beanModel);
-        }
-        catch (EscidocBrowserException e) {
-            LOG.error(e.getMessage());
-            return;
-        }
+            try {
+                validateBean(this.beanModel);
+            }
+            catch (EscidocBrowserException e) {
+                LOG.error(e.getMessage());
+                return;
+            }
+            RigBean rigBean = (RigBean) beanModel;
+            final Element metaDataContent = RigController.createRigDOMElementByBeanModel(rigBean);
 
-        RigBean rigBean = (RigBean) beanModel;
-        final Element metaDataContent = RigController.createRigDOMElementByBeanModel(rigBean);
-
-        try {
-            Item item = itemRepositories.findItemById(rigBean.getObjectId());
-            MetadataRecord metadataRecord = item.getMetadataRecords().get(ESCIDOC);
-            metadataRecord.setContent(metaDataContent);
-            itemRepositories.update(item.getObjid(), item);
+            try {
+                Item item = itemRepositories.findItemById(rigBean.getObjectId());
+                MetadataRecord metadataRecord = item.getMetadataRecords().get(ESCIDOC);
+                metadataRecord.setContent(metaDataContent);
+                itemRepositories.update(item.getObjid(), item);
+            }
+            catch (EscidocClientException e) {
+                LOG.error(e.getLocalizedMessage());
+                showError(e.getLocalizedMessage());
+            }
+            finally {
+                beanModel = null;
+            }
+            LOG.info("Rig is successfully saved.");
+            showTrayMessage("Success", "Rig is saved.");
         }
-        catch (EscidocClientException e) {
-            LOG.error(e.getLocalizedMessage());
-            showError(e.getLocalizedMessage());
-        }
-        finally {
-            beanModel = null;
-        }
-        LOG.info("Rig is successfully saved.");
-        showTrayMessage("Success", "Rig is saved.");
     }
 
     @Override
-    public synchronized List<InstrumentBean> getNewAvailableInstruments(final List<String> containedInstrumentIDs) {
-        List<InstrumentBean> result = new ArrayList<InstrumentBean>();
-        try {
-            List<ResourceModel> items = null;
-            for (Iterator<String> iterator = ELabsCache.getInstrumentCMMIds().iterator(); iterator.hasNext();) {
-                String cmmId = iterator.next();
-                items = repositories.item().findItemsByContentModel(cmmId);
-                for (Iterator<ResourceModel> iterator2 = items.iterator(); iterator2.hasNext();) {
-                    ResourceModel itemModel = iterator2.next();
-                    if (itemModel instanceof ItemProxy) {
-                        ItemProxy itemProxy = (ItemProxy) itemModel;
-                        if (!containedInstrumentIDs.contains(itemProxy.getId())) {
-                            result.add(loadRelatedInstrumentBeanData(itemProxy));
+    public List<InstrumentBean> getNewAvailableInstruments(final List<String> containedInstrumentIDs) {
+        synchronized (LOCK_2) {
+            List<InstrumentBean> result = new ArrayList<InstrumentBean>();
+            try {
+                List<ResourceModel> items = null;
+                for (Iterator<String> iterator = ELabsCache.getInstrumentCMMIds().iterator(); iterator.hasNext();) {
+                    String cmmId = iterator.next();
+                    items = repositories.item().findItemsByContentModel(cmmId);
+                    for (Iterator<ResourceModel> iterator2 = items.iterator(); iterator2.hasNext();) {
+                        ResourceModel itemModel = iterator2.next();
+                        if (itemModel instanceof ItemProxy) {
+                            ItemProxy itemProxy = (ItemProxy) itemModel;
+                            if (!containedInstrumentIDs.contains(itemProxy.getId())) {
+                                result.add(loadRelatedInstrumentBeanData(itemProxy));
+                            }
                         }
                     }
                 }
             }
+            catch (EscidocClientException e) {
+                LOG.error(e.getMessage());
+            }
+            return result;
         }
-        catch (EscidocClientException e) {
-            LOG.error(e.getMessage());
-        }
-        return result;
     }
 
     @Override

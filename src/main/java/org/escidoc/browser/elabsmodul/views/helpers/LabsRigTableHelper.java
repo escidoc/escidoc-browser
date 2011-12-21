@@ -59,26 +59,21 @@ import com.vaadin.ui.VerticalLayout;
  */
 public final class LabsRigTableHelper {
 
-    // properties for the tables def
-    private final String rigProperty1 = "title", rigProperty2 = "id";
-
-    // buttons related to the tables
     private Button rigDeleteButton = null, rigAddButton = null;
 
-    // table references
-    private Table rigTable = null; // table on the RigView
+    private Table rigTable = null;
 
-    // model references
     private RigBean rigBean = null;
 
     private IndexedContainer rigContainer = null;
 
-    // common texts
-    private final String ADD_BUTTON = "Add element";
+    private final static String ADD_BUTTON = "Add element";
 
-    private final String DELETE_BUTTON_TEXT = "Delete element";
+    private final static String DELETE_BUTTON_TEXT = "Delete element";
 
-    private final String DELETES_BUTTON_TEXT = "Delete selected elements";
+    private final static String DELETES_BUTTON_TEXT = "Delete selected elements";
+
+    private static final String rigProperty1 = "title", rigProperty2 = "id";
 
     private ILabsAction labsAction = null;
 
@@ -89,31 +84,26 @@ public final class LabsRigTableHelper {
         this.labsAction = action;
     }
 
-    public synchronized VerticalLayout createTableLayoutForRig(final RigBean rigBean, final IRigAction controller) {
+    public VerticalLayout createTableLayoutForRig(final RigBean rigBean, final IRigAction controller) {
         Preconditions.checkNotNull(rigBean, "rigModel is null");
-        this.rigBean = rigBean;
-
         final int RIG_TABLE_SIZE = 5;
+        this.rigBean = rigBean;
         final Label selectedLabel = new Label("No selection");
         final VerticalLayout layout = new VerticalLayout();
         layout.setSizeUndefined();
-
-        rigTable = new Table();
-        rigTable.setSelectable(true);
-        rigTable.setMultiSelect(true);
-        rigTable.setMultiSelectMode(MultiSelectMode.DEFAULT);
-        rigTable.setImmediate(true);
-        rigTable.setPageLength(RIG_TABLE_SIZE);
-        rigTable.setWidth("350px");
-
-        rigTable.setColumnReorderingAllowed(false);
-        rigTable.setColumnCollapsingAllowed(false);
-        rigTable.setRowHeaderMode(Table.ROW_HEADER_MODE_HIDDEN);
-
-        rigTable.setContainerDataSource(fillRigTableData(rigBean.getContentList()));
-        rigTable.setColumnHeaders(new String[] { "Name", "Id" }); // put these into ELabsViewContants
-
-        rigTable.addListener(new Table.ValueChangeListener() {
+        this.rigTable = new Table();
+        this.rigTable.setSelectable(true);
+        this.rigTable.setMultiSelect(true);
+        this.rigTable.setMultiSelectMode(MultiSelectMode.DEFAULT);
+        this.rigTable.setImmediate(true);
+        this.rigTable.setPageLength(RIG_TABLE_SIZE);
+        this.rigTable.setWidth("350px");
+        this.rigTable.setColumnReorderingAllowed(false);
+        this.rigTable.setColumnCollapsingAllowed(false);
+        this.rigTable.setRowHeaderMode(Table.ROW_HEADER_MODE_HIDDEN);
+        this.rigTable.setContainerDataSource(fillRigTableData(rigBean.getContentList()));
+        this.rigTable.setColumnHeaders(new String[] { "Name", "Id" }); // put these into ELabsViewContants
+        this.rigTable.addListener(new Table.ValueChangeListener() {
             private static final long serialVersionUID = 2000562132182698589L;
 
             @Override
@@ -147,30 +137,24 @@ public final class LabsRigTableHelper {
                 }
             }
         });
-        layout.addComponent(rigTable);
+        layout.addComponent(this.rigTable);
         layout.addComponent(selectedLabel);
         addRigButtonToLayout(layout, controller);
         return layout;
     }
 
     private void addRigButtonToLayout(final VerticalLayout layout, final IRigAction controller) {
-
-        Button.ClickListener rigButtonsListener = new Button.ClickListener() {
+        final Button.ClickListener rigButtonsListener = new Button.ClickListener() {
             private static final long serialVersionUID = 1586321256611542129L;
 
             @Override
             public void buttonClick(final ClickEvent event) {
                 LabsRigTableHelper.this.labsAction.showButtonLayout();
-
                 if (event.getButton().getCaption().equals(DELETE_BUTTON_TEXT)
                     || event.getButton().getCaption().equals(DELETES_BUTTON_TEXT)) {
                     @SuppressWarnings("unchecked")
                     Set<String> selectedIdSet = (Set<String>) rigTable.getValue();
-
-                    // delete relations from the model
                     LabsRigTableHelper.this.synchronizeRigModel(selectedIdSet);
-
-                    // instant delete from table containerdatasource
                     for (Iterator<String> iterator = selectedIdSet.iterator(); iterator.hasNext();) {
                         String idToDelete = iterator.next();
                         rigTable.getContainerDataSource().removeItem(idToDelete);
@@ -200,9 +184,7 @@ public final class LabsRigTableHelper {
                                             .hasNext();) {
                                             InstrumentBean instrumentBean = iterator2.next();
                                             if (instrumentBean.getObjectId().equals(id)) {
-                                                // update model
                                                 LabsRigTableHelper.this.rigBean.getContentList().add(instrumentBean);
-                                                // update view
                                                 LabsRigTableHelper.this.addnewItemToRigTable(instrumentBean);
                                             }
                                         }
@@ -212,30 +194,26 @@ public final class LabsRigTableHelper {
                 }
             }
         };
-
-        rigAddButton = new Button(ADD_BUTTON);
-        rigDeleteButton = new Button(DELETE_BUTTON_TEXT);
+        this.rigAddButton = new Button(ADD_BUTTON);
+        this.rigDeleteButton = new Button(DELETE_BUTTON_TEXT);
         if (controller.hasUpdateAccess()) {
-            rigAddButton.setEnabled(true);
-            rigAddButton.setVisible(true);
-            rigAddButton.setIcon(ELabsViewContants.ICON_16_OK);
-
-            rigDeleteButton.setEnabled(false);
-            rigDeleteButton.setVisible(true);
-            rigDeleteButton.setIcon(ELabsViewContants.ICON_16_CANCEL);
-
-            rigDeleteButton.addListener(rigButtonsListener);
-            rigAddButton.addListener(rigButtonsListener);
+            this.rigAddButton.setEnabled(true);
+            this.rigAddButton.setVisible(true);
+            this.rigAddButton.setIcon(ELabsViewContants.ICON_16_OK);
+            this.rigDeleteButton.setEnabled(false);
+            this.rigDeleteButton.setVisible(true);
+            this.rigDeleteButton.setIcon(ELabsViewContants.ICON_16_CANCEL);
+            this.rigDeleteButton.addListener(rigButtonsListener);
+            this.rigAddButton.addListener(rigButtonsListener);
         }
         else {
-            rigAddButton.setVisible(false);
-            rigDeleteButton.setVisible(false);
+            this.rigAddButton.setVisible(false);
+            this.rigDeleteButton.setVisible(false);
         }
-
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSpacing(true);
-        horizontalLayout.addComponent(rigAddButton);
-        horizontalLayout.addComponent(rigDeleteButton);
+        horizontalLayout.addComponent(this.rigAddButton);
+        horizontalLayout.addComponent(this.rigDeleteButton);
         layout.addComponent(horizontalLayout);
     }
 
@@ -251,28 +229,28 @@ public final class LabsRigTableHelper {
     }
 
     private IndexedContainer fillRigTableData(List<InstrumentBean> instrumentBeans) {
-        rigContainer = new IndexedContainer();
-        rigContainer.addContainerProperty(rigProperty1, String.class, null);
-        rigContainer.addContainerProperty(rigProperty2, String.class, null);
+        this.rigContainer = new IndexedContainer();
+        this.rigContainer.addContainerProperty(rigProperty1, String.class, null);
+        this.rigContainer.addContainerProperty(rigProperty2, String.class, null);
 
         for (Iterator<InstrumentBean> iterator = instrumentBeans.iterator(); iterator.hasNext();) {
             InstrumentBean instrumentBean = iterator.next();
             String id = instrumentBean.getObjectId();
             String title = instrumentBean.getName();
-            Item item = rigContainer.addItem(id);
+            Item item = this.rigContainer.addItem(id);
             if (item != null) {
                 item.getItemProperty(rigProperty1).setValue(title);
                 item.getItemProperty(rigProperty2).setValue(id);
             }
         }
-        rigContainer.sort(new Object[] { rigProperty1 }, new boolean[] { true });
-        return rigContainer;
+        this.rigContainer.sort(new Object[] { rigProperty1 }, new boolean[] { true });
+        return this.rigContainer;
     }
 
     private void addnewItemToRigTable(final InstrumentBean instrumentBean) {
-        Preconditions.checkNotNull(rigContainer, "Rig Container is null");
+        Preconditions.checkNotNull(this.rigContainer, "Rig Container is null");
         Preconditions.checkNotNull(instrumentBean, "Bean is null");
-        Item newItem = rigContainer.addItem(instrumentBean.getObjectId());
+        Item newItem = this.rigContainer.addItem(instrumentBean.getObjectId());
         if (newItem != null) {
             newItem.getItemProperty(rigProperty1).setValue(instrumentBean.getName());
             newItem.getItemProperty(rigProperty2).setValue(instrumentBean.getObjectId());

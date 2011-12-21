@@ -83,35 +83,33 @@ public class InvestigationSeriesView extends View implements ILabsPanel, ILabsAc
 
     private InvestigationSeriesBean investigationSeriesBean;
 
-    private ResourceProxy containerProxy;
-
-    private List<ResourceModel> breadCrumb;
-
     private Component modifiedComponent;
-
-    private ISaveAction controller;
 
     private Component buttonLayout;
 
     private HorizontalLayout hl = new HorizontalLayout();
 
-    private Button saveButton = new Button("Save");
+    private final Button saveButton = new Button("Save");
 
     private HorizontalLayout directMemberInvSeriesContainer = new HorizontalLayout();
 
-    private Router router;
+    private final Router router;
+
+    private final ISaveAction controller;
+
+    private final ResourceProxy containerProxy;
+
+    private final List<ResourceModel> breadCrumb;
 
     private static Logger LOG = LoggerFactory.getLogger(InvestigationSeriesView.class);
 
     public InvestigationSeriesView(ContainerProxy containerProxy, InvestigationSeriesBean investigationSeriesBean,
         List<ResourceModel> breadCrumb, ISaveAction saveAction, Router router) {
-
         Preconditions.checkNotNull(containerProxy, "containerProxy is null: %s", containerProxy);
         Preconditions.checkNotNull(investigationSeriesBean, "investigationSeriesBean is null: %s",
             investigationSeriesBean);
         Preconditions.checkNotNull(breadCrumb, "breadCrumb is null: %s", breadCrumb);
         Preconditions.checkNotNull(saveAction, "saveAction is null: %s", saveAction);
-
         this.containerProxy = containerProxy;
         this.setViewName(containerProxy.getName());
         this.investigationSeriesBean = investigationSeriesBean;
@@ -122,13 +120,13 @@ public class InvestigationSeriesView extends View implements ILabsPanel, ILabsAc
         initPanelComponents();
         buildPropertiesView();
         buildContainerGUI();
-        buildPanelView();
+        buildPanelGUI();
         createPanelListener();
         createClickListener();
     }
 
     private void createClickListener() {
-        saveButton.addListener(new Button.ClickListener() {
+        this.saveButton.addListener(new Button.ClickListener() {
             private static final long serialVersionUID = 6314520686584942778L;
 
             @Override
@@ -143,34 +141,32 @@ public class InvestigationSeriesView extends View implements ILabsPanel, ILabsAc
     }
 
     private void createPanelListener() {
-        dynamicLayout.addListener(new LabsClientViewEventHandler(registeredComponents, dynamicLayout, this, this));
-
+        this.dynamicLayout.addListener(new LabsClientViewEventHandler(this.registeredComponents, this.dynamicLayout,
+            this, this));
     }
 
-    private void buildPanelView() {
-        dynamicLayout.setStyleName(ELabsViewContants.STYLE_ELABS_FORM);
-
-        buttonLayout = createButtonLayout();
-
+    private void buildPanelGUI() {
+        this.dynamicLayout.setStyleName(ELabsViewContants.STYLE_ELABS_FORM);
+        this.buttonLayout = createButtonLayout();
         HorizontalLayout name =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_TITLE,
-                beanItem.getItemProperty("name"), true);
+                this.beanItem.getItemProperty("name"), true);
         HorizontalLayout description =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_DESCRIPTION,
-                beanItem.getItemProperty("description"), true);
+                this.beanItem.getItemProperty("description"), true);
 
-        registeredComponents.add(name);
-        registeredComponents.add(description);
+        this.registeredComponents.add(name);
+        this.registeredComponents.add(description);
 
-        dynamicLayout.addComponent(name, 0);
-        dynamicLayout.addComponent(description, 1);
-        dynamicLayout.addComponent(hl, 2);
+        this.dynamicLayout.addComponent(name, 0);
+        this.dynamicLayout.addComponent(description, 1);
+        this.dynamicLayout.addComponent(this.hl, 2);
 
-        rightCell(dynamicLayout);
-        mainLayout.addComponent(directMemberInvSeriesContainer);
-        mainLayout.setExpandRatio(directMemberInvSeriesContainer, 1.0f);
-        mainLayout.attach();
-        mainLayout.requestRepaintAll();
+        rightCell(this.dynamicLayout);
+        this.mainLayout.addComponent(this.directMemberInvSeriesContainer);
+        this.mainLayout.setExpandRatio(this.directMemberInvSeriesContainer, 1.0f);
+        this.mainLayout.attach();
+        this.mainLayout.requestRepaintAll();
 
     }
 
@@ -180,40 +176,38 @@ public class InvestigationSeriesView extends View implements ILabsPanel, ILabsAc
         Label blank = new Label("");
         blank.setWidth(LABEL_WIDTH);
         horizontalLayout.addComponent(blank, 0);
-        horizontalLayout.addComponent(saveButton, 1);
+        horizontalLayout.addComponent(this.saveButton, 1);
         return horizontalLayout;
     }
 
     private void buildPropertiesView() {
-        addComponent(new ResourcePropertiesViewHelper(containerProxy, breadCrumb, "Investigationseries",
-            router.getServiceLocation()).generatePropertiesView());
+        addComponent(new ResourcePropertiesViewHelper(this.containerProxy, this.breadCrumb, "Investigationseries",
+            this.router.getServiceLocation()).generatePropertiesView());
     }
 
     private void initPanelComponents() {
-        mainLayout = new VerticalLayout();
-        mainLayout.setSpacing(true);
-        mainLayout.setMargin(true);
-        mainLayout.setSizeFull();
-        dynamicLayout = new VerticalLayout();
-        dynamicLayout.setSpacing(true);
-        // dynamicLayout.setMargin(true);
-
-        beanItem = new BeanItem<InvestigationSeriesBean>(investigationSeriesBean, Arrays.asList(PROPERTIES));
-        registeredComponents = new ArrayList<HorizontalLayout>(COMPONENT_COUNT);
+        this.mainLayout = new VerticalLayout();
+        this.mainLayout.setSpacing(true);
+        this.mainLayout.setMargin(true);
+        this.mainLayout.setSizeFull();
+        this.dynamicLayout = new VerticalLayout();
+        this.dynamicLayout.setSpacing(true);
+        this.beanItem = new BeanItem<InvestigationSeriesBean>(this.investigationSeriesBean, Arrays.asList(PROPERTIES));
+        this.registeredComponents = new ArrayList<HorizontalLayout>(COMPONENT_COUNT);
 
         setStyleName(Runo.PANEL_LIGHT);
-        setContent(mainLayout);
+        setContent(this.mainLayout);
         setScrollable(true);
     }
 
     private void buildContainerGUI() {
-        directMemberInvSeriesContainer.setWidth("100%");
-        directMemberInvSeriesContainer.setHeight("100%");
+        this.directMemberInvSeriesContainer.setWidth("100%");
+        this.directMemberInvSeriesContainer.setHeight("100%");
         try {
             leftCell();
         }
         catch (EscidocClientException e) {
-            router.getMainWindow().showNotification(
+            this.router.getMainWindow().showNotification(
                 "Could not load the Direct Members Helper in the View" + e.getLocalizedMessage());
         }
     }
@@ -233,8 +227,8 @@ public class InvestigationSeriesView extends View implements ILabsPanel, ILabsAc
         rightpnl.setSizeFull();
         rightpnl.getLayout().setMargin(false);
         rightpnl.addComponent(comptoBind);
-        directMemberInvSeriesContainer.addComponent(rightpnl);
-        directMemberInvSeriesContainer.setExpandRatio(rightpnl, 7.0f);
+        this.directMemberInvSeriesContainer.addComponent(rightpnl);
+        this.directMemberInvSeriesContainer.setExpandRatio(rightpnl, 7.0f);
 
     }
 
@@ -248,26 +242,27 @@ public class InvestigationSeriesView extends View implements ILabsPanel, ILabsAc
         vl.setMargin(false);
         vl.setSizeFull();
         leftPanel.setContent(vl);
-        new DirectMember(router.getServiceLocation(), router, containerProxy.getId(), router.getMainWindow(),
-            router.getRepositories(), leftPanel, ResourceType.CONTAINER.toString()).containerAsTree();
-        directMemberInvSeriesContainer.addComponent(leftPanel);
-        directMemberInvSeriesContainer.setExpandRatio(leftPanel, 3.0f);
+        new DirectMember(this.router.getServiceLocation(), this.router, this.containerProxy.getId(),
+            this.router.getMainWindow(), router.getRepositories(), leftPanel, ResourceType.CONTAINER.toString())
+            .containerAsTree();
+        this.directMemberInvSeriesContainer.addComponent(leftPanel);
+        this.directMemberInvSeriesContainer.setExpandRatio(leftPanel, 3.0f);
     }
 
     @Override
     public void showButtonLayout() {
-        hl.removeAllComponents();
-        hl.addComponent(buttonLayout);
+        this.hl.removeAllComponents();
+        this.hl.addComponent(buttonLayout);
     }
 
     @Override
     public void hideButtonLayout() {
-        hl.removeAllComponents();
+        this.hl.removeAllComponents();
     }
 
     @Override
     public Component getModifiedComponent() {
-        return modifiedComponent;
+        return this.modifiedComponent;
     }
 
     @Override
@@ -294,7 +289,7 @@ public class InvestigationSeriesView extends View implements ILabsPanel, ILabsAc
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((containerProxy == null) ? 0 : containerProxy.hashCode());
+        result = prime * result + ((this.containerProxy == null) ? 0 : this.containerProxy.hashCode());
         return result;
     }
 
@@ -310,12 +305,12 @@ public class InvestigationSeriesView extends View implements ILabsPanel, ILabsAc
             return false;
         }
         final InvestigationSeriesView other = (InvestigationSeriesView) obj;
-        if (containerProxy == null) {
+        if (this.containerProxy == null) {
             if (other.containerProxy != null) {
                 return false;
             }
         }
-        else if (!containerProxy.equals(other.containerProxy)) {
+        else if (!this.containerProxy.equals(other.containerProxy)) {
             return false;
         }
         return true;
@@ -323,10 +318,9 @@ public class InvestigationSeriesView extends View implements ILabsPanel, ILabsAc
 
     @Override
     public void resetLayout() {
-        Preconditions.checkNotNull(dynamicLayout, "View's dynamiclayout is null.");
-
+        Preconditions.checkNotNull(this.dynamicLayout, "View's dynamiclayout is null.");
         HorizontalLayout tempParentLayout = null;
-        for (final Iterator<Component> iterator = dynamicLayout.getComponentIterator(); iterator.hasNext();) {
+        for (final Iterator<Component> iterator = this.dynamicLayout.getComponentIterator(); iterator.hasNext();) {
             final Component component = iterator.next();
             if (component instanceof HorizontalLayout) {
                 tempParentLayout = (HorizontalLayout) component;

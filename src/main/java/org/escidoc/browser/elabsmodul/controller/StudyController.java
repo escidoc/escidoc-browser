@@ -84,6 +84,9 @@ public class StudyController extends Controller implements ISaveAction {
 
     private IBeanModel beanModel = null;
 
+    private final Object LOCK = new Object() {
+    };
+
     private static Logger LOG = LoggerFactory.getLogger(InstrumentController.class);
 
     public StudyController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
@@ -118,38 +121,38 @@ public class StudyController extends Controller implements ISaveAction {
     /**
      * @throws EscidocClientException
      */
-    private synchronized void saveModel() {
-        Preconditions.checkNotNull(beanModel, "DataBean to store is NULL");
-        ContainerRepository containerRepositories = repositories.container();
-        final String ESCIDOC = "escidoc";
+    private void saveModel() {
+        synchronized (LOCK) {
+            Preconditions.checkNotNull(beanModel, "DataBean to store is NULL");
+            ContainerRepository containerRepositories = repositories.container();
+            final String ESCIDOC = "escidoc";
 
-        try {
-            validateBean(this.beanModel);
-        }
-        catch (EscidocBrowserException e) {
-            LOG.error(e.getMessage());
-            return;
-        }
+            try {
+                validateBean(this.beanModel);
+            }
+            catch (EscidocBrowserException e) {
+                LOG.error(e.getMessage());
+                return;
+            }
+            StudyBean studyBean = (StudyBean) beanModel;
+            final Element metaDataContent = StudyController.createInstrumentDOMElementByBeanModel(studyBean);
 
-        StudyBean studyBean = (StudyBean) beanModel;
-        final Element metaDataContent = StudyController.createInstrumentDOMElementByBeanModel(studyBean);
-
-        try {
-            Container container = containerRepositories.findContainerById(studyBean.getObjectId());
-            MetadataRecord metadataRecord = container.getMetadataRecords().get(ESCIDOC);
-            metadataRecord.setContent(metaDataContent);
-            containerRepositories.update(container);
+            try {
+                Container container = containerRepositories.findContainerById(studyBean.getObjectId());
+                MetadataRecord metadataRecord = container.getMetadataRecords().get(ESCIDOC);
+                metadataRecord.setContent(metaDataContent);
+                containerRepositories.update(container);
+            }
+            catch (EscidocClientException e) {
+                LOG.error(e.getLocalizedMessage());
+                showError(e.getLocalizedMessage());
+            }
+            finally {
+                beanModel = null;
+            }
+            LOG.info("Study is successfully saved.");
+            showTrayMessage("Success", "Study is saved.");
         }
-        catch (EscidocClientException e) {
-            LOG.error(e.getLocalizedMessage());
-            showError(e.getLocalizedMessage());
-        }
-        finally {
-            beanModel = null;
-        }
-        LOG.info("Study is successfully saved.");
-        showTrayMessage("Success", "Study is saved.");
-
     }
 
     private static Element createInstrumentDOMElementByBeanModel(StudyBean studyBean) {

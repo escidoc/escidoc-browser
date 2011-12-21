@@ -89,6 +89,9 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
 
     private IBeanModel beanModel;
 
+    private final Object LOCK = new Object() {
+    };
+
     public InvestigationSeriesController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
@@ -125,34 +128,36 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
      * 
      * @throws EscidocClientException
      */
-    private synchronized void saveModel() {
-        Preconditions.checkNotNull(beanModel, "DataBean to store is NULL");
-        ContainerRepository containerRepositories = repositories.container();
-        final String ESCIDOC = "escidoc";
+    private void saveModel() {
+        synchronized (LOCK) {
+            Preconditions.checkNotNull(beanModel, "DataBean to store is NULL");
+            ContainerRepository containerRepositories = repositories.container();
+            final String ESCIDOC = "escidoc";
 
-        try {
-            validateBean(this.beanModel);
-        }
-        catch (EscidocBrowserException e) {
-            LOG.error(e.getMessage());
-            return;
-        }
+            try {
+                validateBean(this.beanModel);
+            }
+            catch (EscidocBrowserException e) {
+                LOG.error(e.getMessage());
+                return;
+            }
 
-        try {
-            Container container = containerRepositories.findContainerById(resourceProxy.getId());
-            MetadataRecord metadataRecord = container.getMetadataRecords().get(ESCIDOC);
-            metadataRecord.setContent(beanToDom(isb));
-            containerRepositories.update(container);
+            try {
+                Container container = containerRepositories.findContainerById(resourceProxy.getId());
+                MetadataRecord metadataRecord = container.getMetadataRecords().get(ESCIDOC);
+                metadataRecord.setContent(beanToDom(isb));
+                containerRepositories.update(container);
+            }
+            catch (EscidocClientException e) {
+                LOG.error(e.getLocalizedMessage());
+                showError(e.getLocalizedMessage());
+            }
+            finally {
+                beanModel = null;
+            }
+            LOG.info("InvestigationSeries is successfully saved.");
+            showTrayMessage("Success", "Investigation series is saved.");
         }
-        catch (EscidocClientException e) {
-            LOG.error(e.getLocalizedMessage());
-            showError(e.getLocalizedMessage());
-        }
-        finally {
-            beanModel = null;
-        }
-        LOG.info("InvestigationSeries is successfully saved.");
-        showTrayMessage("Success", "Investigation series is saved.");
     }
 
     private Element beanToDom(InvestigationSeriesBean isb) {

@@ -109,6 +109,12 @@ public class InvestigationController extends Controller implements IInvestigatio
 
     private IBeanModel model;
 
+    private final Object LOCK_1 = new Object() {
+    };
+
+    private final Object LOCK_2 = new Object() {
+    };
+
     /*
      * (non-Javadoc)
      * 
@@ -439,38 +445,39 @@ public class InvestigationController extends Controller implements IInvestigatio
      * 
      * @throws EscidocClientException
      */
-    private synchronized void saveModel() {
-        Preconditions.checkNotNull(model, "Model is NULL. Can not save.");
-        final ContainerRepository containerRepository = repositories.container();
-        final String ESCIDOC = "escidoc";
+    private void saveModel() {
+        synchronized (LOCK_1) {
+            Preconditions.checkNotNull(model, "Model is NULL. Can not save.");
+            final ContainerRepository containerRepository = repositories.container();
+            final String ESCIDOC = "escidoc";
 
-        try {
-            validateBean(this.model);
-        }
-        catch (EscidocBrowserException e) {
-            LOG.error(e.getMessage());
-            return;
-        }
+            try {
+                validateBean(this.model);
+            }
+            catch (EscidocBrowserException e) {
+                LOG.error(e.getMessage());
+                return;
+            }
+            final InvestigationBean investigationBean = (InvestigationBean) model;
+            final Element metaDataContent =
+                InvestigationController.createInvestigationDOMElementByBeanModel(investigationBean);
 
-        final InvestigationBean investigationBean = (InvestigationBean) model;
-        final Element metaDataContent =
-            InvestigationController.createInvestigationDOMElementByBeanModel(investigationBean);
-        try {
-            final Container container = containerRepository.findContainerById(investigationBean.getObjid());
-            final MetadataRecord metadataRecord = container.getMetadataRecords().get(ESCIDOC);
-            metadataRecord.setContent(metaDataContent);
-            containerRepository.update(container);
+            try {
+                final Container container = containerRepository.findContainerById(investigationBean.getObjid());
+                final MetadataRecord metadataRecord = container.getMetadataRecords().get(ESCIDOC);
+                metadataRecord.setContent(metaDataContent);
+                containerRepository.update(container);
+            }
+            catch (final EscidocClientException e) {
+                LOG.error(e.getLocalizedMessage());
+                showError(e.getLocalizedMessage());
+            }
+            finally {
+                model = null;
+            }
+            LOG.info("Investigation is successfully saved.");
+            showTrayMessage("Success", "Investigation is saved.");
         }
-        catch (final EscidocClientException e) {
-            LOG.error(e.getLocalizedMessage());
-            showError(e.getLocalizedMessage());
-        }
-        finally {
-            model = null;
-        }
-        LOG.info("Investigation is successfully saved.");
-        showTrayMessage("Success", "Investigation is saved.");
-
     }
 
     public static Element createInvestigationDOMElementByBeanModel(final InvestigationBean investigationBean) {
@@ -568,26 +575,29 @@ public class InvestigationController extends Controller implements IInvestigatio
     }
 
     @Override
-    public synchronized List<RigBean> getAvailableRigs() {
-        final List<RigBean> result = new ArrayList<RigBean>();
-        try {
-            List<ResourceModel> items = null;
-            for (Iterator<String> iterator = ELabsCache.getRigCMMIds().iterator(); iterator.hasNext();) {
-                String cmmId = iterator.next();
-                items = repositories.item().findItemsByContentModel(cmmId);
-                for (Iterator<ResourceModel> iterator2 = items.iterator(); iterator2.hasNext();) {
-                    ResourceModel itemModel = iterator2.next();
-                    if (itemModel instanceof ItemProxy) {
-                        ItemProxy itemProxy = (ItemProxy) itemModel;
-                        result.add(loadRelatedRigBeanData(itemProxy));
+    public List<RigBean> getAvailableRigs() {
+        synchronized (LOCK_2) {
+
+            final List<RigBean> result = new ArrayList<RigBean>();
+            try {
+                List<ResourceModel> items = null;
+                for (Iterator<String> iterator = ELabsCache.getRigCMMIds().iterator(); iterator.hasNext();) {
+                    String cmmId = iterator.next();
+                    items = repositories.item().findItemsByContentModel(cmmId);
+                    for (Iterator<ResourceModel> iterator2 = items.iterator(); iterator2.hasNext();) {
+                        ResourceModel itemModel = iterator2.next();
+                        if (itemModel instanceof ItemProxy) {
+                            ItemProxy itemProxy = (ItemProxy) itemModel;
+                            result.add(loadRelatedRigBeanData(itemProxy));
+                        }
                     }
                 }
             }
+            catch (EscidocClientException e) {
+                LOG.error(e.getMessage());
+            }
+            return result;
         }
-        catch (EscidocClientException e) {
-            LOG.error(e.getMessage());
-        }
-        return result;
     }
 
     private String setDurationLabel(String storedDuration) {

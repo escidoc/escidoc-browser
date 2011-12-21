@@ -99,11 +99,11 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
 
     private final ISaveAction controller;
 
-    private List<ResourceModel> breadCrumbModel;
+    private final List<ResourceModel> breadCrumbModel;
 
     private final ItemProxy itemProxy;
 
-    private EscidocServiceLocation serviceLocation;
+    private final EscidocServiceLocation serviceLocation;
 
     public InstrumentView(InstrumentBean sourceBean, ISaveAction controller, List<ResourceModel> breadCrumbModel,
         ResourceProxy resourceProxy, EscidocServiceLocation serviceLocation) {
@@ -129,21 +129,17 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
     }
 
     private void initialisePanelComponents() {
-
-        mainLayout = new VerticalLayout();
-        mainLayout.setSizeFull();
-        mainLayout.setSpacing(true);
-        mainLayout.setMargin(true);
-        dynamicLayout = new VerticalLayout();
-        dynamicLayout.setSpacing(true);
-        // dynamicLayout.setMargin(true);
-
-        pojoItem = new POJOItem<InstrumentBean>(instrumentBean, PROPERTIES);
-        registeredComponents = new ArrayList<HorizontalLayout>(COMPONENT_COUNT);
-
+        this.mainLayout = new VerticalLayout();
+        this.mainLayout.setSizeFull();
+        this.mainLayout.setSpacing(true);
+        this.mainLayout.setMargin(true);
+        this.dynamicLayout = new VerticalLayout();
+        this.dynamicLayout.setSpacing(true);
+        this.pojoItem = new POJOItem<InstrumentBean>(this.instrumentBean, PROPERTIES);
+        this.registeredComponents = new ArrayList<HorizontalLayout>(COMPONENT_COUNT);
         this.setSizeFull();
         this.setStyleName(Runo.PANEL_LIGHT);
-        setContent(mainLayout);
+        setContent(this.mainLayout);
         setScrollable(true);
     }
 
@@ -151,8 +147,8 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
      * Build the read-only layout of the eLabsElement
      */
     private void buildPropertiesGUI() {
-        addComponent(new ResourcePropertiesViewHelper(itemProxy, breadCrumbModel, "Instrument", serviceLocation)
-            .generatePropertiesView());
+        addComponent(new ResourcePropertiesViewHelper(this.itemProxy, this.breadCrumbModel, "Instrument",
+            this.serviceLocation).generatePropertiesView());
     }
 
     /**
@@ -160,7 +156,7 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
      */
     private void buildPanelGUI() {
 
-        final String supervisorId = instrumentBean.getDeviceSupervisor();
+        final String supervisorId = this.instrumentBean.getDeviceSupervisor();
         String supervisorText = null;
         if (supervisorId != null) {
             for (Iterator<UserBean> iterator = ELabsCache.getUsers().iterator(); iterator.hasNext();) {
@@ -172,7 +168,7 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
             }
         }
 
-        final String instituteId = instrumentBean.getInstitute();
+        final String instituteId = this.instrumentBean.getInstitute();
         String instituteText = null;
         if (instituteId != null) {
             for (Iterator<OrgUnitBean> iterator = ELabsCache.getOrgUnits().iterator(); iterator.hasNext();) {
@@ -184,12 +180,12 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
             }
         }
 
-        dynamicLayout.setStyleName(ELabsViewContants.STYLE_ELABS_FORM);
+        this.dynamicLayout.setStyleName(ELabsViewContants.STYLE_ELABS_FORM);
 
-        buttonLayout = LabsLayoutHelper.createButtonLayout();
+        this.buttonLayout = LabsLayoutHelper.createButtonLayout();
         HorizontalLayout h1 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_TITLE,
-                pojoItem.getItemProperty(ELabsViewContants.P_INSTRUMENT_TITLE), true);
+            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_TITLE, getPojoItem()
+                .getItemProperty(ELabsViewContants.P_INSTRUMENT_TITLE), true);
         HorizontalLayout h2 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_DESCRIPTION,
                 getPojoItem().getItemProperty(ELabsViewContants.P_INSTRUMENT_DESC), true);
@@ -218,7 +214,6 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelComplexData(
                 ELabsViewContants.L_INSTRUMENT_INSTITUTE, instituteText, false);
 
-        // set up specific listeners
         h5.addListener(new ESyncDaemonEndpointSelectionLayoutListener(this, this));
         if (!ELabsCache.getFileFormats().isEmpty()) {
             h7.addListener(new FileFormatSelectionLayoutListener(this));
@@ -226,50 +221,51 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
         h8.addListener(new DeviceSupervisorSelectionLayoutListener(this));
         h9.addListener(new InstituteSelectionLayoutListener(this));
 
-        registeredComponents.add(h1);
-        registeredComponents.add(h2);
-        registeredComponents.add(h3);
-        registeredComponents.add(h4);
-        registeredComponents.add(h5);
-        registeredComponents.add(h6);
-        registeredComponents.add(h7);
-        registeredComponents.add(h8);
-        registeredComponents.add(h9);
+        this.registeredComponents.add(h1);
+        this.registeredComponents.add(h2);
+        this.registeredComponents.add(h3);
+        this.registeredComponents.add(h4);
+        this.registeredComponents.add(h5);
+        this.registeredComponents.add(h6);
+        this.registeredComponents.add(h7);
+        this.registeredComponents.add(h8);
+        this.registeredComponents.add(h9);
 
-        dynamicLayout.addComponent(h1, 0);
-        dynamicLayout.addComponent(h2, 1);
-        dynamicLayout.addComponent(h3, 2);
-        dynamicLayout.addComponent(h4, 3);
-        dynamicLayout.addComponent(h5, 4);
-        dynamicLayout.addComponent(h6, 5);
-        dynamicLayout.addComponent(h7, 6);
-        dynamicLayout.addComponent(h8, 7);
-        dynamicLayout.addComponent(h9, 8);
-        dynamicLayout.addComponent(new HorizontalLayout(), 9);
+        this.dynamicLayout.addComponent(h1, 0);
+        this.dynamicLayout.addComponent(h2, 1);
+        this.dynamicLayout.addComponent(h3, 2);
+        this.dynamicLayout.addComponent(h4, 3);
+        this.dynamicLayout.addComponent(h5, 4);
+        this.dynamicLayout.addComponent(h6, 5);
+        this.dynamicLayout.addComponent(h7, 6);
+        this.dynamicLayout.addComponent(h8, 7);
+        this.dynamicLayout.addComponent(h9, 8);
+        this.dynamicLayout.addComponent(new HorizontalLayout(), 9);
 
-        dynamicLayout.setComponentAlignment(h1, Alignment.MIDDLE_LEFT);
-        dynamicLayout.setComponentAlignment(h2, Alignment.MIDDLE_LEFT);
-        dynamicLayout.setComponentAlignment(h3, Alignment.MIDDLE_LEFT);
-        dynamicLayout.setComponentAlignment(h4, Alignment.MIDDLE_LEFT);
-        dynamicLayout.setComponentAlignment(h5, Alignment.MIDDLE_LEFT);
-        dynamicLayout.setComponentAlignment(h6, Alignment.MIDDLE_LEFT);
-        dynamicLayout.setComponentAlignment(h7, Alignment.MIDDLE_LEFT);
-        dynamicLayout.setComponentAlignment(h8, Alignment.MIDDLE_LEFT);
-        dynamicLayout.setComponentAlignment(h9, Alignment.MIDDLE_LEFT);
+        this.dynamicLayout.setComponentAlignment(h1, Alignment.MIDDLE_LEFT);
+        this.dynamicLayout.setComponentAlignment(h2, Alignment.MIDDLE_LEFT);
+        this.dynamicLayout.setComponentAlignment(h3, Alignment.MIDDLE_LEFT);
+        this.dynamicLayout.setComponentAlignment(h4, Alignment.MIDDLE_LEFT);
+        this.dynamicLayout.setComponentAlignment(h5, Alignment.MIDDLE_LEFT);
+        this.dynamicLayout.setComponentAlignment(h6, Alignment.MIDDLE_LEFT);
+        this.dynamicLayout.setComponentAlignment(h7, Alignment.MIDDLE_LEFT);
+        this.dynamicLayout.setComponentAlignment(h8, Alignment.MIDDLE_LEFT);
+        this.dynamicLayout.setComponentAlignment(h9, Alignment.MIDDLE_LEFT);
 
-        mainLayout.addComponent(dynamicLayout);
-        mainLayout.setExpandRatio(dynamicLayout, 9.0f);
-        mainLayout.attach();
-        mainLayout.requestRepaintAll();
+        this.mainLayout.addComponent(this.dynamicLayout);
+        this.mainLayout.setExpandRatio(this.dynamicLayout, 9.0f);
+        this.mainLayout.attach();
+        this.mainLayout.requestRepaintAll();
     }
 
     private void createPanelListener() {
-        clientViewEventHandler = new LabsClientViewEventHandler(registeredComponents, dynamicLayout, this, this);
-        dynamicLayout.addListener(clientViewEventHandler);
+        this.clientViewEventHandler =
+            new LabsClientViewEventHandler(this.registeredComponents, this.dynamicLayout, this, this);
+        this.dynamicLayout.addListener(this.clientViewEventHandler);
     }
 
     private void createClickListener() {
-        mouseClickListener = new Button.ClickListener() {
+        this.mouseClickListener = new Button.ClickListener() {
             private static final long serialVersionUID = -8330004043242560612L;
 
             @Override
@@ -282,7 +278,6 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
                 }
             }
         };
-
         try {
             ((Button) buttonLayout.getComponent(1)).addListener(mouseClickListener);
         }
@@ -293,10 +288,9 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
 
     @Override
     public void resetLayout() {
-        Preconditions.checkNotNull(dynamicLayout, "View's dynamiclayout is null.");
-
+        Preconditions.checkNotNull(this.dynamicLayout, "View's dynamiclayout is null.");
         HorizontalLayout tempParentLayout = null;
-        for (Iterator<Component> iterator = dynamicLayout.getComponentIterator(); iterator.hasNext();) {
+        for (Iterator<Component> iterator = this.dynamicLayout.getComponentIterator(); iterator.hasNext();) {
             Component component = iterator.next();
             if (component instanceof HorizontalLayout) {
                 tempParentLayout = (HorizontalLayout) component;
@@ -311,11 +305,9 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
             }
 
             if (LabsLayoutHelper.switchToLabelFromEditedField(tempParentLayout)) {
-                setModifiedComponent(null);
-
-                // get esynch label for instant save
-                if (dynamicLayout.getComponentIndex(tempParentLayout) == 4) {
-                    instrumentBean.setESyncDaemon((String) ((Label) tempParentLayout.getComponent(1)).getValue());
+                this.setModifiedComponent(null);
+                if (this.dynamicLayout.getComponentIndex(tempParentLayout) == 4) {
+                    this.instrumentBean.setESyncDaemon((String) ((Label) tempParentLayout.getComponent(1)).getValue());
                 }
             }
             else {
@@ -326,9 +318,9 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
 
     @Override
     public void hideButtonLayout() {
-        if (dynamicLayout != null && dynamicLayout.getComponent(COMPONENT_COUNT) != null) {
+        if (this.dynamicLayout != null && this.dynamicLayout.getComponent(COMPONENT_COUNT) != null) {
             try {
-                ((HorizontalLayout) dynamicLayout.getComponent(COMPONENT_COUNT)).removeAllComponents();
+                ((HorizontalLayout) this.dynamicLayout.getComponent(COMPONENT_COUNT)).removeAllComponents();
             }
             catch (ClassCastException e) {
                 LOG.error(e.getMessage());
@@ -339,23 +331,23 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
     @Override
     public void showButtonLayout() {
         HorizontalLayout horizontalLayout = null;
-        if (dynamicLayout != null && buttonLayout != null) {
+        if (this.dynamicLayout != null && this.buttonLayout != null) {
             try {
-                horizontalLayout = (HorizontalLayout) dynamicLayout.getComponent(COMPONENT_COUNT);
+                horizontalLayout = (HorizontalLayout) this.dynamicLayout.getComponent(COMPONENT_COUNT);
             }
             catch (ClassCastException e) {
                 LOG.error(e.getMessage());
             }
             if (horizontalLayout != null) {
                 horizontalLayout.removeAllComponents();
-                horizontalLayout.addComponent(buttonLayout);
+                horizontalLayout.addComponent(this.buttonLayout);
             }
         }
     }
 
     @Override
     public Component getModifiedComponent() {
-        return modifiedComponent;
+        return this.modifiedComponent;
     }
 
     @Override
@@ -379,14 +371,14 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
     }
 
     public POJOItem<InstrumentBean> getPojoItem() {
-        return pojoItem;
+        return this.pojoItem;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((itemProxy == null) ? 0 : itemProxy.hashCode());
+        result = prime * result + ((this.itemProxy == null) ? 0 : this.itemProxy.hashCode());
         return result;
     }
 
@@ -402,12 +394,12 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
             return false;
         }
         final InstrumentView other = (InstrumentView) obj;
-        if (itemProxy == null) {
+        if (this.itemProxy == null) {
             if (other.itemProxy != null) {
                 return false;
             }
         }
-        else if (!itemProxy.equals(other.itemProxy)) {
+        else if (!this.itemProxy.equals(other.itemProxy)) {
             return false;
         }
         return true;
@@ -416,18 +408,18 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
     @Override
     public void setDeviceSupervisor(final String deviceSupervisorId) {
         Preconditions.checkNotNull(deviceSupervisorId, "input arg is null");
-        instrumentBean.setDeviceSupervisor(deviceSupervisorId);
+        this.instrumentBean.setDeviceSupervisor(deviceSupervisorId);
     }
 
     @Override
     public void setInstitute(final String instituteId) {
         Preconditions.checkNotNull(instituteId, "input arg is null");
-        instrumentBean.setInstitute(instituteId);
+        this.instrumentBean.setInstitute(instituteId);
     }
 
     @Override
     public void setFileFormat(String fileFormat) {
         Preconditions.checkNotNull(fileFormat, "input arg is null");
-        instrumentBean.setFileFormat(fileFormat);
+        this.instrumentBean.setFileFormat(fileFormat);
     }
 }

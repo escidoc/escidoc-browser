@@ -101,7 +101,7 @@ public class StudyView extends View implements ILabsPanel, ILabsAction {
 
     private HorizontalLayout modifiedComponent;
 
-    private LabsStudyTableHelper studyTableHelper = null;
+    private final LabsStudyTableHelper studyTableHelper;
 
     public StudyView(final StudyBean sourceBean, final ISaveAction controller,
         final List<ResourceModel> breadCrumbModel, final ResourceProxy resourceProxy, final Router router) {
@@ -110,23 +110,14 @@ public class StudyView extends View implements ILabsPanel, ILabsAction {
         Preconditions.checkNotNull(breadCrumbModel, "breadCrumbModel is null: %s", breadCrumbModel);
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         Preconditions.checkNotNull(router, "router is null: %s", router);
-
+        Preconditions.checkArgument(resourceProxy instanceof ContainerProxy, "resourceProxy is not a ContainerProxy");
         this.studyBean = (sourceBean != null) ? sourceBean : new StudyBean();
         this.controller = controller;
         this.breadCrumbModel = breadCrumbModel;
         this.router = router;
-
-        if (resourceProxy instanceof ContainerProxy) {
-            this.containerProxy = (ContainerProxy) resourceProxy;
-        }
-        else {
-            LOG.error("ResourceProxy is not ItemProxy");
-            this.containerProxy = null;
-            return;
-        }
-        this.setViewName(resourceProxy.getName());
         this.studyTableHelper = new LabsStudyTableHelper(this.studyBean, this, this.controller.hasUpdateAccess());
-
+        this.setViewName(resourceProxy.getName());
+        this.containerProxy = (ContainerProxy) resourceProxy;
         initialisePanelComponents();
         buildContainerGUI();
         buildPropertiesGUI();
@@ -162,7 +153,6 @@ public class StudyView extends View implements ILabsPanel, ILabsAction {
     @Override
     public void resetLayout() {
         Preconditions.checkNotNull(dynamicLayout, "View's dynamiclayout is null.");
-
         HorizontalLayout tempParentLayout = null;
         for (final Iterator<Component> iterator = dynamicLayout.getComponentIterator(); iterator.hasNext();) {
             final Component component = iterator.next();
@@ -185,32 +175,26 @@ public class StudyView extends View implements ILabsPanel, ILabsAction {
     }
 
     private void initialisePanelComponents() {
-        mainLayout = new VerticalLayout();
-        mainLayout.setSpacing(true);
-        mainLayout.setMargin(true);
-        mainLayout.setSizeFull();
-        dynamicLayout = new VerticalLayout();
-        dynamicLayout.setSpacing(true);
-        // dynamicLayout.setMargin(true);
-        // dynamicLayout.setSizeFull();
-
-        pojoItem = new POJOItem<StudyBean>(studyBean, PROPERTIES);
-        registeredComponents = new ArrayList<HorizontalLayout>(COMPONENT_COUNT);
-
-        setContent(mainLayout);
-
+        this.mainLayout = new VerticalLayout();
+        this.mainLayout.setSpacing(true);
+        this.mainLayout.setMargin(true);
+        this.mainLayout.setSizeFull();
+        this.dynamicLayout = new VerticalLayout();
+        this.dynamicLayout.setSpacing(true);
+        this.pojoItem = new POJOItem<StudyBean>(studyBean, PROPERTIES);
+        this.registeredComponents = new ArrayList<HorizontalLayout>(COMPONENT_COUNT);
         this.setStyleName(Runo.PANEL_LIGHT);
+        setContent(this.mainLayout);
         setScrollable(true);
     }
 
     private void buildPanelGUI() {
-        Preconditions.checkNotNull(studyTableHelper, "StudyHelper is null");
-        dynamicLayout.setStyleName(ELabsViewContants.STYLE_ELABS_FORM);
-
-        buttonLayout = LabsLayoutHelper.createButtonLayout();
+        Preconditions.checkNotNull(this.studyTableHelper, "StudyHelper is null");
+        this.dynamicLayout.setStyleName(ELabsViewContants.STYLE_ELABS_FORM);
+        this.buttonLayout = LabsLayoutHelper.createButtonLayout();
         final HorizontalLayout h1 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_TITLE,
-                pojoItem.getItemProperty(ELabsViewContants.P_STUDY_TITLE), true);
+            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_TITLE, getPojoItem()
+                .getItemProperty(ELabsViewContants.P_STUDY_TITLE), true);
         final HorizontalLayout h2 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_DESCRIPTION,
                 getPojoItem().getItemProperty(ELabsViewContants.P_STUDY_DESC), true);
@@ -220,47 +204,45 @@ public class StudyView extends View implements ILabsPanel, ILabsAction {
         final HorizontalLayout h4 =
             LabsLayoutHelper.createHorizontalLayoutWithPublicationDataForStudy(ELabsViewContants.L_STUDY_RES_PUB,
                 getPojoItem().getItemProperty(ELabsViewContants.P_STUDY_RES_PUB), false, studyTableHelper, false);
+        this.registeredComponents.add(h1);
+        this.registeredComponents.add(h2);
+        this.registeredComponents.add(h3);
+        this.registeredComponents.add(h4);
 
-        registeredComponents.add(h1);
-        registeredComponents.add(h2);
-        registeredComponents.add(h3);
-        registeredComponents.add(h4);
+        this.dynamicLayout.addComponent(h1, 0);
+        this.dynamicLayout.addComponent(h2, 1);
+        this.dynamicLayout.addComponent(h3, 2);
+        this.dynamicLayout.addComponent(h4, 3);
+        this.dynamicLayout.addComponent(new HorizontalLayout(), 4);
 
-        dynamicLayout.addComponent(h1, 0);
-        dynamicLayout.addComponent(h2, 1);
-        dynamicLayout.addComponent(h3, 2);
-        dynamicLayout.addComponent(h4, 3);
-
-        dynamicLayout.addComponent(new HorizontalLayout(), 4);
-
-        rightCell(dynamicLayout);
-        mainLayout.addComponent(directMemberExperimentContainer);
-        mainLayout.setExpandRatio(directMemberExperimentContainer, 9.0f);
-        mainLayout.attach();
-        mainLayout.requestRepaintAll();
+        rightCell(this.dynamicLayout);
+        this.mainLayout.addComponent(this.directMemberExperimentContainer);
+        this.mainLayout.setExpandRatio(this.directMemberExperimentContainer, 9.0f);
+        this.mainLayout.attach();
+        this.mainLayout.requestRepaintAll();
     }
 
     private void createPanelListener() {
-        clientViewEventHandler = new LabsClientViewEventHandler(registeredComponents, dynamicLayout, this, this);
-        dynamicLayout.addListener(clientViewEventHandler);
-
+        this.clientViewEventHandler =
+            new LabsClientViewEventHandler(this.registeredComponents, this.dynamicLayout, this, this);
+        this.dynamicLayout.addListener(this.clientViewEventHandler);
     }
 
     public POJOItem<StudyBean> getPojoItem() {
-        return pojoItem;
+        return this.pojoItem;
     }
 
     /**
      * Builds a Container for the DM and the ElabPanel
      */
     private void buildContainerGUI() {
-        directMemberExperimentContainer.setWidth("100%");
-        directMemberExperimentContainer.setHeight("100%");
+        this.directMemberExperimentContainer.setWidth("100%");
+        this.directMemberExperimentContainer.setHeight("100%");
         try {
             leftCell();
         }
         catch (final EscidocClientException e) {
-            router.getMainWindow().showNotification(
+            this.router.getMainWindow().showNotification(
                 "Could not load the Direct Members Helper in the View" + e.getLocalizedMessage());
         }
     }
@@ -282,8 +264,8 @@ public class StudyView extends View implements ILabsPanel, ILabsAction {
         vlRightPnl.setMargin(false);
         vlRightPnl.addComponent(comptoBind);
         rightpnl.setContent(vlRightPnl);
-        directMemberExperimentContainer.addComponent(rightpnl);
-        directMemberExperimentContainer.setExpandRatio(rightpnl, 7.0f);
+        this.directMemberExperimentContainer.addComponent(rightpnl);
+        this.directMemberExperimentContainer.setExpandRatio(rightpnl, 7.0f);
     }
 
     private void leftCell() throws EscidocClientException {
@@ -295,41 +277,41 @@ public class StudyView extends View implements ILabsPanel, ILabsAction {
         vlLeftPanel.setSizeFull();
         vlLeftPanel.setMargin(false);
         leftPanel.setContent(vlLeftPanel);
-        new DirectMember(router.getServiceLocation(), router, containerProxy.getId(), router.getMainWindow(),
-            router.getRepositories(), leftPanel, ResourceType.CONTAINER.toString()).containerAsTree();
-        directMemberExperimentContainer.addComponent(leftPanel);
-        directMemberExperimentContainer.setExpandRatio(leftPanel, 3.0f);
+        new DirectMember(this.router.getServiceLocation(), this.router, this.containerProxy.getId(),
+            this.router.getMainWindow(), this.router.getRepositories(), leftPanel, ResourceType.CONTAINER.toString())
+            .containerAsTree();
+        this.directMemberExperimentContainer.addComponent(leftPanel);
+        this.directMemberExperimentContainer.setExpandRatio(leftPanel, 3.0f);
     }
 
     /**
      * Build the read-only layout of the eLabsElement
      */
     private void buildPropertiesGUI() {
-        addComponent(new ResourcePropertiesViewHelper(containerProxy, breadCrumbModel, "Study",
-            router.getServiceLocation()).generatePropertiesView());
+        addComponent(new ResourcePropertiesViewHelper(this.containerProxy, this.breadCrumbModel, "Study",
+            this.router.getServiceLocation()).generatePropertiesView());
     }
 
     @Override
     public void showButtonLayout() {
         HorizontalLayout horizontalLayout = null;
-        if (dynamicLayout != null && buttonLayout != null) {
+        if (this.dynamicLayout != null && this.buttonLayout != null) {
             try {
-                horizontalLayout = (HorizontalLayout) dynamicLayout.getComponent(COMPONENT_COUNT);
+                horizontalLayout = (HorizontalLayout) this.dynamicLayout.getComponent(COMPONENT_COUNT);
             }
             catch (final ClassCastException e) {
-                // TODO log exception and tell the user something going wrong
                 LOG.error(e.getMessage());
             }
             if (horizontalLayout != null) {
                 horizontalLayout.removeAllComponents();
-                horizontalLayout.addComponent(buttonLayout);
+                horizontalLayout.addComponent(this.buttonLayout);
             }
         }
     }
 
     @Override
     public Component getModifiedComponent() {
-        return modifiedComponent;
+        return this.modifiedComponent;
     }
 
     @Override
@@ -354,12 +336,11 @@ public class StudyView extends View implements ILabsPanel, ILabsAction {
 
     @Override
     public void hideButtonLayout() {
-        if (dynamicLayout != null && dynamicLayout.getComponent(COMPONENT_COUNT) != null) {
+        if (this.dynamicLayout != null && this.dynamicLayout.getComponent(COMPONENT_COUNT) != null) {
             try {
-                ((HorizontalLayout) dynamicLayout.getComponent(COMPONENT_COUNT)).removeAllComponents();
+                ((HorizontalLayout) this.dynamicLayout.getComponent(COMPONENT_COUNT)).removeAllComponents();
             }
             catch (final ClassCastException e) {
-                // TODO tell the user something going wrong
                 LOG.error(e.getMessage());
             }
         }
@@ -369,7 +350,7 @@ public class StudyView extends View implements ILabsPanel, ILabsAction {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((containerProxy == null) ? 0 : containerProxy.hashCode());
+        result = prime * result + ((this.containerProxy == null) ? 0 : this.containerProxy.hashCode());
         return result;
     }
 
@@ -385,12 +366,12 @@ public class StudyView extends View implements ILabsPanel, ILabsAction {
             return false;
         }
         final StudyView other = (StudyView) obj;
-        if (containerProxy == null) {
+        if (this.containerProxy == null) {
             if (other.containerProxy != null) {
                 return false;
             }
         }
-        else if (!containerProxy.equals(other.containerProxy)) {
+        else if (!this.containerProxy.equals(other.containerProxy)) {
             return false;
         }
         return true;

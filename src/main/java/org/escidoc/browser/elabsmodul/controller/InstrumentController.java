@@ -105,10 +105,14 @@ public final class InstrumentController extends Controller implements ISaveActio
 
     private IBeanModel beanModel;
 
+    private final Object LOCK = new Object() {
+    };
+
     public InstrumentController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
         Preconditions.checkNotNull(repositories, "Repository ref is null");
         Preconditions.checkNotNull(router, "Router ref is null");
+        this.setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
         this.router = router;
         this.serviceLocation = router.getServiceLocation();
         this.resourceProxy = resourceProxy;
@@ -118,7 +122,6 @@ public final class InstrumentController extends Controller implements ISaveActio
         getUsers();
         loadAdminDescriptorInfo();
         view = createView(resourceProxy);
-        this.setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
     }
 
     /**
@@ -526,37 +529,38 @@ public final class InstrumentController extends Controller implements ISaveActio
      * 
      * @throws EscidocClientException
      */
-    private synchronized void saveModel() {
-        Preconditions.checkNotNull(beanModel, "DataBean to store is NULL");
-        final ItemRepository itemRepositories = repositories.item();
-        final String ESCIDOC = "escidoc";
+    private void saveModel() {
+        synchronized (LOCK) {
+            Preconditions.checkNotNull(beanModel, "DataBean to store is NULL");
+            final ItemRepository itemRepositories = repositories.item();
+            final String ESCIDOC = "escidoc";
 
-        try {
-            validateBean(this.beanModel);
-        }
-        catch (EscidocBrowserException e) {
-            LOG.error(e.getMessage());
-            return;
-        }
+            try {
+                validateBean(this.beanModel);
+            }
+            catch (EscidocBrowserException e) {
+                LOG.error(e.getMessage());
+                return;
+            }
+            final InstrumentBean instrumentBean = (InstrumentBean) beanModel;
+            final Element metaDataContent = InstrumentController.createInstrumentDOMElementByBeanModel(instrumentBean);
 
-        final InstrumentBean instrumentBean = (InstrumentBean) beanModel;
-        final Element metaDataContent = InstrumentController.createInstrumentDOMElementByBeanModel(instrumentBean);
-
-        try {
-            final Item item = itemRepositories.findItemById(instrumentBean.getObjectId());
-            final MetadataRecord metadataRecord = item.getMetadataRecords().get(ESCIDOC);
-            metadataRecord.setContent(metaDataContent);
-            itemRepositories.update(item.getObjid(), item);
+            try {
+                final Item item = itemRepositories.findItemById(instrumentBean.getObjectId());
+                final MetadataRecord metadataRecord = item.getMetadataRecords().get(ESCIDOC);
+                metadataRecord.setContent(metaDataContent);
+                itemRepositories.update(item.getObjid(), item);
+            }
+            catch (final EscidocClientException e) {
+                LOG.error(e.getLocalizedMessage());
+                showError(e.getLocalizedMessage());
+            }
+            finally {
+                beanModel = null;
+            }
+            LOG.info("Instument is successfully saved.");
+            showTrayMessage("Success", "Instrument is saved.");
         }
-        catch (final EscidocClientException e) {
-            LOG.error(e.getLocalizedMessage());
-            showError(e.getLocalizedMessage());
-        }
-        finally {
-            beanModel = null;
-        }
-        LOG.info("Instument is successfully saved.");
-        showTrayMessage("Success", "Instrument is saved.");
     }
 
     @Override
