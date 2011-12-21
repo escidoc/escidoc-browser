@@ -28,14 +28,11 @@
  */
 package org.escidoc.browser.ui;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.BrowserApplication;
@@ -65,10 +62,14 @@ import org.escidoc.browser.ui.maincontent.SearchAdvancedView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -205,8 +206,12 @@ public class Router {
     }
 
     /**
+     * The router should be passed a controller and the controller should open its personal view Should be the default
+     * method for binding ControllerViews to the Layout. + Should be the default call
+     * 
+     * @param cnt
+     */
     public void openControllerView(final Controller cnt, final Boolean doReloadView) {
-        // cnt.init(repositories, this, resourceProxy);
         if (!doReloadView) {
             cnt.showView(layout);
         }
@@ -216,7 +221,10 @@ public class Router {
     }
 
     /**
-     * This method handles the open of a new tab on the right section of the mainWindow <br />
+     * public void openControllerView(final Controller cnt, final Boolean doReloadView) { // cnt.init(repositories,
+     * this, resourceProxy); if (!doReloadView) { cnt.showView(layout); } else { cnt.showViewByReloading(layout); } }
+     * 
+     * /** This method handles the open of a new tab on the right section of the mainWindow <br />
      * If you have a controller for the view, please use the method @openControllerView which is the perfect place to
      * inject Views that represent objects <br />
      * The desired method for opening a View is by passing a controller as a reference to the Router. The Controller

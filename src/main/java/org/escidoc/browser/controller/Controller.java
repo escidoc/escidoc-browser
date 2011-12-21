@@ -60,7 +60,6 @@ public abstract class Controller {
     public Controller(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(router, "router is null: %s", router);
-        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
 
         this.repositories = repositories;
         this.router = router;
