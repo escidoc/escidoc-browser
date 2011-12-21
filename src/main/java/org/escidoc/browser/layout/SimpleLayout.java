@@ -350,8 +350,44 @@ public class SimpleLayout extends LayoutDesign {
 
             @Override
             public void selectedTabChange(final SelectedTabChangeEvent event) {
-                LOG.debug("Tab change: " + event.getSource());
-                LOG.debug("Tab change: " + event.getComponent());
+                Preconditions.checkNotNull(event, "event is null: %s", event);
+
+                final Object source = event.getSource();
+
+                Preconditions.checkNotNull(source, "source is null: %s", source);
+                if (!(source instanceof Accordion)) {
+                    return;
+                }
+
+                if (isOrgUniTabSelected(source)) {
+                    reloadOrgUnitTree(source);
+                }
+            }
+
+            private void reloadOrgUnitTree(final Object source) {
+                try {
+                    reloadContent(source);
+                }
+                catch (final EscidocClientException e) {
+                    LOG.error("Can not reload data source: " + e.getMessage(), e);
+                }
+            }
+
+            private boolean isOrgUniTabSelected(final Object source) {
+                return getSelectedTabCaption(source).equalsIgnoreCase(ViewConstants.ORG_UNITS)
+                    && getTabContent(source) instanceof OrgUnitTreeView;
+            }
+
+            private void reloadContent(final Object source) throws EscidocClientException {
+                ((OrgUnitTreeView) getTabContent(source)).reload();
+            }
+
+            private Component getTabContent(final Object source) {
+                return ((Accordion) source).getSelectedTab();
+            }
+
+            private String getSelectedTabCaption(final Object source) {
+                return ((Accordion) source).getTab(getTabContent(source)).getCaption();
             }
         });
 

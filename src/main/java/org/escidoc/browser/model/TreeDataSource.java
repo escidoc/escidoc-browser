@@ -28,9 +28,11 @@
  */
 package org.escidoc.browser.model;
 
+import com.vaadin.data.Container;
+
 import java.util.List;
 
-import com.vaadin.data.Container;
+import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public interface TreeDataSource {
 
@@ -47,5 +49,7 @@ public interface TreeDataSource {
     void init();
 
     ResourceModel getParent(ResourceModel child);
+
+    void reload() throws EscidocClientException;
 
 }

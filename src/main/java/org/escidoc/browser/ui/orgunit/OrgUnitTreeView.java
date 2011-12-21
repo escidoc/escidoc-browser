@@ -42,10 +42,14 @@ import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.ui.navigation.NavigationTreeView;
 
+import de.escidoc.core.client.exceptions.EscidocClientException;
+
 //TODO consider merge this class with ResourceTreeView. All the implementation are same.
 @SuppressWarnings("serial")
-public class OrgUnitTreeView extends VerticalLayout implements NavigationTreeView {
+public class OrgUnitTreeView extends VerticalLayout implements NavigationTreeView, Reloadable {
     private final Tree tree = new Tree();
+
+    private TreeDataSource ds;
 
     public OrgUnitTreeView() {
         setSizeFull();
@@ -56,6 +60,7 @@ public class OrgUnitTreeView extends VerticalLayout implements NavigationTreeVie
     @Override
     public void setDataSource(final TreeDataSource dataSource) {
         Preconditions.checkNotNull(dataSource, "dataSource is null: %s", dataSource);
+        this.ds = dataSource;
         tree.setContainerDataSource(dataSource.getContainer());
         tree.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
         tree.setItemCaptionPropertyId(PropertyId.NAME);
@@ -84,5 +89,13 @@ public class OrgUnitTreeView extends VerticalLayout implements NavigationTreeVie
     public void addActionHandler(final Handler handler) {
         Preconditions.checkNotNull(handler, "handler is null: %s", handler);
         tree.addActionHandler(handler);
+    }
+
+    @Override
+    public void reload() throws EscidocClientException {
+        final boolean isSucessful = tree.removeAllItems();
+        if (isSucessful) {
+            ds.reload();
+        }
     }
 }

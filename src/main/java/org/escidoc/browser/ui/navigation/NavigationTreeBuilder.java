@@ -80,7 +80,7 @@ public class NavigationTreeBuilder {
         return createNavigationTreeView(withDataSource(repositories.container(), parentId));
     }
 
-    private TreeDataSource withDataSource(final Repository repository, final String parentId)
+    private static TreeDataSource withDataSource(final Repository repository, final String parentId)
         throws EscidocClientException {
         final TreeDataSource treeDataSource = new TreeDataSourceImpl(repository.findTopLevelMembersById(parentId));
         treeDataSource.init();
@@ -114,7 +114,7 @@ public class NavigationTreeBuilder {
     }
 
     private TreeDataSource getDataSource() throws EscidocClientException {
-        final TreeDataSource treeDataSource = new TreeDataSourceImpl(repositories.organization().findTopLevel());
+        final OrgUnitDataSource treeDataSource = new OrgUnitDataSource(repositories.organization());
         treeDataSource.init();
         return treeDataSource;
 
