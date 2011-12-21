@@ -30,7 +30,6 @@ package org.escidoc.browser.ui.maincontent;
 
 import java.net.URISyntaxException;
 
-import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.repository.Repositories;
@@ -61,7 +60,7 @@ import de.escidoc.core.resources.common.MetadataRecords;
 
 public class MetadataRecsItem {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MetadataRecsItem.class);
 
     private final ItemProxy resourceProxy;
 

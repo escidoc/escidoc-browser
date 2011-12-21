@@ -55,7 +55,7 @@ public class InstituteSelectionLayoutListener implements LayoutClickListener {
 
     private static final long serialVersionUID = 3285963424870578840L;
 
-    private Logger LOG = LoggerFactory.getLogger(InstituteSelectionLayoutListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(InstituteSelectionLayoutListener.class);
 
     private final ILabsInstrumentAction labsInstrumentAction;
 

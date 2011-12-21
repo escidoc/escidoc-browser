@@ -36,7 +36,6 @@ import java.util.regex.Pattern;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.ViewConstants;
@@ -71,7 +70,7 @@ import de.escidoc.core.resources.om.item.Item;
 
 @SuppressWarnings("serial")
 public class AddMetaDataFileItemBehaviour implements ClickListener {
-    static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AddMetaDataFileItemBehaviour.class);
 
     private final ResourceProxy resourceProxy;
 

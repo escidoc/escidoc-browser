@@ -29,7 +29,6 @@
 package org.escidoc.browser.ui.view.helpers;
 
 import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.ItemView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,11 +42,12 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.themes.BaseTheme;
 
+@SuppressWarnings("serial")
 public class CloseTabsViewHelper implements ClickListener {
 
     private CssLayout layout;
 
-    private static final Logger LOG = LoggerFactory.getLogger(ItemView.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CloseTabsViewHelper.class);
 
     private static final String FLOAT_RIGHT = "floatright";
 
@@ -94,7 +94,7 @@ public class CloseTabsViewHelper implements ClickListener {
     private Component getParent(Component son) throws NullPointerException {
         Component father;
         if (son.getParent().getClass().toString().equals("class com.vaadin.ui.TabSheet")) {
-            return (TabSheet) son.getParent();
+            return son.getParent();
         }
         else {
             father = getParent(son.getParent());

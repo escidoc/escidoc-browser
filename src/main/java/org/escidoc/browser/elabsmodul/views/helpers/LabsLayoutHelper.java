@@ -77,192 +77,175 @@ public final class LabsLayoutHelper {
 
     private static final Logger LOG = LoggerFactory.getLogger(LabsLayoutHelper.class);
 
+    private static final Object LOCK_1 = new Object() {
+    };
+
+    private static final Object LOCK_2 = new Object() {
+    };
+
     private LabsLayoutHelper() {
     }
 
-    public static synchronized HorizontalLayout createHorizontalLayoutWithELabsLabelAndLabelData(
+    public static HorizontalLayout createHorizontalLayoutWithELabsLabelAndLabelData(
         final String labelTxt, Property dataProperty, boolean required) {
         Preconditions.checkNotNull(labelTxt, "Label is null");
         Preconditions.checkNotNull(dataProperty, "DataSource is null");
-
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSizeUndefined();
         horizontalLayout.setDescription(USER_DESCR_ON_HOR_LAYOUT_TO_EDIT);
         horizontalLayout.setEnabled(true);
         horizontalLayout.setSpacing(true);
         horizontalLayout.setHeight(HOR_PANEL_HEIGHT);
-
         Label label = new Label();
         label.setWidth(LABEL_WIDTH);
         label.setValue(DIV_ALIGN_RIGHT + (required ? ELabsViewContants.REQUIRED_SIGN : "") + labelTxt + DIV_END);
         label.setContentMode(Label.CONTENT_XHTML);
         label.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
-
         Label textLabel = new Label(dataProperty);
         textLabel.setWidth(TEXT_WIDTH);
         textLabel.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
         textLabel.setStyleName(STYLE_ELABS_TEXT_AS_LABEL);
-
         horizontalLayout.setStyleName(STYLE_ELABS_HOR_PANEL);
         horizontalLayout.addComponent(label, 0);
         horizontalLayout.addComponent(textLabel, 1);
         horizontalLayout.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
         horizontalLayout.setComponentAlignment(textLabel, Alignment.MIDDLE_RIGHT);
-
         return horizontalLayout;
     }
 
-    public static synchronized HorizontalLayout createHorizontalLayoutWithELabsLabelAndStaticComboData(
+    public static HorizontalLayout createHorizontalLayoutWithELabsLabelAndStaticComboData(
         final String labelTxt, String value, boolean required) {
         Preconditions.checkNotNull(labelTxt, "Label is null");
-        // Preconditions.checkNotNull(value, "Value is null");
-
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSizeUndefined();
         horizontalLayout.setDescription(USER_DESCR_ON_HOR_LAYOUT_TO_EDIT);
         horizontalLayout.setEnabled(true);
         horizontalLayout.setSpacing(true);
         horizontalLayout.setHeight(HOR_PANEL_HEIGHT);
-
         Label label = new Label();
         label.setWidth(LABEL_WIDTH);
         label.setValue(DIV_ALIGN_RIGHT + (required ? ELabsViewContants.REQUIRED_SIGN : "") + labelTxt + DIV_END);
         label.setContentMode(Label.CONTENT_XHTML);
         label.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
-
         Label textLabel = new Label(value);
         textLabel.setWidth(TEXT_WIDTH);
         textLabel.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
         textLabel.setStyleName(STYLE_ELABS_TEXT_AS_LABEL);
-
         horizontalLayout.setStyleName(STYLE_ELABS_HOR_PANEL);
         horizontalLayout.addComponent(label, 0);
         horizontalLayout.addComponent(textLabel, 1);
         horizontalLayout.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
         horizontalLayout.setComponentAlignment(textLabel, Alignment.MIDDLE_RIGHT);
-
         return horizontalLayout;
     }
 
-    public static synchronized HorizontalLayout createHorizontalLayoutWithELabsLabelAndLabelComplexData(
+    public static HorizontalLayout createHorizontalLayoutWithELabsLabelAndLabelComplexData(
         final String labelTxt, String dataTxt, boolean required) {
         Preconditions.checkNotNull(labelTxt, "Label is null");
-
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSizeUndefined();
         horizontalLayout.setDescription(USER_DESCR_ON_HOR_LAYOUT_TO_EDIT);
         horizontalLayout.setEnabled(true);
         horizontalLayout.setSpacing(true);
         horizontalLayout.setHeight(HOR_PANEL_HEIGHT);
-
         Label label = new Label();
         label.setWidth(LABEL_WIDTH);
         label.setValue(DIV_ALIGN_RIGHT + (required ? ELabsViewContants.REQUIRED_SIGN : "") + labelTxt + DIV_END);
         label.setContentMode(Label.CONTENT_XHTML);
         label.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
-
         Label textLabel = new Label(dataTxt);
         textLabel.setWidth(TEXT_WIDTH);
         textLabel.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
         textLabel.setStyleName(STYLE_ELABS_TEXT_AS_LABEL);
-
         horizontalLayout.setStyleName(STYLE_ELABS_HOR_PANEL);
         horizontalLayout.addComponent(label, 0);
         horizontalLayout.addComponent(textLabel, 1);
         horizontalLayout.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
         horizontalLayout.setComponentAlignment(textLabel, Alignment.MIDDLE_RIGHT);
-
         return horizontalLayout;
     }
 
-    public static synchronized HorizontalLayout createHorizontalLayoutWithELabsLabelAndRelatedDataForRig(
+    public static HorizontalLayout createHorizontalLayoutWithELabsLabelAndRelatedDataForRig(
         final String labelTxt, Property dataProperty, RigBean rigBean, final IRigAction controller,
         LabsRigTableHelper helper, boolean required) {
-        Preconditions.checkNotNull(labelTxt, "Label is null");
-        Preconditions.checkNotNull(dataProperty, "DataSource is null");
-        Preconditions.checkNotNull(rigBean, "RigBean is null");
-        Preconditions.checkNotNull(helper, "Helper is null");
-        Preconditions.checkNotNull(controller, "Controller is null");
-
-        HorizontalLayout horizontalLayout = new HorizontalLayout();
-        horizontalLayout.setSizeUndefined();
-        horizontalLayout.setEnabled(true);
-        horizontalLayout.setSpacing(true);
-        horizontalLayout.setStyleName(STYLE_ELABS_HOR_PANEL_FOR_TABLE);
-
-        Label label = new Label();
-        label.setWidth(LABEL_WIDTH);
-        label.setValue(DIV_ALIGN_RIGHT + (required ? ELabsViewContants.REQUIRED_SIGN : "") + labelTxt + DIV_END);
-        label.setContentMode(Label.CONTENT_XHTML);
-        label.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
-        label.setStyleName(STYLE_ELABS_HOR_PANEL);
-
-        horizontalLayout.addComponent(label, 0);
-        horizontalLayout.addComponent(helper.createTableLayoutForRig(rigBean, controller), 1);
-        horizontalLayout.setComponentAlignment(label, Alignment.TOP_LEFT);
-
-        return horizontalLayout;
+        synchronized (LOCK_1) {
+            Preconditions.checkNotNull(labelTxt, "Label is null");
+            Preconditions.checkNotNull(dataProperty, "DataSource is null");
+            Preconditions.checkNotNull(rigBean, "RigBean is null");
+            Preconditions.checkNotNull(helper, "Helper is null");
+            Preconditions.checkNotNull(controller, "Controller is null");
+            HorizontalLayout horizontalLayout = new HorizontalLayout();
+            horizontalLayout.setSizeUndefined();
+            horizontalLayout.setEnabled(true);
+            horizontalLayout.setSpacing(true);
+            horizontalLayout.setStyleName(STYLE_ELABS_HOR_PANEL_FOR_TABLE);
+            Label label = new Label();
+            label.setWidth(LABEL_WIDTH);
+            label.setValue(DIV_ALIGN_RIGHT + (required ? ELabsViewContants.REQUIRED_SIGN : "") + labelTxt + DIV_END);
+            label.setContentMode(Label.CONTENT_XHTML);
+            label.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
+            label.setStyleName(STYLE_ELABS_HOR_PANEL);
+            horizontalLayout.addComponent(label, 0);
+            horizontalLayout.addComponent(helper.createTableLayoutForRig(rigBean, controller), 1);
+            horizontalLayout.setComponentAlignment(label, Alignment.TOP_LEFT);
+            return horizontalLayout;
+        }
     }
 
-    public static synchronized HorizontalLayout createHorizontalLayoutWithPublicationDataForStudy(
+    public static HorizontalLayout createHorizontalLayoutWithPublicationDataForStudy(
         final String labelTxt, Property dataProperty, boolean isMotNotResPublication, LabsStudyTableHelper helper,
         boolean required) {
-        Preconditions.checkNotNull(labelTxt, "Label is null");
-        Preconditions.checkNotNull(dataProperty, "DataSource is null");
-        Preconditions.checkNotNull(helper, "Helper is null");
-
-        HorizontalLayout horizontalLayout = new HorizontalLayout();
-        horizontalLayout.setSizeUndefined();
-        horizontalLayout.setEnabled(true);
-        horizontalLayout.setSpacing(true);
-        horizontalLayout.setStyleName(STYLE_ELABS_HOR_PANEL_FOR_TABLE);
-
-        Label label = new Label();
-        label.setWidth(LABEL_WIDTH);
-        label.setValue(DIV_ALIGN_RIGHT + (required ? ELabsViewContants.REQUIRED_SIGN : "") + labelTxt + DIV_END);
-        label.setContentMode(Label.CONTENT_XHTML);
-        label.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
-        label.setStyleName(STYLE_ELABS_HOR_PANEL);
-
-        horizontalLayout.addComponent(label, 0);
-        if (isMotNotResPublication) {
-            horizontalLayout.addComponent(helper.createTableLayoutForMotPublications(), 1);
+        synchronized (LOCK_2) {
+            Preconditions.checkNotNull(labelTxt, "Label is null");
+            Preconditions.checkNotNull(dataProperty, "DataSource is null");
+            Preconditions.checkNotNull(helper, "Helper is null");
+            HorizontalLayout horizontalLayout = new HorizontalLayout();
+            horizontalLayout.setSizeUndefined();
+            horizontalLayout.setEnabled(true);
+            horizontalLayout.setSpacing(true);
+            horizontalLayout.setStyleName(STYLE_ELABS_HOR_PANEL_FOR_TABLE);
+            Label label = new Label();
+            label.setWidth(LABEL_WIDTH);
+            label.setValue(DIV_ALIGN_RIGHT + (required ? ELabsViewContants.REQUIRED_SIGN : "") + labelTxt + DIV_END);
+            label.setContentMode(Label.CONTENT_XHTML);
+            label.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
+            label.setStyleName(STYLE_ELABS_HOR_PANEL);
+            horizontalLayout.addComponent(label, 0);
+            if (isMotNotResPublication) {
+                horizontalLayout.addComponent(helper.createTableLayoutForMotPublications(), 1);
+            }
+            else {
+                horizontalLayout.addComponent(helper.createTableLayoutForResPublications(), 1);
+            }
+            horizontalLayout.setComponentAlignment(label, Alignment.TOP_LEFT);
+            return horizontalLayout;
         }
-        else {
-            horizontalLayout.addComponent(helper.createTableLayoutForResPublications(), 1);
-        }
-        horizontalLayout.setComponentAlignment(label, Alignment.TOP_LEFT);
-        return horizontalLayout;
     }
 
-    public static synchronized HorizontalLayout createHorizontalLayoutWithELabsLabelAndCheckBoxData(
+    public static HorizontalLayout createHorizontalLayoutWithELabsLabelAndCheckBoxData(
         final String labelTxt, final String checkBoxDescription, Property dataProperty, boolean required) {
-        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        final HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSizeUndefined();
         horizontalLayout.setDescription(USER_DESCR_ON_HOR_LAYOUT_TO_EDIT);
         horizontalLayout.setEnabled(true);
         horizontalLayout.setSpacing(true);
         horizontalLayout.setHeight(HOR_PANEL_HEIGHT);
         horizontalLayout.setStyleName(STYLE_ELABS_HOR_PANEL);
-
         Label label = new Label();
         label.setWidth(LABEL_WIDTH);
         label.setValue(DIV_ALIGN_RIGHT + (required ? ELabsViewContants.REQUIRED_SIGN : "") + labelTxt + DIV_END);
         label.setContentMode(Label.CONTENT_XHTML);
         label.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
-
-        CheckBox checkBox = new CheckBox(checkBoxDescription, dataProperty);
+        final CheckBox checkBox = new CheckBox(checkBoxDescription, dataProperty);
         checkBox.setEnabled(true);
         checkBox.setVisible(true);
         checkBox.setWidth(TEXT_WIDTH);
         checkBox.setStyleName(STYLE_ELABS_TEXT_AS_LABEL);
         checkBox.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
-
         horizontalLayout.addComponent(label, 0);
         horizontalLayout.addComponent(checkBox, 1);
         horizontalLayout.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
         horizontalLayout.setComponentAlignment(checkBox, Alignment.MIDDLE_RIGHT);
-
         return horizontalLayout;
     }
 
@@ -272,7 +255,7 @@ public final class LabsLayoutHelper {
      * @param property
      * @return boolean an element switch happened or not
      */
-    public static synchronized boolean switchToLabelFromEditedField(HorizontalLayout parentLayout) {
+    public static boolean switchToLabelFromEditedField(HorizontalLayout parentLayout) {
         Preconditions.checkNotNull(parentLayout, "ParentLayout on DynamicLayout is null");
         Component staticLabelComponent = null, dataComponent = null;
         try {
@@ -326,11 +309,9 @@ public final class LabsLayoutHelper {
             LOG.debug("The wrong dataComponent is " + dataComponent.toString());
             return false;
         }
-
         label.setWidth(TEXT_WIDTH);
         label.setStyleName(STYLE_ELABS_TEXT_AS_LABEL);
         label.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
-
         parentLayout.replaceComponent(dataComponent, label);
         parentLayout.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
         ((Label) staticLabelComponent).setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
@@ -342,9 +323,8 @@ public final class LabsLayoutHelper {
      * @param property
      * @return
      */
-    public static synchronized AbstractComponent createTextFieldFromLabel(Property property) {
+    public static AbstractComponent createTextFieldFromLabel(Property property) {
         Preconditions.checkNotNull(property, "Datasource is null");
-
         TextField textField = new TextField(property);
         textField.setWidth(TEXT_WIDTH);
         textField.setStyleName(STYLE_ELABS_TEXT);
@@ -359,9 +339,9 @@ public final class LabsLayoutHelper {
      * @param property
      * @return
      */
-    public static synchronized AbstractComponent createStaticComboBoxFieldFromLabel(Property property) {
+    public static AbstractComponent createStaticComboBoxFieldFromLabel(Property property) {
         Preconditions.checkNotNull(property, "Datasource is null");
-        ComboBox comboBox = new ComboBox(null, ELabsFileFormatsEnum.toList());
+        final ComboBox comboBox = new ComboBox(null, ELabsFileFormatsEnum.toList());
         comboBox.setEnabled(true);
         comboBox.setVisible(true);
         comboBox.setImmediate(true);
@@ -372,7 +352,6 @@ public final class LabsLayoutHelper {
         comboBox.setWidth(COMBOBOX_WIDTH);
         comboBox.setStyleName(STYLE_ELABS_TEXT_AS_LABEL);
         comboBox.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
-
         return comboBox;
     }
 
@@ -381,7 +360,7 @@ public final class LabsLayoutHelper {
      * @return
      */
     @SuppressWarnings("serial")
-    public static synchronized AbstractComponent createDynamicComboBoxFieldForInvestigation(
+    public static AbstractComponent createDynamicComboBoxFieldForInvestigation(
         final ILabsInvestigationAction labsInvestigationAction, Property property, String itemCaptionProperty,
         final Container itemContainer) {
         Preconditions.checkNotNull(labsInvestigationAction, "LabsInvestigationAction is null");
@@ -437,7 +416,7 @@ public final class LabsLayoutHelper {
      * @return
      */
     @SuppressWarnings("serial")
-    public static synchronized AbstractComponent createDynamicComboBoxFieldForInstrument(
+    public static AbstractComponent createDynamicComboBoxFieldForInstrument(
         final ILabsInstrumentAction labsInstrumentAction, Property property, String itemCaptionProperty,
         final Container itemContainer) {
         Preconditions.checkNotNull(labsInstrumentAction, "LabsInstrumentAction is null");
@@ -457,7 +436,6 @@ public final class LabsLayoutHelper {
                 comboBox.setItemCaptionMode(ComboBox.ITEM_CAPTION_MODE_PROPERTY);
                 comboBox.setItemCaptionPropertyId(itemCaptionProperty);
             }
-
             comboBox.setEnabled(true);
             comboBox.setVisible(true);
             comboBox.setImmediate(true);
@@ -496,11 +474,11 @@ public final class LabsLayoutHelper {
     }
 
     public static HorizontalLayout createButtonLayout() {
-        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        final HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSpacing(true);
-        Button saveButton = new Button("Save");
+        final Button saveButton = new Button("Save");
         saveButton.setIcon(ELabsViewContants.ICON_16_OK);
-        Label blank = new Label("");
+        final Label blank = new Label("");
         blank.setWidth(LABEL_WIDTH);
         horizontalLayout.addComponent(blank, 0);
         horizontalLayout.addComponent(saveButton, 1);

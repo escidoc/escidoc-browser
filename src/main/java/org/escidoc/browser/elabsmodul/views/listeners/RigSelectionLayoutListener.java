@@ -58,7 +58,7 @@ public class RigSelectionLayoutListener implements LayoutClickListener {
 
     private static final long serialVersionUID = -1787438522603054074L;
 
-    private Logger LOG = LoggerFactory.getLogger(RigSelectionLayoutListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RigSelectionLayoutListener.class);
 
     private final IInvestigationAction controller;
 

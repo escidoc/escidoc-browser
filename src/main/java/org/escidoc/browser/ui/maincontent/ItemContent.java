@@ -57,6 +57,7 @@ import com.vaadin.ui.themes.BaseTheme;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.om.item.component.Component;
 
+@SuppressWarnings("serial")
 public class ItemContent extends VerticalLayout {
 
     private static final Logger LOG = LoggerFactory.getLogger(ItemContent.class);

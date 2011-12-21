@@ -56,7 +56,7 @@ public final class ELabsCache {
 
     private static Map<String, ContentModelTypeEnum> contentModels = new HashMap<String, ContentModelTypeEnum>();
 
-    private static Logger LOG = LoggerFactory.getLogger(ELabsCache.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ELabsCache.class);
 
     private ELabsCache() {
     }

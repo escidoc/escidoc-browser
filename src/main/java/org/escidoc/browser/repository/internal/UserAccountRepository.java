@@ -50,7 +50,7 @@ public class UserAccountRepository implements Repository {
 
     private final ContainerHandlerClientInterface client;
 
-    static final Logger LOG = LoggerFactory.getLogger(UserAccountRepository.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UserAccountRepository.class);
 
     UserAccountRepository(final EscidocServiceLocation escidocServiceLocation) {
         Preconditions

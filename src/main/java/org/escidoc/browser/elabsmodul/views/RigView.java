@@ -67,7 +67,7 @@ public class RigView extends View implements ILabsPanel, ILabsAction {
 
     private static final long serialVersionUID = -6095498070313755653L;
 
-    private static Logger LOG = LoggerFactory.getLogger(RigView.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RigView.class);
 
     private final String[] PROPERTIES = ELabsViewContants.RIG_PROPERTIES;
 
@@ -91,31 +91,28 @@ public class RigView extends View implements ILabsPanel, ILabsAction {
 
     private final IRigAction controller;
 
-    private List<ResourceModel> breadCrumbModel;
+    private final List<ResourceModel> breadCrumbModel;
 
     private final ItemProxy itemProxy;
 
-    private EscidocServiceLocation serviceLocation;
+    private final EscidocServiceLocation serviceLocation;
 
-    private LabsRigTableHelper rigTableHelper;
+    private final LabsRigTableHelper rigTableHelper;
 
     public RigView(RigBean sourceBean, final IRigAction controller, List<ResourceModel> breadCrumbModel,
         final ResourceProxy resourceProxy, EscidocServiceLocation serviceLocation) {
+        Preconditions.checkNotNull(sourceBean, "sourceBean is null: %s", sourceBean);
+        Preconditions.checkNotNull(controller, "saveComponent is null: %s", controller);
+        Preconditions.checkNotNull(breadCrumbModel, "breadCrumbModel is null: %s", breadCrumbModel);
+        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
+        Preconditions.checkArgument(resourceProxy instanceof ItemProxy, "resourceProxy is not an ItemProxy");
+        this.serviceLocation = serviceLocation;
         this.rigBean = (sourceBean != null) ? sourceBean : new RigBean();
         this.controller = controller;
         this.breadCrumbModel = breadCrumbModel;
-        if (resourceProxy instanceof ItemProxy) {
-            this.itemProxy = (ItemProxy) resourceProxy;
-        }
-        else {
-            LOG.error("ResourceProxy is not ItemProxy");
-            this.itemProxy = null;
-            return;
-        }
-        this.setViewName(resourceProxy.getName());
-        this.serviceLocation = serviceLocation;
         this.rigTableHelper = new LabsRigTableHelper(this);
-
+        this.setViewName(resourceProxy.getName());
+        this.itemProxy = (ItemProxy) resourceProxy;
         initialisePanelComponents();
         buildPropertiesGUI();
         buildPanelGUI();
@@ -131,10 +128,9 @@ public class RigView extends View implements ILabsPanel, ILabsAction {
         this.mainLayout.setMargin(true);
         this.dynamicLayout = new VerticalLayout();
         this.dynamicLayout.setSpacing(true);
-        // this.dynamicLayout.setMargin(true);
         this.pojoItem = new POJOItem<RigBean>(this.rigBean, PROPERTIES);
         this.registeredComponents = new ArrayList<HorizontalLayout>(COMPONENT_COUNT);
-        this.setContent(mainLayout);
+        this.setContent(this.mainLayout);
         this.setScrollable(true);
         this.setSizeFull();
         this.setStyleName(Runo.PANEL_LIGHT);
@@ -152,7 +148,7 @@ public class RigView extends View implements ILabsPanel, ILabsAction {
      * Build the specific editable layout of the eLabsElement.
      */
     private void buildPanelGUI() {
-        Preconditions.checkNotNull(rigTableHelper, "Helper is not null");
+        Preconditions.checkNotNull(this.rigTableHelper, "Helper is not null");
         this.dynamicLayout.setStyleName(ELabsViewContants.STYLE_ELABS_FORM);
 
         this.buttonLayout = LabsLayoutHelper.createButtonLayout();
@@ -167,9 +163,9 @@ public class RigView extends View implements ILabsPanel, ILabsAction {
                 getPojoItem().getItemProperty(ELabsViewContants.P_RIG_CONTENT), this.rigBean, this.controller,
                 this.rigTableHelper, true);
 
-        registeredComponents.add(h1);
-        registeredComponents.add(h2);
-        registeredComponents.add(h3);
+        this.registeredComponents.add(h1);
+        this.registeredComponents.add(h2);
+        this.registeredComponents.add(h3);
 
         this.dynamicLayout.addComponent(h1, 0);
         this.dynamicLayout.addComponent(h2, 1);
@@ -182,7 +178,8 @@ public class RigView extends View implements ILabsPanel, ILabsAction {
     }
 
     private void createPanelListener() {
-        this.clientViewEventHandler = new LabsClientViewEventHandler(registeredComponents, dynamicLayout, this, this);
+        this.clientViewEventHandler =
+            new LabsClientViewEventHandler(this.registeredComponents, this.dynamicLayout, this, this);
         this.dynamicLayout.addListener(this.clientViewEventHandler);
     }
 
@@ -199,7 +196,6 @@ public class RigView extends View implements ILabsPanel, ILabsAction {
                 }
             }
         };
-
         try {
             ((Button) this.buttonLayout.getComponent(1)).addListener(this.mouseClickListener);
         }
@@ -211,7 +207,6 @@ public class RigView extends View implements ILabsPanel, ILabsAction {
     @Override
     public void resetLayout() {
         Preconditions.checkNotNull(this.dynamicLayout, "View's dynamiclayout is null.");
-
         HorizontalLayout tempParentLayout = null;
         for (Iterator<Component> iterator = this.dynamicLayout.getComponentIterator(); iterator.hasNext();) {
             Component component = iterator.next();
@@ -288,14 +283,14 @@ public class RigView extends View implements ILabsPanel, ILabsAction {
     }
 
     public POJOItem<RigBean> getPojoItem() {
-        return pojoItem;
+        return this.pojoItem;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((itemProxy == null) ? 0 : itemProxy.hashCode());
+        result = prime * result + ((this.itemProxy == null) ? 0 : this.itemProxy.hashCode());
         return result;
     }
 
@@ -311,12 +306,12 @@ public class RigView extends View implements ILabsPanel, ILabsAction {
             return false;
         }
         final RigView other = (RigView) obj;
-        if (itemProxy == null) {
+        if (this.itemProxy == null) {
             if (other.itemProxy != null) {
                 return false;
             }
         }
-        else if (!itemProxy.equals(other.itemProxy)) {
+        else if (!this.itemProxy.equals(other.itemProxy)) {
             return false;
         }
         return true;

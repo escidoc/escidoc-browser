@@ -77,7 +77,15 @@ import de.escidoc.core.resources.om.item.Item;
 
 public final class RigController extends Controller implements IRigAction {
 
-    private static Logger LOG = LoggerFactory.getLogger(RigController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RigController.class);
+
+    private static final String ESCIDOC = "escidoc";
+
+    private static final String URI_DC = "http://purl.org/dc/elements/1.1/";
+
+    private static final String URI_EL = "http://escidoc.org/ontologies/bw-elabs/re#";
+
+    private static final String URI_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
     private final Repositories repositories;
 
@@ -87,17 +95,25 @@ public final class RigController extends Controller implements IRigAction {
 
     private final Window mainWindow;
 
-    private IBeanModel beanModel = null;
+    private IBeanModel beanModel;
+
+    private final Object LOCK_1 = new Object() {
+    };
+
+    private final Object LOCK_2 = new Object() {
+    };
 
     public RigController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
         Preconditions.checkNotNull(repositories, "Repository ref is null");
         Preconditions.checkNotNull(router, "Router ref is null");
+        Preconditions.checkNotNull(resourceProxy, "ResourceProxy ref is null");
+        Preconditions.checkArgument(resourceProxy instanceof ItemProxy, "ResourceProxy is not an ItemProxy");
         this.serviceLocation = router.getServiceLocation();
         this.resourceProxy = resourceProxy;
         this.repositories = repositories;
         this.mainWindow = router.getMainWindow();
-        view = createView(resourceProxy);
+        this.view = createView(resourceProxy);
         this.setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
     }
 
@@ -108,19 +124,13 @@ public final class RigController extends Controller implements IRigAction {
      * @return controlled bean exception
      */
     private RigBean loadBeanData(final ItemProxy itemProxy) {
-        Preconditions.checkNotNull(itemProxy, "Resource is null");
-        final String URI_DC = "http://purl.org/dc/elements/1.1/";
-        final String URI_EL = "http://escidoc.org/ontologies/bw-elabs/re#";
-        final String URI_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-        final NodeList nodeList = itemProxy.getMedataRecords().get("escidoc").getContent().getChildNodes();
+        final NodeList nodeList = itemProxy.getMedataRecords().get(ESCIDOC).getContent().getChildNodes();
         RigBean rigBean = new RigBean();
         rigBean.setObjectId(itemProxy.getId());
-
         for (int i = 0; i < nodeList.getLength(); i++) {
             final Node node = nodeList.item(i);
             final String nodeName = node.getLocalName();
             final String nsUri = node.getNamespaceURI();
-
             if ("title".equals(nodeName) && URI_DC.equals(nsUri)) {
                 rigBean.setName((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
             }
@@ -132,7 +142,7 @@ public final class RigController extends Controller implements IRigAction {
                     Node attributeNode = node.getAttributes().getNamedItemNS(URI_RDF, "resource");
                     String instrumentID = attributeNode.getNodeValue();
                     try {
-                        ItemProxy instrumentProxy = (ItemProxy) repositories.item().findById(instrumentID);
+                        ItemProxy instrumentProxy = (ItemProxy) this.repositories.item().findById(instrumentID);
                         rigBean.getContentList().add(loadRelatedInstrumentBeanData(instrumentProxy));
                     }
                     catch (EscidocClientException e) {
@@ -151,8 +161,7 @@ public final class RigController extends Controller implements IRigAction {
     private static InstrumentBean loadRelatedInstrumentBeanData(final ItemProxy instrumentItem) {
         Preconditions.checkNotNull(instrumentItem, "Resource is null");
         final InstrumentBean instrumentBean = new InstrumentBean();
-        final String URI_DC = "http://purl.org/dc/elements/1.1/";
-        final NodeList nodeList = instrumentItem.getMedataRecords().get("escidoc").getContent().getChildNodes();
+        final NodeList nodeList = instrumentItem.getMedataRecords().get(ESCIDOC).getContent().getChildNodes();
 
         for (int i = 0; i < nodeList.getLength(); i++) {
             final Node node = nodeList.item(i);
@@ -181,25 +190,23 @@ public final class RigController extends Controller implements IRigAction {
             builder = factory.newDocumentBuilder();
             final Document doc = builder.newDocument();
 
-            Element rig = doc.createElementNS("http://escidoc.org/ontologies/bw-elabs/re#", "Rig");
+            Element rig = doc.createElementNS(URI_EL, "Rig");
             rig.setPrefix("el");
 
-            final Element title = doc.createElementNS("http://purl.org/dc/elements/1.1/", "title");
+            final Element title = doc.createElementNS(URI_DC, "title");
             title.setPrefix("dc");
             title.setTextContent(rigBean.getName());
             rig.appendChild(title);
 
-            final Element description = doc.createElementNS("http://purl.org/dc/elements/1.1/", "description");
+            final Element description = doc.createElementNS(URI_DC, "description");
             description.setPrefix("dc");
             description.setTextContent(rigBean.getDescription());
             rig.appendChild(description);
 
             for (InstrumentBean instrumentBean : rigBean.getContentList()) {
-                final Element insturmentRelation =
-                    doc.createElementNS("http://escidoc.org/ontologies/bw-elabs/re#", "instrument");
+                final Element insturmentRelation = doc.createElementNS(URI_EL, "instrument");
                 insturmentRelation.setPrefix("el");
-                insturmentRelation.setAttributeNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdf:resource",
-                    instrumentBean.getObjectId());
+                insturmentRelation.setAttributeNS(URI_RDF, "rdf:resource", instrumentBean.getObjectId());
                 rig.appendChild(insturmentRelation);
             }
             return rig;
@@ -214,24 +221,19 @@ public final class RigController extends Controller implements IRigAction {
     }
 
     private Component createView(final ResourceProxy resourceProxy) {
-        Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
-        ItemProxyImpl itemProxyImpl = null;
         RigBean rigBean = null;
-
-        if (resourceProxy instanceof ItemProxyImpl) {
-            itemProxyImpl = (ItemProxyImpl) resourceProxy;
-            rigBean = loadBeanData(itemProxyImpl);
-        }
-        return new RigView(rigBean, this, createBeadCrumbModel(), resourceProxy, serviceLocation);
+        ItemProxyImpl itemProxyImpl = (ItemProxyImpl) resourceProxy;
+        rigBean = loadBeanData(itemProxyImpl);
+        return new RigView(rigBean, this, createBeadCrumbModel(), resourceProxy, this.serviceLocation);
     }
 
     private List<ResourceModel> createBeadCrumbModel() {
-        final ResourceHierarchy rs = new ResourceHierarchy(serviceLocation, repositories);
+        final ResourceHierarchy rs = new ResourceHierarchy(this.serviceLocation, this.repositories);
         List<ResourceModel> hierarchy = null;
         try {
-            hierarchy = rs.getHierarchy(resourceProxy);
+            hierarchy = rs.getHierarchy(this.resourceProxy);
             Collections.reverse(hierarchy);
-            hierarchy.add(resourceProxy);
+            hierarchy.add(this.resourceProxy);
             return hierarchy;
         }
         catch (EscidocClientException e) {
@@ -245,10 +247,8 @@ public final class RigController extends Controller implements IRigAction {
     public void saveAction(final IBeanModel beanModel) {
         Preconditions.checkNotNull(beanModel, "DataBean to store is NULL");
         this.beanModel = beanModel;
-
-        mainWindow.addWindow(new YesNoDialog(ELabsViewContants.DIALOG_SAVERIG_HEADER,
-            ELabsViewContants.DIALOG_SAVERIG_TEXT, new YesNoDialog.Callback() {
-
+        this.mainWindow.addWindow(new YesNoDialog(ELabsViewContants.DIALOG_SAVE_RIG_HEADER,
+            ELabsViewContants.DIALOG_SAVE_RIG_TEXT, new YesNoDialog.Callback() {
                 @Override
                 public void onDialogResult(boolean resultIsYes) {
                     if (resultIsYes) {
@@ -263,83 +263,83 @@ public final class RigController extends Controller implements IRigAction {
      * 
      * @throws EscidocClientException
      */
-    private synchronized void saveModel() {
-        Preconditions.checkNotNull(beanModel, "DataBean to store is NULL");
-        ItemRepository itemRepositories = repositories.item();
-        final String ESCIDOC = "escidoc";
-
-        try {
-            validateBean(this.beanModel);
+    private void saveModel() {
+        synchronized (LOCK_1) {
+            Preconditions.checkNotNull(this.beanModel, "DataBean to store is NULL");
+            ItemRepository itemRepositories = this.repositories.item();
+            try {
+                validateBean(this.beanModel);
+            }
+            catch (EscidocBrowserException e) {
+                LOG.error(e.getMessage());
+                return;
+            }
+            RigBean rigBean = (RigBean) this.beanModel;
+            final Element metaDataContent = RigController.createRigDOMElementByBeanModel(rigBean);
+            try {
+                Item item = itemRepositories.findItemById(rigBean.getObjectId());
+                MetadataRecord metadataRecord = item.getMetadataRecords().get(ESCIDOC);
+                metadataRecord.setContent(metaDataContent);
+                itemRepositories.update(item.getObjid(), item);
+            }
+            catch (EscidocClientException e) {
+                LOG.error(e.getLocalizedMessage());
+                showError(e.getLocalizedMessage());
+            }
+            finally {
+                this.beanModel = null;
+            }
+            LOG.info("Rig is successfully saved.");
+            showTrayMessage("Success", "Rig is saved.");
         }
-        catch (EscidocBrowserException e) {
-            LOG.error(e.getMessage());
-            return;
-        }
-
-        RigBean rigBean = (RigBean) beanModel;
-        final Element metaDataContent = RigController.createRigDOMElementByBeanModel(rigBean);
-
-        try {
-            Item item = itemRepositories.findItemById(rigBean.getObjectId());
-            MetadataRecord metadataRecord = item.getMetadataRecords().get(ESCIDOC);
-            metadataRecord.setContent(metaDataContent);
-            itemRepositories.update(item.getObjid(), item);
-        }
-        catch (EscidocClientException e) {
-            LOG.error(e.getLocalizedMessage());
-            showError(e.getLocalizedMessage());
-        }
-        finally {
-            beanModel = null;
-        }
-        LOG.info("Rig is successfully saved.");
-        showTrayMessage("Success", "Rig is saved.");
     }
 
     @Override
-    public synchronized List<InstrumentBean> getNewAvailableInstruments(final List<String> containedInstrumentIDs) {
-        List<InstrumentBean> result = new ArrayList<InstrumentBean>();
-        try {
-            List<ResourceModel> items = null;
-            for (Iterator<String> iterator = ELabsCache.getInstrumentCMMIds().iterator(); iterator.hasNext();) {
-                String cmmId = iterator.next();
-                items = repositories.item().findItemsByContentModel(cmmId);
-                for (Iterator<ResourceModel> iterator2 = items.iterator(); iterator2.hasNext();) {
-                    ResourceModel itemModel = iterator2.next();
-                    if (itemModel instanceof ItemProxy) {
-                        ItemProxy itemProxy = (ItemProxy) itemModel;
-                        if (!containedInstrumentIDs.contains(itemProxy.getId())) {
-                            result.add(loadRelatedInstrumentBeanData(itemProxy));
+    public List<InstrumentBean> getNewAvailableInstruments(final List<String> containedInstrumentIDs) {
+        synchronized (LOCK_2) {
+            List<InstrumentBean> result = new ArrayList<InstrumentBean>();
+            try {
+                List<ResourceModel> items = null;
+                for (Iterator<String> iterator = ELabsCache.getInstrumentCMMIds().iterator(); iterator.hasNext();) {
+                    String cmmId = iterator.next();
+                    items = this.repositories.item().findItemsByContentModel(cmmId);
+                    for (Iterator<ResourceModel> iterator2 = items.iterator(); iterator2.hasNext();) {
+                        ResourceModel itemModel = iterator2.next();
+                        if (itemModel instanceof ItemProxy) {
+                            ItemProxy itemProxy = (ItemProxy) itemModel;
+                            if (!containedInstrumentIDs.contains(itemProxy.getId())) {
+                                result.add(loadRelatedInstrumentBeanData(itemProxy));
+                            }
                         }
                     }
                 }
             }
+            catch (EscidocClientException e) {
+                LOG.error(e.getMessage());
+            }
+            return result;
         }
-        catch (EscidocClientException e) {
-            LOG.error(e.getMessage());
-        }
-        return result;
     }
 
     @Override
     public boolean hasUpdateAccess() {
         try {
-            return repositories
+            return this.repositories
                 .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_ITEM).forResource(resourceProxy.getId())
                 .permitted();
         }
         catch (UnsupportedOperationException e) {
-            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            showError("Internal error");
             LOG.error(e.getMessage());
             return false;
         }
         catch (EscidocClientException e) {
-            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            showError("Internal error");
             LOG.error(e.getMessage());
             return false;
         }
         catch (URISyntaxException e) {
-            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            showError("Internal error");
             LOG.error(e.getMessage());
             return false;
         }

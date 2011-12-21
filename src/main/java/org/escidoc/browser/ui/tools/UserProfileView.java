@@ -24,6 +24,7 @@ import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
+@SuppressWarnings("serial")
 public class UserProfileView extends View {
     private static final Logger LOG = LoggerFactory.getLogger(UserProfileView.class);
 

@@ -68,7 +68,7 @@ public class DatePickerWindow extends Window implements Button.ClickListener {
 
     private final String INPUT_WIDTH = "30px";
 
-    private static Logger LOG = LoggerFactory.getLogger(DatePickerWindow.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DatePickerWindow.class);
 
     private final TextField tfDays = new TextField(), tfHours = new TextField(), tfMinutes = new TextField();
 

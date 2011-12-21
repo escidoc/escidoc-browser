@@ -75,6 +75,8 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
 
     private static final Logger LOG = LoggerFactory.getLogger(InvestigationSeriesController.class);
 
+    private static final String ESCIDOC = "escidoc";
+
     private final EscidocServiceLocation serviceLocation;
 
     private final Repositories repositories;
@@ -85,16 +87,19 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
 
     private final Window mainWindow;
 
-    private InvestigationSeriesBean isb;
+    private InvestigationSeriesBean investigationSeriesBean;
 
     private IBeanModel beanModel;
+
+    private final Object LOCK = new Object() {
+    };
 
     public InvestigationSeriesController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(router, "mainSite is null: %s", router);
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
-        Preconditions.checkArgument(resourceProxy instanceof ContainerProxy, "resourceProxy is not container proxy");
+        Preconditions.checkArgument(resourceProxy instanceof ContainerProxy, "resourceProxy is not a Containerproxy");
         this.router = router;
         this.mainWindow = router.getMainWindow();
         this.serviceLocation = router.getServiceLocation();
@@ -102,14 +107,14 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
         this.resourceProxy = (ContainerProxy) resourceProxy;
         setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
         resourceToBean();
-        view = createView();
+        this.view = createView();
     }
 
     @Override
     public void saveAction(IBeanModel beanModel) {
         Preconditions.checkNotNull(beanModel, "DataBean to store is NULL");
         this.beanModel = beanModel;
-        mainWindow.addWindow(new YesNoDialog(ELabsViewContants.DIALOG_SAVE_INVESTIGATION_SERIES_HEADER,
+        this.mainWindow.addWindow(new YesNoDialog(ELabsViewContants.DIALOG_SAVE_INVESTIGATION_SERIES_HEADER,
             ELabsViewContants.DIALOG_SAVE_INVESTIGATION_SERIES_TEXT, new YesNoDialog.Callback() {
                 @Override
                 public void onDialogResult(boolean resultIsYes) {
@@ -125,34 +130,34 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
      * 
      * @throws EscidocClientException
      */
-    private synchronized void saveModel() {
-        Preconditions.checkNotNull(beanModel, "DataBean to store is NULL");
-        ContainerRepository containerRepositories = repositories.container();
-        final String ESCIDOC = "escidoc";
+    private void saveModel() {
+        synchronized (LOCK) {
+            Preconditions.checkNotNull(this.beanModel, "DataBean to store is NULL");
+            ContainerRepository containerRepositories = repositories.container();
+            try {
+                validateBean(this.beanModel);
+            }
+            catch (EscidocBrowserException e) {
+                LOG.error(e.getMessage());
+                return;
+            }
 
-        try {
-            validateBean(this.beanModel);
+            try {
+                Container container = containerRepositories.findContainerById(this.resourceProxy.getId());
+                MetadataRecord metadataRecord = container.getMetadataRecords().get(ESCIDOC);
+                metadataRecord.setContent(beanToDom(this.investigationSeriesBean));
+                containerRepositories.update(container);
+            }
+            catch (EscidocClientException e) {
+                LOG.error(e.getLocalizedMessage());
+                showError(e.getLocalizedMessage());
+            }
+            finally {
+                this.beanModel = null;
+            }
+            LOG.info("InvestigationSeries is successfully saved.");
+            showTrayMessage("Success", "Investigation series is saved.");
         }
-        catch (EscidocBrowserException e) {
-            LOG.error(e.getMessage());
-            return;
-        }
-
-        try {
-            Container container = containerRepositories.findContainerById(resourceProxy.getId());
-            MetadataRecord metadataRecord = container.getMetadataRecords().get(ESCIDOC);
-            metadataRecord.setContent(beanToDom(isb));
-            containerRepositories.update(container);
-        }
-        catch (EscidocClientException e) {
-            LOG.error(e.getLocalizedMessage());
-            showError(e.getLocalizedMessage());
-        }
-        finally {
-            beanModel = null;
-        }
-        LOG.info("InvestigationSeries is successfully saved.");
-        showTrayMessage("Success", "Investigation series is saved.");
     }
 
     private Element beanToDom(InvestigationSeriesBean isb) {
@@ -165,7 +170,7 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
             builder = factory.newDocumentBuilder();
             final Document doc = builder.newDocument();
 
-            Element instrument =
+            final Element instrument =
                 doc.createElementNS("http://escidoc.org/ontologies/bw-elabs/re#", "InvestigationSeries");
             instrument.setPrefix("el");
 
@@ -191,33 +196,35 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
     }
 
     private void resourceToBean() {
-        this.isb = new InvestigationSeriesBean();
+        final NodeList nodeList = resourceProxy.getMedataRecords().get(ESCIDOC).getContent().getChildNodes();
 
-        final NodeList nodeList = resourceProxy.getMedataRecords().get("escidoc").getContent().getChildNodes();
-
+        this.investigationSeriesBean = new InvestigationSeriesBean();
         for (int i = 0; i < nodeList.getLength(); i++) {
 
             final Node node = nodeList.item(i);
             if ("title".equals(node.getLocalName()) && AppConstants.DC_NAMESPACE.equals(node.getNamespaceURI())) {
-                this.isb.setName((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
+                this.investigationSeriesBean.setName((node.getFirstChild() != null) ? node
+                    .getFirstChild().getNodeValue() : null);
             }
             else if ("description".equals(node.getLocalName())
                 && AppConstants.DC_NAMESPACE.equals(node.getNamespaceURI())) {
-                this.isb.setDescription((node.getFirstChild() != null) ? node.getFirstChild().getNodeValue() : null);
+                this.investigationSeriesBean.setDescription((node.getFirstChild() != null) ? node
+                    .getFirstChild().getNodeValue() : null);
             }
         }
     }
 
     private Component createView() {
-        return new InvestigationSeriesView(resourceProxy, isb, createBreadCrumbModel(), this, router);
+        return new InvestigationSeriesView(this.resourceProxy, this.investigationSeriesBean, createBreadCrumbModel(),
+            this, this.router);
     }
 
     private List<ResourceModel> createBreadCrumbModel() {
-        final ResourceHierarchy rs = new ResourceHierarchy(serviceLocation, repositories);
+        final ResourceHierarchy rs = new ResourceHierarchy(this.serviceLocation, this.repositories);
         try {
-            List<ResourceModel> hierarchy = rs.getHierarchy(resourceProxy);
+            List<ResourceModel> hierarchy = rs.getHierarchy(this.resourceProxy);
             Collections.reverse(hierarchy);
-            hierarchy.add(resourceProxy);
+            hierarchy.add(this.resourceProxy);
             return hierarchy;
         }
         catch (EscidocClientException e) {
@@ -229,22 +236,22 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
     @Override
     public boolean hasUpdateAccess() {
         try {
-            return repositories
+            return this.repositories
                 .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER).forResource(resourceProxy.getId())
                 .permitted();
         }
         catch (UnsupportedOperationException e) {
-            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            showError("Internal error");
             LOG.error(e.getMessage());
             return false;
         }
         catch (EscidocClientException e) {
-            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            showError("Internal error");
             LOG.error(e.getMessage());
             return false;
         }
         catch (URISyntaxException e) {
-            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            showError("Internal error");
             LOG.error(e.getMessage());
             return false;
         }

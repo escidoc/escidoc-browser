@@ -55,30 +55,25 @@ import com.vaadin.ui.VerticalLayout;
 
 public final class LabsStudyTableHelper {
 
-    // properties for the tables def
-    private final String motPubProperty1 = "path-mot", resPubProperty1 = "path-res";
+    private static final String motPubProperty1 = "path-mot", resPubProperty1 = "path-res";
 
     private static final String HTTP = "http://", HTTPS = "https://";
 
-    // buttons related to the tables
+    private static final String ADD_BUTTON = "Add document";
+
+    private static final String DELETE_BUTTON_TEXT = "Delete document";
+
+    private static final String DELETES_BUTTON_TEXT = "Delete selected documents";
+
     private Button motPubDeleteButton = null, motPubAddButton = null;
 
     private Button resPubDeleteButton = null, resPubAddButton = null;
 
-    // table and container references
     private Table motPubTable = null, resPubTable = null;
 
     private IndexedContainer motPubContainer = null, resPubContainer = null;
 
-    // model references
     private StudyBean studyBean = null;
-
-    // common texts
-    private final String ADD_BUTTON = "Add document";
-
-    private final String DELETE_BUTTON_TEXT = "Delete document";
-
-    private final String DELETES_BUTTON_TEXT = "Delete selected documents";
 
     private ILabsAction labsAction;
 
@@ -94,13 +89,11 @@ public final class LabsStudyTableHelper {
         this.hasUpdateAccess = hasUpdateAccess;
     }
 
-    public synchronized VerticalLayout createTableLayoutForMotPublications() {
-
+    public VerticalLayout createTableLayoutForMotPublications() {
         final int RIG_TABLE_SIZE = 4;
         final Label selectedLabel = new Label("No selection");
         final VerticalLayout layout = new VerticalLayout();
         layout.setSizeUndefined();
-
         motPubTable = new Table();
         motPubTable.setSelectable(true);
         motPubTable.setMultiSelect(true);
@@ -108,14 +101,11 @@ public final class LabsStudyTableHelper {
         motPubTable.setImmediate(true);
         motPubTable.setPageLength(RIG_TABLE_SIZE);
         motPubTable.setWidth("450px");
-
         motPubTable.setColumnReorderingAllowed(false);
         motPubTable.setColumnCollapsingAllowed(false);
         motPubTable.setRowHeaderMode(Table.ROW_HEADER_MODE_ICON_ONLY);
-
         motPubTable.setContainerDataSource(fillMotPubTableData());
         motPubTable.setColumnHeaders(new String[] { "Url" });
-
         motPubTable.addListener(new Table.ValueChangeListener() {
             private static final long serialVersionUID = 2000562132182698589L;
 
@@ -217,7 +207,7 @@ public final class LabsStudyTableHelper {
         layout.addComponent(horizontalLayout);
     }
 
-    public synchronized VerticalLayout createTableLayoutForResPublications() {
+    public VerticalLayout createTableLayoutForResPublications() {
         final int RIG_TABLE_SIZE = 4;
         final Label selectedLabel = new Label("No selection");
         final VerticalLayout layout = new VerticalLayout();

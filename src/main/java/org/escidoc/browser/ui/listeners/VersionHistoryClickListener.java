@@ -49,6 +49,7 @@ import de.escidoc.core.resources.common.versionhistory.Event;
 import de.escidoc.core.resources.common.versionhistory.Version;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 
+@SuppressWarnings("serial")
 public class VersionHistoryClickListener implements ClickListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(VersionHistoryClickListener.class);

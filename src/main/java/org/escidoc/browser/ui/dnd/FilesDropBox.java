@@ -55,7 +55,7 @@ import de.escidoc.core.resources.om.item.component.Components;
 @SuppressWarnings("serial")
 class FilesDropBox extends DragAndDropWrapper implements DropHandler {
 
-    private final static Logger LOG = LoggerFactory.getLogger(FilesDropBox.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FilesDropBox.class);
 
     private static final int FILE_SIZE_IN_MEGABYTE = 20;
 

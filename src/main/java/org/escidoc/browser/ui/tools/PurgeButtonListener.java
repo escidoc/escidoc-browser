@@ -141,8 +141,7 @@ final class PurgeButtonListener implements ClickListener {
             showSucess(status);
         }
         else if (status.getStatusCode() == AdminStatus.STATUS_IN_PROGRESS) {
-            showPurgeStatus(this.filterButtonListener.bulkTasksView.repositories
-                .admin().retrievePurgeStatus());
+            showPurgeStatus(this.filterButtonListener.bulkTasksView.repositories.admin().retrievePurgeStatus());
         }
         else {
             this.filterButtonListener.bulkTasksView.showErrorMessage(status);
@@ -157,8 +156,8 @@ final class PurgeButtonListener implements ClickListener {
     }
 
     private void showSucess(final MessagesStatus status) {
-        this.filterButtonListener.bulkTasksView.router.getMainWindow().showNotification(
-            ViewConstants.INFO, status.getStatusMessage(), Notification.TYPE_TRAY_NOTIFICATION);
+        this.filterButtonListener.bulkTasksView.router.getMainWindow().showNotification(ViewConstants.INFO,
+            status.getStatusMessage(), Notification.TYPE_TRAY_NOTIFICATION);
     }
 
     private MessagesStatus startPurging(final Set<String> objectIds) throws EscidocClientException {

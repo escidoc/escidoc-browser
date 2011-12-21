@@ -55,7 +55,7 @@ public class DeviceSupervisorSelectionLayoutListener implements LayoutClickListe
 
     private static final long serialVersionUID = -3576338023981512558L;
 
-    private Logger LOG = LoggerFactory.getLogger(DeviceSupervisorSelectionLayoutListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DeviceSupervisorSelectionLayoutListener.class);
 
     private final ILabsInstrumentAction labsInstrumentAction;
 

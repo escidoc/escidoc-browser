@@ -28,17 +28,6 @@
  */
 package org.escidoc.browser.ui.listeners;
 
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Window;
-
-import org.escidoc.browser.AppConstants;
-import org.escidoc.browser.ui.ViewConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
-
 import java.io.StringWriter;
 
 import javax.xml.transform.OutputKeys;
@@ -48,12 +37,23 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.escidoc.browser.AppConstants;
+import org.escidoc.browser.ui.ViewConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Element;
+
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Window;
+
 import de.escidoc.core.resources.common.MetadataRecord;
 
 @SuppressWarnings("serial")
 public class MetadataRecBehavour implements ClickListener {
 
-    private final static Logger LOG = LoggerFactory.getLogger(MetadataRecBehavour.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MetadataRecBehavour.class);
 
     private static final String NAME = "Name :";
 

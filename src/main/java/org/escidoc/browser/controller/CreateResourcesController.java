@@ -14,7 +14,6 @@ import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ContextBuilder;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.ItemView;
 import org.escidoc.browser.ui.tools.CreateResourcesView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +36,7 @@ public class CreateResourcesController extends Controller {
 
     private Router router;
 
-    private static final Logger LOG = LoggerFactory.getLogger(ItemView.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CreateResourcesController.class);
 
     public CreateResourcesController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);

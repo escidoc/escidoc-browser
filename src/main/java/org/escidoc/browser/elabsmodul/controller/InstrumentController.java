@@ -57,7 +57,6 @@ import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.UserService;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
-import org.escidoc.browser.model.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.repository.internal.ItemRepository;
@@ -91,7 +90,15 @@ import de.escidoc.core.resources.oum.OrganizationalUnit;
  */
 public final class InstrumentController extends Controller implements ISaveAction {
 
-    private static Logger LOG = LoggerFactory.getLogger(InstrumentController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(InstrumentController.class);
+
+    private static final String ESCIDOC = "escidoc";
+
+    private static final String URI_DC = "http://purl.org/dc/elements/1.1/";
+
+    private static final String URI_EL = "http://escidoc.org/ontologies/bw-elabs/re#";
+
+    private static final String URI_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
     private final Repositories repositories;
 
@@ -105,10 +112,16 @@ public final class InstrumentController extends Controller implements ISaveActio
 
     private IBeanModel beanModel;
 
+    private final Object LOCK = new Object() {
+    };
+
     public InstrumentController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
         Preconditions.checkNotNull(repositories, "Repository ref is null");
         Preconditions.checkNotNull(router, "Router ref is null");
+        Preconditions.checkNotNull(resourceProxy, "ResourceProxy ref is null");
+        Preconditions.checkArgument(resourceProxy instanceof ItemProxy, "ResourceProxy is not an ItemProxy");
+        this.setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
         this.router = router;
         this.serviceLocation = router.getServiceLocation();
         this.resourceProxy = resourceProxy;
@@ -117,8 +130,7 @@ public final class InstrumentController extends Controller implements ISaveActio
         getOrgUnits();
         getUsers();
         loadAdminDescriptorInfo();
-        view = createView(resourceProxy);
-        this.setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
+        this.view = createView(resourceProxy);
     }
 
     /**
@@ -130,18 +142,11 @@ public final class InstrumentController extends Controller implements ISaveActio
      *             exception
      */
     private InstrumentBean loadBeanData(final ResourceProxy resourceProxy) throws EscidocBrowserException {
-        Preconditions.checkNotNull(resourceProxy, "Resource is null");
-        if (resourceProxy == null || !(resourceProxy instanceof ItemProxy)) {
-            throw new EscidocBrowserException("NOT an ItemProxy", null);
-        }
-
         final ItemProxy itemProxy = (ItemProxy) resourceProxy;
         final InstrumentBean instrumentBean = new InstrumentBean();
         instrumentBean.setObjectId(itemProxy.getId());
-        final Element e = itemProxy.getMedataRecords().get("escidoc").getContent();
+        final Element e = itemProxy.getMedataRecords().get(ESCIDOC).getContent();
         final NodeList nodeList = e.getChildNodes();
-        final String URI_DC = "http://purl.org/dc/elements/1.1/";
-        final String URI_EL = "http://escidoc.org/ontologies/bw-elabs/re#";
 
         for (int i = 0; i < nodeList.getLength(); i++) {
             final Node node = nodeList.item(i);
@@ -212,73 +217,39 @@ public final class InstrumentController extends Controller implements ISaveActio
         factory.setCoalescing(true);
         factory.setValidating(true);
         DocumentBuilder builder;
-
-        final String URI_DC = "http://purl.org/dc/elements/1.1/";
-        final String URI_EL = "http://escidoc.org/ontologies/bw-elabs/re#";
-        final String URI_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-
         try {
             builder = factory.newDocumentBuilder();
             final Document doc = builder.newDocument();
-
             Element instrument = doc.createElementNS(URI_EL, "Instrument");
             instrument.setPrefix("el");
-
-            // e.g. <dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">FRS
-            // Instrument 01</dc:title>
             final Element title = doc.createElementNS(URI_DC, "title");
             title.setPrefix("dc");
             title.setTextContent(instrumentBean.getName());
             instrument.appendChild(title);
-
-            // e.g. <dc:description
-            // xmlns:dc="http://purl.org/dc/elements/1.1/">A
-            // description.</dc:description>
             final Element description = doc.createElementNS(URI_DC, "description");
             description.setPrefix("dc");
             description.setTextContent(instrumentBean.getDescription());
             instrument.appendChild(description);
-
-            // <el:identity-number></el:identity-number>
             instrument = createDOMElementWithoutNamespace(doc, instrument, "identity-number", "");
-
-            // <el:requires-configuration>no</el:requires-configuration>
             instrument =
                 createDOMElementWithoutNamespace(doc, instrument, "requires-configuration",
                     booleanToHumanReadable(instrumentBean.getConfiguration()));
-
-            // <el:requires-calibration>no</el:requires-calibration>
             instrument =
                 createDOMElementWithoutNamespace(doc, instrument, "requires-calibration",
                     booleanToHumanReadable(instrumentBean.getCalibration()));
-
-            // <el:esync-endpoint>http://my.es/ync/endpoint</el:esync-endpoint>
             instrument =
                 createDOMElementWithoutNamespace(doc, instrument, "esync-endpoint", instrumentBean.getESyncDaemon());
-
-            // <el:monitored-folder>C:\tmp</el:monitored-folder>
             instrument =
                 createDOMElementWithoutNamespace(doc, instrument, "monitored-folder", instrumentBean.getFolder());
-
-            // <el:result-mime-type>application/octet-stream</el:result-mime-type>
             instrument =
                 createDOMElementWithoutNamespace(doc, instrument, "result-mime-type", instrumentBean.getFileFormat());
-
-            // <el:responsible-person
-            // xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-            // rdf:resource="escidoc:42"></el:responsible-person>
             final Element responsiblePerson = doc.createElement("el:responsible-person");
             responsiblePerson.setAttributeNS(URI_RDF, "rdf:resource", instrumentBean.getDeviceSupervisor());
             instrument.appendChild(responsiblePerson);
-
-            // <el:institution
-            // xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-            // rdf:resource="escidoc:1001"></el:institution>
             final Element institution = doc.createElement("el:institution");
             institution.setAttributeNS(URI_RDF, "rdf:resource", instrumentBean.getInstitute());
             instrument.appendChild(institution);
             return instrument;
-
         }
         catch (final DOMException e) {
             LOG.error(e.getLocalizedMessage());
@@ -286,7 +257,6 @@ public final class InstrumentController extends Controller implements ISaveActio
         catch (final ParserConfigurationException e) {
             LOG.error(e.getLocalizedMessage());
         }
-
         return null;
     }
 
@@ -311,7 +281,8 @@ public final class InstrumentController extends Controller implements ISaveActio
     private void loadAdminDescriptorInfo() {
         ContextProxyImpl context;
         try {
-            context = (ContextProxyImpl) repositories.context().findById(resourceProxy.getContext().getObjid());
+            context =
+                (ContextProxyImpl) this.repositories.context().findById(this.resourceProxy.getContext().getObjid());
             if (context == null) {
                 LOG.error("Context is null");
                 showError("Internal error");
@@ -343,8 +314,7 @@ public final class InstrumentController extends Controller implements ISaveActio
 
             if (ELabsCache.getFileFormats().isEmpty()) {
                 List<FileFormatBean> fileFormatList = new ArrayList<FileFormatBean>();
-                final String URI_DC = "http://purl.org/dc/elements/1.1/";
-                final String URI_EL = "http://escidoc.org/ontologies/bw-elabs.owl#";
+                final String mimeTypeURI = "http://escidoc.org/ontologies/bw-elabs.owl#";
                 final NodeList fileFormatNodeList = content.getElementsByTagName("el:FileFormat");
                 if (fileFormatNodeList != null) {
                     for (int i = 0; i < fileFormatNodeList.getLength(); i++) {
@@ -363,7 +333,7 @@ public final class InstrumentController extends Controller implements ISaveActio
                                 if ("title".equals(nodeName) && URI_DC.equals(nsUri)) {
                                     bean.setTitle(formatNode.getTextContent().trim());
                                 }
-                                else if ("mime-type".equals(nodeName) && URI_EL.equals(nsUri)) {
+                                else if ("mime-type".equals(nodeName) && mimeTypeURI.equals(nsUri)) {
                                     bean.setMimeType(formatNode.getTextContent().trim());
                                 }
                             }
@@ -401,32 +371,25 @@ public final class InstrumentController extends Controller implements ISaveActio
     }
 
     private Component createView(final ResourceProxy resourceProxy) {
-        Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
-
-        ItemProxyImpl itemProxyImpl = null;
         InstrumentBean instumentBean = null;
-
-        if (resourceProxy instanceof ItemProxyImpl) {
-            itemProxyImpl = (ItemProxyImpl) resourceProxy;
-        }
-
         try {
-            instumentBean = loadBeanData(itemProxyImpl);
+            instumentBean = loadBeanData(resourceProxy);
         }
         catch (final EscidocBrowserException e) {
-            mainWindow.showNotification(new Notification("Error", e.getMessage(), Notification.TYPE_ERROR_MESSAGE));
+            this.mainWindow
+                .showNotification(new Notification("Error", e.getMessage(), Notification.TYPE_ERROR_MESSAGE));
             LOG.error(e.getLocalizedMessage());
         }
-        return new InstrumentView(instumentBean, this, createBeadCrumbModel(), resourceProxy, serviceLocation);
+        return new InstrumentView(instumentBean, this, createBeadCrumbModel(), resourceProxy, this.serviceLocation);
     }
 
     private List<ResourceModel> createBeadCrumbModel() {
-        final ResourceHierarchy rs = new ResourceHierarchy(serviceLocation, repositories);
+        final ResourceHierarchy rs = new ResourceHierarchy(this.serviceLocation, this.repositories);
         List<ResourceModel> hierarchy = null;
         try {
-            hierarchy = rs.getHierarchy(resourceProxy);
+            hierarchy = rs.getHierarchy(this.resourceProxy);
             Collections.reverse(hierarchy);
-            hierarchy.add(resourceProxy);
+            hierarchy.add(this.resourceProxy);
             return hierarchy;
         }
         catch (final EscidocClientException e) {
@@ -437,7 +400,6 @@ public final class InstrumentController extends Controller implements ISaveActio
     }
 
     private void getUsers() {
-
         if (!ELabsCache.getUsers().isEmpty()) {
             return;
         }
@@ -445,7 +407,7 @@ public final class InstrumentController extends Controller implements ISaveActio
         Collection<UserAccount> userAccounts = null;
         try {
             final UserService userService =
-                new UserService(serviceLocation.getEscidocUri(), router.getApp().getCurrentUser().getToken());
+                new UserService(this.serviceLocation.getEscidocUri(), this.router.getApp().getCurrentUser().getToken());
             userAccounts = userService.findAll();
             UserBean bean = null;
             for (final UserAccount account : userAccounts) {
@@ -454,7 +416,6 @@ public final class InstrumentController extends Controller implements ISaveActio
                 bean.setName(account.getXLinkTitle());
                 userAccountList.add(bean);
             }
-
             synchronized (ELabsCache.getUsers()) {
                 if (!userAccountList.isEmpty()) {
                     ELabsCache.setUsers(Collections.unmodifiableList(userAccountList));
@@ -477,7 +438,8 @@ public final class InstrumentController extends Controller implements ISaveActio
         final List<OrgUnitBean> orgUnitList = new ArrayList<OrgUnitBean>();
         try {
             final OrgUnitService orgUnitService =
-                new OrgUnitService(serviceLocation.getEscidocUri(), router.getApp().getCurrentUser().getToken());
+                new OrgUnitService(this.serviceLocation.getEscidocUri(), this.router
+                    .getApp().getCurrentUser().getToken());
             orgUnits = orgUnitService.findAll();
             OrgUnitBean bean = null;
             for (final OrganizationalUnit orgUnitBean : orgUnits) {
@@ -486,7 +448,6 @@ public final class InstrumentController extends Controller implements ISaveActio
                 bean.setName(orgUnitBean.getXLinkTitle());
                 orgUnitList.add(bean);
             }
-
             synchronized (ELabsCache.getOrgUnits()) {
                 if (!orgUnitList.isEmpty()) {
                     ELabsCache.setOrgUnits(Collections.unmodifiableList(orgUnitList));
@@ -508,10 +469,8 @@ public final class InstrumentController extends Controller implements ISaveActio
     public void saveAction(final IBeanModel beanModel) {
         Preconditions.checkNotNull(beanModel, "DataBean to store is NULL");
         this.beanModel = beanModel;
-
-        mainWindow.addWindow(new YesNoDialog(ELabsViewContants.DIALOG_SAVEINSTRUMENT_HEADER,
-            ELabsViewContants.DIALOG_SAVEINSTRUMENT_TEXT, new YesNoDialog.Callback() {
-
+        this.mainWindow.addWindow(new YesNoDialog(ELabsViewContants.DIALOG_SAVE_INSTRUMENT_HEADER,
+            ELabsViewContants.DIALOG_SAVE_INSTRUMENT_TEXT, new YesNoDialog.Callback() {
                 @Override
                 public void onDialogResult(final boolean resultIsYes) {
                     if (resultIsYes) {
@@ -526,58 +485,57 @@ public final class InstrumentController extends Controller implements ISaveActio
      * 
      * @throws EscidocClientException
      */
-    private synchronized void saveModel() {
-        Preconditions.checkNotNull(beanModel, "DataBean to store is NULL");
-        final ItemRepository itemRepositories = repositories.item();
-        final String ESCIDOC = "escidoc";
+    private void saveModel() {
+        synchronized (LOCK) {
+            Preconditions.checkNotNull(this.beanModel, "DataBean to store is NULL");
+            final ItemRepository itemRepositories = this.repositories.item();
+            try {
+                validateBean(this.beanModel);
+            }
+            catch (EscidocBrowserException e) {
+                LOG.error(e.getMessage());
+                return;
+            }
+            final InstrumentBean instrumentBean = (InstrumentBean) this.beanModel;
+            final Element metaDataContent = InstrumentController.createInstrumentDOMElementByBeanModel(instrumentBean);
 
-        try {
-            validateBean(this.beanModel);
+            try {
+                final Item item = itemRepositories.findItemById(instrumentBean.getObjectId());
+                final MetadataRecord metadataRecord = item.getMetadataRecords().get(ESCIDOC);
+                metadataRecord.setContent(metaDataContent);
+                itemRepositories.update(item.getObjid(), item);
+            }
+            catch (final EscidocClientException e) {
+                LOG.error(e.getLocalizedMessage());
+                showError(e.getLocalizedMessage());
+            }
+            finally {
+                this.beanModel = null;
+            }
+            LOG.info("Instument is successfully saved.");
+            showTrayMessage("Success", "Instrument is saved.");
         }
-        catch (EscidocBrowserException e) {
-            LOG.error(e.getMessage());
-            return;
-        }
-
-        final InstrumentBean instrumentBean = (InstrumentBean) beanModel;
-        final Element metaDataContent = InstrumentController.createInstrumentDOMElementByBeanModel(instrumentBean);
-
-        try {
-            final Item item = itemRepositories.findItemById(instrumentBean.getObjectId());
-            final MetadataRecord metadataRecord = item.getMetadataRecords().get(ESCIDOC);
-            metadataRecord.setContent(metaDataContent);
-            itemRepositories.update(item.getObjid(), item);
-        }
-        catch (final EscidocClientException e) {
-            LOG.error(e.getLocalizedMessage());
-            showError(e.getLocalizedMessage());
-        }
-        finally {
-            beanModel = null;
-        }
-        LOG.info("Instument is successfully saved.");
-        showTrayMessage("Success", "Instrument is saved.");
     }
 
     @Override
     public boolean hasUpdateAccess() {
         try {
-            return repositories
-                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_ITEM).forResource(resourceProxy.getId())
+            return this.repositories
+                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_ITEM).forResource(this.resourceProxy.getId())
                 .permitted();
         }
         catch (final UnsupportedOperationException e) {
-            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            showError("Internal error");
             LOG.error(e.getMessage());
             return false;
         }
         catch (final EscidocClientException e) {
-            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            showError("Internal error");
             LOG.error(e.getMessage());
             return false;
         }
         catch (final URISyntaxException e) {
-            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            showError("Internal error");
             LOG.error(e.getMessage());
             return false;
         }

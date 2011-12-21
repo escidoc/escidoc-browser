@@ -54,7 +54,7 @@ public class FileFormatSelectionLayoutListener implements LayoutClickListener {
 
     private static final long serialVersionUID = 3285963424870578840L;
 
-    private Logger LOG = LoggerFactory.getLogger(FileFormatSelectionLayoutListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FileFormatSelectionLayoutListener.class);
 
     private final ILabsInstrumentAction labsInstrumentAction;
 

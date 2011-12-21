@@ -56,7 +56,7 @@ public class ContainerController extends Controller {
 
     private Router router;
 
-    private static Logger LOG = LoggerFactory.getLogger(ContainerController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ContainerController.class);
 
     public ContainerController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);

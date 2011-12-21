@@ -77,7 +77,7 @@ public class InvestigationView extends View implements ILabsPanel, ILabsAction, 
 
     private static final long serialVersionUID = -5284506653803233585L;
 
-    private static Logger LOG = LoggerFactory.getLogger(InvestigationView.class);
+    private static final Logger LOG = LoggerFactory.getLogger(InvestigationView.class);
 
     private final InvestigationBean investigationBean;
 
@@ -107,23 +107,23 @@ public class InvestigationView extends View implements ILabsPanel, ILabsAction, 
 
     private final Router router;
 
-    private DurationBean durationBean;
-
     public InvestigationView(final InvestigationBean sourceBean, final IInvestigationAction controller,
         final List<ResourceModel> breadCrumbModel, final ContainerProxy containerProxy, final Router router) {
-
+        Preconditions.checkNotNull(sourceBean, "sourceBean is null: %s", sourceBean);
+        Preconditions.checkNotNull(controller, "saveComponent is null: %s", controller);
+        Preconditions.checkNotNull(breadCrumbModel, "breadCrumbModel is null: %s", breadCrumbModel);
+        Preconditions.checkNotNull(containerProxy, "resourceProxy is null: %s", containerProxy);
+        Preconditions.checkNotNull(router, "router is null: %s", router);
         this.investigationBean = (sourceBean != null) ? sourceBean : new InvestigationBean();
         this.controller = controller;
         this.breadCrumbModel = breadCrumbModel;
         this.containerProxy = containerProxy;
         this.setViewName(containerProxy.getName());
         this.router = router;
-
         initialisePanelComponents();
         buildPropertiesGUI();
         buildContainerGUI();
         buildPanelGUI();
-
         if (controller.hasUpdateAccess()) {
             createPanelListener();
             createClickListener();
@@ -131,13 +131,13 @@ public class InvestigationView extends View implements ILabsPanel, ILabsAction, 
     }
 
     private void buildContainerGUI() {
-        directMemberInvestigationContainer.setWidth("100%");
-        directMemberInvestigationContainer.setHeight("100%");
+        this.directMemberInvestigationContainer.setWidth("100%");
+        this.directMemberInvestigationContainer.setHeight("100%");
         try {
             leftCell();
         }
         catch (final EscidocClientException e) {
-            router.getMainWindow().showNotification(
+            this.router.getMainWindow().showNotification(
                 "Could not load the Direct Members Helper in the View" + e.getLocalizedMessage());
         }
     }
@@ -152,8 +152,9 @@ public class InvestigationView extends View implements ILabsPanel, ILabsAction, 
         vl.setMargin(false);
         vl.setSizeFull();
         leftPanel.setContent(vl);
-        new DirectMember(router.getServiceLocation(), router, containerProxy.getId(), router.getMainWindow(),
-            router.getRepositories(), leftPanel, ResourceType.CONTAINER.toString()).containerAsTree();
+        new DirectMember(this.router.getServiceLocation(), this.router, containerProxy.getId(),
+            this.router.getMainWindow(), this.router.getRepositories(), leftPanel, ResourceType.CONTAINER.toString())
+            .containerAsTree();
         directMemberInvestigationContainer.addComponent(leftPanel);
         directMemberInvestigationContainer.setExpandRatio(leftPanel, 3.0f);
     }
@@ -185,15 +186,13 @@ public class InvestigationView extends View implements ILabsPanel, ILabsAction, 
         mainLayout.setSizeFull();
         this.dynamicLayout = new VerticalLayout();
         this.dynamicLayout.setSpacing(true);
-        // this.dynamicLayout.setMargin(true);
-
         this.pojoItem =
             new POJOItem<InvestigationBean>(this.investigationBean, ELabsViewContants.INVESTIGATION_PROPERTIES);
         this.registeredComponents = new ArrayList<HorizontalLayout>(COMPONENT_COUNT);
 
         setSizeFull();
         setStyleName(Runo.PANEL_LIGHT);
-        setContent(mainLayout);
+        setContent(this.mainLayout);
         setScrollable(true);
     }
 
@@ -202,13 +201,13 @@ public class InvestigationView extends View implements ILabsPanel, ILabsAction, 
      */
     private void buildPropertiesGUI() {
         addComponent(new ResourcePropertiesViewHelper(this.containerProxy, this.breadCrumbModel, "Investigation",
-            router.getServiceLocation()).generatePropertiesView());
+            this.router.getServiceLocation()).generatePropertiesView());
     }
 
     private void createPanelListener() {
         this.clientViewEventHandler =
             new LabsClientViewEventHandler(this.registeredComponents, this.dynamicLayout, this, this);
-        this.dynamicLayout.addListener(clientViewEventHandler);
+        this.dynamicLayout.addListener(this.clientViewEventHandler);
     }
 
     private void createClickListener() {
@@ -227,7 +226,7 @@ public class InvestigationView extends View implements ILabsPanel, ILabsAction, 
         };
 
         try {
-            ((Button) buttonLayout.getComponent(1)).addListener(mouseClickListener);
+            ((Button) this.buttonLayout.getComponent(1)).addListener(this.mouseClickListener);
         }
         catch (final ClassCastException e) {
             LOG.error(e.getMessage());
@@ -236,10 +235,10 @@ public class InvestigationView extends View implements ILabsPanel, ILabsAction, 
 
     @Override
     public void resetLayout() {
-        Preconditions.checkNotNull(dynamicLayout, "View's dynamiclayout is null.");
+        Preconditions.checkNotNull(this.dynamicLayout, "View's dynamiclayout is null.");
 
         HorizontalLayout tempParentLayout = null;
-        for (final Iterator<Component> iterator = dynamicLayout.getComponentIterator(); iterator.hasNext();) {
+        for (final Iterator<Component> iterator = this.dynamicLayout.getComponentIterator(); iterator.hasNext();) {
             final Component component = iterator.next();
             if (component instanceof HorizontalLayout) {
                 tempParentLayout = (HorizontalLayout) component;
@@ -254,9 +253,7 @@ public class InvestigationView extends View implements ILabsPanel, ILabsAction, 
             }
 
             if (LabsLayoutHelper.switchToLabelFromEditedField(tempParentLayout)) {
-                setModifiedComponent(null);
-
-                // get deposit url label for instant save
+                this.setModifiedComponent(null);
                 if (dynamicLayout.getComponentIndex(tempParentLayout) == 2) {
                     investigationBean
                         .setDepositEndpoint((String) ((Label) tempParentLayout.getComponent(1)).getValue());
@@ -269,7 +266,6 @@ public class InvestigationView extends View implements ILabsPanel, ILabsAction, 
      * Build the specific editable layout of the eLabsElement.
      */
     private void buildPanelGUI() {
-
         final String investigatorId = investigationBean.getInvestigator();
         String investigatorText = null;
         if (investigatorId != null) {
@@ -280,16 +276,14 @@ public class InvestigationView extends View implements ILabsPanel, ILabsAction, 
                 }
             }
         }
-
         this.dynamicLayout.setStyleName(ELabsViewContants.STYLE_ELABS_FORM);
-
         this.buttonLayout = LabsLayoutHelper.createButtonLayout();
         final HorizontalLayout h1 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_TITLE,
-                pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_TITLE), true);
+                this.pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_TITLE), true);
         final HorizontalLayout h2 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_DESCRIPTION,
-                pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_DESC), true);
+                this.pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_DESC), true);
         final HorizontalLayout h3 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndStaticComboData(
                 ELabsViewContants.L_INVESTIGATION_DEPOSIT_SERVICE, investigationBean.getDepositEndpoint(), true);
@@ -299,61 +293,60 @@ public class InvestigationView extends View implements ILabsPanel, ILabsAction, 
         final HorizontalLayout h5 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(
                 ELabsViewContants.L_INVESTIGATION_DURATION,
-                pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_DURATION), true);
+                this.pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_DURATION), true);
         final HorizontalLayout h6 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_INVESTIGATION_RIG,
-                pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_RIG), true);
+                this.pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_RIG), true);
 
-        // set up specific listeners
         h3.addListener(new DepositEndpointSelectionLayoutListener(this, this));
         h4.addListener(new DepositorSelectionLayoutListener(this));
         h5.addListener(new DurationSelectionLayoutListener(this, this));
         h6.addListener(new RigSelectionLayoutListener(this.controller, this));
 
-        registeredComponents.add(h1);
-        registeredComponents.add(h2);
-        registeredComponents.add(h3);
-        registeredComponents.add(h4);
-        registeredComponents.add(h5);
-        registeredComponents.add(h6);
+        this.registeredComponents.add(h1);
+        this.registeredComponents.add(h2);
+        this.registeredComponents.add(h3);
+        this.registeredComponents.add(h4);
+        this.registeredComponents.add(h5);
+        this.registeredComponents.add(h6);
 
-        dynamicLayout.addComponent(h1, 0);
-        dynamicLayout.addComponent(h2, 1);
-        dynamicLayout.addComponent(h3, 2);
-        dynamicLayout.addComponent(h4, 3);
-        dynamicLayout.addComponent(h5, 4);
-        dynamicLayout.addComponent(h6, 5);
-        dynamicLayout.addComponent(new HorizontalLayout(), 6);
+        this.dynamicLayout.addComponent(h1, 0);
+        this.dynamicLayout.addComponent(h2, 1);
+        this.dynamicLayout.addComponent(h3, 2);
+        this.dynamicLayout.addComponent(h4, 3);
+        this.dynamicLayout.addComponent(h5, 4);
+        this.dynamicLayout.addComponent(h6, 5);
+        this.dynamicLayout.addComponent(new HorizontalLayout(), 6);
 
-        rightCell(dynamicLayout);
-        mainLayout.addComponent(directMemberInvestigationContainer);
-        mainLayout.setExpandRatio(directMemberInvestigationContainer, 1.0f);
-        mainLayout.attach();
-        mainLayout.requestRepaintAll();
+        rightCell(this.dynamicLayout);
+        this.mainLayout.addComponent(this.directMemberInvestigationContainer);
+        this.mainLayout.setExpandRatio(this.directMemberInvestigationContainer, 1.0f);
+        this.mainLayout.attach();
+        this.mainLayout.requestRepaintAll();
     }
 
     @Override
     public void showButtonLayout() {
         HorizontalLayout horizontalLayout = null;
-        if (dynamicLayout != null && buttonLayout != null) {
+        if (this.dynamicLayout != null && this.buttonLayout != null) {
             try {
-                horizontalLayout = (HorizontalLayout) dynamicLayout.getComponent(COMPONENT_COUNT);
+                horizontalLayout = (HorizontalLayout) this.dynamicLayout.getComponent(COMPONENT_COUNT);
             }
             catch (final ClassCastException e) {
                 LOG.error(e.getMessage());
             }
             if (horizontalLayout != null) {
                 horizontalLayout.removeAllComponents();
-                horizontalLayout.addComponent(buttonLayout);
+                horizontalLayout.addComponent(this.buttonLayout);
             }
         }
     }
 
     @Override
     public void hideButtonLayout() {
-        if (dynamicLayout != null && dynamicLayout.getComponent(COMPONENT_COUNT) != null) {
+        if (this.dynamicLayout != null && this.dynamicLayout.getComponent(COMPONENT_COUNT) != null) {
             try {
-                ((HorizontalLayout) dynamicLayout.getComponent(COMPONENT_COUNT)).removeAllComponents();
+                ((HorizontalLayout) this.dynamicLayout.getComponent(COMPONENT_COUNT)).removeAllComponents();
             }
             catch (final ClassCastException e) {
                 LOG.error(e.getMessage());
@@ -390,7 +383,7 @@ public class InvestigationView extends View implements ILabsPanel, ILabsAction, 
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((containerProxy == null) ? 0 : containerProxy.hashCode());
+        result = prime * result + ((this.containerProxy == null) ? 0 : this.containerProxy.hashCode());
         return result;
     }
 
@@ -406,12 +399,12 @@ public class InvestigationView extends View implements ILabsPanel, ILabsAction, 
             return false;
         }
         final InvestigationView other = (InvestigationView) obj;
-        if (containerProxy == null) {
+        if (this.containerProxy == null) {
             if (other.containerProxy != null) {
                 return false;
             }
         }
-        else if (!containerProxy.equals(other.containerProxy)) {
+        else if (!this.containerProxy.equals(other.containerProxy)) {
             return false;
         }
         return true;
@@ -424,20 +417,18 @@ public class InvestigationView extends View implements ILabsPanel, ILabsAction, 
     @Override
     public synchronized void setRigBean(final RigBean rigBean) {
         Preconditions.checkNotNull(rigBean, "input arg is null");
-        investigationBean.setRigBean(rigBean);
+        this.investigationBean.setRigBean(rigBean);
     }
 
     @Override
     public void setInvestigator(final String investigatorId) {
         Preconditions.checkNotNull(investigatorId, "input arg is null");
-        investigationBean.setInvestigator(investigatorId);
+        this.investigationBean.setInvestigator(investigatorId);
     }
 
     @Override
     public void setDuration(DurationBean durationBean) {
         Preconditions.checkNotNull(durationBean, "Duration is null");
-        this.durationBean = durationBean;
-
         StringBuilder sb = new StringBuilder();
         if (durationBean.getDays() != 0) {
             sb.append(durationBean.getDays());
@@ -449,7 +440,6 @@ public class InvestigationView extends View implements ILabsPanel, ILabsAction, 
         }
         sb.append(durationBean.getMinutes());
         sb.append((durationBean.getMinutes() == 0 || durationBean.getMinutes() == 1) ? " minute" : " minutes");
-
         this.investigationBean.setMaxRuntimeInMin(durationBean.getDays() * 1440 + durationBean.getHours() * 60
             + durationBean.getMinutes());
 

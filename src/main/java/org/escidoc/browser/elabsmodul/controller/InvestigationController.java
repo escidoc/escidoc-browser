@@ -93,7 +93,15 @@ import de.escidoc.core.resources.om.container.Container;
  */
 public class InvestigationController extends Controller implements IInvestigationAction {
 
-    private static Logger LOG = LoggerFactory.getLogger(InstrumentController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(InstrumentController.class);
+
+    private static final String ESCIDOC = "escidoc";
+
+    private static final String URI_DC = "http://purl.org/dc/elements/1.1/";
+
+    private static final String URI_EL = "http://escidoc.org/ontologies/bw-elabs/re#";
+
+    private static final String URI_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
     private final EscidocServiceLocation serviceLocation;
 
@@ -107,7 +115,13 @@ public class InvestigationController extends Controller implements IInvestigatio
 
     private final ILabsService labsService;
 
-    private IBeanModel model;
+    private IBeanModel beanModel;
+
+    private final Object LOCK_1 = new Object() {
+    };
+
+    private final Object LOCK_2 = new Object() {
+    };
 
     /*
      * (non-Javadoc)
@@ -118,8 +132,10 @@ public class InvestigationController extends Controller implements IInvestigatio
      */
     public InvestigationController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
-        Preconditions.checkNotNull(repositories, "Repository ref is null");
-        Preconditions.checkNotNull(resourceProxy, "ResourceProxy ref is null");
+        Preconditions.checkNotNull(repositories, "Repositories is NULL");
+        Preconditions.checkNotNull(router, "Router is NULL");
+        Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
+        Preconditions.checkArgument(resourceProxy instanceof ContainerProxy, "ResourceProxy is not a ContainerProxy");
         this.router = router;
         this.serviceLocation = router.getServiceLocation();
         this.repositories = repositories;
@@ -129,7 +145,7 @@ public class InvestigationController extends Controller implements IInvestigatio
 
         loadAdminDescriptorInfo();
         getUsers();
-        view = createView(resourceProxy);
+        this.view = createView(resourceProxy);
         this.setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
 
     }
@@ -139,7 +155,8 @@ public class InvestigationController extends Controller implements IInvestigatio
         ContextProxyImpl context;
         final List<String> depositEndPointUrls = new ArrayList<String>();
         try {
-            context = (ContextProxyImpl) repositories.context().findById(resourceProxy.getContext().getObjid());
+            context =
+                (ContextProxyImpl) this.repositories.context().findById(this.resourceProxy.getContext().getObjid());
             if (context == null) {
                 LOG.error("Context is null");
                 showError("Internal error");
@@ -178,7 +195,7 @@ public class InvestigationController extends Controller implements IInvestigatio
         Collection<UserAccount> userAccounts = null;
         try {
             final UserService userService =
-                new UserService(serviceLocation.getEscidocUri(), router.getApp().getCurrentUser().getToken());
+                new UserService(this.serviceLocation.getEscidocUri(), this.router.getApp().getCurrentUser().getToken());
             userAccounts = userService.findAll();
             UserBean bean = null;
             for (final UserAccount account : userAccounts) {
@@ -209,14 +226,9 @@ public class InvestigationController extends Controller implements IInvestigatio
     }
 
     private Component createView(final ResourceProxy resourceProxy) {
-        Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
-        ContainerProxyImpl containerProxy = null;
         InvestigationBean investigationBean = null;
         List<ResourceModel> breadCrumbModel = null;
-
-        if (resourceProxy instanceof ContainerProxyImpl) {
-            containerProxy = (ContainerProxyImpl) resourceProxy;
-        }
+        final ContainerProxyImpl containerProxy = (ContainerProxyImpl) resourceProxy;
 
         try {
             investigationBean = loadBeanData(containerProxy);
@@ -227,18 +239,13 @@ public class InvestigationController extends Controller implements IInvestigatio
         }
         breadCrumbModel = createBreadCrumbModel();
 
-        return new InvestigationView(investigationBean, this, breadCrumbModel, containerProxy, router);
+        return new InvestigationView(investigationBean, this, breadCrumbModel, containerProxy, this.router);
     }
 
     private InvestigationBean loadBeanData(final ContainerProxy containerProxy) throws EscidocBrowserException {
-        Preconditions.checkNotNull(containerProxy, "Resource is null");
-        final String URI_DC = "http://purl.org/dc/elements/1.1/";
-        final String URI_EL = "http://escidoc.org/ontologies/bw-elabs/re#";
-        final String URI_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-
         InvestigationBean investigationBean = new InvestigationBean();
         investigationBean.setObjid(containerProxy.getId());
-        final Element e = containerProxy.getMedataRecords().get("escidoc").getContent();
+        final Element e = containerProxy.getMedataRecords().get(ESCIDOC).getContent();
         final NodeList nodeList = e.getChildNodes();
 
         for (int i = 0; i < nodeList.getLength(); i++) {
@@ -281,7 +288,7 @@ public class InvestigationController extends Controller implements IInvestigatio
                     try {
                         final Element rigElement =
                             ((ItemProxy) repositories.item().findById(rigId))
-                                .getMedataRecords().get("escidoc").getContent();
+                                .getMedataRecords().get(ESCIDOC).getContent();
 
                         if (!(("Rig".equals(rigElement.getLocalName()) && URI_EL.equals(rigElement.getNamespaceURI())) || "el:Rig"
                             .equals(rigElement.getTagName()))) {
@@ -334,13 +341,10 @@ public class InvestigationController extends Controller implements IInvestigatio
      */
     private RigBean loadRelatedRigBeanData(final ItemProxy rigItem) {
         Preconditions.checkNotNull(rigItem, "Resource is null");
-
         final RigBean rigBean = new RigBean();
         rigBean.setObjectId(rigItem.getId());
-        final String URI_DC = "http://purl.org/dc/elements/1.1/";
-        final String URI_EL = "http://escidoc.org/ontologies/bw-elabs/re#";
-        final String URI_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-        final NodeList nodeList = rigItem.getMedataRecords().get("escidoc").getContent().getChildNodes();
+
+        final NodeList nodeList = rigItem.getMedataRecords().get(ESCIDOC).getContent().getChildNodes();
 
         for (int i = 0; i < nodeList.getLength(); i++) {
             final Node node = nodeList.item(i);
@@ -357,7 +361,6 @@ public class InvestigationController extends Controller implements IInvestigatio
                 if (node.getAttributes() != null && node.getAttributes().getNamedItemNS(URI_RDF, "resource") != null) {
                     final Node attributeNode = node.getAttributes().getNamedItemNS(URI_RDF, "resource");
                     final String instrumentID = attributeNode.getNodeValue();
-
                     try {
                         final ItemProxy instrumentProxy = (ItemProxy) repositories.item().findById(instrumentID);
                         rigBean.getContentList().add(loadRelatedInstrumentBeanData(instrumentProxy));
@@ -373,10 +376,8 @@ public class InvestigationController extends Controller implements IInvestigatio
 
     private static InstrumentBean loadRelatedInstrumentBeanData(final ItemProxy instrumentItem) {
         Preconditions.checkNotNull(instrumentItem, "Resource is null");
-
         final InstrumentBean instrumentBean = new InstrumentBean();
-        final String URI_DC = "http://purl.org/dc/elements/1.1/";
-        final NodeList nodeList = instrumentItem.getMedataRecords().get("escidoc").getContent().getChildNodes();
+        final NodeList nodeList = instrumentItem.getMedataRecords().get(ESCIDOC).getContent().getChildNodes();
 
         for (int i = 0; i < nodeList.getLength(); i++) {
             final Node node = nodeList.item(i);
@@ -396,12 +397,12 @@ public class InvestigationController extends Controller implements IInvestigatio
     }
 
     private List<ResourceModel> createBreadCrumbModel() {
-        final ResourceHierarchy rs = new ResourceHierarchy(serviceLocation, repositories);
+        final ResourceHierarchy rs = new ResourceHierarchy(this.serviceLocation, this.repositories);
         List<ResourceModel> hierarchy = null;
         try {
-            hierarchy = rs.getHierarchy(resourceProxy);
+            hierarchy = rs.getHierarchy(this.resourceProxy);
             Collections.reverse(hierarchy);
-            hierarchy.add(resourceProxy);
+            hierarchy.add(this.resourceProxy);
             return hierarchy;
         }
         catch (final EscidocClientException e) {
@@ -421,10 +422,9 @@ public class InvestigationController extends Controller implements IInvestigatio
     @Override
     public void saveAction(final IBeanModel model) {
         Preconditions.checkNotNull(model, "Model is null.");
-        this.model = model;
-        mainWindow.addWindow(new YesNoDialog(ELabsViewContants.DIALOG_SAVE_INVESTIGATION_HEADER,
+        this.beanModel = model;
+        this.mainWindow.addWindow(new YesNoDialog(ELabsViewContants.DIALOG_SAVE_INVESTIGATION_HEADER,
             ELabsViewContants.DIALOG_SAVE_INVESTIGATION_TEXT, new YesNoDialog.Callback() {
-
                 @Override
                 public void onDialogResult(final boolean resultIsYes) {
                     if (resultIsYes) {
@@ -439,38 +439,37 @@ public class InvestigationController extends Controller implements IInvestigatio
      * 
      * @throws EscidocClientException
      */
-    private synchronized void saveModel() {
-        Preconditions.checkNotNull(model, "Model is NULL. Can not save.");
-        final ContainerRepository containerRepository = repositories.container();
-        final String ESCIDOC = "escidoc";
+    private void saveModel() {
+        synchronized (LOCK_1) {
+            Preconditions.checkNotNull(this.beanModel, "Model is NULL. Can not save.");
+            final ContainerRepository containerRepository = repositories.container();
+            try {
+                validateBean(this.beanModel);
+            }
+            catch (EscidocBrowserException e) {
+                LOG.error(e.getMessage());
+                return;
+            }
+            final InvestigationBean investigationBean = (InvestigationBean) this.beanModel;
+            final Element metaDataContent =
+                InvestigationController.createInvestigationDOMElementByBeanModel(investigationBean);
 
-        try {
-            validateBean(this.model);
+            try {
+                final Container container = containerRepository.findContainerById(investigationBean.getObjid());
+                final MetadataRecord metadataRecord = container.getMetadataRecords().get(ESCIDOC);
+                metadataRecord.setContent(metaDataContent);
+                containerRepository.update(container);
+            }
+            catch (final EscidocClientException e) {
+                LOG.error(e.getLocalizedMessage());
+                showError(e.getLocalizedMessage());
+            }
+            finally {
+                this.beanModel = null;
+            }
+            LOG.info("Investigation is successfully saved.");
+            showTrayMessage("Success", "Investigation is saved.");
         }
-        catch (EscidocBrowserException e) {
-            LOG.error(e.getMessage());
-            return;
-        }
-
-        final InvestigationBean investigationBean = (InvestigationBean) model;
-        final Element metaDataContent =
-            InvestigationController.createInvestigationDOMElementByBeanModel(investigationBean);
-        try {
-            final Container container = containerRepository.findContainerById(investigationBean.getObjid());
-            final MetadataRecord metadataRecord = container.getMetadataRecords().get(ESCIDOC);
-            metadataRecord.setContent(metaDataContent);
-            containerRepository.update(container);
-        }
-        catch (final EscidocClientException e) {
-            LOG.error(e.getLocalizedMessage());
-            showError(e.getLocalizedMessage());
-        }
-        finally {
-            model = null;
-        }
-        LOG.info("Investigation is successfully saved.");
-        showTrayMessage("Success", "Investigation is saved.");
-
     }
 
     public static Element createInvestigationDOMElementByBeanModel(final InvestigationBean investigationBean) {
@@ -479,55 +478,52 @@ public class InvestigationController extends Controller implements IInvestigatio
         factory.setCoalescing(true);
         factory.setValidating(true);
         DocumentBuilder builder;
-        final String NSURI_ELABS_RE = "http://escidoc.org/ontologies/bw-elabs/re#";
-        final String NSURI_ELABS_DC = "http://purl.org/dc/elements/1.1/";
-        final String NSPREFIX_ELABS_RE = "el";
-        final String NSURI_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-        final String NSPREFIX_RDF = "rdf";
+        final String prefixElement = "el";
+        final String prefixAttr = "rdf";
         try {
             builder = factory.newDocumentBuilder();
             final Document doc = builder.newDocument();
 
-            final Element investigation = doc.createElementNS(NSURI_ELABS_RE, "Investigation");
-            investigation.setPrefix(NSPREFIX_ELABS_RE);
+            final Element investigation = doc.createElementNS(URI_EL, "Investigation");
+            investigation.setPrefix(prefixElement);
 
-            final Element title = doc.createElementNS(NSURI_ELABS_DC, "title");
+            final Element title = doc.createElementNS(URI_DC, "title");
             title.setPrefix("dc");
             title.setTextContent(investigationBean.getName());
             investigation.appendChild(title);
 
-            final Element description = doc.createElementNS(NSURI_ELABS_DC, "description");
+            final Element description = doc.createElementNS(URI_DC, "description");
             description.setPrefix("dc");
             description.setTextContent(investigationBean.getDescription());
             investigation.appendChild(description);
 
-            final Element maxRuntime = doc.createElementNS(NSURI_ELABS_RE, "max-runtime");
-            maxRuntime.setPrefix(NSPREFIX_ELABS_RE);
+            final Element maxRuntime = doc.createElementNS(URI_EL, "max-runtime");
+            maxRuntime.setPrefix(prefixElement);
             maxRuntime.setTextContent("" + investigationBean.getMaxRuntimeInMin());
             investigation.appendChild(maxRuntime);
 
-            final Element depositEndpoint = doc.createElementNS(NSURI_ELABS_RE, "deposit-endpoint");
-            depositEndpoint.setPrefix(NSPREFIX_ELABS_RE);
+            final Element depositEndpoint = doc.createElementNS(URI_EL, "deposit-endpoint");
+            depositEndpoint.setPrefix(prefixElement);
             depositEndpoint.setTextContent(investigationBean.getDepositEndpoint());
             investigation.appendChild(depositEndpoint);
 
-            final Element investigator = doc.createElementNS(NSURI_ELABS_RE, "investigator");
-            investigator.setPrefix(NSPREFIX_ELABS_RE);
-            investigator.setAttributeNS(NSURI_RDF, NSPREFIX_RDF + ":resource", investigationBean.getInvestigator());
+            final Element investigator = doc.createElementNS(URI_EL, "investigator");
+            investigator.setPrefix(prefixElement);
+            investigator.setAttributeNS(URI_RDF, prefixAttr + ":resource", investigationBean.getInvestigator());
             investigation.appendChild(investigator);
 
-            final Element rig = doc.createElementNS(NSURI_ELABS_RE, "rig");
-            rig.setPrefix(NSPREFIX_ELABS_RE);
-            rig.setAttributeNS(NSURI_RDF, NSPREFIX_RDF + ":resource", investigationBean.getRigBean().getObjectId());
+            final Element rig = doc.createElementNS(URI_EL, "rig");
+            rig.setPrefix(prefixElement);
+            rig.setAttributeNS(URI_RDF, prefixAttr + ":resource", investigationBean.getRigBean().getObjectId());
             investigation.appendChild(rig);
 
             for (final Entry<String, String> instrumentFolder : investigationBean.getInstrumentFolder().entrySet()) {
-                final Element instrument = doc.createElementNS(NSURI_ELABS_RE, "instrument");
-                instrument.setPrefix(NSPREFIX_ELABS_RE);
-                instrument.setAttributeNS(NSURI_RDF, NSPREFIX_RDF + ":resource", instrumentFolder.getKey());
+                final Element instrument = doc.createElementNS(URI_EL, "instrument");
+                instrument.setPrefix(prefixElement);
+                instrument.setAttributeNS(URI_RDF, prefixAttr + ":resource", instrumentFolder.getKey());
 
-                final Element folder = doc.createElementNS(NSURI_ELABS_RE, "monitored-folder");
-                folder.setPrefix(NSPREFIX_ELABS_RE);
+                final Element folder = doc.createElementNS(URI_EL, "monitored-folder");
+                folder.setPrefix(prefixElement);
                 folder.setTextContent(instrumentFolder.getValue());
                 instrument.appendChild(folder);
                 investigation.appendChild(instrument);
@@ -546,48 +542,50 @@ public class InvestigationController extends Controller implements IInvestigatio
     @Override
     public boolean hasUpdateAccess() {
         try {
-            return repositories
-                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER).forResource(resourceProxy.getId())
-                .permitted();
+            return this.repositories
+                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER)
+                .forResource(this.resourceProxy.getId()).permitted();
         }
         catch (final UnsupportedOperationException e) {
-            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            showError("Inernal error");
             LOG.error(e.getMessage());
             return false;
         }
         catch (final EscidocClientException e) {
-            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            showError("Inernal error");
             LOG.error(e.getMessage());
             return false;
         }
         catch (final URISyntaxException e) {
-            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            showError("Inernal error");
             LOG.error(e.getMessage());
             return false;
         }
     }
 
     @Override
-    public synchronized List<RigBean> getAvailableRigs() {
-        final List<RigBean> result = new ArrayList<RigBean>();
-        try {
-            List<ResourceModel> items = null;
-            for (Iterator<String> iterator = ELabsCache.getRigCMMIds().iterator(); iterator.hasNext();) {
-                String cmmId = iterator.next();
-                items = repositories.item().findItemsByContentModel(cmmId);
-                for (Iterator<ResourceModel> iterator2 = items.iterator(); iterator2.hasNext();) {
-                    ResourceModel itemModel = iterator2.next();
-                    if (itemModel instanceof ItemProxy) {
-                        ItemProxy itemProxy = (ItemProxy) itemModel;
-                        result.add(loadRelatedRigBeanData(itemProxy));
+    public List<RigBean> getAvailableRigs() {
+        synchronized (LOCK_2) {
+            final List<RigBean> result = new ArrayList<RigBean>();
+            try {
+                List<ResourceModel> items = null;
+                for (Iterator<String> iterator = ELabsCache.getRigCMMIds().iterator(); iterator.hasNext();) {
+                    String cmmId = iterator.next();
+                    items = this.repositories.item().findItemsByContentModel(cmmId);
+                    for (Iterator<ResourceModel> iterator2 = items.iterator(); iterator2.hasNext();) {
+                        ResourceModel itemModel = iterator2.next();
+                        if (itemModel instanceof ItemProxy) {
+                            ItemProxy itemProxy = (ItemProxy) itemModel;
+                            result.add(loadRelatedRigBeanData(itemProxy));
+                        }
                     }
                 }
             }
+            catch (EscidocClientException e) {
+                LOG.error(e.getMessage());
+            }
+            return result;
         }
-        catch (EscidocClientException e) {
-            LOG.error(e.getMessage());
-        }
-        return result;
     }
 
     private String setDurationLabel(String storedDuration) {
@@ -608,10 +606,10 @@ public class InvestigationController extends Controller implements IInvestigatio
             }
             sb.append(minute);
             sb.append((minute == 0 || minute == 1) ? " minute" : " minutes");
-            LOG.debug("setDurationLabel: " + day + "|" + hour + "|" + minute);
             return sb.toString();
         }
         catch (NumberFormatException e) {
+            showError("Internal error");
             LOG.debug(e.getMessage());
             return null;
         }
@@ -622,7 +620,7 @@ public class InvestigationController extends Controller implements IInvestigatio
      */
     @Override
     public ILabsService getLabsService() {
-        return labsService;
+        return this.labsService;
     }
 
     protected void validateBean(IBeanModel beanModel) throws EscidocBrowserException {

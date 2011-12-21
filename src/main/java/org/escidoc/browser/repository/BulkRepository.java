@@ -28,7 +28,11 @@
  */
 package org.escidoc.browser.repository;
 
-import com.google.common.base.Preconditions;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceType;
@@ -39,17 +43,13 @@ import org.escidoc.browser.repository.internal.ItemRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.google.common.base.Preconditions;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class BulkRepository {
 
-    private final static Logger LOG = LoggerFactory.getLogger(BulkRepository.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BulkRepository.class);
 
     public class DeleteResult {
 
