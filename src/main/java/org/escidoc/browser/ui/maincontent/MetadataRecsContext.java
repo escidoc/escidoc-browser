@@ -32,19 +32,24 @@ import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.listeners.AddOrgUnitstoContext;
 import org.escidoc.browser.ui.listeners.ContextAdminDescriptorsClickListener;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 
+import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.reference.OrganizationalUnitRef;
 import de.escidoc.core.resources.om.context.AdminDescriptor;
 import de.escidoc.core.resources.om.context.AdminDescriptors;
@@ -58,12 +63,12 @@ class MetadataRecsContext {
 
     private Router router;
 
-    MetadataRecsContext(final ResourceProxy resourceProxy, final Window mainWindow, Router router) {
+    MetadataRecsContext(final ResourceProxy resourceProxy, Router router) {
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
-        Preconditions.checkNotNull(mainWindow, "resource is null.");
+        Preconditions.checkNotNull(router, "resource is null.");
 
         this.resourceProxy = (ContextProxyImpl) resourceProxy;
-        this.mainWindow = mainWindow;
+        this.mainWindow = router.getMainWindow();
         this.router = router;
     }
 
@@ -108,10 +113,7 @@ class MetadataRecsContext {
 
         final AdminDescriptors admDesc = resourceProxy.getAdminDescription();
         for (final AdminDescriptor adminDescriptor : admDesc) {
-            // final Button button = new Button(adminDescriptor.getName());
-            // button.setStyleName(BaseTheme.BUTTON_LINK);
-            // button.addListener(new ContextAdminDescriptorsClickListener(adminDescriptor, mainWindow));
-            // admDescriptors.addComponent(button);
+
             Link admDescBtn =
                 new Link(adminDescriptor.getXLinkTitle(), new ExternalResource(router
                     .getServiceLocation().getEscidocUri() + adminDescriptor.getXLinkHref()));
@@ -125,18 +127,51 @@ class MetadataRecsContext {
     }
 
     private Panel buildOrganizationUnit() {
-        final Panel orgUnit = new Panel();
-        orgUnit.setWidth("100%");
-        orgUnit.setHeight("100%");
+        final Panel pnlOrgUnit = new Panel();
+        pnlOrgUnit.setWidth("100%");
+        pnlOrgUnit.setHeight("100%");
 
         final OrganizationalUnitRefs orgUnits = resourceProxy.getOrganizationalUnit();
         for (final OrganizationalUnitRef organizationalUnitRef : orgUnits) {
             final Button button = new Button(organizationalUnitRef.getXLinkTitle());
             button.setStyleName(BaseTheme.BUTTON_LINK);
             button.addListener(new ContextAdminDescriptorsClickListener(organizationalUnitRef, mainWindow));
-            orgUnit.addComponent(button);
+            pnlOrgUnit.addComponent(button);
         }
-        return orgUnit;
+        Button btnAdd = new Button("+");
+        btnAdd.setStyleName(BaseTheme.BUTTON_LINK);
+        btnAdd.addListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                final Window subwindow = new Window("A modal subwindow");
+                subwindow.setModal(true);
+                subwindow.setWidth("500px");
+                VerticalLayout layout = (VerticalLayout) subwindow.getContent();
+                layout.setMargin(true);
+                layout.setSpacing(true);
+
+                try {
+                    subwindow.addComponent(new AddOrgUnitstoContext(router, orgUnits));
+                }
+                catch (EscidocClientException e) {
+                    e.printStackTrace();
+                }
+                Button close = new Button("Close", new Button.ClickListener() {
+                    public void buttonClick(ClickEvent event) {
+                        (subwindow.getParent()).removeWindow(subwindow);
+                    }
+                });
+                layout.addComponent(close);
+                layout.setComponentAlignment(close, Alignment.TOP_RIGHT);
+
+                router.getMainWindow().addWindow(subwindow);
+
+            }
+
+        });
+        pnlOrgUnit.addComponent(btnAdd);
+
+        return pnlOrgUnit;
     }
 
 }
