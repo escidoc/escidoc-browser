@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Preconditions;
 
 public class CookieHandler {
-    static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CookieHandler.class);
 
     private HttpServletResponse response;
 

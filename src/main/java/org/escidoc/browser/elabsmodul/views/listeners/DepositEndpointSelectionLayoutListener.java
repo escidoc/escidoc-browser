@@ -58,7 +58,7 @@ public class DepositEndpointSelectionLayoutListener implements LayoutClickListen
 
     private static final long serialVersionUID = 3913787093238168593L;
 
-    private Logger LOG = LoggerFactory.getLogger(DepositEndpointSelectionLayoutListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DepositEndpointSelectionLayoutListener.class);
 
     private final ILabsInvestigationAction labsInvestigationAction;
 

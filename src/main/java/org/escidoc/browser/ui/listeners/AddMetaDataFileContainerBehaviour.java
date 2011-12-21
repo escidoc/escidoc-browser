@@ -37,7 +37,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.ViewConstants;
@@ -72,7 +71,7 @@ import de.escidoc.core.resources.om.container.Container;
 
 @SuppressWarnings("serial")
 public class AddMetaDataFileContainerBehaviour implements ClickListener {
-    static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AddMetaDataFileContainerBehaviour.class);
 
     private final ResourceProxy resourceProxy;
 

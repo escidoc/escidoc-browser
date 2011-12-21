@@ -60,7 +60,7 @@ final class ActionHandlerImpl implements Action.Handler {
 
     private static final long serialVersionUID = 1L;
 
-    private final static Logger LOG = LoggerFactory.getLogger(ActionHandlerImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ActionHandlerImpl.class);
 
     private final Window mainWindow;
 

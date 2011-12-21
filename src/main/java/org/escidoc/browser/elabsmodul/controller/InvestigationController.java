@@ -93,7 +93,7 @@ import de.escidoc.core.resources.om.container.Container;
  */
 public class InvestigationController extends Controller implements IInvestigationAction {
 
-    private static Logger LOG = LoggerFactory.getLogger(InstrumentController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(InstrumentController.class);
 
     private final EscidocServiceLocation serviceLocation;
 

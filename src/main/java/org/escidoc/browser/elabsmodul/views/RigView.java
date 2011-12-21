@@ -67,7 +67,7 @@ public class RigView extends View implements ILabsPanel, ILabsAction {
 
     private static final long serialVersionUID = -6095498070313755653L;
 
-    private static Logger LOG = LoggerFactory.getLogger(RigView.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RigView.class);
 
     private final String[] PROPERTIES = ELabsViewContants.RIG_PROPERTIES;
 

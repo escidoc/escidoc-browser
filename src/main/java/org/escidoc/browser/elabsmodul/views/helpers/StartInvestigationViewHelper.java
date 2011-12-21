@@ -50,7 +50,7 @@ public class StartInvestigationViewHelper {
 
     private final IInvestigationAction investigationAction;
 
-    private static Logger LOG = LoggerFactory.getLogger(StartInvestigationViewHelper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(StartInvestigationViewHelper.class);
 
     public StartInvestigationViewHelper(ILabsPanel labsPanel, IInvestigationAction investigationAction) {
         Preconditions.checkNotNull(labsPanel, "labsPanel is null");

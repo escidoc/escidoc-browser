@@ -55,7 +55,7 @@ import de.escidoc.core.resources.aa.pdp.Results;
 
 public class PdpRepositoryImpl implements PdpRepository {
 
-    private final static Logger LOG = LoggerFactory.getLogger(PdpRepositoryImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PdpRepositoryImpl.class);
 
     private final PolicyDecisionPointHandlerClient client;
 

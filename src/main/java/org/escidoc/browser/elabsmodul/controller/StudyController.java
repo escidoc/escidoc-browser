@@ -87,7 +87,7 @@ public class StudyController extends Controller implements ISaveAction {
     private final Object LOCK = new Object() {
     };
 
-    private static Logger LOG = LoggerFactory.getLogger(InstrumentController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(InstrumentController.class);
 
     public StudyController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);

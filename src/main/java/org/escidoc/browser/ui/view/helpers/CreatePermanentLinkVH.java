@@ -32,7 +32,6 @@ import java.net.MalformedURLException;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.ItemView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +42,7 @@ import com.vaadin.ui.Link;
 
 public class CreatePermanentLinkVH {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ItemView.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CreatePermanentLinkVH.class);
 
     public CreatePermanentLinkVH(String url, String id, String type, AbstractComponentContainer componentContainer,
         EscidocServiceLocation serviceLocation) {

@@ -56,7 +56,7 @@ public class ItemController extends Controller {
 
     private Router router;
 
-    private static Logger LOG = LoggerFactory.getLogger(ItemController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ItemController.class);
 
     public ItemController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);

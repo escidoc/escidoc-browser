@@ -57,15 +57,14 @@ public final class Util {
      * No instance allowed for utility classes.
      */
     private Util() {
-        // utility class
     }
 
-    public final static boolean isEscidocUrlExists(final Map<String, String[]> parameters) {
+    public static final boolean isEscidocUrlExists(final Map<String, String[]> parameters) {
         Preconditions.checkNotNull(parameters, "parameters is null: %s", parameters);
         return parameters.containsKey(AppConstants.ESCIDOC_URL);
     }
 
-    public final static boolean hasTabArg(final Map<String, String[]> parameters) {
+    public static final boolean hasTabArg(final Map<String, String[]> parameters) {
         Preconditions.checkNotNull(parameters, "parameters is null: %s", parameters);
         return parameters.containsKey(AppConstants.ARG_TAB);
     }
@@ -118,12 +117,10 @@ public final class Util {
     }
 
     private static String topLevelContainersAndItems(final String id) {
-
         final StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("(top-level-containers=true or top-level-items=true) and \"/properties/context/id\"=");
         stringBuilder.append(id);
         final String query = stringBuilder.toString();
-
         return query;
     }
 }

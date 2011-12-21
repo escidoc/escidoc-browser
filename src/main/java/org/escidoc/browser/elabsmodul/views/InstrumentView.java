@@ -75,7 +75,7 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
 
     private static final long serialVersionUID = -7601252311598579746L;
 
-    private static Logger LOG = LoggerFactory.getLogger(InstrumentView.class);
+    private static final Logger LOG = LoggerFactory.getLogger(InstrumentView.class);
 
     private final String[] PROPERTIES = ELabsViewContants.INSTRUMENT_PROPERTIES;
 

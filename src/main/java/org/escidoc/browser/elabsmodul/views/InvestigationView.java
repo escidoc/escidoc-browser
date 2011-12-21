@@ -77,7 +77,7 @@ public class InvestigationView extends View implements ILabsPanel, ILabsAction, 
 
     private static final long serialVersionUID = -5284506653803233585L;
 
-    private static Logger LOG = LoggerFactory.getLogger(InvestigationView.class);
+    private static final Logger LOG = LoggerFactory.getLogger(InvestigationView.class);
 
     private final InvestigationBean investigationBean;
 

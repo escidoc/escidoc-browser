@@ -77,7 +77,7 @@ import de.escidoc.core.resources.om.item.Item;
 
 public final class RigController extends Controller implements IRigAction {
 
-    private static Logger LOG = LoggerFactory.getLogger(RigController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RigController.class);
 
     private final Repositories repositories;
 

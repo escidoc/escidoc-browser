@@ -67,7 +67,7 @@ public class ContextController extends Controller {
 
     private Router router;
 
-    private static Logger LOG = LoggerFactory.getLogger(ContextController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ContextController.class);
 
     private Component createView(ResourceProxy resourceProxy) throws EscidocClientException {
         Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");

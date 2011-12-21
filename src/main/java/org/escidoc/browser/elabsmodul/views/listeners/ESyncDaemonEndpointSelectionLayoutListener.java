@@ -58,7 +58,7 @@ public class ESyncDaemonEndpointSelectionLayoutListener implements LayoutClickLi
 
     private static final long serialVersionUID = -4633508842094432119L;
 
-    private Logger LOG = LoggerFactory.getLogger(ESyncDaemonEndpointSelectionLayoutListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ESyncDaemonEndpointSelectionLayoutListener.class);
 
     private final ILabsInstrumentAction labsInstrumentAction;
 

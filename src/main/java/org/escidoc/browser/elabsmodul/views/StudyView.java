@@ -67,7 +67,7 @@ public class StudyView extends View implements ILabsPanel, ILabsAction {
 
     private static final long serialVersionUID = -6071621079544448578L;
 
-    private static Logger LOG = LoggerFactory.getLogger(StudyView.class);
+    private static final Logger LOG = LoggerFactory.getLogger(StudyView.class);
 
     private static final String RIGHT_PANEL = "";
 

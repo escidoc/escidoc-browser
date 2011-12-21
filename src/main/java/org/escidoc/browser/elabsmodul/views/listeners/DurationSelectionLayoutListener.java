@@ -45,7 +45,7 @@ public class DurationSelectionLayoutListener implements LayoutClickListener {
 
     private static final long serialVersionUID = -4350955223851977866L;
 
-    private Logger LOG = LoggerFactory.getLogger(DurationSelectionLayoutListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DurationSelectionLayoutListener.class);
 
     private final ILabsPanel labsPanel;
 

@@ -101,7 +101,7 @@ public class InvestigationSeriesView extends View implements ILabsPanel, ILabsAc
 
     private final List<ResourceModel> breadCrumb;
 
-    private static Logger LOG = LoggerFactory.getLogger(InvestigationSeriesView.class);
+    private static final Logger LOG = LoggerFactory.getLogger(InvestigationSeriesView.class);
 
     public InvestigationSeriesView(ContainerProxy containerProxy, InvestigationSeriesBean investigationSeriesBean,
         List<ResourceModel> breadCrumb, ISaveAction saveAction, Router router) {

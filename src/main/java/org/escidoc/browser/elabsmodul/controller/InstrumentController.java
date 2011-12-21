@@ -91,7 +91,7 @@ import de.escidoc.core.resources.oum.OrganizationalUnit;
  */
 public final class InstrumentController extends Controller implements ISaveAction {
 
-    private static Logger LOG = LoggerFactory.getLogger(InstrumentController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(InstrumentController.class);
 
     private final Repositories repositories;
 

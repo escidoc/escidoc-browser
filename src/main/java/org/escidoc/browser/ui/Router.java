@@ -88,7 +88,7 @@ public class Router {
 
     private Properties browserProperties;
 
-    private static final Logger LOG = LoggerFactory.getLogger(ItemView.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Router.class);
 
     /**
      * The mainWindow should be revised whether we need it or not the appHeight is the Height of the Application and I

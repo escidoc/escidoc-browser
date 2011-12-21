@@ -36,7 +36,6 @@ import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.ResourceDeleteConfirmation;
-import org.escidoc.browser.ui.maincontent.ItemView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,7 +77,7 @@ public class ItemPropertiesVH {
 
     private static final String LAST_MODIFIED_BY = "Last modification by ";
 
-    private static final Logger LOG = LoggerFactory.getLogger(ItemView.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ItemPropertiesVH.class);
 
     private String status;
 

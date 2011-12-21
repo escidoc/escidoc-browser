@@ -34,7 +34,6 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +48,7 @@ import de.escidoc.core.client.interfaces.SearchHandlerClientInterface;
 import de.escidoc.core.resources.sb.search.SearchRetrieveResponse;
 
 public class SearchRepositoryImpl {
-    private static final Logger LOG = LoggerFactory.getLogger(BrowserApplication.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SearchRepositoryImpl.class);
 
     // private static final String SRCH_INDEX = "escidoc_all";
     private static final String SRCH_INDEX = "item_container_admin";

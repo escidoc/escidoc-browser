@@ -44,7 +44,6 @@ public class XmlUtil {
     private static final Logger LOG = LoggerFactory.getLogger(XmlUtil.class);
 
     private XmlUtil() {
-        // utility class
     }
 
     /**
