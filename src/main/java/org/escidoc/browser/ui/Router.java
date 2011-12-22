@@ -40,6 +40,7 @@ import java.util.regex.Pattern;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.BrowserApplication;
+import org.escidoc.browser.controller.ContextController;
 import org.escidoc.browser.controller.Controller;
 import org.escidoc.browser.elabsmodul.cache.ELabsCache;
 import org.escidoc.browser.elabsmodul.enums.ContentModelTypeEnum;
@@ -58,9 +59,6 @@ import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.helper.Util;
-import org.escidoc.browser.ui.maincontent.ContainerView;
-import org.escidoc.browser.ui.maincontent.ContextView;
-import org.escidoc.browser.ui.maincontent.ItemView;
 import org.escidoc.browser.ui.maincontent.SearchAdvancedView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -242,7 +240,7 @@ public class Router {
                 try {
                     final ContextProxyImpl context =
                         (ContextProxyImpl) resourceFactory.find(escidocID, ResourceType.CONTEXT);
-                    layout.openView(new ContextView(this, context, repositories), context.getName());
+                    openControllerView(new ContextController(repositories, this, context), true);
                 }
                 catch (final EscidocClientException e) {
                     showError(FAIL_RETRIEVING_RESOURCE);
@@ -252,7 +250,7 @@ public class Router {
                 try {
                     final ContainerProxy container =
                         (ContainerProxy) resourceFactory.find(escidocID, ResourceType.CONTAINER);
-                    layout.openView(new ContainerView(this, container, repositories), container.getName());
+                    openControllerView(new ContextController(repositories, this, container), true);
                 }
                 catch (final EscidocClientException e) {
                     showError(FAIL_RETRIEVING_RESOURCE);
@@ -261,7 +259,7 @@ public class Router {
             else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("ITEM")) {
                 try {
                     final ItemProxy item = (ItemProxy) resourceFactory.find(escidocID, ResourceType.ITEM);
-                    layout.openView(new ItemView(repositories, this, item), item.getName());
+                    openControllerView(new ContextController(repositories, this, item), true);
                 }
                 catch (final EscidocClientException e) {
                     showError(FAIL_RETRIEVING_RESOURCE);

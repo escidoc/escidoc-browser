@@ -28,6 +28,7 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
+import org.escidoc.browser.controller.ContextController;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
@@ -71,8 +72,10 @@ public class ContextView extends View {
 
     private VerticalLayout vlResourceProperties;
 
-    public ContextView(final Router router, final ResourceProxy resourceProxy, final Repositories repositories)
-        throws EscidocClientException {
+    private ContextController contextController;
+
+    public ContextView(final Router router, final ResourceProxy resourceProxy, final Repositories repositories,
+        ContextController contextController) throws EscidocClientException {
 
         Preconditions.checkNotNull(router, "mainSite is null: %s", router);
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
@@ -84,6 +87,7 @@ public class ContextView extends View {
         this.setViewName(resourceProxy.getName());
         this.mainWindow = router.getMainWindow();
         this.repositories = repositories;
+        this.contextController = contextController;
         buildContentPanel();
     }
 
@@ -229,7 +233,7 @@ public class ContextView extends View {
 
     private Accordion buildMetaDataRecsAcc() {
         // common part: create layout
-        Accordion metaDataRecsAcc = new MetadataRecsContext(resourceProxy, router).asAccord();
+        Accordion metaDataRecsAcc = new MetadataRecsContext(resourceProxy, router, contextController).asAccord();
         return metaDataRecsAcc;
     }
 

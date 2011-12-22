@@ -51,8 +51,11 @@ import de.escidoc.core.client.interfaces.ContextHandlerClientInterface;
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.Relations;
 import de.escidoc.core.resources.common.TaskParam;
+import de.escidoc.core.resources.common.reference.OrganizationalUnitRef;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.om.context.Context;
+import de.escidoc.core.resources.om.context.ContextProperties;
+import de.escidoc.core.resources.om.context.OrganizationalUnitRefs;
 
 public class ContextRepository implements Repository {
 
@@ -137,4 +140,25 @@ public class ContextRepository implements Repository {
 
     }
 
+    public Context addOrganizationalUnit(String contextId, String orgUnitId) throws EscidocClientException {
+        Context context = client.retrieve(contextId);
+        ContextProperties properties = context.getProperties();
+        OrganizationalUnitRefs organizationalUnitRefs = properties.getOrganizationalUnitRefs();
+        organizationalUnitRefs.add(new OrganizationalUnitRef(orgUnitId));
+        properties.setOrganizationalUnitRefs(organizationalUnitRefs);
+        return client.update(context);
+    }
+
+    public Context delOrganizationalUnit(String contextId, String orgUnitId) throws EscidocClientException {
+        Context context = client.retrieve(contextId);
+        ContextProperties properties = context.getProperties();
+        OrganizationalUnitRefs organizationalUnitRefs = properties.getOrganizationalUnitRefs();
+        for (OrganizationalUnitRef organizationalUnitRef : organizationalUnitRefs) {
+            if (organizationalUnitRef.getObjid().equals(orgUnitId)) {
+                organizationalUnitRefs.remove(new OrganizationalUnitRef(orgUnitId));
+            }
+        }
+        properties.setOrganizationalUnitRefs(organizationalUnitRefs);
+        return client.update(context);
+    }
 }

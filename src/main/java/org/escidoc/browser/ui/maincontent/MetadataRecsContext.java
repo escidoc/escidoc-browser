@@ -28,6 +28,7 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
+import org.escidoc.browser.controller.ContextController;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.ui.Router;
@@ -63,13 +64,16 @@ class MetadataRecsContext {
 
     private Router router;
 
-    MetadataRecsContext(final ResourceProxy resourceProxy, Router router) {
+    private ContextController contextController;
+
+    MetadataRecsContext(final ResourceProxy resourceProxy, Router router, ContextController contextController) {
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         Preconditions.checkNotNull(router, "resource is null.");
 
         this.resourceProxy = (ContextProxyImpl) resourceProxy;
         this.mainWindow = router.getMainWindow();
         this.router = router;
+        this.contextController = contextController;
     }
 
     public Accordion asAccord() {
@@ -145,13 +149,14 @@ class MetadataRecsContext {
             public void buttonClick(ClickEvent event) {
                 final Window subwindow = new Window("A modal subwindow");
                 subwindow.setModal(true);
-                subwindow.setWidth("500px");
+                subwindow.setWidth("650px");
                 VerticalLayout layout = (VerticalLayout) subwindow.getContent();
                 layout.setMargin(true);
                 layout.setSpacing(true);
 
                 try {
-                    subwindow.addComponent(new AddOrgUnitstoContext(router, orgUnits));
+                    subwindow
+                        .addComponent(new AddOrgUnitstoContext(router, resourceProxy, contextController, orgUnits));
                 }
                 catch (EscidocClientException e) {
                     e.printStackTrace();

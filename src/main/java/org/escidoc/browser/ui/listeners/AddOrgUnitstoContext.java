@@ -1,11 +1,11 @@
 package org.escidoc.browser.ui.listeners;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 
+import org.escidoc.browser.controller.ContextController;
 import org.escidoc.browser.model.OrgUnitService;
+import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.ui.Router;
 
 import com.vaadin.data.Container;
@@ -18,15 +18,13 @@ import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.event.dd.acceptcriteria.And;
 import com.vaadin.event.dd.acceptcriteria.ClientSideCriterion;
 import com.vaadin.event.dd.acceptcriteria.SourceIs;
-import com.vaadin.ui.AbstractSelect.AbstractSelectTargetDetails;
 import com.vaadin.ui.AbstractSelect.AcceptItem;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.Tree;
-import com.vaadin.ui.Tree.TargetItemAllowsChildren;
 import com.vaadin.ui.Tree.TreeDragMode;
-import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.VerticalLayout;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.reference.OrganizationalUnitRef;
@@ -40,7 +38,7 @@ import de.escidoc.core.resources.oum.OrganizationalUnit;
  * has a String, whereas the table contains items with both a name and a category. Data conversions between these
  * representations are made during drop processing.
  */
-public class AddOrgUnitstoContext extends HorizontalLayout {
+public class AddOrgUnitstoContext extends VerticalLayout {
 
     private static String PROPERTY_NAME = "name";
 
@@ -54,57 +52,72 @@ public class AddOrgUnitstoContext extends HorizontalLayout {
 
     private OrganizationalUnitRefs orgUnits;
 
-    public static class OrgUnitRefTemp implements Serializable {
-        private String name;
+    private ContextProxyImpl resourceProxy;
 
-        private String href;
+    private ContextController controller;
 
-        public OrgUnitRefTemp(String name, String href) {
-            this.name = name;
-            this.href = href;
-        }
+    private Table tableDelete;
 
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setHref(String href) {
-            this.href = href;
-        }
-
-        public String getHref() {
-            return href;
-        }
-    }
-
-    public AddOrgUnitstoContext(Router router, OrganizationalUnitRefs orgUnits) throws EscidocClientException {
+    public AddOrgUnitstoContext(Router router, ContextProxyImpl resourceProxy, ContextController contextController,
+        OrganizationalUnitRefs orgUnits) throws EscidocClientException {
         setSpacing(true);
         this.router = router;
         this.orgUnits = orgUnits;
+        this.resourceProxy = resourceProxy;
+        this.controller = contextController;
 
-        // First create the components to be able to refer to them as allowed
-        // drag sources
+        createDragComponents();
+    }
+
+    private void createDragComponents() throws EscidocClientException {
         tree = new Tree("Drag from tree to table");
         table = new Table("Drag from table to tree");
         table.setWidth("100%");
 
-        // Populate the tree and set up drag & drop
+        // Populate the tree and set up as drag
         initializeTree(new SourceIs(table));
-
         // Populate the table and set up drag & drop
         initializeTable(new SourceIs(tree));
 
-        // Add components
-        addComponent(tree);
-        addComponent(table);
+        HorizontalLayout hl = new HorizontalLayout();
+        hl.addComponent(tree);
+        hl.addComponent(table);
+
+        VerticalLayout vl = new VerticalLayout();
+        tableDelete = new Table("Drag here te remove");
+
+        initializeDeleteTable(new SourceIs(tableDelete));
+
+        vl.addComponent(tableDelete);
+
+        addComponent(hl);
+        addComponent(vl);
+    }
+
+    private void initializeDeleteTable(final ClientSideCriterion acceptCriterion) throws EscidocClientException {
+        tableDelete.setWidth("100%");
+        tableDelete.setHeight("100px");
+        // Handle drop in table: move hardware item or subtree to the table
+        // tableDelete.setDragMode(TableDragMode.ROW);
+        tableDelete.setDropHandler(new DropHandler() {
+            public void drop(DragAndDropEvent dropEvent) {
+                DataBoundTransferable t = (DataBoundTransferable) dropEvent.getTransferable();
+                if (!(t.getSourceContainer() instanceof Container.Hierarchical)) {
+                    return;
+                }
+                Container.Hierarchical source = (Container.Hierarchical) t.getSourceContainer();
+                source.removeItem(t.getItemId());
+            }
+
+            public AcceptCriterion getAcceptCriterion() {
+                return new And(acceptCriterion, AcceptItem.ALL);
+            }
+        });
+
     }
 
     private void initializeTree(final ClientSideCriterion acceptCriterion) throws EscidocClientException {
-        tree.setContainerDataSource(getOrgUnitRefsContainer());
+        tree.setContainerDataSource(getOrgUnitRefsContainerTree());
         tree.setItemCaptionPropertyId(PROPERTY_NAME);
 
         // Expand all nodes
@@ -112,46 +125,6 @@ public class AddOrgUnitstoContext extends HorizontalLayout {
             tree.expandItemsRecursively(it.next());
         }
         tree.setDragMode(TreeDragMode.NODE);
-        tree.setDropHandler(new DropHandler() {
-            public void drop(DragAndDropEvent dropEvent) {
-                // criteria verify that this is safe
-                DataBoundTransferable t = (DataBoundTransferable) dropEvent.getTransferable();
-                Container sourceContainer = t.getSourceContainer();
-                Object sourceItemId = t.getItemId();
-                Item sourceItem = sourceContainer.getItem(sourceItemId);
-                String name = sourceItem.getItemProperty("name").toString();
-                String category = sourceItem.getItemProperty("category").toString();
-
-                AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) dropEvent.getTargetDetails());
-                Object targetItemId = dropData.getItemIdOver();
-
-                // find category in target: the target node itself or its parent
-                if (targetItemId != null && name != null && category != null) {
-                    String treeCategory = getTreeNodeName(tree, targetItemId);
-                    if (category.equals(treeCategory)) {
-                        // move item from table to category'
-                        Object newItemId = tree.addItem();
-                        tree.getItem(newItemId).getItemProperty(PROPERTY_NAME).setValue(name);
-                        tree.setParent(newItemId, targetItemId);
-                        tree.setChildrenAllowed(newItemId, false);
-
-                        sourceContainer.removeItem(sourceItemId);
-                    }
-                    else {
-                        String message = name + " is not a " + treeCategory.toLowerCase().replaceAll("s$", "");
-                        getWindow().showNotification(message, Notification.TYPE_WARNING_MESSAGE);
-                    }
-                }
-            }
-
-            public AcceptCriterion getAcceptCriterion() {
-                // Only allow dropping of data bound transferables within
-                // folders.
-                // In this example, checking for the correct category in drop()
-                // rather than in the criteria.
-                return new And(acceptCriterion, TargetItemAllowsChildren.get(), AcceptItem.ALL);
-            }
-        });
     }
 
     private void initializeTable(final ClientSideCriterion acceptCriterion) throws EscidocClientException {
@@ -171,50 +144,10 @@ public class AddOrgUnitstoContext extends HorizontalLayout {
                 }
                 Container.Hierarchical source = (Container.Hierarchical) t.getSourceContainer();
                 Object sourceItemId = t.getItemId();
-                Object parentItemId = source.getParent(sourceItemId);
-                // map from moved source item Id to the corresponding Hardware
-                LinkedHashMap<Object, OrgUnitRefTemp> orgUnitRefMap = new LinkedHashMap<Object, OrgUnitRefTemp>();
-                if (parentItemId == null) {
-                    // move the whole subtree
-                    String parent = getTreeNodeName(source, sourceItemId);
-                    Collection<?> children = source.getChildren(sourceItemId);
-                    if (children != null) {
-                        for (Object childId : children) {
-                            String name = getTreeNodeName(source, childId);
-                            orgUnitRefMap.put(childId, new OrgUnitRefTemp(name, parent));
-                        }
-                    }
-                }
-                else {
-                    // move a single hardware item
-                    String category = getTreeNodeName(source, parentItemId);
-                    String name = getTreeNodeName(source, sourceItemId);
-                    orgUnitRefMap.put(sourceItemId, new OrgUnitRefTemp(name, category));
-                }
-
-                // move item(s) to the correct location in the table
-
-                AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) dropEvent.getTargetDetails());
-                Object targetItemId = dropData.getItemIdOver();
-
-                for (Object sourceId : orgUnitRefMap.keySet()) {
-                    OrgUnitRefTemp newElement = orgUnitRefMap.get(sourceId);
-                    if (targetItemId != null) {
-                        switch (dropData.getDropLocation()) {
-                            case BOTTOM:
-                                tableContainer.addItemAfter(targetItemId, newElement);
-                                break;
-                            case MIDDLE:
-                            case TOP:
-                                Object prevItemId = tableContainer.prevItemId(targetItemId);
-                                tableContainer.addItemAfter(prevItemId, newElement);
-                                break;
-                        }
-                    }
-                    else {
-                        tableContainer.addItem(newElement);
-                    }
-                    source.removeItem(sourceId);
+                if (tableContainer.getItem(sourceItemId) == null) {
+                    createItem(tableContainer, sourceItemId.toString(), getTreeNodeName(source, sourceItemId),
+                        getTreeNodeHref(source, sourceItemId));
+                    controller.addOrgUnitToContext(resourceProxy, sourceItemId.toString());
                 }
             }
 
@@ -224,11 +157,22 @@ public class AddOrgUnitstoContext extends HorizontalLayout {
         });
     }
 
+    private Item createItem(HierarchicalContainer tableContainer, String itemId, String itemName, String itemHref) {
+        Item item = tableContainer.addItem(itemId);
+        item.getItemProperty(PROPERTY_NAME).setValue(itemName);
+        item.getItemProperty(PROPERTY_HREF).setValue(itemHref);
+        return item;
+    }
+
     private static String getTreeNodeName(Container.Hierarchical source, Object sourceId) {
         return (String) source.getItem(sourceId).getItemProperty(PROPERTY_NAME).getValue();
     }
 
-    private HierarchicalContainer getOrgUnitRefsContainer() throws EscidocClientException {
+    private static String getTreeNodeHref(Container.Hierarchical source, Object sourceId) {
+        return (String) source.getItem(sourceId).getItemProperty(PROPERTY_HREF).getValue();
+    }
+
+    private HierarchicalContainer getOrgUnitRefsContainerTree() throws EscidocClientException {
         Item item = null;
         // Create new container
         HierarchicalContainer orgUnitContainer = new HierarchicalContainer();

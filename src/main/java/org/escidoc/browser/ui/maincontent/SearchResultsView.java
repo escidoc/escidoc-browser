@@ -30,6 +30,7 @@ package org.escidoc.browser.ui.maincontent;
 
 import java.util.List;
 
+import org.escidoc.browser.controller.ContextController;
 import org.escidoc.browser.layout.LayoutDesign;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModelFactory;
@@ -273,7 +274,10 @@ public class SearchResultsView extends VerticalLayout {
                 }
                 else if (variablesForTheTab[0].equals(ResourceType.CONTEXT.getLabel())) {
                     try {
-                        return new ContextView(router, find(variablesForTheTab, ResourceType.CONTEXT), repositories);
+                        ContextController contextController =
+                            new ContextController(repositories, router, find(variablesForTheTab, ResourceType.CONTEXT));
+                        return new ContextView(router, find(variablesForTheTab, ResourceType.CONTEXT), repositories,
+                            contextController);
                     }
                     catch (final EscidocClientException e) {
                         showerror();
