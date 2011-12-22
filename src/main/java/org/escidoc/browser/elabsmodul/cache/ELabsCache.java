@@ -28,19 +28,18 @@
  */
 package org.escidoc.browser.elabsmodul.cache;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.escidoc.browser.elabsmodul.enums.ContentModelTypeEnum;
 import org.escidoc.browser.elabsmodul.model.FileFormatBean;
 import org.escidoc.browser.elabsmodul.model.OrgUnitBean;
 import org.escidoc.browser.elabsmodul.model.UserBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ELabsCache {
 
@@ -69,7 +68,7 @@ public class ELabsCache {
      * @param depositEndpoints
      *            the depositEndpoints to set
      */
-    public static void setDepositEndpoints(List<String> depositEndpoints) {
+    public static void setDepositEndpoints(final List<String> depositEndpoints) {
         ELabsCache.depositEndpoints = depositEndpoints;
     }
 
@@ -84,7 +83,7 @@ public class ELabsCache {
      * @param esyncEndpoints
      *            the esyncEndpoints to set
      */
-    public static void setEsyncEndpoints(List<String> esyncEndpoints) {
+    public static void setEsyncEndpoints(final List<String> esyncEndpoints) {
         ELabsCache.esyncEndpoints = esyncEndpoints;
     }
 
@@ -99,7 +98,7 @@ public class ELabsCache {
      * @param users
      *            the users to set
      */
-    public static void setUsers(List<UserBean> users) {
+    public static void setUsers(final List<UserBean> users) {
         ELabsCache.users = users;
     }
 
@@ -114,7 +113,7 @@ public class ELabsCache {
      * @param orgUnits
      *            the orgUnits to set
      */
-    public static void setOrgUnits(List<OrgUnitBean> orgUnits) {
+    public static void setOrgUnits(final List<OrgUnitBean> orgUnits) {
         ELabsCache.orgUnits = orgUnits;
     }
 
@@ -129,7 +128,7 @@ public class ELabsCache {
      * @param fileFormats
      *            the fileFormats to set
      */
-    public static void setFileFormats(List<FileFormatBean> fileFormats) {
+    public static void setFileFormats(final List<FileFormatBean> fileFormats) {
         ELabsCache.fileFormats = fileFormats;
     }
 
@@ -141,9 +140,7 @@ public class ELabsCache {
         if (getEsyncEndpoints().isEmpty()) {
             return "no esynch endpoint exists";
         }
-        else {
-            return getEsyncEndpoints().get(0);
-        }
+        return getEsyncEndpoints().get(0);
     }
 
     /**
@@ -154,9 +151,7 @@ public class ELabsCache {
         if (getDepositEndpoints().isEmpty()) {
             return "no deposit endpoint exists";
         }
-        else {
-            return getDepositEndpoints().get(0);
-        }
+        return getDepositEndpoints().get(0);
     }
 
     /**
@@ -167,10 +162,9 @@ public class ELabsCache {
     }
 
     public static List<String> getRigCMMIds() {
-        List<String> list = new ArrayList<String>();
+        final List<String> list = new ArrayList<String>();
         if (!ELabsCache.getContentModels().isEmpty()) {
-            for (Iterator<String> iterator = ELabsCache.getContentModels().keySet().iterator(); iterator.hasNext();) {
-                String key = iterator.next();
+            for (final String key : ELabsCache.getContentModels().keySet()) {
                 if (ELabsCache.getContentModels().get(key).isRig()) {
                     list.add(key);
                 }
@@ -180,10 +174,9 @@ public class ELabsCache {
     }
 
     public static List<String> getInstrumentCMMIds() {
-        List<String> list = new ArrayList<String>();
+        final List<String> list = new ArrayList<String>();
         if (!ELabsCache.getContentModels().isEmpty()) {
-            for (Iterator<String> iterator = ELabsCache.getContentModels().keySet().iterator(); iterator.hasNext();) {
-                String key = iterator.next();
+            for (final String key : ELabsCache.getContentModels().keySet()) {
                 if (ELabsCache.getContentModels().get(key).isInstrument()) {
                     list.add(key);
                 }
@@ -193,10 +186,9 @@ public class ELabsCache {
     }
 
     public static List<String> getStudyCMMIds() {
-        List<String> list = new ArrayList<String>();
+        final List<String> list = new ArrayList<String>();
         if (!ELabsCache.getContentModels().isEmpty()) {
-            for (Iterator<String> iterator = ELabsCache.getContentModels().keySet().iterator(); iterator.hasNext();) {
-                String key = iterator.next();
+            for (final String key : ELabsCache.getContentModels().keySet()) {
                 if (ELabsCache.getContentModels().get(key).isStudy()) {
                     list.add(key);
                 }
@@ -206,10 +198,9 @@ public class ELabsCache {
     }
 
     public static List<String> getInvestigationCMMIds() {
-        List<String> list = new ArrayList<String>();
+        final List<String> list = new ArrayList<String>();
         if (!ELabsCache.getContentModels().isEmpty()) {
-            for (Iterator<String> iterator = ELabsCache.getContentModels().keySet().iterator(); iterator.hasNext();) {
-                String key = iterator.next();
+            for (final String key : ELabsCache.getContentModels().keySet()) {
                 if (ELabsCache.getContentModels().get(key).isInvestigation()) {
                     list.add(key);
                 }
@@ -219,10 +210,9 @@ public class ELabsCache {
     }
 
     public static List<String> getGeneratedItemCMMId() {
-        List<String> list = new ArrayList<String>();
+        final List<String> list = new ArrayList<String>();
         if (!ELabsCache.getContentModels().isEmpty()) {
-            for (Iterator<String> iterator = ELabsCache.getContentModels().keySet().iterator(); iterator.hasNext();) {
-                String key = iterator.next();
+            for (final String key : ELabsCache.getContentModels().keySet()) {
                 if (ELabsCache.getContentModels().get(key).isGeneratedItem()) {
                     if (list.isEmpty()) {
                         list.add(key);

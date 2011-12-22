@@ -66,9 +66,7 @@ public class TreeClickListener implements ItemClickListener {
         if (event.getButton() == ClickEvent.BUTTON_RIGHT) {
             return;
         }
-        final ResourceModel rm = (ResourceModel) event.getItemId();
-
-        openClickedResourceInNewTab(rm);
+        openClickedResourceInNewTab((ResourceModel) event.getItemId());
     }
 
     private void openClickedResourceInNewTab(final ResourceModel clickedResource) {

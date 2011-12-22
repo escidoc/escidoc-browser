@@ -92,7 +92,7 @@ public class NavigationTreeBuilder {
         return createNavigationTreeView(withDataSource(repositories.context(), parentId));
     }
 
-    public OrgUnitTreeView buildOrgUnitTree() throws EscidocClientException {
+    public OrgUnitTreeView buildOrgUnitTree() {
         final OrgUnitTreeView tree = new OrgUnitTreeView();
         tree.setDataSource(getDataSource());
         addClickListener(tree);
@@ -101,11 +101,11 @@ public class NavigationTreeBuilder {
         return tree;
     }
 
-    private void addActionListener(final OrgUnitTreeView tree) throws EscidocClientException {
+    private void addActionListener(final OrgUnitTreeView tree) {
         tree.addActionHandler(new ActionHandlerImpl(mainWindow, repositories, getDataSource(), router));
     }
 
-    private void addExpandListener(final OrgUnitTreeView tree) throws EscidocClientException {
+    private void addExpandListener(final OrgUnitTreeView tree) {
         tree.addExpandListener(new OrgUnitTreeExpandListener(repositories.organization(), mainWindow, getDataSource()));
     }
 
@@ -113,7 +113,7 @@ public class NavigationTreeBuilder {
         tree.addClickListener(new TreeClickListener(mainWindow, router));
     }
 
-    private TreeDataSource getDataSource() throws EscidocClientException {
+    private TreeDataSource getDataSource() {
         final OrgUnitDataSource treeDataSource = new OrgUnitDataSource(repositories.organization());
         treeDataSource.init();
         return treeDataSource;

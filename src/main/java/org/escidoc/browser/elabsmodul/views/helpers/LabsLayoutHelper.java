@@ -28,6 +28,22 @@
  */
 package org.escidoc.browser.elabsmodul.views.helpers;
 
+import com.google.common.base.Preconditions;
+
+import com.vaadin.data.Container;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
+
 import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.COMBOBOX_WIDTH;
 import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.DIV_ALIGN_RIGHT;
 import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.DIV_END;
@@ -55,21 +71,6 @@ import org.escidoc.browser.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.data.Container;
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
-
 /**
  * Utility class.
  */
@@ -81,24 +82,24 @@ public final class LabsLayoutHelper {
     }
 
     public static synchronized HorizontalLayout createHorizontalLayoutWithELabsLabelAndLabelData(
-        final String labelTxt, Property dataProperty, boolean required) {
+        final String labelTxt, final Property dataProperty, final boolean required) {
         Preconditions.checkNotNull(labelTxt, "Label is null");
         Preconditions.checkNotNull(dataProperty, "DataSource is null");
 
-        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        final HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSizeUndefined();
         horizontalLayout.setDescription(USER_DESCR_ON_HOR_LAYOUT_TO_EDIT);
         horizontalLayout.setEnabled(true);
         horizontalLayout.setSpacing(true);
         horizontalLayout.setHeight(HOR_PANEL_HEIGHT);
 
-        Label label = new Label();
+        final Label label = new Label();
         label.setWidth(LABEL_WIDTH);
         label.setValue(DIV_ALIGN_RIGHT + (required ? ELabsViewContants.REQUIRED_SIGN : "") + labelTxt + DIV_END);
         label.setContentMode(Label.CONTENT_XHTML);
         label.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
 
-        Label textLabel = new Label(dataProperty);
+        final Label textLabel = new Label(dataProperty);
         textLabel.setWidth(TEXT_WIDTH);
         textLabel.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
         textLabel.setStyleName(STYLE_ELABS_TEXT_AS_LABEL);
@@ -113,24 +114,24 @@ public final class LabsLayoutHelper {
     }
 
     public static synchronized HorizontalLayout createHorizontalLayoutWithELabsLabelAndStaticComboData(
-        final String labelTxt, String value, boolean required) {
+        final String labelTxt, final String value, final boolean required) {
         Preconditions.checkNotNull(labelTxt, "Label is null");
         // Preconditions.checkNotNull(value, "Value is null");
 
-        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        final HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSizeUndefined();
         horizontalLayout.setDescription(USER_DESCR_ON_HOR_LAYOUT_TO_EDIT);
         horizontalLayout.setEnabled(true);
         horizontalLayout.setSpacing(true);
         horizontalLayout.setHeight(HOR_PANEL_HEIGHT);
 
-        Label label = new Label();
+        final Label label = new Label();
         label.setWidth(LABEL_WIDTH);
         label.setValue(DIV_ALIGN_RIGHT + (required ? ELabsViewContants.REQUIRED_SIGN : "") + labelTxt + DIV_END);
         label.setContentMode(Label.CONTENT_XHTML);
         label.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
 
-        Label textLabel = new Label(value);
+        final Label textLabel = new Label(value);
         textLabel.setWidth(TEXT_WIDTH);
         textLabel.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
         textLabel.setStyleName(STYLE_ELABS_TEXT_AS_LABEL);
@@ -145,23 +146,23 @@ public final class LabsLayoutHelper {
     }
 
     public static synchronized HorizontalLayout createHorizontalLayoutWithELabsLabelAndLabelComplexData(
-        final String labelTxt, String dataTxt, boolean required) {
+        final String labelTxt, final String dataTxt, final boolean required) {
         Preconditions.checkNotNull(labelTxt, "Label is null");
 
-        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        final HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSizeUndefined();
         horizontalLayout.setDescription(USER_DESCR_ON_HOR_LAYOUT_TO_EDIT);
         horizontalLayout.setEnabled(true);
         horizontalLayout.setSpacing(true);
         horizontalLayout.setHeight(HOR_PANEL_HEIGHT);
 
-        Label label = new Label();
+        final Label label = new Label();
         label.setWidth(LABEL_WIDTH);
         label.setValue(DIV_ALIGN_RIGHT + (required ? ELabsViewContants.REQUIRED_SIGN : "") + labelTxt + DIV_END);
         label.setContentMode(Label.CONTENT_XHTML);
         label.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
 
-        Label textLabel = new Label(dataTxt);
+        final Label textLabel = new Label(dataTxt);
         textLabel.setWidth(TEXT_WIDTH);
         textLabel.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
         textLabel.setStyleName(STYLE_ELABS_TEXT_AS_LABEL);
@@ -176,21 +177,21 @@ public final class LabsLayoutHelper {
     }
 
     public static synchronized HorizontalLayout createHorizontalLayoutWithELabsLabelAndRelatedDataForRig(
-        final String labelTxt, Property dataProperty, RigBean rigBean, final IRigAction controller,
-        LabsRigTableHelper helper, boolean required) {
+        final String labelTxt, final Property dataProperty, final RigBean rigBean, final IRigAction controller,
+        final LabsRigTableHelper helper, final boolean required) {
         Preconditions.checkNotNull(labelTxt, "Label is null");
         Preconditions.checkNotNull(dataProperty, "DataSource is null");
         Preconditions.checkNotNull(rigBean, "RigBean is null");
         Preconditions.checkNotNull(helper, "Helper is null");
         Preconditions.checkNotNull(controller, "Controller is null");
 
-        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        final HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSizeUndefined();
         horizontalLayout.setEnabled(true);
         horizontalLayout.setSpacing(true);
         horizontalLayout.setStyleName(STYLE_ELABS_HOR_PANEL_FOR_TABLE);
 
-        Label label = new Label();
+        final Label label = new Label();
         label.setWidth(LABEL_WIDTH);
         label.setValue(DIV_ALIGN_RIGHT + (required ? ELabsViewContants.REQUIRED_SIGN : "") + labelTxt + DIV_END);
         label.setContentMode(Label.CONTENT_XHTML);
@@ -205,19 +206,19 @@ public final class LabsLayoutHelper {
     }
 
     public static synchronized HorizontalLayout createHorizontalLayoutWithPublicationDataForStudy(
-        final String labelTxt, Property dataProperty, boolean isMotNotResPublication, LabsStudyTableHelper helper,
-        boolean required) {
+        final String labelTxt, final Property dataProperty, final boolean isMotNotResPublication,
+        final LabsStudyTableHelper helper, final boolean required) {
         Preconditions.checkNotNull(labelTxt, "Label is null");
         Preconditions.checkNotNull(dataProperty, "DataSource is null");
         Preconditions.checkNotNull(helper, "Helper is null");
 
-        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        final HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSizeUndefined();
         horizontalLayout.setEnabled(true);
         horizontalLayout.setSpacing(true);
         horizontalLayout.setStyleName(STYLE_ELABS_HOR_PANEL_FOR_TABLE);
 
-        Label label = new Label();
+        final Label label = new Label();
         label.setWidth(LABEL_WIDTH);
         label.setValue(DIV_ALIGN_RIGHT + (required ? ELabsViewContants.REQUIRED_SIGN : "") + labelTxt + DIV_END);
         label.setContentMode(Label.CONTENT_XHTML);
@@ -236,8 +237,8 @@ public final class LabsLayoutHelper {
     }
 
     public static synchronized HorizontalLayout createHorizontalLayoutWithELabsLabelAndCheckBoxData(
-        final String labelTxt, final String checkBoxDescription, Property dataProperty, boolean required) {
-        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        final String labelTxt, final String checkBoxDescription, final Property dataProperty, final boolean required) {
+        final HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSizeUndefined();
         horizontalLayout.setDescription(USER_DESCR_ON_HOR_LAYOUT_TO_EDIT);
         horizontalLayout.setEnabled(true);
@@ -245,13 +246,13 @@ public final class LabsLayoutHelper {
         horizontalLayout.setHeight(HOR_PANEL_HEIGHT);
         horizontalLayout.setStyleName(STYLE_ELABS_HOR_PANEL);
 
-        Label label = new Label();
+        final Label label = new Label();
         label.setWidth(LABEL_WIDTH);
         label.setValue(DIV_ALIGN_RIGHT + (required ? ELabsViewContants.REQUIRED_SIGN : "") + labelTxt + DIV_END);
         label.setContentMode(Label.CONTENT_XHTML);
         label.setDescription(USER_DESCR_ON_LABEL_TO_EDIT);
 
-        CheckBox checkBox = new CheckBox(checkBoxDescription, dataProperty);
+        final CheckBox checkBox = new CheckBox(checkBoxDescription, dataProperty);
         checkBox.setEnabled(true);
         checkBox.setVisible(true);
         checkBox.setWidth(TEXT_WIDTH);
@@ -272,14 +273,14 @@ public final class LabsLayoutHelper {
      * @param property
      * @return boolean an element switch happened or not
      */
-    public static synchronized boolean switchToLabelFromEditedField(HorizontalLayout parentLayout) {
+    public static synchronized boolean switchToLabelFromEditedField(final HorizontalLayout parentLayout) {
         Preconditions.checkNotNull(parentLayout, "ParentLayout on DynamicLayout is null");
         Component staticLabelComponent = null, dataComponent = null;
         try {
             staticLabelComponent = parentLayout.getComponent(0);
             dataComponent = parentLayout.getComponent(1);
         }
-        catch (IndexOutOfBoundsException e) {
+        catch (final IndexOutOfBoundsException e) {
             LOG.error("This layout should contain only 2 components!");
             return false;
         }
@@ -342,10 +343,10 @@ public final class LabsLayoutHelper {
      * @param property
      * @return
      */
-    public static synchronized AbstractComponent createTextFieldFromLabel(Property property) {
+    public static synchronized AbstractComponent createTextFieldFromLabel(final Property property) {
         Preconditions.checkNotNull(property, "Datasource is null");
 
-        TextField textField = new TextField(property);
+        final TextField textField = new TextField(property);
         textField.setWidth(TEXT_WIDTH);
         textField.setStyleName(STYLE_ELABS_TEXT);
         textField.setDescription(USER_DESCR_ON_TEXTFIELD_TO_SAVE_OR_CANCEL);
@@ -359,9 +360,9 @@ public final class LabsLayoutHelper {
      * @param property
      * @return
      */
-    public static synchronized AbstractComponent createStaticComboBoxFieldFromLabel(Property property) {
+    public static synchronized AbstractComponent createStaticComboBoxFieldFromLabel(final Property property) {
         Preconditions.checkNotNull(property, "Datasource is null");
-        ComboBox comboBox = new ComboBox(null, ELabsFileFormatsEnum.toList());
+        final ComboBox comboBox = new ComboBox(null, ELabsFileFormatsEnum.toList());
         comboBox.setEnabled(true);
         comboBox.setVisible(true);
         comboBox.setImmediate(true);
@@ -382,8 +383,8 @@ public final class LabsLayoutHelper {
      */
     @SuppressWarnings("serial")
     public static synchronized AbstractComponent createDynamicComboBoxFieldForInvestigation(
-        final ILabsInvestigationAction labsInvestigationAction, Property property, String itemCaptionProperty,
-        final Container itemContainer) {
+        final ILabsInvestigationAction labsInvestigationAction, final Property property,
+        final String itemCaptionProperty, final Container itemContainer) {
         Preconditions.checkNotNull(labsInvestigationAction, "LabsInvestigationAction is null");
         Preconditions.checkNotNull(itemContainer, "ItemContainer is null");
 
@@ -410,8 +411,9 @@ public final class LabsLayoutHelper {
 
             comboBox.addListener(new Property.ValueChangeListener() {
                 @Override
-                public void valueChange(ValueChangeEvent event) {
+                public void valueChange(final ValueChangeEvent event) {
                     if ((comboBox.getValue() instanceof String)) {
+                        // do nothing, why?
                     }
                     else if (comboBox.getValue() instanceof RigBean) {
                         labsInvestigationAction.setRigBean((RigBean) comboBox.getValue());
@@ -426,7 +428,7 @@ public final class LabsLayoutHelper {
             });
             return comboBox;
         }
-        catch (Exception e) {
+        catch (final Exception e) {
             LOG.error(e.getMessage());
         }
         return null;
@@ -438,7 +440,7 @@ public final class LabsLayoutHelper {
      */
     @SuppressWarnings("serial")
     public static synchronized AbstractComponent createDynamicComboBoxFieldForInstrument(
-        final ILabsInstrumentAction labsInstrumentAction, Property property, String itemCaptionProperty,
+        final ILabsInstrumentAction labsInstrumentAction, final Property property, final String itemCaptionProperty,
         final Container itemContainer) {
         Preconditions.checkNotNull(labsInstrumentAction, "LabsInstrumentAction is null");
         Preconditions.checkNotNull(itemContainer, "ItemContainer is null");
@@ -470,7 +472,7 @@ public final class LabsLayoutHelper {
 
             comboBox.addListener(new Property.ValueChangeListener() {
                 @Override
-                public void valueChange(ValueChangeEvent event) {
+                public void valueChange(final ValueChangeEvent event) {
                     if ((comboBox.getValue() instanceof String)) {
                     }
                     else if (comboBox.getValue() instanceof UserBean) {
@@ -489,18 +491,18 @@ public final class LabsLayoutHelper {
             });
             return comboBox;
         }
-        catch (Exception e) {
+        catch (final Exception e) {
             LOG.error(e.getMessage());
         }
         return null;
     }
 
     public static HorizontalLayout createButtonLayout() {
-        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        final HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSpacing(true);
-        Button saveButton = new Button("Save");
+        final Button saveButton = new Button("Save");
         saveButton.setIcon(ELabsViewContants.ICON_16_OK);
-        Label blank = new Label("");
+        final Label blank = new Label("");
         blank.setWidth(LABEL_WIDTH);
         horizontalLayout.addComponent(blank, 0);
         horizontalLayout.addComponent(saveButton, 1);
