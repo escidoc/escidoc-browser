@@ -325,7 +325,7 @@ public class Router {
 
             return (Controller) Class
                 .forName(controllerClassName).getConstructor(Repositories.class, Router.class, ResourceProxy.class)
-                .newInstance(repositories, this, tryToFindResource(clickedResource));
+                .newInstance(repositories, this, fetchResource(clickedResource));
         }
         catch (final ClassNotFoundException e) {
             this.getMainWindow().showNotification(ViewConstants.CONTROLLER_ERR_CANNOT_FIND_CLASS,
@@ -405,10 +405,10 @@ public class Router {
 
     private String getContentModelDescription(final ResourceModel clickedResource) throws EscidocClientException {
         return repositories
-            .contentModel().findById(tryToFindResource(clickedResource).getContentModel().getObjid()).getDescription();
+            .contentModel().findById(fetchResource(clickedResource).getContentModel().getObjid()).getDescription();
     }
 
-    private ResourceProxy tryToFindResource(final ResourceModel clickedResource) throws EscidocClientException {
+    private ResourceProxy fetchResource(final ResourceModel clickedResource) throws EscidocClientException {
         if (ContainerModel.isContainer(clickedResource)) {
             return repositories.container().findById(clickedResource.getId());
         }

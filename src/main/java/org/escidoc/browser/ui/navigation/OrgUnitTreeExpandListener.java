@@ -51,19 +51,19 @@ public class OrgUnitTreeExpandListener implements ExpandListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(OrgUnitTreeExpandListener.class);
 
-    private final OrganizationUnitRepository repo;
+    private final OrganizationUnitRepository repository;
 
     private final Window mainWindow;
 
     private final TreeDataSource dataSource;
 
-    public OrgUnitTreeExpandListener(final OrganizationUnitRepository repo, final Window mainWindow,
+    public OrgUnitTreeExpandListener(final OrganizationUnitRepository repository, final Window mainWindow,
         final TreeDataSource dataSource) {
-        Preconditions.checkNotNull(repo, "repo is null: %s", repo);
+        Preconditions.checkNotNull(repository, "repository is null: %s", repository);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(dataSource, "dataSource is null: %s", dataSource);
 
-        this.repo = repo;
+        this.repository = repository;
         this.mainWindow = mainWindow;
         this.dataSource = dataSource;
     }
@@ -86,7 +86,7 @@ public class OrgUnitTreeExpandListener implements ExpandListener {
 
     private List<ResourceModel> fetchChildren(final ResourceModel rm) {
         try {
-            return repo.findTopLevelMembersById(rm.getId());
+            return repository.findTopLevelMembersById(rm.getId());
         }
         catch (final EscidocClientException e) {
             final String msg = "Can not fetch children of " + rm + ". Reason: " + e.getMessage();

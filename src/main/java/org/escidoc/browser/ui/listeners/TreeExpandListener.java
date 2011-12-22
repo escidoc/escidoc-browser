@@ -39,7 +39,6 @@ import org.escidoc.browser.model.internal.ContainerModel;
 import org.escidoc.browser.model.internal.ContextModel;
 import org.escidoc.browser.model.internal.ItemModel;
 import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.repository.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,9 +51,7 @@ public final class TreeExpandListener implements Tree.ExpandListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(TreeExpandListener.class);
 
-    private final Repository contextRepository;
-
-    private final Repository containerRepository;
+    private final Repositories repositories;
 
     private final TreeDataSource treeDataSource;
 
@@ -62,8 +59,7 @@ public final class TreeExpandListener implements Tree.ExpandListener {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(treeDataSource, "treeDataSource is null: %s", treeDataSource);
 
-        contextRepository = repositories.context();
-        containerRepository = repositories.container();
+        this.repositories = repositories;
         this.treeDataSource = treeDataSource;
     }
 
@@ -87,25 +83,25 @@ public final class TreeExpandListener implements Tree.ExpandListener {
 
     private void addContainerChildren(final ResourceModel resource) {
         try {
-            final List<ResourceModel> children = containerRepository.findTopLevelMembersById(resource.getId());
+            final List<ResourceModel> children = repositories.container().findTopLevelMembersById(resource.getId());
             treeDataSource.addChildren(resource, children);
         }
         catch (final EscidocClientException e) {
-            showErrorMessageToUser(resource, e);
+            handleError(resource, e);
         }
     }
 
     private void addContextChildren(final ResourceModel resource) {
         try {
-            treeDataSource.addChildren(resource, contextRepository.findTopLevelMembersById(resource.getId()));
+            treeDataSource.addChildren(resource, repositories.context().findTopLevelMembersById(resource.getId()));
         }
         catch (final EscidocClientException e) {
-            showErrorMessageToUser(resource, e);
+            handleError(resource, e);
         }
     }
 
     // TODO: show notification to user, not just log.
-    private void showErrorMessageToUser(final ResourceModel hasChildrenResource, final EscidocClientException e) {
+    private static void handleError(final ResourceModel hasChildrenResource, final EscidocClientException e) {
         LOG.error("Can not find member of: " + hasChildrenResource.getId(), e);
     }
 }

@@ -136,13 +136,7 @@ public class CreateResourcesView extends View {
         vlAccCreate.setWidth("100.0%");
         vlAccCreate.setHeight("100.0%");
         vlAccCreate.setMargin(false);
-        try {
-            formAddContentModel(vlAccCreate);
-        }
-        catch (final EscidocClientException e) {
-            router.getMainWindow().showNotification(ViewConstants.ERROR_CREATING_RESOURCE + e.getLocalizedMessage(),
-                Window.Notification.TYPE_ERROR_MESSAGE);
-        }
+        formAddContentModel(vlAccCreate);
         accCreateContentModel.addTab(vlAccCreate, "Create Content Model");
 
         return accCreateContentModel;
@@ -230,7 +224,7 @@ public class CreateResourcesView extends View {
         return form;
     }
 
-    private void formAddContentModel(final VerticalLayout vlAccCreateContentModel) throws EscidocClientException {
+    private void formAddContentModel(final VerticalLayout vlAccCreateContentModel) {
         final Form frm = new Form();
         frm.setImmediate(true);
         // Name
@@ -342,7 +336,7 @@ public class CreateResourcesView extends View {
                     frm.commit();
                     controller.createResourceAddContextListener(txtNameContext.getValue().toString(), txtDescContext
                         .getValue().toString(), txtType.getValue().toString(), slOrgUnit.getValue().toString(),
-                        repositories, router.getServiceLocation());
+                        repositories);
                     router.getMainWindow().showNotification(
                         "Context " + txtNameContext.getValue().toString() + " created successfully ",
                         Window.Notification.TYPE_TRAY_NOTIFICATION);

@@ -152,7 +152,7 @@ public class SimpleLayout extends LayoutDesign {
     }
 
     @Override
-    public void openViewByReloading(final Component component, String tabname) {
+    public void openViewByReloading(final Component component, final String tabname) {
         Preconditions.checkNotNull(component, "component is null: %s", component);
         Preconditions.checkNotNull(tabname, "tabname is null: %s", tabname);
 
@@ -162,27 +162,29 @@ public class SimpleLayout extends LayoutDesign {
         final int p = tabname.lastIndexOf('#');
 
         // FIXME parameter should not be reassigned.
+        String newTabName = tabname;
         if (p > 0) {
-            tabname = tabname.substring(0, p);
+            newTabName = tabname.substring(0, p);
         }
         if (tabname.length() > 50) {
-            tabname = tabname.substring(0, 50) + "...";
+            newTabName = tabname.substring(0, 50) + "...";
         }
+
         int position = -1;
         if (mainContentTabs.getTab(component) != null) {
             final Tab tmpTab = mainContentTabs.getTab(component);
             position = mainContentTabs.getTabPosition(tmpTab);
             mainContentTabs.removeTab(tmpTab);
         }
-        final Tab tb = mainContentTabs.addTab(component);
-        tb.setCaption(tabname);
-        tb.setDescription(description);
+        final Tab tab = mainContentTabs.addTab(component);
+        tab.setCaption(newTabName);
+        tab.setDescription(description);
         if (position != -1) {
-            mainContentTabs.setTabPosition(tb, position);
+            mainContentTabs.setTabPosition(tab, position);
         }
 
         mainContentTabs.setSelectedTab(component);
-        tb.setClosable(true);
+        tab.setClosable(true);
     }
 
     /**

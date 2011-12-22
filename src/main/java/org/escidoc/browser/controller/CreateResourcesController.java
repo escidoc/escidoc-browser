@@ -29,22 +29,16 @@ import de.escidoc.core.resources.om.context.OrganizationalUnitRefs;
 
 public class CreateResourcesController extends Controller {
 
-    private final Repositories repositories;
-
-    private final Router router;
-
     public CreateResourcesController(final Repositories repositories, final Router router,
         final ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
-        this.repositories = repositories;
-        this.router = router;
 
         this.view = createView();
         this.setResourceName(ViewConstants.CREATE_RESOURCES);
     }
 
     private Component createView() {
-        return new CreateResourcesView(router, repositories, this);
+        return new CreateResourcesView(getRouter(), getRepositories(), this);
     }
 
     public void createResourceAddOrgUnit(
@@ -81,7 +75,7 @@ public class CreateResourcesController extends Controller {
 
     public void createResourceAddContextListener(
         final String name, final String description, final String type, final String orgUnit,
-        final Repositories repositories, final EscidocServiceLocation serviceLocation) throws EscidocClientException {
+        final Repositories repositories) throws EscidocClientException {
         Preconditions.checkNotNull(name, "Name of Context is Null");
         Preconditions.checkNotNull(orgUnit, "Organizational Unit is null is Null");
         Preconditions.checkNotNull(description, "txtDescContext is Null");
@@ -99,6 +93,6 @@ public class CreateResourcesController extends Controller {
 
     @Override
     protected Component createView(final ResourceProxy resourceProxy) throws EscidocClientException {
-        throw new UnsupportedOperationException("not-yet-implemented.");
+        return createView();
     }
 }

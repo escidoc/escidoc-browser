@@ -51,6 +51,8 @@ public class NavigationTreeBuilder {
 
     private final Router router;
 
+    private OrgUnitDataSource treeDataSource;
+
     public NavigationTreeBuilder(final Window mainWindow, final Router router, final Repositories repositories) {
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(router, "router is null: %s", router);
@@ -94,29 +96,34 @@ public class NavigationTreeBuilder {
 
     public OrgUnitTreeView buildOrgUnitTree() {
         final OrgUnitTreeView tree = new OrgUnitTreeView();
-        tree.setDataSource(getDataSource());
+        createOrgUnitDataSource();
+        tree.setDataSource(getOrgUnitDataSource());
         addClickListener(tree);
         addExpandListener(tree);
         addActionListener(tree);
         return tree;
     }
 
+    private void createOrgUnitDataSource() {
+        treeDataSource = new OrgUnitDataSource(repositories.organization());
+        treeDataSource.init();
+    }
+
+    private TreeDataSource getOrgUnitDataSource() {
+        return treeDataSource;
+    }
+
     private void addActionListener(final OrgUnitTreeView tree) {
-        tree.addActionHandler(new ActionHandlerImpl(mainWindow, repositories, getDataSource(), router));
+        tree.addActionHandler(new ActionHandlerImpl(mainWindow, repositories, getOrgUnitDataSource(), router));
     }
 
     private void addExpandListener(final OrgUnitTreeView tree) {
-        tree.addExpandListener(new OrgUnitTreeExpandListener(repositories.organization(), mainWindow, getDataSource()));
+        tree.addExpandListener(new OrgUnitTreeExpandListener(repositories.organization(), mainWindow,
+            getOrgUnitDataSource()));
     }
 
     private void addClickListener(final OrgUnitTreeView tree) {
         tree.addClickListener(new TreeClickListener(mainWindow, router));
     }
 
-    private TreeDataSource getDataSource() {
-        final OrgUnitDataSource treeDataSource = new OrgUnitDataSource(repositories.organization());
-        treeDataSource.init();
-        return treeDataSource;
-
-    }
 }

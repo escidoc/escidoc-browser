@@ -47,6 +47,8 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 @SuppressWarnings("serial")
 public class TreeClickListener implements ItemClickListener {
 
+    private static final boolean SHOULD_RELOAD_VIEW = true;
+
     private static final Logger LOG = LoggerFactory.getLogger(TreeClickListener.class);
 
     private final Router router;
@@ -63,18 +65,18 @@ public class TreeClickListener implements ItemClickListener {
 
     @Override
     public void itemClick(final ItemClickEvent event) {
-        if (event.getButton() == ClickEvent.BUTTON_RIGHT) {
+        if (event.getButton() == ClickEvent.BUTTON_RIGHT || !(event.getItemId() instanceof ResourceModel)) {
             return;
         }
-        openClickedResourceInNewTab((ResourceModel) event.getItemId());
+        openInNewTab((ResourceModel) event.getItemId());
     }
 
-    private void openClickedResourceInNewTab(final ResourceModel clickedResource) {
+    private void openInNewTab(final ResourceModel clickedResource) {
         try {
-            router.show(clickedResource, true);
+            router.show(clickedResource, SHOULD_RELOAD_VIEW);
         }
         catch (final EscidocClientException e) {
-            LOG.error(e.getMessage());
+            LOG.error(e.getMessage(), e);
             showErrorMessageToUser(e);
         }
     }

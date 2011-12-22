@@ -56,9 +56,9 @@ public abstract class LayoutDesign extends VerticalLayout {
         Window mainWindow, EscidocServiceLocation serviceLocation, BrowserApplication app, Repositories repositories,
         Router router) throws EscidocClientException, UnsupportedOperationException, URISyntaxException;
 
-    public abstract void openView(Component cmp, String title);
+    public abstract void openView(Component component, String title);
 
-    public abstract void openViewByReloading(Component cmp, String title);
+    public abstract void openViewByReloading(Component component, String title);
 
     public abstract void closeView(ResourceModel model, ResourceModel parent, Object sender);
 

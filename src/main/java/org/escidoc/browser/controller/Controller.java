@@ -67,7 +67,9 @@ public abstract class Controller {
 
         try {
             this.view = createView(resourceProxy);
-            this.setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
+            if (resourceProxy != null) {
+                this.setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
+            }
         }
         catch (final EscidocClientException e) {
             router.getMainWindow().showNotification(
