@@ -86,7 +86,7 @@ public class AddOrgUnitstoContext extends VerticalLayout {
         VerticalLayout vl = new VerticalLayout();
         tableDelete = new Table("Drag here te remove");
 
-        initializeDeleteTable(new SourceIs(tableDelete));
+        initializeDeleteTable(new SourceIs(table));
 
         vl.addComponent(tableDelete);
 
@@ -97,8 +97,6 @@ public class AddOrgUnitstoContext extends VerticalLayout {
     private void initializeDeleteTable(final ClientSideCriterion acceptCriterion) throws EscidocClientException {
         tableDelete.setWidth("100%");
         tableDelete.setHeight("100px");
-        // Handle drop in table: move hardware item or subtree to the table
-        // tableDelete.setDragMode(TableDragMode.ROW);
         tableDelete.setDropHandler(new DropHandler() {
             public void drop(DragAndDropEvent dropEvent) {
                 DataBoundTransferable t = (DataBoundTransferable) dropEvent.getTransferable();
@@ -107,6 +105,9 @@ public class AddOrgUnitstoContext extends VerticalLayout {
                 }
                 Container.Hierarchical source = (Container.Hierarchical) t.getSourceContainer();
                 source.removeItem(t.getItemId());
+                Object sourceItemId = t.getItemId();
+                controller.removeOrgUnitFromContext(resourceProxy, sourceItemId.toString());
+                controller.refreshView();
             }
 
             public AcceptCriterion getAcceptCriterion() {

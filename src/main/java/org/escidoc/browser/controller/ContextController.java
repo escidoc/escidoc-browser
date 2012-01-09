@@ -85,4 +85,15 @@ public class ContextController extends Controller {
 
     }
 
+    public void removeOrgUnitFromContext(ContextProxyImpl resourceProxy, String orgUnitid) {
+        try {
+            repositories.context().delOrganizationalUnit(resourceProxy.getId(), orgUnitid);
+            showTrayMessage("Updated!", "Organizational Unit was removed Successfully");
+        }
+        catch (EscidocClientException e) {
+            showError("Unable to add the OrganizationalUnit. An error occurred " + e.getLocalizedMessage());
+        }
+
+    }
+
 }

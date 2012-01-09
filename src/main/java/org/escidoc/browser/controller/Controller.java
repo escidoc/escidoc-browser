@@ -62,6 +62,14 @@ public abstract class Controller {
         layout.openViewByReloading(this.view, this.getResourceName());
     }
 
+    // TODO There has to be a method from the Router to call a refresh on the view
+    /**
+     * Used for syncing resources etc
+     */
+    public void refreshView() {
+
+    }
+
     public String getResourceName() {
         return resourceName;
     }
