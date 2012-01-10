@@ -37,6 +37,8 @@ import com.google.common.base.Preconditions;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Window.Notification;
 
+import de.escidoc.core.client.exceptions.EscidocClientException;
+
 public abstract class Controller {
     private Repositories repositories;
 
@@ -44,21 +46,24 @@ public abstract class Controller {
 
     private ResourceProxy resourProxy;
 
+    private LayoutDesign layout;
+
     public Controller(Repositories repositories, Router router, ResourceProxy resourceProxy) {
         this.repositories = repositories;
         this.router = router;
         this.resourProxy = resourceProxy;
+        this.layout = router.getLayout();
     }
 
     protected Component view;
 
     private String resourceName;
 
-    public void showView(final LayoutDesign layout) {
+    public void showView() {
         layout.openView(this.view, this.getResourceName());
     }
 
-    public void showViewByReloading(final LayoutDesign layout) {
+    public void showViewByReloading() {
         layout.openViewByReloading(this.view, this.getResourceName());
     }
 
@@ -67,7 +72,13 @@ public abstract class Controller {
      * Used for syncing resources etc
      */
     public void refreshView() {
-
+        try {
+            router.show(resourProxy, true);
+        }
+        catch (EscidocClientException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     public String getResourceName() {

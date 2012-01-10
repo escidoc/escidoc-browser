@@ -202,10 +202,10 @@ public class Router {
      */
     public void openControllerView(final Controller cnt, final Boolean doReloadView) {
         if (!doReloadView) {
-            cnt.showView(layout);
+            cnt.showView();
         }
         else {
-            cnt.showViewByReloading(layout);
+            cnt.showViewByReloading();
         }
     }
 
@@ -302,10 +302,10 @@ public class Router {
                         .getConstructor(Repositories.class, Router.class, ResourceProxy.class).newInstance(
                             repositories, this, tryToFindResource(clickedResource));
                 if (!doReloadView) {
-                    controller.showView(layout);
+                    controller.showView();
                 }
                 else {
-                    controller.showViewByReloading(layout);
+                    controller.showViewByReloading();
                 }
             }
         }

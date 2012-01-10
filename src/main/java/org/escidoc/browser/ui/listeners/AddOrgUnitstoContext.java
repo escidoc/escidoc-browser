@@ -149,6 +149,7 @@ public class AddOrgUnitstoContext extends VerticalLayout {
                     createItem(tableContainer, sourceItemId.toString(), getTreeNodeName(source, sourceItemId),
                         getTreeNodeHref(source, sourceItemId));
                     controller.addOrgUnitToContext(resourceProxy, sourceItemId.toString());
+                    controller.refreshView();
                 }
             }
 

@@ -159,6 +159,7 @@ class MetadataRecsContext {
                         .addComponent(new AddOrgUnitstoContext(router, resourceProxy, contextController, orgUnits));
                 }
                 catch (EscidocClientException e) {
+
                     e.printStackTrace();
                 }
                 Button close = new Button("Close", new Button.ClickListener() {

@@ -156,6 +156,7 @@ public class ContextRepository implements Repository {
         for (OrganizationalUnitRef organizationalUnitRef : organizationalUnitRefs) {
             if (organizationalUnitRef.getObjid().equals(orgUnitId)) {
                 organizationalUnitRefs.remove(new OrganizationalUnitRef(orgUnitId));
+                break;
             }
         }
         properties.setOrganizationalUnitRefs(organizationalUnitRefs);
