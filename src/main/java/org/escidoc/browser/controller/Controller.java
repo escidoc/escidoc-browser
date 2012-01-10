@@ -76,7 +76,7 @@ public abstract class Controller {
             router.show(resourProxy, true);
         }
         catch (EscidocClientException e) {
-            // TODO Auto-generated catch block
+            showError("Could not refresh view" + e.getLocalizedMessage());
             e.printStackTrace();
         }
     }

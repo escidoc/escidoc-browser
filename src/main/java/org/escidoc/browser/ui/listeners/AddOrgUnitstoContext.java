@@ -32,11 +32,8 @@ import de.escidoc.core.resources.om.context.OrganizationalUnitRefs;
 import de.escidoc.core.resources.oum.OrganizationalUnit;
 
 /**
- * Demonstrate moving data back and forth between a table and a tree using drag and drop.
+ * Removing the Organizational Units from a Context
  * 
- * The tree and the table use different data structures: The category is a separate node in the tree and each item just
- * has a String, whereas the table contains items with both a name and a category. Data conversions between these
- * representations are made during drop processing.
  */
 public class AddOrgUnitstoContext extends VerticalLayout {
 
@@ -86,9 +83,10 @@ public class AddOrgUnitstoContext extends VerticalLayout {
         VerticalLayout vl = new VerticalLayout();
         tableDelete = new Table("Drag here te remove");
 
-        initializeDeleteTable(new SourceIs(table));
-
-        vl.addComponent(tableDelete);
+        if (controller.canRemoveOUs()) {
+            initializeDeleteTable(new SourceIs(table));
+            vl.addComponent(tableDelete);
+        }
 
         addComponent(hl);
         addComponent(vl);

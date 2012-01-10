@@ -142,41 +142,43 @@ class MetadataRecsContext {
             button.addListener(new ContextAdminDescriptorsClickListener(organizationalUnitRef, mainWindow));
             pnlOrgUnit.addComponent(button);
         }
-        Button btnAdd = new Button("+");
-        btnAdd.setStyleName(BaseTheme.BUTTON_LINK);
-        btnAdd.addListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(ClickEvent event) {
-                final Window subwindow = new Window("A modal subwindow");
-                subwindow.setModal(true);
-                subwindow.setWidth("650px");
-                VerticalLayout layout = (VerticalLayout) subwindow.getContent();
-                layout.setMargin(true);
-                layout.setSpacing(true);
 
-                try {
-                    subwindow
-                        .addComponent(new AddOrgUnitstoContext(router, resourceProxy, contextController, orgUnits));
-                }
-                catch (EscidocClientException e) {
+        if (contextController.canAddOUs()) {
+            Button btnAdd = new Button("+/-");
+            btnAdd.setStyleName(BaseTheme.BUTTON_LINK);
+            btnAdd.addListener(new Button.ClickListener() {
+                @Override
+                public void buttonClick(ClickEvent event) {
+                    final Window subwindow = new Window("A modal subwindow");
+                    subwindow.setModal(true);
+                    subwindow.setWidth("650px");
+                    VerticalLayout layout = (VerticalLayout) subwindow.getContent();
+                    layout.setMargin(true);
+                    layout.setSpacing(true);
 
-                    e.printStackTrace();
-                }
-                Button close = new Button("Close", new Button.ClickListener() {
-                    public void buttonClick(ClickEvent event) {
-                        (subwindow.getParent()).removeWindow(subwindow);
+                    try {
+                        subwindow.addComponent(new AddOrgUnitstoContext(router, resourceProxy, contextController,
+                            orgUnits));
                     }
-                });
-                layout.addComponent(close);
-                layout.setComponentAlignment(close, Alignment.TOP_RIGHT);
+                    catch (EscidocClientException e) {
 
-                router.getMainWindow().addWindow(subwindow);
+                        e.printStackTrace();
+                    }
+                    Button close = new Button("Close", new Button.ClickListener() {
+                        public void buttonClick(ClickEvent event) {
+                            (subwindow.getParent()).removeWindow(subwindow);
+                        }
+                    });
+                    layout.addComponent(close);
+                    layout.setComponentAlignment(close, Alignment.TOP_RIGHT);
 
-            }
+                    router.getMainWindow().addWindow(subwindow);
 
-        });
-        pnlOrgUnit.addComponent(btnAdd);
+                }
 
+            });
+            pnlOrgUnit.addComponent(btnAdd);
+        }
         return pnlOrgUnit;
     }
 

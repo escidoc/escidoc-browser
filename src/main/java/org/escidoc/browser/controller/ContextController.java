@@ -28,9 +28,12 @@
  */
 package org.escidoc.browser.controller;
 
+import java.net.URISyntaxException;
+
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.ContextView;
@@ -39,6 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -47,6 +51,8 @@ public class ContextController extends Controller {
     private Repositories repositories;
 
     private Router router;
+
+    private ResourceProxy resourceProxy;
 
     private static final Logger LOG = LoggerFactory.getLogger(ContextController.class);
 
@@ -58,6 +64,7 @@ public class ContextController extends Controller {
 
         this.repositories = repositories;
         this.router = router;
+        this.resourceProxy = resourceProxy;
         try {
             this.view = createView(resourceProxy);
         }
@@ -93,7 +100,38 @@ public class ContextController extends Controller {
         catch (EscidocClientException e) {
             showError("Unable to add the OrganizationalUnit. An error occurred " + e.getLocalizedMessage());
         }
+    }
 
+    public boolean canRemoveOUs() {
+        try {
+            return repositories
+                .pdp().forCurrentUser().isAction(ActionIdConstants.DELETE_ORGANIZATIONAL_UNIT_ACTION)
+                .forResource(resourceProxy.getId()).permitted();
+        }
+        catch (EscidocClientException e) {
+            router.getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            return false;
+        }
+        catch (URISyntaxException e) {
+            router.getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            return false;
+        }
+    }
+
+    public boolean canAddOUs() {
+        try {
+            return repositories
+                .pdp().forCurrentUser().isAction(ActionIdConstants.CREATE_ORG_UNIT).forResource(resourceProxy.getId())
+                .permitted();
+        }
+        catch (EscidocClientException e) {
+            router.getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            return false;
+        }
+        catch (URISyntaxException e) {
+            router.getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            return false;
+        }
     }
 
 }
