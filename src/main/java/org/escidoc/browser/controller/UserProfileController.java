@@ -1,5 +1,7 @@
 package org.escidoc.browser.controller;
 
+import com.vaadin.ui.Component;
+
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
@@ -8,31 +10,22 @@ import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.tools.UserProfileView;
 
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Window.Notification;
-
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class UserProfileController extends Controller {
 
-    private Repositories repositories;
+    private final Repositories repositories;
 
-    private Router router;
+    private final Router router;
 
     private UserRepositoryImpl userRep;
 
-    public UserProfileController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
+    public UserProfileController(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
         this.repositories = repositories;
         this.router = router;
         this.userRep = getUserRepository();
-        try {
-            this.view = createView();
-        }
-        catch (EscidocClientException e) {
-            router.getMainWindow().showNotification(
-                ViewConstants.VIEW_ERROR_CANNOT_LOAD_VIEW + e.getLocalizedMessage(), Notification.TYPE_ERROR_MESSAGE);
-        }
+        this.view = createView();
         this.setResourceName(ViewConstants.EDIT_PROFILE);
     }
 
@@ -46,18 +39,23 @@ public class UserProfileController extends Controller {
         return userRep;
     }
 
-    private Component createView() throws EscidocClientException {
+    private Component createView() {
         return new UserProfileView(router, repositories, this, getCurrentUser());
     }
 
-    public void updateProfile(String name, String password) throws EscidocClientException {
+    public void updateProfile(final String name, final String password) throws EscidocClientException {
         updateProfile(name);
         userRep.updatePassword(password);
 
     }
 
-    public void updateProfile(String name) throws EscidocClientException {
+    public void updateProfile(final String name) throws EscidocClientException {
         userRep.updateName(name);
+    }
+
+    @Override
+    protected Component createView(final ResourceProxy resourceProxy) throws EscidocClientException {
+        throw new UnsupportedOperationException("not-yet-implemented.");
     }
 
 }

@@ -1,15 +1,7 @@
 package org.escidoc.browser.ui.tools;
 
-import java.util.Collection;
-
-import org.escidoc.browser.controller.CreateResourcesController;
-import org.escidoc.browser.model.OrgUnitService;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.View;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.data.Validator.EmptyValueException;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
@@ -22,18 +14,29 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
 
+import org.escidoc.browser.controller.CreateResourcesController;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.internal.OrgUnitService;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.maincontent.View;
+
+import java.util.Collection;
+
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.oum.OrganizationalUnit;
 
+@SuppressWarnings("serial")
 public class CreateResourcesView extends View {
 
-    private Router router;
+    private final Router router;
 
-    private Repositories repositories;
+    private final Repositories repositories;
 
-    private CreateResourcesController controller;
+    private final CreateResourcesController controller;
 
-    public CreateResourcesView(Router router, Repositories repositories, CreateResourcesController controller) {
+    public CreateResourcesView(final Router router, final Repositories repositories,
+        final CreateResourcesController controller) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         this.router = router;
@@ -53,13 +56,13 @@ public class CreateResourcesView extends View {
 
     private Panel buildContentPanel() {
         // common part: create layout
-        Panel contentPanel = new Panel();
+        final Panel contentPanel = new Panel();
         contentPanel.setImmediate(false);
         contentPanel.setWidth("100.0%");
         contentPanel.setHeight("100.0%");
 
         // vlContentPanel
-        VerticalLayout vlContentPanel = buildVlContentPanel();
+        final VerticalLayout vlContentPanel = buildVlContentPanel();
         contentPanel.setContent(vlContentPanel);
 
         return contentPanel;
@@ -67,24 +70,24 @@ public class CreateResourcesView extends View {
 
     private VerticalLayout buildVlContentPanel() {
         // common part: create layout
-        VerticalLayout vlContentPanel = new VerticalLayout();
+        final VerticalLayout vlContentPanel = new VerticalLayout();
         vlContentPanel.setImmediate(false);
         vlContentPanel.setWidth("100.0%");
         vlContentPanel.setHeight("100.0%");
         vlContentPanel.setMargin(false);
 
         // pnlCreateContext
-        Accordion pnlCreateContext = buildPnlCreateContext();
+        final Accordion pnlCreateContext = buildPnlCreateContext();
         vlContentPanel.addComponent(pnlCreateContext);
         vlContentPanel.setExpandRatio(pnlCreateContext, 0.4f);
 
         // pnlCreate
-        Accordion pnlCreate = buildCreateContentModel();
+        final Accordion pnlCreate = buildCreateContentModel();
         vlContentPanel.addComponent(pnlCreate);
         vlContentPanel.setExpandRatio(pnlCreate, 0.3f);
 
         // pnlCreateOrgUnit
-        Accordion pnlCreateOrgUnit = buildPnlCreateOrgUnit();
+        final Accordion pnlCreateOrgUnit = buildPnlCreateOrgUnit();
         vlContentPanel.addComponent(pnlCreateOrgUnit);
         vlContentPanel.setExpandRatio(pnlCreateOrgUnit, 0.3f);
 
@@ -93,13 +96,13 @@ public class CreateResourcesView extends View {
 
     private Accordion buildPnlCreateContext() {
         // common part: create layout
-        Accordion accCreateContext = new Accordion();
+        final Accordion accCreateContext = new Accordion();
         accCreateContext.setImmediate(false);
         accCreateContext.setWidth("100.0%");
         accCreateContext.setHeight("100.0%");
 
         // vlPnlCreateContext
-        VerticalLayout vlAccCreateContext = new VerticalLayout();
+        final VerticalLayout vlAccCreateContext = new VerticalLayout();
         vlAccCreateContext.setImmediate(false);
         vlAccCreateContext.setWidth("100.0%");
         vlAccCreateContext.setHeight("100.0%");
@@ -111,7 +114,7 @@ public class CreateResourcesView extends View {
         try {
             formAddContext(vlAccCreateContext);
         }
-        catch (EscidocClientException e) {
+        catch (final EscidocClientException e) {
             router.getMainWindow().showNotification(ViewConstants.ERROR_CREATING_RESOURCE + e.getLocalizedMessage(),
                 Window.Notification.TYPE_ERROR_MESSAGE);
         }
@@ -122,24 +125,18 @@ public class CreateResourcesView extends View {
 
     private Accordion buildCreateContentModel() {
         // common part: create layout
-        Accordion accCreateContentModel = new Accordion();
+        final Accordion accCreateContentModel = new Accordion();
         accCreateContentModel.setImmediate(false);
         accCreateContentModel.setWidth("100.0%");
         accCreateContentModel.setHeight("100.0%");
 
         // vlPnlCreate
-        VerticalLayout vlAccCreate = new VerticalLayout();
+        final VerticalLayout vlAccCreate = new VerticalLayout();
         vlAccCreate.setImmediate(false);
         vlAccCreate.setWidth("100.0%");
         vlAccCreate.setHeight("100.0%");
         vlAccCreate.setMargin(false);
-        try {
-            formAddContentModel(vlAccCreate);
-        }
-        catch (EscidocClientException e) {
-            router.getMainWindow().showNotification(ViewConstants.ERROR_CREATING_RESOURCE + e.getLocalizedMessage(),
-                Window.Notification.TYPE_ERROR_MESSAGE);
-        }
+        formAddContentModel(vlAccCreate);
         accCreateContentModel.addTab(vlAccCreate, "Create Content Model");
 
         return accCreateContentModel;
@@ -147,32 +144,31 @@ public class CreateResourcesView extends View {
 
     private Accordion buildPnlCreateOrgUnit() {
         // common part: create layout
-        Accordion accCreateOrgUnit = new Accordion();
+        final Accordion accCreateOrgUnit = new Accordion();
         accCreateOrgUnit.setImmediate(false);
         accCreateOrgUnit.setWidth("100.0%");
         accCreateOrgUnit.setHeight("100.0%");
 
         // vlPnlCreateOrgUnit
-        VerticalLayout vlAccCreateOrgUnit = new VerticalLayout();
+        final VerticalLayout vlAccCreateOrgUnit = new VerticalLayout();
         vlAccCreateOrgUnit.setImmediate(false);
         vlAccCreateOrgUnit.setWidth("100.0%");
         vlAccCreateOrgUnit.setHeight("100.0%");
         vlAccCreateOrgUnit.setMargin(false);
-        try {
-            formAddOrgUnit(vlAccCreateOrgUnit);
-        }
-        catch (EscidocClientException e) {
-            router.getMainWindow().showNotification(ViewConstants.ERROR_CREATING_RESOURCE + e.getLocalizedMessage(),
-                Window.Notification.TYPE_ERROR_MESSAGE);
-        }
+        formAddOrgUnit(vlAccCreateOrgUnit);
         accCreateOrgUnit.addTab(vlAccCreateOrgUnit, "Create Organizational Units");
 
         return accCreateOrgUnit;
     }
 
-    private void formAddOrgUnit(VerticalLayout vlAccCreateOrgUnit) throws EscidocClientException {
-        final Form frm = new Form();
-        frm.setImmediate(true);
+    private void formAddOrgUnit(final VerticalLayout vlAccCreateOrgUnit) {
+        vlAccCreateOrgUnit.addComponent(buildCreateOrgUnitForm());
+    }
+
+    private Form buildCreateOrgUnitForm() {
+        final Form form = new Form();
+        form.setImmediate(true);
+
         // Name
         final TextField txtNameContext = new TextField();
         txtNameContext.setCaption("Name");
@@ -181,36 +177,36 @@ public class CreateResourcesView extends View {
         txtNameContext.setHeight("-1px");
         txtNameContext.setInvalidAllowed(false);
         txtNameContext.setRequired(true);
-        frm.addField("txtNameContext", txtNameContext);
+        form.addField("txtNameContext", txtNameContext);
 
         // Description
         final TextField txtDescContext = new TextField("Description");
         txtDescContext.setImmediate(false);
         txtDescContext.setWidth("-1px");
         txtDescContext.setHeight("-1px");
-        frm.addField("txtDescContext", txtDescContext);
+        form.addField("txtDescContext", txtDescContext);
 
         // btnAddContext
-        Button btnAddContext = new Button("Submit", new Button.ClickListener() {
+        final Button btnAddContext = new Button("Submit", new Button.ClickListener() {
             private static final long serialVersionUID = -1373866726572059290L;
 
             @Override
-            public void buttonClick(ClickEvent event) {
+            public void buttonClick(final ClickEvent event) {
                 try {
-                    frm.commit();
+                    form.commit();
                     controller.createResourceAddOrgUnit(txtNameContext.getValue().toString(), txtDescContext
                         .getValue().toString(), router, router.getServiceLocation());
                     router.getMainWindow().showNotification(
                         "Organizational Unit " + txtNameContext.getValue().toString() + " created successfully ",
                         Window.Notification.TYPE_TRAY_NOTIFICATION);
-                    frm.getField("txtNameContext").setValue("");
-                    frm.getField("txtDescContext").setValue("");
+                    form.getField("txtNameContext").setValue("");
+                    form.getField("txtDescContext").setValue("");
                 }
-                catch (EmptyValueException e) {
+                catch (final EmptyValueException e) {
                     router.getMainWindow().showNotification("Please fill in all the required elements in the form",
                         Window.Notification.TYPE_TRAY_NOTIFICATION);
                 }
-                catch (Exception e) {
+                catch (final Exception e) {
                     router.getMainWindow().showNotification(
                         ViewConstants.ERROR_CREATING_RESOURCE + e.getLocalizedMessage(),
                         Window.Notification.TYPE_ERROR_MESSAGE);
@@ -220,18 +216,17 @@ public class CreateResourcesView extends View {
 
         btnAddContext.setWidth("-1px");
         btnAddContext.setHeight("-1px");
-        frm.getLayout().addComponent(btnAddContext);
+        form.getLayout().addComponent(btnAddContext);
 
-        frm.getField("txtNameContext").setRequired(true);
-        frm.getField("txtNameContext").setRequiredError("Name is missing");
+        form.getField("txtNameContext").setRequired(true);
+        form.getField("txtNameContext").setRequiredError("Name is missing");
 
-        frm.getField("txtDescContext").setRequired(true);
-        frm.getField("txtDescContext").setRequiredError("Description is missing");
-
-        vlAccCreateOrgUnit.addComponent(frm);
+        form.getField("txtDescContext").setRequired(true);
+        form.getField("txtDescContext").setRequiredError("Description is missing");
+        return form;
     }
 
-    private void formAddContentModel(VerticalLayout vlAccCreateContentModel) throws EscidocClientException {
+    private void formAddContentModel(final VerticalLayout vlAccCreateContentModel) {
         final Form frm = new Form();
         frm.setImmediate(true);
         // Name
@@ -252,11 +247,11 @@ public class CreateResourcesView extends View {
         frm.addField("txtDescContext", txtDescContext);
 
         // btnAddContext
-        Button btnAddContext = new Button("Submit", new Button.ClickListener() {
+        final Button btnAddContext = new Button("Submit", new Button.ClickListener() {
             private static final long serialVersionUID = -6461338505705399082L;
 
             @Override
-            public void buttonClick(ClickEvent event) {
+            public void buttonClick(final ClickEvent event) {
                 try {
                     frm.commit();
                     controller.createResourceAddContentModel(txtNameContext.getValue().toString(), txtDescContext
@@ -267,11 +262,11 @@ public class CreateResourcesView extends View {
                     frm.getField("txtNameContext").setValue("");
                     frm.getField("txtDescContext").setValue("");
                 }
-                catch (EmptyValueException e) {
+                catch (final EmptyValueException e) {
                     router.getMainWindow().showNotification("Please fill in all the required elements in the form",
                         Window.Notification.TYPE_TRAY_NOTIFICATION);
                 }
-                catch (EscidocClientException e) {
+                catch (final EscidocClientException e) {
                     router.getMainWindow().showNotification(
                         ViewConstants.ERROR_CREATING_RESOURCE + e.getLocalizedMessage(),
                         Window.Notification.TYPE_ERROR_MESSAGE);
@@ -292,7 +287,7 @@ public class CreateResourcesView extends View {
         vlAccCreateContentModel.addComponent(frm);
     }
 
-    private void formAddContext(VerticalLayout vlAccCreateContext) throws EscidocClientException {
+    private void formAddContext(final VerticalLayout vlAccCreateContext) throws EscidocClientException {
         final Form frm = new Form();
         frm.setImmediate(true);
         // Name
@@ -330,24 +325,24 @@ public class CreateResourcesView extends View {
 
         final OrgUnitService orgUnitService =
             new OrgUnitService(router.getServiceLocation().getEscidocUri(), router.getApp().getCurrentUser().getToken());
-        Collection<OrganizationalUnit> orgUnits = orgUnitService.findAll();
-        for (OrganizationalUnit organizationalUnit : orgUnits) {
+        final Collection<OrganizationalUnit> orgUnits = orgUnitService.findAll();
+        for (final OrganizationalUnit organizationalUnit : orgUnits) {
             slOrgUnit.addItem(organizationalUnit.getObjid());
             slOrgUnit.setItemCaption(organizationalUnit.getObjid(), organizationalUnit.getXLinkTitle());
         }
         frm.getLayout().addComponent(slOrgUnit);
 
         // btnAddContext
-        Button btnAddContext = new Button("Submit", new Button.ClickListener() {
+        final Button btnAddContext = new Button("Submit", new Button.ClickListener() {
             private static final long serialVersionUID = -4696167135894721166L;
 
             @Override
-            public void buttonClick(ClickEvent event) {
+            public void buttonClick(final ClickEvent event) {
                 try {
                     frm.commit();
                     controller.createResourceAddContext(txtNameContext.getValue().toString(), txtDescContext
                         .getValue().toString(), txtType.getValue().toString(), slOrgUnit.getValue().toString(),
-                        repositories, router.getServiceLocation());
+                        repositories);
                     router.getMainWindow().showNotification(
                         "Context " + txtNameContext.getValue().toString() + " created successfully ",
                         Window.Notification.TYPE_TRAY_NOTIFICATION);
@@ -358,11 +353,11 @@ public class CreateResourcesView extends View {
                     // Ideally here should be a sync method to sync the tree
 
                 }
-                catch (EmptyValueException e) {
+                catch (final EmptyValueException e) {
                     router.getMainWindow().showNotification("Please fill in all the required elements in the form",
                         Window.Notification.TYPE_TRAY_NOTIFICATION);
                 }
-                catch (EscidocClientException e) {
+                catch (final EscidocClientException e) {
                     router.getMainWindow().showNotification(
                         ViewConstants.ERROR_CREATING_RESOURCE + e.getLocalizedMessage(),
                         Window.Notification.TYPE_ERROR_MESSAGE);

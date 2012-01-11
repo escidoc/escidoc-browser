@@ -26,50 +26,60 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.model;
+package org.escidoc.browser.model.internal;
+
+import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.ResourceType;
 
 import com.google.common.base.Preconditions;
 
-import de.escidoc.core.resources.Resource;
+import de.escidoc.core.resources.oum.OrganizationalUnit;
 
-public abstract class AbstractResourceModel implements ResourceModel {
+public final class OrgUnitModel implements ResourceModel {
+    private final OrganizationalUnit ou;
 
-    private final String id;
-
-    private final String name;
-
-    private final Resource resource;
-
-    public AbstractResourceModel(final Resource resource) {
-        Preconditions.checkNotNull(resource, "resource is null: %s", resource);
-        this.resource = resource;
-        id = resource.getObjid();
-        name = resource.getXLinkTitle();
-    }
-
-    protected Resource getResource() {
-        return resource;
+    public OrgUnitModel(final OrganizationalUnit ou) {
+        Preconditions.checkNotNull(ou, "ou is null: %s", ou);
+        this.ou = ou;
     }
 
     @Override
-    public String getId() {
-        return id;
+    public ResourceType getType() {
+        return ResourceType.ORG_UNIT;
     }
 
     @Override
     public String getName() {
-        return name;
+        return ou.getXLinkTitle();
     }
 
     @Override
-    public abstract ResourceType getType();
+    public String getId() {
+        return ou.getObjid();
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("OrgUnitModel [");
+        if (getType() != null) {
+            builder.append("getType()=").append(getType()).append(", ");
+        }
+        if (getName() != null) {
+            builder.append("getName()=").append(getName()).append(", ");
+        }
+        if (getId() != null) {
+            builder.append("getId()=").append(getId());
+        }
+        builder.append("]");
+        return builder.toString();
+    }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((ou == null) ? 0 : ou.hashCode());
         return result;
     }
 
@@ -84,23 +94,20 @@ public abstract class AbstractResourceModel implements ResourceModel {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final AbstractResourceModel other = (AbstractResourceModel) obj;
-        if (id == null) {
-            if (other.id != null) {
+        final OrgUnitModel other = (OrgUnitModel) obj;
+        if (ou == null) {
+            if (other.ou != null) {
                 return false;
             }
         }
-        else if (!id.equals(other.id)) {
-            return false;
-        }
-        if (name == null) {
-            if (other.name != null) {
-                return false;
-            }
-        }
-        else if (!name.equals(other.name)) {
+        else if (!ou.equals(other.ou)) {
             return false;
         }
         return true;
     }
+
+    public static boolean isOrgUnit(final ResourceModel clickedResource) {
+        return clickedResource.getType().equals(ResourceType.ORG_UNIT);
+    }
+
 }

@@ -28,11 +28,11 @@
  */
 package org.escidoc.browser.ui.navigation;
 
+import com.vaadin.event.Action;
+
 import org.escidoc.browser.elabsmodul.constants.ELabsIcons;
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
 import org.escidoc.browser.ui.ViewConstants;
-
-import com.vaadin.event.Action;
 
 class ActionList {
 
@@ -79,6 +79,9 @@ class ActionList {
 
     static final Action ACTION_DELETE_INSTRUMENT = new Action(ELabsViewContants.DELETE_INSTRUMENT,
         ELabsIcons.DELETE_ELEMENT_ICON);
+
     //
+
+    public static final Action ACTION_ADD_CHILD = new Action(ViewConstants.ADD_CHILD);
 
 }

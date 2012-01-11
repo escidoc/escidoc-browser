@@ -1,27 +1,25 @@
 package org.escidoc.browser.controller;
 
-import java.io.IOException;
+import com.google.common.base.Preconditions;
 
-import javax.xml.parsers.ParserConfigurationException;
+import com.vaadin.ui.Component;
 
 import org.escidoc.browser.model.ContentModelService;
-import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.OrgUnitService;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.internal.ContextModel;
 import org.escidoc.browser.model.internal.OrgUnitBuilder;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ContextBuilder;
+import org.escidoc.browser.repository.internal.OrgUnitService;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.tools.CreateResourcesView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Window.Notification;
+import java.io.IOException;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.cmm.ContentModel;
@@ -32,47 +30,34 @@ import de.escidoc.core.resources.om.context.OrganizationalUnitRefs;
 
 public class CreateResourcesController extends Controller {
 
-    private Repositories repositories;
-
-    private Router router;
-
-    private static final Logger LOG = LoggerFactory.getLogger(CreateResourcesController.class);
-
-    public CreateResourcesController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
+    public CreateResourcesController(final Repositories repositories, final Router router,
+        final ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
-        this.repositories = repositories;
-        this.router = router;
 
-        try {
-            this.view = createView();
-        }
-        catch (EscidocClientException e) {
-            router.getMainWindow().showNotification(
-                ViewConstants.VIEW_ERROR_CANNOT_LOAD_VIEW + e.getLocalizedMessage(), Notification.TYPE_ERROR_MESSAGE);
-        }
+        this.view = createView();
         this.setResourceName(ViewConstants.CREATE_RESOURCES);
     }
 
-    private Component createView() throws EscidocClientException {
-        return new CreateResourcesView(router, repositories, this);
+    private Component createView() {
+        return new CreateResourcesView(getRouter(), getRepositories(), this);
     }
 
     public void createResourceAddOrgUnit(
-        String name, String description, Router router, EscidocServiceLocation serviceLocation)
+        final String name, final String description, final Router router, final EscidocServiceLocation serviceLocation)
         throws EscidocClientException, ParserConfigurationException, SAXException, IOException {
         Preconditions.checkNotNull(name, "Name of Context is Null");
         Preconditions.checkNotNull(description, "txtDescContext is Null");
 
-        OrgUnitBuilder orgBuilder = new OrgUnitBuilder();
+        final OrgUnitBuilder orgBuilder = new OrgUnitBuilder();
 
-        OrgUnitService orgService =
+        final OrgUnitService orgService =
             new OrgUnitService(serviceLocation.getEscidocUri(), router.getApp().getCurrentUser().getToken());
 
         orgService.create(orgBuilder.with(name, description).build());
     }
 
     public void createResourceAddContentModel(
-        String name, String description, Router router, EscidocServiceLocation serviceLocation)
+        final String name, final String description, final Router router, final EscidocServiceLocation serviceLocation)
         throws EscidocClientException {
         Preconditions.checkNotNull(name, "Name of Context is Null");
         Preconditions.checkNotNull(description, "txtDescContext is Null");
@@ -83,33 +68,38 @@ public class CreateResourcesController extends Controller {
         contentModelProperties.setDescription(description);
         contentModel.setProperties(contentModelProperties);
 
-        ContentModelService cntService =
+        final ContentModelService cntService =
             new ContentModelService(serviceLocation.getEscidocUri(), router.getApp().getCurrentUser().getToken());
         cntService.create(contentModel);
 
     }
 
     public void createResourceAddContext(
-        String name, String description, String type, String orgUnit, Repositories repositories,
-        EscidocServiceLocation serviceLocation) throws EscidocClientException {
+        final String name, final String description, final String type, final String orgUnit,
+        final Repositories repositories) throws EscidocClientException {
         Preconditions.checkNotNull(name, "Name of Context is Null");
         Preconditions.checkNotNull(orgUnit, "Organizational Unit is null is Null");
         Preconditions.checkNotNull(description, "txtDescContext is Null");
         Preconditions.checkNotNull(type, "Type is Null");
-
-        ContextBuilder cntx = new ContextBuilder(new Context());
+        final ContextBuilder cntx = new ContextBuilder(new Context());
         cntx.name(name);
         cntx.description(name);
         cntx.type(type);
 
-        OrganizationalUnitRefs orgRefs = new OrganizationalUnitRefs();
+        final OrganizationalUnitRefs orgRefs = new OrganizationalUnitRefs();
         orgRefs.add(new OrganizationalUnitRef(orgUnit));
         cntx.orgUnits(orgRefs);
-        Context newContext = repositories.context().create(cntx.build());
+        final Context newContext = repositories.context().create(cntx.build());
 
         // Open Context for Public
         repositories.context().open(newContext);
         // Updating the tree
         router.getLayout().getTreeDataSource().addTopLevelResource(new ContextModel(newContext));
     }
+
+    @Override
+    protected Component createView(final ResourceProxy resourceProxy) throws EscidocClientException {
+        return createView();
+    }
+
 }

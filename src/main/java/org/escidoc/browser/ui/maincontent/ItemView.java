@@ -29,10 +29,10 @@
 package org.escidoc.browser.ui.maincontent;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.TreeDataSource;
+import org.escidoc.browser.model.internal.ItemModel;
 import org.escidoc.browser.model.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;

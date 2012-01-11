@@ -28,15 +28,11 @@
  */
 package org.escidoc.browser.ui;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URISyntaxException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.BrowserApplication;
@@ -45,31 +41,45 @@ import org.escidoc.browser.controller.Controller;
 import org.escidoc.browser.elabsmodul.cache.ELabsCache;
 import org.escidoc.browser.elabsmodul.enums.ContentModelTypeEnum;
 import org.escidoc.browser.layout.LayoutDesign;
-import org.escidoc.browser.model.ContainerModel;
 import org.escidoc.browser.model.ContainerProxy;
-import org.escidoc.browser.model.ContentModelProxyImpl;
-import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceModelFactory;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.model.internal.ContainerModel;
+import org.escidoc.browser.model.internal.ContentModelProxyImpl;
+import org.escidoc.browser.model.internal.ContextModel;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
+import org.escidoc.browser.model.internal.ItemModel;
+import org.escidoc.browser.model.internal.OrgUnitModel;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.helper.Util;
 import org.escidoc.browser.ui.maincontent.SearchAdvancedView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class Router {
+
+    private static final String ITEM_CONTROLLER_ID = "org.escidoc.browser.Item";
+
+    private static final String CONTAINER_CONTROLLER_ID = "org.escidoc.browser.Container";
+
+    private static final String CONTEXT_CONTROLLER_ID = "org.escidoc.browser.Context";
+
+    private static final String ORG_UNIT_CONTROLLER_ID = "org.escidoc.browser.OrgUnit";
 
     private static final String FAIL_RETRIEVING_RESOURCE =
         "Cannot retrieve resource, or you don't have access to see this resource";
@@ -138,7 +148,6 @@ public class Router {
     /**
      * Initiate Layout / Default or another one
      * 
-     * @return
      */
     private void createLayout() {
         final String layoutClassName = browserProperties.getProperty("design");
@@ -174,11 +183,11 @@ public class Router {
                 this.getMainWindow().showNotification(e.getLocalizedMessage(), Notification.TYPE_ERROR_MESSAGE);
                 LOG.error(e.getLocalizedMessage());
             }
-            catch (UnsupportedOperationException e) {
+            catch (final UnsupportedOperationException e) {
                 this.getMainWindow().showNotification(e.getLocalizedMessage(), Notification.TYPE_ERROR_MESSAGE);
                 LOG.error(e.getLocalizedMessage());
             }
-            catch (URISyntaxException e) {
+            catch (final URISyntaxException e) {
                 this.getMainWindow().showNotification(e.getLocalizedMessage(), Notification.TYPE_ERROR_MESSAGE);
                 LOG.error(e.getLocalizedMessage());
             }
@@ -210,7 +219,10 @@ public class Router {
     }
 
     /**
-     * This method handles the open of a new tab on the right section of the mainWindow <br />
+     * public void openControllerView(final Controller cnt, final Boolean doReloadView) { // cnt.init(repositories,
+     * this, resourceProxy); if (!doReloadView) { cnt.showView(layout); } else { cnt.showViewByReloading(layout); } }
+     * 
+     * /** This method handles the open of a new tab on the right section of the mainWindow <br />
      * If you have a controller for the view, please use the method @openControllerView which is the perfect place to
      * inject Views that represent objects <br />
      * The desired method for opening a View is by passing a controller as a reference to the Router. The Controller
@@ -279,35 +291,39 @@ public class Router {
         mainWindow.showNotification(msg, Notification.TYPE_ERROR_MESSAGE);
     }
 
-    /**
-     * 
-     * @param clickedResource
-     * @param doReloadView
-     * @throws EscidocClientException
-     */
-    public void show(final ResourceModel clickedResource, final Boolean doReloadView) throws EscidocClientException {
-        final String controllerId = getControllerId(clickedResource);
-        Controller controller;
+    public void show(final ResourceModel clickedResource, final boolean shouldReloadView) throws EscidocClientException {
+        Preconditions.checkNotNull(clickedResource, "clickedResource is null: %s", clickedResource);
+
+        final Controller controller = buildController(clickedResource);
+        Preconditions.checkNotNull(controller, "controller is null: %s", controller);
+
+        if (shouldReloadView) {
+            controller.showViewByReloading();
+        }
+        else {
+            controller.showView();
+        }
+    }
+
+    // FIXME we should only use the reflection if ResourceModel.type is either container or item, otherwise use a normal
+    // constructor.
+    private Controller buildController(final ResourceModel clickedResource) throws EscidocClientException {
+        final Controller controller = null;
         try {
+
+            final String controllerId = getControllerId(clickedResource);
             final String controllerClassName = browserProperties.getProperty(controllerId);
+
             // TODO find a better solution for "controller ID not configured"
             if (controllerClassName == null) {
-                LOG.error("Could not resolve controller ID. " + controllerId);
+                final String msg = "Could not resolve controller ID. ";
+                LOG.error(msg + controllerId);
+                throw new IllegalArgumentException(msg);
             }
-            else {
-                LOG.debug(clickedResource.getId());
-                final Class<?> controllerClass = Class.forName(controllerClassName);
-                controller =
-                    (Controller) controllerClass
-                        .getConstructor(Repositories.class, Router.class, ResourceProxy.class).newInstance(
-                            repositories, this, tryToFindResource(clickedResource));
-                if (!doReloadView) {
-                    controller.showView();
-                }
-                else {
-                    controller.showViewByReloading();
-                }
-            }
+
+            return (Controller) Class
+                .forName(controllerClassName).getConstructor(Repositories.class, Router.class, ResourceProxy.class)
+                .newInstance(repositories, this, fetchResource(clickedResource));
         }
         catch (final ClassNotFoundException e) {
             this.getMainWindow().showNotification(ViewConstants.CONTROLLER_ERR_CANNOT_FIND_CLASS,
@@ -324,53 +340,73 @@ public class Router {
                 Notification.TYPE_ERROR_MESSAGE);
             LOG.error(ViewConstants.CONTROLLER_ERR_ILLEG_EXEP + e.getLocalizedMessage());
         }
-        catch (SecurityException e) {
+        catch (final SecurityException e) {
             LOG.error(ViewConstants.CONTROLLER_ERR_SECU_EXEP + e.getLocalizedMessage());
         }
-        catch (InvocationTargetException e) {
+        catch (final InvocationTargetException e) {
             LOG.error(ViewConstants.CONTROLLER_ERR_INVOKE_EXEP + e.getLocalizedMessage());
         }
-        catch (NoSuchMethodException e) {
+        catch (final NoSuchMethodException e) {
             LOG.error(ViewConstants.CONTROLLER_ERR_NOSUCHMETH_EXEP + e.getLocalizedMessage());
         }
-
+        return controller;
     }
 
+    // TODO refactor if ... else with switch(resourceType)
     private String getControllerId(final ResourceModel clickedResource) throws EscidocClientException {
         String controllerId = null;
+
         if (ContextModel.isContext(clickedResource)) {
-            controllerId = "org.escidoc.browser.Context";
+            controllerId = CONTEXT_CONTROLLER_ID;
         }
         else if (ContainerModel.isContainer(clickedResource) || ItemModel.isItem(clickedResource)) {
+
             if (ContainerModel.isContainer(clickedResource)) {
-                controllerId = "org.escidoc.browser.Container";
+                controllerId = CONTAINER_CONTROLLER_ID;
             }
             else if (ItemModel.isItem(clickedResource)) {
-                controllerId = "org.escidoc.browser.Item";
+                controllerId = ITEM_CONTROLLER_ID;
             }
 
-            final ResourceProxy resourceProxy = tryToFindResource(clickedResource);
-            final String description =
-                repositories.contentModel().findById(resourceProxy.getContentModel().getObjid()).getDescription();
-
-            if (description != null) {
-                final Pattern controllerIdPattern = Pattern.compile("org.escidoc.browser.Controller=([^;]*);");
-                final Matcher controllerIdMatcher = controllerIdPattern.matcher(description);
-
-                if (controllerIdMatcher.find()) {
-                    controllerId = controllerIdMatcher.group(1);
-                }
-            }
-
+            controllerId = findContollerId(clickedResource, controllerId);
         }
+
+        else if (OrgUnitModel.isOrgUnit(clickedResource)) {
+            controllerId = ORG_UNIT_CONTROLLER_ID;
+        }
+
         LOG.debug("ControllerID[" + controllerId + "]");
         if (controllerId == null) {
-            throw new UnsupportedOperationException("Unknown resource. Can not be shown.");
+            throw new UnsupportedOperationException("Unknown resource type: " + clickedResource.getType().getLabel()
+                + "can not be shown.");
         }
+
         return controllerId;
     }
 
-    private ResourceProxy tryToFindResource(final ResourceModel clickedResource) throws EscidocClientException {
+    private String findContollerId(final ResourceModel clickedResource, final String oldId)
+        throws EscidocClientException {
+
+        final String contentModelDescription = getContentModelDescription(clickedResource);
+        if (contentModelDescription == null) {
+            return oldId;
+        }
+
+        final Matcher controllerIdMatcher =
+            Pattern.compile("org.escidoc.browser.Controller=([^;]*);").matcher(contentModelDescription);
+        if (controllerIdMatcher.find()) {
+            return controllerIdMatcher.group(1);
+        }
+
+        return oldId;
+    }
+
+    private String getContentModelDescription(final ResourceModel clickedResource) throws EscidocClientException {
+        return repositories
+            .contentModel().findById(fetchResource(clickedResource).getContentModel().getObjid()).getDescription();
+    }
+
+    private ResourceProxy fetchResource(final ResourceModel clickedResource) throws EscidocClientException {
         if (ContainerModel.isContainer(clickedResource)) {
             return repositories.container().findById(clickedResource.getId());
         }
@@ -380,7 +416,10 @@ public class Router {
         else if (ContextModel.isContext(clickedResource)) {
             return repositories.context().findById(clickedResource.getId());
         }
-        throw new UnsupportedOperationException(clickedResource + " is unsupported");
+        else if (OrgUnitModel.isOrgUnit(clickedResource)) {
+            return repositories.organization().findById(clickedResource.getId());
+        }
+        throw new UnsupportedOperationException(clickedResource.getType() + " is unsupported");
     }
 
     private void cachePredefinedContentModels() {
@@ -396,11 +435,10 @@ public class Router {
 
             synchronized (ELabsCache.getContentModels()) {
 
-                for (Iterator<ResourceModel> iterator = contentModels.iterator(); iterator.hasNext();) {
-                    ResourceModel resourceModel = iterator.next();
+                for (final ResourceModel resourceModel : contentModels) {
                     if (resourceModel instanceof ContentModelProxyImpl) {
-                        ContentModelProxyImpl contentModelProxy = (ContentModelProxyImpl) resourceModel;
-                        String description = contentModelProxy.getDescription();
+                        final ContentModelProxyImpl contentModelProxy = (ContentModelProxyImpl) resourceModel;
+                        final String description = contentModelProxy.getDescription();
                         if (description == null || description.isEmpty()) {
                             continue;
                         }
@@ -435,10 +473,10 @@ public class Router {
                 }
             }
         }
-        catch (ClassCastException e) {
+        catch (final ClassCastException e) {
             LOG.error(e.getMessage());
         }
-        catch (EscidocClientException e) {
+        catch (final EscidocClientException e) {
             LOG.error(e.getMessage());
         }
     }

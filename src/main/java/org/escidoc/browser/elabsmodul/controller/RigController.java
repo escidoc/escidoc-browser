@@ -28,15 +28,10 @@
  */
 package org.escidoc.browser.elabsmodul.controller;
 
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import com.google.common.base.Preconditions;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Window;
 
 import org.escidoc.browser.controller.Controller;
 import org.escidoc.browser.elabsmodul.cache.ELabsCache;
@@ -67,9 +62,14 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Window;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
@@ -103,7 +103,7 @@ public final class RigController extends Controller implements IRigAction {
     private final Object LOCK_2 = new Object() {
     };
 
-    public RigController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
+    public RigController(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
         Preconditions.checkNotNull(repositories, "Repository ref is null");
         Preconditions.checkNotNull(router, "Router ref is null");
@@ -125,7 +125,7 @@ public final class RigController extends Controller implements IRigAction {
      */
     private RigBean loadBeanData(final ItemProxy itemProxy) {
         final NodeList nodeList = itemProxy.getMedataRecords().get(ESCIDOC).getContent().getChildNodes();
-        RigBean rigBean = new RigBean();
+        final RigBean rigBean = new RigBean();
         rigBean.setObjectId(itemProxy.getId());
         for (int i = 0; i < nodeList.getLength(); i++) {
             final Node node = nodeList.item(i);
@@ -139,13 +139,13 @@ public final class RigController extends Controller implements IRigAction {
             }
             else if ("instrument".equals(nodeName) && URI_EL.equals(nsUri)) {
                 if (node.getAttributes() != null && node.getAttributes().getNamedItemNS(URI_RDF, "resource") != null) {
-                    Node attributeNode = node.getAttributes().getNamedItemNS(URI_RDF, "resource");
-                    String instrumentID = attributeNode.getNodeValue();
+                    final Node attributeNode = node.getAttributes().getNamedItemNS(URI_RDF, "resource");
+                    final String instrumentID = attributeNode.getNodeValue();
                     try {
-                        ItemProxy instrumentProxy = (ItemProxy) this.repositories.item().findById(instrumentID);
+                        final ItemProxy instrumentProxy = (ItemProxy) this.repositories.item().findById(instrumentID);
                         rigBean.getContentList().add(loadRelatedInstrumentBeanData(instrumentProxy));
                     }
-                    catch (EscidocClientException e) {
+                    catch (final EscidocClientException e) {
                         LOG.error(e.getLocalizedMessage());
                     }
                 }
@@ -190,7 +190,7 @@ public final class RigController extends Controller implements IRigAction {
             builder = factory.newDocumentBuilder();
             final Document doc = builder.newDocument();
 
-            Element rig = doc.createElementNS(URI_EL, "Rig");
+            final Element rig = doc.createElementNS(URI_EL, "Rig");
             rig.setPrefix("el");
 
             final Element title = doc.createElementNS(URI_DC, "title");
@@ -203,7 +203,7 @@ public final class RigController extends Controller implements IRigAction {
             description.setTextContent(rigBean.getDescription());
             rig.appendChild(description);
 
-            for (InstrumentBean instrumentBean : rigBean.getContentList()) {
+            for (final InstrumentBean instrumentBean : rigBean.getContentList()) {
                 final Element insturmentRelation = doc.createElementNS(URI_EL, "instrument");
                 insturmentRelation.setPrefix("el");
                 insturmentRelation.setAttributeNS(URI_RDF, "rdf:resource", instrumentBean.getObjectId());
@@ -211,18 +211,19 @@ public final class RigController extends Controller implements IRigAction {
             }
             return rig;
         }
-        catch (DOMException e) {
+        catch (final DOMException e) {
             LOG.error(e.getLocalizedMessage());
         }
-        catch (ParserConfigurationException e) {
+        catch (final ParserConfigurationException e) {
             LOG.error(e.getLocalizedMessage());
         }
         return null;
     }
 
-    private Component createView(final ResourceProxy resourceProxy) {
+    @Override
+    protected Component createView(final ResourceProxy resourceProxy) {
         RigBean rigBean = null;
-        ItemProxyImpl itemProxyImpl = (ItemProxyImpl) resourceProxy;
+        final ItemProxyImpl itemProxyImpl = (ItemProxyImpl) resourceProxy;
         rigBean = loadBeanData(itemProxyImpl);
         return new RigView(rigBean, this, createBeadCrumbModel(), resourceProxy, this.serviceLocation);
     }
@@ -236,7 +237,7 @@ public final class RigController extends Controller implements IRigAction {
             hierarchy.add(this.resourceProxy);
             return hierarchy;
         }
-        catch (EscidocClientException e) {
+        catch (final EscidocClientException e) {
             LOG.error("Fatal error, could not load BreadCrumb " + e.getLocalizedMessage());
             showError(e.getLocalizedMessage());
         }
@@ -250,7 +251,7 @@ public final class RigController extends Controller implements IRigAction {
         this.mainWindow.addWindow(new YesNoDialog(ELabsViewContants.DIALOG_SAVE_RIG_HEADER,
             ELabsViewContants.DIALOG_SAVE_RIG_TEXT, new YesNoDialog.Callback() {
                 @Override
-                public void onDialogResult(boolean resultIsYes) {
+                public void onDialogResult(final boolean resultIsYes) {
                     if (resultIsYes) {
                         saveModel();
                     }
@@ -266,23 +267,23 @@ public final class RigController extends Controller implements IRigAction {
     private void saveModel() {
         synchronized (LOCK_1) {
             Preconditions.checkNotNull(this.beanModel, "DataBean to store is NULL");
-            ItemRepository itemRepositories = this.repositories.item();
+            final ItemRepository itemRepositories = this.repositories.item();
             try {
                 validateBean(this.beanModel);
             }
-            catch (EscidocBrowserException e) {
+            catch (final EscidocBrowserException e) {
                 LOG.error(e.getMessage());
                 return;
             }
-            RigBean rigBean = (RigBean) this.beanModel;
+            final RigBean rigBean = (RigBean) this.beanModel;
             final Element metaDataContent = RigController.createRigDOMElementByBeanModel(rigBean);
             try {
-                Item item = itemRepositories.findItemById(rigBean.getObjectId());
-                MetadataRecord metadataRecord = item.getMetadataRecords().get(ESCIDOC);
+                final Item item = itemRepositories.findItemById(rigBean.getObjectId());
+                final MetadataRecord metadataRecord = item.getMetadataRecords().get(ESCIDOC);
                 metadataRecord.setContent(metaDataContent);
                 itemRepositories.update(item.getObjid(), item);
             }
-            catch (EscidocClientException e) {
+            catch (final EscidocClientException e) {
                 LOG.error(e.getLocalizedMessage());
                 showError(e.getLocalizedMessage());
             }
@@ -297,16 +298,14 @@ public final class RigController extends Controller implements IRigAction {
     @Override
     public List<InstrumentBean> getNewAvailableInstruments(final List<String> containedInstrumentIDs) {
         synchronized (LOCK_2) {
-            List<InstrumentBean> result = new ArrayList<InstrumentBean>();
+            final List<InstrumentBean> result = new ArrayList<InstrumentBean>();
             try {
                 List<ResourceModel> items = null;
-                for (Iterator<String> iterator = ELabsCache.getInstrumentCMMIds().iterator(); iterator.hasNext();) {
-                    String cmmId = iterator.next();
+                for (final String cmmId : ELabsCache.getInstrumentCMMIds()) {
                     items = this.repositories.item().findItemsByContentModel(cmmId);
-                    for (Iterator<ResourceModel> iterator2 = items.iterator(); iterator2.hasNext();) {
-                        ResourceModel itemModel = iterator2.next();
+                    for (final ResourceModel itemModel : items) {
                         if (itemModel instanceof ItemProxy) {
-                            ItemProxy itemProxy = (ItemProxy) itemModel;
+                            final ItemProxy itemProxy = (ItemProxy) itemModel;
                             if (!containedInstrumentIDs.contains(itemProxy.getId())) {
                                 result.add(loadRelatedInstrumentBeanData(itemProxy));
                             }
@@ -314,7 +313,7 @@ public final class RigController extends Controller implements IRigAction {
                     }
                 }
             }
-            catch (EscidocClientException e) {
+            catch (final EscidocClientException e) {
                 LOG.error(e.getMessage());
             }
             return result;
@@ -328,30 +327,30 @@ public final class RigController extends Controller implements IRigAction {
                 .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_ITEM).forResource(resourceProxy.getId())
                 .permitted();
         }
-        catch (UnsupportedOperationException e) {
+        catch (final UnsupportedOperationException e) {
             showError("Internal error");
             LOG.error(e.getMessage());
             return false;
         }
-        catch (EscidocClientException e) {
+        catch (final EscidocClientException e) {
             showError("Internal error");
             LOG.error(e.getMessage());
             return false;
         }
-        catch (URISyntaxException e) {
+        catch (final URISyntaxException e) {
             showError("Internal error");
             LOG.error(e.getMessage());
             return false;
         }
     }
 
-    protected void validateBean(IBeanModel beanModel) throws EscidocBrowserException {
+    protected void validateBean(final IBeanModel beanModel) throws EscidocBrowserException {
         Preconditions.checkNotNull(beanModel, "Input is null");
         RigBean rigBean = null;
         try {
             rigBean = (RigBean) beanModel;
         }
-        catch (ClassCastException e) {
+        catch (final ClassCastException e) {
             showError("Internal error");
             throw new EscidocBrowserException("Wrong type of model", e);
         }

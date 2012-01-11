@@ -26,27 +26,28 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.model;
+package org.escidoc.browser.controller;
 
 import com.google.common.base.Preconditions;
 
-public enum ResourceType {
+import com.vaadin.ui.Component;
 
-    CONTEXT("Context"), CONTAINER("Container"), ITEM("Item"), CONTENT_MODEL("Content Model"), ORG_UNIT(
-        "Organizational Unit");
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.maincontent.OrgUnitView;
 
-    private String label;
+import de.escidoc.core.client.exceptions.EscidocClientException;
 
-    private ResourceType(final String label) {
-        Preconditions.checkNotNull(label, "value is null: %s", label);
-        this.label = label;
+public class OrgUnitController extends Controller {
+
+    public OrgUnitController(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
+        super(repositories, router, resourceProxy);
     }
 
-    private ResourceType() {
-        label = "";
-    }
-
-    public String getLabel() {
-        return label;
+    @Override
+    protected Component createView(final ResourceProxy resourceProxy) throws EscidocClientException {
+        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
+        return new OrgUnitView(resourceProxy);
     }
 }

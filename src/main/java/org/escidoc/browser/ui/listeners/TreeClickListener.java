@@ -28,73 +28,60 @@
  */
 package org.escidoc.browser.ui.listeners;
 
-import org.escidoc.browser.model.EscidocServiceLocation;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.event.MouseEvents.ClickEvent;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
+
 import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
 public class TreeClickListener implements ItemClickListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TreeClickListener.class);
+    private static final boolean SHOULD_RELOAD_VIEW = true;
 
-    private final EscidocServiceLocation serviceLocation;
+    private static final Logger LOG = LoggerFactory.getLogger(TreeClickListener.class);
 
     private final Router router;
 
     private final Window mainWindow;
 
-    private final Repositories repositories;
-
-    public TreeClickListener(final EscidocServiceLocation serviceLocation, final Repositories repositories,
-        final Window mainWindow, final Router mainSite) {
-
-        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
+    public TreeClickListener(final Window mainWindow, final Router router) {
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
-        Preconditions.checkNotNull(mainSite, "mainSite is null: %s", mainSite);
-        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        Preconditions.checkNotNull(router, "mainSite is null: %s", router);
 
-        this.repositories = repositories;
         this.mainWindow = mainWindow;
-        router = mainSite;
-        this.serviceLocation = serviceLocation;
+        this.router = router;
     }
 
     @Override
     public void itemClick(final ItemClickEvent event) {
-        if (event.getButton() == ItemClickEvent.BUTTON_RIGHT) {
+        if (event.getButton() == ClickEvent.BUTTON_RIGHT || !(event.getItemId() instanceof ResourceModel)) {
             return;
         }
-        openClickedResourceInNewTab((ResourceModel) event.getItemId());
+        openInNewTab((ResourceModel) event.getItemId());
     }
 
-    private void openClickedResourceInNewTab(final ResourceModel clickedResource) {
+    private void openInNewTab(final ResourceModel clickedResource) {
         try {
-            createView(clickedResource);
+            router.show(clickedResource, SHOULD_RELOAD_VIEW);
         }
         catch (final EscidocClientException e) {
-            LOG.error(e.getMessage());
-            showErrorMessageToUser(clickedResource, e);
+            LOG.error(e.getMessage(), e);
+            showErrorMessageToUser(e);
         }
     }
 
-    private void createView(final ResourceModel clickedResource) throws EscidocClientException {
-        router.show(clickedResource, true);
-    }
-
-    private void showErrorMessageToUser(final ResourceModel hasChildrenResource, final EscidocClientException e) {
-        LOG.error("Can not find member of: " + hasChildrenResource.getId(), e);
+    private void showErrorMessageToUser(final EscidocClientException e) {
         mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
             Notification.TYPE_ERROR_MESSAGE));
     }

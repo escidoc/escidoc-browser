@@ -28,7 +28,7 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import java.net.MalformedURLException;
+import com.google.common.base.Preconditions;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.repository.AdminRepository;
@@ -38,7 +38,7 @@ import org.escidoc.browser.repository.PdpRepository;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.StagingRepository;
 
-import com.google.common.base.Preconditions;
+import java.net.MalformedURLException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -66,6 +66,8 @@ public class RepositoriesImpl implements Repositories {
 
     private BulkRepository bulkRepo;
 
+    private OrganizationUnitRepository orgUnitRepository;
+
     public RepositoriesImpl(final EscidocServiceLocation serviceLocation) {
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         this.serviceLocation = serviceLocation;
@@ -82,6 +84,7 @@ public class RepositoriesImpl implements Repositories {
         adminRepository = new AdminRepository(serviceLocation);
         ingestRepository = new IngestRepository(serviceLocation);
         bulkRepo = new BulkRepository(contextRepository, containerRepository, itemRepository, contentModelRepository);
+        orgUnitRepository = new OrganizationUnitRepository(serviceLocation);
         return this;
     }
 
@@ -95,6 +98,7 @@ public class RepositoriesImpl implements Repositories {
         userAccountRepository.loginWith(token);
         adminRepository.loginWith(token);
         ingestRepository.loginWith(token);
+        orgUnitRepository.loginWith(token);
         contentModelRepository.loginWith(token);
     }
 
@@ -156,6 +160,11 @@ public class RepositoriesImpl implements Repositories {
     @Override
     public BulkRepository bulkTasks() {
         return bulkRepo;
+    }
+
+    @Override
+    public OrganizationUnitRepository organization() {
+        return orgUnitRepository;
     }
 
 }

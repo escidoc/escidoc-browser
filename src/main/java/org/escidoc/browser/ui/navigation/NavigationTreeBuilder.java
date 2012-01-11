@@ -28,69 +28,102 @@
  */
 package org.escidoc.browser.ui.navigation;
 
-import org.escidoc.browser.model.EscidocServiceLocation;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.ui.Window;
+
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.TreeDataSourceImpl;
 import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.listeners.TreeClickListener;
 import org.escidoc.browser.ui.listeners.TreeExpandListener;
-
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.Window;
+import org.escidoc.browser.ui.orgunit.OrgUnitTreeView;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class NavigationTreeBuilder {
 
-    // private final CurrentUser currentUser;
-
-    private final EscidocServiceLocation serviceLocation;
-
     private final Repositories repositories;
 
-    public NavigationTreeBuilder(final EscidocServiceLocation serviceLocation, final Repositories repositories) {
-        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
+    private final Window mainWindow;
+
+    private final Router router;
+
+    private OrgUnitDataSource treeDataSource;
+
+    public NavigationTreeBuilder(final Window mainWindow, final Router router, final Repositories repositories) {
+        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
+        Preconditions.checkNotNull(router, "router is null: %s", router);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
-        this.serviceLocation = serviceLocation;
+
+        this.mainWindow = mainWindow;
+        this.router = router;
         this.repositories = repositories;
     }
 
-    public NavigationTreeView buildNavigationTree(
-        final Router mainSite, final Window mainWindow, final TreeDataSource treeDataSource) {
+    public NavigationTreeView buildNavigationTree(final TreeDataSource treeDataSource) {
+        Preconditions.checkNotNull(treeDataSource, "treeDataSource is null: %s", treeDataSource);
+        return createNavigationTreeView(treeDataSource);
+    }
 
-        final NavigationTreeView navigationTreeView = createNavigationTreeView(mainSite, mainWindow, treeDataSource);
+    private NavigationTreeView createNavigationTreeView(final TreeDataSource treeDataSource) {
+        final NavigationTreeView navigationTreeView = new ResourceTreeView();
+        navigationTreeView.setDataSource(treeDataSource);
+        navigationTreeView.addClickListener(new TreeClickListener(mainWindow, router));
         navigationTreeView.addExpandListener(new TreeExpandListener(repositories, treeDataSource));
-
-        return navigationTreeView;
-    }
-
-    public NavigationTreeView buildContainerDirectMemberTree(
-        final Router router, final String parentID, final Window mainWindow) throws EscidocClientException {
-
-        final TreeDataSource treeDataSource =
-            new TreeDataSourceImpl(repositories.container().findTopLevelMembersById(parentID));
-        treeDataSource.init();
-
-        return createNavigationTreeView(router, mainWindow, treeDataSource);
-    }
-
-    public NavigationTreeView buildContextDirectMemberTree(
-        final Router router, final String parentId, final Window mainWindow) throws EscidocClientException {
-
-        final TreeDataSource treeDataSource =
-            new TreeDataSourceImpl(repositories.context().findTopLevelMembersById(parentId));
-        treeDataSource.init();
-
-        return createNavigationTreeView(router, mainWindow, treeDataSource);
-    }
-
-    private NavigationTreeView createNavigationTreeView(
-        final Router router, final Window mainWindow, final TreeDataSource treeDataSource) {
-        final NavigationTreeView navigationTreeView = new NavigationTreeViewImpl();
-        navigationTreeView.setDataSource(treeDataSource, router);
-        navigationTreeView.addClickListener(new TreeClickListener(serviceLocation, repositories, mainWindow, router));
         navigationTreeView.addActionHandler(new ActionHandlerImpl(mainWindow, repositories, treeDataSource, router));
         return navigationTreeView;
     }
+
+    public NavigationTreeView buildContainerDirectMemberTree(final String parentId) throws EscidocClientException {
+        Preconditions.checkNotNull(parentId, "parentID is null: %s", parentId);
+        return createNavigationTreeView(withDataSource(repositories.container(), parentId));
+    }
+
+    private static TreeDataSource withDataSource(final Repository repository, final String parentId)
+        throws EscidocClientException {
+        final TreeDataSource treeDataSource = new TreeDataSourceImpl(repository.findTopLevelMembersById(parentId));
+        treeDataSource.init();
+        return treeDataSource;
+    }
+
+    public NavigationTreeView buildContextDirectMemberTree(final String parentId) throws EscidocClientException {
+        Preconditions.checkNotNull(parentId, "parentId is null: %s", parentId);
+        return createNavigationTreeView(withDataSource(repositories.context(), parentId));
+    }
+
+    public OrgUnitTreeView buildOrgUnitTree() {
+        final OrgUnitTreeView tree = new OrgUnitTreeView();
+        createOrgUnitDataSource();
+        tree.setDataSource(getOrgUnitDataSource());
+        addClickListener(tree);
+        addExpandListener(tree);
+        addActionListener(tree);
+        return tree;
+    }
+
+    private void createOrgUnitDataSource() {
+        treeDataSource = new OrgUnitDataSource(repositories.organization());
+        treeDataSource.init();
+    }
+
+    private TreeDataSource getOrgUnitDataSource() {
+        return treeDataSource;
+    }
+
+    private void addActionListener(final OrgUnitTreeView tree) {
+        tree.addActionHandler(new ActionHandlerImpl(mainWindow, repositories, getOrgUnitDataSource(), router));
+    }
+
+    private void addExpandListener(final OrgUnitTreeView tree) {
+        tree.addExpandListener(new OrgUnitTreeExpandListener(repositories.organization(), mainWindow,
+            getOrgUnitDataSource()));
+    }
+
+    private void addClickListener(final OrgUnitTreeView tree) {
+        tree.addClickListener(new TreeClickListener(mainWindow, router));
+    }
+
 }

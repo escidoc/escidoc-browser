@@ -28,15 +28,11 @@
  */
 package org.escidoc.browser.elabsmodul.controller;
 
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import com.google.common.base.Preconditions;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import org.escidoc.browser.controller.Controller;
 import org.escidoc.browser.elabsmodul.cache.ELabsCache;
@@ -52,14 +48,14 @@ import org.escidoc.browser.elabsmodul.views.InstrumentView;
 import org.escidoc.browser.elabsmodul.views.YesNoDialog;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
-import org.escidoc.browser.model.OrgUnitService;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.model.UserService;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.repository.internal.ItemRepository;
+import org.escidoc.browser.repository.internal.OrgUnitService;
+import org.escidoc.browser.repository.internal.UserService;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.helper.ResourceHierarchy;
 import org.escidoc.browser.util.StringUtils;
@@ -71,10 +67,15 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.EscidocException;
@@ -115,7 +116,7 @@ public final class InstrumentController extends Controller implements ISaveActio
     private final Object LOCK = new Object() {
     };
 
-    public InstrumentController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
+    public InstrumentController(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
         Preconditions.checkNotNull(repositories, "Repository ref is null");
         Preconditions.checkNotNull(router, "Router ref is null");
@@ -296,7 +297,7 @@ public final class InstrumentController extends Controller implements ISaveActio
                 return;
             }
 
-            List<String> eSychEndpoints = new ArrayList<String>();
+            final List<String> eSychEndpoints = new ArrayList<String>();
             if (ELabsCache.getEsyncEndpoints().isEmpty()) {
                 final NodeList nodeList = content.getElementsByTagName("el:esync-endpoint");
                 if (nodeList != null) {
@@ -313,7 +314,7 @@ public final class InstrumentController extends Controller implements ISaveActio
             }
 
             if (ELabsCache.getFileFormats().isEmpty()) {
-                List<FileFormatBean> fileFormatList = new ArrayList<FileFormatBean>();
+                final List<FileFormatBean> fileFormatList = new ArrayList<FileFormatBean>();
                 final String mimeTypeURI = "http://escidoc.org/ontologies/bw-elabs.owl#";
                 final NodeList fileFormatNodeList = content.getElementsByTagName("el:FileFormat");
                 if (fileFormatNodeList != null) {
@@ -321,7 +322,7 @@ public final class InstrumentController extends Controller implements ISaveActio
                         final Node node = fileFormatNodeList.item(i);
                         if (node.hasChildNodes()) {
                             final NodeList interNodeList = node.getChildNodes();
-                            FileFormatBean bean = new FileFormatBean();
+                        final FileFormatBean bean = new FileFormatBean();
                             for (int j = 0; j < interNodeList.getLength(); j++) {
                                 final Node formatNode = interNodeList.item(j);
                                 final String nodeName = formatNode.getLocalName();
@@ -370,7 +371,8 @@ public final class InstrumentController extends Controller implements ISaveActio
         }
     }
 
-    private Component createView(final ResourceProxy resourceProxy) {
+    @Override
+    protected Component createView(final ResourceProxy resourceProxy) {
         InstrumentBean instumentBean = null;
         try {
             instumentBean = loadBeanData(resourceProxy);
@@ -492,7 +494,7 @@ public final class InstrumentController extends Controller implements ISaveActio
             try {
                 validateBean(this.beanModel);
             }
-            catch (EscidocBrowserException e) {
+        catch (final EscidocBrowserException e) {
                 LOG.error(e.getMessage());
                 return;
             }
@@ -541,13 +543,13 @@ public final class InstrumentController extends Controller implements ISaveActio
         }
     }
 
-    protected void validateBean(IBeanModel beanModel) throws EscidocBrowserException {
+    protected void validateBean(final IBeanModel beanModel) throws EscidocBrowserException {
         Preconditions.checkNotNull(beanModel, "Input is null");
         InstrumentBean instrumentBean = null;
         try {
             instrumentBean = (InstrumentBean) beanModel;
         }
-        catch (ClassCastException e) {
+        catch (final ClassCastException e) {
             showError("Internal error");
             throw new EscidocBrowserException("Wrong type of model", e);
         }

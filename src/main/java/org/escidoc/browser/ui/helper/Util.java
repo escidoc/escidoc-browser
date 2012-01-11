@@ -36,9 +36,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.escidoc.browser.AppConstants;
-import org.escidoc.browser.model.ContainerModel;
-import org.escidoc.browser.model.ItemModel;
 import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.internal.ContainerModel;
+import org.escidoc.browser.model.internal.ItemModel;
 import org.escidoc.browser.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

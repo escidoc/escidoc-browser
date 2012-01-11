@@ -33,12 +33,12 @@ import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.model.internal.ContextModel;
 import org.escidoc.browser.model.internal.HasNoNameResource;
 import org.escidoc.browser.model.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.Repository;

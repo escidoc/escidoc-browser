@@ -28,13 +28,7 @@
  */
 package org.escidoc.browser.model.internal;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.net.URL;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import com.google.common.base.Preconditions;
 
 import org.escidoc.browser.AppConstants;
 import org.slf4j.Logger;
@@ -44,7 +38,13 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import com.google.common.base.Preconditions;
+import java.io.IOException;
+import java.io.StringReader;
+import java.net.URL;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.MetadataRecords;
@@ -85,7 +85,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder withMimeType(String mimeType) {
+    public ItemBuilder withMimeType(final String mimeType) {
         if (mimeType == null) {
             return this;
         }
@@ -94,11 +94,11 @@ public class ItemBuilder {
         return this;
     }
 
-    public Item build(String itemName) {
+    public Item build(final String itemName) {
         return tryBuildNewItem(itemName);
     }
 
-    private Item tryBuildNewItem(String itemName) {
+    private Item tryBuildNewItem(final String itemName) {
         try {
             setItemName(itemName);
             setItemProperties();
@@ -112,11 +112,11 @@ public class ItemBuilder {
 
     }
 
-    private void setItemName(String itemName) throws ParserConfigurationException {
+    private void setItemName(final String itemName) throws ParserConfigurationException {
         addDefaultMetadata(createNewDocument(), itemName);
     }
 
-    private Document createNewDocument() throws ParserConfigurationException {
+    private static Document createNewDocument() throws ParserConfigurationException {
         return DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
     }
 
@@ -126,14 +126,14 @@ public class ItemBuilder {
         item.setProperties(itemProps);
     }
 
-    private void addDefaultMetadata(final Document doc, String itemName) {
+    private void addDefaultMetadata(final Document doc, final String itemName) {
         buildDefaultMetadata(doc, itemName);
         final MetadataRecords itemMetadataList = new MetadataRecords();
         itemMetadataList.add(itemMetadata);
         item.setMetadataRecords(itemMetadataList);
     }
 
-    private void buildDefaultMetadata(final Document doc, String itemName) {
+    private void buildDefaultMetadata(final Document doc, final String itemName) {
         itemMetadata.setName(AppConstants.ESCIDOC);
         if (strMedataData.isEmpty()) {
             itemMetadata.setContent(buildContentForItemMetadata(doc, itemName));
@@ -144,7 +144,7 @@ public class ItemBuilder {
 
     }
 
-    private Element buildContentForItemMetadata(final Document doc, String itemName) {
+    private static Element buildContentForItemMetadata(final Document doc, final String itemName) {
         final Element element = doc.createElementNS(AppConstants.DC_NAMESPACE, "dc");
         final Element titleElmt = doc.createElementNS(AppConstants.DC_NAMESPACE, "title");
         titleElmt.setPrefix("dc");
@@ -154,25 +154,25 @@ public class ItemBuilder {
     }
 
     private Element buildContentForItemMetadataFromUploadedFile() {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
 
         try {
             builder = factory.newDocumentBuilder();
-            InputSource is = new InputSource(new StringReader(strMedataData));
+            final InputSource is = new InputSource(new StringReader(strMedataData));
             Document d;
             try {
                 d = builder.parse(is);
                 return d.getDocumentElement();
             }
-            catch (SAXException e) {
+            catch (final SAXException e) {
                 return null;
             }
-            catch (IOException e) {
+            catch (final IOException e) {
                 return null;
             }
         }
-        catch (ParserConfigurationException e) {
+        catch (final ParserConfigurationException e) {
             return null;
         }
     }

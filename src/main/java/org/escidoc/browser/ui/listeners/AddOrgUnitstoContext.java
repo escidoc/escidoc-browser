@@ -1,13 +1,5 @@
 package org.escidoc.browser.ui.listeners;
 
-import java.util.Collection;
-import java.util.Iterator;
-
-import org.escidoc.browser.controller.ContextController;
-import org.escidoc.browser.model.OrgUnitService;
-import org.escidoc.browser.model.internal.ContextProxyImpl;
-import org.escidoc.browser.ui.Router;
-
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
@@ -26,6 +18,13 @@ import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.TreeDragMode;
 import com.vaadin.ui.VerticalLayout;
 
+import org.escidoc.browser.controller.ContextController;
+import org.escidoc.browser.model.internal.ContextProxyImpl;
+import org.escidoc.browser.repository.internal.OrgUnitService;
+import org.escidoc.browser.ui.Router;
+
+import java.util.Collection;
+
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.reference.OrganizationalUnitRef;
 import de.escidoc.core.resources.om.context.OrganizationalUnitRefs;
@@ -35,6 +34,7 @@ import de.escidoc.core.resources.oum.OrganizationalUnit;
  * Removing the Organizational Units from a Context
  * 
  */
+@SuppressWarnings("serial")
 public class AddOrgUnitstoContext extends VerticalLayout {
 
     private static String PROPERTY_NAME = "name";
@@ -92,10 +92,11 @@ public class AddOrgUnitstoContext extends VerticalLayout {
         addComponent(vl);
     }
 
-    private void initializeDeleteTable(final ClientSideCriterion acceptCriterion) throws EscidocClientException {
+    private void initializeDeleteTable(final ClientSideCriterion acceptCriterion) {
         tableDelete.setWidth("100%");
         tableDelete.setHeight("100px");
         tableDelete.setDropHandler(new DropHandler() {
+            @Override
             public void drop(DragAndDropEvent dropEvent) {
                 DataBoundTransferable t = (DataBoundTransferable) dropEvent.getTransferable();
                 if (!(t.getSourceContainer() instanceof Container.Hierarchical)) {
@@ -108,6 +109,7 @@ public class AddOrgUnitstoContext extends VerticalLayout {
                 controller.refreshView();
             }
 
+            @Override
             public AcceptCriterion getAcceptCriterion() {
                 return new And(acceptCriterion, AcceptItem.ALL);
             }
@@ -115,18 +117,18 @@ public class AddOrgUnitstoContext extends VerticalLayout {
 
     }
 
-    private void initializeTree(final ClientSideCriterion acceptCriterion) throws EscidocClientException {
+    private void initializeTree(ClientSideCriterion acceptCriterion) throws EscidocClientException {
         tree.setContainerDataSource(getOrgUnitRefsContainerTree());
         tree.setItemCaptionPropertyId(PROPERTY_NAME);
 
         // Expand all nodes
-        for (Iterator<?> it = tree.rootItemIds().iterator(); it.hasNext();) {
-            tree.expandItemsRecursively(it.next());
+        for (Object name : tree.rootItemIds()) {
+            tree.expandItemsRecursively(name);
         }
         tree.setDragMode(TreeDragMode.NODE);
     }
 
-    private void initializeTable(final ClientSideCriterion acceptCriterion) throws EscidocClientException {
+    private void initializeTable(final ClientSideCriterion acceptCriterion) {
         final HierarchicalContainer tableContainer = getOrgUnitRefsContainerTable();
         table.setContainerDataSource(tableContainer);
         table.setItemCaptionPropertyId(PROPERTY_NAME);
@@ -135,6 +137,7 @@ public class AddOrgUnitstoContext extends VerticalLayout {
         // Handle drop in table: move hardware item or subtree to the table
         table.setDragMode(TableDragMode.ROW);
         table.setDropHandler(new DropHandler() {
+            @Override
             public void drop(DragAndDropEvent dropEvent) {
                 // criteria verify that this is safe
                 DataBoundTransferable t = (DataBoundTransferable) dropEvent.getTransferable();
@@ -151,13 +154,14 @@ public class AddOrgUnitstoContext extends VerticalLayout {
                 }
             }
 
+            @Override
             public AcceptCriterion getAcceptCriterion() {
                 return new And(acceptCriterion, AcceptItem.ALL);
             }
         });
     }
 
-    private Item createItem(HierarchicalContainer tableContainer, String itemId, String itemName, String itemHref) {
+    private static Item createItem(HierarchicalContainer tableContainer, String itemId, String itemName, String itemHref) {
         Item item = tableContainer.addItem(itemId);
         item.getItemProperty(PROPERTY_NAME).setValue(itemName);
         item.getItemProperty(PROPERTY_HREF).setValue(itemHref);
@@ -198,7 +202,7 @@ public class AddOrgUnitstoContext extends VerticalLayout {
         return orgUnitContainer;
     }
 
-    private HierarchicalContainer getOrgUnitRefsContainerTable() throws EscidocClientException {
+    private HierarchicalContainer getOrgUnitRefsContainerTable() {
         Item item = null;
         // Create new container
         HierarchicalContainer orgUnitContainer = new HierarchicalContainer();
