@@ -314,4 +314,22 @@ public class ViewConstants {
     public static final String EDIT_PROFILE = "Edit personal profile";
 
     public static final String ERROR_UPDATING_USER = "Error updating user profile";
+
+    // Container
+    public static final String DESC_LOCKSTATUS = "lockstatus";
+
+    public static final String DESC_STATUS = "status";
+
+    public static final String DESC_HEADER = "header";
+
+    public static final String SUBWINDOW_EDIT = "Add Comment to the Edit operation";
+
+    public static final String FULLWIDHT_STYLE_NAME = "fullwidth";
+
+    public static final String RESOURCE_NAME_CONTAINER = "Container: ";
+
+    // Context
+    public static final String RESOURCE_NAME_CONTEXT = "Workspace: ";
+
+    public static final String CONTEXT_TYPE = "Context type is ";
 }

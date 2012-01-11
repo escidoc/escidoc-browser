@@ -161,4 +161,8 @@ public class ContextProxyImpl implements ResourceProxy {
         throw new UnsupportedOperationException();
     }
 
+    public String getPropertiesType() {
+        return contextFromCore.getProperties().getType();
+    }
+
 }

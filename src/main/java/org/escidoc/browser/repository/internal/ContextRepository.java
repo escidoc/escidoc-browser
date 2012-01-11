@@ -162,4 +162,35 @@ public class ContextRepository implements Repository {
         properties.setOrganizationalUnitRefs(organizationalUnitRefs);
         return client.update(context);
     }
+
+    public Context updateType(String newContextType, String contextId) throws EscidocClientException {
+        Context context = client.retrieve(contextId);
+        ContextProperties properties = context.getProperties();
+        properties.setType(newContextType);
+        return client.update(context);
+    }
+
+    public Context updateName(String newName, String contextId) throws EscidocClientException {
+        Context context = client.retrieve(contextId);
+        ContextProperties properties = context.getProperties();
+        properties.setName(newName);
+        return client.update(context);
+
+    }
+
+    public void updatePublicStatusOpen(String comment, String contextId) throws EscidocClientException {
+        final TaskParam taskParam = new TaskParam();
+        taskParam.setLastModificationDate(client.retrieve(contextId).getLastModificationDate());
+        taskParam.setComment(comment);
+        client.open(client.retrieve(contextId), taskParam);
+    }
+
+    public void updatePublicStatusClosed(String comment, String contextId) throws EscidocClientException {
+        final TaskParam taskParam = new TaskParam();
+        taskParam.setLastModificationDate(client.retrieve(contextId).getLastModificationDate());
+        taskParam.setComment(comment);
+        client.close(client.retrieve(contextId), taskParam);
+
+    }
+
 }

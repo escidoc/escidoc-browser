@@ -77,21 +77,6 @@ import de.escidoc.core.resources.om.container.Container;
  */
 @SuppressWarnings("serial")
 public class ContainerView extends View {
-    private static final String DESC_LOCKSTATUS = "lockstatus";
-
-    private static final String DESC_STATUS2 = "status";
-
-    private static final String DESC_HEADER = "header";
-
-    private static final String SUBWINDOW_EDIT = "Add Comment to the Edit operation";
-
-    private static final String CREATED_BY = "Created by ";
-
-    private static final String FULLWIDHT_STYLE_NAME = "fullwidth";
-
-    private static final String LAST_MODIFIED_BY = "Last modification by ";
-
-    private static final String RESOURCE_NAME = "Container: ";
 
     private final VerticalLayout vlPropertiesLeft = new VerticalLayout();
 
@@ -348,24 +333,25 @@ public class ContainerView extends View {
         status = resourceProxy.getType().getLabel() + " is ";
         lockStatus = status;
         lblStatus = new Label(status + resourceProxy.getStatus(), Label.CONTENT_RAW);
-        lblStatus.setDescription(DESC_STATUS2);
+        lblStatus.setDescription(ViewConstants.DESC_STATUS);
 
         lblLockstatus = new Label(status + resourceProxy.getLockStatus(), Label.CONTENT_RAW);
-        lblLockstatus.setDescription(DESC_LOCKSTATUS);
+        lblLockstatus.setDescription(ViewConstants.DESC_LOCKSTATUS);
         if (hasAccess()) {
             lblLockstatus.setStyleName("inset");
         }
         final Label descMetadata2 =
-            new Label(CREATED_BY + " " + resourceProxy.getCreator() + " on " + resourceProxy.getCreatedOn() + "<br/>"
-                + LAST_MODIFIED_BY + " " + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn()
-                + "<br />" + "Released by " + resourceProxy.getReleasedBy() + " on "
-                + resourceProxy.getLatestVersionModifiedOn(), Label.CONTENT_XHTML);
+            new Label(ViewConstants.CREATED_BY + " " + resourceProxy.getCreator() + " on "
+                + resourceProxy.getCreatedOn() + "<br/>" + ViewConstants.LAST_MODIFIED_BY + " "
+                + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn() + "<br />" + "Released by "
+                + resourceProxy.getReleasedBy() + " on " + resourceProxy.getLatestVersionModifiedOn(),
+                Label.CONTENT_XHTML);
 
         vlPropertiesLeft.addComponent(descMetadata1);
         if (hasAccess()) {
             status = "Latest status is ";
             lblCurrentVersionStatus = new Label(status + resourceProxy.getVersionStatus());
-            lblCurrentVersionStatus.setDescription(DESC_STATUS2);
+            lblCurrentVersionStatus.setDescription(ViewConstants.DESC_STATUS);
             lblCurrentVersionStatus.setStyleName("inset");
             vlPropertiesLeft.addComponent(lblCurrentVersionStatus);
 
@@ -417,7 +403,7 @@ public class ContainerView extends View {
 
     private void bindDescription(CssLayout cssLayout) {
         final Label description = new Label(resourceProxy.getDescription());
-        description.setStyleName(FULLWIDHT_STYLE_NAME);
+        description.setStyleName(ViewConstants.FULLWIDHT_STYLE_NAME);
         cssLayout.addComponent(description);
     }
 
@@ -429,19 +415,12 @@ public class ContainerView extends View {
      * Building the Header Element that shows the title of the Container
      */
     private void bindNameToHeader(CssLayout cssLayout) {
-        final Label headerContext = new Label(RESOURCE_NAME + resourceProxy.getName());
+        final Label headerContext = new Label(ViewConstants.RESOURCE_NAME_CONTAINER + resourceProxy.getName());
         headerContext.setStyleName("h2 fullwidth floatleft");
         headerContext.setWidth("80%");
-        headerContext.setDescription(DESC_HEADER);
+        headerContext.setDescription(ViewConstants.DESC_HEADER);
         cssLayout.addComponent(headerContext);
     }
-
-    // private void configureLayout() {
-    // setMargin(true, true, false, true);
-    // this.setHeight("100%");
-    // metadataContainer.setWidth("100%");
-    // metadataContainer.setHeight("100%");
-    // }
 
     private void handleLayoutListeners() {
         if (hasAccess()) {
@@ -457,14 +436,14 @@ public class ContainerView extends View {
                         // Is Label?
                         if (event.getChildComponent().getClass().getCanonicalName() == "com.vaadin.ui.Label") {
                             final Label child = (Label) event.getChildComponent();
-                            if ((child.getDescription() == DESC_STATUS2)
+                            if ((child.getDescription() == ViewConstants.DESC_STATUS)
                                 && (!lblStatus.getValue().equals(status + "withdrawn"))) {
                                 reSwapComponents();
                                 oldComponent = event.getClickedComponent();
                                 swapComponent = editStatus(child.getValue().toString().replace(status, ""));
                                 vlPropertiesLeft.replaceComponent(oldComponent, swapComponent);
                             }
-                            else if (child.getDescription() == DESC_LOCKSTATUS) {
+                            else if (child.getDescription() == ViewConstants.DESC_LOCKSTATUS) {
                                 reSwapComponents();
                                 oldComponent = event.getClickedComponent();
                                 swapComponent = editLockStatus(child.getValue().toString().replace(status, ""));
@@ -585,7 +564,7 @@ public class ContainerView extends View {
                 }
 
                 public void addCommentWindow() {
-                    subwindow = new Window(SUBWINDOW_EDIT);
+                    subwindow = new Window(ViewConstants.SUBWINDOW_EDIT);
                     subwindow.setModal(true);
                     // Configure the windws layout; by default a VerticalLayout
                     VerticalLayout layout = (VerticalLayout) subwindow.getContent();
@@ -715,7 +694,8 @@ public class ContainerView extends View {
 
     }
 
-    public void reloadView() {
+    // TODO Move to Controller
+    public void refreshView() {
         try {
             router.show(resourceProxy, true);
             // refresh tree
@@ -735,6 +715,7 @@ public class ContainerView extends View {
         }
     }
 
+    // TODO Move to Controller
     private boolean hasAccess() {
         try {
             return repositories

@@ -189,7 +189,7 @@ public class EditMetaDataFileContainerBehaviour implements ClickListener {
                     container = repositories.container().findContainerById(resourceProxy.getId());
                     metadataRecord.setContent(metadataContent);
                     repositories.container().updateMetaData(metadataRecord, container);
-                    containerView.reloadView();
+                    containerView.refreshView();
                     status.setValue("");
                     upload.setEnabled(true);
                 }

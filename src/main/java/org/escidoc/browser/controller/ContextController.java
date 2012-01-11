@@ -76,11 +76,25 @@ public class ContextController extends Controller {
         this.setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
     }
 
+    /**
+     * Create the view for this controller
+     * 
+     * @param resourceProxy
+     * @return
+     * @throws EscidocClientException
+     */
     private Component createView(ResourceProxy resourceProxy) throws EscidocClientException {
         Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
         return new ContextView(router, resourceProxy, repositories, this);
     }
 
+    /**
+     * Handle the operation of adding a new organizational unit from a context<br />
+     * Called from one of the view elements of a Context
+     * 
+     * @param resourceProxy
+     * @param orgUnitid
+     */
     public void addOrgUnitToContext(ContextProxyImpl resourceProxy, String orgUnitid) {
         try {
             repositories.context().addOrganizationalUnit(resourceProxy.getId(), orgUnitid);
@@ -92,6 +106,13 @@ public class ContextController extends Controller {
 
     }
 
+    /**
+     * Handle the operation of removing an organizational unit from a context<br />
+     * Called from one of the view elements of a Context
+     * 
+     * @param resourceProxy
+     * @param orgUnitid
+     */
     public void removeOrgUnitFromContext(ContextProxyImpl resourceProxy, String orgUnitid) {
         try {
             repositories.context().delOrganizationalUnit(resourceProxy.getId(), orgUnitid);
@@ -102,6 +123,31 @@ public class ContextController extends Controller {
         }
     }
 
+    public void updateContextType(String newContextType, String contextId) throws EscidocClientException {
+        repositories.context().updateType(newContextType, contextId);
+
+    }
+
+    public void updateContextName(String newName, String contextId) throws EscidocClientException {
+        repositories.context().updateName(newName, contextId);
+    }
+
+    public void updatePublicStatus(String newStatus, String contextId, String comment) throws EscidocClientException {
+
+        if (newStatus.equals("opened")) {
+            repositories.context().updatePublicStatusOpen(comment, contextId);
+        }
+        else if (newStatus.equals("closed")) {
+            repositories.context().updatePublicStatusClosed(comment, contextId);
+        }
+
+    }
+
+    /**
+     * PDP check if the logged-in user can Remove an Organizational Unit
+     * 
+     * @return boolean
+     */
     public boolean canRemoveOUs() {
         try {
             return repositories
@@ -118,10 +164,36 @@ public class ContextController extends Controller {
         }
     }
 
+    /**
+     * PDP check if the logged-in user can Add a new Organizational Unit
+     * 
+     * @return boolean
+     */
     public boolean canAddOUs() {
         try {
             return repositories
                 .pdp().forCurrentUser().isAction(ActionIdConstants.CREATE_ORG_UNIT).forResource(resourceProxy.getId())
+                .permitted();
+        }
+        catch (EscidocClientException e) {
+            router.getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            return false;
+        }
+        catch (URISyntaxException e) {
+            router.getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            return false;
+        }
+    }
+
+    /**
+     * PDP check if the logged-in user can update this context
+     * 
+     * @return boolean
+     */
+    public boolean canUpdateContext() {
+        try {
+            return repositories
+                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER).forResource(resourceProxy.getId())
                 .permitted();
         }
         catch (EscidocClientException e) {
