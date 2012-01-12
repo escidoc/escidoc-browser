@@ -30,6 +30,16 @@ package org.escidoc.browser.ui;
 
 public class ViewConstants {
 
+    // Footer
+    public static final String VERSION = "0.3.9";
+
+    public static final String PRODUCT_NAME = " eSciDoc Browser ";
+
+    public static final String ADMIN_TOOL = "Admin Tool";
+
+    public static final String CHANGE = "Switch Instance of eSciDoc";
+
+    //
     public static final String BREAD_CRUMP_CONTENT =
         "<ul id='crumbs'><li><a href='#'>Home</a></li><li><a href='#'>Main section</a></li><li><a href='#'>Sub section</a></li><li><a href='#'>Sub sub section</a></li><li>The page you are on right now</li></ul>";
 

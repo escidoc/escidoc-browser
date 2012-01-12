@@ -29,6 +29,7 @@
 package org.escidoc.browser.ui.mainpage;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.ui.ViewConstants;
 
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Button;
@@ -40,10 +41,6 @@ import com.vaadin.ui.themes.Reindeer;
 @SuppressWarnings("serial")
 public class Footer {
 
-    private static final String ADMIN_TOOL = "Admin Tool";
-
-    private static final String CHANGE = "Switch Instance of eSciDoc";
-
     private HorizontalLayout footerLayout;
 
     public Footer(HorizontalLayout footerLayout, final EscidocServiceLocation serviceLocation) {
@@ -54,7 +51,8 @@ public class Footer {
     private void buildView(final EscidocServiceLocation serviceLocation) {
         System.out.println(serviceLocation.getEscidocUri().toString());
         Label lblBaseUrl =
-            new Label(" eSciDoc Browser 0.3.9 on " + serviceLocation.getEscidocUri().toString() + "", Label.CONTENT_RAW);
+            new Label(ViewConstants.PRODUCT_NAME + ViewConstants.VERSION + " on "
+                + serviceLocation.getEscidocUri().toString() + "", Label.CONTENT_RAW);
         footerLayout.addComponent(lblBaseUrl);
         footerLayout.setExpandRatio(lblBaseUrl, 1f);
 
@@ -64,7 +62,7 @@ public class Footer {
 
         hl.setMargin(false);
 
-        final Button btnChange = new Button(CHANGE, new Button.ClickListener() {
+        final Button btnChange = new Button(ViewConstants.CHANGE, new Button.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
                 footerLayout.getApplication().close();
@@ -74,7 +72,7 @@ public class Footer {
         hl.addComponent(btnChange);
         hl.setExpandRatio(btnChange, 0.5f);
 
-        final Button btnAdminTl = new Button(ADMIN_TOOL, new Button.ClickListener() {
+        final Button btnAdminTl = new Button(ViewConstants.ADMIN_TOOL, new Button.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
                 footerLayout.getWindow().open(new ExternalResource(serviceLocation.getEscidocUri() + "/AdminTool"),
