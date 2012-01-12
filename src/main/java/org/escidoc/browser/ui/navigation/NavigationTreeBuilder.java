@@ -57,9 +57,9 @@ public class NavigationTreeBuilder {
     }
 
     public NavigationTreeView buildNavigationTree(
-        final Router mainSite, final Window mainWindow, final TreeDataSource treeDataSource) {
+        final Router router, final Window mainWindow, final TreeDataSource treeDataSource) {
 
-        final NavigationTreeView navigationTreeView = createNavigationTreeView(mainSite, mainWindow, treeDataSource);
+        final NavigationTreeView navigationTreeView = createNavigationTreeView(router, mainWindow, treeDataSource);
         navigationTreeView.addExpandListener(new TreeExpandListener(repositories, treeDataSource));
 
         return navigationTreeView;

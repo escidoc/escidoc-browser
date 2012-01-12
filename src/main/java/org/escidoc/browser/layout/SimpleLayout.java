@@ -42,7 +42,6 @@ import org.escidoc.browser.ui.mainpage.Footer;
 import org.escidoc.browser.ui.mainpage.HeaderContainer;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.navigation.NavigationTreeView;
-import org.escidoc.browser.ui.navigation.RootNode;
 import org.escidoc.browser.ui.tools.ToolsTreeView;
 import org.escidoc.browser.ui.view.helpers.CloseTabsViewHelper;
 import org.slf4j.Logger;
@@ -255,8 +254,9 @@ public class SimpleLayout extends LayoutDesign {
         footer.setWidth("100.0%");
         footer.setHeight("20px");
         footer.setMargin(false);
-        final Footer footerHtml = new Footer(serviceLocation);
-        footer.addComponent(footerHtml);
+        footer.setStyleName("footer");
+        final Footer footerHtml = new Footer(footer, serviceLocation);
+        // footer.addComponent(footerHtml);
 
     }
 
@@ -302,9 +302,6 @@ public class SimpleLayout extends LayoutDesign {
         vlNavigationPanel.setWidth("100.0%");
         vlNavigationPanel.setHeight("100.0%");
         vlNavigationPanel.setMargin(false);
-
-        // Adding a root element in the Navigation Tree
-        vlNavigationPanel.addComponent(new RootNode(serviceLocation));
 
         // Binding the tree to the NavigationPanel
         mainNavigationTree = this.addNavigationTree();

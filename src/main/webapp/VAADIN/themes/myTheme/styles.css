@@ -66,6 +66,8 @@
 	white-space: normal;
 	border: 1px solid #dcdcdc;
 	color: #999;
+	font-size: x-small;
+	padding: 0 5 5 2; 
 }
 
 .footer a:link {

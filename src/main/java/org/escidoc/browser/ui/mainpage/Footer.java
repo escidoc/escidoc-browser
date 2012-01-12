@@ -33,44 +33,60 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.Reindeer;
 
 @SuppressWarnings("serial")
-public class Footer extends VerticalLayout {
+public class Footer {
 
     private static final String ADMIN_TOOL = "Admin Tool";
 
-    private static final String FOOTER = "footer";
-
     private static final String CHANGE = "Switch Instance of eSciDoc";
 
-    final CustomLayout custom = new CustomLayout(FOOTER);
+    private HorizontalLayout footerLayout;
 
-    private final EscidocServiceLocation serviceLocation;
+    public Footer(HorizontalLayout footerLayout, final EscidocServiceLocation serviceLocation) {
+        this.footerLayout = footerLayout;
+        buildView(serviceLocation);
+    }
 
-    public Footer(final EscidocServiceLocation serviceLocation) {
-        this.serviceLocation = serviceLocation;
-        // This is myTheme/layouts/footer.html
+    private void buildView(final EscidocServiceLocation serviceLocation) {
+        System.out.println(serviceLocation.getEscidocUri().toString());
+        Label lblBaseUrl =
+            new Label(" eSciDoc Browser 0.3.9 on " + serviceLocation.getEscidocUri().toString() + "", Label.CONTENT_RAW);
+        footerLayout.addComponent(lblBaseUrl);
+        footerLayout.setExpandRatio(lblBaseUrl, 1f);
+
+        HorizontalLayout hl = new HorizontalLayout();
+        hl.setWidth("200px");
+        hl.setStyleName("floatright");
+
+        hl.setMargin(false);
+
         final Button btnChange = new Button(CHANGE, new Button.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
-                getApplication().close();
+                footerLayout.getApplication().close();
             }
         });
         btnChange.setStyleName(Reindeer.BUTTON_LINK);
-        custom.addComponent(btnChange, "change");
+        hl.addComponent(btnChange);
+        hl.setExpandRatio(btnChange, 0.5f);
 
         final Button btnAdminTl = new Button(ADMIN_TOOL, new Button.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
-                getWindow().open(new ExternalResource(serviceLocation.getEscidocUri() + "/AdminTool"), "_self");
+                footerLayout.getWindow().open(new ExternalResource(serviceLocation.getEscidocUri() + "/AdminTool"),
+                    "_self");
             }
         });
         btnAdminTl.setStyleName(Reindeer.BUTTON_LINK);
-        custom.addComponent(btnAdminTl, "admintool");
+        hl.addComponent(btnAdminTl);
+        hl.setExpandRatio(btnAdminTl, 0.5f);
 
-        addComponent(custom);
+        footerLayout.addComponent(hl);
+        // footerLayout.setExpandRatio(hl, 0.1f);
+
     }
 }
