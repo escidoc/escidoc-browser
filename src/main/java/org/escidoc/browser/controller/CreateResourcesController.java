@@ -111,5 +111,7 @@ public class CreateResourcesController extends Controller {
         repositories.context().open(newContext);
         // Updating the tree
         router.getLayout().getTreeDataSource().addTopLevelResource(new ContextModel(newContext));
+        router.openControllerView(
+            new ContextController(repositories, router, repositories.context().findById(newContext.getObjid())), true);
     }
 }
