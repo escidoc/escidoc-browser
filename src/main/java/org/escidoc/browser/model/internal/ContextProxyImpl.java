@@ -165,4 +165,8 @@ public class ContextProxyImpl implements ResourceProxy {
         return contextFromCore.getProperties().getType();
     }
 
+    public Resource getResource() {
+        return contextFromCore;
+    }
+
 }

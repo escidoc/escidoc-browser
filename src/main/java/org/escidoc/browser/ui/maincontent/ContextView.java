@@ -94,6 +94,10 @@ public class ContextView extends View {
 
     private VerticalLayout headerLayout;
 
+    private VerticalLayout vlContentPanel;
+
+    private Panel breadCrump;
+
     public ContextView(final Router router, final ResourceProxy resourceProxy, final Repositories repositories,
         ContextController contextController) throws EscidocClientException {
 
@@ -127,7 +131,7 @@ public class ContextView extends View {
     // Elements of the view are bound in this layout of the main Panel
     private VerticalLayout buildVlContentPanel() throws EscidocClientException {
         // common part: create layout
-        VerticalLayout vlContentPanel = new VerticalLayout();
+        vlContentPanel = new VerticalLayout();
         vlContentPanel.setImmediate(false);
         vlContentPanel.setWidth("100.0%");
         vlContentPanel.setHeight("100.0%");
@@ -138,7 +142,8 @@ public class ContextView extends View {
             .getType().toString(), vlContentPanel, serviceLocation);
 
         // breadCrumpPanel
-        vlContentPanel.addComponent(buildBreadCrumpPanel());
+        breadCrump = buildBreadCrumpPanel();
+        vlContentPanel.addComponent(breadCrump);
 
         // resourcePropertiesPanel
         Panel resourcePropertiesPanel = buildResourcePropertiesPanel();
@@ -513,11 +518,14 @@ public class ContextView extends View {
             }
             else if ((swapComponent instanceof TextField)
                 && (((TextField) swapComponent).getDescription().equals(ViewConstants.RESOURCE_NAME_CONTEXT))) {
+                ((Label) oldComponent).setValue(ViewConstants.RESOURCE_NAME_CONTEXT
+                    + ((TextField) swapComponent).getValue());
                 try {
                     contextController.updateContextName(((TextField) swapComponent).getValue().toString(),
                         resourceProxy.getId());
                     mainWindow.showNotification("Context Name updated successfully",
                         Notification.TYPE_TRAY_NOTIFICATION);
+                    contextController.refreshView();
                 }
                 catch (EscidocClientException e) {
                     mainWindow.showNotification(

@@ -30,7 +30,10 @@ package org.escidoc.browser.controller;
 
 import java.net.URISyntaxException;
 
+import org.escidoc.browser.model.ContextModel;
+import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
@@ -46,13 +49,14 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.Resource;
 
 public class ContextController extends Controller {
     private Repositories repositories;
 
     private Router router;
 
-    private ResourceProxy resourceProxy;
+    private ContextProxyImpl resourceProxy;
 
     private static final Logger LOG = LoggerFactory.getLogger(ContextController.class);
 
@@ -64,7 +68,7 @@ public class ContextController extends Controller {
 
         this.repositories = repositories;
         this.router = router;
-        this.resourceProxy = resourceProxy;
+        this.resourceProxy = (ContextProxyImpl) resourceProxy;
         try {
             this.view = createView(resourceProxy);
         }
@@ -86,6 +90,25 @@ public class ContextController extends Controller {
     private Component createView(ResourceProxy resourceProxy) throws EscidocClientException {
         Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
         return new ContextView(router, resourceProxy, repositories, this);
+    }
+
+    public void refreshView() {
+        try {
+            router.show(resourceProxy, true);
+            // refresh tree
+            TreeDataSource treeDS = router.getLayout().getTreeDataSource();
+            ContextModel cnt = new ContextModel(resourceProxy.getResource());
+            ResourceModel parentModel = treeDS.getParent(cnt);
+
+            boolean isSuccesful = treeDS.remove(cnt);
+            if (isSuccesful) {
+                Resource contextT = repositories.context().findContextById((resourceProxy.getId()));
+                treeDS.addChild(parentModel, new ContextModel(contextT));
+            }
+        }
+        catch (EscidocClientException e) {
+            router.getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        }
     }
 
     /**

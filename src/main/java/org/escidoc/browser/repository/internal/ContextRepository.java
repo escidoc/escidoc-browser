@@ -94,6 +94,10 @@ public class ContextRepository implements Repository {
         return new ContextProxyImpl(client.retrieve(id));
     }
 
+    public Context findContextById(final String id) throws EscidocClientException {
+        return client.retrieve(id);
+    }
+
     @Override
     public VersionHistory getVersionHistory(final String id) throws EscidocClientException {
         return null;

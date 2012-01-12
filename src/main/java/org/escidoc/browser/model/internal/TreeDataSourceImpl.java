@@ -183,6 +183,8 @@ public class TreeDataSourceImpl implements TreeDataSource {
                 return dataSource.removeItem(resourceModel);
             case CONTAINER:
                 return dataSource.removeItem(resourceModel);
+            case CONTEXT:
+                return dataSource.removeItem(resourceModel);
             default:
                 throw new UnsupportedOperationException("Not yet implemented");
         }
