@@ -9,9 +9,13 @@ import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.ui.Router;
 
 import com.vaadin.data.Container;
+import com.vaadin.data.Container.Filterable;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
+import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.event.DataBoundTransferable;
+import com.vaadin.event.FieldEvents.TextChangeEvent;
+import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
@@ -20,8 +24,10 @@ import com.vaadin.event.dd.acceptcriteria.ClientSideCriterion;
 import com.vaadin.event.dd.acceptcriteria.SourceIs;
 import com.vaadin.ui.AbstractSelect.AcceptItem;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.TreeDragMode;
 import com.vaadin.ui.VerticalLayout;
@@ -55,6 +61,8 @@ public class AddOrgUnitstoContext extends VerticalLayout {
 
     private Table tableDelete;
 
+    private TextField tf;
+
     public AddOrgUnitstoContext(Router router, ContextProxyImpl resourceProxy, ContextController contextController,
         OrganizationalUnitRefs orgUnits) throws EscidocClientException {
         setSpacing(true);
@@ -67,7 +75,7 @@ public class AddOrgUnitstoContext extends VerticalLayout {
     }
 
     private void createDragComponents() throws EscidocClientException {
-        tree = new Tree("Drag from tree to table");
+        tree = new Tree();
         table = new Table("Drag from table to tree");
         table.setWidth("100%");
 
@@ -76,8 +84,13 @@ public class AddOrgUnitstoContext extends VerticalLayout {
         // Populate the table and set up drag & drop
         initializeTable(new SourceIs(tree));
 
+        VerticalLayout vlTree = new VerticalLayout();
+        vlTree.addComponent(new Label("Drag from Tree to Table to add new OU"));
+        vlTree.addComponent(tf);
+        vlTree.addComponent(tree);
+
         HorizontalLayout hl = new HorizontalLayout();
-        hl.addComponent(tree);
+        hl.addComponent(vlTree);
         hl.addComponent(table);
 
         VerticalLayout vl = new VerticalLayout();
@@ -116,6 +129,7 @@ public class AddOrgUnitstoContext extends VerticalLayout {
     }
 
     private void initializeTree(final ClientSideCriterion acceptCriterion) throws EscidocClientException {
+        treeFilter();
         tree.setContainerDataSource(getOrgUnitRefsContainerTree());
         tree.setItemCaptionPropertyId(PROPERTY_NAME);
 
@@ -124,6 +138,26 @@ public class AddOrgUnitstoContext extends VerticalLayout {
             tree.expandItemsRecursively(it.next());
         }
         tree.setDragMode(TreeDragMode.NODE);
+    }
+
+    private void treeFilter() {
+        tf = new TextField();
+
+        tf.addListener(new TextChangeListener() {
+            SimpleStringFilter filter = null;
+
+            public void textChange(TextChangeEvent event) {
+                Filterable f = (Filterable) tree.getContainerDataSource();
+
+                // Remove old filter
+                if (filter != null)
+                    f.removeContainerFilter(filter);
+
+                // Set new filter for the "caption" property
+                filter = new SimpleStringFilter(PROPERTY_NAME, event.getText(), true, false);
+                f.addContainerFilter(filter);
+            }
+        });
     }
 
     private void initializeTable(final ClientSideCriterion acceptCriterion) throws EscidocClientException {
