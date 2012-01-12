@@ -58,9 +58,6 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 
 final class ActionHandlerImpl implements Action.Handler {
 
-    private static final String CANNOT_REMOVE_CONTEXT_NOT_IN_STATUS_CREATED =
-        "Cannot remove this context since it is not in status created";
-
     private static final long serialVersionUID = 1L;
 
     private static final Logger LOG = LoggerFactory.getLogger(ActionHandlerImpl.class);
@@ -70,10 +67,6 @@ final class ActionHandlerImpl implements Action.Handler {
     private final Repositories repositories;
 
     private final TreeDataSource treeDataSource;
-
-    private static final String DELETE_RESOURCE_WND_NAME = "Do you really want to delete this resource!?";
-
-    private static final String DELETE_RESOURCE = "Are you confident to delete this resource!?";
 
     private Router router;
 
@@ -171,8 +164,10 @@ final class ActionHandlerImpl implements Action.Handler {
                 tryDeleteContext(selectedResource, sender);
             }
             else {
-                mainWindow.showNotification(new Window.Notification(CANNOT_REMOVE_CONTEXT_NOT_IN_STATUS_CREATED,
-                    Window.Notification.TYPE_WARNING_MESSAGE));
+                mainWindow
+                    .showNotification(new Window.Notification(
+                        ViewConstants.CANNOT_REMOVE_CONTEXT_NOT_IN_STATUS_CREATED,
+                        Window.Notification.TYPE_WARNING_MESSAGE));
             }
         }
         else {
@@ -195,9 +190,9 @@ final class ActionHandlerImpl implements Action.Handler {
     }
 
     private void deleteContext(final ContextModel model, final Object sender) {
-        final Window subwindow = new Window(DELETE_RESOURCE_WND_NAME);
+        final Window subwindow = new Window(ViewConstants.DELETE_RESOURCE_WND_NAME);
         subwindow.setModal(true);
-        final Label message = new Label(DELETE_RESOURCE);
+        final Label message = new Label(ViewConstants.QUESTION_DELETE_RESOURCE);
         subwindow.addComponent(message);
 
         final Button okConfirmed = new Button("Yes", new Button.ClickListener() {
@@ -364,9 +359,9 @@ final class ActionHandlerImpl implements Action.Handler {
     }
 
     public void deleteSelected(final ItemModel model, final Object sender) throws EscidocClientException {
-        final Window subwindow = new Window(DELETE_RESOURCE_WND_NAME);
+        final Window subwindow = new Window(ViewConstants.DELETE_RESOURCE_WND_NAME);
         subwindow.setModal(true);
-        Label message = new Label(DELETE_RESOURCE);
+        Label message = new Label(ViewConstants.QUESTION_DELETE_RESOURCE);
         subwindow.addComponent(message);
 
         Button okConfirmed = new Button("Yes", new Button.ClickListener() {
@@ -407,9 +402,9 @@ final class ActionHandlerImpl implements Action.Handler {
     }
 
     public void deleteContainer(final ContainerModel model, final Object sender) throws EscidocClientException {
-        final Window subwindow = new Window(DELETE_RESOURCE_WND_NAME);
+        final Window subwindow = new Window(ViewConstants.DELETE_RESOURCE_WND_NAME);
         subwindow.setModal(true);
-        final Label message = new Label(DELETE_RESOURCE);
+        final Label message = new Label(ViewConstants.QUESTION_DELETE_RESOURCE);
         subwindow.addComponent(message);
 
         final Button okConfirmed = new Button("Yes", new Button.ClickListener() {

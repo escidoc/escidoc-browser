@@ -290,7 +290,7 @@ public class ViewConstants {
     public static final String DIRECT_MEMBERS = "Direct Members";
 
     /* ItemDeleteConfirmation */
-    public static final String DELETE_RESOURCE_WND_NAME = "Do you really want to delete this item!?";
+    public static final String DELETE_RESOURCE_WND_NAME = "Do you really want to delete this resource!?";
 
     public static final String QUESTION_DELETE_RESOURCE = "Are you confident to delete this resource!?";
 
@@ -334,5 +334,9 @@ public class ViewConstants {
     public static final String RESOURCE_NAME_CONTEXT = "Workspace: ";
 
     public static final String CONTEXT_TYPE = "Context type is ";
+
+    // ActionHandlerImpl
+    public static final String CANNOT_REMOVE_CONTEXT_NOT_IN_STATUS_CREATED =
+        "Cannot remove this context since it is not in status created";
 
 }
