@@ -14,6 +14,7 @@ import com.vaadin.data.Validator.EmptyValueException;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.Panel;
@@ -335,7 +336,11 @@ public class CreateResourcesView extends View {
             slOrgUnit.addItem(organizationalUnit.getObjid());
             slOrgUnit.setItemCaption(organizationalUnit.getObjid(), organizationalUnit.getXLinkTitle());
         }
+
         frm.getLayout().addComponent(slOrgUnit);
+        final CheckBox checkStatusOpened = new CheckBox("Create Context in Status opened?", true);
+        checkStatusOpened.setImmediate(true);
+        frm.addField("checkStatusOpened", checkStatusOpened);
 
         // btnAddContext
         Button btnAddContext = new Button("Submit", new Button.ClickListener() {
@@ -347,7 +352,7 @@ public class CreateResourcesView extends View {
                     frm.commit();
                     controller.createResourceAddContext(txtNameContext.getValue().toString(), txtDescContext
                         .getValue().toString(), txtType.getValue().toString(), slOrgUnit.getValue().toString(),
-                        repositories, router.getServiceLocation());
+                        (Boolean) checkStatusOpened.getValue(), repositories, router.getServiceLocation());
                     router.getMainWindow().showNotification(
                         "Context " + txtNameContext.getValue().toString() + " created successfully ",
                         Window.Notification.TYPE_TRAY_NOTIFICATION);

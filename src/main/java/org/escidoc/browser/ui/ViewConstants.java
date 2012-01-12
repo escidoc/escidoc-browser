@@ -124,6 +124,8 @@ public class ViewConstants {
 
     public static final String DELETE_CONTAINER = "Delete Container";
 
+    public static final String DELETE_CONTEXT = "Delete Context";
+
     public static final String CREATED_BY = "Created by";
 
     public static final String LAST_MODIFIED_BY = "Last modification by";
@@ -332,4 +334,5 @@ public class ViewConstants {
     public static final String RESOURCE_NAME_CONTEXT = "Workspace: ";
 
     public static final String CONTEXT_TYPE = "Context type is ";
+
 }

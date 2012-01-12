@@ -79,6 +79,9 @@ class ActionList {
 
     static final Action ACTION_DELETE_INSTRUMENT = new Action(ELabsViewContants.DELETE_INSTRUMENT,
         ELabsIcons.DELETE_ELEMENT_ICON);
+
     //
+
+    public static final Action ACTION_DELETE_CONTEXT = new Action(ViewConstants.DELETE_CONTEXT);
 
 }

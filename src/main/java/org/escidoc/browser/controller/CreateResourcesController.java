@@ -90,7 +90,7 @@ public class CreateResourcesController extends Controller {
     }
 
     public void createResourceAddContext(
-        String name, String description, String type, String orgUnit, Repositories repositories,
+        String name, String description, String type, String orgUnit, Boolean openedContext, Repositories repositories,
         EscidocServiceLocation serviceLocation) throws EscidocClientException {
         Preconditions.checkNotNull(name, "Name of Context is Null");
         Preconditions.checkNotNull(orgUnit, "Organizational Unit is null is Null");
@@ -108,7 +108,9 @@ public class CreateResourcesController extends Controller {
         Context newContext = repositories.context().create(cntx.build());
 
         // Open Context for Public
-        repositories.context().open(newContext);
+        if (openedContext) {
+            repositories.context().open(newContext);
+        }
         // Updating the tree
         router.getLayout().getTreeDataSource().addTopLevelResource(new ContextModel(newContext));
         router.openControllerView(

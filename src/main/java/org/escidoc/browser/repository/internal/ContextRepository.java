@@ -126,9 +126,8 @@ public class ContextRepository implements Repository {
     }
 
     @Override
-    public void delete(final String id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Not yet implemented");
+    public void delete(final String id) throws EscidocClientException {
+        client.delete(id);
 
     }
 
