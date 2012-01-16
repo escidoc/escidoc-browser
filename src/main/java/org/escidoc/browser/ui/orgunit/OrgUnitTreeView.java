@@ -82,7 +82,7 @@ public class OrgUnitTreeView extends VerticalLayout implements NavigationTreeVie
 
     @Override
     public ResourceModel getSelected() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return (ResourceModel) tree.getValue();
     }
 
     @Override

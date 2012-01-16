@@ -39,36 +39,26 @@ import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.maincontent.ContextView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.URISyntaxException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class ContextController extends Controller {
-    private Repositories repositories;
-
-    private Router router;
-
-    private final ResourceProxy resourceProxy;
-
-    private static final Logger LOG = LoggerFactory.getLogger(ContextController.class);
 
     public ContextController(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
-        this.resourceProxy = resourceProxy;
     }
 
     @Override
     protected Component createView(final ResourceProxy resourceProxy) throws EscidocClientException {
-        Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
-        return new ContextView(router, resourceProxy, repositories, this);
+        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
+        return new ContextView(getRouter(), resourceProxy, getRepositories(), this);
     }
 
     public void addOrgUnitToContext(final ContextProxyImpl resourceProxy, final String orgUnitid) {
         try {
-            repositories.context().addOrganizationalUnit(resourceProxy.getId(), orgUnitid);
+            getRepositories().context().addOrganizationalUnit(resourceProxy.getId(), orgUnitid);
             showTrayMessage("Updated!", "Organizational Unit was added Successfully");
         }
         catch (final EscidocClientException e) {
@@ -78,7 +68,7 @@ public class ContextController extends Controller {
 
     public void removeOrgUnitFromContext(final ContextProxyImpl resourceProxy, final String orgUnitid) {
         try {
-            repositories.context().delOrganizationalUnit(resourceProxy.getId(), orgUnitid);
+            getRepositories().context().delOrganizationalUnit(resourceProxy.getId(), orgUnitid);
             showTrayMessage("Updated!", "Organizational Unit was removed Successfully");
         }
         catch (final EscidocClientException e) {
@@ -88,32 +78,32 @@ public class ContextController extends Controller {
 
     public boolean canRemoveOUs() {
         try {
-            return repositories
+            return getRepositories()
                 .pdp().forCurrentUser().isAction(ActionIdConstants.DELETE_ORGANIZATIONAL_UNIT_ACTION)
-                .forResource(resourceProxy.getId()).permitted();
+                .forResource(getResourceProxy().getId()).permitted();
         }
         catch (final EscidocClientException e) {
-            router.getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
             return false;
         }
         catch (final URISyntaxException e) {
-            router.getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
             return false;
         }
     }
 
     public boolean canAddOUs() {
         try {
-            return repositories
-                .pdp().forCurrentUser().isAction(ActionIdConstants.CREATE_ORG_UNIT).forResource(resourceProxy.getId())
-                .permitted();
+            return getRepositories()
+                .pdp().forCurrentUser().isAction(ActionIdConstants.CREATE_ORG_UNIT)
+                .forResource(getResourceProxy().getId()).permitted();
         }
         catch (final EscidocClientException e) {
-            router.getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
             return false;
         }
         catch (final URISyntaxException e) {
-            router.getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
             return false;
         }
     }

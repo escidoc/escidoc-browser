@@ -80,12 +80,6 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
 
     private final EscidocServiceLocation serviceLocation;
 
-    private final Repositories repositories;
-
-    private final Router router;
-
-    private final ContainerProxy resourceProxy;
-
     private final Window mainWindow;
 
     private InvestigationSeriesBean investigationSeriesBean;
@@ -93,20 +87,18 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
     private IBeanModel beanModel;
 
     private final Object LOCK = new Object() {
+        // empty
     };
+
+    private ContainerProxy containerProxy;
 
     public InvestigationSeriesController(final Repositories repositories, final Router router,
         final ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
-        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
-        Preconditions.checkNotNull(router, "mainSite is null: %s", router);
-        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         Preconditions.checkArgument(resourceProxy instanceof ContainerProxy, "resourceProxy is not a Containerproxy");
-        this.router = router;
         this.mainWindow = router.getMainWindow();
         this.serviceLocation = router.getServiceLocation();
-        this.repositories = repositories;
-        this.resourceProxy = (ContainerProxy) resourceProxy;
+        this.containerProxy = (ContainerProxy) resourceProxy;
         setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
         resourceToBean();
         this.view = createView();
@@ -135,7 +127,7 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
     private void saveModel() {
         synchronized (LOCK) {
             Preconditions.checkNotNull(this.beanModel, "DataBean to store is NULL");
-            final ContainerRepository containerRepositories = repositories.container();
+            final ContainerRepository containerRepositories = getRepositories().container();
             try {
                 validateBean(this.beanModel);
             }
@@ -145,7 +137,7 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
             }
 
             try {
-                final Container container = containerRepositories.findContainerById(this.resourceProxy.getId());
+                final Container container = containerRepositories.findContainerById(getResourceProxy().getId());
                 final MetadataRecord metadataRecord = container.getMetadataRecords().get(ESCIDOC);
                 metadataRecord.setContent(beanToDom(this.investigationSeriesBean));
                 containerRepositories.update(container);
@@ -198,7 +190,7 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
     }
 
     private void resourceToBean() {
-        final NodeList nodeList = resourceProxy.getMedataRecords().get(ESCIDOC).getContent().getChildNodes();
+        final NodeList nodeList = containerProxy.getMedataRecords().get(ESCIDOC).getContent().getChildNodes();
 
         this.investigationSeriesBean = new InvestigationSeriesBean();
         for (int i = 0; i < nodeList.getLength(); i++) {
@@ -217,16 +209,16 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
     }
 
     private Component createView() {
-        return new InvestigationSeriesView(this.resourceProxy, this.investigationSeriesBean, createBreadCrumbModel(),
-            this, this.router);
+        return new InvestigationSeriesView((ContainerProxy) getResourceProxy(), this.investigationSeriesBean,
+            createBreadCrumbModel(), this, getRouter());
     }
 
     private List<ResourceModel> createBreadCrumbModel() {
-        final ResourceHierarchy rs = new ResourceHierarchy(this.serviceLocation, this.repositories);
+        final ResourceHierarchy rs = new ResourceHierarchy(this.serviceLocation, this.getRepositories());
         try {
-            final List<ResourceModel> hierarchy = rs.getHierarchy(resourceProxy);
+            final List<ResourceModel> hierarchy = rs.getHierarchy(containerProxy);
             Collections.reverse(hierarchy);
-            hierarchy.add(this.resourceProxy);
+            hierarchy.add(getResourceProxy());
             return hierarchy;
         }
         catch (final EscidocClientException e) {
@@ -238,9 +230,9 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
     @Override
     public boolean hasUpdateAccess() {
         try {
-            return this.repositories
-                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER).forResource(resourceProxy.getId())
-                .permitted();
+            return getRepositories()
+                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER)
+                .forResource(containerProxy.getId()).permitted();
         }
         catch (final UnsupportedOperationException e) {
             showError("Internal error");
@@ -278,7 +270,8 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
     }
 
     @Override
-    protected Component createView(final ResourceProxy resourceProxy) throws EscidocClientException {
-        throw new UnsupportedOperationException("not-yet-implemented.");
+    protected Component createView(final ResourceProxy containerProxy) throws EscidocClientException {
+        return new InvestigationSeriesView((ContainerProxy) containerProxy, this.investigationSeriesBean,
+            createBreadCrumbModel(), this, getRouter());
     }
 }

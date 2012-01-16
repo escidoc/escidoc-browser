@@ -57,7 +57,7 @@ public class TreeClickListener implements ItemClickListener {
 
     public TreeClickListener(final Window mainWindow, final Router router) {
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
-        Preconditions.checkNotNull(router, "mainSite is null: %s", router);
+        Preconditions.checkNotNull(router, "router is null: %s", router);
 
         this.mainWindow = mainWindow;
         this.router = router;

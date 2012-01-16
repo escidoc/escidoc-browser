@@ -28,17 +28,8 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import org.escidoc.browser.controller.ContextController;
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.model.ResourceType;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
-import org.escidoc.browser.ui.view.helpers.CreatePermanentLinkVH;
-import org.escidoc.browser.ui.view.helpers.DirectMember;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.ui.AbstractComponentContainer;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.CssLayout;
@@ -48,6 +39,16 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
+
+import org.escidoc.browser.controller.ContextController;
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
+import org.escidoc.browser.ui.view.helpers.CreatePermanentLinkVH;
+import org.escidoc.browser.ui.view.helpers.DirectMember;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -77,7 +78,7 @@ public class ContextView extends View {
     public ContextView(final Router router, final ResourceProxy resourceProxy, final Repositories repositories,
         ContextController contextController) throws EscidocClientException {
 
-        Preconditions.checkNotNull(router, "mainSite is null: %s", router);
+        Preconditions.checkNotNull(router, "router is null: %s", router);
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
 

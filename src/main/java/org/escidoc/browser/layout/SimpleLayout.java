@@ -399,7 +399,7 @@ public class SimpleLayout extends LayoutDesign {
         return accordion;
     }
 
-    private void addOrgUnitTab(final Accordion accordion) throws EscidocClientException {
+    private void addOrgUnitTab(final Accordion accordion) {
         final OrgUnitTreeView tree = treeBuilder.buildOrgUnitTree();
         accordion.addTab(tree, ViewConstants.ORG_UNITS, NO_ICON);
     }

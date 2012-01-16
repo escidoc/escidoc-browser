@@ -87,31 +87,24 @@ public final class RigController extends Controller implements IRigAction {
 
     private static final String URI_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
-    private final Repositories repositories;
-
     private final EscidocServiceLocation serviceLocation;
-
-    private final ResourceProxy resourceProxy;
 
     private final Window mainWindow;
 
     private IBeanModel beanModel;
 
     private final Object LOCK_1 = new Object() {
+        // empty
     };
 
     private final Object LOCK_2 = new Object() {
+        // empty
     };
 
     public RigController(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
-        Preconditions.checkNotNull(repositories, "Repository ref is null");
-        Preconditions.checkNotNull(router, "Router ref is null");
-        Preconditions.checkNotNull(resourceProxy, "ResourceProxy ref is null");
         Preconditions.checkArgument(resourceProxy instanceof ItemProxy, "ResourceProxy is not an ItemProxy");
         this.serviceLocation = router.getServiceLocation();
-        this.resourceProxy = resourceProxy;
-        this.repositories = repositories;
         this.mainWindow = router.getMainWindow();
         this.view = createView(resourceProxy);
         this.setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
@@ -142,7 +135,7 @@ public final class RigController extends Controller implements IRigAction {
                     final Node attributeNode = node.getAttributes().getNamedItemNS(URI_RDF, "resource");
                     final String instrumentID = attributeNode.getNodeValue();
                     try {
-                        final ItemProxy instrumentProxy = (ItemProxy) this.repositories.item().findById(instrumentID);
+                        final ItemProxy instrumentProxy = (ItemProxy) getRepositories().item().findById(instrumentID);
                         rigBean.getContentList().add(loadRelatedInstrumentBeanData(instrumentProxy));
                     }
                     catch (final EscidocClientException e) {
@@ -222,19 +215,19 @@ public final class RigController extends Controller implements IRigAction {
 
     @Override
     protected Component createView(final ResourceProxy resourceProxy) {
-        RigBean rigBean = null;
         final ItemProxyImpl itemProxyImpl = (ItemProxyImpl) resourceProxy;
-        rigBean = loadBeanData(itemProxyImpl);
+
+        RigBean rigBean = loadBeanData(itemProxyImpl);
         return new RigView(rigBean, this, createBeadCrumbModel(), resourceProxy, this.serviceLocation);
     }
 
     private List<ResourceModel> createBeadCrumbModel() {
-        final ResourceHierarchy rs = new ResourceHierarchy(this.serviceLocation, this.repositories);
+        final ResourceHierarchy rs = new ResourceHierarchy(this.serviceLocation, getRepositories());
         List<ResourceModel> hierarchy = null;
         try {
-            hierarchy = rs.getHierarchy(this.resourceProxy);
+            hierarchy = rs.getHierarchy(this.getResourceProxy());
             Collections.reverse(hierarchy);
-            hierarchy.add(this.resourceProxy);
+            hierarchy.add(this.getResourceProxy());
             return hierarchy;
         }
         catch (final EscidocClientException e) {
@@ -267,7 +260,7 @@ public final class RigController extends Controller implements IRigAction {
     private void saveModel() {
         synchronized (LOCK_1) {
             Preconditions.checkNotNull(this.beanModel, "DataBean to store is NULL");
-            final ItemRepository itemRepositories = this.repositories.item();
+            final ItemRepository itemRepositories = getRepositories().item();
             try {
                 validateBean(this.beanModel);
             }
@@ -302,7 +295,7 @@ public final class RigController extends Controller implements IRigAction {
             try {
                 List<ResourceModel> items = null;
                 for (final String cmmId : ELabsCache.getInstrumentCMMIds()) {
-                    items = this.repositories.item().findItemsByContentModel(cmmId);
+                    items = getRepositories().item().findItemsByContentModel(cmmId);
                     for (final ResourceModel itemModel : items) {
                         if (itemModel instanceof ItemProxy) {
                             final ItemProxy itemProxy = (ItemProxy) itemModel;
@@ -323,8 +316,8 @@ public final class RigController extends Controller implements IRigAction {
     @Override
     public boolean hasUpdateAccess() {
         try {
-            return this.repositories
-                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_ITEM).forResource(resourceProxy.getId())
+            return getRepositories()
+                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_ITEM).forResource(getResourceProxy().getId())
                 .permitted();
         }
         catch (final UnsupportedOperationException e) {

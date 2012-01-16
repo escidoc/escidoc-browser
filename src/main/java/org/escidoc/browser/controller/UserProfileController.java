@@ -14,33 +14,27 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class UserProfileController extends Controller {
 
-    private final Repositories repositories;
-
-    private final Router router;
-
     private UserRepositoryImpl userRep;
 
     public UserProfileController(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
-        this.repositories = repositories;
-        this.router = router;
         this.userRep = getUserRepository();
         this.view = createView();
         this.setResourceName(ViewConstants.EDIT_PROFILE);
     }
 
     private CurrentUser getCurrentUser() {
-        return userRep.findCurrentUser();
+        return getUserRepository().findCurrentUser();
     }
 
     private UserRepositoryImpl getUserRepository() {
-        userRep = new UserRepositoryImpl(this.router.getServiceLocation());
-        userRep.withToken(this.router.getApp().getCurrentUser().getToken());
+        userRep = new UserRepositoryImpl(getRouter().getServiceLocation());
+        userRep.withToken(getRouter().getApp().getCurrentUser().getToken());
         return userRep;
     }
 
     private Component createView() {
-        return new UserProfileView(router, repositories, this, getCurrentUser());
+        return new UserProfileView(getRouter(), getRepositories(), this, getCurrentUser());
     }
 
     public void updateProfile(final String name, final String password) throws EscidocClientException {
@@ -55,7 +49,6 @@ public class UserProfileController extends Controller {
 
     @Override
     protected Component createView(final ResourceProxy resourceProxy) throws EscidocClientException {
-        throw new UnsupportedOperationException("not-yet-implemented.");
+        return createView();
     }
-
 }

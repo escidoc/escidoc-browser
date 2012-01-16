@@ -282,7 +282,8 @@ public class Router {
                 layout.openView(srch, "Advanced Search");
             }
             else {
-                throw new UnsupportedOperationException("Not yet implemented");
+                throw new UnsupportedOperationException("Unknown parameter: "
+                    + parameters.get(AppConstants.ARG_TYPE)[0]);
             }
         }
     }
@@ -344,7 +345,7 @@ public class Router {
             LOG.error(ViewConstants.CONTROLLER_ERR_SECU_EXEP + e.getLocalizedMessage());
         }
         catch (final InvocationTargetException e) {
-            LOG.error(ViewConstants.CONTROLLER_ERR_INVOKE_EXEP + e.getLocalizedMessage());
+            LOG.error(ViewConstants.CONTROLLER_ERR_INVOKE_EXEP + e.getTargetException().getMessage());
         }
         catch (final NoSuchMethodException e) {
             LOG.error(ViewConstants.CONTROLLER_ERR_NOSUCHMETH_EXEP + e.getLocalizedMessage());

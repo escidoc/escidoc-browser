@@ -86,9 +86,6 @@ import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.om.item.Item;
 import de.escidoc.core.resources.oum.OrganizationalUnit;
 
-/**
- * 
- */
 public final class InstrumentController extends Controller implements ISaveAction {
 
     private static final Logger LOG = LoggerFactory.getLogger(InstrumentController.class);
@@ -101,33 +98,22 @@ public final class InstrumentController extends Controller implements ISaveActio
 
     private static final String URI_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
-    private final Repositories repositories;
-
     private final EscidocServiceLocation serviceLocation;
-
-    private final ResourceProxy resourceProxy;
 
     private final Window mainWindow;
 
-    private final Router router;
+    private final Object LOCK = new Object() {
+        // Empty
+    };
 
     private IBeanModel beanModel;
 
-    private final Object LOCK = new Object() {
-    };
-
     public InstrumentController(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
-        Preconditions.checkNotNull(repositories, "Repository ref is null");
-        Preconditions.checkNotNull(router, "Router ref is null");
-        Preconditions.checkNotNull(resourceProxy, "ResourceProxy ref is null");
         Preconditions.checkArgument(resourceProxy instanceof ItemProxy, "ResourceProxy is not an ItemProxy");
         this.setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
-        this.router = router;
-        this.serviceLocation = router.getServiceLocation();
-        this.resourceProxy = resourceProxy;
-        this.repositories = repositories;
-        this.mainWindow = router.getMainWindow();
+        this.serviceLocation = getRouter().getServiceLocation();
+        this.mainWindow = getRouter().getMainWindow();
         getOrgUnits();
         getUsers();
         loadAdminDescriptorInfo();
@@ -142,7 +128,7 @@ public final class InstrumentController extends Controller implements ISaveActio
      * @throws EscidocBrowserException
      *             exception
      */
-    private InstrumentBean loadBeanData(final ResourceProxy resourceProxy) throws EscidocBrowserException {
+    private static InstrumentBean loadBeanData(final ResourceProxy resourceProxy) throws EscidocBrowserException {
         final ItemProxy itemProxy = (ItemProxy) resourceProxy;
         final InstrumentBean instrumentBean = new InstrumentBean();
         instrumentBean.setObjectId(itemProxy.getId());
@@ -283,7 +269,7 @@ public final class InstrumentController extends Controller implements ISaveActio
         ContextProxyImpl context;
         try {
             context =
-                (ContextProxyImpl) this.repositories.context().findById(this.resourceProxy.getContext().getObjid());
+                (ContextProxyImpl) getRepositories().context().findById(getResourceProxy().getContext().getObjid());
             if (context == null) {
                 LOG.error("Context is null");
                 showError("Internal error");
@@ -322,7 +308,7 @@ public final class InstrumentController extends Controller implements ISaveActio
                         final Node node = fileFormatNodeList.item(i);
                         if (node.hasChildNodes()) {
                             final NodeList interNodeList = node.getChildNodes();
-                        final FileFormatBean bean = new FileFormatBean();
+                            final FileFormatBean bean = new FileFormatBean();
                             for (int j = 0; j < interNodeList.getLength(); j++) {
                                 final Node formatNode = interNodeList.item(j);
                                 final String nodeName = formatNode.getLocalName();
@@ -386,12 +372,12 @@ public final class InstrumentController extends Controller implements ISaveActio
     }
 
     private List<ResourceModel> createBeadCrumbModel() {
-        final ResourceHierarchy rs = new ResourceHierarchy(this.serviceLocation, this.repositories);
+        final ResourceHierarchy rs = new ResourceHierarchy(this.serviceLocation, getRepositories());
         List<ResourceModel> hierarchy = null;
         try {
-            hierarchy = rs.getHierarchy(this.resourceProxy);
+            hierarchy = rs.getHierarchy(getResourceProxy());
             Collections.reverse(hierarchy);
-            hierarchy.add(this.resourceProxy);
+            hierarchy.add(getResourceProxy());
             return hierarchy;
         }
         catch (final EscidocClientException e) {
@@ -409,7 +395,7 @@ public final class InstrumentController extends Controller implements ISaveActio
         Collection<UserAccount> userAccounts = null;
         try {
             final UserService userService =
-                new UserService(this.serviceLocation.getEscidocUri(), this.router.getApp().getCurrentUser().getToken());
+                new UserService(this.serviceLocation.getEscidocUri(), getRouter().getApp().getCurrentUser().getToken());
             userAccounts = userService.findAll();
             UserBean bean = null;
             for (final UserAccount account : userAccounts) {
@@ -440,7 +426,7 @@ public final class InstrumentController extends Controller implements ISaveActio
         final List<OrgUnitBean> orgUnitList = new ArrayList<OrgUnitBean>();
         try {
             final OrgUnitService orgUnitService =
-                new OrgUnitService(this.serviceLocation.getEscidocUri(), this.router
+                new OrgUnitService(this.serviceLocation.getEscidocUri(), getRouter()
                     .getApp().getCurrentUser().getToken());
             orgUnits = orgUnitService.findAll();
             OrgUnitBean bean = null;
@@ -490,11 +476,11 @@ public final class InstrumentController extends Controller implements ISaveActio
     private void saveModel() {
         synchronized (LOCK) {
             Preconditions.checkNotNull(this.beanModel, "DataBean to store is NULL");
-            final ItemRepository itemRepositories = this.repositories.item();
+            final ItemRepository itemRepositories = getRepositories().item();
             try {
                 validateBean(this.beanModel);
             }
-        catch (final EscidocBrowserException e) {
+            catch (final EscidocBrowserException e) {
                 LOG.error(e.getMessage());
                 return;
             }
@@ -522,8 +508,8 @@ public final class InstrumentController extends Controller implements ISaveActio
     @Override
     public boolean hasUpdateAccess() {
         try {
-            return this.repositories
-                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_ITEM).forResource(this.resourceProxy.getId())
+            return getRepositories()
+                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_ITEM).forResource(getResourceProxy().getId())
                 .permitted();
         }
         catch (final UnsupportedOperationException e) {

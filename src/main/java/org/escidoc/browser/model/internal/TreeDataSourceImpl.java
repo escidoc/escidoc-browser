@@ -94,10 +94,6 @@ public class TreeDataSourceImpl implements TreeDataSource {
         }
     }
 
-    // public void addTopLevel(ResourceModel topLevelItem) {
-    // dataSource.addItem(topLevelItem);
-    // }
-
     private Item add(final ResourceModel resource) {
         Preconditions.checkNotNull(resource, "resource is null: %s", resource);
         return dataSource.addItem(resource);
@@ -198,7 +194,8 @@ public class TreeDataSourceImpl implements TreeDataSource {
             case CONTAINER:
                 return dataSource.removeItem(resourceModel);
             default:
-                throw new UnsupportedOperationException("Not yet implemented");
+                throw new UnsupportedOperationException("Cannot remove resource with the type: "
+                    + resourceModel.getType());
         }
     }
 
@@ -217,7 +214,7 @@ public class TreeDataSourceImpl implements TreeDataSource {
 
     @Override
     public void reload() throws EscidocClientException {
-        throw new UnsupportedOperationException("not-yet-implemented.");
+        init();
     }
 
 }

@@ -28,7 +28,7 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import java.util.List;
+import com.google.common.base.Preconditions;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
@@ -37,7 +37,7 @@ import org.escidoc.browser.repository.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
+import java.util.List;
 
 import de.escidoc.core.client.ContainerHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -101,8 +101,6 @@ public class UserAccountRepository implements Repository {
 
     @Override
     public void delete(String id) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Not yet implemented");
-
     }
 }

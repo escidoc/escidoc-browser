@@ -37,7 +37,6 @@ import org.escidoc.browser.layout.LayoutDesign;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,11 +52,11 @@ public abstract class Controller {
 
     private final ResourceProxy resourceProxy;
 
-    protected final Router router;
-
-    private String resourceName;
+    private final Router router;
 
     private final LayoutDesign layout;
+
+    private String resourceName;
 
     public Controller(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
@@ -67,17 +66,17 @@ public abstract class Controller {
         this.router = router;
         this.resourceProxy = resourceProxy;
         this.layout = router.getLayout();
-        try {
-            this.view = createView(resourceProxy);
-            if (resourceProxy != null) {
-                this.setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
-            }
-        }
-        catch (final EscidocClientException e) {
-            router.getMainWindow().showNotification(
-                ViewConstants.VIEW_ERROR_CANNOT_LOAD_VIEW + e.getLocalizedMessage(), Notification.TYPE_ERROR_MESSAGE);
-            LOG.error("Failed at: ", e.getStackTrace());
-        }
+        // try {
+        // this.view = createView(resourceProxy);
+        // if (resourceProxy != null) {
+        // this.setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
+        // }
+        // }
+        // catch (final EscidocClientException e) {
+        // router.getMainWindow().showNotification(
+        // ViewConstants.VIEW_ERROR_CANNOT_LOAD_VIEW + e.getLocalizedMessage(), Notification.TYPE_ERROR_MESSAGE);
+        // LOG.error("Failed at: ", e.getStackTrace());
+        // }
     }
 
     protected abstract Component createView(final ResourceProxy resourceProxy) throws EscidocClientException;

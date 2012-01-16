@@ -94,12 +94,11 @@ public class CreateResourcesController extends Controller {
         // Open Context for Public
         repositories.context().open(newContext);
         // Updating the tree
-        router.getLayout().getTreeDataSource().addTopLevelResource(new ContextModel(newContext));
+        getRouter().getLayout().getTreeDataSource().addTopLevelResource(new ContextModel(newContext));
     }
 
     @Override
     protected Component createView(final ResourceProxy resourceProxy) throws EscidocClientException {
         return createView();
     }
-
 }

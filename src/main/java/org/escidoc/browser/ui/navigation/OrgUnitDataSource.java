@@ -54,15 +54,7 @@ public class OrgUnitDataSource implements TreeDataSource {
 
     private void addTopLevel() throws EscidocClientException {
         for (final ResourceModel topLevel : repository.findTopLevel()) {
-            final Item addedItem = add(topLevel);
-            if (isAlreadyAdded(addedItem)) {
-                return;
-            }
-            bind(addedItem, topLevel);
-
-            if (topLevel.getType() == ResourceType.CONTEXT && isChildless((ContextModel) topLevel)) {
-                dataSource.setChildrenAllowed(topLevel, false);
-            }
+            addTopLevelResource(topLevel);
         }
     }
 
@@ -165,7 +157,8 @@ public class OrgUnitDataSource implements TreeDataSource {
             case CONTAINER:
                 return dataSource.removeItem(resourceModel);
             default:
-                throw new UnsupportedOperationException("Not yet implemented");
+                throw new UnsupportedOperationException("Cannot remove resource with the type: "
+                    + resourceModel.getType());
         }
     }
 
@@ -188,8 +181,16 @@ public class OrgUnitDataSource implements TreeDataSource {
     }
 
     @Override
-    public void addTopLevelResource(ResourceModel context) {
-        throw new UnsupportedOperationException("not-yet-implemented.");
+    public void addTopLevelResource(ResourceModel topLevel) {
+        final Item addedItem = add(topLevel);
+        if (isAlreadyAdded(addedItem)) {
+            return;
+        }
+        bind(addedItem, topLevel);
+
+        if (topLevel.getType() == ResourceType.CONTEXT && isChildless((ContextModel) topLevel)) {
+            dataSource.setChildrenAllowed(topLevel, false);
+        }
     }
 
 }
