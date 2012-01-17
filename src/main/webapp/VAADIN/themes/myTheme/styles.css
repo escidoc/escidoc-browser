@@ -164,6 +164,10 @@ ul.horizontal_list li {
 .v-table-drophere > div {
    background: transparent;
 }*/
+.deleteTable .v-table-body{
+	background-image: url(images/assets/recyclebin.png);
+	background-repeat:no-repeat;
+}
 .v-table-body {
 	overflow: hidden !important;
 }

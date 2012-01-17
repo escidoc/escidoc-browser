@@ -23,6 +23,7 @@ import com.vaadin.event.dd.acceptcriteria.And;
 import com.vaadin.event.dd.acceptcriteria.ClientSideCriterion;
 import com.vaadin.event.dd.acceptcriteria.SourceIs;
 import com.vaadin.ui.AbstractSelect.AcceptItem;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
@@ -31,6 +32,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.TreeDragMode;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.Reindeer;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.reference.OrganizationalUnitRef;
@@ -78,10 +80,9 @@ public class AddOrgUnitstoContext extends VerticalLayout {
         tree = new Tree();
         table = new Table("Drag from table to tree");
         table.setWidth("100%");
+        tableDelete = new Table();
 
-        // Populate the tree and set up as drag
         initializeTree(new SourceIs(table));
-        // Populate the table and set up drag & drop
         initializeTable(new SourceIs(tree));
 
         VerticalLayout vlTree = new VerticalLayout();
@@ -92,22 +93,24 @@ public class AddOrgUnitstoContext extends VerticalLayout {
         HorizontalLayout hl = new HorizontalLayout();
         hl.addComponent(vlTree);
         hl.addComponent(table);
-
         VerticalLayout vl = new VerticalLayout();
-        tableDelete = new Table("Drag here te remove");
+        vl.setWidth("100%");
 
         if (controller.canRemoveOUs()) {
             initializeDeleteTable(new SourceIs(table));
             vl.addComponent(tableDelete);
+            vl.setComponentAlignment(tableDelete, Alignment.TOP_RIGHT);
         }
-
         addComponent(hl);
         addComponent(vl);
     }
 
     private void initializeDeleteTable(final ClientSideCriterion acceptCriterion) throws EscidocClientException {
-        tableDelete.setWidth("100%");
-        tableDelete.setHeight("100px");
+        tableDelete.setWidth("170px");
+        tableDelete.setHeight("200px");
+        tableDelete.setStyleName(Reindeer.TABLE_BORDERLESS);
+        tableDelete.addStyleName("deleteTable");
+        tableDelete.addContainerProperty("Drag here to remove", String.class, null);
         tableDelete.setDropHandler(new DropHandler() {
             public void drop(DragAndDropEvent dropEvent) {
                 DataBoundTransferable t = (DataBoundTransferable) dropEvent.getTransferable();
@@ -128,6 +131,10 @@ public class AddOrgUnitstoContext extends VerticalLayout {
 
     }
 
+    private void initializeDeleteLayout() {
+        // someLayout = new VerticalLayout();
+    }
+
     private void initializeTree(final ClientSideCriterion acceptCriterion) throws EscidocClientException {
         treeFilter();
         tree.setContainerDataSource(getOrgUnitRefsContainerTree());
@@ -142,7 +149,6 @@ public class AddOrgUnitstoContext extends VerticalLayout {
 
     private void treeFilter() {
         tf = new TextField();
-
         tf.addListener(new TextChangeListener() {
             SimpleStringFilter filter = null;
 
@@ -152,7 +158,6 @@ public class AddOrgUnitstoContext extends VerticalLayout {
                 // Remove old filter
                 if (filter != null)
                     f.removeContainerFilter(filter);
-
                 // Set new filter for the "caption" property
                 filter = new SimpleStringFilter(PROPERTY_NAME, event.getText(), true, false);
                 f.addContainerFilter(filter);
