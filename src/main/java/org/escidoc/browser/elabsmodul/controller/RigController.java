@@ -30,7 +30,6 @@ package org.escidoc.browser.elabsmodul.controller;
 
 import com.google.common.base.Preconditions;
 
-import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
 
 import org.escidoc.browser.controller.Controller;
@@ -106,7 +105,6 @@ public final class RigController extends Controller implements IRigAction {
         Preconditions.checkArgument(resourceProxy instanceof ItemProxy, "ResourceProxy is not an ItemProxy");
         this.serviceLocation = router.getServiceLocation();
         this.mainWindow = router.getMainWindow();
-        this.view = createView(resourceProxy);
         this.setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
     }
 
@@ -211,14 +209,6 @@ public final class RigController extends Controller implements IRigAction {
             LOG.error(e.getLocalizedMessage());
         }
         return null;
-    }
-
-    @Override
-    protected Component createView(final ResourceProxy resourceProxy) {
-        final ItemProxyImpl itemProxyImpl = (ItemProxyImpl) resourceProxy;
-
-        RigBean rigBean = loadBeanData(itemProxyImpl);
-        return new RigView(rigBean, this, createBeadCrumbModel(), resourceProxy, this.serviceLocation);
     }
 
     private List<ResourceModel> createBeadCrumbModel() {
@@ -353,5 +343,12 @@ public final class RigController extends Controller implements IRigAction {
             showError("Please fill out all of the requried fields!");
             throw new EscidocBrowserException("Some required field is null or the instrument's list is empty");
         }
+    }
+
+    @Override
+    public void createView() {
+        view =
+            new RigView(loadBeanData((ItemProxyImpl) getResourceProxy()), this, createBeadCrumbModel(),
+                getResourceProxy(), this.serviceLocation);
     }
 }

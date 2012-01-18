@@ -30,7 +30,6 @@ package org.escidoc.browser.elabsmodul.controller;
 
 import com.google.common.base.Preconditions;
 
-import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
 
 import org.escidoc.browser.controller.Controller;
@@ -136,7 +135,6 @@ public class InvestigationController extends Controller implements IInvestigatio
 
         loadAdminDescriptorInfo();
         getUsers();
-        this.view = createView(resourceProxy);
         this.setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
 
     }
@@ -216,25 +214,7 @@ public class InvestigationController extends Controller implements IInvestigatio
         }
     }
 
-    @Override
-    protected Component createView(final ResourceProxy resourceProxy) {
-        InvestigationBean investigationBean = null;
-        List<ResourceModel> breadCrumbModel = null;
-        final ContainerProxyImpl containerProxy = (ContainerProxyImpl) resourceProxy;
-
-        try {
-            investigationBean = loadBeanData(containerProxy);
-        }
-        catch (final EscidocBrowserException e) {
-            LOG.error(e.getLocalizedMessage());
-            investigationBean = null;
-        }
-        breadCrumbModel = createBreadCrumbModel();
-
-        return new InvestigationView(investigationBean, this, breadCrumbModel, containerProxy, getRouter());
-    }
-
-    private InvestigationBean loadBeanData(final ContainerProxy containerProxy) throws EscidocBrowserException {
+    private InvestigationBean loadBeanData(final ContainerProxy containerProxy) {
         InvestigationBean investigationBean = new InvestigationBean();
         investigationBean.setObjid(containerProxy.getId());
         final Element e = containerProxy.getMedataRecords().get(ESCIDOC).getContent();
@@ -312,10 +292,7 @@ public class InvestigationController extends Controller implements IInvestigatio
                         LOG.error(ex.getMessage());
                     }
                     investigationBean.setRigBean(rigBean);
-
-                    if (rigBean != null) {
-                        investigationBean.setRigComplexId(rigBean.getComplexId());
-                    }
+                    investigationBean.setRigComplexId(rigBean.getComplexId());
                 }
             }
             else if ("instrument".equals(nodeName) && URI_EL.equals(nsUri)) {
@@ -630,5 +607,12 @@ public class InvestigationController extends Controller implements IInvestigatio
             showError("Please fill out all of the requried fields!");
             throw new EscidocBrowserException("Some required field is null");
         }
+    }
+
+    @Override
+    public void createView() {
+        view =
+            new InvestigationView(loadBeanData((ContainerProxyImpl) getResourceProxy()), this, createBreadCrumbModel(),
+                (ContainerProxyImpl) getResourceProxy(), getRouter());
     }
 }

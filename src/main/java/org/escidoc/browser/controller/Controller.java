@@ -37,14 +37,10 @@ import org.escidoc.browser.layout.LayoutDesign;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public abstract class Controller {
-
-    private final static Logger LOG = LoggerFactory.getLogger(Controller.class);
 
     protected Component view;
 
@@ -61,25 +57,14 @@ public abstract class Controller {
     public Controller(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(router, "router is null: %s", router);
-
         this.repositories = repositories;
         this.router = router;
         this.resourceProxy = resourceProxy;
         this.layout = router.getLayout();
-        // try {
-        // this.view = createView(resourceProxy);
-        // if (resourceProxy != null) {
-        // this.setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
-        // }
-        // }
-        // catch (final EscidocClientException e) {
-        // router.getMainWindow().showNotification(
-        // ViewConstants.VIEW_ERROR_CANNOT_LOAD_VIEW + e.getLocalizedMessage(), Notification.TYPE_ERROR_MESSAGE);
-        // LOG.error("Failed at: ", e.getStackTrace());
-        // }
+        setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
     }
 
-    protected abstract Component createView(final ResourceProxy resourceProxy) throws EscidocClientException;
+    public abstract void createView();
 
     protected Repositories getRepositories() {
         return repositories;
@@ -94,7 +79,9 @@ public abstract class Controller {
     }
 
     public void showView() {
-        layout.openView(view, this.getResourceName());
+        Preconditions.checkNotNull(view, "view is null: %s", view);
+        Preconditions.checkNotNull(layout, "layout is null: %s", layout);
+        layout.openView(view, getResourceName());
     }
 
     public void showViewByReloading() {
@@ -162,4 +149,5 @@ public abstract class Controller {
         this.router
             .getApp().getMainWindow().showNotification(trayTitle, trayMessage, Notification.TYPE_TRAY_NOTIFICATION);
     }
+
 }

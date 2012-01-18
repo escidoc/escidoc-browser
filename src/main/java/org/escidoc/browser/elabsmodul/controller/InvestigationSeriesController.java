@@ -30,7 +30,6 @@ package org.escidoc.browser.elabsmodul.controller;
 
 import com.google.common.base.Preconditions;
 
-import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
 
 import org.escidoc.browser.AppConstants;
@@ -101,7 +100,6 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
         this.containerProxy = (ContainerProxy) resourceProxy;
         setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
         resourceToBean();
-        this.view = createView();
     }
 
     @Override
@@ -208,10 +206,12 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
         }
     }
 
-    private Component createView() {
-        return new InvestigationSeriesView((ContainerProxy) getResourceProxy(), this.investigationSeriesBean,
-            createBreadCrumbModel(), this, getRouter());
-    }
+    // @Override
+    // protected void createView() {
+    // view =
+    // new InvestigationSeriesView((ContainerProxy) getResourceProxy(), this.investigationSeriesBean,
+    // createBreadCrumbModel(), this, getRouter());
+    // }
 
     private List<ResourceModel> createBreadCrumbModel() {
         final ResourceHierarchy rs = new ResourceHierarchy(this.serviceLocation, this.getRepositories());
@@ -270,8 +270,10 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
     }
 
     @Override
-    protected Component createView(final ResourceProxy containerProxy) throws EscidocClientException {
-        return new InvestigationSeriesView((ContainerProxy) containerProxy, this.investigationSeriesBean,
-            createBreadCrumbModel(), this, getRouter());
+    public void createView() {
+        view =
+            new InvestigationSeriesView(containerProxy, investigationSeriesBean, createBreadCrumbModel(), this,
+                getRouter());
     }
+
 }

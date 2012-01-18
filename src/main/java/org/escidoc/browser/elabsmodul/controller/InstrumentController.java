@@ -30,7 +30,6 @@ package org.escidoc.browser.elabsmodul.controller;
 
 import com.google.common.base.Preconditions;
 
-import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
@@ -117,7 +116,6 @@ public final class InstrumentController extends Controller implements ISaveActio
         getOrgUnits();
         getUsers();
         loadAdminDescriptorInfo();
-        this.view = createView(resourceProxy);
     }
 
     /**
@@ -357,20 +355,6 @@ public final class InstrumentController extends Controller implements ISaveActio
         }
     }
 
-    @Override
-    protected Component createView(final ResourceProxy resourceProxy) {
-        InstrumentBean instumentBean = null;
-        try {
-            instumentBean = loadBeanData(resourceProxy);
-        }
-        catch (final EscidocBrowserException e) {
-            this.mainWindow
-                .showNotification(new Notification("Error", e.getMessage(), Notification.TYPE_ERROR_MESSAGE));
-            LOG.error(e.getLocalizedMessage());
-        }
-        return new InstrumentView(instumentBean, this, createBeadCrumbModel(), resourceProxy, this.serviceLocation);
-    }
-
     private List<ResourceModel> createBeadCrumbModel() {
         final ResourceHierarchy rs = new ResourceHierarchy(this.serviceLocation, getRepositories());
         List<ResourceModel> hierarchy = null;
@@ -545,5 +529,19 @@ public final class InstrumentController extends Controller implements ISaveActio
             showError("Please fill out all of the requried fields!");
             throw new EscidocBrowserException("Some required field is null");
         }
+    }
+
+    @Override
+    public void createView() {
+        InstrumentBean instumentBean = null;
+        try {
+            instumentBean = loadBeanData(getResourceProxy());
+        }
+        catch (final EscidocBrowserException e) {
+            this.mainWindow
+                .showNotification(new Notification("Error", e.getMessage(), Notification.TYPE_ERROR_MESSAGE));
+            LOG.error(e.getLocalizedMessage());
+        }
+        view = new InstrumentView(instumentBean, this, createBeadCrumbModel(), getResourceProxy(), serviceLocation);
     }
 }

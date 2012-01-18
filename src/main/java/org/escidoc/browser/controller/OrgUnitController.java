@@ -28,16 +28,10 @@
  */
 package org.escidoc.browser.controller;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.ui.Component;
-
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.maincontent.OrgUnitView;
-
-import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class OrgUnitController extends Controller {
 
@@ -46,8 +40,7 @@ public class OrgUnitController extends Controller {
     }
 
     @Override
-    protected Component createView(final ResourceProxy resourceProxy) throws EscidocClientException {
-        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
-        return new OrgUnitView(resourceProxy);
+    public void createView() {
+        view = new OrgUnitView(getResourceProxy());
     }
 }

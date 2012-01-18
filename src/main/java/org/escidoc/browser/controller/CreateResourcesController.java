@@ -2,8 +2,6 @@ package org.escidoc.browser.controller;
 
 import com.google.common.base.Preconditions;
 
-import com.vaadin.ui.Component;
-
 import org.escidoc.browser.model.ContentModelService;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
@@ -33,13 +31,12 @@ public class CreateResourcesController extends Controller {
     public CreateResourcesController(final Repositories repositories, final Router router,
         final ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
-
-        this.view = createView();
         this.setResourceName(ViewConstants.CREATE_RESOURCES);
     }
 
-    private Component createView() {
-        return new CreateResourcesView(getRouter(), getRepositories(), this);
+    @Override
+    public void createView() {
+        view = new CreateResourcesView(getRouter(), getRepositories(), this);
     }
 
     public void createResourceAddOrgUnit(
@@ -95,10 +92,5 @@ public class CreateResourcesController extends Controller {
         repositories.context().open(newContext);
         // Updating the tree
         getRouter().getLayout().getTreeDataSource().addTopLevelResource(new ContextModel(newContext));
-    }
-
-    @Override
-    protected Component createView(final ResourceProxy resourceProxy) throws EscidocClientException {
-        return createView();
     }
 }

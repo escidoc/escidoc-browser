@@ -297,7 +297,7 @@ public class Router {
 
         final Controller controller = buildController(clickedResource);
         Preconditions.checkNotNull(controller, "controller is null: %s", controller);
-
+        controller.createView();
         if (shouldReloadView) {
             controller.showViewByReloading();
         }

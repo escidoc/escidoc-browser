@@ -28,21 +28,8 @@
  */
 package org.escidoc.browser.ui.mainpage;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.escidoc.browser.BrowserApplication;
-import org.escidoc.browser.controller.UserProfileController;
-import org.escidoc.browser.layout.LayoutDesign;
-import org.escidoc.browser.model.CurrentUser;
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.listeners.LogoutListener;
-import org.escidoc.browser.ui.maincontent.SearchResultsView;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.Application.UserChangeEvent;
 import com.vaadin.Application.UserChangeListener;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -60,6 +47,20 @@ import com.vaadin.ui.PopupView.PopupVisibilityListener;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
+
+import org.escidoc.browser.BrowserApplication;
+import org.escidoc.browser.controller.UserProfileController;
+import org.escidoc.browser.layout.LayoutDesign;
+import org.escidoc.browser.model.CurrentUser;
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.listeners.LogoutListener;
+import org.escidoc.browser.ui.maincontent.SearchResultsView;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * This is the Header of the page. Main Search comes here, also the login ability
@@ -128,7 +129,9 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
             ((Button) name).addListener(new Button.ClickListener() {
                 @Override
                 public void buttonClick(ClickEvent event) {
-                    router.openControllerView(new UserProfileController(repositories, router, null), false);
+                    UserProfileController cnt = new UserProfileController(repositories, router, null);
+                    cnt.createView();
+                    router.openControllerView(cnt, false);
                 }
             });
         }

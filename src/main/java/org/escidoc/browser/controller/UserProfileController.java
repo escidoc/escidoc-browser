@@ -1,7 +1,5 @@
 package org.escidoc.browser.controller;
 
-import com.vaadin.ui.Component;
-
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
@@ -19,7 +17,6 @@ public class UserProfileController extends Controller {
     public UserProfileController(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
         this.userRep = getUserRepository();
-        this.view = createView();
         this.setResourceName(ViewConstants.EDIT_PROFILE);
     }
 
@@ -33,8 +30,9 @@ public class UserProfileController extends Controller {
         return userRep;
     }
 
-    private Component createView() {
-        return new UserProfileView(getRouter(), getRepositories(), this, getCurrentUser());
+    @Override
+    public void createView() {
+        view = new UserProfileView(getRouter(), getRepositories(), this, getCurrentUser());
     }
 
     public void updateProfile(final String name, final String password) throws EscidocClientException {
@@ -45,10 +43,5 @@ public class UserProfileController extends Controller {
 
     public void updateProfile(final String name) throws EscidocClientException {
         userRep.updateName(name);
-    }
-
-    @Override
-    protected Component createView(final ResourceProxy resourceProxy) throws EscidocClientException {
-        return createView();
     }
 }

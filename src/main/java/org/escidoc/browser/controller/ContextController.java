@@ -28,9 +28,6 @@
  */
 package org.escidoc.browser.controller;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
 
 import org.escidoc.browser.model.ResourceProxy;
@@ -51,9 +48,14 @@ public class ContextController extends Controller {
     }
 
     @Override
-    protected Component createView(final ResourceProxy resourceProxy) throws EscidocClientException {
-        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
-        return new ContextView(getRouter(), resourceProxy, getRepositories(), this);
+    public void createView() {
+        try {
+            view = new ContextView(getRouter(), getResourceProxy(), getRepositories(), this);
+        }
+        catch (EscidocClientException e) {
+            getRouter().getMainWindow().showNotification("Error", e.getMessage(),
+                Window.Notification.TYPE_ERROR_MESSAGE);
+        }
     }
 
     public void addOrgUnitToContext(final ContextProxyImpl resourceProxy, final String orgUnitid) {

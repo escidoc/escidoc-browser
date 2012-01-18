@@ -28,7 +28,24 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import java.net.URISyntaxException;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.event.LayoutEvents.LayoutClickEvent;
+import com.vaadin.event.LayoutEvents.LayoutClickListener;
+import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.TextArea;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.themes.Runo;
 
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.EscidocServiceLocation;
@@ -48,23 +65,7 @@ import org.escidoc.browser.ui.view.helpers.DirectMember;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.event.LayoutEvents.LayoutClickEvent;
-import com.vaadin.event.LayoutEvents.LayoutClickListener;
-import com.vaadin.ui.Accordion;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
-import com.vaadin.ui.themes.Runo;
+import java.net.URISyntaxException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.properties.LockStatus;
@@ -384,7 +385,7 @@ public class ContainerView extends View {
 
     }
 
-    private Panel buildLeftPropertiesPnl() {
+    private static Panel buildLeftPropertiesPnl() {
         Panel pnlPropertiesLeft = new Panel();
         pnlPropertiesLeft.setWidth("40%");
         pnlPropertiesLeft.setHeight("60px");
@@ -397,7 +398,7 @@ public class ContainerView extends View {
         return pnlPropertiesLeft;
     }
 
-    private Panel buildRightPnlProperties() {
+    private static Panel buildRightPnlProperties() {
         Panel pnlPropertiesRight = new Panel();
         pnlPropertiesRight.setWidth("60%");
         pnlPropertiesRight.setHeight("60px");
@@ -409,7 +410,7 @@ public class ContainerView extends View {
         return pnlPropertiesRight;
     }
 
-    private void addHorizontalRuler(CssLayout cssLayout) {
+    private static void addHorizontalRuler(CssLayout cssLayout) {
         final Label descRuler = new Label("<hr />", Label.CONTENT_RAW);
         descRuler.setStyleName("hr");
         cssLayout.addComponent(descRuler);
@@ -435,13 +436,6 @@ public class ContainerView extends View {
         headerContext.setDescription(DESC_HEADER);
         cssLayout.addComponent(headerContext);
     }
-
-    // private void configureLayout() {
-    // setMargin(true, true, false, true);
-    // this.setHeight("100%");
-    // metadataContainer.setWidth("100%");
-    // metadataContainer.setHeight("100%");
-    // }
 
     private void handleLayoutListeners() {
         if (hasAccess()) {

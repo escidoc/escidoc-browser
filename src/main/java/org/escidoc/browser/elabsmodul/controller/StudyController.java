@@ -30,7 +30,6 @@ package org.escidoc.browser.elabsmodul.controller;
 
 import com.google.common.base.Preconditions;
 
-import com.vaadin.ui.Component;
 import com.vaadin.ui.Window;
 
 import org.escidoc.browser.controller.Controller;
@@ -101,7 +100,6 @@ public class StudyController extends Controller implements ISaveAction {
         Preconditions.checkArgument(resourceProxy instanceof ContainerProxy, "ResourceProxy is not a ContainerProxy");
         this.serviceLocation = router.getServiceLocation();
         this.mainWindow = router.getMainWindow();
-        this.view = createView(resourceProxy);
         this.setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
     }
 
@@ -205,20 +203,7 @@ public class StudyController extends Controller implements ISaveAction {
         return null;
     }
 
-    @Override
-    protected Component createView(ResourceProxy resourceProxy) {
-        StudyBean studyBean = null;
-        try {
-            studyBean = loadBeanData(resourceProxy);
-        }
-        catch (final EscidocBrowserException e) {
-            LOG.error(e.getMessage());
-            showError("Internal error");
-        }
-        return new StudyView(studyBean, this, this.createBeadCrumbModel(), resourceProxy, getRouter());
-    }
-
-    private static StudyBean loadBeanData(final ResourceProxy resourceProxy) throws EscidocBrowserException {
+    private static StudyBean loadBeanData(final ResourceProxy resourceProxy) {
         final ContainerProxy containerProxy1 = (ContainerProxy) resourceProxy;
         final StudyBean studyBean = new StudyBean();
         studyBean.setObjectId(containerProxy1.getId());
@@ -310,5 +295,12 @@ public class StudyController extends Controller implements ISaveAction {
             showError("Please fill out all of the requried fields!");
             throw new EscidocBrowserException("Some required field is null");
         }
+    }
+
+    @Override
+    public void createView() {
+        view =
+            new StudyView(loadBeanData(getResourceProxy()), this, createBeadCrumbModel(), getResourceProxy(),
+                getRouter());
     }
 }
