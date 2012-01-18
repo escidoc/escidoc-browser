@@ -178,8 +178,8 @@ public class TreeDataSourceImpl implements TreeDataSource {
     @Override
     public boolean remove(final ResourceModel resourceModel) {
         Preconditions.checkNotNull(resourceModel, "resourceModel is null: %s", resourceModel);
-        if (resourceModel.getType().equals("ITEM") || resourceModel.getType().equals("CONTAINER")
-            || resourceModel.getType().equals("CONTEXT")) {
+        if (resourceModel.getType().toString() == "ITEM" || resourceModel.getType().toString() == "CONTAINER"
+            || resourceModel.getType().toString() == "CONTEXT") {
             return dataSource.removeItem(resourceModel);
         }
         else {
