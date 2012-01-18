@@ -178,15 +178,12 @@ public class TreeDataSourceImpl implements TreeDataSource {
     @Override
     public boolean remove(final ResourceModel resourceModel) {
         Preconditions.checkNotNull(resourceModel, "resourceModel is null: %s", resourceModel);
-        switch (resourceModel.getType()) {
-            case ITEM:
-                return dataSource.removeItem(resourceModel);
-            case CONTAINER:
-                return dataSource.removeItem(resourceModel);
-            case CONTEXT:
-                return dataSource.removeItem(resourceModel);
-            default:
-                throw new UnsupportedOperationException("Not yet implemented");
+        if (resourceModel.getType().equals("ITEM") || resourceModel.getType().equals("CONTAINER")
+            || resourceModel.getType().equals("CONTEXT")) {
+            return dataSource.removeItem(resourceModel);
+        }
+        else {
+            throw new UnsupportedOperationException("Not yet implemented");
         }
     }
 
