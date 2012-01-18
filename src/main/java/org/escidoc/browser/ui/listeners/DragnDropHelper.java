@@ -3,7 +3,7 @@ package org.escidoc.browser.ui.listeners;
 import java.util.Iterator;
 
 import org.escidoc.browser.controller.Controller;
-import org.escidoc.browser.model.internal.ContextProxyImpl;
+import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.ui.Router;
 
 import com.vaadin.data.Container;
@@ -56,7 +56,7 @@ public abstract class DragnDropHelper extends VerticalLayout {
 
     protected Controller controller;
 
-    protected ContextProxyImpl resourceProxy;
+    protected ResourceProxy resourceProxy;
 
     protected Router router;
 
@@ -64,6 +64,12 @@ public abstract class DragnDropHelper extends VerticalLayout {
         super();
     }
 
+    /**
+     * This is the container for the Recycle Bin
+     * 
+     * @param acceptCriterion
+     * @throws EscidocClientException
+     */
     private void initializeDeleteTable(final ClientSideCriterion acceptCriterion) throws EscidocClientException {
         tableDelete.setWidth("170px");
         tableDelete.setHeight("200px");
@@ -89,6 +95,12 @@ public abstract class DragnDropHelper extends VerticalLayout {
 
     }
 
+    /**
+     * This is the table where the elements are added by drag'n drop
+     * 
+     * @param acceptCriterion
+     * @throws EscidocClientException
+     */
     private void initializeTable(final ClientSideCriterion acceptCriterion) throws EscidocClientException {
         final HierarchicalContainer tableContainer = populateContainerTable();
         table.setContainerDataSource(tableContainer);

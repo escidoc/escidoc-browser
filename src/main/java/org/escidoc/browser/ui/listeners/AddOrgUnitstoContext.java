@@ -3,7 +3,9 @@ package org.escidoc.browser.ui.listeners;
 import java.util.Collection;
 
 import org.escidoc.browser.controller.ContextController;
+import org.escidoc.browser.controller.Controller;
 import org.escidoc.browser.model.OrgUnitService;
+import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.ui.Router;
 
@@ -25,13 +27,15 @@ public class AddOrgUnitstoContext extends DragnDropHelper {
 
     private ContextController controller;
 
-    public AddOrgUnitstoContext(Router router, ContextProxyImpl resourceProxy, ContextController contextController,
+    private ContextProxyImpl resourceProxy;
+
+    public AddOrgUnitstoContext(Router router, ResourceProxy resourceProxy, Controller contextController,
         OrganizationalUnitRefs orgUnits) throws EscidocClientException {
         setSpacing(true);
         this.router = router;
         this.orgUnits = orgUnits;
-        this.resourceProxy = resourceProxy;
-        this.controller = contextController;
+        this.resourceProxy = (ContextProxyImpl) resourceProxy;
+        this.controller = (ContextController) contextController;
 
         createDragComponents();
     }

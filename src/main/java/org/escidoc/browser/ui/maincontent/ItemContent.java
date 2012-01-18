@@ -89,6 +89,7 @@ public class ItemContent extends VerticalLayout {
     }
 
     private void initView() {
+        verticalLayout.addStyleName("drophere");
         wrap(verticalLayout);
         if (hasComponents()) {
             verticalLayout.addComponent(buildTable());
