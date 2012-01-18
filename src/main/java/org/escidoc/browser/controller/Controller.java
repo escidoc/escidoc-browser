@@ -61,7 +61,10 @@ public abstract class Controller {
         this.router = router;
         this.resourceProxy = resourceProxy;
         this.layout = router.getLayout();
-        setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
+        // FIXME bad, this is done only for UserProfileController. A user profile does not need a controller.
+        if (resourceProxy != null) {
+            setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
+        }
     }
 
     public abstract void createView();
