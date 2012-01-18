@@ -70,4 +70,8 @@ public class UserProfileController extends Controller {
         return userRep.createUserPreference(preference);
     }
 
+    public void removePreference(String preferenceName) throws EscidocClientException {
+        userRep.removeUserPreference(preferenceName);
+    }
+
 }

@@ -131,4 +131,8 @@ public class UserRepositoryImpl implements UserRepository {
         return client.updatePreference(getCurrentUser(), preference);
     }
 
+    public void removeUserPreference(String preferenceName) throws EscidocClientException {
+        client.deletePreference(getCurrentUser().getObjid(), preferenceName);
+    }
+
 }

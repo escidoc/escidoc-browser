@@ -6,6 +6,7 @@ import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.View;
+import org.escidoc.browser.ui.view.helpers.UserPreferencesTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +27,6 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
-import de.escidoc.core.resources.aa.useraccount.Preference;
 import de.escidoc.core.resources.aa.useraccount.Preferences;
 
 @SuppressWarnings("serial")
@@ -218,10 +218,7 @@ public class UserProfileView extends View {
         final Panel pnl = new Panel("Preferences");
         Preferences preferences = controller.getUserPreferences();
 
-        for (Preference preference : preferences) {
-            final Label preferenceName = new Label(preference.getName() + " : " + preference.getValue());
-            pnl.addComponent(preferenceName);
-        }
+        pnl.addComponent(new UserPreferencesTable(preferences, controller));
 
         Button addPreference = new Button();
         addPreference.setDescription("Add new Preference");
