@@ -1,32 +1,4 @@
-/**
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License, Version 1.0 only
- * (the "License").  You may not use this file except in compliance
- * with the License.
- *
- * You can obtain a copy of the license at license/ESCIDOC.LICENSE
- * or https://www.escidoc.org/license/ESCIDOC.LICENSE .
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at license/ESCIDOC.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- *
- *
- *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
- * fuer wissenschaftlich-technische Information mbH and Max-Planck-
- * Gesellschaft zur Foerderung der Wissenschaft e.V.
- * All rights reserved.  Use is subject to license terms.
- */
-package org.escidoc.browser.model.internal;
+package org.escidoc.browser.ui.navigation;
 
 import com.google.common.base.Preconditions;
 
@@ -40,32 +12,37 @@ import org.escidoc.browser.model.PropertyId;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.TreeDataSource;
+import org.escidoc.browser.model.internal.ContextModel;
+import org.escidoc.browser.repository.internal.OrganizationUnitRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
 import java.util.List;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
-public class TreeDataSourceImpl implements TreeDataSource {
+public class OrgUnitDataSource implements TreeDataSource {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TreeDataSourceImpl.class);
+    private final static Logger LOG = LoggerFactory.getLogger(OrgUnitDataSource.class);
+
+    private final OrganizationUnitRepository repository;
 
     private final HierarchicalContainer dataSource = new HierarchicalContainer();
 
-    private final Collection<? extends ResourceModel> topLevelResources;
-
-    public TreeDataSourceImpl(final Collection<? extends ResourceModel> topLevelResources) {
-        Preconditions.checkNotNull(topLevelResources, "topLevelResources is null: %s", topLevelResources);
-        this.topLevelResources = topLevelResources;
+    public OrgUnitDataSource(final OrganizationUnitRepository repository) {
+        this.repository = repository;
     }
 
     @Override
     public void init() {
         addProperties();
-        addTopLevelResources();
-        sortByTypeAndNameAscending();
+        try {
+            addTopLevel();
+            sortByTypeAndNameAscending();
+        }
+        catch (final EscidocClientException e) {
+            LOG.error(e.getMessage(), e);
+        }
     }
 
     private void addProperties() {
@@ -75,22 +52,9 @@ public class TreeDataSourceImpl implements TreeDataSource {
         dataSource.addContainerProperty(PropertyId.TYPE, ResourceType.class, null);
     }
 
-    private void addTopLevelResources() {
-        for (final ResourceModel topLevel : topLevelResources) {
+    private void addTopLevel() throws EscidocClientException {
+        for (final ResourceModel topLevel : repository.findTopLevel()) {
             addTopLevelResource(topLevel);
-        }
-    }
-
-    @Override
-    public void addTopLevelResource(final ResourceModel topLevel) {
-        final Item addedItem = add(topLevel);
-        if (isAlreadyAdded(addedItem)) {
-            return;
-        }
-        bind(addedItem, topLevel);
-
-        if (topLevel.getType() == ResourceType.CONTEXT && isChildless((ContextModel) topLevel)) {
-            dataSource.setChildrenAllowed(topLevel, false);
         }
     }
 
@@ -157,7 +121,6 @@ public class TreeDataSourceImpl implements TreeDataSource {
     public void addChild(final ResourceModel parent, final ResourceModel child) {
         Preconditions.checkNotNull(parent, "parent is null: %s", parent);
         Preconditions.checkNotNull(child, "child is null: %s", child);
-        // removeAllChildren(parent);
         final Item addedItem = add(child);
         if (isAlreadyAdded(addedItem)) {
             LOG.debug("Resource: " + child + " already added to the tree.");
@@ -215,6 +178,19 @@ public class TreeDataSourceImpl implements TreeDataSource {
     @Override
     public void reload() throws EscidocClientException {
         init();
+    }
+
+    @Override
+    public void addTopLevelResource(ResourceModel topLevel) {
+        final Item addedItem = add(topLevel);
+        if (isAlreadyAdded(addedItem)) {
+            return;
+        }
+        bind(addedItem, topLevel);
+
+        if (topLevel.getType() == ResourceType.CONTEXT && isChildless((ContextModel) topLevel)) {
+            dataSource.setChildrenAllowed(topLevel, false);
+        }
     }
 
 }

@@ -8,7 +8,6 @@ import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.tools.UserProfileView;
 
-import com.vaadin.ui.Component;
 import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -28,13 +27,7 @@ public class UserProfileController extends Controller {
         this.repositories = repositories;
         this.router = router;
         this.userRep = getUserRepository();
-        try {
-            this.view = createView();
-        }
-        catch (EscidocClientException e) {
-            router.getMainWindow().showNotification(
-                ViewConstants.VIEW_ERROR_CANNOT_LOAD_VIEW + e.getLocalizedMessage(), Notification.TYPE_ERROR_MESSAGE);
-        }
+        createView();
         this.setResourceName(ViewConstants.EDIT_PROFILE);
     }
 
@@ -48,8 +41,14 @@ public class UserProfileController extends Controller {
         return userRep;
     }
 
-    private Component createView() throws EscidocClientException {
-        return new UserProfileView(router, repositories, this, getCurrentUser());
+    public void createView() {
+        try {
+            view = new UserProfileView(router, repositories, this, getCurrentUser());
+        }
+        catch (EscidocClientException e) {
+            router.getMainWindow().showNotification(
+                ViewConstants.VIEW_ERROR_CANNOT_LOAD_VIEW + e.getLocalizedMessage(), Notification.TYPE_ERROR_MESSAGE);
+        }
     }
 
     public void updateProfile(String name, String password) throws EscidocClientException {

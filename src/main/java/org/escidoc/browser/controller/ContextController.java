@@ -28,86 +28,57 @@
  */
 package org.escidoc.browser.controller;
 
-import java.net.URISyntaxException;
+import com.vaadin.ui.Window;
 
-import org.escidoc.browser.model.ContextModel;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.TreeDataSource;
+import org.escidoc.browser.model.internal.ContextModel;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.ContextView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
+import java.net.URISyntaxException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.Resource;
 
 public class ContextController extends Controller {
-    private Repositories repositories;
 
-    private Router router;
-
-    private ContextProxyImpl resourceProxy;
-
-    private static final Logger LOG = LoggerFactory.getLogger(ContextController.class);
-
-    public ContextController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
+    public ContextController(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
-        Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
-        Preconditions.checkNotNull(repositories, "repositories is NULL");
-        Preconditions.checkNotNull(router, "Router is NULL");
+    }
 
-        this.repositories = repositories;
-        this.router = router;
-        this.resourceProxy = (ContextProxyImpl) resourceProxy;
+    @Override
+    public void createView() {
         try {
-            this.view = createView(resourceProxy);
+            view = new ContextView(getRouter(), getResourceProxy(), getRepositories(), this);
         }
         catch (EscidocClientException e) {
-            router.getMainWindow().showNotification(
-                ViewConstants.VIEW_ERROR_CANNOT_LOAD_VIEW + e.getLocalizedMessage(), Notification.TYPE_ERROR_MESSAGE);
-            LOG.error("Failed at: ", e.getStackTrace());
+            getRouter().getMainWindow().showNotification("Error", e.getMessage(),
+                Window.Notification.TYPE_ERROR_MESSAGE);
         }
-        this.setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
     }
 
-    /**
-     * Create the view for this controller
-     * 
-     * @param resourceProxy
-     * @return
-     * @throws EscidocClientException
-     */
-    private Component createView(ResourceProxy resourceProxy) throws EscidocClientException {
-        Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
-        return new ContextView(router, resourceProxy, repositories, this);
-    }
-
+    @Override
     public void refreshView() {
         try {
-            router.show(resourceProxy, true);
+            getRouter().show(getResourceProxy(), true);
             // refresh tree
-            TreeDataSource treeDS = router.getLayout().getTreeDataSource();
-            ContextModel cnt = new ContextModel(resourceProxy.getResource());
+            TreeDataSource treeDS = getRouter().getLayout().getTreeDataSource();
+            ContextModel cnt = new ContextModel(((ContextProxyImpl) getResourceProxy()).getResource());
             ResourceModel parentModel = treeDS.getParent(cnt);
 
             boolean isSuccesful = treeDS.remove(cnt);
             if (isSuccesful) {
-                Resource contextT = repositories.context().findContextById((resourceProxy.getId()));
-                treeDS.addChild(parentModel, new ContextModel(contextT));
+                Resource context = getRepositories().context().findContextById((getResourceProxy().getId()));
+                treeDS.addChild(parentModel, new ContextModel(context));
             }
         }
         catch (EscidocClientException e) {
-            router.getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
         }
     }
 
@@ -120,7 +91,7 @@ public class ContextController extends Controller {
      */
     public void addOrgUnitToContext(ContextProxyImpl resourceProxy, String orgUnitid) {
         try {
-            repositories.context().addOrganizationalUnit(resourceProxy.getId(), orgUnitid);
+            getRepositories().context().addOrganizationalUnit(resourceProxy.getId(), orgUnitid);
             showTrayMessage("Updated!", "Organizational Unit was added Successfully");
         }
         catch (EscidocClientException e) {
@@ -138,7 +109,7 @@ public class ContextController extends Controller {
      */
     public void removeOrgUnitFromContext(ContextProxyImpl resourceProxy, String orgUnitid) {
         try {
-            repositories.context().delOrganizationalUnit(resourceProxy.getId(), orgUnitid);
+            getRepositories().context().delOrganizationalUnit(resourceProxy.getId(), orgUnitid);
             showTrayMessage("Updated!", "Organizational Unit was removed Successfully");
         }
         catch (EscidocClientException e) {
@@ -147,21 +118,21 @@ public class ContextController extends Controller {
     }
 
     public void updateContextType(String newContextType, String contextId) throws EscidocClientException {
-        repositories.context().updateType(newContextType, contextId);
+        getRepositories().context().updateType(newContextType, contextId);
 
     }
 
     public void updateContextName(String newName, String contextId) throws EscidocClientException {
-        repositories.context().updateName(newName, contextId);
+        getRepositories().context().updateName(newName, contextId);
     }
 
     public void updatePublicStatus(String newStatus, String contextId, String comment) throws EscidocClientException {
 
         if (newStatus.equals("opened")) {
-            repositories.context().updatePublicStatusOpen(comment, contextId);
+            getRepositories().context().updatePublicStatusOpen(comment, contextId);
         }
         else if (newStatus.equals("closed")) {
-            repositories.context().updatePublicStatusClosed(comment, contextId);
+            getRepositories().context().updatePublicStatusClosed(comment, contextId);
         }
 
     }
@@ -173,16 +144,16 @@ public class ContextController extends Controller {
      */
     public boolean canRemoveOUs() {
         try {
-            return repositories
+            return getRepositories()
                 .pdp().forCurrentUser().isAction(ActionIdConstants.DELETE_ORGANIZATIONAL_UNIT_ACTION)
-                .forResource(resourceProxy.getId()).permitted();
+                .forResource(getResourceProxy().getId()).permitted();
         }
-        catch (EscidocClientException e) {
-            router.getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        catch (final EscidocClientException e) {
+            getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
             return false;
         }
-        catch (URISyntaxException e) {
-            router.getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        catch (final URISyntaxException e) {
+            getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
             return false;
         }
     }
@@ -194,16 +165,16 @@ public class ContextController extends Controller {
      */
     public boolean canAddOUs() {
         try {
-            return repositories
-                .pdp().forCurrentUser().isAction(ActionIdConstants.CREATE_ORG_UNIT).forResource(resourceProxy.getId())
-                .permitted();
+            return getRepositories()
+                .pdp().forCurrentUser().isAction(ActionIdConstants.CREATE_ORG_UNIT)
+                .forResource(getResourceProxy().getId()).permitted();
         }
         catch (EscidocClientException e) {
-            router.getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
             return false;
         }
         catch (URISyntaxException e) {
-            router.getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
             return false;
         }
     }
@@ -215,18 +186,17 @@ public class ContextController extends Controller {
      */
     public boolean canUpdateContext() {
         try {
-            return repositories
-                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER).forResource(resourceProxy.getId())
-                .permitted();
+            return getRepositories()
+                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER)
+                .forResource(getResourceProxy().getId()).permitted();
         }
         catch (EscidocClientException e) {
-            router.getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
             return false;
         }
         catch (URISyntaxException e) {
-            router.getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
             return false;
         }
     }
-
 }

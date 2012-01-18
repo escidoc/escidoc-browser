@@ -32,6 +32,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.escidoc.browser.model.internal.ContainerModel;
+import org.escidoc.browser.model.internal.ContentModelProxyImpl;
+import org.escidoc.browser.model.internal.ContextModel;
+import org.escidoc.browser.model.internal.ItemModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -31,7 +31,9 @@
  */
 package org.escidoc.browser.layout;
 
-import java.net.URISyntaxException;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.EscidocServiceLocation;
@@ -40,24 +42,23 @@ import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 
-import com.vaadin.ui.Component;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
+import java.net.URISyntaxException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 /**
  * @author ajb More should be added here
  */
+@SuppressWarnings("serial")
 public abstract class LayoutDesign extends VerticalLayout {
 
     public abstract void init(
         Window mainWindow, EscidocServiceLocation serviceLocation, BrowserApplication app, Repositories repositories,
         Router router) throws EscidocClientException, UnsupportedOperationException, URISyntaxException;
 
-    public abstract void openView(Component cmp, String title);
+    public abstract void openView(Component component, String title);
 
-    public abstract void openViewByReloading(Component cmp, String title);
+    public abstract void openViewByReloading(Component component, String title);
 
     public abstract void closeView(ResourceModel model, ResourceModel parent, Object sender);
 

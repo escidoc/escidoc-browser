@@ -42,7 +42,7 @@ public class UserProfileView extends View {
     private CurrentUser currentUser;
 
     public UserProfileView(Router router, Repositories repositories, UserProfileController userProfileController,
-        CurrentUser currentUser) {
+        CurrentUser currentUser) throws EscidocClientException {
         Preconditions.checkNotNull(router, "router is null: %s", router);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         this.router = router;

@@ -58,8 +58,4 @@ public interface ResourceProxy extends ResourceModel {
 
     Resource getContentModel();
 
-    int hashCode();
-
-    boolean equals(Object obj);
-
 }

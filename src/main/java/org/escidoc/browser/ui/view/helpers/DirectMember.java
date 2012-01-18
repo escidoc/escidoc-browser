@@ -67,15 +67,15 @@ public class DirectMember {
 
     private final NavigationTreeBuilder navigationTreeBuilder;
 
-    private Panel panel;
+    private final Panel panel;
 
-    private String resourceType;
+    private final String resourceType;
+
+    private final Repositories repositories;
 
     private String contextId;
 
     private ResourceProxy resourceProxy;
-
-    private Repositories repositories;
 
     /**
      * The method retrieves a Panel as the View where it should place itself and binds there a List of Members and some
@@ -90,7 +90,7 @@ public class DirectMember {
      * @param leftPanel
      */
     public DirectMember(final EscidocServiceLocation serviceLocation, final Router router, final String parentId,
-        final Window mainWindow, final Repositories repositories, Panel leftPanel, String resourceType) {
+        final Window mainWindow, final Repositories repositories, final Panel leftPanel, final String resourceType) {
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(router, "Router is null: %s", router);
         Preconditions.checkNotNull(parentId, "parentID is null: %s", parentId);
@@ -107,7 +107,7 @@ public class DirectMember {
         this.repositories = repositories;
 
         bindButtons();
-        navigationTreeBuilder = new NavigationTreeBuilder(serviceLocation, repositories);
+        navigationTreeBuilder = new NavigationTreeBuilder(mainWindow, router, repositories);
     }
 
     private void bindButtons() {
@@ -115,7 +115,7 @@ public class DirectMember {
             try {
                 createButtons();
             }
-            catch (EscidocClientException e) {
+            catch (final EscidocClientException e) {
                 mainWindow.showNotification(ViewConstants.CANNOT_CREATE_BUTTONS + e.getLocalizedMessage(),
                     Window.Notification.TYPE_ERROR_MESSAGE);
             }
@@ -130,7 +130,7 @@ public class DirectMember {
     }
 
     private NavigationTreeView createContextDirectMembers() throws EscidocClientException {
-        return navigationTreeBuilder.buildContextDirectMemberTree(router, parentId, mainWindow);
+        return navigationTreeBuilder.buildContextDirectMemberTree(parentId);
     }
 
     public void containerAsTree() throws EscidocClientException {
@@ -140,7 +140,7 @@ public class DirectMember {
     }
 
     private NavigationTreeView createContainerDirectMembers() throws EscidocClientException {
-        return navigationTreeBuilder.buildContainerDirectMemberTree(router, parentId, mainWindow);
+        return navigationTreeBuilder.buildContainerDirectMemberTree(parentId);
     }
 
     @SuppressWarnings("serial")
@@ -157,7 +157,7 @@ public class DirectMember {
         panel.setStyleName("directmembers");
         panel.setScrollable(true);
 
-        VerticalLayout panelLayout = (VerticalLayout) panel.getContent();
+        final VerticalLayout panelLayout = (VerticalLayout) panel.getContent();
         panelLayout.setSizeUndefined();
         panelLayout.setWidth("100%");
         panelLayout.setStyleName(Runo.PANEL_LIGHT);
@@ -171,12 +171,12 @@ public class DirectMember {
             resourceProxy = router.getRepositories().context().findById(parentId);
         }
 
-        Button addResourceButton = new Button("+Resource  ");
+        final Button addResourceButton = new Button("+Resource  ");
         addResourceButton.setStyleName(Reindeer.BUTTON_SMALL);
         addResourceButton.addListener(new ClickListener() {
 
             @Override
-            public void buttonClick(ClickEvent event) {
+            public void buttonClick(final ClickEvent event) {
                 try {
                     new ResourceAddViewImpl(resourceProxy, contextId, router).openSubWindow();
                 }
@@ -187,20 +187,20 @@ public class DirectMember {
             }
         });
 
-        HorizontalLayout hl = new HorizontalLayout();
+        final HorizontalLayout hl = new HorizontalLayout();
         hl.setWidth("200px");
         hl.setHeight("20px");
 
         panelLayout.addComponent(hl);
 
-        HorizontalLayout buttonLayout = new HorizontalLayout();
+        final HorizontalLayout buttonLayout = new HorizontalLayout();
         hl.addComponent(buttonLayout);
         buttonLayout.addComponent(addResourceButton);
 
     }
 
-    protected void bindDirectMembersInTheContainer(Component comptoBind) {
-        VerticalLayout panelLayout = (VerticalLayout) panel.getContent();
+    protected void bindDirectMembersInTheContainer(final Component comptoBind) {
+        final VerticalLayout panelLayout = (VerticalLayout) panel.getContent();
         panelLayout.addComponent(comptoBind);
         panelLayout.setExpandRatio(comptoBind, 1.0f);
         panelLayout.setStyleName(Runo.PANEL_LIGHT);
@@ -211,17 +211,17 @@ public class DirectMember {
             return repositories
                 .pdp().forCurrentUser().isAction(ActionIdConstants.CREATE_ITEM).forResource(parentId).permitted();
         }
-        catch (UnsupportedOperationException e) {
+        catch (final UnsupportedOperationException e) {
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
             e.printStackTrace();
             return false;
         }
-        catch (EscidocClientException e) {
+        catch (final EscidocClientException e) {
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
             e.printStackTrace();
             return false;
         }
-        catch (URISyntaxException e) {
+        catch (final URISyntaxException e) {
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
             e.printStackTrace();
             return false;

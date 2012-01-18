@@ -128,7 +128,10 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
             ((Button) name).addListener(new Button.ClickListener() {
                 @Override
                 public void buttonClick(ClickEvent event) {
-                    router.openControllerView(new UserProfileController(repositories, router, null), false);
+                    UserProfileController cnt = new UserProfileController(repositories, router, null);
+                    cnt.createView();
+                    router.openControllerView(cnt, false);
+
                 }
             });
         }
