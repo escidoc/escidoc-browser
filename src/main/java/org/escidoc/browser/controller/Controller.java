@@ -28,43 +28,66 @@
  */
 package org.escidoc.browser.controller;
 
+import com.google.common.base.Preconditions;
+
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Window.Notification;
+
 import org.escidoc.browser.layout.LayoutDesign;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Window.Notification;
-
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public abstract class Controller {
-    private Repositories repositories;
-
-    private Router router;
-
-    private ResourceProxy resourProxy;
-
-    private LayoutDesign layout;
-
-    public Controller(Repositories repositories, Router router, ResourceProxy resourceProxy) {
-        this.repositories = repositories;
-        this.router = router;
-        this.resourProxy = resourceProxy;
-        this.layout = router.getLayout();
-    }
 
     protected Component view;
 
+    private final Repositories repositories;
+
+    private final ResourceProxy resourceProxy;
+
+    private final Router router;
+
+    private final LayoutDesign layout;
+
     private String resourceName;
 
+    public Controller(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        Preconditions.checkNotNull(router, "router is null: %s", router);
+        this.repositories = repositories;
+        this.router = router;
+        this.resourceProxy = resourceProxy;
+        this.layout = router.getLayout();
+        setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
+    }
+
+    public abstract void createView();
+
+    protected Repositories getRepositories() {
+        return repositories;
+    }
+
+    protected Router getRouter() {
+        return router;
+    }
+
+    protected ResourceProxy getResourceProxy() {
+        return resourceProxy;
+    }
+
     public void showView() {
-        layout.openView(this.view, this.getResourceName());
+        Preconditions.checkNotNull(view, "view is null: %s", view);
+        Preconditions.checkNotNull(layout, "layout is null: %s", layout);
+        layout.openView(view, getResourceName());
     }
 
     public void showViewByReloading() {
-        layout.openViewByReloading(this.view, this.getResourceName());
+        Preconditions.checkNotNull(view, "view is null: %s", view);
+        Preconditions.checkNotNull(layout, "layout is null: %s", layout);
+        layout.openViewByReloading(view, getResourceName());
     }
 
     // TODO There has to be a method from the Router to call a refresh on the view
@@ -73,9 +96,9 @@ public abstract class Controller {
      */
     public void refreshView() {
         try {
-            router.show(resourProxy, true);
+            router.show(resourceProxy, true);
         }
-        catch (EscidocClientException e) {
+        catch (final EscidocClientException e) {
             showError("Could not refresh view" + e.getLocalizedMessage());
             e.printStackTrace();
         }
@@ -85,7 +108,7 @@ public abstract class Controller {
         return resourceName;
     }
 
-    public void setResourceName(String name) {
+    public void setResourceName(final String name) {
         this.resourceName = name;
     }
 
@@ -126,4 +149,5 @@ public abstract class Controller {
         this.router
             .getApp().getMainWindow().showNotification(trayTitle, trayMessage, Notification.TYPE_TRAY_NOTIFICATION);
     }
+
 }

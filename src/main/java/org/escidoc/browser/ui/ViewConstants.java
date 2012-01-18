@@ -324,11 +324,16 @@ public class ViewConstants {
     public static final String ERROR_CREATING_RESOURCE = "Error creating resource";
 
     public static final String EDIT_PROFILE = "Edit personal profile";
+    
+    public static final String ORG_UNITS = "Organizational Units";
 
     public static final String ERROR_UPDATING_USER = "Error updating user profile";
 
     // Container
     public static final String DESC_LOCKSTATUS = "lockstatus";
+    public static final String ADD_CHILD = "Add Child";
+
+    public static final String DELETE_RESOURCE_CONFIRMATION = "Are you confident to delete this resource!?";
 
     public static final String DESC_STATUS = "status";
 

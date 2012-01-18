@@ -28,12 +28,12 @@
  */
 package org.escidoc.browser.ui.navigation.menubar;
 
-import org.escidoc.browser.model.TreeDataSource;
-import org.escidoc.browser.repository.Repositories;
-
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Window;
+
+import org.escidoc.browser.model.TreeDataSource;
+import org.escidoc.browser.repository.Repositories;
 
 @SuppressWarnings("serial")
 public class ShowItemAddViewMenuCommand implements Command {
@@ -45,9 +45,6 @@ public class ShowItemAddViewMenuCommand implements Command {
 
     @Override
     public void menuSelected(final MenuItem selectedItem) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Not yet implemented");
-
     }
-
 }

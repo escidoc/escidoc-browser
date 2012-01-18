@@ -28,29 +28,19 @@
  */
 package org.escidoc.browser.controller;
 
-import com.vaadin.ui.Window;
-
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.maincontent.ItemView;
+import org.escidoc.browser.ui.maincontent.OrgUnitView;
 
-import de.escidoc.core.client.exceptions.EscidocClientException;
+public class OrgUnitController extends Controller {
 
-public class ItemController extends Controller {
-
-    public ItemController(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
+    public OrgUnitController(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
     }
 
     @Override
     public void createView() {
-        try {
-            view = new ItemView(getRepositories(), getRouter(), getResourceProxy());
-        }
-        catch (EscidocClientException e) {
-            getRouter().getMainWindow().showNotification("Error", e.getMessage(),
-                Window.Notification.TYPE_ERROR_MESSAGE);
-        }
+        view = new OrgUnitView(getResourceProxy());
     }
 }

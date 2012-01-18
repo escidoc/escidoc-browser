@@ -28,7 +28,25 @@
  */
 package org.escidoc.browser.layout;
 
-import java.net.URISyntaxException;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.terminal.Resource;
+import com.vaadin.terminal.Sizeable;
+import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.HorizontalSplitPanel;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
+import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
+import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.Tree;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.Runo;
 
 import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.EscidocServiceLocation;
@@ -42,30 +60,22 @@ import org.escidoc.browser.ui.mainpage.Footer;
 import org.escidoc.browser.ui.mainpage.HeaderContainer;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.navigation.NavigationTreeView;
+import org.escidoc.browser.ui.orgunit.OrgUnitTreeView;
 import org.escidoc.browser.ui.tools.ToolsTreeView;
 import org.escidoc.browser.ui.view.helpers.CloseTabsViewHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.terminal.Sizeable;
-import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Accordion;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.HorizontalSplitPanel;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TabSheet.Tab;
-import com.vaadin.ui.Tree;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Runo;
+import java.net.URISyntaxException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 @SuppressWarnings("serial")
 public class SimpleLayout extends LayoutDesign {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SimpleLayout.class);
+
+    private Resource NO_ICON;
 
     private AbsoluteLayout mainLayout;
 
@@ -97,26 +107,34 @@ public class SimpleLayout extends LayoutDesign {
 
     private HorizontalLayout footer;
 
-    private static final Logger LOG = LoggerFactory.getLogger(SimpleLayout.class);
+    private NavigationTreeBuilder treeBuilder;
 
     @Override
     public void init(
-        Window mainWindow, EscidocServiceLocation serviceLocation, BrowserApplication app, Repositories repositories,
-        Router router) throws EscidocClientException, UnsupportedOperationException, URISyntaxException {
+        final Window mainWindow, final EscidocServiceLocation serviceLocation, final BrowserApplication app,
+        final Repositories repositories, final Router router) throws EscidocClientException,
+        UnsupportedOperationException, URISyntaxException {
+        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
+        Preconditions.checkNotNull(app, "app is null: %s", app);
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        Preconditions.checkNotNull(router, "router is null: %s", router);
         this.serviceLocation = serviceLocation;
         this.app = app;
         this.mainWindow = mainWindow;
         this.serviceLocation = serviceLocation;
         this.repositories = repositories;
         this.router = router;
+
+        treeBuilder = new NavigationTreeBuilder(mainWindow, router, repositories);
         buildMainLayout();
         addComponent(mainLayout);
     }
 
     @Override
-    public void openView(Component cmp, String tabname) {
-        String description = tabname;
-        int p = tabname.lastIndexOf('#');
+    public void openView(final Component cmp, String tabname) {
+        final String description = tabname;
+        final int p = tabname.lastIndexOf('#');
+        // FIXME parameter should not be reassigned.
         if (p > 0) {
             tabname = tabname.substring(0, p);
         }
@@ -133,47 +151,55 @@ public class SimpleLayout extends LayoutDesign {
     }
 
     @Override
-    public void openViewByReloading(Component cmp, String tabname) {
-        String description = tabname;
+    public void openViewByReloading(final Component component, final String tabname) {
+        Preconditions.checkNotNull(component, "component is null: %s", component);
+        Preconditions.checkNotNull(tabname, "tabname is null: %s", tabname);
+
+        final String description = tabname;
 
         // use as tabname the name without the ID
-        int p = tabname.lastIndexOf('#');
+        final int p = tabname.lastIndexOf('#');
+
+        // FIXME parameter should not be reassigned.
+        String newTabName = tabname;
         if (p > 0) {
-            tabname = tabname.substring(0, p);
+            newTabName = tabname.substring(0, p);
         }
         if (tabname.length() > 50) {
-            tabname = tabname.substring(0, 50) + "...";
+            newTabName = tabname.substring(0, 50) + "...";
         }
+
         int position = -1;
-        if (mainContentTabs.getTab(cmp) != null) {
-            Tab tmpTab = mainContentTabs.getTab(cmp);
+        if (mainContentTabs.getTab(component) != null) {
+            final Tab tmpTab = mainContentTabs.getTab(component);
             position = mainContentTabs.getTabPosition(tmpTab);
             mainContentTabs.removeTab(tmpTab);
         }
-        final Tab tb = mainContentTabs.addTab(cmp);
-        tb.setCaption(tabname);
-        tb.setDescription(description);
+        final Tab tab = mainContentTabs.addTab(component);
+        tab.setCaption(newTabName);
+        tab.setDescription(description);
         if (position != -1) {
-            mainContentTabs.setTabPosition(tb, position);
+            mainContentTabs.setTabPosition(tab, position);
         }
 
-        mainContentTabs.setSelectedTab(cmp);
-        tb.setClosable(true);
+        mainContentTabs.setSelectedTab(component);
+        tab.setClosable(true);
     }
 
     /**
-     * There are cases where we need to close views programatically. <br />
+     * There are cases where we need to close views programmatically. <br />
      * Example close resource-views which are deleted.
      * 
      * @param cmp
      */
     @Override
-    public void closeView(ResourceModel model, ResourceModel parent, Object sender) {
+    public void closeView(final ResourceModel model, final ResourceModel parent, final Object sender) {
+        // FIXME replace comment with methods.
         // 1. Remove the tab for the resource to be deleted
         // 2. Reload the parent Tab
         // 3. Remove the element from the tree
         for (int i = mainContentTabs.getComponentCount() - 1; i >= 0; i--) {
-            String tabDescription =
+            final String tabDescription =
                 mainContentTabs
                     .getTab(i).getDescription()
                     .substring(mainContentTabs.getTab(i).getDescription().lastIndexOf('#') + 1).toString();
@@ -190,7 +216,7 @@ public class SimpleLayout extends LayoutDesign {
                     try {
                         router.show(parent, true);
                     }
-                    catch (EscidocClientException e) {
+                    catch (final EscidocClientException e) {
                         mainWindow.showNotification(ViewConstants.VIEW_ERROR_CANNOT_LOAD_VIEW,
                             Window.Notification.TYPE_ERROR_MESSAGE);
 
@@ -198,7 +224,7 @@ public class SimpleLayout extends LayoutDesign {
                 }
             }
             else {
-                Tree dmTree = (Tree) sender;
+                final Tree dmTree = (Tree) sender;
                 dmTree.removeItem(model);
             }
         }
@@ -304,15 +330,9 @@ public class SimpleLayout extends LayoutDesign {
         vlNavigationPanel.setMargin(false);
 
         // Binding the tree to the NavigationPanel
-        mainNavigationTree = this.addNavigationTree();
+        mainNavigationTree = addNavigationTree();
 
-        final Accordion accordion = new Accordion();
-        accordion.setSizeFull();
-        accordion.addTab(mainNavigationTree, ViewConstants.RESOURCES, null);
-
-        ToolsTreeView toolsTreeView = new ToolsTreeView(router, repositories);
-        toolsTreeView.init();
-        accordion.addTab(toolsTreeView, ViewConstants.TOOLS, null);
+        final Accordion accordion = buildAccordion();
 
         vlNavigationPanel.addComponent(accordion);
         vlNavigationPanel.setExpandRatio(accordion, 1.0f);
@@ -322,23 +342,90 @@ public class SimpleLayout extends LayoutDesign {
         return navigationPanel;
     }
 
+    private Accordion buildAccordion() throws EscidocClientException, URISyntaxException {
+        final Accordion accordion = new Accordion();
+        accordion.setSizeFull();
+        accordion.addListener(new SelectedTabChangeListener() {
+
+            @Override
+            public void selectedTabChange(final SelectedTabChangeEvent event) {
+                Preconditions.checkNotNull(event, "event is null: %s", event);
+
+                final Object source = event.getSource();
+
+                Preconditions.checkNotNull(source, "source is null: %s", source);
+                if (!(source instanceof Accordion)) {
+                    return;
+                }
+
+                if (isOrgUniTabSelected(source)) {
+                    reloadOrgUnitTree(source);
+                }
+            }
+
+            private void reloadOrgUnitTree(final Object source) {
+                try {
+                    reloadContent(source);
+                }
+                catch (final EscidocClientException e) {
+                    LOG.error("Can not reload data source: " + e.getMessage(), e);
+                }
+            }
+
+            private boolean isOrgUniTabSelected(final Object source) {
+                return getSelectedTabCaption(source).equalsIgnoreCase(ViewConstants.ORG_UNITS)
+                    && getTabContent(source) instanceof OrgUnitTreeView;
+            }
+
+            private void reloadContent(final Object source) throws EscidocClientException {
+                ((OrgUnitTreeView) getTabContent(source)).reload();
+            }
+
+            private Component getTabContent(final Object source) {
+                return ((Accordion) source).getSelectedTab();
+            }
+
+            private String getSelectedTabCaption(final Object source) {
+                return ((Accordion) source).getTab(getTabContent(source)).getCaption();
+            }
+        });
+
+        addResourcesTab(accordion);
+        addOrgUnitTab(accordion);
+        addToolsTab(accordion);
+        return accordion;
+    }
+
+    private void addOrgUnitTab(final Accordion accordion) {
+        final OrgUnitTreeView tree = treeBuilder.buildOrgUnitTree();
+        accordion.addTab(tree, ViewConstants.ORG_UNITS, NO_ICON);
+    }
+
+    private void addResourcesTab(final Accordion accordion) {
+        accordion.addTab(mainNavigationTree, ViewConstants.RESOURCES, NO_ICON);
+    }
+
+    private void addToolsTab(final Accordion accordion) throws EscidocClientException, URISyntaxException {
+        final ToolsTreeView toolsTreeView = new ToolsTreeView(router, repositories);
+        toolsTreeView.init();
+        accordion.addTab(toolsTreeView, ViewConstants.TOOLS, NO_ICON);
+    }
+
     private NavigationTreeView addNavigationTree() throws EscidocClientException {
         treeDataSource = new TreeDataSourceImpl(repositories.context().findAllWithChildrenInfo());
         treeDataSource.init();
         setTreeDataSource(treeDataSource);
-        mainNavigationTree =
-            new NavigationTreeBuilder(serviceLocation, repositories).buildNavigationTree(router, mainWindow,
-                treeDataSource);
+        mainNavigationTree = treeBuilder.buildNavigationTree(treeDataSource);
         return mainNavigationTree;
     }
 
+    @SuppressWarnings("unused")
     private TabSheet buildTabContainer() {
-        // common part: create layout
         mainContentTabs = new TabSheet();
         mainContentTabs.setImmediate(true);
         mainContentTabs.setWidth("100.0%");
         mainContentTabs.setHeight("100.0%");
-        new CloseTabsViewHelper(cssContent, mainContentTabs); // headerContainer
+        new CloseTabsViewHelper(cssContent, mainContentTabs);
         return mainContentTabs;
     }
 
@@ -347,7 +434,7 @@ public class SimpleLayout extends LayoutDesign {
         return treeDataSource;
     }
 
-    void setTreeDataSource(TreeDataSource treeDataSource) {
+    void setTreeDataSource(final TreeDataSource treeDataSource) {
         this.treeDataSource = treeDataSource;
     }
 

@@ -26,7 +26,11 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.model;
+package org.escidoc.browser.model.internal;
+
+import org.escidoc.browser.model.AbstractResourceModel;
+import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.ResourceType;
 
 import de.escidoc.core.resources.Resource;
 

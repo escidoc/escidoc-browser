@@ -32,7 +32,8 @@ import com.google.common.base.Preconditions;
 
 public enum ResourceType {
 
-    CONTEXT("Context"), CONTAINER("Container"), ITEM("Item"), CONTENT_MODEL("Content Model");
+    CONTEXT("Context"), CONTAINER("Container"), ITEM("Item"), CONTENT_MODEL("Content Model"), ORG_UNIT(
+        "Organizational Unit");
 
     private String label;
 

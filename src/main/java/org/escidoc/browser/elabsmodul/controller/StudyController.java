@@ -28,13 +28,9 @@
  */
 package org.escidoc.browser.elabsmodul.controller;
 
-import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.List;
+import com.google.common.base.Preconditions;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import com.vaadin.ui.Window;
 
 import org.escidoc.browser.controller.Controller;
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
@@ -62,9 +58,13 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Window;
+import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.List;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
@@ -84,17 +84,12 @@ public class StudyController extends Controller implements ISaveAction {
 
     private final EscidocServiceLocation serviceLocation;
 
-    private final ResourceProxy resourceProxy;
-
-    private final Repositories repositories;
-
     private final Window mainWindow;
-
-    private final Router router;
 
     private IBeanModel beanModel;
 
-    private final Object LOCK = new Object() {
+    private Object LOCK = new Object() {
+        // empty
     };
 
     public StudyController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
@@ -103,12 +98,8 @@ public class StudyController extends Controller implements ISaveAction {
         Preconditions.checkNotNull(router, "Router is NULL");
         Preconditions.checkNotNull(resourceProxy, "ResourceProxy is NULL");
         Preconditions.checkArgument(resourceProxy instanceof ContainerProxy, "ResourceProxy is not a ContainerProxy");
-        this.router = router;
         this.serviceLocation = router.getServiceLocation();
-        this.resourceProxy = resourceProxy;
-        this.repositories = repositories;
         this.mainWindow = router.getMainWindow();
-        this.view = createView(resourceProxy);
         this.setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
     }
 
@@ -134,7 +125,7 @@ public class StudyController extends Controller implements ISaveAction {
     private void saveModel() {
         synchronized (LOCK) {
             Preconditions.checkNotNull(this.beanModel, "DataBean to store is NULL");
-            ContainerRepository containerRepositories = this.repositories.container();
+            ContainerRepository containerRepositories = getRepositories().container();
 
             try {
                 validateBean(this.beanModel);
@@ -212,19 +203,7 @@ public class StudyController extends Controller implements ISaveAction {
         return null;
     }
 
-    private Component createView(ResourceProxy resourceProxy) {
-        StudyBean studyBean = null;
-        try {
-            studyBean = loadBeanData(resourceProxy);
-        }
-        catch (final EscidocBrowserException e) {
-            LOG.error(e.getMessage());
-            showError("Internal error");
-        }
-        return new StudyView(studyBean, this, this.createBeadCrumbModel(), resourceProxy, this.router);
-    }
-
-    private StudyBean loadBeanData(final ResourceProxy resourceProxy) throws EscidocBrowserException {
+    private static StudyBean loadBeanData(final ResourceProxy resourceProxy) {
         final ContainerProxy containerProxy1 = (ContainerProxy) resourceProxy;
         final StudyBean studyBean = new StudyBean();
         studyBean.setObjectId(containerProxy1.getId());
@@ -265,9 +244,9 @@ public class StudyController extends Controller implements ISaveAction {
     private List<ResourceModel> createBeadCrumbModel() {
         try {
             List<ResourceModel> hierarchy =
-                new ResourceHierarchy(this.serviceLocation, this.repositories).getHierarchy(this.resourceProxy);
+                new ResourceHierarchy(this.serviceLocation, getRepositories()).getHierarchy(getResourceProxy());
             Collections.reverse(hierarchy);
-            hierarchy.add(this.resourceProxy);
+            hierarchy.add(getResourceProxy());
             return hierarchy;
         }
         catch (EscidocClientException e) {
@@ -280,9 +259,9 @@ public class StudyController extends Controller implements ISaveAction {
     @Override
     public boolean hasUpdateAccess() {
         try {
-            return this.repositories
+            return getRepositories()
                 .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER)
-                .forResource(this.resourceProxy.getId()).permitted();
+                .forResource(getResourceProxy().getId()).permitted();
         }
         catch (UnsupportedOperationException e) {
             showError("Internal error");
@@ -316,5 +295,12 @@ public class StudyController extends Controller implements ISaveAction {
             showError("Please fill out all of the requried fields!");
             throw new EscidocBrowserException("Some required field is null");
         }
+    }
+
+    @Override
+    public void createView() {
+        view =
+            new StudyView(loadBeanData(getResourceProxy()), this, createBeadCrumbModel(), getResourceProxy(),
+                getRouter());
     }
 }

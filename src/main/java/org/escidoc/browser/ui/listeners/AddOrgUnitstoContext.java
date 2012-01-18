@@ -1,16 +1,16 @@
 package org.escidoc.browser.ui.listeners;
 
-import java.util.Collection;
+import com.vaadin.data.Item;
+import com.vaadin.data.util.HierarchicalContainer;
 
 import org.escidoc.browser.controller.ContextController;
 import org.escidoc.browser.controller.Controller;
-import org.escidoc.browser.model.OrgUnitService;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
+import org.escidoc.browser.repository.internal.OrgUnitService;
 import org.escidoc.browser.ui.Router;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.util.HierarchicalContainer;
+import java.util.Collection;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.reference.OrganizationalUnitRef;

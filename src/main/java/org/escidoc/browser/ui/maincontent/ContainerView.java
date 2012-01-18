@@ -28,27 +28,8 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import java.net.URISyntaxException;
-
-import org.escidoc.browser.model.ContainerModel;
-import org.escidoc.browser.model.ContainerProxy;
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.model.ResourceType;
-import org.escidoc.browser.model.TreeDataSource;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.repository.internal.ActionIdConstants;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.listeners.ResourceDeleteConfirmation;
-import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
-import org.escidoc.browser.ui.view.helpers.CreatePermanentLinkVH;
-import org.escidoc.browser.ui.view.helpers.DirectMember;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.Accordion;
@@ -65,6 +46,26 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Runo;
+
+import org.escidoc.browser.model.ContainerProxy;
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.model.TreeDataSource;
+import org.escidoc.browser.model.internal.ContainerModel;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.internal.ActionIdConstants;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.listeners.ResourceDeleteConfirmation;
+import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
+import org.escidoc.browser.ui.view.helpers.CreatePermanentLinkVH;
+import org.escidoc.browser.ui.view.helpers.DirectMember;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.net.URISyntaxException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.properties.LockStatus;
@@ -370,7 +371,7 @@ public class ContainerView extends View {
 
     }
 
-    private Panel buildLeftPropertiesPnl() {
+    private static Panel buildLeftPropertiesPnl() {
         Panel pnlPropertiesLeft = new Panel();
         pnlPropertiesLeft.setWidth("40%");
         pnlPropertiesLeft.setHeight("60px");
@@ -383,7 +384,7 @@ public class ContainerView extends View {
         return pnlPropertiesLeft;
     }
 
-    private Panel buildRightPnlProperties() {
+    private static Panel buildRightPnlProperties() {
         Panel pnlPropertiesRight = new Panel();
         pnlPropertiesRight.setWidth("60%");
         pnlPropertiesRight.setHeight("60px");
@@ -395,7 +396,7 @@ public class ContainerView extends View {
         return pnlPropertiesRight;
     }
 
-    private void addHorizontalRuler(CssLayout cssLayout) {
+    private static void addHorizontalRuler(CssLayout cssLayout) {
         final Label descRuler = new Label("<hr />", Label.CONTENT_RAW);
         descRuler.setStyleName("hr");
         cssLayout.addComponent(descRuler);
