@@ -8,6 +8,7 @@ import org.escidoc.browser.model.OrgUnitService;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.view.helpers.DragnDropHelper;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;

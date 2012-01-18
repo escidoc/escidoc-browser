@@ -11,10 +11,13 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.data.Validator.EmptyValueException;
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Form;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
@@ -23,6 +26,8 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.aa.useraccount.Preference;
+import de.escidoc.core.resources.aa.useraccount.Preferences;
 
 @SuppressWarnings("serial")
 public class UserProfileView extends View {
@@ -203,5 +208,102 @@ public class UserProfileView extends View {
         frm.getField("txtNameContext").setRequiredError("Name is missing");
 
         vlAccCreateContext.addComponent(frm);
+
+        final Panel pnl = buildPreferences();
+
+        vlAccCreateContext.addComponent(pnl);
     }
+
+    private Panel buildPreferences() throws EscidocClientException {
+        final Panel pnl = new Panel("Preferences");
+        Preferences preferences = controller.getUserPreferences();
+
+        for (Preference preference : preferences) {
+            final Label preferenceName = new Label(preference.getName() + " : " + preference.getValue());
+            pnl.addComponent(preferenceName);
+        }
+
+        Button addPreference = new Button();
+        addPreference.setDescription("Add new Preference");
+        addPreference.setIcon(new ThemeResource("images/assets/plus.png"));
+        addPreference.addListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(ClickEvent event) {
+                final HorizontalLayout hl = new HorizontalLayout();
+                final TextField key = new TextField();
+                key.setCaption("Name");
+                key.setImmediate(false);
+                key.setWidth("-1px");
+                key.setHeight("-1px");
+                key.setInvalidAllowed(false);
+                key.setRequired(true);
+
+                final TextField value = new TextField();
+                value.setCaption("Value");
+                value.setImmediate(false);
+                value.setWidth("-1px");
+                value.setHeight("-1px");
+                value.setInvalidAllowed(false);
+                value.setRequired(true);
+
+                Button btnadd = new Button();
+                btnadd.setIcon(new ThemeResource("images/assets/plus.png"));
+                btnadd.addListener(new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(ClickEvent event) {
+
+                        try {
+                            controller.createPreference(key.getValue().toString(), value.getValue().toString());
+                            router.getMainWindow().showNotification("Preference added successfully ",
+                                Window.Notification.TYPE_TRAY_NOTIFICATION);
+                            hl.removeAllComponents();
+                            hl.addComponent(new Label(key.getValue().toString() + " : " + value.getValue().toString()));
+
+                        }
+                        catch (EscidocClientException e) {
+                            router.getMainWindow().showNotification(
+                                ViewConstants.ERROR_CREATING_USER_PREFERENCE + e.getLocalizedMessage(),
+                                Window.Notification.TYPE_ERROR_MESSAGE);
+                        }
+                    }
+                });
+
+                hl.addComponent(key);
+                hl.addComponent(value);
+                hl.addComponent(btnadd);
+                pnl.addComponent(hl);
+            }
+        });
+
+        pnl.addComponent(addPreference);
+        return pnl;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((currentUser == null) ? 0 : currentUser.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        UserProfileView other = (UserProfileView) obj;
+        if (currentUser == null) {
+            if (other.currentUser != null)
+                return false;
+        }
+        else if (!currentUser.equals(other.currentUser))
+            return false;
+        return true;
+    }
+
 }

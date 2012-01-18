@@ -12,6 +12,8 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.aa.useraccount.Preference;
+import de.escidoc.core.resources.aa.useraccount.Preferences;
 
 public class UserProfileController extends Controller {
 
@@ -58,6 +60,15 @@ public class UserProfileController extends Controller {
 
     public void updateProfile(String name) throws EscidocClientException {
         userRep.updateName(name);
+    }
+
+    public Preferences getUserPreferences() throws EscidocClientException {
+        return userRep.getUserPreferences();
+    }
+
+    public Preference createPreference(String key, String value) throws EscidocClientException {
+        Preference preference = new Preference(key, value);
+        return userRep.createUserPreference(preference);
     }
 
 }

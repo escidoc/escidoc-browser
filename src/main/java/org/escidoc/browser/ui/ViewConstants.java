@@ -327,6 +327,8 @@ public class ViewConstants {
 
     public static final String ERROR_UPDATING_USER = "Error updating user profile";
 
+    public static final String ERROR_CREATING_USER_PREFERENCE = "Error creating user profile preference";
+
     // Container
     public static final String DESC_LOCKSTATUS = "lockstatus";
 

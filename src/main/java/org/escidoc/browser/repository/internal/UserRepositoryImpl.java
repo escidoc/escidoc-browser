@@ -41,6 +41,8 @@ import com.google.common.base.Preconditions;
 import de.escidoc.core.client.UserAccountHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.InternalClientException;
+import de.escidoc.core.resources.aa.useraccount.Preference;
+import de.escidoc.core.resources.aa.useraccount.Preferences;
 import de.escidoc.core.resources.aa.useraccount.UserAccount;
 import de.escidoc.core.resources.aa.useraccount.UserAccountProperties;
 import de.escidoc.core.resources.common.TaskParam;
@@ -116,4 +118,17 @@ public class UserRepositoryImpl implements UserRepository {
         taskParam.setPassword(newPassword);
         client.updatePassword(user.getObjid(), taskParam);
     }
+
+    public Preferences getUserPreferences() throws EscidocClientException {
+        return client.retrievePreferences(getCurrentUser());
+    }
+
+    public Preference createUserPreference(Preference preference) throws EscidocClientException {
+        return client.createPreference(getCurrentUser().getObjid(), preference);
+    }
+
+    public Preference updateUserPreference(Preference preference) throws EscidocClientException {
+        return client.updatePreference(getCurrentUser(), preference);
+    }
+
 }
