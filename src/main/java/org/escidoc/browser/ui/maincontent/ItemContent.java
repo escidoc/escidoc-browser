@@ -55,6 +55,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.om.item.component.Component;
 
 @SuppressWarnings("serial")
@@ -158,13 +159,19 @@ public class ItemContent extends VerticalLayout {
     }
 
     private Label createLabelForMetadata(final Component comp) {
+        String mdrecords = "";
+        for (MetadataRecord metadataRecord : comp.getMetadataRecords()) {
+            mdrecords +=
+                "<a href=\"" + serviceLocation.getEscidocUri() + metadataRecord.getXLinkHref()
+                    + "\" target =\"_blank\">" + metadataRecord.getName() + "</a><br />";
+        }
         final Label labelMetadata =
             new Label("<strong>" + comp.getContent().getXLinkTitle() + "</strong>" + "<br />"
                 + comp.getProperties().getContentCategory() + "<hr />" + ViewConstants.CREATED_ON
                 + comp.getProperties().getCreationDate().toString("d.M.y, H:mm") + "<br /> by "
                 + comp.getProperties().getCreatedBy().getXLinkTitle() + "<br /> Mime Type: "
-                + comp.getProperties().getMimeType() + "<br />" + "MD5Checksum " + comp.getProperties().getChecksum(),
-                Label.CONTENT_RAW);
+                + comp.getProperties().getMimeType() + "<br />" + "MD5Checksum " + comp.getProperties().getChecksum()
+                + "<hr />" + mdrecords, Label.CONTENT_RAW);
         labelMetadata.setStyleName("smallfont");
         return labelMetadata;
     }
