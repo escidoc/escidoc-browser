@@ -116,7 +116,7 @@ public abstract class Controller {
      * @param errorMessage
      *            message content
      */
-    protected void showError(final String errorMessage) {
+    public void showError(final String errorMessage) {
         Preconditions.checkNotNull(errorMessage, "Errormessage is null");
         this.router.getApp().getMainWindow().showNotification("Error", errorMessage, Notification.TYPE_ERROR_MESSAGE);
     }
@@ -141,7 +141,7 @@ public abstract class Controller {
      * @param trayMessage
      *            message content
      */
-    protected void showTrayMessage(final String trayTitle, final String trayMessage) {
+    public void showTrayMessage(final String trayTitle, final String trayMessage) {
         Preconditions.checkNotNull(trayMessage, "Traymessage is null");
         Preconditions.checkNotNull(trayTitle, "trayTitle is null");
         this.router

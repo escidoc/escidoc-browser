@@ -14,11 +14,11 @@ import com.google.common.base.Preconditions;
 import com.vaadin.data.Validator.EmptyValueException;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
@@ -217,16 +217,16 @@ public class UserProfileView extends View {
     private Panel buildPreferences() throws EscidocClientException {
         final Panel pnl = new Panel("Preferences");
         Preferences preferences = controller.getUserPreferences();
+        final UserPreferencesTable userPrefTable = new UserPreferencesTable(preferences, controller);
+        pnl.addComponent(userPrefTable);
 
-        pnl.addComponent(new UserPreferencesTable(preferences, controller));
-
-        Button addPreference = new Button();
+        final Button addPreference = new Button();
         addPreference.setDescription("Add new Preference");
         addPreference.setIcon(new ThemeResource("images/assets/plus.png"));
         addPreference.addListener(new Button.ClickListener() {
-
             @Override
             public void buttonClick(ClickEvent event) {
+                addPreference.setEnabled(false);
                 final HorizontalLayout hl = new HorizontalLayout();
                 final TextField key = new TextField();
                 key.setCaption("Name");
@@ -244,7 +244,7 @@ public class UserProfileView extends View {
                 value.setInvalidAllowed(false);
                 value.setRequired(true);
 
-                Button btnadd = new Button();
+                final Button btnadd = new Button();
                 btnadd.setIcon(new ThemeResource("images/assets/plus.png"));
                 btnadd.addListener(new Button.ClickListener() {
                     @Override
@@ -255,8 +255,9 @@ public class UserProfileView extends View {
                             router.getMainWindow().showNotification("Preference added successfully ",
                                 Window.Notification.TYPE_TRAY_NOTIFICATION);
                             hl.removeAllComponents();
-                            hl.addComponent(new Label(key.getValue().toString() + " : " + value.getValue().toString()));
-
+                            addPreference.setEnabled(true);
+                            userPrefTable.createItem(userPrefTable.getTableContainer(), key.getValue().toString(), key
+                                .getValue().toString(), value.getValue().toString());
                         }
                         catch (EscidocClientException e) {
                             router.getMainWindow().showNotification(
@@ -265,10 +266,10 @@ public class UserProfileView extends View {
                         }
                     }
                 });
-
                 hl.addComponent(key);
                 hl.addComponent(value);
                 hl.addComponent(btnadd);
+                hl.setComponentAlignment(btnadd, Alignment.BOTTOM_RIGHT);
                 pnl.addComponent(hl);
             }
         });

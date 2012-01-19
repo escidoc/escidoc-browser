@@ -324,7 +324,7 @@ public class ViewConstants {
     public static final String ERROR_CREATING_RESOURCE = "Error creating resource";
 
     public static final String EDIT_PROFILE = "Edit personal profile";
-    
+
     public static final String ORG_UNITS = "Organizational Units";
 
     public static final String ERROR_UPDATING_USER = "Error updating user profile";
@@ -333,6 +333,7 @@ public class ViewConstants {
 
     // Container
     public static final String DESC_LOCKSTATUS = "lockstatus";
+
     public static final String ADD_CHILD = "Add Child";
 
     public static final String DELETE_RESOURCE_CONFIRMATION = "Are you confident to delete this resource!?";
@@ -355,5 +356,11 @@ public class ViewConstants {
     // ActionHandlerImpl
     public static final String CANNOT_REMOVE_CONTEXT_NOT_IN_STATUS_CREATED =
         "Cannot remove this context since it is not in status created";
+
+    // UserPreferencesTable
+    public static final String THE_PREFERENCE_REMOVED =
+        "The preference was removed successfully from this users profile";
+
+    public static final String PREFERENCE_REMOVE = "Preference remove";
 
 }
