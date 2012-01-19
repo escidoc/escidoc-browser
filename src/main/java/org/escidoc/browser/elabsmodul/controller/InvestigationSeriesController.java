@@ -28,9 +28,13 @@
  */
 package org.escidoc.browser.elabsmodul.controller;
 
-import com.google.common.base.Preconditions;
+import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.List;
 
-import com.vaadin.ui.Window;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.controller.Controller;
@@ -59,13 +63,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.List;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import com.google.common.base.Preconditions;
+import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
@@ -100,6 +99,7 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
         this.containerProxy = (ContainerProxy) resourceProxy;
         setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
         resourceToBean();
+        createView();
     }
 
     @Override

@@ -28,9 +28,13 @@
  */
 package org.escidoc.browser.elabsmodul.controller;
 
-import com.google.common.base.Preconditions;
+import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.List;
 
-import com.vaadin.ui.Window;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.escidoc.browser.controller.Controller;
 import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
@@ -58,13 +62,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.List;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import com.google.common.base.Preconditions;
+import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
@@ -101,6 +100,7 @@ public class StudyController extends Controller implements ISaveAction {
         this.serviceLocation = router.getServiceLocation();
         this.mainWindow = router.getMainWindow();
         this.setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
+        createView();
     }
 
     @Override

@@ -37,6 +37,7 @@ public class OrgUnitController extends Controller {
 
     public OrgUnitController(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
+        createView();
     }
 
     @Override

@@ -28,12 +28,12 @@
  */
 package org.escidoc.browser.controller;
 
-import com.vaadin.ui.Window;
-
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.maincontent.ContainerView;
+
+import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -41,6 +41,7 @@ public class ContainerController extends Controller {
 
     public ContainerController(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
+        createView();
     }
 
     @Override

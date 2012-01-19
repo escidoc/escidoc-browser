@@ -49,6 +49,7 @@ public class ContextController extends Controller {
 
     public ContextController(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
+        createView();
     }
 
     @Override
