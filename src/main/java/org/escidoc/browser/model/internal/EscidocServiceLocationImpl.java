@@ -81,6 +81,11 @@ public class EscidocServiceLocationImpl implements EscidocServiceLocation {
     }
 
     @Override
+    public void setEscidocUri(final String escidocUri) {
+        this.escidocUri = escidocUri.toString();
+    }
+
+    @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
         builder.append("EscidocServiceLocationImpl [");

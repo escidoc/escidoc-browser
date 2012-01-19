@@ -151,9 +151,22 @@ public class BrowserApplication extends Application implements HttpServletReques
 
         final Repositories repositories = new RepositoriesImpl(serviceLocation).createAllRepositories();
         repositories.loginWith(getCurrentUser().getToken());
+        updateServiceUri(serviceLocation, repositories);
         final Router router = new Router(mainWindow, serviceLocation, this, repositories);
 
         return router;
+    }
+
+    /**
+     * Make sure we use the escidoc-core.baseurl and not some domain alias
+     * 
+     * @param serviceLocation
+     * @param repositories
+     * @throws EscidocClientException
+     */
+    private void updateServiceUri(final EscidocServiceLocation serviceLocation, final Repositories repositories)
+        throws EscidocClientException {
+        serviceLocation.setEscidocUri(repositories.admin().getRepositoryInfo().get("escidoc-core.baseurl"));
     }
 
     private void setMainWindowHeight() {
