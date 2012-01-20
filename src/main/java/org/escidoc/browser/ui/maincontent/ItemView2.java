@@ -6,6 +6,7 @@ import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.HorizontalSplitPanel;
@@ -26,6 +27,11 @@ public class ItemView2 extends View {
 	private EscidocServiceLocation serviceLocation;
 	private Panel panelView;
 	private ItemController controller;
+	private String status;
+	private String lockStatus;
+	private Label lblStatus;
+	private Label lblLockstatus;
+	private Label lblCurrentVersionStatus;
 
 	public ItemView2(Router router, ResourceProxy resourceProxy,
 			ItemController itemController) throws EscidocClientException {
@@ -86,6 +92,44 @@ public class ItemView2 extends View {
 		VerticalLayout sidebar = new VerticalLayout();
 		sidebar.setStyleName(Reindeer.LAYOUT_BLUE);
 		Panel properties = new Panel("Properties");
+		final Label descMetadata1 = new Label("ID: " + resourceProxy.getId());
+
+		status = resourceProxy.getType().getLabel() + " is ";
+		lockStatus = status;
+		lblStatus = new Label(status + resourceProxy.getStatus(),
+				Label.CONTENT_RAW);
+		lblStatus.setDescription(ViewConstants.DESC_STATUS);
+
+		lblLockstatus = new Label(status + resourceProxy.getLockStatus(),
+				Label.CONTENT_RAW);
+		lblLockstatus.setDescription(ViewConstants.DESC_LOCKSTATUS);
+		if (controller.canUpdateItem()) {
+			lblLockstatus.setStyleName("inset");
+		}
+		final Label descMetadata2 = new Label(ViewConstants.CREATED_BY + " "
+				+ resourceProxy.getCreator() + " on "
+				+ resourceProxy.getCreatedOn() + "<br/>"
+				+ ViewConstants.LAST_MODIFIED_BY + " "
+				+ resourceProxy.getModifier() + " on "
+				+ resourceProxy.getModifiedOn() + "<br/>" + "Released by "
+				+ resourceProxy.getReleasedBy() + " on "
+				+ resourceProxy.getLatestVersionModifiedOn(),
+				Label.CONTENT_XHTML);
+
+		properties.addComponent(descMetadata1);
+		if (controller.canUpdateItem()) {
+			status = "Latest status is ";
+			lblCurrentVersionStatus = new Label(status
+					+ resourceProxy.getVersionStatus());
+			lblCurrentVersionStatus.setDescription(ViewConstants.DESC_STATUS);
+			lblCurrentVersionStatus.setStyleName("inset");
+			properties.addComponent(lblCurrentVersionStatus);
+
+		} else {
+			properties.addComponent(lblStatus);
+		}
+
+		properties.addComponent(lblLockstatus);
 
 		sidebar.addComponent(properties);
 		return sidebar;
