@@ -12,6 +12,7 @@ import com.google.common.base.Preconditions;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
@@ -32,6 +33,7 @@ public class ItemView2 extends View {
 	private Label lblStatus;
 	private Label lblLockstatus;
 	private Label lblCurrentVersionStatus;
+	private Table table;
 
 	public ItemView2(Router router, ResourceProxy resourceProxy,
 			ItemController itemController) throws EscidocClientException {
@@ -81,7 +83,8 @@ public class ItemView2 extends View {
 		final HorizontalSplitPanel horiz = new HorizontalSplitPanel();
 		horiz.setStyleName(Runo.SPLITPANEL_SMALL);
 		horiz.setSplitPosition(80); // percent
-		horiz.addComponent(new Label("Whatever"));
+		horiz.addComponent(new ItemContent(repositories, resourceProxy,
+				serviceLocation, mainWindow));
 		VerticalLayout sidebar = buildSidebar();
 		horiz.addComponent(sidebar);
 
@@ -130,6 +133,7 @@ public class ItemView2 extends View {
 		}
 
 		properties.addComponent(lblLockstatus);
+		properties.addComponent(descMetadata2);
 
 		sidebar.addComponent(properties);
 		return sidebar;
