@@ -61,170 +61,187 @@ import de.escidoc.core.resources.om.item.component.Component;
 @SuppressWarnings("serial")
 public class ItemContent extends VerticalLayout {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ItemContent.class);
+	private static final Logger LOG = LoggerFactory
+			.getLogger(ItemContent.class);
 
-    private final VerticalLayout verticalLayout = new VerticalLayout();
+	private final VerticalLayout verticalLayout = new VerticalLayout();
 
-    private final EscidocServiceLocation serviceLocation;
+	private final EscidocServiceLocation serviceLocation;
 
-    private final Repositories repositories;
+	private final Repositories repositories;
 
-    private final Window mainWindow;
+	private final Window mainWindow;
 
-    private ItemProxy itemProxy;
+	private ItemProxy itemProxy;
 
-    private Table table;
+	private Table table;
 
-    public ItemContent(final Repositories repositories, final ItemProxyImpl itemProxy,
-        final EscidocServiceLocation serviceLocation, final Window mainWindow) {
-        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
-        Preconditions.checkNotNull(itemProxy, "resourceProxy is null.");
-        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null.");
-        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
+	public ItemContent(final Repositories repositories,
+			final ItemProxyImpl itemProxy,
+			final EscidocServiceLocation serviceLocation,
+			final Window mainWindow) {
+		Preconditions.checkNotNull(repositories, "repositories is null: %s",
+				repositories);
+		Preconditions.checkNotNull(itemProxy, "resourceProxy is null.");
+		Preconditions.checkNotNull(serviceLocation, "serviceLocation is null.");
+		Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s",
+				mainWindow);
 
-        this.repositories = repositories;
-        this.itemProxy = itemProxy;
-        this.serviceLocation = serviceLocation;
-        this.mainWindow = mainWindow;
-        initView();
-    }
+		this.repositories = repositories;
+		this.itemProxy = itemProxy;
+		this.serviceLocation = serviceLocation;
+		this.mainWindow = mainWindow;
+		initView();
 
-    private void initView() {
-        verticalLayout.addStyleName("drophere");
-        wrap(verticalLayout);
-        if (hasComponents()) {
-            verticalLayout.addComponent(buildTable());
-        }
-        else {
-            final Label lblNoComponents =
-                new Label(
-                    "No components in this Item. You can drag n'drop some file from your computer to this box to add new components!");
-            lblNoComponents.setWidth("90%");
-            lblNoComponents.setStyleName("skybluetext");
-            verticalLayout.addComponent(lblNoComponents);
-        }
-    }
+	}
 
-    private void wrap(final VerticalLayout verticalLayout) {
-        try {
-            if (userIsPermittedToUpdate()) {
-                verticalLayout.setHeight(mainWindow.getHeight() * 65 / 100 + "px");
-                verticalLayout.setWidth("99%");
+	private void initView() {
+		verticalLayout.addStyleName("drophere");
+		wrap(verticalLayout);
+		if (hasComponents()) {
+			verticalLayout.addComponent(buildTable());
+		} else {
+			final Label lblNoComponents = new Label(
+					"No components in this Item. You can drag n'drop some file from your computer to this box to add new components!");
+			lblNoComponents.setWidth("90%");
+			lblNoComponents.setStyleName("skybluetext");
+			verticalLayout.addComponent(lblNoComponents);
+		}
+	}
 
-                final DragAndDropFileUpload dragAndDropFileUpload =
-                    new DragAndDropFileUpload(repositories, itemProxy, this, verticalLayout);
-                dragAndDropFileUpload.setSizeFull();
-                addComponent(dragAndDropFileUpload);
-            }
-        }
-        catch (final EscidocClientException e) {
-            LOG.error(e.getMessage());
-            showError(e);
-        }
-        catch (final URISyntaxException e) {
-            LOG.error(e.getMessage());
-            showError(e);
-        }
-    }
+	private void wrap(final VerticalLayout verticalLayout) {
+		try {
+			if (userIsPermittedToUpdate()) {
+				verticalLayout.setHeight(mainWindow.getHeight() * 65 / 100
+						+ "px");
+				verticalLayout.setWidth("99%");
 
-    private boolean userIsPermittedToUpdate() throws EscidocClientException, URISyntaxException {
-        return repositories
-            .pdp().isAction(ActionIdConstants.UPDATE_ITEM).forCurrentUser().forResource(itemProxy.getId()).permitted();
-    }
+				final DragAndDropFileUpload dragAndDropFileUpload = new DragAndDropFileUpload(
+						repositories, itemProxy, this, verticalLayout);
+				dragAndDropFileUpload.setSizeFull();
+				addComponent(dragAndDropFileUpload);
+			}
+		} catch (final EscidocClientException e) {
+			LOG.error(e.getMessage());
+			showError(e);
+		} catch (final URISyntaxException e) {
+			LOG.error(e.getMessage());
+			showError(e);
+		}
+	}
 
-    private void showError(final Exception e) {
-        mainWindow.showNotification(new Window.Notification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE));
-    }
+	private boolean userIsPermittedToUpdate() throws EscidocClientException,
+			URISyntaxException {
+		return repositories.pdp().isAction(ActionIdConstants.UPDATE_ITEM)
+				.forCurrentUser().forResource(itemProxy.getId()).permitted();
+	}
 
-    private boolean hasComponents() {
-        return itemProxy.hasComponents().booleanValue();
-    }
+	private void showError(final Exception e) {
+		mainWindow.showNotification(new Window.Notification(e.getMessage(),
+				Window.Notification.TYPE_ERROR_MESSAGE));
+	}
 
-    private Button createDownloadLink(final Component comp) {
-        final Button link = new Button();
-        link.setStyleName(BaseTheme.BUTTON_LINK);
-        link.setIcon(new ThemeResource("images/download.png"));
-        link.addListener(new Button.ClickListener() {
+	private boolean hasComponents() {
+		return itemProxy.hasComponents().booleanValue();
+	}
 
-            private static final long serialVersionUID = 651483473875504715L;
+	private Button createDownloadLink(final Component comp) {
+		final Button link = new Button();
+		link.setStyleName(BaseTheme.BUTTON_LINK);
+		link.setIcon(new ThemeResource("images/download.png"));
+		link.addListener(new Button.ClickListener() {
 
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                mainWindow.open(new ExternalResource(
-                    serviceLocation.getEscidocUri() + comp.getContent().getXLinkHref(), comp
-                        .getProperties().getMimeType()), "_new");
-            }
-        });
-        return link;
-    }
+			private static final long serialVersionUID = 651483473875504715L;
 
-    private Label createLabelForMetadata(final Component comp) {
-        String mdrecords = "";
-        for (MetadataRecord metadataRecord : comp.getMetadataRecords()) {
-            mdrecords +=
-                "<a href=\"" + serviceLocation.getEscidocUri() + metadataRecord.getXLinkHref()
-                    + "\" target =\"_blank\">" + metadataRecord.getName() + "</a><br />";
-        }
-        final Label labelMetadata =
-            new Label("<strong>" + comp.getContent().getXLinkTitle() + "</strong>" + "<br />"
-                + comp.getProperties().getContentCategory() + "<hr />" + ViewConstants.CREATED_ON
-                + comp.getProperties().getCreationDate().toString("d.M.y, H:mm") + "<br /> by "
-                + comp.getProperties().getCreatedBy().getXLinkTitle() + "<br /> Mime Type: "
-                + comp.getProperties().getMimeType() + "<br />" + "MD5Checksum " + comp.getProperties().getChecksum()
-                + "<hr />" + mdrecords, Label.CONTENT_RAW);
-        labelMetadata.setStyleName("smallfont");
-        return labelMetadata;
-    }
+			@Override
+			public void buttonClick(final ClickEvent event) {
+				mainWindow.open(
+						new ExternalResource(serviceLocation.getEscidocUri()
+								+ comp.getContent().getXLinkHref(), comp
+								.getProperties().getMimeType()), "_new");
+			}
+		});
+		return link;
+	}
 
-    private Embedded createEmbeddedImage(final Component comp) {
-        final String currentDir = new File(".").getAbsolutePath();
-        final File file =
-            new File(currentDir.substring(0, currentDir.length() - 1) + AppConstants.MIMETYPE_ICON_LOCATION
-                + getFileType(comp) + ".png");
-        final boolean exists = file.exists();
-        if (exists) {
-            return new Embedded("", new ThemeResource("images/filetypes/" + getFileType(comp) + ".png"));
-        }
-        return new Embedded("", new ThemeResource("images/filetypes/article.png"));
-    }
+	private Label createLabelForMetadata(final Component comp) {
+		String mdrecords = "";
+		for (MetadataRecord metadataRecord : comp.getMetadataRecords()) {
+			mdrecords += "<a href=\"" + serviceLocation.getEscidocUri()
+					+ metadataRecord.getXLinkHref() + "\" target =\"_blank\">"
+					+ metadataRecord.getName() + "</a><br />";
+		}
+		final Label labelMetadata = new Label("<strong>"
+				+ comp.getContent().getXLinkTitle()
+				+ "</strong>"
+				+ "<br />"
+				+ comp.getProperties().getContentCategory()
+				+ "<hr />"
+				+ ViewConstants.CREATED_ON
+				+ comp.getProperties().getCreationDate()
+						.toString("d.M.y, H:mm") + "<br /> by "
+				+ comp.getProperties().getCreatedBy().getXLinkTitle()
+				+ "<br /> Mime Type: " + comp.getProperties().getMimeType()
+				+ "<br />" + "MD5Checksum "
+				+ comp.getProperties().getChecksum() + "<hr />" + mdrecords,
+				Label.CONTENT_RAW);
+		labelMetadata.setStyleName("smallfont");
+		return labelMetadata;
+	}
 
-    private String getFileType(final Component itemProperties) {
-        final String mimeType = itemProperties.getProperties().getMimeType();
-        if (mimeType == null) {
-            return AppConstants.EMPTY_STRING;
-        }
-        final String[] last = mimeType.split("/");
-        final String lastOne = last[last.length - 1];
-        return lastOne;
-    }
+	private Embedded createEmbeddedImage(final Component comp) {
+		final String currentDir = new File(".").getAbsolutePath();
+		final File file = new File(currentDir.substring(0,
+				currentDir.length() - 1)
+				+ AppConstants.MIMETYPE_ICON_LOCATION
+				+ getFileType(comp) + ".png");
+		final boolean exists = file.exists();
+		if (exists) {
+			return new Embedded("", new ThemeResource("images/filetypes/"
+					+ getFileType(comp) + ".png"));
+		}
+		return new Embedded("", new ThemeResource(
+				"images/filetypes/article.png"));
+	}
 
-    private Table buildTable() {
-        table = new Table();
-        table.setPageLength(0);
-        table.setWidth("100%");
-        table.setStyleName("drophere");
-        table.addContainerProperty("Type", Embedded.class, null);
-        table.addContainerProperty("Meta", Label.class, null);
-        table.addContainerProperty("Link", Button.class, null);
-        int rowIndex = 0;
-        for (final Component comp : itemProxy.getElements()) {
-            table.addItem(new Object[] { createEmbeddedImage(comp), createLabelForMetadata(comp),
-                createDownloadLink(comp) }, Integer.valueOf(rowIndex++));
-        }
-        table.setColumnWidth("Type", 20);
-        table.setColumnWidth("Link", 20);
-        return table;
-    }
+	private String getFileType(final Component itemProperties) {
+		final String mimeType = itemProperties.getProperties().getMimeType();
+		if (mimeType == null) {
+			return AppConstants.EMPTY_STRING;
+		}
+		final String[] last = mimeType.split("/");
+		final String lastOne = last[last.length - 1];
+		return lastOne;
+	}
 
-    public void updateView(final ItemProxyImpl itemProxy) {
-        this.itemProxy = itemProxy;
-        if (hasComponents()) {
-            rebuildFilesTable();
-        }
-    }
+	private Table buildTable() {
+		table = new Table();
+		table.setPageLength(0);
+		table.setWidth("100%");
+		table.setStyleName("drophere");
+		table.addContainerProperty("Type", Embedded.class, null);
+		table.addContainerProperty("Meta", Label.class, null);
+		table.addContainerProperty("Link", Button.class, null);
+		int rowIndex = 0;
+		for (final Component comp : itemProxy.getElements()) {
+			table.addItem(new Object[] { createEmbeddedImage(comp),
+					createLabelForMetadata(comp), createDownloadLink(comp) },
+					Integer.valueOf(rowIndex++));
+		}
+		table.setColumnWidth("Type", 20);
+		table.setColumnWidth("Link", 20);
+		return table;
+	}
 
-    private void rebuildFilesTable() {
-        verticalLayout.removeAllComponents();
-        verticalLayout.addComponent(buildTable());
-    }
+	public void updateView(final ItemProxyImpl itemProxy) {
+		this.itemProxy = itemProxy;
+		if (hasComponents()) {
+			rebuildFilesTable();
+		}
+	}
+
+	private void rebuildFilesTable() {
+		verticalLayout.removeAllComponents();
+		verticalLayout.addComponent(buildTable());
+	}
 }

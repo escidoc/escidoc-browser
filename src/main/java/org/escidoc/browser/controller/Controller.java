@@ -41,113 +41,125 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public abstract class Controller {
 
-    protected Component view;
+	protected Component view;
 
-    private final Repositories repositories;
+	protected final Repositories repositories;
 
-    private final ResourceProxy resourceProxy;
+	protected final ResourceProxy resourceProxy;
 
-    private final Router router;
+	protected final Router router;
 
-    private final LayoutDesign layout;
+	private final LayoutDesign layout;
 
-    private String resourceName;
+	private String resourceName;
 
-    public Controller(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
-        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
-        Preconditions.checkNotNull(router, "router is null: %s", router);
-        this.repositories = repositories;
-        this.router = router;
-        this.resourceProxy = resourceProxy;
-        this.layout = router.getLayout();
-        if (resourceProxy != null) {
-            setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
-        }
-    }
+	public Controller(final Repositories repositories, final Router router,
+			final ResourceProxy resourceProxy) {
+		Preconditions.checkNotNull(repositories, "repositories is null: %s",
+				repositories);
+		Preconditions.checkNotNull(router, "router is null: %s", router);
+		this.repositories = repositories;
+		this.router = router;
+		this.resourceProxy = resourceProxy;
+		this.layout = router.getLayout();
+		if (resourceProxy != null) {
+			setResourceName(resourceProxy.getName() + "#"
+					+ resourceProxy.getId());
+		}
+	}
 
-    protected Repositories getRepositories() {
-        return repositories;
-    }
+	protected Repositories getRepositories() {
+		return repositories;
+	}
 
-    protected Router getRouter() {
-        return router;
-    }
+	protected Router getRouter() {
+		return router;
+	}
 
-    protected ResourceProxy getResourceProxy() {
-        return resourceProxy;
-    }
+	protected ResourceProxy getResourceProxy() {
+		return resourceProxy;
+	}
 
-    public void showView() {
-        Preconditions.checkNotNull(view, "view is null: %s", view);
-        Preconditions.checkNotNull(layout, "layout is null: %s", layout);
-        layout.openView(view, getResourceName());
-    }
+	public void showView() {
+		Preconditions.checkNotNull(view, "view is null: %s", view);
+		Preconditions.checkNotNull(layout, "layout is null: %s", layout);
+		layout.openView(view, getResourceName());
+	}
 
-    public void showViewByReloading() {
-        Preconditions.checkNotNull(view, "view is null: %s", view);
-        Preconditions.checkNotNull(layout, "layout is null: %s", layout);
-        layout.openViewByReloading(view, getResourceName());
-    }
+	public void showViewByReloading() {
+		Preconditions.checkNotNull(view, "view is null: %s", view);
+		Preconditions.checkNotNull(layout, "layout is null: %s", layout);
+		layout.openViewByReloading(view, getResourceName());
+	}
 
-    /**
-     * Used for syncing resources etc
-     */
-    public void refreshView() {
-        try {
-            router.show(resourceProxy, true);
-        }
-        catch (final EscidocClientException e) {
-            showError("Could not refresh view" + e.getLocalizedMessage());
-            e.printStackTrace();
-        }
-    }
+	/**
+	 * Used for syncing resources etc
+	 */
+	public void refreshView() {
+		try {
+			router.show(resourceProxy, true);
+		} catch (final EscidocClientException e) {
+			showError("Could not refresh view" + e.getLocalizedMessage());
+			e.printStackTrace();
+		}
+	}
 
-    public String getResourceName() {
-        return resourceName;
-    }
+	public String getResourceName() {
+		return resourceName;
+	}
 
-    public void setResourceName(final String name) {
-        this.resourceName = name;
-    }
+	public void setResourceName(final String name) {
+		this.resourceName = name;
+	}
 
-    /**
-     * Show error message to the user
-     * 
-     * @param errorMessage
-     *            message content
-     */
-    public void showError(final String errorMessage) {
-        Preconditions.checkNotNull(errorMessage, "Errormessage is null");
-        this.router.getApp().getMainWindow().showNotification("Error", errorMessage, Notification.TYPE_ERROR_MESSAGE);
-    }
+	/**
+	 * Show error message to the user
+	 * 
+	 * @param errorMessage
+	 *            message content
+	 */
+	public void showError(final String errorMessage) {
+		Preconditions.checkNotNull(errorMessage, "Errormessage is null");
+		this.router
+				.getApp()
+				.getMainWindow()
+				.showNotification("Error", errorMessage,
+						Notification.TYPE_ERROR_MESSAGE);
+	}
 
-    /**
-     * Show warning message to the user
-     * 
-     * @param warningMessage
-     *            message content
-     */
-    protected void showWarning(final String warningMessage) {
-        Preconditions.checkNotNull(warningMessage, "Warningmessage is null");
-        this.router
-            .getApp().getMainWindow().showNotification("Warning", warningMessage, Notification.TYPE_WARNING_MESSAGE);
-    }
+	/**
+	 * Show warning message to the user
+	 * 
+	 * @param warningMessage
+	 *            message content
+	 */
+	protected void showWarning(final String warningMessage) {
+		Preconditions.checkNotNull(warningMessage, "Warningmessage is null");
+		this.router
+				.getApp()
+				.getMainWindow()
+				.showNotification("Warning", warningMessage,
+						Notification.TYPE_WARNING_MESSAGE);
+	}
 
-    /**
-     * Show tray panel message to the user
-     * 
-     * @param trayTitle
-     *            message header
-     * @param trayMessage
-     *            message content
-     */
-    public void showTrayMessage(final String trayTitle, final String trayMessage) {
-        Preconditions.checkNotNull(trayMessage, "Traymessage is null");
-        Preconditions.checkNotNull(trayTitle, "trayTitle is null");
-        this.router
-            .getApp().getMainWindow().showNotification(trayTitle, trayMessage, Notification.TYPE_TRAY_NOTIFICATION);
-    }
+	/**
+	 * Show tray panel message to the user
+	 * 
+	 * @param trayTitle
+	 *            message header
+	 * @param trayMessage
+	 *            message content
+	 */
+	public void showTrayMessage(final String trayTitle, final String trayMessage) {
+		Preconditions.checkNotNull(trayMessage, "Traymessage is null");
+		Preconditions.checkNotNull(trayTitle, "trayTitle is null");
+		this.router
+				.getApp()
+				.getMainWindow()
+				.showNotification(trayTitle, trayMessage,
+						Notification.TYPE_TRAY_NOTIFICATION);
+	}
 
-    public abstract void createView() throws EscidocClientException;
+	public abstract void createView() throws EscidocClientException;
 
 }

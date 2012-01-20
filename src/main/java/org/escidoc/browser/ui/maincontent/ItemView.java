@@ -28,6 +28,7 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
+import org.escidoc.browser.controller.ItemController;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
@@ -54,283 +55,293 @@ import de.escidoc.core.resources.om.item.Item;
 @SuppressWarnings("serial")
 public final class ItemView extends View {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ItemView.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ItemView.class);
 
-    private final Router router;
+	private final Router router;
 
-    private final ItemProxyImpl resourceProxy;
+	private final ItemProxyImpl resourceProxy;
 
-    private final Window mainWindow;
+	private final Window mainWindow;
 
-    private final EscidocServiceLocation serviceLocation;
+	private final EscidocServiceLocation serviceLocation;
 
-    private final Repositories repositories;
+	private final Repositories repositories;
 
-    private ItemPropertiesVH itemPropertiesView;
+	private ItemPropertiesVH itemPropertiesView;
 
-    private Panel panelView;
+	private Panel panelView;
 
-    public ItemView(final Repositories repositories, final Router router, final ResourceProxy resourceProxy)
-        throws EscidocClientException {
-        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
-        Preconditions.checkNotNull(router, "mainSite is null.");
-        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null.");
+	private ItemController controller;
 
-        this.resourceProxy = (ItemProxyImpl) resourceProxy;
-        this.repositories = repositories;
-        this.setViewName(resourceProxy.getName());
-        this.mainWindow = router.getMainWindow();
-        this.router = router;
-        this.serviceLocation = router.getServiceLocation();
-        panelView = buildContentPanel();
-    }
+	public ItemView(final Router router, final ResourceProxy resourceProxy,
+			final ItemController itemController) throws EscidocClientException {
+		Preconditions.checkNotNull(router, "router is null: %s", router);
+		Preconditions.checkNotNull(resourceProxy, "resourceProxy is null.");
+		Preconditions.checkNotNull(itemController, "itemController is null.");
 
-    public Panel buildContentPanel() throws EscidocClientException {
-        this.setImmediate(false);
-        this.setWidth("100.0%");
-        this.setHeight("100.0%");
-        this.setStyleName(Runo.PANEL_LIGHT);
+		this.resourceProxy = (ItemProxyImpl) resourceProxy;
+		this.repositories = router.getRepositories();
+		this.setViewName(resourceProxy.getName());
+		this.mainWindow = router.getMainWindow();
+		this.router = router;
+		this.serviceLocation = router.getServiceLocation();
+		this.controller = itemController;
+		panelView = buildContentPanel();
+	}
 
-        // vlContentPanel assign a layout to this panel
-        this.setContent(buildVlContentPanel());
-        return this;
-    }
+	public Panel buildContentPanel() throws EscidocClientException {
+		this.setImmediate(false);
+		this.setWidth("100.0%");
+		this.setHeight("100.0%");
+		this.setStyleName(Runo.PANEL_LIGHT);
 
-    // the main panel has a Layout.
-    // Elements of the view are bound in this layout of the main Panel
-    private VerticalLayout buildVlContentPanel() throws EscidocClientException {
-        // common part: create layout
-        VerticalLayout vlContentPanel = new VerticalLayout();
-        vlContentPanel.setImmediate(false);
-        vlContentPanel.setWidth("100.0%");
-        vlContentPanel.setHeight("100.0%");
-        vlContentPanel.setMargin(true, true, false, true);
+		// vlContentPanel assign a layout to this panel
+		this.setContent(buildVlContentPanel());
+		return this;
+	}
 
-        // resourcePropertiesPanel
-        Panel resourcePropertiesPanel = buildResourcePropertiesPanel();
-        vlContentPanel.addComponent(resourcePropertiesPanel);
-        vlContentPanel.setExpandRatio(resourcePropertiesPanel, 1.5f);
+	// the main panel has a Layout.
+	// Elements of the view are bound in this layout of the main Panel
+	private VerticalLayout buildVlContentPanel() throws EscidocClientException {
+		// common part: create layout
+		VerticalLayout vlContentPanel = new VerticalLayout();
+		vlContentPanel.setImmediate(false);
+		vlContentPanel.setWidth("100.0%");
+		vlContentPanel.setHeight("100.0%");
+		vlContentPanel.setMargin(true, true, false, true);
 
-        // metaViewsPanel contains Panel for the DirectMembers & for the Metas
-        Panel metaViewsPanel = buildMetaViewsPanel();
-        vlContentPanel.addComponent(metaViewsPanel);
-        vlContentPanel.setExpandRatio(metaViewsPanel, 8.0f);
+		// resourcePropertiesPanel
+		Panel resourcePropertiesPanel = buildResourcePropertiesPanel();
+		vlContentPanel.addComponent(resourcePropertiesPanel);
+		vlContentPanel.setExpandRatio(resourcePropertiesPanel, 1.5f);
 
-        return vlContentPanel;
-    }
+		// metaViewsPanel contains Panel for the DirectMembers & for the Metas
+		Panel metaViewsPanel = buildMetaViewsPanel();
+		vlContentPanel.addComponent(metaViewsPanel);
+		vlContentPanel.setExpandRatio(metaViewsPanel, 8.0f);
 
-    private Panel buildMetaViewsPanel() throws EscidocClientException {
-        // common part: create layout
-        Panel metaViewsPanel = new Panel();
-        metaViewsPanel.setImmediate(false);
-        metaViewsPanel.setWidth("100.0%");
-        metaViewsPanel.setHeight("100.0%");
-        metaViewsPanel.setStyleName(Runo.PANEL_LIGHT);
+		return vlContentPanel;
+	}
 
-        // hlMetaViews
-        HorizontalLayout hlMetaViews = buildHlMetaViews();
-        metaViewsPanel.setContent(hlMetaViews);
+	private Panel buildMetaViewsPanel() throws EscidocClientException {
+		// common part: create layout
+		Panel metaViewsPanel = new Panel();
+		metaViewsPanel.setImmediate(false);
+		metaViewsPanel.setWidth("100.0%");
+		metaViewsPanel.setHeight("100.0%");
+		metaViewsPanel.setStyleName(Runo.PANEL_LIGHT);
 
-        return metaViewsPanel;
-    }
+		// hlMetaViews
+		HorizontalLayout hlMetaViews = buildHlMetaViews();
+		metaViewsPanel.setContent(hlMetaViews);
 
-    private HorizontalLayout buildHlMetaViews() throws EscidocClientException {
-        // common part: create layout
-        HorizontalLayout hlMetaViews = new HorizontalLayout();
-        hlMetaViews.setImmediate(false);
-        hlMetaViews.setWidth("100.0%");
-        hlMetaViews.setHeight("100.0%");
-        hlMetaViews.setMargin(false);
+		return metaViewsPanel;
+	}
 
-        // leftPanel
-        Panel leftPanel = buildLeftPanel();
-        hlMetaViews.addComponent(leftPanel);
-        hlMetaViews.setExpandRatio(leftPanel, 4.5f);
+	private HorizontalLayout buildHlMetaViews() throws EscidocClientException {
+		// common part: create layout
+		HorizontalLayout hlMetaViews = new HorizontalLayout();
+		hlMetaViews.setImmediate(false);
+		hlMetaViews.setWidth("100.0%");
+		hlMetaViews.setHeight("100.0%");
+		hlMetaViews.setMargin(false);
 
-        // rightPanel
-        Panel rightPanel = buildRightPanel();
-        hlMetaViews.addComponent(rightPanel);
-        hlMetaViews.setExpandRatio(rightPanel, 5.5f);
+		// leftPanel
+		Panel leftPanel = buildLeftPanel();
+		hlMetaViews.addComponent(leftPanel);
+		hlMetaViews.setExpandRatio(leftPanel, 4.5f);
 
-        return hlMetaViews;
-    }
+		// rightPanel
+		Panel rightPanel = buildRightPanel();
+		hlMetaViews.addComponent(rightPanel);
+		hlMetaViews.setExpandRatio(rightPanel, 5.5f);
 
-    private Panel buildRightPanel() {
-        // common part: create layout
-        Panel rightPanel = new Panel();
-        rightPanel.setImmediate(false);
-        rightPanel.setWidth("100.0%");
-        rightPanel.setHeight("100.0%");
+		return hlMetaViews;
+	}
 
-        // vlRightPanel
-        VerticalLayout vlRightPanel = buildVlRightPanel();
-        rightPanel.setContent(vlRightPanel);
+	private Panel buildRightPanel() {
+		// common part: create layout
+		Panel rightPanel = new Panel();
+		rightPanel.setImmediate(false);
+		rightPanel.setWidth("100.0%");
+		rightPanel.setHeight("100.0%");
 
-        return rightPanel;
-    }
+		// vlRightPanel
+		VerticalLayout vlRightPanel = buildVlRightPanel();
+		rightPanel.setContent(vlRightPanel);
 
-    private VerticalLayout buildVlRightPanel() {
-        // common part: create layout
-        VerticalLayout vlRightPanel = new VerticalLayout();
-        vlRightPanel.setImmediate(false);
-        vlRightPanel.setWidth("100.0%");
-        vlRightPanel.setHeight("100.0%");
-        vlRightPanel.setMargin(false);
+		return rightPanel;
+	}
 
-        // metaDataRecsAcc
-        Accordion metaDataRecsAcc = new MetadataRecsItem(resourceProxy, repositories, router, this).asAccord();
-        vlRightPanel.addComponent(metaDataRecsAcc);
-        return vlRightPanel;
-    }
+	private VerticalLayout buildVlRightPanel() {
+		// common part: create layout
+		VerticalLayout vlRightPanel = new VerticalLayout();
+		vlRightPanel.setImmediate(false);
+		vlRightPanel.setWidth("100.0%");
+		vlRightPanel.setHeight("100.0%");
+		vlRightPanel.setMargin(false);
 
-    private Panel buildLeftPanel() throws EscidocClientException {
-        // common part: create layout
-        Panel leftPanel = new Panel();
-        leftPanel.setImmediate(false);
-        leftPanel.setWidth("100.0%");
-        leftPanel.setHeight("100.0%");
+		// metaDataRecsAcc
+		Accordion metaDataRecsAcc = new MetadataRecsItem(resourceProxy,
+				repositories, router, this).asAccord();
+		vlRightPanel.addComponent(metaDataRecsAcc);
+		return vlRightPanel;
+	}
 
-        // vlLeftPanel
-        VerticalLayout vlLeftPanel = buildVlLeftPanel();
-        leftPanel.setContent(vlLeftPanel);
+	private Panel buildLeftPanel() throws EscidocClientException {
+		// common part: create layout
+		Panel leftPanel = new Panel();
+		leftPanel.setImmediate(false);
+		leftPanel.setWidth("100.0%");
+		leftPanel.setHeight("100.0%");
 
-        return leftPanel;
-    }
+		// vlLeftPanel
+		VerticalLayout vlLeftPanel = buildVlLeftPanel();
+		leftPanel.setContent(vlLeftPanel);
 
-    private VerticalLayout buildVlLeftPanel() throws EscidocClientException {
-        // common part: create layout
-        VerticalLayout vlLeftPanel = new VerticalLayout();
-        vlLeftPanel.setImmediate(false);
-        vlLeftPanel.setWidth("100.0%");
-        vlLeftPanel.setHeight("100.0%");
-        vlLeftPanel.setMargin(false);
+		return leftPanel;
+	}
 
-        // directMembersPanel
-        Panel directMembersPanel = buildDirectMembersPanel();
-        directMembersPanel.setStyleName("directmembers");
-        vlLeftPanel.addComponent(directMembersPanel);
+	private VerticalLayout buildVlLeftPanel() throws EscidocClientException {
+		// common part: create layout
+		VerticalLayout vlLeftPanel = new VerticalLayout();
+		vlLeftPanel.setImmediate(false);
+		vlLeftPanel.setWidth("100.0%");
+		vlLeftPanel.setHeight("100.0%");
+		vlLeftPanel.setMargin(false);
 
-        return vlLeftPanel;
-    }
+		// directMembersPanel
+		Panel directMembersPanel = buildDirectMembersPanel();
+		directMembersPanel.setStyleName("directmembers");
+		vlLeftPanel.addComponent(directMembersPanel);
 
-    private Panel buildDirectMembersPanel() throws EscidocClientException {
-        // common part: create layout
-        Panel directMembersPanel = new Panel();
-        directMembersPanel.setImmediate(false);
-        directMembersPanel.setWidth("100.0%");
-        directMembersPanel.setHeight("100.0%");
-        directMembersPanel.setStyleName(Runo.PANEL_LIGHT);
+		return vlLeftPanel;
+	}
 
-        // vlDirectMember
-        VerticalLayout vlDirectMember = new VerticalLayout();
-        vlDirectMember.setImmediate(false);
-        vlDirectMember.setWidth("100.0%");
-        vlDirectMember.setHeight("100.0%");
-        vlDirectMember.setMargin(false);
-        vlDirectMember = new ItemContent(repositories, resourceProxy, serviceLocation, mainWindow);
-        directMembersPanel.setContent(vlDirectMember);
+	private Panel buildDirectMembersPanel() throws EscidocClientException {
+		// common part: create layout
+		Panel directMembersPanel = new Panel();
+		directMembersPanel.setImmediate(false);
+		directMembersPanel.setWidth("100.0%");
+		directMembersPanel.setHeight("100.0%");
+		directMembersPanel.setStyleName(Runo.PANEL_LIGHT);
 
-        return directMembersPanel;
-    }
+		// vlDirectMember
+		VerticalLayout vlDirectMember = new VerticalLayout();
+		vlDirectMember.setImmediate(false);
+		vlDirectMember.setWidth("100.0%");
+		vlDirectMember.setHeight("100.0%");
+		vlDirectMember.setMargin(false);
+		vlDirectMember = new ItemContent(repositories, resourceProxy,
+				serviceLocation, mainWindow);
+		directMembersPanel.setContent(vlDirectMember);
 
-    private Panel buildResourcePropertiesPanel() {
-        // common part: create layout
-        Panel resourcePropertiesPanel = new Panel();
-        resourcePropertiesPanel.setImmediate(false);
-        resourcePropertiesPanel.setWidth("100.0%");
-        resourcePropertiesPanel.setHeight("100.0%");
-        resourcePropertiesPanel.setStyleName(Runo.PANEL_LIGHT);
+		return directMembersPanel;
+	}
 
-        // vlResourceProperties
-        VerticalLayout vlResourceProperties = buildVlResourceProperties();
-        resourcePropertiesPanel.setContent(vlResourceProperties);
+	private Panel buildResourcePropertiesPanel() {
+		// common part: create layout
+		Panel resourcePropertiesPanel = new Panel();
+		resourcePropertiesPanel.setImmediate(false);
+		resourcePropertiesPanel.setWidth("100.0%");
+		resourcePropertiesPanel.setHeight("100.0%");
+		resourcePropertiesPanel.setStyleName(Runo.PANEL_LIGHT);
 
-        return resourcePropertiesPanel;
-    }
+		// vlResourceProperties
+		VerticalLayout vlResourceProperties = buildVlResourceProperties();
+		resourcePropertiesPanel.setContent(vlResourceProperties);
 
-    private VerticalLayout buildVlResourceProperties() {
-        // common part: create layout
-        VerticalLayout vlResourceProperties = new VerticalLayout();
-        vlResourceProperties.setImmediate(false);
-        vlResourceProperties.setWidth("100.0%");
-        vlResourceProperties.setHeight("100.0%");
-        vlResourceProperties.setMargin(false);
+		return resourcePropertiesPanel;
+	}
 
-        // creating the properties / without the breadcrump
-        itemPropertiesView = new ItemPropertiesVH(resourceProxy, repositories, mainWindow, serviceLocation);
-        vlResourceProperties.addComponent(itemPropertiesView.getContentLayout());
-        return vlResourceProperties;
-    }
+	private VerticalLayout buildVlResourceProperties() {
+		// common part: create layout
+		VerticalLayout vlResourceProperties = new VerticalLayout();
+		vlResourceProperties.setImmediate(false);
+		vlResourceProperties.setWidth("100.0%");
+		vlResourceProperties.setHeight("100.0%");
+		vlResourceProperties.setMargin(false);
 
-    public ItemPropertiesVH getItemPropertiesVH() {
-        return itemPropertiesView;
-    }
+		// creating the properties / without the breadcrump
+		itemPropertiesView = new ItemPropertiesVH(resourceProxy, router,
+				controller);
+		vlResourceProperties
+				.addComponent(itemPropertiesView.getContentLayout());
+		return vlResourceProperties;
+	}
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((resourceProxy == null) ? 0 : resourceProxy.hashCode());
-        return result;
-    }
+	public ItemPropertiesVH getItemPropertiesVH() {
+		return itemPropertiesView;
+	}
 
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final ItemView other = (ItemView) obj;
-        if (resourceProxy == null) {
-            if (other.resourceProxy != null) {
-                return false;
-            }
-        }
-        else if (!resourceProxy.equals(other.resourceProxy)) {
-            return false;
-        }
-        return true;
-    }
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((resourceProxy == null) ? 0 : resourceProxy.hashCode());
+		return result;
+	}
 
-    public void reloadView() {
-        try {
-            router.show(resourceProxy, true);
-            // refresh tree
-            TreeDataSource treeDS = router.getLayout().getTreeDataSource();
-            ItemModel im = new ItemModel(resourceProxy.getResource());
-            ResourceModel parentModel = treeDS.getParent(im);
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final ItemView other = (ItemView) obj;
+		if (resourceProxy == null) {
+			if (other.resourceProxy != null) {
+				return false;
+			}
+		} else if (!resourceProxy.equals(other.resourceProxy)) {
+			return false;
+		}
+		return true;
+	}
 
-            boolean isSuccesful = treeDS.remove(im);
-            if (isSuccesful) {
-                // Need to reload again the item
-                Item itemP = repositories.item().findItemById(resourceProxy.getId());
-                treeDS.addChild(parentModel, new ItemModel(itemP));
+	public void reloadView() {
+		try {
+			router.show(resourceProxy, true);
+			// refresh tree
+			TreeDataSource treeDS = router.getLayout().getTreeDataSource();
+			ItemModel im = new ItemModel(resourceProxy.getResource());
+			ResourceModel parentModel = treeDS.getParent(im);
 
-                // Reload Parent
-                // reloadParent(parentModel);
-            }
+			boolean isSuccesful = treeDS.remove(im);
+			if (isSuccesful) {
+				// Need to reload again the item
+				Item itemP = repositories.item().findItemById(
+						resourceProxy.getId());
+				treeDS.addChild(parentModel, new ItemModel(itemP));
 
-        }
-        catch (EscidocClientException e) {
-            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-        }
-    }
+				// Reload Parent
+				// reloadParent(parentModel);
+			}
 
-    // private void reloadParent(ResourceModel parentModel) throws EscidocClientException {
-    // TabSheet ts = (TabSheet) router.getLayout().getViewContainer();
-    // for (int i = ts.getComponentCount() - 1; i >= 0; i--) {
-    // String tabDescription =
-    // ts.getTab(i).getDescription().substring(ts.getTab(i).getDescription().lastIndexOf('#') + 1).toString();
-    // LOG.debug("############################ " + tabDescription);
-    // // Remove the tab from the TabSheet
-    // if (tabDescription.equals(parentModel.getId().toString())) {
-    // router.show(parentModel, true);
-    // }
-    // }
-    // }
+		} catch (EscidocClientException e) {
+			mainWindow.showNotification(e.getMessage(),
+					Window.Notification.TYPE_ERROR_MESSAGE);
+		}
+	}
+
+	// private void reloadParent(ResourceModel parentModel) throws
+	// EscidocClientException {
+	// TabSheet ts = (TabSheet) router.getLayout().getViewContainer();
+	// for (int i = ts.getComponentCount() - 1; i >= 0; i--) {
+	// String tabDescription =
+	// ts.getTab(i).getDescription().substring(ts.getTab(i).getDescription().lastIndexOf('#')
+	// + 1).toString();
+	// LOG.debug("############################ " + tabDescription);
+	// // Remove the tab from the TabSheet
+	// if (tabDescription.equals(parentModel.getId().toString())) {
+	// router.show(parentModel, true);
+	// }
+	// }
+	// }
 }
