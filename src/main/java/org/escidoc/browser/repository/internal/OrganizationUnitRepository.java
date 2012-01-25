@@ -130,7 +130,7 @@ public class OrganizationUnitRepository implements Repository {
 
             @Override
             public String getStatus() {
-                throw new UnsupportedOperationException("not-yet-implemented.");
+                return o.getProperties().getPublicStatus().toString();
             }
 
             @Override
@@ -140,12 +140,12 @@ public class OrganizationUnitRepository implements Repository {
 
             @Override
             public String getModifier() {
-                throw new UnsupportedOperationException("not-yet-implemented.");
+                return o.getProperties().getModifiedBy().getXLinkTitle();
             }
 
             @Override
             public String getModifiedOn() {
-                throw new UnsupportedOperationException("not-yet-implemented.");
+                return o.getLastModificationDate().toString("d.M.y, H:m");
             }
 
             @Override
@@ -160,12 +160,12 @@ public class OrganizationUnitRepository implements Repository {
 
             @Override
             public String getCreator() {
-                throw new UnsupportedOperationException("not-yet-implemented.");
+                return o.getProperties().getCreatedBy().getXLinkTitle();
             }
 
             @Override
             public String getCreatedOn() {
-                throw new UnsupportedOperationException("not-yet-implemented.");
+                return o.getProperties().getCreationDate().toString("d.M.y, H:m");
             }
 
             @Override

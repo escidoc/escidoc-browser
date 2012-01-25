@@ -42,6 +42,7 @@ public class OrgUnitController extends Controller {
 
     @Override
     public void createView() {
-        view = new OrgUnitView(getResourceProxy());
+        view = new OrgUnitView(getRouter(), getResourceProxy());
+        ((OrgUnitView) view).buildContentPanel();
     }
 }

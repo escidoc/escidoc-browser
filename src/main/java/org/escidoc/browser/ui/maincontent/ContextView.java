@@ -28,11 +28,8 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import org.escidoc.browser.model.internal.ContextProxyImpl;
-import org.escidoc.browser.ui.ViewConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.google.common.base.Preconditions;
+
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.AbstractComponentContainer;
@@ -54,8 +51,10 @@ import org.escidoc.browser.controller.ContextController;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
 import org.escidoc.browser.ui.view.helpers.CreatePermanentLinkVH;
 import org.escidoc.browser.ui.view.helpers.DirectMember;
@@ -83,8 +82,6 @@ public class ContextView extends View {
     private Label lblStatus;
 
     private Label lblType;
-
-    private static final Logger LOG = LoggerFactory.getLogger(ContextView.class);
 
     private Component oldComponent;
 
