@@ -31,67 +31,135 @@ package org.escidoc.browser.repository.internal;
 import com.google.common.base.Preconditions;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ModelConverter;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.repository.Repository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.escidoc.browser.ui.helper.Util;
 
+import java.net.MalformedURLException;
 import java.util.List;
 
-import de.escidoc.core.client.ContainerHandlerClient;
+import de.escidoc.core.client.UserAccountHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.InternalClientException;
-import de.escidoc.core.client.interfaces.ContainerHandlerClientInterface;
+import de.escidoc.core.client.interfaces.UserAccountHandlerClientInterface;
+import de.escidoc.core.resources.Resource;
+import de.escidoc.core.resources.aa.useraccount.UserAccount;
 import de.escidoc.core.resources.common.Relations;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 
 public class UserAccountRepository implements Repository {
 
-    private final ContainerHandlerClientInterface client;
+    private final UserAccountHandlerClientInterface client;
 
-    private static final Logger LOG = LoggerFactory.getLogger(UserAccountRepository.class);
-
-    UserAccountRepository(final EscidocServiceLocation escidocServiceLocation) {
+    public UserAccountRepository(final EscidocServiceLocation escidocServiceLocation) throws MalformedURLException {
         Preconditions
             .checkNotNull(escidocServiceLocation, "escidocServiceLocation is null: %s", escidocServiceLocation);
-        client = new ContainerHandlerClient(escidocServiceLocation.getEscidocUri());
+        client = new UserAccountHandlerClient(escidocServiceLocation.getEscidocUrl());
     }
 
     @Override
     public void loginWith(final String handle) throws InternalClientException {
-        // TODO Auto-generated method stub
-
+        client.setHandle(handle);
     }
 
     @Override
     public List<ResourceModel> findAll() throws EscidocClientException {
-        // TODO Auto-generated method stub
-        return null;
+        return ModelConverter.userAccountToList(client.retrieveUserAccountsAsList(Util.createEmptyFilter()));
     }
 
     @Override
     public List<ResourceModel> findTopLevelMembersById(final String id) throws EscidocClientException {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException("not-yet-implemented.");
     }
 
     @Override
     public ResourceProxy findById(final String id) throws EscidocClientException {
-        // TODO Auto-generated method stub
-        return null;
+        final UserAccount u = client.retrieve(id);
+        return new ResourceProxy() {
+
+            @Override
+            public ResourceType getType() {
+                throw new UnsupportedOperationException("not-yet-implemented.");
+            }
+
+            @Override
+            public String getName() {
+                return u.getXLinkTitle();
+            }
+
+            @Override
+            public String getId() {
+                return u.getObjid();
+            }
+
+            @Override
+            public String getVersionStatus() {
+                throw new UnsupportedOperationException("not-yet-implemented.");
+            }
+
+            @Override
+            public String getStatus() {
+                throw new UnsupportedOperationException("not-yet-implemented.");
+            }
+
+            @Override
+            public List<String> getRelations() {
+                throw new UnsupportedOperationException("not-yet-implemented.");
+            }
+
+            @Override
+            public String getModifier() {
+                throw new UnsupportedOperationException("not-yet-implemented.");
+            }
+
+            @Override
+            public String getModifiedOn() {
+                throw new UnsupportedOperationException("not-yet-implemented.");
+            }
+
+            @Override
+            public String getLockStatus() {
+                throw new UnsupportedOperationException("not-yet-implemented.");
+            }
+
+            @Override
+            public String getDescription() {
+                throw new UnsupportedOperationException("not-yet-implemented.");
+            }
+
+            @Override
+            public String getCreator() {
+                throw new UnsupportedOperationException("not-yet-implemented.");
+            }
+
+            @Override
+            public String getCreatedOn() {
+                throw new UnsupportedOperationException("not-yet-implemented.");
+            }
+
+            @Override
+            public Resource getContext() {
+                throw new UnsupportedOperationException("not-yet-implemented.");
+            }
+
+            @Override
+            public Resource getContentModel() {
+                throw new UnsupportedOperationException("not-yet-implemented.");
+            }
+        };
     }
 
     @Override
     public VersionHistory getVersionHistory(final String id) throws EscidocClientException {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException("not-yet-implemented.");
     }
 
     @Override
     public Relations getRelations(final String id) throws EscidocClientException {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException("not-yet-implemented.");
     }
 
     @Override

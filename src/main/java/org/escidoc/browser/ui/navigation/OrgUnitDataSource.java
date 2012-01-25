@@ -58,6 +58,19 @@ public class OrgUnitDataSource implements TreeDataSource {
         }
     }
 
+    @Override
+    public void addTopLevelResource(ResourceModel topLevel) {
+        final Item addedItem = add(topLevel);
+        if (isAlreadyAdded(addedItem)) {
+            return;
+        }
+        bind(addedItem, topLevel);
+
+        if (topLevel.getType() == ResourceType.CONTEXT && isChildless((ContextModel) topLevel)) {
+            dataSource.setChildrenAllowed(topLevel, false);
+        }
+    }
+
     private Item add(final ResourceModel resource) {
         Preconditions.checkNotNull(resource, "resource is null: %s", resource);
         return dataSource.addItem(resource);
@@ -178,19 +191,6 @@ public class OrgUnitDataSource implements TreeDataSource {
     @Override
     public void reload() throws EscidocClientException {
         init();
-    }
-
-    @Override
-    public void addTopLevelResource(ResourceModel topLevel) {
-        final Item addedItem = add(topLevel);
-        if (isAlreadyAdded(addedItem)) {
-            return;
-        }
-        bind(addedItem, topLevel);
-
-        if (topLevel.getType() == ResourceType.CONTEXT && isChildless((ContextModel) topLevel)) {
-            dataSource.setChildrenAllowed(topLevel, false);
-        }
     }
 
 }

@@ -49,7 +49,7 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 public class OrgUnitTreeView extends VerticalLayout implements NavigationTreeView, Reloadable {
     private final Tree tree = new Tree();
 
-    private TreeDataSource ds;
+    private TreeDataSource dataSource;
 
     public OrgUnitTreeView() {
         setSizeFull();
@@ -60,7 +60,7 @@ public class OrgUnitTreeView extends VerticalLayout implements NavigationTreeVie
     @Override
     public void setDataSource(final TreeDataSource dataSource) {
         Preconditions.checkNotNull(dataSource, "dataSource is null: %s", dataSource);
-        this.ds = dataSource;
+        this.dataSource = dataSource;
         tree.setContainerDataSource(dataSource.getContainer());
         tree.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
         tree.setItemCaptionPropertyId(PropertyId.NAME);
@@ -95,7 +95,7 @@ public class OrgUnitTreeView extends VerticalLayout implements NavigationTreeVie
     public void reload() throws EscidocClientException {
         final boolean isSucessful = tree.removeAllItems();
         if (isSucessful) {
-            ds.reload();
+            dataSource.reload();
         }
     }
 }

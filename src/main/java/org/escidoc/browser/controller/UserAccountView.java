@@ -1,4 +1,4 @@
-package org.escidoc.browser.ui.tools;
+package org.escidoc.browser.controller;
 
 import com.google.common.base.Preconditions;
 
@@ -7,7 +7,7 @@ import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
@@ -17,39 +17,27 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
 
-import org.escidoc.browser.controller.UserProfileController;
-import org.escidoc.browser.model.CurrentUser;
-import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.View;
 import org.escidoc.browser.ui.view.helpers.UserPreferencesTable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.aa.useraccount.Preferences;
+import de.escidoc.core.resources.aa.useraccount.UserAccount;
 
 @SuppressWarnings("serial")
-public class UserProfileView extends View {
-    private static final Logger LOG = LoggerFactory.getLogger(UserProfileView.class);
+public class UserAccountView extends View {
 
     private Router router;
 
-    private Repositories repositories;
-
     private UserProfileController controller;
 
-    private CurrentUser currentUser;
+    private UserAccount currentUser;
 
-    public UserProfileView(Router router, Repositories repositories, UserProfileController userProfileController,
-        CurrentUser currentUser) {
+    public UserAccountView(Router router) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
-        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         this.router = router;
-        this.repositories = repositories;
-        this.controller = userProfileController;
-        this.currentUser = currentUser;
         init();
     }
 
@@ -59,7 +47,6 @@ public class UserProfileView extends View {
         this.setHeight("100.0%");
         this.setStyleName(Runo.PANEL_LIGHT);
         this.setContent(buildContentPanel());
-
     }
 
     private Panel buildContentPanel() {
@@ -108,14 +95,14 @@ public class UserProfileView extends View {
         vlAccCreateContext.setSpacing(false);
 
         // AddContext Form
-        try {
-            frmEditUser(vlAccCreateContext);
-        }
-        catch (EscidocClientException e) {
-            router.getMainWindow().showNotification(ViewConstants.ERROR_CREATING_RESOURCE + e.getLocalizedMessage(),
-                Window.Notification.TYPE_ERROR_MESSAGE);
-        }
-        accCreateContext.addTab(vlAccCreateContext, " ");
+        // try {
+        // frmEditUser(vlAccCreateContext);
+        // }
+        // catch (EscidocClientException e) {
+        // router.getMainWindow().showNotification(ViewConstants.ERROR_CREATING_RESOURCE + e.getLocalizedMessage(),
+        // Window.Notification.TYPE_ERROR_MESSAGE);
+        // }
+        // accCreateContext.addTab(vlAccCreateContext, " ");
 
         return accCreateContext;
     }
@@ -127,7 +114,7 @@ public class UserProfileView extends View {
         // Name
         final TextField txtLoginName = new TextField();
         txtLoginName.setCaption("Login Name");
-        txtLoginName.setValue(currentUser.getLoginName());
+        // txtLoginName.setValue(currentUser.getLoginName());
         txtLoginName.setEnabled(false);
         txtLoginName.setImmediate(false);
         txtLoginName.setWidth("-1px");
@@ -139,7 +126,7 @@ public class UserProfileView extends View {
         // Name
         final TextField txtNameContext = new TextField();
         txtNameContext.setCaption("Real Name");
-        txtNameContext.setValue(currentUser.getRealName());
+        // txtNameContext.setValue(currentUser.getRealName());
         txtNameContext.setImmediate(false);
         txtNameContext.setWidth("-1px");
         txtNameContext.setHeight("-1px");
@@ -164,10 +151,9 @@ public class UserProfileView extends View {
 
         // btnAddContext
         Button btnAddContext = new Button("Submit", new Button.ClickListener() {
-            private static final long serialVersionUID = -4696167135894721166L;
 
             @Override
-            public void buttonClick(ClickEvent event) {
+            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
                 try {
                     frm.commit();
                     if (!txtPassword.getValue().equals(txtPassword2.getValue())) {
@@ -179,7 +165,6 @@ public class UserProfileView extends View {
                         return;
                     }
                     if (txtPassword.getValue().toString() != "") {
-                        LOG.debug("Updating with password!");
                         controller.updateProfile(txtNameContext.getValue().toString(), txtPassword
                             .getValue().toString());
                     }
@@ -199,6 +184,7 @@ public class UserProfileView extends View {
                         Window.Notification.TYPE_ERROR_MESSAGE);
                 }
             }
+
         });
 
         btnAddContext.setWidth("-1px");
@@ -224,9 +210,9 @@ public class UserProfileView extends View {
         final Button addPreference = new Button();
         addPreference.setDescription("Add new Preference");
         addPreference.setIcon(new ThemeResource("images/assets/plus.png"));
-        addPreference.addListener(new Button.ClickListener() {
+        addPreference.addListener(new ClickListener() {
             @Override
-            public void buttonClick(ClickEvent event) {
+            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
                 addPreference.setEnabled(false);
                 final HorizontalLayout hl = new HorizontalLayout();
                 final TextField key = new TextField();
@@ -249,7 +235,7 @@ public class UserProfileView extends View {
                 btnadd.setIcon(new ThemeResource("images/assets/plus.png"));
                 btnadd.addListener(new Button.ClickListener() {
                     @Override
-                    public void buttonClick(ClickEvent event) {
+                    public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
 
                         try {
                             controller.createPreference(key.getValue().toString(), value.getValue().toString());
@@ -273,41 +259,10 @@ public class UserProfileView extends View {
                 hl.setComponentAlignment(btnadd, Alignment.BOTTOM_RIGHT);
                 pnl.addComponent(hl);
             }
+
         });
 
         pnl.addComponent(addPreference);
         return pnl;
     }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((currentUser == null) ? 0 : currentUser.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        UserProfileView other = (UserProfileView) obj;
-        if (currentUser == null) {
-            if (other.currentUser != null) {
-                return false;
-            }
-        }
-        else if (!currentUser.equals(other.currentUser)) {
-            return false;
-        }
-        return true;
-    }
-
 }

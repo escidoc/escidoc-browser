@@ -28,10 +28,6 @@
  */
 package org.escidoc.browser.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.escidoc.browser.model.internal.ContainerModel;
 import org.escidoc.browser.model.internal.ContentModelProxyImpl;
 import org.escidoc.browser.model.internal.ContextModel;
@@ -39,9 +35,14 @@ import org.escidoc.browser.model.internal.ItemModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.ResourceType;
 import de.escidoc.core.resources.VersionableResource;
+import de.escidoc.core.resources.aa.useraccount.UserAccount;
 import de.escidoc.core.resources.cmm.ContentModel;
 import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.om.context.Context;
@@ -125,6 +126,14 @@ public final class ModelConverter {
         final List<ResourceModel> models = new ArrayList<ResourceModel>(list.size());
         for (final Resource resource : list) {
             models.add(new ContentModelProxyImpl(resource));
+        }
+        return models;
+    }
+
+    public static List<ResourceModel> userAccountToList(List<UserAccount> list) {
+        final List<ResourceModel> models = new ArrayList<ResourceModel>(list.size());
+        for (final Resource resource : list) {
+            models.add(new UserModel(resource));
         }
         return models;
     }

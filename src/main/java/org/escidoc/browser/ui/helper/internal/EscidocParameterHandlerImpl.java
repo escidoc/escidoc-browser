@@ -28,14 +28,9 @@
  */
 package org.escidoc.browser.ui.helper.internal;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Map;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.ui.Window.Notification;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.BrowserApplication;
@@ -49,10 +44,16 @@ import org.escidoc.browser.ui.helper.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import biz.source_code.base64Coder.Base64Coder;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.Map;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.Window.Notification;
+import biz.source_code.base64Coder.Base64Coder;
 
 @SuppressWarnings("serial")
 public class EscidocParameterHandlerImpl implements EscidocParameterHandler {
@@ -88,11 +89,11 @@ public class EscidocParameterHandlerImpl implements EscidocParameterHandler {
             doLogin(parameters);
         }
         else if (Util.isEscidocUrlExists(parameters) && hasNotEscidocHandler(parameters)) {
-            if (app.getCookieValue(AppConstants.COOKIE_NAME) != null) {
+            if (app.getCookieValue() != null) {
                 setEscidocUri(parameters);
                 app.setServiceLocation(serviceLocation);
                 app.setLogoutURL(serviceLocation.getLogoutUri());
-                loginThroughCookie(app.getCookieValue(AppConstants.COOKIE_NAME));
+                loginThroughCookie(app.getCookieValue());
 
             }
             else if (isServerOnline(tryToParseEscidocUriFromParameter(parameters))) {

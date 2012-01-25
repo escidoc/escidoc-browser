@@ -30,6 +30,8 @@ package org.escidoc.browser;
 
 public final class AppConstants {
 
+    public static final String SYSADMIN = "sysadmin";
+
     private AppConstants() {
         // not to be initialized
     }

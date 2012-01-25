@@ -106,6 +106,7 @@ final class ActionHandlerImpl implements Action.Handler {
 
             case ORG_UNIT:
                 return new Action[] { ActionList.ACTION_ADD_CHILD };
+
             default:
                 return new Action[] {};
         }

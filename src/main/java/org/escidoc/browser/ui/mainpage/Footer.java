@@ -28,15 +28,15 @@
  */
 package org.escidoc.browser.ui.mainpage;
 
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.ui.ViewConstants;
-
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.Reindeer;
+
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.ui.ViewConstants;
 
 @SuppressWarnings("serial")
 public class Footer {
@@ -49,7 +49,6 @@ public class Footer {
     }
 
     private void buildView(final EscidocServiceLocation serviceLocation) {
-        System.out.println(serviceLocation.getEscidocUri().toString());
         Label lblBaseUrl =
             new Label(ViewConstants.PRODUCT_NAME + ViewConstants.VERSION + " on "
                 + serviceLocation.getEscidocUri().toString() + "", Label.CONTENT_RAW);

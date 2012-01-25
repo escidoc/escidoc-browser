@@ -28,14 +28,11 @@
  */
 package org.escidoc.browser.ui;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.BrowserApplication;
@@ -51,22 +48,22 @@ import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceModelFactory;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
-import org.escidoc.browser.model.internal.ContainerModel;
 import org.escidoc.browser.model.internal.ContentModelProxyImpl;
-import org.escidoc.browser.model.internal.ContextModel;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
-import org.escidoc.browser.model.internal.ItemModel;
-import org.escidoc.browser.model.internal.OrgUnitModel;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.helper.Util;
 import org.escidoc.browser.ui.maincontent.SearchAdvancedView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -79,6 +76,10 @@ public class Router {
     private static final String CONTEXT_CONTROLLER_ID = "org.escidoc.browser.Context";
 
     private static final String ORG_UNIT_CONTROLLER_ID = "org.escidoc.browser.OrgUnit";
+
+    private static final String USER_ACCOUNT_CONTROLLER_ID = "org.escidoc.browser.UserAccount";
+
+    private static final String CONTENT_MODEL_CONTROLLER_ID = "org.escidoc.browser.ContentModel";
 
     private static final String FAIL_RETRIEVING_RESOURCE =
         "Cannot retrieve resource, or you don't have access to see this resource";
@@ -351,35 +352,37 @@ public class Router {
         return controller;
     }
 
-    // TODO refactor if ... else with switch(resourceType)
     private String getControllerId(final ResourceModel clickedResource) throws EscidocClientException {
+        ResourceType type = clickedResource.getType();
+
         String controllerId = null;
-
-        if (ContextModel.isContext(clickedResource)) {
-            controllerId = CONTEXT_CONTROLLER_ID;
-        }
-        else if (ContainerModel.isContainer(clickedResource) || ItemModel.isItem(clickedResource)) {
-
-            if (ContainerModel.isContainer(clickedResource)) {
+        switch (type) {
+            case CONTEXT:
+                controllerId = CONTEXT_CONTROLLER_ID;
+                break;
+            case CONTAINER:
                 controllerId = CONTAINER_CONTROLLER_ID;
-            }
-            else if (ItemModel.isItem(clickedResource)) {
+                controllerId = findContollerId(clickedResource, controllerId);
+                break;
+            case ITEM:
                 controllerId = ITEM_CONTROLLER_ID;
-            }
+                controllerId = findContollerId(clickedResource, controllerId);
+                break;
+            case ORG_UNIT:
+                controllerId = ORG_UNIT_CONTROLLER_ID;
+                break;
+            case USER_ACCOUNT:
+                controllerId = USER_ACCOUNT_CONTROLLER_ID;
+                break;
+            case CONTENT_MODEL:
+                controllerId = CONTENT_MODEL_CONTROLLER_ID;
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown resource type: "
+                    + clickedResource.getType().getLabel() + "can not be shown.");
 
-            controllerId = findContollerId(clickedResource, controllerId);
         }
-
-        else if (OrgUnitModel.isOrgUnit(clickedResource)) {
-            controllerId = ORG_UNIT_CONTROLLER_ID;
-        }
-
         LOG.debug("ControllerID[" + controllerId + "]");
-        if (controllerId == null) {
-            throw new UnsupportedOperationException("Unknown resource type: " + clickedResource.getType().getLabel()
-                + "can not be shown.");
-        }
-
         return controllerId;
     }
 
@@ -406,19 +409,22 @@ public class Router {
     }
 
     private ResourceProxy fetchResource(final ResourceModel clickedResource) throws EscidocClientException {
-        if (ContainerModel.isContainer(clickedResource)) {
-            return repositories.container().findById(clickedResource.getId());
+        switch (clickedResource.getType()) {
+            case CONTEXT:
+                return repositories.context().findById(clickedResource.getId());
+            case CONTAINER:
+                return repositories.container().findById(clickedResource.getId());
+            case ITEM:
+                return repositories.item().findById(clickedResource.getId());
+            case ORG_UNIT:
+                return repositories.organization().findById(clickedResource.getId());
+            case USER_ACCOUNT:
+                return repositories.user().findById(clickedResource.getId());
+            case CONTENT_MODEL:
+                return repositories.contentModel().findById(clickedResource.getId());
+            default:
+                throw new UnsupportedOperationException(clickedResource.getType() + " is unsupported");
         }
-        else if (ItemModel.isItem(clickedResource)) {
-            return repositories.item().findById(clickedResource.getId());
-        }
-        else if (ContextModel.isContext(clickedResource)) {
-            return repositories.context().findById(clickedResource.getId());
-        }
-        else if (OrgUnitModel.isOrgUnit(clickedResource)) {
-            return repositories.organization().findById(clickedResource.getId());
-        }
-        throw new UnsupportedOperationException(clickedResource.getType() + " is unsupported");
     }
 
     private void cachePredefinedContentModels() {

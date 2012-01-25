@@ -363,4 +363,6 @@ public class ViewConstants {
 
     public static final String PREFERENCE_REMOVE = "Preference remove";
 
+    public static final String CONTENT_MODELS = "Content Models";
+
 }

@@ -30,7 +30,9 @@ package org.escidoc.browser.ui.maincontent;
 
 import com.vaadin.ui.Panel;
 
+@SuppressWarnings("serial")
 public class View extends Panel {
+
     private String viewName;
 
     public String getViewName() {

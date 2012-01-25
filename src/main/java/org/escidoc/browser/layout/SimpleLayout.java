@@ -48,6 +48,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
 
+import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
@@ -392,8 +393,26 @@ public class SimpleLayout extends LayoutDesign {
 
         addResourcesTab(accordion);
         addOrgUnitTab(accordion);
+        addUserAccountsTab(accordion);
+        addContentModelsTab(accordion);
         addToolsTab(accordion);
         return accordion;
+    }
+
+    private void addContentModelsTab(Accordion accordion) {
+        BaseNavigationTreeView list = treeBuilder.buildContentModelTree();
+        accordion.addTab(list, ViewConstants.CONTENT_MODELS, NO_ICON);
+    }
+
+    private void addUserAccountsTab(Accordion accordion) {
+        if (isSysAdmin()) {
+            BaseNavigationTreeView list = treeBuilder.buildUserAccountTree();
+            accordion.addTab(list, ViewConstants.USER_ACCOUNTS, NO_ICON);
+        }
+    }
+
+    private boolean isSysAdmin() {
+        return router.getApp().getCurrentUser().getLoginName().equals(AppConstants.SYSADMIN);
     }
 
     private void addOrgUnitTab(final Accordion accordion) {

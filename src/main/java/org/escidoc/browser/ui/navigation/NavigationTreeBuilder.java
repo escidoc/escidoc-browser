@@ -32,6 +32,7 @@ import com.google.common.base.Preconditions;
 
 import com.vaadin.ui.Window;
 
+import org.escidoc.browser.layout.BaseNavigationTreeView;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.TreeDataSourceImpl;
 import org.escidoc.browser.repository.Repositories;
@@ -124,6 +125,32 @@ public class NavigationTreeBuilder {
 
     private void addClickListener(final OrgUnitTreeView tree) {
         tree.addClickListener(new TreeClickListener(mainWindow, router));
+    }
+
+    public BaseNavigationTreeView buildUserAccountTree() {
+        BaseNavigationTreeView l = new BaseNavigationTreeView();
+        l.setDataSource(createUserAccountDataSource());
+        l.addClickListener(new TreeClickListener(mainWindow, router));
+        return l;
+    }
+
+    private TreeDataSource createUserAccountDataSource() {
+        UserAccountDataSource ds = new UserAccountDataSource(repositories.user());
+        ds.init();
+        return ds;
+    }
+
+    public BaseNavigationTreeView buildContentModelTree() {
+        BaseNavigationTreeView l = new BaseNavigationTreeView();
+        l.setDataSource(createContentModelDataSource());
+        l.addClickListener(new TreeClickListener(mainWindow, router));
+        return l;
+    }
+
+    private TreeDataSource createContentModelDataSource() {
+        BaseTreeDataSource ds = new BaseTreeDataSource(repositories.contentModel());
+        ds.init();
+        return ds;
     }
 
 }
