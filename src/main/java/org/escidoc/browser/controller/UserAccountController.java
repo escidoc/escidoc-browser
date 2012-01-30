@@ -16,6 +16,6 @@ public class UserAccountController extends Controller {
 
     @Override
     public void createView() {
-        view = new UserAccountView(getRouter(), (UserProxy) getResourceProxy(), getRepositories().user());
+        view = new UserAccountView(getRouter(), (UserProxy) getResourceProxy(), getRepositories().user(), this);
     }
 }

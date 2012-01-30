@@ -8,6 +8,7 @@ import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
@@ -17,6 +18,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
 
+import org.escidoc.browser.controller.UserAccountController;
 import org.escidoc.browser.model.internal.UserProxy;
 import org.escidoc.browser.repository.internal.UserAccountRepository;
 import org.escidoc.browser.ui.Router;
@@ -24,6 +26,7 @@ import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.View;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.aa.useraccount.Attributes;
 import de.escidoc.core.resources.aa.useraccount.Preference;
 import de.escidoc.core.resources.aa.useraccount.Preferences;
 
@@ -36,13 +39,18 @@ public class UserAccountView extends View {
 
     private UserAccountRepository ur;
 
-    public UserAccountView(Router router, UserProxy userProxy, UserAccountRepository ur) {
+    private UserAccountController uac;
+
+    public UserAccountView(Router router, UserProxy userProxy, UserAccountRepository ur, UserAccountController uac) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
         Preconditions.checkNotNull(userProxy, "userProxy is null: %s", userProxy);
+        Preconditions.checkNotNull(ur, "ur is null: %s", ur);
+        Preconditions.checkNotNull(uac, "uac is null: %s", uac);
 
         this.router = router;
         this.userProxy = userProxy;
         this.ur = ur;
+        this.uac = uac;
         init();
     }
 
@@ -197,15 +205,80 @@ public class UserAccountView extends View {
 
         vlAccCreateContext.addComponent(frm);
 
-        final Panel pnl = buildPreferences();
-
-        vlAccCreateContext.addComponent(pnl);
+        vlAccCreateContext.addComponent(buildPreferencesView());
+        vlAccCreateContext.addComponent(buildAttributesView());
     }
 
-    private Panel buildPreferences() throws EscidocClientException {
+    private Component buildAttributesView() throws EscidocClientException {
+        final Panel pnl = new Panel("Attributes");
+        Attributes attributes = ur.getAttributes(userProxy);
+        final UserAccountAttributes userPrefTable = new UserAccountAttributes(attributes, ur, uac);
+        pnl.addComponent(userPrefTable);
+
+        final Button addPreference = new Button();
+        addPreference.setDescription("Add new Preference");
+        addPreference.setIcon(new ThemeResource("images/assets/plus.png"));
+        addPreference.addListener(new ClickListener() {
+            @Override
+            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+                addPreference.setEnabled(false);
+                final HorizontalLayout hl = new HorizontalLayout();
+                final TextField key = new TextField();
+                key.setCaption("Name");
+                key.setImmediate(false);
+                key.setWidth("-1px");
+                key.setHeight("-1px");
+                key.setInvalidAllowed(false);
+                key.setRequired(true);
+
+                final TextField value = new TextField();
+                value.setCaption("Value");
+                value.setImmediate(false);
+                value.setWidth("-1px");
+                value.setHeight("-1px");
+                value.setInvalidAllowed(false);
+                value.setRequired(true);
+
+                final Button btnadd = new Button();
+                btnadd.setIcon(new ThemeResource("images/assets/plus.png"));
+                btnadd.addListener(new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+
+                        try {
+                            ur.createPreference(userProxy, new Preference(key.getValue().toString(), value
+                                .getValue().toString()));
+                            router.getMainWindow().showNotification("Preference added successfully ",
+                                Window.Notification.TYPE_TRAY_NOTIFICATION);
+                            hl.removeAllComponents();
+                            addPreference.setEnabled(true);
+                            userPrefTable.createItem(userPrefTable.getTableContainer(), key.getValue().toString(), key
+                                .getValue().toString(), value.getValue().toString());
+                        }
+                        catch (EscidocClientException e) {
+                            router.getMainWindow().showNotification(
+                                ViewConstants.ERROR_CREATING_USER_PREFERENCE + e.getLocalizedMessage(),
+                                Window.Notification.TYPE_ERROR_MESSAGE);
+                        }
+                    }
+                });
+                hl.addComponent(key);
+                hl.addComponent(value);
+                hl.addComponent(btnadd);
+                hl.setComponentAlignment(btnadd, Alignment.BOTTOM_RIGHT);
+                pnl.addComponent(hl);
+            }
+
+        });
+
+        pnl.addComponent(addPreference);
+        return pnl;
+    }
+
+    private Panel buildPreferencesView() throws EscidocClientException {
         final Panel pnl = new Panel("Preferences");
         Preferences preferences = ur.getPreferences(userProxy);
-        final UserAccountPreferences userPrefTable = new UserAccountPreferences(preferences, ur);
+        final UserAccountPreferences userPrefTable = new UserAccountPreferences(preferences, ur, uac);
         pnl.addComponent(userPrefTable);
 
         final Button addPreference = new Button();

@@ -12,13 +12,12 @@ import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.view.helpers.TableContainerVH;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
-import de.escidoc.core.resources.aa.useraccount.Preference;
-import de.escidoc.core.resources.aa.useraccount.Preferences;
+import de.escidoc.core.resources.aa.useraccount.Attribute;
+import de.escidoc.core.resources.aa.useraccount.Attributes;
 
-@SuppressWarnings("serial")
-public class UserAccountPreferences extends TableContainerVH {
+public class UserAccountAttributes
 
-    private Preferences preferences;
+extends TableContainerVH {
 
     private UserAccountRepository repository;
 
@@ -28,12 +27,12 @@ public class UserAccountPreferences extends TableContainerVH {
 
     private UserAccountController uac;
 
-    public UserAccountPreferences(Preferences preferences, UserAccountRepository repository, UserAccountController uac) {
-        Preconditions.checkNotNull(preferences, "preferences is null: %s", preferences);
-        Preconditions.checkNotNull(repository, "repository is null: %s", repository);
+    private Attributes attributes;
+
+    public UserAccountAttributes(Attributes attributes, UserAccountRepository ur, UserAccountController uac) {
+        Preconditions.checkNotNull(attributes, "attributes is null: %s", attributes);
         Preconditions.checkNotNull(uac, "uac is null: %s", uac);
-        this.preferences = preferences;
-        this.repository = repository;
+        this.attributes = attributes;
         this.uac = uac;
         table.setContainerDataSource(populateContainerTable());
     }
@@ -58,11 +57,13 @@ public class UserAccountPreferences extends TableContainerVH {
         tableContainer.addContainerProperty(PROPERTY_NAME, String.class, null);
         tableContainer.addContainerProperty(PROPERTY_VALUE, String.class, null);
 
-        for (Preference preference : preferences) {
-            Item item = tableContainer.addItem(preference.getName());
-            if (item != null) {
-                item.getItemProperty(PROPERTY_NAME).setValue(preference.getName());
-                item.getItemProperty(PROPERTY_VALUE).setValue(preference.getValue());
+        for (Attribute a : attributes) {
+            if (a.isInternal()) {
+                Item item = tableContainer.addItem(a.getName());
+                if (item != null) {
+                    item.getItemProperty(PROPERTY_NAME).setValue(a.getName());
+                    item.getItemProperty(PROPERTY_VALUE).setValue(a.getValue());
+                }
             }
         }
         return tableContainer;

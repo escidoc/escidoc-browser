@@ -63,5 +63,4 @@ public class UserProfileController extends Controller {
     public void removePreference(String preferenceName) throws EscidocClientException {
         userRep.removeUserPreference(preferenceName);
     }
-
 }

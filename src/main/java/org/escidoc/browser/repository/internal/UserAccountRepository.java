@@ -45,6 +45,7 @@ import de.escidoc.core.client.UserAccountHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.client.interfaces.UserAccountHandlerClientInterface;
+import de.escidoc.core.resources.aa.useraccount.Attributes;
 import de.escidoc.core.resources.aa.useraccount.Preference;
 import de.escidoc.core.resources.aa.useraccount.Preferences;
 import de.escidoc.core.resources.aa.useraccount.UserAccount;
@@ -131,7 +132,6 @@ public class UserAccountRepository implements Repository {
     // }
     //
     // public void removeUserPreference(String preferenceName) throws EscidocClientException {
-    // client.deletePreference(getCurrentUser().getObjid(), preferenceName);
     // }
 
     public void updatePassword(UserProxy userProxy, String pw) throws EscidocClientException {
@@ -143,5 +143,13 @@ public class UserAccountRepository implements Repository {
 
     public Preference createPreference(UserProxy userProxy, Preference preference) throws EscidocClientException {
         return client.createPreference(userProxy.getId(), preference);
+    }
+
+    public void removePreference(UserProxy userProxy, String preferenceName) throws EscidocClientException {
+        client.deletePreference(userProxy.getId(), preferenceName);
+    }
+
+    public Attributes getAttributes(UserProxy userProxy) throws EscidocClientException {
+        return client.retrieveAttributes(userProxy.getId());
     }
 }

@@ -24,18 +24,19 @@ import java.util.Set;
  * @author ajb
  * 
  */
+@SuppressWarnings("serial")
 public abstract class TableContainerVH extends VerticalLayout {
+
     protected Table table = new Table();
-
-    static final Action ACTION_DELETE = new Action("Delete");
-
-    static final Action[] ACTIONS_LIST = new Action[] { ACTION_DELETE };
 
     protected static final String PROPERTY_NAME = "name";
 
     protected static final String PROPERTY_VALUE = "value";
 
-    @SuppressWarnings("serial")
+    private static final Action ACTION_DELETE = new Action("Delete");
+
+    private static final Action[] ACTIONS_LIST = new Action[] { ACTION_DELETE };
+
     public TableContainerVH() {
         addComponent(table);
         final Label selected = new Label("No selection");
@@ -141,11 +142,9 @@ public abstract class TableContainerVH extends VerticalLayout {
         Button okBtn = new Button("Yes Remove", new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-
                 removeAction(target);
                 table.refreshRowCache();
                 (subwindow.getParent()).removeWindow(subwindow);
-
             }
         });
         Button cancelBtn = new Button("Cancel", new Button.ClickListener() {
