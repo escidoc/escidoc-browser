@@ -59,9 +59,9 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.MetadataRecords;
 
-public class MetadataRecs {
+public class MetadataRecsContainer {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MetadataRecs.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MetadataRecsContainer.class);
 
     private final ContainerProxy resourceProxy;
 
@@ -83,7 +83,7 @@ public class MetadataRecs {
 
     private ContainerView containerView;
 
-    public MetadataRecs(final ResourceProxy resourceProxy, final Repositories repositories, final Router router,
+    public MetadataRecsContainer(final ResourceProxy resourceProxy, final Repositories repositories, final Router router,
         ContainerView containerView) {
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
 

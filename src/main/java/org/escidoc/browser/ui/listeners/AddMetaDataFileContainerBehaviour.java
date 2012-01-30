@@ -40,7 +40,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.MetadataRecs;
+import org.escidoc.browser.ui.maincontent.MetadataRecsContainer;
 import org.escidoc.browser.ui.maincontent.XmlUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,14 +95,14 @@ public class AddMetaDataFileContainerBehaviour implements ClickListener {
 
     private TextField mdName;
 
-    private final MetadataRecs metadataRecs;
+    private final MetadataRecsContainer metadataRecsContainer;
 
     public AddMetaDataFileContainerBehaviour(final Window mainWindow, final Repositories repositories,
-        final ResourceProxy resourceProxy, final MetadataRecs metadataRecs) {
+        final ResourceProxy resourceProxy, final MetadataRecsContainer metadataRecsContainer) {
         this.mainWindow = mainWindow;
         this.repositories = repositories;
         this.resourceProxy = resourceProxy;
-        this.metadataRecs = metadataRecs;
+        this.metadataRecsContainer = metadataRecsContainer;
     }
 
     @Override
@@ -222,7 +222,7 @@ public class AddMetaDataFileContainerBehaviour implements ClickListener {
                             container = repositories.container().findContainerById(resourceProxy.getId());
                             metadataRecord.setContent(getMetadataContent());
                             repositories.container().addMetaData(metadataRecord, container);
-                            metadataRecs.addButtons(metadataRecord);
+                            metadataRecsContainer.addButtons(metadataRecord);
                             upload.setEnabled(true);
                             subwindow.getParent().removeWindow(subwindow);
                         }
