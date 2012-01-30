@@ -39,8 +39,10 @@ import java.util.regex.Pattern;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.BrowserApplication;
+import org.escidoc.browser.controller.ContainerController;
 import org.escidoc.browser.controller.ContextController;
 import org.escidoc.browser.controller.Controller;
+import org.escidoc.browser.controller.ItemController;
 import org.escidoc.browser.elabsmodul.cache.ELabsCache;
 import org.escidoc.browser.elabsmodul.enums.ContentModelTypeEnum;
 import org.escidoc.browser.layout.LayoutDesign;
@@ -261,7 +263,7 @@ public class Router {
                 try {
                     final ContainerProxy container =
                         (ContainerProxy) resourceFactory.find(escidocID, ResourceType.CONTAINER);
-                    openControllerView(new ContextController(repositories, this, container), true);
+                    openControllerView(new ContainerController(repositories, this, container), true);
                 }
                 catch (final EscidocClientException e) {
                     showError(FAIL_RETRIEVING_RESOURCE);
@@ -270,7 +272,7 @@ public class Router {
             else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("ITEM")) {
                 try {
                     final ItemProxy item = (ItemProxy) resourceFactory.find(escidocID, ResourceType.ITEM);
-                    openControllerView(new ContextController(repositories, this, item), true);
+                    openControllerView(new ItemController(repositories, this, item), true);
                 }
                 catch (final EscidocClientException e) {
                     showError(FAIL_RETRIEVING_RESOURCE);

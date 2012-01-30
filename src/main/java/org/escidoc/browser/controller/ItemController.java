@@ -34,7 +34,7 @@ import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.maincontent.ItemView2;
+import org.escidoc.browser.ui.maincontent.ItemView;
 
 import com.vaadin.ui.Window;
 
@@ -42,41 +42,41 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class ItemController extends Controller {
 
-	public ItemController(final Repositories repositories, final Router router,
-			final ResourceProxy resourceProxy) {
-		super(repositories, router, resourceProxy);
-		createView();
-	}
+    public ItemController(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
+        super(repositories, router, resourceProxy);
+        createView();
+    }
 
-	@Override
-	public void createView() {
-		try {
-			// view = new ItemView(getRouter(), getResourceProxy(), this);
-			view = new ItemView2(getRouter(), getResourceProxy(), this);
-		} catch (EscidocClientException e) {
-			getRouter().getMainWindow().showNotification("Error",
-					e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-		}
-	}
+    @Override
+    public void createView() {
+        try {
+            view = new ItemView(getRouter(), getResourceProxy(), this);
+            // view = new ItemView2(getRouter(), getResourceProxy(), this);
+        }
+        catch (EscidocClientException e) {
+            getRouter().getMainWindow().showNotification("Error", e.getMessage(),
+                Window.Notification.TYPE_ERROR_MESSAGE);
+        }
+    }
 
-	/**
-	 * Check if the user has access and provide some operations on the view
-	 * 
-	 * @return boolean
-	 */
-	public boolean canUpdateItem() {
-		try {
-			return repositories.pdp().forCurrentUser()
-					.isAction(ActionIdConstants.UPDATE_ITEM)
-					.forResource(resourceProxy.getId()).permitted();
-		} catch (final EscidocClientException e) {
-			router.getMainWindow().showNotification(e.getMessage(),
-					Window.Notification.TYPE_ERROR_MESSAGE);
-			return false;
-		} catch (final URISyntaxException e) {
-			router.getMainWindow().showNotification(e.getMessage(),
-					Window.Notification.TYPE_ERROR_MESSAGE);
-			return false;
-		}
-	}
+    /**
+     * Check if the user has access and provide some operations on the view
+     * 
+     * @return boolean
+     */
+    public boolean canUpdateItem() {
+        try {
+            return repositories
+                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_ITEM).forResource(resourceProxy.getId())
+                .permitted();
+        }
+        catch (final EscidocClientException e) {
+            router.getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            return false;
+        }
+        catch (final URISyntaxException e) {
+            router.getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            return false;
+        }
+    }
 }
