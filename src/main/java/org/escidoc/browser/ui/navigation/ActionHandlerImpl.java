@@ -95,7 +95,7 @@ final class ActionHandlerImpl implements Action.Handler {
             ResourceType type = rm.getType();
             switch (type) {
                 case CONTEXT:
-                    return new Action[] { ActionList.ACTION_ADD_RESOURCE };
+                    return new Action[] { ActionList.ACTION_ADD_RESOURCE, ActionList.ACTION_DELETE_CONTEXT };
 
                 case CONTAINER:
                     return new Action[] { ActionList.ACTION_ADD_RESOURCE, ActionList.ACTION_DELETE_CONTAINER };
@@ -168,10 +168,81 @@ final class ActionHandlerImpl implements Action.Handler {
         else if (action.equals(ActionList.ACTION_ADD_CHILD)) {
             tryShowAddChildOrgUnit((ResourceModel) selectedResource);
         }
+        else if (action.equals(ActionList.ACTION_DELETE_CONTEXT)) {
+            mainWindow.showNotification("TEST");
+            if (canContextbeRemoved(((ContextModel) selectedResource).getId())) {
+                tryDeleteContext(selectedResource, sender);
+            }
+            else {
+                mainWindow
+                    .showNotification(new Window.Notification(
+                        ViewConstants.CANNOT_REMOVE_CONTEXT_NOT_IN_STATUS_CREATED,
+                        Window.Notification.TYPE_WARNING_MESSAGE));
+            }
+        }
         else {
             mainWindow.showNotification("Unknown Action: " + action.getCaption(),
                 Window.Notification.TYPE_ERROR_MESSAGE);
         }
+    }
+
+    private void tryDeleteContext(final Object target, Object sender) throws EscidocClientException, URISyntaxException {
+        final String contextId = ((ContextModel) target).getId();
+        if (allowedToDeleteContext(contextId)) {
+            deleteContext((ContextModel) target, sender);
+        }
+        else {
+            mainWindow
+                .showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
+                    "You do not have the right to delete a context: " + contextId,
+                    Window.Notification.TYPE_WARNING_MESSAGE));
+        }
+    }
+
+    private void deleteContext(final ContextModel model, final Object sender) {
+        final Window subwindow = new Window(ViewConstants.DELETE_RESOURCE_WND_NAME);
+        subwindow.setModal(true);
+        final Label message = new Label(ViewConstants.QUESTION_DELETE_RESOURCE);
+        subwindow.addComponent(message);
+
+        final Button okConfirmed = new Button("Yes", new Button.ClickListener() {
+
+            private static final long serialVersionUID = 3919074540805378986L;
+
+            @Override
+            public void buttonClick(final ClickEvent event) {
+                (subwindow.getParent()).removeWindow(subwindow);
+                try {
+                    repositories.context().delete(model.getId());
+                    router.getLayout().closeView(model, treeDataSource.getParent(model), sender);
+                    mainWindow.showNotification(new Window.Notification(ViewConstants.DELETED,
+                        Notification.TYPE_TRAY_NOTIFICATION));
+                }
+                catch (final EscidocClientException e) {
+                    mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
+                        Notification.TYPE_ERROR_MESSAGE));
+                }
+            }
+
+        });
+        final Button cancel = new Button("Cancel", new Button.ClickListener() {
+            private static final long serialVersionUID = 3919074540805378986L;
+
+            @Override
+            public void buttonClick(final ClickEvent event) {
+                (subwindow.getParent()).removeWindow(subwindow);
+            }
+        });
+        final HorizontalLayout hl = new HorizontalLayout();
+        hl.addComponent(okConfirmed);
+        hl.addComponent(cancel);
+        subwindow.addComponent(hl);
+        mainWindow.addWindow(subwindow);
+    }
+
+    private boolean allowedToDeleteContext(final String contextId) throws EscidocClientException, URISyntaxException {
+        return (repositories.pdp().forCurrentUser().isAction(ActionIdConstants.DELETE_CONTEXT).forResource(contextId)
+            .permitted());
     }
 
     private void tryShowAddChildOrgUnit(final ResourceModel selectedOrgUnit) throws EscidocClientException,
@@ -193,6 +264,10 @@ final class ActionHandlerImpl implements Action.Handler {
     // FIXME ask pdp if add child allowed
     private static boolean isAllowedToAddChild() {
         return true;
+    }
+
+    private boolean canContextbeRemoved(final String contextId) throws EscidocClientException {
+        return repositories.context().findById(contextId).getStatus().equals("created");
     }
 
     private void tryDeleteItem(final Object target, Object sender) throws EscidocClientException, URISyntaxException {
