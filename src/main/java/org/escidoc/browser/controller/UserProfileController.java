@@ -41,7 +41,7 @@ public class UserProfileController extends Controller {
 
     @Override
     public void createView() {
-        view = new UserProfileView(router, repositories, this, getCurrentUser());
+        view = new UserProfileView(router, this, getCurrentUser());
     }
 
     public void updateProfile(String name, String password) throws EscidocClientException {

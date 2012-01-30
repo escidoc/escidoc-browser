@@ -19,7 +19,6 @@ import com.vaadin.ui.themes.Runo;
 
 import org.escidoc.browser.controller.UserProfileController;
 import org.escidoc.browser.model.CurrentUser;
-import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.View;
@@ -36,18 +35,13 @@ public class UserProfileView extends View {
 
     private Router router;
 
-    private Repositories repositories;
-
     private UserProfileController controller;
 
     private CurrentUser currentUser;
 
-    public UserProfileView(Router router, Repositories repositories, UserProfileController userProfileController,
-        CurrentUser currentUser) {
+    public UserProfileView(Router router, UserProfileController userProfileController, CurrentUser currentUser) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
-        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         this.router = router;
-        this.repositories = repositories;
         this.controller = userProfileController;
         this.currentUser = currentUser;
         init();
@@ -59,7 +53,6 @@ public class UserProfileView extends View {
         this.setHeight("100.0%");
         this.setStyleName(Runo.PANEL_LIGHT);
         this.setContent(buildContentPanel());
-
     }
 
     private Panel buildContentPanel() {
