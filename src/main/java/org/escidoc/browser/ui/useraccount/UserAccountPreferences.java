@@ -1,29 +1,36 @@
-package org.escidoc.browser.ui.view.helpers;
+package org.escidoc.browser.ui.useraccount;
+
+import com.google.common.base.Preconditions;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
 
-import org.escidoc.browser.controller.UserProfileController;
-import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.repository.internal.UserAccountRepository;
+import org.escidoc.browser.ui.view.helpers.TableContainerVH;
 
-import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.aa.useraccount.Preference;
 import de.escidoc.core.resources.aa.useraccount.Preferences;
 
 @SuppressWarnings("serial")
-public class UserPreferencesTable extends TableContainerVH {
+public class UserAccountPreferences extends TableContainerVH {
 
     private Preferences preferences;
 
-    private UserProfileController controller;
+    private UserAccountRepository ur;
 
     private HierarchicalContainer tableContainer;
 
-    public UserPreferencesTable(Preferences preferences, UserProfileController controller) {
+    public UserAccountPreferences(Preferences preferences, UserAccountRepository ur) {
+        Preconditions.checkNotNull(preferences, "preferences is null: %s", preferences);
+        Preconditions.checkNotNull(ur, "ur is null: %s", ur);
         this.preferences = preferences;
-        this.controller = controller;
+        this.ur = ur;
         table.setContainerDataSource(populateContainerTable());
+    }
 
+    @Override
+    protected void removeAction(Object target) {
+        throw new UnsupportedOperationException("not-yet-implemented.");
     }
 
     @Override
@@ -44,20 +51,8 @@ public class UserPreferencesTable extends TableContainerVH {
         return tableContainer;
     }
 
-    @Override
-    protected void removeAction(Object preferenceName) {
-        try {
-            controller.removePreference((String) preferenceName);
-            controller.showTrayMessage(ViewConstants.PREFERENCE_REMOVE, ViewConstants.THE_PREFERENCE_REMOVED);
-            tableContainer.removeItem(preferenceName);
-
-        }
-        catch (EscidocClientException e) {
-            controller.showError(e.getLocalizedMessage());
-        }
-    }
-
     public HierarchicalContainer getTableContainer() {
         return tableContainer;
     }
+
 }

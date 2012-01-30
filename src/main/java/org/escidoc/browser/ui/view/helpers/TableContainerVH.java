@@ -1,9 +1,5 @@
 package org.escidoc.browser.ui.view.helpers;
 
-import java.util.Set;
-
-import org.escidoc.browser.ui.ViewConstants;
-
 import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.HierarchicalContainer;
@@ -17,6 +13,10 @@ import com.vaadin.ui.Table.CellStyleGenerator;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
+import org.escidoc.browser.ui.ViewConstants;
+
+import java.util.Set;
+
 /**
  * This is a table container. <br >
  * It lists a set of elements and provides a remove operation on each element.
@@ -25,7 +25,7 @@ import com.vaadin.ui.Window;
  * 
  */
 public abstract class TableContainerVH extends VerticalLayout {
-    Table table = new Table();
+    protected Table table = new Table();
 
     static final Action ACTION_DELETE = new Action("Delete");
 
@@ -35,6 +35,7 @@ public abstract class TableContainerVH extends VerticalLayout {
 
     protected static final String PROPERTY_VALUE = "value";
 
+    @SuppressWarnings("serial")
     public TableContainerVH() {
         addComponent(table);
         final Label selected = new Label("No selection");
@@ -43,10 +44,12 @@ public abstract class TableContainerVH extends VerticalLayout {
 
         // Actions (a.k.a context menu)
         table.addActionHandler(new Action.Handler() {
+            @Override
             public Action[] getActions(Object target, Object sender) {
                 return ACTIONS_LIST;
             }
 
+            @Override
             public void handleAction(Action action, Object sender, Object target) {
                 if (ACTION_DELETE == action) {
                     confirmActionWindow(target);
@@ -56,15 +59,12 @@ public abstract class TableContainerVH extends VerticalLayout {
 
         // style generator
         table.setCellStyleGenerator(new CellStyleGenerator() {
+            @Override
             public String getStyle(Object itemId, Object propertyId) {
                 if (PROPERTY_NAME.equals(propertyId)) {
                     return "bold";
                 }
-                else {
-                    // no style
-                    return null;
-                }
-
+                return null;
             }
         });
 

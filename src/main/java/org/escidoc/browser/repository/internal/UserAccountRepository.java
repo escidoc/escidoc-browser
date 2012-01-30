@@ -45,6 +45,8 @@ import de.escidoc.core.client.UserAccountHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.client.interfaces.UserAccountHandlerClientInterface;
+import de.escidoc.core.resources.aa.useraccount.Preference;
+import de.escidoc.core.resources.aa.useraccount.Preferences;
 import de.escidoc.core.resources.aa.useraccount.UserAccount;
 import de.escidoc.core.resources.aa.useraccount.UserAccountProperties;
 import de.escidoc.core.resources.common.Relations;
@@ -119,13 +121,10 @@ public class UserAccountRepository implements Repository {
         client.updatePassword(user.getObjid(), taskParam);
     }
 
-    // public Preferences getUserPreferences() throws EscidocClientException {
-    // return client.retrievePreferences(getCurrentUser());
-    // }
-    //
-    // public Preference createUserPreference(Preference preference) throws EscidocClientException {
-    // return client.createPreference(getCurrentUser().getObjid(), preference);
-    // }
+    public Preferences getPreferences(UserProxy up) throws EscidocClientException {
+        return client.retrievePreferences(up.getId());
+    }
+
     //
     // public Preference updateUserPreference(Preference preference) throws EscidocClientException {
     // return client.updatePreference(getCurrentUser(), preference);
@@ -140,5 +139,9 @@ public class UserAccountRepository implements Repository {
         taskParam.setLastModificationDate(userProxy.getResource().getLastModificationDate());
         taskParam.setPassword(pw);
         client.updatePassword(userProxy.getId(), taskParam);
+    }
+
+    public Preference createPreference(UserProxy userProxy, Preference preference) throws EscidocClientException {
+        return client.createPreference(userProxy.getId(), preference);
     }
 }

@@ -4,6 +4,7 @@ import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.UserProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.useraccount.UserAccountView;
 
 public class UserAccountController extends Controller {
 

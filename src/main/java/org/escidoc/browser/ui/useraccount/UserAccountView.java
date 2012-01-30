@@ -1,11 +1,15 @@
-package org.escidoc.browser.controller;
+package org.escidoc.browser.ui.useraccount;
 
 import com.google.common.base.Preconditions;
 
 import com.vaadin.data.Validator.EmptyValueException;
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Form;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
@@ -20,6 +24,8 @@ import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.View;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.aa.useraccount.Preference;
+import de.escidoc.core.resources.aa.useraccount.Preferences;
 
 @SuppressWarnings("serial")
 public class UserAccountView extends View {
@@ -198,66 +204,67 @@ public class UserAccountView extends View {
 
     private Panel buildPreferences() throws EscidocClientException {
         final Panel pnl = new Panel("Preferences");
-        // Preferences preferences = controller.getUserPreferences();
-        // final UserPreferencesTable userPrefTable = new UserPreferencesTable(preferences, controller);
-        // pnl.addComponent(userPrefTable);
-        //
-        // final Button addPreference = new Button();
-        // addPreference.setDescription("Add new Preference");
-        // addPreference.setIcon(new ThemeResource("images/assets/plus.png"));
-        // addPreference.addListener(new ClickListener() {
-        // @Override
-        // public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-        // addPreference.setEnabled(false);
-        // final HorizontalLayout hl = new HorizontalLayout();
-        // final TextField key = new TextField();
-        // key.setCaption("Name");
-        // key.setImmediate(false);
-        // key.setWidth("-1px");
-        // key.setHeight("-1px");
-        // key.setInvalidAllowed(false);
-        // key.setRequired(true);
-        //
-        // final TextField value = new TextField();
-        // value.setCaption("Value");
-        // value.setImmediate(false);
-        // value.setWidth("-1px");
-        // value.setHeight("-1px");
-        // value.setInvalidAllowed(false);
-        // value.setRequired(true);
-        //
-        // final Button btnadd = new Button();
-        // btnadd.setIcon(new ThemeResource("images/assets/plus.png"));
-        // btnadd.addListener(new Button.ClickListener() {
-        // @Override
-        // public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-        //
-        // try {
-        // controller.createPreference(key.getValue().toString(), value.getValue().toString());
-        // router.getMainWindow().showNotification("Preference added successfully ",
-        // Window.Notification.TYPE_TRAY_NOTIFICATION);
-        // hl.removeAllComponents();
-        // addPreference.setEnabled(true);
-        // userPrefTable.createItem(userPrefTable.getTableContainer(), key.getValue().toString(), key
-        // .getValue().toString(), value.getValue().toString());
-        // }
-        // catch (EscidocClientException e) {
-        // router.getMainWindow().showNotification(
-        // ViewConstants.ERROR_CREATING_USER_PREFERENCE + e.getLocalizedMessage(),
-        // Window.Notification.TYPE_ERROR_MESSAGE);
-        // }
-        // }
-        // });
-        // hl.addComponent(key);
-        // hl.addComponent(value);
-        // hl.addComponent(btnadd);
-        // hl.setComponentAlignment(btnadd, Alignment.BOTTOM_RIGHT);
-        // pnl.addComponent(hl);
-        // }
-        //
-        // });
-        //
-        // pnl.addComponent(addPreference);
+        Preferences preferences = ur.getPreferences(userProxy);
+        final UserAccountPreferences userPrefTable = new UserAccountPreferences(preferences, ur);
+        pnl.addComponent(userPrefTable);
+
+        final Button addPreference = new Button();
+        addPreference.setDescription("Add new Preference");
+        addPreference.setIcon(new ThemeResource("images/assets/plus.png"));
+        addPreference.addListener(new ClickListener() {
+            @Override
+            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+                addPreference.setEnabled(false);
+                final HorizontalLayout hl = new HorizontalLayout();
+                final TextField key = new TextField();
+                key.setCaption("Name");
+                key.setImmediate(false);
+                key.setWidth("-1px");
+                key.setHeight("-1px");
+                key.setInvalidAllowed(false);
+                key.setRequired(true);
+
+                final TextField value = new TextField();
+                value.setCaption("Value");
+                value.setImmediate(false);
+                value.setWidth("-1px");
+                value.setHeight("-1px");
+                value.setInvalidAllowed(false);
+                value.setRequired(true);
+
+                final Button btnadd = new Button();
+                btnadd.setIcon(new ThemeResource("images/assets/plus.png"));
+                btnadd.addListener(new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+
+                        try {
+                            ur.createPreference(userProxy, new Preference(key.getValue().toString(), value
+                                .getValue().toString()));
+                            router.getMainWindow().showNotification("Preference added successfully ",
+                                Window.Notification.TYPE_TRAY_NOTIFICATION);
+                            hl.removeAllComponents();
+                            addPreference.setEnabled(true);
+                            userPrefTable.createItem(userPrefTable.getTableContainer(), key.getValue().toString(), key
+                                .getValue().toString(), value.getValue().toString());
+                        }
+                        catch (EscidocClientException e) {
+                            router.getMainWindow().showNotification(
+                                ViewConstants.ERROR_CREATING_USER_PREFERENCE + e.getLocalizedMessage(),
+                                Window.Notification.TYPE_ERROR_MESSAGE);
+                        }
+                    }
+                });
+                hl.addComponent(key);
+                hl.addComponent(value);
+                hl.addComponent(btnadd);
+                hl.setComponentAlignment(btnadd, Alignment.BOTTOM_RIGHT);
+                pnl.addComponent(hl);
+            }
+
+        });
+
+        pnl.addComponent(addPreference);
         return pnl;
     }
 }
