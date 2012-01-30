@@ -1,11 +1,5 @@
 package org.escidoc.browser.ui.view.helpers;
 
-import java.util.Iterator;
-
-import org.escidoc.browser.controller.Controller;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.ui.Router;
-
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filterable;
 import com.vaadin.data.Item;
@@ -31,6 +25,10 @@ import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.TreeDragMode;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
+
+import org.escidoc.browser.controller.Controller;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.ui.Router;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -77,6 +75,7 @@ public abstract class DragnDropHelper extends VerticalLayout {
         tableDelete.addStyleName("deleteTable");
         tableDelete.addContainerProperty("Drag here to remove", String.class, null);
         tableDelete.setDropHandler(new DropHandler() {
+            @Override
             public void drop(DragAndDropEvent dropEvent) {
                 DataBoundTransferable t = (DataBoundTransferable) dropEvent.getTransferable();
                 if (!(t.getSourceContainer() instanceof Container.Hierarchical)) {
@@ -88,6 +87,7 @@ public abstract class DragnDropHelper extends VerticalLayout {
                 removeElementController(sourceItemId);
             }
 
+            @Override
             public AcceptCriterion getAcceptCriterion() {
                 return new And(acceptCriterion, AcceptItem.ALL);
             }
@@ -110,6 +110,7 @@ public abstract class DragnDropHelper extends VerticalLayout {
         // Handle drop in table: move hardware item or subtree to the table
         table.setDragMode(TableDragMode.ROW);
         table.setDropHandler(new DropHandler() {
+            @Override
             public void drop(DragAndDropEvent dropEvent) {
                 // criteria verify that this is safe
                 DataBoundTransferable t = (DataBoundTransferable) dropEvent.getTransferable();
@@ -125,6 +126,7 @@ public abstract class DragnDropHelper extends VerticalLayout {
                 }
             }
 
+            @Override
             public AcceptCriterion getAcceptCriterion() {
                 return new And(acceptCriterion, AcceptItem.ALL);
             }
@@ -137,23 +139,26 @@ public abstract class DragnDropHelper extends VerticalLayout {
         tree.setItemCaptionPropertyId(PROPERTY_NAME);
 
         // Expand all nodes
-        for (Iterator<?> it = tree.rootItemIds().iterator(); it.hasNext();) {
-            tree.expandItemsRecursively(it.next());
+        for (Object name : tree.rootItemIds()) {
+            tree.expandItemsRecursively(name);
         }
         tree.setDragMode(TreeDragMode.NODE);
     }
 
+    @SuppressWarnings("serial")
     private void treeFilter() {
         tf = new TextField();
         tf.addListener(new TextChangeListener() {
             SimpleStringFilter filter = null;
 
+            @Override
             public void textChange(TextChangeEvent event) {
                 Filterable f = (Filterable) tree.getContainerDataSource();
 
                 // Remove old filter
-                if (filter != null)
+                if (filter != null) {
                     f.removeContainerFilter(filter);
+                }
                 // Set new filter for the "caption" property
                 filter = new SimpleStringFilter(PROPERTY_NAME, event.getText(), true, false);
                 f.addContainerFilter(filter);
@@ -170,7 +175,7 @@ public abstract class DragnDropHelper extends VerticalLayout {
      * @param itemHref
      * @return Item
      */
-    private Item createItem(HierarchicalContainer tableContainer, String itemId, String itemName, String itemHref) {
+    private static Item createItem(HierarchicalContainer tableContainer, String itemId, String itemName, String itemHref) {
         Item item = tableContainer.addItem(itemId);
         item.getItemProperty(PROPERTY_NAME).setValue(itemName);
         item.getItemProperty(PROPERTY_HREF).setValue(itemHref);

@@ -30,6 +30,10 @@ package org.escidoc.browser.layout;
 
 import com.google.common.base.Preconditions;
 
+import com.vaadin.data.Container.Filterable;
+import com.vaadin.data.util.filter.SimpleStringFilter;
+import com.vaadin.event.FieldEvents.TextChangeEvent;
+import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.terminal.Resource;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.AbsoluteLayout;
@@ -43,6 +47,7 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.TabSheet.Tab;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -51,6 +56,7 @@ import com.vaadin.ui.themes.Runo;
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.PropertyId;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.TreeDataSourceImpl;
@@ -400,14 +406,42 @@ public class SimpleLayout extends LayoutDesign {
     }
 
     private void addContentModelsTab(Accordion accordion) {
-        BaseNavigationTreeView list = treeBuilder.buildContentModelTree();
-        accordion.addTab(list, ViewConstants.CONTENT_MODELS, NO_ICON);
+        final BaseNavigationTreeView list = treeBuilder.buildContentModelTree();
+        addFilter(accordion, ViewConstants.CONTENT_MODELS, list);
+    }
+
+    private void addFilter(Accordion accordion, String name, final BaseNavigationTreeView list) {
+        // TODO refactor to a class
+        VerticalLayout vl = new VerticalLayout();
+        vl.setMargin(false, false, false, true);
+
+        TextField tf = new TextField("");
+        tf.setInputPrompt("Type something to filter the list");
+        tf.setWidth("250px");
+        tf.setImmediate(true);
+        tf.focus();
+        tf.addListener(new TextChangeListener() {
+
+            private SimpleStringFilter filter;
+
+            @Override
+            public void textChange(TextChangeEvent event) {
+                // TODO refactor this, the list should not return the data source
+                Filterable ds = (Filterable) list.getDataSource();
+                ds.removeAllContainerFilters();
+                filter = new SimpleStringFilter(PropertyId.NAME, event.getText(), true, false);
+                ds.addContainerFilter(filter);
+            }
+        });
+        vl.addComponent(tf);
+        vl.addComponent(list);
+        accordion.addTab(vl, name, NO_ICON);
     }
 
     private void addUserAccountsTab(Accordion accordion) {
         if (isSysAdmin()) {
-            BaseNavigationTreeView list = treeBuilder.buildUserAccountTree();
-            accordion.addTab(list, ViewConstants.USER_ACCOUNTS, NO_ICON);
+            final BaseNavigationTreeView list = treeBuilder.buildUserAccountTree();
+            addFilter(accordion, ViewConstants.USER_ACCOUNTS, list);
         }
     }
 

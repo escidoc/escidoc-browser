@@ -1,5 +1,6 @@
 package org.escidoc.browser.layout;
 
+import com.vaadin.data.Container;
 import com.vaadin.event.Action.Handler;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.AbstractSelect;
@@ -66,6 +67,10 @@ public class BaseNavigationTreeView extends VerticalLayout implements Navigation
     @Override
     public void addActionHandler(Handler handler) {
         throw new UnsupportedOperationException("not-yet-implemented.");
+    }
+
+    public Container getDataSource() {
+        return dataSource.getContainer();
     }
 
 }
