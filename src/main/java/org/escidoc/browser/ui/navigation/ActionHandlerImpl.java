@@ -28,15 +28,7 @@
  */
 package org.escidoc.browser.ui.navigation;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.event.Action;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
+import java.net.URISyntaxException;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ResourceModel;
@@ -54,15 +46,21 @@ import org.escidoc.browser.ui.navigation.menubar.ShowAddViewCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URISyntaxException;
+import com.google.common.base.Preconditions;
+import com.vaadin.event.Action;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
+@SuppressWarnings("serial")
 final class ActionHandlerImpl implements Action.Handler {
 
-    private static final long serialVersionUID = 1L;
-
-    private static final Logger LOG = LoggerFactory.getLogger(ActionHandlerImpl.class);
+    private final static Logger LOG = LoggerFactory.getLogger(ActionHandlerImpl.class);
 
     private final Window mainWindow;
 
@@ -70,10 +68,14 @@ final class ActionHandlerImpl implements Action.Handler {
 
     private final TreeDataSource treeDataSource;
 
-    private final Router router;
+    private static final String DELETE_RESOURCE_WND_NAME = "Do you really want to delete this item!?";
+
+    private static final String DELETE_RESOURCE = "Are you confident to delete this resource!?";
+
+    private Router router;
 
     public ActionHandlerImpl(final Window mainWindow, final Repositories repositories,
-        final TreeDataSource treeDataSource, final Router router) {
+        final TreeDataSource treeDataSource, Router router) {
 
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
@@ -87,138 +89,29 @@ final class ActionHandlerImpl implements Action.Handler {
     }
 
     @Override
-    public Action[] getActions(final Object target, @SuppressWarnings("unused") final Object sender) {
+    public Action[] getActions(final Object target, final Object sender) {
+        if (target instanceof ResourceModel) {
+            ResourceModel rm = (ResourceModel) target;
+            ResourceType type = rm.getType();
+            switch (type) {
+                case CONTEXT:
+                    return new Action[] { ActionList.ACTION_ADD_RESOURCE, ActionList.ACTION_DELETE_CONTEXT };
 
-        if (!(target instanceof ResourceModel)) {
-            return new Action[] {};
-        }
+                case CONTAINER:
+                    return new Action[] { ActionList.ACTION_ADD_RESOURCE, ActionList.ACTION_DELETE_CONTAINER };
 
-        // FIXME check access here? if the user does not have the right, the context menu should not be shown.
-        switch (((ResourceModel) target).getType()) {
-            case CONTEXT:
-                return new Action[] { ActionList.ACTION_ADD_RESOURCE, ActionList.ACTION_DELETE_CONTEXT };
+                case ITEM:
+                    return new Action[] { ActionList.ACTION_DELETE_ITEM };
+                case ORG_UNIT:
+                    return new Action[] { ActionList.ACTION_ADD_CHILD };
 
-            case CONTAINER:
-                return new Action[] { ActionList.ACTION_ADD_RESOURCE, ActionList.ACTION_DELETE_CONTAINER };
+                default:
 
-            case ITEM:
-                return new Action[] { ActionList.ACTION_DELETE_ITEM };
-
-            case ORG_UNIT:
-                return new Action[] { ActionList.ACTION_ADD_CHILD };
-
-            default:
-                return new Action[] {};
-        }
-    }
-
-    @Override
-    public void handleAction(final Action action, final Object sender, final Object selected) {
-        Preconditions.checkNotNull(selected, "target is null: %s", selected);
-
-        if (!(selected instanceof ResourceModel)) {
-            return;
-        }
-
-        final ResourceModel rm = (ResourceModel) selected;
-        // FIXME to many exception catches
-        switch (rm.getType()) {
-            case ORG_UNIT:
-                try {
-                    doActionIfAllowed(action, rm);
-                }
-                catch (final EscidocClientException e1) {
-                    handleError(e1);
-                }
-                catch (final URISyntaxException e1) {
-                    handleError(e1);
-                }
-                break;
-            case ITEM:
-            case CONTAINER:
-                try {
-                    doActionIfAllowed(action, rm, findContextId(selected), sender);
-                }
-                catch (final EscidocClientException e) {
-                    handleError(e);
-                }
-                catch (final URISyntaxException e) {
-                    handleError(e);
-                }
-                break;
-            default:
-                break;
-        }
-
-    }
-
-    private void handleError(final Exception e) {
-        LOG.error(e.getMessage(), e);
-        showErrorMessage(e);
-    }
-
-    private void showErrorMessage(final Exception e) {
-        mainWindow.showNotification(new Window.Notification("Application Error", e.getMessage(),
-            Window.Notification.TYPE_ERROR_MESSAGE));
-    }
-
-    private void doActionIfAllowed(final Action action, final ResourceModel rm) throws EscidocClientException,
-        URISyntaxException {
-        if (!action.equals(ActionList.ACTION_ADD_CHILD)) {
-            return;
-        }
-
-        tryShowAddChildOrgUnit(rm);
-    }
-
-    private String findContextId(final Object target) {
-        if (isContext(target)) {
-            return ((ContextModel) target).getId();
-        }
-        else if (isContainer(target)) {
-            final ContainerModel containerModel = (ContainerModel) target;
-            try {
-                return repositories.container().findById(containerModel.getId()).getContext().getObjid();
-            }
-            catch (final EscidocClientException e) {
-                getWindow().showNotification(
-                    "Can not retrieve container " + containerModel.getId() + ". Reason: " + e.getMessage(),
-                    Window.Notification.TYPE_ERROR_MESSAGE);
+                    return new Action[] {};
             }
         }
-        else if (isItem(target)) {
-            final ItemModel itemModel = (ItemModel) target;
-            try {
-                return repositories.item().findById(itemModel.getId()).getContext().getObjid();
-            }
-            catch (final EscidocClientException e) {
-                getWindow().showNotification(
-                    "Unable to retrieve Item " + itemModel.getId() + ". Reason: " + e.getMessage(),
-                    Window.Notification.TYPE_ERROR_MESSAGE);
-            }
-        }
-        return AppConstants.EMPTY_STRING;
-    }
+        return new Action[] {};
 
-    private void tryShowAddChildOrgUnit(final ResourceModel selectedOrgUnit) throws EscidocClientException,
-        URISyntaxException {
-        if (isAllowedToCreateOrgUnit() && isAllowedToAddChild()) {
-            showAddChildOrgUnitView(selectedOrgUnit);
-        }
-    }
-
-    private void showAddChildOrgUnitView(final ResourceModel selectedOrgUnit) {
-        new CreateOrgUnitView(mainWindow, repositories.organization(), selectedOrgUnit, treeDataSource).show();
-    }
-
-    // FIXME ask pdp if add child allowed
-    private static boolean isAllowedToAddChild() {
-        return true;
-    }
-
-    private boolean isAllowedToCreateOrgUnit() throws EscidocClientException, URISyntaxException {
-        return repositories
-            .pdp().forCurrentUser().isAction(ActionIdConstants.CREATE_ORG_UNIT).forResource("").permitted();
     }
 
     private boolean allowedToDeleteItem(final String resourceId) throws EscidocClientException, URISyntaxException {
@@ -242,10 +135,28 @@ final class ActionHandlerImpl implements Action.Handler {
         return mainWindow;
     }
 
-    private void doActionIfAllowed(
-        final Action action, final ResourceModel selectedResource, final String contextId, final Object sender)
-        throws EscidocClientException, URISyntaxException {
+    @Override
+    public void handleAction(final Action action, final Object sender, final Object target) {
+        final String contextId = findContextId(target);
+        try {
+            doActionIfAllowed(action, target, contextId, sender);
+        }
+        catch (final EscidocClientException e) {
+            LOG.error(e.getMessage(), e);
+            mainWindow.showNotification(new Window.Notification("Application Error", e.getMessage(),
+                Window.Notification.TYPE_ERROR_MESSAGE));
+        }
+        catch (final URISyntaxException e) {
+            LOG.error(e.getMessage(), e);
+            mainWindow.showNotification(new Window.Notification("Application Error", e.getMessage(),
+                Window.Notification.TYPE_ERROR_MESSAGE));
+        }
+    }
 
+    private void doActionIfAllowed(
+        final Action action, final Object selectedResource, final String contextId, Object sender)
+        throws EscidocClientException, URISyntaxException {
+        // original doActions
         if (action.equals(ActionList.ACTION_ADD_RESOURCE)) {
             tryShowCreateResourceView(selectedResource, contextId);
         }
@@ -255,7 +166,11 @@ final class ActionHandlerImpl implements Action.Handler {
         else if (action.equals(ActionList.ACTION_DELETE_ITEM)) {
             tryDeleteItem(selectedResource, sender);
         }
+        else if (action.equals(ActionList.ACTION_ADD_CHILD)) {
+            tryShowAddChildOrgUnit((ResourceModel) selectedResource);
+        }
         else if (action.equals(ActionList.ACTION_DELETE_CONTEXT)) {
+            mainWindow.showNotification("TEST");
             if (canContextbeRemoved(((ContextModel) selectedResource).getId())) {
                 tryDeleteContext(selectedResource, sender);
             }
@@ -265,9 +180,6 @@ final class ActionHandlerImpl implements Action.Handler {
                         ViewConstants.CANNOT_REMOVE_CONTEXT_NOT_IN_STATUS_CREATED,
                         Window.Notification.TYPE_WARNING_MESSAGE));
             }
-        }
-        else if (action.equals(ActionList.ACTION_ADD_CHILD)) {
-            tryShowAddChildOrgUnit(selectedResource);
         }
         else {
             mainWindow.showNotification("Unknown Action: " + action.getCaption(),
@@ -329,8 +241,37 @@ final class ActionHandlerImpl implements Action.Handler {
         mainWindow.addWindow(subwindow);
     }
 
-    private void tryDeleteItem(final Object target, final Object sender) throws EscidocClientException,
+    private boolean allowedToDeleteContext(final String contextId) throws EscidocClientException, URISyntaxException {
+        return (repositories.pdp().forCurrentUser().isAction(ActionIdConstants.DELETE_CONTEXT).forResource(contextId)
+            .permitted());
+    }
+
+    private void tryShowAddChildOrgUnit(final ResourceModel selectedOrgUnit) throws EscidocClientException,
         URISyntaxException {
+        if (isAllowedToCreateOrgUnit() && isAllowedToAddChild()) {
+            showAddChildOrgUnitView(selectedOrgUnit);
+        }
+    }
+
+    private boolean isAllowedToCreateOrgUnit() throws EscidocClientException, URISyntaxException {
+        return repositories
+            .pdp().forCurrentUser().isAction(ActionIdConstants.CREATE_ORG_UNIT).forResource("").permitted();
+    }
+
+    private void showAddChildOrgUnitView(final ResourceModel selectedOrgUnit) {
+        new CreateOrgUnitView(mainWindow, repositories.organization(), selectedOrgUnit, treeDataSource).show();
+    }
+
+    // FIXME ask pdp if add child allowed
+    private static boolean isAllowedToAddChild() {
+        return true;
+    }
+
+    private boolean canContextbeRemoved(final String contextId) throws EscidocClientException {
+        return repositories.context().findById(contextId).getStatus().equals("created");
+    }
+
+    private void tryDeleteItem(final Object target, Object sender) throws EscidocClientException, URISyntaxException {
         final String itemId = ((ItemModel) target).getId();
         if (allowedToDeleteItem(itemId)) {
             deleteItem((ItemModel) target, sender);
@@ -341,7 +282,7 @@ final class ActionHandlerImpl implements Action.Handler {
         }
     }
 
-    private void tryDeleteContainer(final Object target, final Object sender) throws EscidocClientException,
+    private void tryDeleteContainer(final Object target, Object sender) throws EscidocClientException,
         URISyntaxException {
         final String containerId = ((ContainerModel) target).getId();
         if (allowedToDeleteContainer(containerId)) {
@@ -382,15 +323,6 @@ final class ActionHandlerImpl implements Action.Handler {
             .permitted();
     }
 
-    private boolean allowedToDeleteContext(final String contextId) throws EscidocClientException, URISyntaxException {
-        return (repositories.pdp().forCurrentUser().isAction(ActionIdConstants.DELETE_CONTEXT).forResource(contextId)
-            .permitted());
-    }
-
-    private boolean canContextbeRemoved(final String contextId) throws EscidocClientException {
-        return repositories.context().findById(contextId).getStatus().equals("created");
-    }
-
     private boolean allowedToDeleteContainer(final String containerId) throws EscidocClientException,
         URISyntaxException {
         return repositories
@@ -409,6 +341,35 @@ final class ActionHandlerImpl implements Action.Handler {
             .withTypeAndInContext(ResourceType.CONTAINER, contextId).permitted();
     }
 
+    private String findContextId(final Object target) {
+        if (isContext(target)) {
+            return ((ContextModel) target).getId();
+        }
+        else if (isContainer(target)) {
+            final ContainerModel containerModel = (ContainerModel) target;
+            try {
+                return repositories.container().findById(containerModel.getId()).getContext().getObjid();
+            }
+            catch (final EscidocClientException e) {
+                getWindow().showNotification(
+                    "Can not retrieve container " + containerModel.getId() + ". Reason: " + e.getMessage(),
+                    Window.Notification.TYPE_ERROR_MESSAGE);
+            }
+        }
+        else if (isItem(target)) {
+            final ItemModel itemModel = (ItemModel) target;
+            try {
+                return repositories.item().findById(itemModel.getId()).getContext().getObjid();
+            }
+            catch (final EscidocClientException e) {
+                getWindow().showNotification(
+                    "Unable to retrieve Item " + itemModel.getId() + ". Reason: " + e.getMessage(),
+                    Window.Notification.TYPE_ERROR_MESSAGE);
+            }
+        }
+        return AppConstants.EMPTY_STRING;
+    }
+
     private void showCreateResourceView(final Object target, final String contextId) {
         buildCommand(target, contextId).showResourceAddView();
     }
@@ -420,31 +381,32 @@ final class ActionHandlerImpl implements Action.Handler {
         return showAddViewCommand;
     }
 
-    private void deleteItem(final ItemModel selectedItem, final Object sender) {
-        deleteSelected(selectedItem, sender);
+    private void deleteItem(final ItemModel selectedItem, Object sender) {
+        try {
+            deleteSelected(selectedItem, sender);
+        }
+        catch (final EscidocClientException e) {
+            getWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        }
     }
 
-    public void deleteSelected(final ItemModel model, final Object tree) {
-
-        final Window subwindow = new Window(ViewConstants.DELETE_RESOURCE_WND_NAME);
+    public void deleteSelected(final ItemModel model, final Object sender) throws EscidocClientException {
+        final Window subwindow = new Window(DELETE_RESOURCE_WND_NAME);
         subwindow.setModal(true);
-        final Label message = new Label(ViewConstants.DELETE_RESOURCE);
+        Label message = new Label(DELETE_RESOURCE);
         subwindow.addComponent(message);
 
-        final Button okConfirmed = new Button("Yes", new Button.ClickListener() {
-
-            private static final long serialVersionUID = 1L;
-
+        Button okConfirmed = new Button("Yes", new Button.ClickListener() {
             @Override
-            public void buttonClick(final ClickEvent event) {
+            public void buttonClick(ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
                 try {
                     repositories.item().finalDelete(model);
-                    router.getLayout().closeView(model, treeDataSource.getParent(model), tree);
+                    router.getLayout().closeView(model, treeDataSource.getParent(model), sender);
                     mainWindow.showNotification(new Window.Notification(ViewConstants.DELETED,
                         Notification.TYPE_TRAY_NOTIFICATION));
                 }
-                catch (final EscidocClientException e) {
+                catch (EscidocClientException e) {
                     mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
                         Notification.TYPE_ERROR_MESSAGE));
                 }
@@ -452,32 +414,26 @@ final class ActionHandlerImpl implements Action.Handler {
 
         });
 
-        final Button cancel = new Button("Cancel", new Button.ClickListener() {
-
-            private static final long serialVersionUID = 1L;
-
+        Button cancel = new Button("Cancel", new Button.ClickListener() {
             @Override
-            public void buttonClick(final ClickEvent event) {
+            public void buttonClick(ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
             }
         });
-        final HorizontalLayout hl = new HorizontalLayout();
+        HorizontalLayout hl = new HorizontalLayout();
         hl.addComponent(okConfirmed);
         hl.addComponent(cancel);
         subwindow.addComponent(hl);
         mainWindow.addWindow(subwindow);
     }
 
-    public void deleteContainer(final ContainerModel model, final Object sender) {
-        final Window subwindow = new Window(ViewConstants.DELETE_RESOURCE_WND_NAME);
+    public void deleteContainer(final ContainerModel model, final Object sender) throws EscidocClientException {
+        final Window subwindow = new Window(DELETE_RESOURCE_WND_NAME);
         subwindow.setModal(true);
-        final Label message = new Label(ViewConstants.DELETE_RESOURCE);
+        final Label message = new Label(DELETE_RESOURCE);
         subwindow.addComponent(message);
 
         final Button okConfirmed = new Button("Yes", new Button.ClickListener() {
-
-            private static final long serialVersionUID = 3919074540805378986L;
-
             @Override
             public void buttonClick(final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
@@ -495,8 +451,6 @@ final class ActionHandlerImpl implements Action.Handler {
 
         });
         final Button cancel = new Button("Cancel", new Button.ClickListener() {
-            private static final long serialVersionUID = 3919074540805378986L;
-
             @Override
             public void buttonClick(final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);

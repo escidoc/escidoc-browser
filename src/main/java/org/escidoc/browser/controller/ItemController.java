@@ -34,7 +34,7 @@ import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.maincontent.ItemView2;
+import org.escidoc.browser.ui.maincontent.ItemView;
 
 import java.net.URISyntaxException;
 
@@ -50,8 +50,8 @@ public class ItemController extends Controller {
     @Override
     public void createView() {
         try {
-            // view = new ItemView(getRouter(), getResourceProxy(), this);
-            view = new ItemView2(getRouter(), getResourceProxy(), this);
+            view = new ItemView(getRouter(), getResourceProxy(), this);
+            // view = new ItemView2(getRouter(), getResourceProxy(), this);
         }
         catch (EscidocClientException e) {
             getRouter().getMainWindow().showNotification("Error", e.getMessage(),
