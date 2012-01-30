@@ -1,7 +1,16 @@
 package org.escidoc.browser.ui.tools;
 
-import com.google.common.base.Preconditions;
+import org.escidoc.browser.controller.UserProfileController;
+import org.escidoc.browser.model.CurrentUser;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.maincontent.View;
+import org.escidoc.browser.ui.view.helpers.UserPreferencesTable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.data.Validator.EmptyValueException;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Accordion;
@@ -16,16 +25,6 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
-
-import org.escidoc.browser.controller.UserProfileController;
-import org.escidoc.browser.model.CurrentUser;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.View;
-import org.escidoc.browser.ui.view.helpers.UserPreferencesTable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.aa.useraccount.Preferences;
@@ -250,20 +249,26 @@ public class UserProfileView extends View {
                 btnadd.addListener(new Button.ClickListener() {
                     @Override
                     public void buttonClick(ClickEvent event) {
-
-                        try {
-                            controller.createPreference(key.getValue().toString(), value.getValue().toString());
-                            router.getMainWindow().showNotification("Preference added successfully ",
-                                Window.Notification.TYPE_TRAY_NOTIFICATION);
-                            hl.removeAllComponents();
-                            addPreference.setEnabled(true);
-                            userPrefTable.createItem(userPrefTable.getTableContainer(), key.getValue().toString(), key
-                                .getValue().toString(), value.getValue().toString());
-                        }
-                        catch (EscidocClientException e) {
+                        if ((key.getValue() == "") || (value.getValue() == "")) {
                             router.getMainWindow().showNotification(
-                                ViewConstants.ERROR_CREATING_USER_PREFERENCE + e.getLocalizedMessage(),
+                                "Both the name and the value are required, please do not leave them blank",
                                 Window.Notification.TYPE_ERROR_MESSAGE);
+                        }
+                        else {
+                            try {
+                                controller.createPreference(key.getValue().toString(), value.getValue().toString());
+                                router.getMainWindow().showNotification("Preference added successfully ",
+                                    Window.Notification.TYPE_TRAY_NOTIFICATION);
+                                hl.removeAllComponents();
+                                addPreference.setEnabled(true);
+                                userPrefTable.createItem(userPrefTable.getTableContainer(), key.getValue().toString(),
+                                    key.getValue().toString(), value.getValue().toString());
+                            }
+                            catch (EscidocClientException e) {
+                                router.getMainWindow().showNotification(
+                                    ViewConstants.ERROR_CREATING_USER_PREFERENCE + e.getLocalizedMessage(),
+                                    Window.Notification.TYPE_ERROR_MESSAGE);
+                            }
                         }
                     }
                 });
