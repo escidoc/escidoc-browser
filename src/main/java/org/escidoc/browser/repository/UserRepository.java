@@ -29,11 +29,26 @@
 package org.escidoc.browser.repository;
 
 import org.escidoc.browser.model.CurrentUser;
+import org.escidoc.browser.model.internal.UserProxy;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.aa.useraccount.Preference;
+import de.escidoc.core.resources.aa.useraccount.Preferences;
 
 public interface UserRepository {
 
     CurrentUser findCurrentUser() throws EscidocClientException;
+
+    void updatePassword(final String newPassword) throws EscidocClientException;
+
+    Preferences getUserPreferences() throws EscidocClientException;
+
+    Preference createUserPreference(Preference preference) throws EscidocClientException;
+
+    Preference updateUserPreference(Preference preference) throws EscidocClientException;
+
+    void updatePassword(UserProxy userProxy, String string) throws EscidocClientException;
+
+    void updateName(String string) throws EscidocClientException;
 
 }

@@ -34,7 +34,7 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.model.internal.UserProxy;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.helper.Util;
 
@@ -45,9 +45,10 @@ import de.escidoc.core.client.UserAccountHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.client.interfaces.UserAccountHandlerClientInterface;
-import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.aa.useraccount.UserAccount;
+import de.escidoc.core.resources.aa.useraccount.UserAccountProperties;
 import de.escidoc.core.resources.common.Relations;
+import de.escidoc.core.resources.common.TaskParam;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 
 public class UserAccountRepository implements Repository {
@@ -78,78 +79,7 @@ public class UserAccountRepository implements Repository {
     @Override
     public ResourceProxy findById(final String id) throws EscidocClientException {
         final UserAccount u = client.retrieve(id);
-        return new ResourceProxy() {
-
-            @Override
-            public ResourceType getType() {
-                throw new UnsupportedOperationException("not-yet-implemented.");
-            }
-
-            @Override
-            public String getName() {
-                return u.getXLinkTitle();
-            }
-
-            @Override
-            public String getId() {
-                return u.getObjid();
-            }
-
-            @Override
-            public String getVersionStatus() {
-                throw new UnsupportedOperationException("not-yet-implemented.");
-            }
-
-            @Override
-            public String getStatus() {
-                throw new UnsupportedOperationException("not-yet-implemented.");
-            }
-
-            @Override
-            public List<String> getRelations() {
-                throw new UnsupportedOperationException("not-yet-implemented.");
-            }
-
-            @Override
-            public String getModifier() {
-                throw new UnsupportedOperationException("not-yet-implemented.");
-            }
-
-            @Override
-            public String getModifiedOn() {
-                throw new UnsupportedOperationException("not-yet-implemented.");
-            }
-
-            @Override
-            public String getLockStatus() {
-                throw new UnsupportedOperationException("not-yet-implemented.");
-            }
-
-            @Override
-            public String getDescription() {
-                throw new UnsupportedOperationException("not-yet-implemented.");
-            }
-
-            @Override
-            public String getCreator() {
-                throw new UnsupportedOperationException("not-yet-implemented.");
-            }
-
-            @Override
-            public String getCreatedOn() {
-                throw new UnsupportedOperationException("not-yet-implemented.");
-            }
-
-            @Override
-            public Resource getContext() {
-                throw new UnsupportedOperationException("not-yet-implemented.");
-            }
-
-            @Override
-            public Resource getContentModel() {
-                throw new UnsupportedOperationException("not-yet-implemented.");
-            }
-        };
+        return new UserProxy(u);
     }
 
     @Override
@@ -170,5 +100,45 @@ public class UserAccountRepository implements Repository {
     @Override
     public void delete(String id) {
         throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    public void updateName(String newName) throws EscidocClientException {
+        UserAccount usr = client.retrieveCurrentUser();
+        UserAccountProperties prop = new UserAccountProperties();
+        prop = usr.getProperties();
+        prop.setName(newName);
+        usr.setProperties(prop);
+        client.update(usr);
+    }
+
+    public void updatePassword(final String newPassword) throws EscidocClientException {
+        UserAccount user = client.retrieveCurrentUser();
+        final TaskParam taskParam = new TaskParam();
+        taskParam.setLastModificationDate(user.getLastModificationDate());
+        taskParam.setPassword(newPassword);
+        client.updatePassword(user.getObjid(), taskParam);
+    }
+
+    // public Preferences getUserPreferences() throws EscidocClientException {
+    // return client.retrievePreferences(getCurrentUser());
+    // }
+    //
+    // public Preference createUserPreference(Preference preference) throws EscidocClientException {
+    // return client.createPreference(getCurrentUser().getObjid(), preference);
+    // }
+    //
+    // public Preference updateUserPreference(Preference preference) throws EscidocClientException {
+    // return client.updatePreference(getCurrentUser(), preference);
+    // }
+    //
+    // public void removeUserPreference(String preferenceName) throws EscidocClientException {
+    // client.deletePreference(getCurrentUser().getObjid(), preferenceName);
+    // }
+
+    public void updatePassword(UserProxy userProxy, String pw) throws EscidocClientException {
+        final TaskParam taskParam = new TaskParam();
+        taskParam.setLastModificationDate(userProxy.getResource().getLastModificationDate());
+        taskParam.setPassword(pw);
+        client.updatePassword(userProxy.getId(), taskParam);
     }
 }

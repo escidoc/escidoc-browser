@@ -14,15 +14,12 @@ import de.escidoc.core.resources.aa.useraccount.Preferences;
 
 public class UserProfileController extends Controller {
 
-    private Repositories repositories;
-
     private Router router;
 
     private UserRepositoryImpl userRep;
 
     public UserProfileController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
-        this.repositories = repositories;
         this.router = router;
         this.userRep = getUserRepository();
         createView();

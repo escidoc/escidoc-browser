@@ -28,15 +28,16 @@
  */
 package org.escidoc.browser.repository.internal;
 
+import com.google.common.base.Preconditions;
+
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.internal.GuestUser;
 import org.escidoc.browser.model.internal.LoggedInUser;
+import org.escidoc.browser.model.internal.UserProxy;
 import org.escidoc.browser.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
 
 import de.escidoc.core.client.UserAccountHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -111,6 +112,7 @@ public class UserRepositoryImpl implements UserRepository {
         client.update(usr);
     }
 
+    @Override
     public void updatePassword(final String newPassword) throws EscidocClientException {
         UserAccount user = client.retrieveCurrentUser();
         final TaskParam taskParam = new TaskParam();
@@ -119,20 +121,31 @@ public class UserRepositoryImpl implements UserRepository {
         client.updatePassword(user.getObjid(), taskParam);
     }
 
+    @Override
     public Preferences getUserPreferences() throws EscidocClientException {
         return client.retrievePreferences(getCurrentUser());
     }
 
+    @Override
     public Preference createUserPreference(Preference preference) throws EscidocClientException {
         return client.createPreference(getCurrentUser().getObjid(), preference);
     }
 
+    @Override
     public Preference updateUserPreference(Preference preference) throws EscidocClientException {
         return client.updatePreference(getCurrentUser(), preference);
     }
 
     public void removeUserPreference(String preferenceName) throws EscidocClientException {
         client.deletePreference(getCurrentUser().getObjid(), preferenceName);
+    }
+
+    @Override
+    public void updatePassword(UserProxy userProxy, String pw) throws EscidocClientException {
+        final TaskParam taskParam = new TaskParam();
+        taskParam.setLastModificationDate(userProxy.getResource().getLastModificationDate());
+        taskParam.setPassword(pw);
+        client.updatePassword(userProxy.getId(), taskParam);
     }
 
 }

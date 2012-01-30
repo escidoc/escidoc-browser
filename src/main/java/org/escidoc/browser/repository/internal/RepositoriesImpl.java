@@ -166,5 +166,4 @@ public class RepositoriesImpl implements Repositories {
     public OrganizationUnitRepository organization() {
         return orgUnitRepository;
     }
-
 }

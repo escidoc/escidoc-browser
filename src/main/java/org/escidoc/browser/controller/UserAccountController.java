@@ -1,6 +1,7 @@
 package org.escidoc.browser.controller;
 
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.internal.UserProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 
@@ -14,6 +15,6 @@ public class UserAccountController extends Controller {
 
     @Override
     public void createView() {
-        view = new UserAccountView(getRouter());
+        view = new UserAccountView(getRouter(), (UserProxy) getResourceProxy(), getRepositories().user());
     }
 }

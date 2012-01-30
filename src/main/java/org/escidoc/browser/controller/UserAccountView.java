@@ -3,13 +3,9 @@ package org.escidoc.browser.controller;
 import com.google.common.base.Preconditions;
 
 import com.vaadin.data.Validator.EmptyValueException;
-import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Accordion;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Form;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
@@ -17,27 +13,30 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
 
+import org.escidoc.browser.model.internal.UserProxy;
+import org.escidoc.browser.repository.internal.UserAccountRepository;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.View;
-import org.escidoc.browser.ui.view.helpers.UserPreferencesTable;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
-import de.escidoc.core.resources.aa.useraccount.Preferences;
-import de.escidoc.core.resources.aa.useraccount.UserAccount;
 
 @SuppressWarnings("serial")
 public class UserAccountView extends View {
 
     private Router router;
 
-    private UserProfileController controller;
+    private UserProxy userProxy;
 
-    private UserAccount currentUser;
+    private UserAccountRepository ur;
 
-    public UserAccountView(Router router) {
+    public UserAccountView(Router router, UserProxy userProxy, UserAccountRepository ur) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
+        Preconditions.checkNotNull(userProxy, "userProxy is null: %s", userProxy);
+
         this.router = router;
+        this.userProxy = userProxy;
+        this.ur = ur;
         init();
     }
 
@@ -94,15 +93,14 @@ public class UserAccountView extends View {
         vlAccCreateContext.setMargin(false);
         vlAccCreateContext.setSpacing(false);
 
-        // AddContext Form
-        // try {
-        // frmEditUser(vlAccCreateContext);
-        // }
-        // catch (EscidocClientException e) {
-        // router.getMainWindow().showNotification(ViewConstants.ERROR_CREATING_RESOURCE + e.getLocalizedMessage(),
-        // Window.Notification.TYPE_ERROR_MESSAGE);
-        // }
-        // accCreateContext.addTab(vlAccCreateContext, " ");
+        try {
+            frmEditUser(vlAccCreateContext);
+        }
+        catch (EscidocClientException e) {
+            router.getMainWindow().showNotification(ViewConstants.ERROR_CREATING_RESOURCE + e.getLocalizedMessage(),
+                Window.Notification.TYPE_ERROR_MESSAGE);
+        }
+        accCreateContext.addTab(vlAccCreateContext, " ");
 
         return accCreateContext;
     }
@@ -114,7 +112,7 @@ public class UserAccountView extends View {
         // Name
         final TextField txtLoginName = new TextField();
         txtLoginName.setCaption("Login Name");
-        // txtLoginName.setValue(currentUser.getLoginName());
+        txtLoginName.setValue(userProxy.getLoginName());
         txtLoginName.setEnabled(false);
         txtLoginName.setImmediate(false);
         txtLoginName.setWidth("-1px");
@@ -126,7 +124,7 @@ public class UserAccountView extends View {
         // Name
         final TextField txtNameContext = new TextField();
         txtNameContext.setCaption("Real Name");
-        // txtNameContext.setValue(currentUser.getRealName());
+        txtNameContext.setValue(userProxy.getName());
         txtNameContext.setImmediate(false);
         txtNameContext.setWidth("-1px");
         txtNameContext.setHeight("-1px");
@@ -149,8 +147,7 @@ public class UserAccountView extends View {
         txtPassword2.setHeight("-1px");
         frm.addField("txtPassword2", txtPassword2);
 
-        // btnAddContext
-        Button btnAddContext = new Button("Submit", new Button.ClickListener() {
+        Button submitButton = new Button("Submit", new Button.ClickListener() {
 
             @Override
             public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
@@ -165,11 +162,10 @@ public class UserAccountView extends View {
                         return;
                     }
                     if (txtPassword.getValue().toString() != "") {
-                        controller.updateProfile(txtNameContext.getValue().toString(), txtPassword
-                            .getValue().toString());
+                        ur.updatePassword(userProxy, txtPassword.getValue().toString());
                     }
                     else {
-                        controller.updateProfile(txtNameContext.getValue().toString());
+                        ur.updateName(txtNameContext.getValue().toString());
                     }
                     router.getMainWindow().showNotification("User updateds successfully ",
                         Window.Notification.TYPE_TRAY_NOTIFICATION);
@@ -184,12 +180,11 @@ public class UserAccountView extends View {
                         Window.Notification.TYPE_ERROR_MESSAGE);
                 }
             }
-
         });
 
-        btnAddContext.setWidth("-1px");
-        btnAddContext.setHeight("-1px");
-        frm.getLayout().addComponent(btnAddContext);
+        submitButton.setWidth("-1px");
+        submitButton.setHeight("-1px");
+        frm.getLayout().addComponent(submitButton);
 
         frm.getField("txtNameContext").setRequired(true);
         frm.getField("txtNameContext").setRequiredError("Name is missing");
@@ -203,66 +198,66 @@ public class UserAccountView extends View {
 
     private Panel buildPreferences() throws EscidocClientException {
         final Panel pnl = new Panel("Preferences");
-        Preferences preferences = controller.getUserPreferences();
-        final UserPreferencesTable userPrefTable = new UserPreferencesTable(preferences, controller);
-        pnl.addComponent(userPrefTable);
-
-        final Button addPreference = new Button();
-        addPreference.setDescription("Add new Preference");
-        addPreference.setIcon(new ThemeResource("images/assets/plus.png"));
-        addPreference.addListener(new ClickListener() {
-            @Override
-            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-                addPreference.setEnabled(false);
-                final HorizontalLayout hl = new HorizontalLayout();
-                final TextField key = new TextField();
-                key.setCaption("Name");
-                key.setImmediate(false);
-                key.setWidth("-1px");
-                key.setHeight("-1px");
-                key.setInvalidAllowed(false);
-                key.setRequired(true);
-
-                final TextField value = new TextField();
-                value.setCaption("Value");
-                value.setImmediate(false);
-                value.setWidth("-1px");
-                value.setHeight("-1px");
-                value.setInvalidAllowed(false);
-                value.setRequired(true);
-
-                final Button btnadd = new Button();
-                btnadd.setIcon(new ThemeResource("images/assets/plus.png"));
-                btnadd.addListener(new Button.ClickListener() {
-                    @Override
-                    public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-
-                        try {
-                            controller.createPreference(key.getValue().toString(), value.getValue().toString());
-                            router.getMainWindow().showNotification("Preference added successfully ",
-                                Window.Notification.TYPE_TRAY_NOTIFICATION);
-                            hl.removeAllComponents();
-                            addPreference.setEnabled(true);
-                            userPrefTable.createItem(userPrefTable.getTableContainer(), key.getValue().toString(), key
-                                .getValue().toString(), value.getValue().toString());
-                        }
-                        catch (EscidocClientException e) {
-                            router.getMainWindow().showNotification(
-                                ViewConstants.ERROR_CREATING_USER_PREFERENCE + e.getLocalizedMessage(),
-                                Window.Notification.TYPE_ERROR_MESSAGE);
-                        }
-                    }
-                });
-                hl.addComponent(key);
-                hl.addComponent(value);
-                hl.addComponent(btnadd);
-                hl.setComponentAlignment(btnadd, Alignment.BOTTOM_RIGHT);
-                pnl.addComponent(hl);
-            }
-
-        });
-
-        pnl.addComponent(addPreference);
+        // Preferences preferences = controller.getUserPreferences();
+        // final UserPreferencesTable userPrefTable = new UserPreferencesTable(preferences, controller);
+        // pnl.addComponent(userPrefTable);
+        //
+        // final Button addPreference = new Button();
+        // addPreference.setDescription("Add new Preference");
+        // addPreference.setIcon(new ThemeResource("images/assets/plus.png"));
+        // addPreference.addListener(new ClickListener() {
+        // @Override
+        // public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+        // addPreference.setEnabled(false);
+        // final HorizontalLayout hl = new HorizontalLayout();
+        // final TextField key = new TextField();
+        // key.setCaption("Name");
+        // key.setImmediate(false);
+        // key.setWidth("-1px");
+        // key.setHeight("-1px");
+        // key.setInvalidAllowed(false);
+        // key.setRequired(true);
+        //
+        // final TextField value = new TextField();
+        // value.setCaption("Value");
+        // value.setImmediate(false);
+        // value.setWidth("-1px");
+        // value.setHeight("-1px");
+        // value.setInvalidAllowed(false);
+        // value.setRequired(true);
+        //
+        // final Button btnadd = new Button();
+        // btnadd.setIcon(new ThemeResource("images/assets/plus.png"));
+        // btnadd.addListener(new Button.ClickListener() {
+        // @Override
+        // public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+        //
+        // try {
+        // controller.createPreference(key.getValue().toString(), value.getValue().toString());
+        // router.getMainWindow().showNotification("Preference added successfully ",
+        // Window.Notification.TYPE_TRAY_NOTIFICATION);
+        // hl.removeAllComponents();
+        // addPreference.setEnabled(true);
+        // userPrefTable.createItem(userPrefTable.getTableContainer(), key.getValue().toString(), key
+        // .getValue().toString(), value.getValue().toString());
+        // }
+        // catch (EscidocClientException e) {
+        // router.getMainWindow().showNotification(
+        // ViewConstants.ERROR_CREATING_USER_PREFERENCE + e.getLocalizedMessage(),
+        // Window.Notification.TYPE_ERROR_MESSAGE);
+        // }
+        // }
+        // });
+        // hl.addComponent(key);
+        // hl.addComponent(value);
+        // hl.addComponent(btnadd);
+        // hl.setComponentAlignment(btnadd, Alignment.BOTTOM_RIGHT);
+        // pnl.addComponent(hl);
+        // }
+        //
+        // });
+        //
+        // pnl.addComponent(addPreference);
         return pnl;
     }
 }

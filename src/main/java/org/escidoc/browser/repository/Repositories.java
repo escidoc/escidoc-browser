@@ -63,5 +63,4 @@ public interface Repositories {
     BulkRepository bulkTasks();
 
     OrganizationUnitRepository organization();
-
 }
