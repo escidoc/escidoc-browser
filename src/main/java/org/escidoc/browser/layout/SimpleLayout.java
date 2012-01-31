@@ -80,6 +80,50 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 @SuppressWarnings("serial")
 public class SimpleLayout extends LayoutDesign {
 
+    private final class OnTabChange implements SelectedTabChangeListener {
+        @Override
+        public void selectedTabChange(final SelectedTabChangeEvent event) {
+            Preconditions.checkNotNull(event, "event is null: %s", event);
+
+            final Object source = event.getSource();
+
+            Preconditions.checkNotNull(source, "source is null: %s", source);
+            if (!(source instanceof Accordion)) {
+                return;
+            }
+
+            if (isOrgUniTabSelected(source)) {
+                reloadOrgUnitTree(source);
+            }
+        }
+
+        private void reloadOrgUnitTree(final Object source) {
+            try {
+                reloadContent(source);
+            }
+            catch (final EscidocClientException e) {
+                LOG.error("Can not reload data source: " + e.getMessage(), e);
+            }
+        }
+
+        private boolean isOrgUniTabSelected(final Object source) {
+            return getSelectedTabCaption(source).equalsIgnoreCase(ViewConstants.ORG_UNITS)
+                && getTabContent(source) instanceof OrgUnitTreeView;
+        }
+
+        private void reloadContent(final Object source) throws EscidocClientException {
+            ((OrgUnitTreeView) getTabContent(source)).reload();
+        }
+
+        private Component getTabContent(final Object source) {
+            return ((Accordion) source).getSelectedTab();
+        }
+
+        private String getSelectedTabCaption(final Object source) {
+            return ((Accordion) source).getTab(getTabContent(source)).getCaption();
+        }
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger(SimpleLayout.class);
 
     private Resource NO_ICON;
@@ -352,69 +396,38 @@ public class SimpleLayout extends LayoutDesign {
     private Accordion buildAccordion() throws EscidocClientException, URISyntaxException {
         final Accordion accordion = new Accordion();
         accordion.setSizeFull();
-        accordion.addListener(new SelectedTabChangeListener() {
-
-            @Override
-            public void selectedTabChange(final SelectedTabChangeEvent event) {
-                Preconditions.checkNotNull(event, "event is null: %s", event);
-
-                final Object source = event.getSource();
-
-                Preconditions.checkNotNull(source, "source is null: %s", source);
-                if (!(source instanceof Accordion)) {
-                    return;
-                }
-
-                if (isOrgUniTabSelected(source)) {
-                    reloadOrgUnitTree(source);
-                }
-            }
-
-            private void reloadOrgUnitTree(final Object source) {
-                try {
-                    reloadContent(source);
-                }
-                catch (final EscidocClientException e) {
-                    LOG.error("Can not reload data source: " + e.getMessage(), e);
-                }
-            }
-
-            private boolean isOrgUniTabSelected(final Object source) {
-                return getSelectedTabCaption(source).equalsIgnoreCase(ViewConstants.ORG_UNITS)
-                    && getTabContent(source) instanceof OrgUnitTreeView;
-            }
-
-            private void reloadContent(final Object source) throws EscidocClientException {
-                ((OrgUnitTreeView) getTabContent(source)).reload();
-            }
-
-            private Component getTabContent(final Object source) {
-                return ((Accordion) source).getSelectedTab();
-            }
-
-            private String getSelectedTabCaption(final Object source) {
-                return ((Accordion) source).getTab(getTabContent(source)).getCaption();
-            }
-        });
+        accordion.addListener(new OnTabChange());
 
         addResourcesTab(accordion);
         addOrgUnitTab(accordion);
         addUserAccountsTab(accordion);
         addContentModelsTab(accordion);
         addToolsTab(accordion);
+
         return accordion;
     }
 
-    private void addContentModelsTab(Accordion accordion) {
-        final BaseNavigationTreeView list = treeBuilder.buildContentModelTree();
-        addFilter(accordion, ViewConstants.CONTENT_MODELS, list);
+    private void addUserAccountsTab(Accordion accordion) {
+        if (isSysAdmin()) {
+            accordion.addTab(buildListWithFilter(treeBuilder.buildUserAccountTree()), ViewConstants.USER_ACCOUNTS,
+                NO_ICON);
+        }
     }
 
-    private void addFilter(Accordion accordion, String name, final BaseNavigationTreeView list) {
-        // TODO refactor to a class
+    private void addContentModelsTab(Accordion accordion) {
+        accordion.addTab(buildListWithFilter(treeBuilder.buildContentModelTree()), ViewConstants.CONTENT_MODELS,
+            NO_ICON);
+    }
+
+    private VerticalLayout buildListWithFilter(final BaseNavigationTreeView list) {
         VerticalLayout vl = new VerticalLayout();
         vl.setMargin(false, false, false, true);
+        vl.addComponent(buildFilterField(list));
+        vl.addComponent(list);
+        return vl;
+    }
 
+    private TextField buildFilterField(final BaseNavigationTreeView list) {
         TextField tf = new TextField("");
         tf.setInputPrompt("Type something to filter the list");
         tf.setWidth("250px");
@@ -433,16 +446,7 @@ public class SimpleLayout extends LayoutDesign {
                 ds.addContainerFilter(filter);
             }
         });
-        vl.addComponent(tf);
-        vl.addComponent(list);
-        accordion.addTab(vl, name, NO_ICON);
-    }
-
-    private void addUserAccountsTab(Accordion accordion) {
-        if (isSysAdmin()) {
-            final BaseNavigationTreeView list = treeBuilder.buildUserAccountTree();
-            addFilter(accordion, ViewConstants.USER_ACCOUNTS, list);
-        }
+        return tf;
     }
 
     private boolean isSysAdmin() {
