@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.themes.BaseTheme;
@@ -22,15 +21,15 @@ import java.net.URISyntaxException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
-public class MetadataRecsOrgUnit {
+public class OrgUnitMetadataRecordsView {
 
-    private final static Logger LOG = LoggerFactory.getLogger(MetadataRecsOrgUnit.class);
+    private final static Logger LOG = LoggerFactory.getLogger(OrgUnitMetadataRecordsView.class);
 
     private OrgUnitProxy ou;
 
     private Repositories repositories;
 
-    public MetadataRecsOrgUnit(ResourceProxy resourceProxy, Router router) {
+    public OrgUnitMetadataRecordsView(ResourceProxy resourceProxy, Router router) {
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         ou = (OrgUnitProxy) resourceProxy;
         repositories = router.getRepositories();
@@ -48,28 +47,21 @@ public class MetadataRecsOrgUnit {
     }
 
     private Component buildMetaData() {
-        Panel pnl = new Panel();
-        pnl.setHeight("100%");
+        Panel panel = new Panel();
+        panel.setHeight("100%");
         if (hasAccess()) {
-            @SuppressWarnings("serial")
-            final Button btnAddNew = new Button("Add New MetaData", new Button.ClickListener() {
-
-                @Override
-                public void buttonClick(ClickEvent event) {
-                    throw new UnsupportedOperationException("not-yet-implemented.");
-                }
-            });
+            final Button btnAddNew = new Button(ViewConstants.ADD_NEW_META_DATA, new OnAddOrgUnitMetadata());
             btnAddNew.setStyleName(BaseTheme.BUTTON_LINK);
-            pnl.addComponent(btnAddNew);
+            panel.addComponent(btnAddNew);
         }
+
         // final MetadataRecords mdRecs = ou.getMedataRecords();
         // for (final MetadataRecord metadataRecord : mdRecs) {
         // buildMDButtons(btnaddContainer, metadataRecord);
         // }
         // pnl.addComponent(new Label("&nbsp;", Label.CONTENT_RAW));
         // pnl.addComponent(btnaddContainer);
-
-        return pnl;
+        return panel;
     }
 
     private boolean hasAccess() {

@@ -365,4 +365,6 @@ public class ViewConstants {
 
     public static final String CONTENT_MODELS = "Content Models";
 
+    public static final String ADD_NEW_META_DATA = "Add New MetaData";
+
 }

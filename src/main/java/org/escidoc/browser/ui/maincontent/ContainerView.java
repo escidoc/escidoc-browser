@@ -222,7 +222,7 @@ public class ContainerView extends View {
         vlRightPanel.setMargin(false);
 
         // metaDataRecsAcc
-        Accordion metaDataRecsAcc = new MetadataRecsContainer(resourceProxy, repositories, router, this).asAccord();
+        Accordion metaDataRecsAcc = new ContainerMetadataRecordsView(resourceProxy, repositories, router, this).asAccord();
         vlRightPanel.addComponent(metaDataRecsAcc);
         return vlRightPanel;
     }

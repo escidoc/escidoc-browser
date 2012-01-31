@@ -174,7 +174,7 @@ public class OrgUnitView extends View {
 
     private Accordion buildMetaDataRecsAcc() {
         // common part: create layout
-        return new MetadataRecsOrgUnit(resourceProxy, router).asAccord();
+        return new OrgUnitMetadataRecordsView(resourceProxy, router).asAccord();
     }
 
     private Panel buildResourcePropertiesPanel() {
