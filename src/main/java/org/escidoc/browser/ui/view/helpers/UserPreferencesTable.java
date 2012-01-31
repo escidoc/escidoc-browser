@@ -1,10 +1,10 @@
 package org.escidoc.browser.ui.view.helpers;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.util.HierarchicalContainer;
-
 import org.escidoc.browser.controller.UserProfileController;
 import org.escidoc.browser.ui.ViewConstants;
+
+import com.vaadin.data.Item;
+import com.vaadin.data.util.HierarchicalContainer;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.aa.useraccount.Preference;
@@ -41,6 +41,9 @@ public class UserPreferencesTable extends TableContainerVH {
                 item.getItemProperty(PROPERTY_VALUE).setValue(preference.getValue());
             }
         }
+        boolean[] ascending = { true, false };
+        Object[] propertyId = { PROPERTY_NAME, PROPERTY_VALUE };
+        tableContainer.sort(propertyId, ascending);
         return tableContainer;
     }
 
