@@ -140,47 +140,6 @@ ul.horizontal_list li {
 	text-decoration: none;
 }
 
-.v-menubar {
-	height: 28px;
-	background: #efefef repeat-x;
-	background-image:
-		url(/browser/VAADIN/themes/myTheme/images/assets/menubg.png);
-	/** sprite-ref: verticals; sprite-alignment: repeat */
-	text-shadow: ;
-	color: black;
-}
-
-.directmembers .v-tree-node {
-	background: #ffffff;
-	padding: 0 0;
-}
-
-.drophere{
-	background-image: url(/images/assets/background-drophere.jpg);
-		background: repeat-x; 
-}
-.v-table-drophere > div {
-   background: transparent;
-}
-.deleteTable .v-table-body{
-	background-image: url(images/assets/recyclebin.png);
-	background-repeat:no-repeat;
-}
-.v-table-body {
-	overflow: hidden !important;
-}
-
-.smallfont {
-	font-size: x-small;
-}
-
-.skybluetext {
-	color: #blue;
-}
-
-.v-tree-node-caption span {
-	white-space: normal;
-}
 
 .footer .v-button.v-button-link,.v-button.v-button-link:focus,.v-button.v-button-link:active,.v-button-link.v-pressed,.v-disabled.v-button.v-button-link,.v-button.v-button-link .v-button-wrap,.v-button.v-button-link:focus .v-button-wrap,.v-button.v-button-link:active .v-button-wrap,.v-button-link.v-pressed .v-button-wrap,.v-disabled.v-button.v-button-link .v-button-wrap
 	{
@@ -327,18 +286,6 @@ ul.horizontal_list li {
 	text-decoration: none;
 }
 
-.my-panel { /*
-	margin-top: 5px;
-	margin-right: 5px;
-	margin-left: 5px;
-	
-	padding-top:10px;
-	padding-right: 10px;
-	padding-left: 10px;
-	*/
-	
-}
-
 .grey-label {
 	padding-left: 5px;
 	border-bottom: 1px solid black;
@@ -363,7 +310,6 @@ ul.horizontal_list li {
 	filter: alpha(opacity = 50);
 	-ms-filter: alpha(opacity = 50);
 	background-repeat: no-repeat;
-	/* thanks to Marthin for pointing this out */
 }
 
 .permanentLink {
@@ -379,4 +325,49 @@ ul.horizontal_list li {
 }
 .userformlblLoginpadding{
 	padding-left:10px;
+}
+
+
+
+
+.v-menubar {
+	height: 28px;
+	background: #efefef repeat-x;
+	background-image:
+		url(/browser/VAADIN/themes/myTheme/images/assets/menubg.png);
+	/** sprite-ref: verticals; sprite-alignment: repeat */
+	text-shadow: ;
+	color: black;
+}
+
+.directmembers .v-tree-node {
+	background: #ffffff;
+	padding: 0 0;
+}
+
+.drophere{
+	background-image: url(/images/assets/background-drophere.jpg);
+		background: repeat-x; 
+}
+.v-table-drophere > div {
+   background: transparent;
+}
+.deleteTable .v-table-body{
+	background-image: url(images/assets/recyclebin.png);
+	background-repeat:no-repeat;
+}
+.deleteTable .v-table-body {
+	overflow: hidden !important;
+}
+
+.smallfont {
+	font-size: x-small;
+}
+
+.skybluetext {
+	color: #blue;
+}
+
+.v-tree-node-caption span {
+	white-space: normal;
 }
