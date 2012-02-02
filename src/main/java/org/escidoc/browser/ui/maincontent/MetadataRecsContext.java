@@ -86,8 +86,8 @@ class MetadataRecsContext {
     private void addComponentAsTabs(final Accordion metadataRecs) {
         metadataRecs.addTab(buildOrganizationUnit(), ViewConstants.ORGANIZATIONAL_UNIT, null);
         metadataRecs.addTab(buildAdminDescription(), ViewConstants.ADMIN_DESCRIPTION, null);
-        metadataRecs.addTab(buildRelations(), ViewConstants.RELATIONS, null);
-        metadataRecs.addTab(buildResources(), ViewConstants.ADDITIONAL_RESOURCES, null);
+        // metadataRecs.addTab(buildRelations(), ViewConstants.RELATIONS, null);
+        // metadataRecs.addTab(buildResources(), ViewConstants.ADDITIONAL_RESOURCES, null);
     }
 
     private Panel buildResources() {
