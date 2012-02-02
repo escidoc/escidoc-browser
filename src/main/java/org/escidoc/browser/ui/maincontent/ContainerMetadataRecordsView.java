@@ -48,7 +48,7 @@ import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.listeners.AddMetaDataFileContainerBehaviour;
+import org.escidoc.browser.ui.listeners.OnAddContainerMetadata;
 import org.escidoc.browser.ui.listeners.EditMetaDataFileContainerBehaviour;
 import org.escidoc.browser.ui.listeners.RelationsClickListener;
 import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
@@ -77,20 +77,22 @@ public class ContainerMetadataRecordsView {
 
     private final Router router;
 
+    private VerticalLayout btnaddContainer = new VerticalLayout();
+
     private Accordion metadataRecs;
 
     private Panel pnlmdRec;
-
-    private VerticalLayout btnaddContainer = new VerticalLayout();
 
     private ContainerView containerView;
 
     public ContainerMetadataRecordsView(final ResourceProxy resourceProxy, final Repositories repositories,
         final Router router, ContainerView containerView) {
-        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
 
+        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(router, "mainSite is null: %s", router);
+        Preconditions.checkNotNull(containerView, "containerView is null: %s", containerView);
+
         this.router = router;
         this.resourceProxy = (ContainerProxy) resourceProxy;
         this.mainWindow = router.getMainWindow();
@@ -105,13 +107,13 @@ public class ContainerMetadataRecordsView {
         metadataRecs.setSizeFull();
 
         pnlmdRec = lblMetadaRecs();
-        final Panel additionalResourcesPanel = lblAddtionalResources();
-
-        // Add the components as tabs in the Accordion.
-        metadataRecs.addTab(pnlmdRec, "Metadata", null);
-        // metadataRecs.addTab(l2, "Relations", null);
-        metadataRecs.addTab(additionalResourcesPanel, "Additional Resources", null);
+        addComponentsAsTabs(lblAddtionalResources());
         return metadataRecs;
+    }
+
+    private void addComponentsAsTabs(final Panel additionalResourcesPanel) {
+        metadataRecs.addTab(pnlmdRec, "Metadata", null);
+        metadataRecs.addTab(additionalResourcesPanel, "Additional Resources", null);
     }
 
     private Panel lblAddtionalResources() {
@@ -139,7 +141,7 @@ public class ContainerMetadataRecordsView {
         panel.setHeight("100%");
         if (hasAccess()) {
             final Button btnAddNew =
-                new Button(ViewConstants.ADD_NEW_META_DATA, new AddMetaDataFileContainerBehaviour(mainWindow,
+                new Button(ViewConstants.ADD_NEW_META_DATA, new OnAddContainerMetadata(mainWindow,
                     repositories, resourceProxy, this));
             btnAddNew.setStyleName(BaseTheme.BUTTON_LINK);
             panel.addComponent(btnAddNew);

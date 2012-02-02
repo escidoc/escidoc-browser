@@ -5,6 +5,8 @@ import org.escidoc.browser.model.ResourceType;
 
 import java.util.List;
 
+import de.escidoc.core.resources.common.MetadataRecords;
+
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.oum.OrganizationalUnit;
 
@@ -84,6 +86,10 @@ public class OrgUnitProxy implements ResourceProxy {
     @Override
     public Resource getContentModel() {
         throw new UnsupportedOperationException("not-yet-implemented.");
+    }
+
+    public MetadataRecords getMedataRecords() {
+        return ou.getMetadataRecords();
     }
 
 }

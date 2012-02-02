@@ -367,4 +367,8 @@ public class ViewConstants {
 
     public static final String ADD_NEW_META_DATA = "Add New MetaData";
 
+    public static final String UPLOAD_A_WELLFORMED_XML_FILE_TO_CREATE_METADATA = "Upload a wellformed XML file to create metadata!";
+
+    public static final String ADD_ORGANIZATIONAL_UNIT_S_METADATA = "Add Organizational Unit's Metadata";
+
 }

@@ -46,7 +46,10 @@ import de.escidoc.core.client.OrganizationalUnitHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.client.interfaces.OrganizationalUnitHandlerClientInterface;
+import de.escidoc.core.resources.common.MetadataRecord;
+import de.escidoc.core.resources.common.MetadataRecords;
 import de.escidoc.core.resources.common.Relations;
+import de.escidoc.core.resources.common.TaskParam;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.oum.OrganizationalUnit;
 import gov.loc.www.zing.srw.SearchRetrieveRequestType;
@@ -127,5 +130,26 @@ public class OrganizationUnitRepository implements Repository {
     public OrgUnitModel create(final OrganizationalUnit ou) throws EscidocClientException {
         final OrganizationalUnit createdOrgUnit = client.create(ou);
         return new OrgUnitModel(createdOrgUnit);
+    }
+
+    public void addMetaData(ResourceProxy ou, MetadataRecord metadataRecord) throws EscidocClientException {
+        final TaskParam taskParam = new TaskParam();
+        OrganizationalUnit orgUnit = client.retrieve(ou.getId());
+        taskParam.setLastModificationDate(orgUnit.getLastModificationDate());
+        taskParam.setComment("Adding a new MetaData");
+        final MetadataRecords list = orgUnit.getMetadataRecords();
+        list.add(metadataRecord);
+        client.update(orgUnit);
+    }
+
+    public void updateMetaData(OrgUnitProxy ou, MetadataRecord metadataRecord) throws EscidocClientException {
+        OrganizationalUnit orgUnit = client.retrieve(ou.getId());
+
+        final MetadataRecords list = orgUnit.getMetadataRecords();
+        list.del(metadataRecord.getName());
+        list.add(metadataRecord);
+        orgUnit.setMetadataRecords(list);
+
+        client.update(orgUnit);
     }
 }

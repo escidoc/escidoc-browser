@@ -174,7 +174,7 @@ public class OrgUnitView extends View {
 
     private Accordion buildMetaDataRecsAcc() {
         // common part: create layout
-        return new OrgUnitMetadataRecordsView(resourceProxy, router).asAccord();
+        return new OrgUnitMetadataRecordsView(resourceProxy, router, this).asAccord();
     }
 
     private Panel buildResourcePropertiesPanel() {
@@ -309,6 +309,10 @@ public class OrgUnitView extends View {
             return false;
         }
         return true;
+    }
+
+    public void refreshView() {
+        // not yet implemented.
     }
 
 }
