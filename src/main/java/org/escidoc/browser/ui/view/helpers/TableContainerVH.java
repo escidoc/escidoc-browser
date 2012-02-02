@@ -1,7 +1,8 @@
 package org.escidoc.browser.ui.view.helpers;
 
+import org.escidoc.browser.ui.ViewConstants;
+
 import com.vaadin.data.Item;
-import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.event.Action;
 import com.vaadin.ui.Button;
@@ -12,10 +13,6 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.CellStyleGenerator;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-
-import org.escidoc.browser.ui.ViewConstants;
-
-import java.util.Set;
 
 /**
  * This is a table container. <br >
@@ -39,8 +36,6 @@ public abstract class TableContainerVH extends VerticalLayout {
 
     public TableContainerVH() {
         addComponent(table);
-        final Label selected = new Label("No selection");
-        addComponent(selected);
         initializeTable();
 
         // Actions (a.k.a context menu)
@@ -68,23 +63,6 @@ public abstract class TableContainerVH extends VerticalLayout {
                 return null;
             }
         });
-
-        // listen for valueChange, a.k.a 'select' and update the label
-        table.addListener(new Table.ValueChangeListener() {
-            @Override
-            public void valueChange(ValueChangeEvent event) {
-                // in multiselect mode, a Set of itemIds is returned,
-                // in singleselect mode the itemId is returned directly
-                Set<?> value = (Set<?>) event.getProperty().getValue();
-                if (null == value || value.size() == 0) {
-                    selected.setValue("No selection");
-                }
-                else {
-                    selected.setValue("Selected: " + table.getValue());
-                }
-            }
-        });
-
     }
 
     /**
