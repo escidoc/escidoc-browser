@@ -212,7 +212,7 @@ public class UserAccountView extends View {
     private Component buildAttributesView() throws EscidocClientException {
         final Panel pnl = new Panel("Attributes");
         Attributes attributes = ur.getAttributes(userProxy);
-        final UserAccountAttributes userPrefTable = new UserAccountAttributes(attributes, ur, uac);
+        final UserAccountAttributes userPrefTable = new UserAccountAttributes(userProxy, attributes, ur, uac);
         pnl.addComponent(userPrefTable);
 
         final Button addPreference = new Button();
@@ -278,7 +278,7 @@ public class UserAccountView extends View {
     private Panel buildPreferencesView() throws EscidocClientException {
         final Panel pnl = new Panel("Preferences");
         Preferences preferences = ur.getPreferences(userProxy);
-        final UserAccountPreferences userPrefTable = new UserAccountPreferences(preferences, ur, uac);
+        final UserAccountPreferences userPrefTable = new UserAccountPreferences(userProxy, preferences, ur, uac);
         pnl.addComponent(userPrefTable);
 
         final Button addPreference = new Button();

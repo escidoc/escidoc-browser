@@ -146,6 +146,9 @@ public class UserAccountRepository implements Repository {
     }
 
     public void removePreference(UserProxy userProxy, String preferenceName) throws EscidocClientException {
+        Preconditions.checkNotNull(userProxy, "userProxy is null: %s", userProxy);
+        Preconditions.checkNotNull(preferenceName, "preferenceName is null: %s", preferenceName);
+
         client.deletePreference(userProxy.getId(), preferenceName);
     }
 
