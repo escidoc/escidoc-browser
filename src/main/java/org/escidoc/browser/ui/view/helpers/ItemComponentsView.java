@@ -14,6 +14,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
+import com.vaadin.ui.themes.Reindeer;
 
 import de.escidoc.core.resources.om.item.component.Component;
 import de.escidoc.core.resources.om.item.component.Components;
@@ -50,6 +51,7 @@ public class ItemComponentsView extends TableContainerVH {
         this.mainWindow = mainWindow;
         table.setContainerDataSource(populateContainerTable());
         table.setHeight("100%");
+        table.setStyleName(Reindeer.TABLE_BORDERLESS);
     }
 
     @Override
