@@ -32,6 +32,7 @@ import java.io.File;
 import java.net.URISyntaxException;
 
 import org.escidoc.browser.AppConstants;
+import org.escidoc.browser.controller.ItemController;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.internal.ItemProxyImpl;
@@ -219,7 +220,7 @@ public class ItemContent extends VerticalLayout {
         // }
         // table.setColumnWidth("Type", 20);
         // table.setColumnWidth("Link", 20);
-        table = new ItemComponentsView(itemProxy.getElements(), controller);
+        table = new ItemComponentsView(itemProxy.getElements(), controller, serviceLocation, mainWindow);
         return table;
     }
 
