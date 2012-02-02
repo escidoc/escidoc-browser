@@ -39,6 +39,7 @@ import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.dnd.DragAndDropFileUpload;
+import org.escidoc.browser.ui.view.helpers.ItemComponentsView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +50,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
@@ -73,19 +73,23 @@ public class ItemContent extends VerticalLayout {
 
     private ItemProxy itemProxy;
 
-    private Table table;
+    private ItemComponentsView table;
+
+    private ItemController controller;
 
     public ItemContent(final Repositories repositories, final ItemProxyImpl itemProxy,
-        final EscidocServiceLocation serviceLocation, final Window mainWindow) {
+        final EscidocServiceLocation serviceLocation, final Window mainWindow, ItemController controller) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(itemProxy, "resourceProxy is null.");
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null.");
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
+        Preconditions.checkNotNull(controller, "controller is null: %s", controller);
 
         this.repositories = repositories;
         this.itemProxy = itemProxy;
         this.serviceLocation = serviceLocation;
         this.mainWindow = mainWindow;
+        this.controller = controller;
         initView();
 
     }
@@ -161,12 +165,10 @@ public class ItemContent extends VerticalLayout {
 
     private Label createLabelForMetadata(final Component comp) {
         String mdrecords = "";
-        if (comp.getMetadataRecords() != null) {
-            for (MetadataRecord metadataRecord : comp.getMetadataRecords()) {
-                mdrecords +=
-                    "<a href=\"" + serviceLocation.getEscidocUri() + metadataRecord.getXLinkHref()
-                        + "\" target =\"_blank\">" + metadataRecord.getName() + "</a><br />";
-            }
+        for (MetadataRecord metadataRecord : comp.getMetadataRecords()) {
+            mdrecords +=
+                "<a href=\"" + serviceLocation.getEscidocUri() + metadataRecord.getXLinkHref()
+                    + "\" target =\"_blank\">" + metadataRecord.getName() + "</a><br />";
         }
         final Label labelMetadata =
             new Label("<strong>" + comp.getContent().getXLinkTitle() + "</strong>" + "<br />"
@@ -201,21 +203,23 @@ public class ItemContent extends VerticalLayout {
         return lastOne;
     }
 
-    private Table buildTable() {
-        table = new Table();
-        table.setPageLength(0);
-        table.setWidth("100%");
-        table.setStyleName("drophere");
-        table.addContainerProperty("Type", Embedded.class, null);
-        table.addContainerProperty("Meta", Label.class, null);
-        table.addContainerProperty("Link", Button.class, null);
-        int rowIndex = 0;
-        for (final Component comp : itemProxy.getElements()) {
-            table.addItem(new Object[] { createEmbeddedImage(comp), createLabelForMetadata(comp),
-                createDownloadLink(comp) }, Integer.valueOf(rowIndex++));
-        }
-        table.setColumnWidth("Type", 20);
-        table.setColumnWidth("Link", 20);
+    private ItemComponentsView buildTable() {
+        // table = new Table();
+        // table.setPageLength(0);
+        // table.setWidth("100%");
+        // table.setStyleName("drophere");
+        // table.addContainerProperty("Type", Embedded.class, null);
+        // table.addContainerProperty("Meta", Label.class, null);
+        // table.addContainerProperty("Link", Button.class, null);
+        // int rowIndex = 0;
+        // for (final Component comp : itemProxy.getElements()) {
+        // table.addItem(new Object[] { createEmbeddedImage(comp),
+        // createLabelForMetadata(comp), createDownloadLink(comp) },
+        // Integer.valueOf(rowIndex++));
+        // }
+        // table.setColumnWidth("Type", 20);
+        // table.setColumnWidth("Link", 20);
+        table = new ItemComponentsView(itemProxy.getElements(), controller);
         return table;
     }
 
