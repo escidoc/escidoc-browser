@@ -28,27 +28,6 @@
  */
 package org.escidoc.browser.ui.listeners;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.MetadataRecs;
-import org.escidoc.browser.ui.maincontent.XmlUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
 import com.vaadin.terminal.UserError;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -65,13 +44,40 @@ import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Window;
 
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.maincontent.ContainerMetadataRecordsView;
+import org.escidoc.browser.ui.maincontent.XmlUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.om.container.Container;
 
 @SuppressWarnings("serial")
-public class AddMetaDataFileContainerBehaviour implements ClickListener {
-    private static final Logger LOG = LoggerFactory.getLogger(AddMetaDataFileContainerBehaviour.class);
+public class OnAddContainerMetadata implements ClickListener {
+
+    private static final Logger LOG = LoggerFactory.getLogger(OnAddContainerMetadata.class);
+
+    private final HorizontalLayout progressLayout = new HorizontalLayout();
+
+    private final Label status = new Label(ViewConstants.UPLOAD_A_WELLFORMED_XML_FILE_TO_CREATE_METADATA);
+
+    private final ProgressIndicator pi = new ProgressIndicator();
 
     private final ResourceProxy resourceProxy;
 
@@ -79,30 +85,22 @@ public class AddMetaDataFileContainerBehaviour implements ClickListener {
 
     private MetadataFileReceiver receiver;
 
-    private final HorizontalLayout progressLayout = new HorizontalLayout();
-
     private Upload upload;
-
-    private final Label status = new Label("Upload a wellformed XML file to create metadata!");
-
-    private final ProgressIndicator pi = new ProgressIndicator();
 
     private HorizontalLayout hl;
 
     private final Repositories repositories;
 
-    private Element metadataContent;
-
     private TextField mdName;
 
-    private final MetadataRecs metadataRecs;
+    private final ContainerMetadataRecordsView containerMetadataRecordsView;
 
-    public AddMetaDataFileContainerBehaviour(final Window mainWindow, final Repositories repositories,
-        final ResourceProxy resourceProxy, final MetadataRecs metadataRecs) {
+    public OnAddContainerMetadata(final Window mainWindow, final Repositories repositories,
+        final ResourceProxy resourceProxy, final ContainerMetadataRecordsView containerMetadataRecordsView) {
         this.mainWindow = mainWindow;
         this.repositories = repositories;
         this.resourceProxy = resourceProxy;
-        this.metadataRecs = metadataRecs;
+        this.containerMetadataRecordsView = containerMetadataRecordsView;
     }
 
     @Override
@@ -159,7 +157,6 @@ public class AddMetaDataFileContainerBehaviour implements ClickListener {
                 else {
                     status.setValue(ViewConstants.XML_IS_NOT_WELL_FORMED);
                     hl.setVisible(false);
-                    metadataContent = null;
                 }
             }
         });
@@ -222,7 +219,7 @@ public class AddMetaDataFileContainerBehaviour implements ClickListener {
                             container = repositories.container().findContainerById(resourceProxy.getId());
                             metadataRecord.setContent(getMetadataContent());
                             repositories.container().addMetaData(metadataRecord, container);
-                            metadataRecs.addButtons(metadataRecord);
+                            containerMetadataRecordsView.addButtons(metadataRecord);
                             upload.setEnabled(true);
                             subwindow.getParent().removeWindow(subwindow);
                         }
@@ -280,36 +277,4 @@ public class AddMetaDataFileContainerBehaviour implements ClickListener {
         mainWindow.addWindow(subwindow);
 
     }
-
-    /**
-     * checking if the uploaded file contains a valid XML string
-     * 
-     * @param xml
-     * @return boolean
-     */
-    private boolean isValidXml(final String xml) {
-        final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder;
-
-        try {
-            builder = factory.newDocumentBuilder();
-            final InputSource is = new InputSource(new StringReader(xml));
-            Document d;
-            try {
-                d = builder.parse(is);
-                metadataContent = d.getDocumentElement();
-                return true;
-            }
-            catch (final SAXException e) {
-                return false;
-            }
-            catch (final IOException e) {
-                return false;
-            }
-        }
-        catch (final ParserConfigurationException e) {
-            return false;
-        }
-    }
-
 }

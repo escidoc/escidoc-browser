@@ -1,32 +1,6 @@
-/**
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License, Version 1.0 only
- * (the "License").  You may not use this file except in compliance
- * with the License.
- *
- * You can obtain a copy of the license at license/ESCIDOC.LICENSE
- * or https://www.escidoc.org/license/ESCIDOC.LICENSE .
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at license/ESCIDOC.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- *
- *
- *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
- * fuer wissenschaftlich-technische Information mbH and Max-Planck-
- * Gesellschaft zur Foerderung der Wissenschaft e.V.
- * All rights reserved.  Use is subject to license terms.
- */
-package org.escidoc.browser.ui.listeners;
+package org.escidoc.browser.ui.maincontent;
+
+import com.google.common.base.Preconditions;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -42,73 +16,63 @@ import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Window;
 
-import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.internal.OrgUnitProxy;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.ContainerView;
+import org.escidoc.browser.ui.listeners.MetadataFileReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-import java.io.IOException;
-import java.io.StringReader;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
-import de.escidoc.core.resources.om.container.Container;
 
 @SuppressWarnings("serial")
-public class EditMetaDataFileContainerBehaviour implements ClickListener {
+public class OnEditOrgUnitMetadata implements ClickListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(EditMetaDataFileContainerBehaviour.class);
-
-    private MetadataFileReceiver receiver;
+    private final static Logger LOG = LoggerFactory.getLogger(OnEditOrgUnitMetadata.class);
 
     private final HorizontalLayout progressLayout = new HorizontalLayout();
-
-    private Upload upload;
-
-    private Label status;
 
     private final ProgressIndicator pi = new ProgressIndicator();
 
     private final MetadataRecord metadataRecord;
 
-    private final Window mainWindow;
-
     private final Repositories repositories;
+
+    private final OrgUnitProxy resourceProxy;
+
+    private MetadataFileReceiver receiver;
+
+    private Upload upload;
+
+    private Label status;
+
+    private Window mainWindow;
 
     private HorizontalLayout hl;
 
-    private final ResourceProxy resourceProxy;
-
     private Element metadataContent;
 
-    private ContainerView containerView;
+    private OrgUnitView view;
 
-    public EditMetaDataFileContainerBehaviour(final MetadataRecord metadataRecord, final Router router,
-        final Repositories repositories, final ResourceProxy resourceProxy, ContainerView containerView) {
+    public OnEditOrgUnitMetadata(MetadataRecord metadataRecord, Router router, Repositories repositories,
+        OrgUnitProxy ou, OrgUnitView view) {
+        Preconditions.checkNotNull(metadataRecord, "metadataRecord is null: %s", metadataRecord);
+        Preconditions.checkNotNull(router, "router is null: %s", router);
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        Preconditions.checkNotNull(ou, "ou is null: %s", ou);
+        Preconditions.checkNotNull(view, "view is null: %s", view);
         this.metadataRecord = metadataRecord;
         this.mainWindow = router.getMainWindow();
         this.repositories = repositories;
-        this.resourceProxy = resourceProxy;
-        this.containerView = containerView;
+        this.resourceProxy = ou;
+        this.view = view;
     }
 
     @Override
-    public void buttonClick(final ClickEvent event) {
-        showWindow();
-    }
-
-    private void showWindow() {
+    public void buttonClick(ClickEvent event) {
         final Window subwindow = new Window(ViewConstants.EDIT_METADATA);
         subwindow.setWidth("600px");
         subwindow.setModal(true);
@@ -146,7 +110,7 @@ public class EditMetaDataFileContainerBehaviour implements ClickListener {
             public void uploadSucceeded(final SucceededEvent event) {
                 // This method gets called when the upload finished successfully
                 status.setValue("Uploading file \"" + event.getFilename() + "\" succeeded");
-                if (isWellFormed(receiver.getFileContent())) {
+                if (XmlUtil.isWellFormed(receiver.getFileContent())) {
                     status.setValue(ViewConstants.XML_IS_WELL_FORMED);
                     hl.setVisible(true);
                     upload.setEnabled(false);
@@ -177,27 +141,28 @@ public class EditMetaDataFileContainerBehaviour implements ClickListener {
             }
         });
 
-        final Button btnAdd = new Button("Save", new Button.ClickListener() {
-            Container container;
+        final Button saveBtn = new Button("Save", new Button.ClickListener() {
 
             @Override
             public void buttonClick(final ClickEvent event) {
                 try {
-                    container = repositories.container().findContainerById(resourceProxy.getId());
                     metadataRecord.setContent(metadataContent);
-                    repositories.container().updateMetaData(metadataRecord, container);
-                    containerView.refreshView();
+                    repositories.organization().updateMetaData(resourceProxy, metadataRecord);
+                    // TODO is it needed?
+                    view.refreshView();
                     status.setValue("");
                     upload.setEnabled(true);
                 }
                 catch (final EscidocClientException e) {
-                    LOG.debug(e.getLocalizedMessage());
+                    LOG.error(e.getMessage());
+                    mainWindow.showNotification(e.getMessage());
                 }
                 subwindow.getParent().removeWindow(subwindow);
             }
         });
 
-        final Button cnclAdd = new Button("Cancel", new Button.ClickListener() {
+        final Button cancelBtn = new Button("Cancel", new Button.ClickListener() {
+
             @Override
             public void buttonClick(final ClickEvent event) {
                 subwindow.getParent().removeWindow(subwindow);
@@ -205,8 +170,8 @@ public class EditMetaDataFileContainerBehaviour implements ClickListener {
         });
         hl = new HorizontalLayout();
         hl.setVisible(false);
-        hl.addComponent(btnAdd);
-        hl.addComponent(cnclAdd);
+        hl.addComponent(saveBtn);
+        hl.addComponent(cancelBtn);
 
         subwindow.addComponent(status);
         subwindow.addComponent(upload);
@@ -215,34 +180,4 @@ public class EditMetaDataFileContainerBehaviour implements ClickListener {
         mainWindow.addWindow(subwindow);
     }
 
-    /**
-     * checking if the uploaded file contains a valid XML string
-     * 
-     * @param xml
-     * @return boolean
-     */
-    private boolean isWellFormed(final String xml) {
-        final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder;
-
-        try {
-            builder = factory.newDocumentBuilder();
-            final InputSource is = new InputSource(new StringReader(xml));
-            Document d;
-            try {
-                d = builder.parse(is);
-                metadataContent = d.getDocumentElement();
-                return true;
-            }
-            catch (final SAXException e) {
-                return false;
-            }
-            catch (final IOException e) {
-                return false;
-            }
-        }
-        catch (final ParserConfigurationException e) {
-            return false;
-        }
-    }
 }

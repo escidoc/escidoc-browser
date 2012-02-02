@@ -39,6 +39,7 @@ public class UserProfileController extends Controller {
     @Override
     public void createView() {
         view = new UserProfileView(router, this, getCurrentUser());
+        // view = new TestView();
     }
 
     public void updateProfile(String name, String password) throws EscidocClientException {

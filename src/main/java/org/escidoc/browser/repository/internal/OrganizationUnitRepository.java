@@ -33,7 +33,6 @@ import com.google.common.base.Preconditions;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.internal.OrgUnitModel;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.util.Utils;
@@ -47,8 +46,10 @@ import de.escidoc.core.client.OrganizationalUnitHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.client.interfaces.OrganizationalUnitHandlerClientInterface;
-import de.escidoc.core.resources.Resource;
+import de.escidoc.core.resources.common.MetadataRecord;
+import de.escidoc.core.resources.common.MetadataRecords;
 import de.escidoc.core.resources.common.Relations;
+import de.escidoc.core.resources.common.TaskParam;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.oum.OrganizationalUnit;
 import gov.loc.www.zing.srw.SearchRetrieveRequestType;
@@ -103,81 +104,7 @@ public class OrganizationUnitRepository implements Repository {
 
     @Override
     public ResourceProxy findById(final String id) throws EscidocClientException {
-
-        final OrganizationalUnit o = client.retrieve(id);
-
-        return new ResourceProxy() {
-
-            @Override
-            public ResourceType getType() {
-                return ResourceType.ORG_UNIT;
-            }
-
-            @Override
-            public String getName() {
-                return o.getXLinkTitle();
-            }
-
-            @Override
-            public String getId() {
-                return o.getObjid();
-            }
-
-            @Override
-            public String getVersionStatus() {
-                throw new UnsupportedOperationException("not-yet-implemented.");
-            }
-
-            @Override
-            public String getStatus() {
-                return o.getProperties().getPublicStatus().toString();
-            }
-
-            @Override
-            public List<String> getRelations() {
-                throw new UnsupportedOperationException("not-yet-implemented.");
-            }
-
-            @Override
-            public String getModifier() {
-                return o.getProperties().getModifiedBy().getXLinkTitle();
-            }
-
-            @Override
-            public String getModifiedOn() {
-                return o.getLastModificationDate().toString("d.M.y, H:m");
-            }
-
-            @Override
-            public String getLockStatus() {
-                throw new UnsupportedOperationException("not-yet-implemented.");
-            }
-
-            @Override
-            public String getDescription() {
-                throw new UnsupportedOperationException("not-yet-implemented.");
-            }
-
-            @Override
-            public String getCreator() {
-                return o.getProperties().getCreatedBy().getXLinkTitle();
-            }
-
-            @Override
-            public String getCreatedOn() {
-                return o.getProperties().getCreationDate().toString("d.M.y, H:m");
-            }
-
-            @Override
-            public Resource getContext() {
-                throw new UnsupportedOperationException("not-yet-implemented.");
-            }
-
-            @Override
-            public Resource getContentModel() {
-                throw new UnsupportedOperationException("not-yet-implemented.");
-            }
-        };
+        return new OrgUnitProxy(client.retrieve(id));
     }
 
     @Override
@@ -203,5 +130,26 @@ public class OrganizationUnitRepository implements Repository {
     public OrgUnitModel create(final OrganizationalUnit ou) throws EscidocClientException {
         final OrganizationalUnit createdOrgUnit = client.create(ou);
         return new OrgUnitModel(createdOrgUnit);
+    }
+
+    public void addMetaData(ResourceProxy ou, MetadataRecord metadataRecord) throws EscidocClientException {
+        final TaskParam taskParam = new TaskParam();
+        OrganizationalUnit orgUnit = client.retrieve(ou.getId());
+        taskParam.setLastModificationDate(orgUnit.getLastModificationDate());
+        taskParam.setComment("Adding a new MetaData");
+        final MetadataRecords list = orgUnit.getMetadataRecords();
+        list.add(metadataRecord);
+        client.update(orgUnit);
+    }
+
+    public void updateMetaData(OrgUnitProxy ou, MetadataRecord metadataRecord) throws EscidocClientException {
+        OrganizationalUnit orgUnit = client.retrieve(ou.getId());
+
+        final MetadataRecords list = orgUnit.getMetadataRecords();
+        list.del(metadataRecord.getName());
+        list.add(metadataRecord);
+        orgUnit.setMetadataRecords(list);
+
+        client.update(orgUnit);
     }
 }
