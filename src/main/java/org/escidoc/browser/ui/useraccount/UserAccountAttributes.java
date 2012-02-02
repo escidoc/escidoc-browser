@@ -15,9 +15,8 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.aa.useraccount.Attribute;
 import de.escidoc.core.resources.aa.useraccount.Attributes;
 
-public class UserAccountAttributes
-
-extends TableContainerVH {
+@SuppressWarnings("serial")
+public class UserAccountAttributes extends TableContainerVH {
 
     private UserAccountRepository repository;
 
@@ -29,11 +28,19 @@ extends TableContainerVH {
 
     private Attributes attributes;
 
-    public UserAccountAttributes(Attributes attributes, UserAccountRepository ur, UserAccountController uac) {
+    public UserAccountAttributes(UserProxy up, Attributes attributes, UserAccountRepository ur,
+        UserAccountController uac) {
+
+        Preconditions.checkNotNull(up, "up is null: %s", up);
         Preconditions.checkNotNull(attributes, "attributes is null: %s", attributes);
         Preconditions.checkNotNull(uac, "uac is null: %s", uac);
+        Preconditions.checkNotNull(uac, "uac is null: %s", uac);
+
+        this.userProxy = up;
         this.attributes = attributes;
+        this.repository = ur;
         this.uac = uac;
+
         table.setContainerDataSource(populateContainerTable());
     }
 

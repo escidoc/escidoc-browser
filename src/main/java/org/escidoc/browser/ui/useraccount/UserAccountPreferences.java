@@ -18,20 +18,24 @@ import de.escidoc.core.resources.aa.useraccount.Preferences;
 @SuppressWarnings("serial")
 public class UserAccountPreferences extends TableContainerVH {
 
+    private UserProxy userProxy;
+
     private Preferences preferences;
 
     private UserAccountRepository repository;
 
     private HierarchicalContainer tableContainer;
 
-    private UserProxy userProxy;
-
     private UserAccountController uac;
 
-    public UserAccountPreferences(Preferences preferences, UserAccountRepository repository, UserAccountController uac) {
+    public UserAccountPreferences(UserProxy userProxy, Preferences preferences, UserAccountRepository repository,
+        UserAccountController uac) {
+        Preconditions.checkNotNull(userProxy, "userProxy is null: %s", userProxy);
         Preconditions.checkNotNull(preferences, "preferences is null: %s", preferences);
         Preconditions.checkNotNull(repository, "repository is null: %s", repository);
         Preconditions.checkNotNull(uac, "uac is null: %s", uac);
+
+        this.userProxy = userProxy;
         this.preferences = preferences;
         this.repository = repository;
         this.uac = uac;
