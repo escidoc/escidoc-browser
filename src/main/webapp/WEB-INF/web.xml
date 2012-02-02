@@ -25,18 +25,16 @@
 		<servlet-name>Vaadin Application Servlet</servlet-name>
 		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
-
-	<!-- <filter>
+	<!-- filter>
 		<filter-name>GzipFilter</filter-name>
 		<filter-class>org.mortbay.servlet.GzipFilter</filter-class>
 		<init-param>
 			<param-name>mimeTypes</param-name>
 			<param-value>text/html,text/xml,text/plain,application/javascript,application/json</param-value>
 		</init-param>
-	</filter>
-
-	<filter-mapping>
+	</filter-->
+	<!--  filter-mapping>
 		<filter-name>GzipFilter</filter-name>
 		<url-pattern>/*</url-pattern>
-	</filter-mapping> -->
+	</filter-mapping-->
 </web-app>

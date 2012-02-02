@@ -3,6 +3,7 @@ package org.escidoc.browser.ui.maincontent;
 import com.google.common.base.Preconditions;
 
 import com.vaadin.ui.AbstractComponentContainer;
+import com.vaadin.ui.Accordion;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
@@ -45,14 +46,6 @@ public class OrgUnitView extends View {
         vlContentPanel.setWidth("100.0%");
         vlContentPanel.setHeight("100.0%");
         vlContentPanel.setMargin(true, true, false, true);
-
-        // Permanent Link
-        // new CreatePermanentLinkVH(router.getMainWindow().getURL().toString(), resourceProxy.getId(), resourceProxy
-        // .getType().toString(), vlContentPanel, router.getServiceLocation());
-
-        // breadCrumpPanel
-        // Panel breadCrump = buildBreadCrumpPanel();
-        // vlContentPanel.addComponent(breadCrump);
 
         // resourcePropertiesPanel
         Panel resourcePropertiesPanel = buildResourcePropertiesPanel();
@@ -148,14 +141,11 @@ public class OrgUnitView extends View {
         vlDirectMember.setHeight("100.0%");
         vlDirectMember.setMargin(false);
         directMembersPanel.setContent(vlDirectMember);
-        // new DirectMember(serviceLocation, router, resourceProxy.getId(), mainWindow, repositories,
-        // directMembersPanel,
-        // ResourceType.CONTEXT.toString()).contextAsTree();
 
         return directMembersPanel;
     }
 
-    private static Panel buildRightPanel() {
+    private Panel buildRightPanel() {
         // common part: create layout
         Panel rightPanel = new Panel();
         rightPanel.setImmediate(false);
@@ -169,7 +159,7 @@ public class OrgUnitView extends View {
         return rightPanel;
     }
 
-    private static VerticalLayout buildVlRightPanel() {
+    private VerticalLayout buildVlRightPanel() {
         // common part: create layout
         VerticalLayout vlRightPanel = new VerticalLayout();
         vlRightPanel.setImmediate(false);
@@ -177,18 +167,15 @@ public class OrgUnitView extends View {
         vlRightPanel.setHeight("100.0%");
         vlRightPanel.setMargin(false);
 
-        // metaDataRecsAcc
-        // Accordion metaDataRecsAcc = buildMetaDataRecsAcc();
-        // vlRightPanel.addComponent(metaDataRecsAcc);
+        vlRightPanel.addComponent(buildMetaDataRecsAcc());
 
         return vlRightPanel;
     }
 
-    // private Accordion buildMetaDataRecsAcc() {
-    // // common part: create layout
-    // // Accordion metaDataRecsAcc = new MetadataRecsContext(resourceProxy, router, contextController).asAccord();
-    // // return metaDataRecsAcc;
-    // }
+    private Accordion buildMetaDataRecsAcc() {
+        // common part: create layout
+        return new OrgUnitMetadataRecordsView(resourceProxy, router, this).asAccord();
+    }
 
     private Panel buildResourcePropertiesPanel() {
         // common part: create layout
@@ -322,6 +309,10 @@ public class OrgUnitView extends View {
             return false;
         }
         return true;
+    }
+
+    public void refreshView() {
+        // not yet implemented.
     }
 
 }
