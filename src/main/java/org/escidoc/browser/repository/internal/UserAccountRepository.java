@@ -126,14 +126,6 @@ public class UserAccountRepository implements Repository {
         return client.retrievePreferences(up.getId());
     }
 
-    //
-    // public Preference updateUserPreference(Preference preference) throws EscidocClientException {
-    // return client.updatePreference(getCurrentUser(), preference);
-    // }
-    //
-    // public void removeUserPreference(String preferenceName) throws EscidocClientException {
-    // }
-
     public void updatePassword(UserProxy userProxy, String pw) throws EscidocClientException {
         final TaskParam taskParam = new TaskParam();
         taskParam.setLastModificationDate(userProxy.getResource().getLastModificationDate());
@@ -154,5 +146,9 @@ public class UserAccountRepository implements Repository {
 
     public Attributes getAttributes(UserProxy userProxy) throws EscidocClientException {
         return client.retrieveAttributes(userProxy.getId());
+    }
+
+    public void create(UserAccount u, String password) throws EscidocClientException {
+        updatePassword(new UserProxy(client.create(u)), password);
     }
 }
