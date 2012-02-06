@@ -193,6 +193,8 @@ public class TreeDataSourceImpl implements TreeDataSource {
                 return dataSource.removeItem(resourceModel);
             case CONTAINER:
                 return dataSource.removeItem(resourceModel);
+            case ORG_UNIT:
+                return dataSource.removeItem(resourceModel);
             default:
                 throw new UnsupportedOperationException("Cannot remove resource with the type: "
                     + resourceModel.getType());

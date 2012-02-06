@@ -11,6 +11,7 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
 
+import org.escidoc.browser.controller.OrgUnitController;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
@@ -23,11 +24,14 @@ public class OrgUnitView extends View {
 
     private final Router router;
 
-    public OrgUnitView(final Router router, final ResourceProxy resourceProxy) {
+    private OrgUnitController orgUnitController;
+
+    public OrgUnitView(final Router router, final ResourceProxy resourceProxy, OrgUnitController orgUnitController) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         this.router = router;
         this.resourceProxy = resourceProxy;
+        this.orgUnitController = orgUnitController;
     }
 
     public void buildContentPanel() {
@@ -168,7 +172,7 @@ public class OrgUnitView extends View {
     }
 
     private Component buildParentsView() {
-        return new ParentsView(resourceProxy).asAccord();
+        return new ParentsView(resourceProxy, router.getMainWindow(), router, orgUnitController).asAccord();
     }
 
     private Accordion buildMetaDataRecsAcc() {

@@ -1,45 +1,60 @@
-package org.escidoc.browser.ui.listeners;
+package org.escidoc.browser.ui.maincontent;
+
+import com.google.common.base.Preconditions;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
 
-import org.escidoc.browser.controller.ContextController;
-import org.escidoc.browser.controller.Controller;
+import org.escidoc.browser.controller.OrgUnitController;
+import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.repository.internal.OrgUnitService;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.view.helpers.DragnDropHelper;
 
 import java.util.Collection;
+import java.util.List;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
-import de.escidoc.core.resources.common.reference.OrganizationalUnitRef;
-import de.escidoc.core.resources.om.context.OrganizationalUnitRefs;
 import de.escidoc.core.resources.oum.OrganizationalUnit;
 
-/**
- * Removing the Organizational Units from a Context
- * 
- */
 @SuppressWarnings("serial")
-public class AddOrgUnitstoContext extends DragnDropHelper {
+public class OrgUnitParentEditView extends DragnDropHelper {
 
-    private OrganizationalUnitRefs orgUnits;
+    private List<ResourceModel> parentList;
 
-    private ContextController controller;
+    private OrgUnitController controller;
 
-    private ContextProxyImpl resourceProxy;
-
-    public AddOrgUnitstoContext(Router router, ResourceProxy resourceProxy, Controller contextController,
-        OrganizationalUnitRefs orgUnits) throws EscidocClientException {
-        setSpacing(true);
+    public OrgUnitParentEditView(ResourceProxy resourceProxy, List<ResourceModel> parentList, Router router,
+        OrgUnitController controller) throws EscidocClientException {
+        Preconditions.checkNotNull(parentList, "parentList is null: %s", parentList);
+        Preconditions.checkNotNull(router, "router is null: %s", router);
+        Preconditions.checkNotNull(controller, "controller is null: %s", controller);
+        this.resourceProxy = resourceProxy;
+        this.parentList = parentList;
         this.router = router;
-        this.orgUnits = orgUnits;
-        this.resourceProxy = (ContextProxyImpl) resourceProxy;
-        this.controller = (ContextController) contextController;
-
+        this.controller = controller;
         createDragComponents();
+    }
+
+    @Override
+    protected boolean canRemoveOperation() {
+        return true;
+    }
+
+    @Override
+    protected HierarchicalContainer populateContainerTable() throws EscidocClientException {
+        // Create new container
+        HierarchicalContainer orgUnitContainer = new HierarchicalContainer();
+        // Create containerproperty for name
+        orgUnitContainer.addContainerProperty(PROPERTY_NAME, String.class, null);
+        orgUnitContainer.addContainerProperty(PROPERTY_HREF, String.class, null);
+        List<ResourceModel> parents = parentList;
+        for (ResourceModel rm : parents) {
+            Item item = orgUnitContainer.addItem(rm.getId());
+            item.getItemProperty(PROPERTY_NAME).setValue(rm.getName());
+        }
+        return orgUnitContainer;
     }
 
     @Override
@@ -49,8 +64,10 @@ public class AddOrgUnitstoContext extends DragnDropHelper {
         // Create containerproperty for name
         orgUnitContainer.addContainerProperty(PROPERTY_NAME, String.class, null);
         orgUnitContainer.addContainerProperty(PROPERTY_HREF, String.class, null);
+
         OrgUnitService orgUnitService =
             new OrgUnitService(router.getServiceLocation().getEscidocUri(), router.getApp().getCurrentUser().getToken());
+
         Collection<OrganizationalUnit> allOrgs = orgUnitService.retrieveTopLevelOrgUnits();
         for (OrganizationalUnit organizationalUnit : allOrgs) {
             Item item = orgUnitContainer.addItem(organizationalUnit.getObjid());
@@ -69,35 +86,15 @@ public class AddOrgUnitstoContext extends DragnDropHelper {
     }
 
     @Override
-    protected HierarchicalContainer populateContainerTable() throws EscidocClientException {
-        // Create new container
-        HierarchicalContainer orgUnitContainer = new HierarchicalContainer();
-        // Create containerproperty for name
-        orgUnitContainer.addContainerProperty(PROPERTY_NAME, String.class, null);
-        orgUnitContainer.addContainerProperty(PROPERTY_HREF, String.class, null);
-        Collection<OrganizationalUnitRef> allOrgs = orgUnits;
-        for (OrganizationalUnitRef organizationalUnit : allOrgs) {
-            Item item = orgUnitContainer.addItem(organizationalUnit.getObjid());
-            item.getItemProperty(PROPERTY_NAME).setValue(organizationalUnit.getXLinkTitle());
-            item.getItemProperty(PROPERTY_HREF).setValue(organizationalUnit.getXLinkHref());
-        }
-        return orgUnitContainer;
-    }
-
-    @Override
-    protected boolean canRemoveOperation() {
-        return controller.canRemoveOUs();
-    }
-
-    @Override
     protected void removeElementController(Object sourceItemId) {
-        controller.removeOrgUnitFromContext(resourceProxy, sourceItemId.toString());
+        controller.removeParent(resourceProxy, sourceItemId.toString());
         controller.refreshView();
     }
 
     @Override
     protected void addOnController(Object sourceItemId) {
-        controller.addOrgUnitToContext(resourceProxy, sourceItemId.toString());
+        controller.addParent(resourceProxy, sourceItemId.toString());
         controller.refreshView();
     }
+
 }

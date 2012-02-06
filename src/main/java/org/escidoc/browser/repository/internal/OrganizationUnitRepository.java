@@ -52,6 +52,8 @@ import de.escidoc.core.resources.common.Relations;
 import de.escidoc.core.resources.common.TaskParam;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.oum.OrganizationalUnit;
+import de.escidoc.core.resources.oum.Parent;
+import de.escidoc.core.resources.oum.Parents;
 import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 public class OrganizationUnitRepository implements Repository {
@@ -151,5 +153,29 @@ public class OrganizationUnitRepository implements Repository {
         orgUnit.setMetadataRecords(list);
 
         client.update(orgUnit);
+    }
+
+    public void removeParent(ResourceProxy resourceProxy, String parentId) throws EscidocClientException {
+        OrganizationalUnit ou = client.retrieve(resourceProxy.getId());
+        Parents parents = ou.getParents();
+        Parent toRemove = new Parent(parentId);
+        parents.remove(toRemove);
+
+        client.updateParents(ou, parents);
+    }
+
+    public void addParent(ResourceProxy resourceProxy, String parentId) throws EscidocClientException {
+        OrganizationalUnit ou = client.retrieve(resourceProxy.getId());
+        Parents parents = ou.getParents();
+
+        if (parents != null) {
+            parents.add(new Parent(parentId));
+        }
+        else {
+            parents = new Parents();
+            parents.add(new Parent(parentId));
+        }
+
+        client.updateParents(ou, parents);
     }
 }

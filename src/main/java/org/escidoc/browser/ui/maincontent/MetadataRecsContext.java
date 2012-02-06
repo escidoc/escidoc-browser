@@ -28,6 +28,20 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
+import com.google.common.base.Preconditions;
+
+import com.vaadin.terminal.ExternalResource;
+import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Link;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.BaseTheme;
+
 import org.escidoc.browser.controller.ContextController;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
@@ -35,20 +49,6 @@ import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.AddOrgUnitstoContext;
 import org.escidoc.browser.ui.listeners.ContextAdminDescriptorsClickListener;
-
-import com.google.common.base.Preconditions;
-import com.vaadin.terminal.ExternalResource;
-import com.vaadin.ui.Accordion;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Link;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.BaseTheme;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.reference.OrganizationalUnitRef;
@@ -86,26 +86,6 @@ class MetadataRecsContext {
     private void addComponentAsTabs(final Accordion metadataRecs) {
         metadataRecs.addTab(buildOrganizationUnit(), ViewConstants.ORGANIZATIONAL_UNIT, null);
         metadataRecs.addTab(buildAdminDescription(), ViewConstants.ADMIN_DESCRIPTION, null);
-        // metadataRecs.addTab(buildRelations(), ViewConstants.RELATIONS, null);
-        // metadataRecs.addTab(buildResources(), ViewConstants.ADDITIONAL_RESOURCES, null);
-    }
-
-    private Panel buildResources() {
-        final Panel resources = new Panel();
-        resources.setWidth("100%");
-        resources.setHeight("100%");
-        final Label lblresources = new Label("<a href='#'>Members Filtered</a><br />", Label.CONTENT_RAW);
-        resources.addComponent(lblresources);
-        return resources;
-    }
-
-    private Panel buildRelations() {
-        final Panel relations = new Panel();
-        relations.setWidth("100%");
-        relations.setHeight("100%");
-        final Label lblrelations = new Label("isRelatedTo <a href='#'>Other Context</a><br />", Label.CONTENT_RAW);
-        relations.addComponent(lblrelations);
-        return relations;
     }
 
     private Panel buildAdminDescription() {
@@ -165,6 +145,7 @@ class MetadataRecsContext {
                         e.printStackTrace();
                     }
                     Button close = new Button("Close", new Button.ClickListener() {
+                        @Override
                         public void buttonClick(ClickEvent event) {
                             (subwindow.getParent()).removeWindow(subwindow);
                         }
