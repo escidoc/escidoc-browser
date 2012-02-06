@@ -421,19 +421,13 @@ public class SimpleLayout extends LayoutDesign {
 
     private VerticalLayout buildListWithFilter(final BaseNavigationTreeView list) {
         VerticalLayout vl = new VerticalLayout();
-        vl.setMargin(false, false, false, true);
-        vl.addComponent(buildFilterField(list));
-        vl.addComponent(list);
-        return vl;
-    }
+        vl.setMargin(true, false, false, true);
 
-    private TextField buildFilterField(final BaseNavigationTreeView list) {
-        TextField tf = new TextField("");
-        tf.setInputPrompt("Type something to filter the list");
-        tf.setWidth("250px");
-        tf.setImmediate(true);
-        tf.focus();
-        tf.addListener(new TextChangeListener() {
+        TextField filterField = new TextField();
+        filterField.setInputPrompt("Type something to filter the list");
+        filterField.setWidth("250px");
+        // filterField.focus();
+        filterField.addListener(new TextChangeListener() {
 
             private SimpleStringFilter filter;
 
@@ -446,7 +440,10 @@ public class SimpleLayout extends LayoutDesign {
                 ds.addContainerFilter(filter);
             }
         });
-        return tf;
+
+        vl.addComponent(filterField);
+        vl.addComponent(list);
+        return vl;
     }
 
     private boolean isSysAdmin() {
