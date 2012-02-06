@@ -11,7 +11,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
 
 import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.View;
 import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
@@ -21,13 +20,9 @@ public class ContentModelView extends View {
 
     private final ResourceProxy resourceProxy;
 
-    private Router router;
-
-    public ContentModelView(ResourceProxy rp, Router router) {
+    public ContentModelView(ResourceProxy rp) {
         Preconditions.checkNotNull(rp, "rp is null: %s", rp);
-        Preconditions.checkNotNull(router, "router is null: %s", router);
         this.resourceProxy = rp;
-        this.router = router;
     }
 
     public void buildContentPanel() {
@@ -282,4 +277,34 @@ public class ContentModelView extends View {
         // not yet implemented.
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((resourceProxy == null) ? 0 : resourceProxy.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        ContentModelView other = (ContentModelView) obj;
+        if (resourceProxy == null) {
+            if (other.resourceProxy != null) {
+                return false;
+            }
+        }
+        else if (!resourceProxy.equals(other.resourceProxy)) {
+            return false;
+        }
+        return true;
+    }
 }
