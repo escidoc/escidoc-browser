@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 
 import com.vaadin.ui.AbstractComponentContainer;
 import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
@@ -34,45 +35,39 @@ public class OrgUnitView extends View {
         this.setWidth("100.0%");
         this.setHeight("100.0%");
         this.setStyleName(Runo.PANEL_LIGHT);
-
-        // vlContentPanel assign a layout to this panel
         this.setContent(buildVlContentPanel());
     }
 
     private VerticalLayout buildVlContentPanel() {
-        // common part: create layout
-        VerticalLayout vlContentPanel = new VerticalLayout();
-        vlContentPanel.setImmediate(false);
-        vlContentPanel.setWidth("100.0%");
-        vlContentPanel.setHeight("100.0%");
-        vlContentPanel.setMargin(true, true, false, true);
+        VerticalLayout contentPanel = new VerticalLayout();
+        contentPanel.setImmediate(false);
+        contentPanel.setWidth("100.0%");
+        contentPanel.setHeight("100.0%");
+        contentPanel.setMargin(true, true, false, true);
 
         // resourcePropertiesPanel
         Panel resourcePropertiesPanel = buildResourcePropertiesPanel();
-        vlContentPanel.addComponent(resourcePropertiesPanel);
-        vlContentPanel.setExpandRatio(resourcePropertiesPanel, 1.5f);
+        contentPanel.addComponent(resourcePropertiesPanel);
+        contentPanel.setExpandRatio(resourcePropertiesPanel, 1.5f);
 
         // metaViewsPanel contains Panel for the DirectMembers & for the Metas
         Panel metaViewsPanel = buildMetaViewsPanel();
-        vlContentPanel.addComponent(metaViewsPanel);
-        vlContentPanel.setExpandRatio(metaViewsPanel, 8.0f);
+        contentPanel.addComponent(metaViewsPanel);
+        contentPanel.setExpandRatio(metaViewsPanel, 8.0f);
 
-        return vlContentPanel;
+        return contentPanel;
     }
 
     private Panel buildMetaViewsPanel() {
-        // common part: create layout
-        Panel metaViewsPanel = new Panel();
-        metaViewsPanel.setImmediate(false);
-        metaViewsPanel.setWidth("100.0%");
-        metaViewsPanel.setHeight("100.0%");
-        metaViewsPanel.setStyleName(Runo.PANEL_LIGHT);
+        Panel mdView = new Panel();
+        mdView.setImmediate(false);
+        mdView.setWidth("100.0%");
+        mdView.setHeight("100.0%");
+        mdView.setStyleName(Runo.PANEL_LIGHT);
 
-        // hlMetaViews
-        HorizontalLayout hlMetaViews = buildHlMetaViews();
-        metaViewsPanel.setContent(hlMetaViews);
+        mdView.setContent(buildHlMetaViews());
 
-        return metaViewsPanel;
+        return mdView;
     }
 
     private HorizontalLayout buildHlMetaViews() {
@@ -153,8 +148,7 @@ public class OrgUnitView extends View {
         rightPanel.setHeight("100.0%");
 
         // vlRightPanel
-        VerticalLayout vlRightPanel = buildVlRightPanel();
-        rightPanel.setContent(vlRightPanel);
+        rightPanel.setContent(buildVlRightPanel());
 
         return rightPanel;
     }
@@ -168,12 +162,16 @@ public class OrgUnitView extends View {
         vlRightPanel.setMargin(false);
 
         vlRightPanel.addComponent(buildMetaDataRecsAcc());
+        vlRightPanel.addComponent(buildParentsView());
 
         return vlRightPanel;
     }
 
+    private Component buildParentsView() {
+        return new ParentsView(resourceProxy).asAccord();
+    }
+
     private Accordion buildMetaDataRecsAcc() {
-        // common part: create layout
         return new OrgUnitMetadataRecordsView(resourceProxy, router, this).asAccord();
     }
 

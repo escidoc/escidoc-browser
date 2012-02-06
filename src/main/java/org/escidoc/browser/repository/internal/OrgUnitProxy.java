@@ -1,14 +1,17 @@
 package org.escidoc.browser.repository.internal;
 
+import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import de.escidoc.core.resources.common.MetadataRecords;
-
 import de.escidoc.core.resources.Resource;
+import de.escidoc.core.resources.common.MetadataRecords;
 import de.escidoc.core.resources.oum.OrganizationalUnit;
+import de.escidoc.core.resources.oum.Parent;
+import de.escidoc.core.resources.oum.Parents;
 
 public class OrgUnitProxy implements ResourceProxy {
 
@@ -92,4 +95,30 @@ public class OrgUnitProxy implements ResourceProxy {
         return ou.getMetadataRecords();
     }
 
+    public List<ResourceModel> getParentList() {
+        Parents parents = ou.getParents();
+        List<ResourceModel> list = new ArrayList<ResourceModel>(parents.size());
+        for (final Parent parent : parents) {
+            ResourceModel pm = new ResourceModel() {
+
+                @Override
+                public ResourceType getType() {
+                    return ResourceType.ORG_UNIT;
+                }
+
+                @Override
+                public String getName() {
+                    return parent.getXLinkTitle();
+                }
+
+                @Override
+                public String getId() {
+                    return parent.getObjid();
+                }
+            };
+            list.add(pm);
+
+        }
+        return list;
+    }
 }
