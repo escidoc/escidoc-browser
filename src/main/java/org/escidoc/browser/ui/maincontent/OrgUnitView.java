@@ -20,9 +20,9 @@ public class OrgUnitView extends View {
 
     private final ResourceProxy resourceProxy;
 
-    private Router router;
+    private final Router router;
 
-    public OrgUnitView(Router router, final ResourceProxy resourceProxy) {
+    public OrgUnitView(final Router router, final ResourceProxy resourceProxy) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         this.router = router;
@@ -280,16 +280,27 @@ public class OrgUnitView extends View {
         contentLayout.addComponent(descRuler);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#hashCode()
+     */
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((resourceProxy == null) ? 0 : resourceProxy.hashCode());
+        result = prime * result + ((router == null) ? 0 : router.hashCode());
         return result;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override
-    public boolean equals(final Object obj) {
+    public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
@@ -299,7 +310,7 @@ public class OrgUnitView extends View {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final OrgUnitView other = (OrgUnitView) obj;
+        OrgUnitView other = (OrgUnitView) obj;
         if (resourceProxy == null) {
             if (other.resourceProxy != null) {
                 return false;
@@ -308,11 +319,18 @@ public class OrgUnitView extends View {
         else if (!resourceProxy.equals(other.resourceProxy)) {
             return false;
         }
+        if (router == null) {
+            if (other.router != null) {
+                return false;
+            }
+        }
+        else if (!router.equals(other.router)) {
+            return false;
+        }
         return true;
     }
 
     public void refreshView() {
         // not yet implemented.
     }
-
 }
