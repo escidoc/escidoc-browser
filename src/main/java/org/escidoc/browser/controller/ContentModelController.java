@@ -15,6 +15,7 @@ public class ContentModelController extends Controller {
 
     @Override
     public void createView() {
-        view = new ContentModelView(getRouter());
+        view = new ContentModelView(getResourceProxy(), getRouter());
+        ((ContentModelView) view).buildContentPanel();
     }
 }
