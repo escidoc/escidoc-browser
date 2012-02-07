@@ -45,11 +45,11 @@ public class UserAccountAttributes extends TableContainerVH {
     }
 
     @Override
-    protected void removeAction(Object preferenceName) {
+    protected void removeAction(Object attributeName) {
         try {
-            repository.removePreference(userProxy, (String) preferenceName);
-            uac.showTrayMessage(ViewConstants.PREFERENCE_REMOVE, ViewConstants.THE_PREFERENCE_REMOVED);
-            tableContainer.removeItem(preferenceName);
+            repository.removeAttribute(userProxy, (String) attributeName);
+            uac.showTrayMessage(ViewConstants.ATTRIBUTE_REMOVED, ViewConstants.ATTRIBUTE_REMOVED_MESSAGE);
+            tableContainer.removeItem(attributeName);
         }
         catch (EscidocClientException e) {
             uac.showError(e.getLocalizedMessage());
