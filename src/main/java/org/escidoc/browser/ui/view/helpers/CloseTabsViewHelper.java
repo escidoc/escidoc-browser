@@ -68,7 +68,7 @@ public class CloseTabsViewHelper implements ClickListener {
         btnRemoveTabs.addStyleName("closeallTabs");
         btnRemoveTabs.setDescription(ViewConstants.CLOSE_ALL_OPEN_TABS);
         btnRemoveTabs.setIcon(icon);
-        btnRemoveTabs.addStyleName(FLOAT_RIGHT);
+        btnRemoveTabs.addStyleName(ViewConstants.FLOAT_RIGHT);
         btnRemoveTabs.addListener(this);
         layout.addComponent(btnRemoveTabs);
     }

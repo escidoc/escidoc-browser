@@ -28,7 +28,6 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import java.io.File;
 import java.net.URISyntaxException;
 
 import org.escidoc.browser.AppConstants;
@@ -38,25 +37,17 @@ import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
-import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.dnd.DragAndDropFileUpload;
 import org.escidoc.browser.ui.view.helpers.ItemComponentsView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
-import com.vaadin.terminal.ExternalResource;
-import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.BaseTheme;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
-import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.om.item.component.Component;
 
 @SuppressWarnings("serial")
@@ -146,54 +137,6 @@ public class ItemContent extends VerticalLayout {
         return itemProxy.hasComponents().booleanValue();
     }
 
-    private Button createDownloadLink(final Component comp) {
-        final Button link = new Button();
-        link.setStyleName(BaseTheme.BUTTON_LINK);
-        link.setIcon(new ThemeResource("images/download.png"));
-        link.addListener(new Button.ClickListener() {
-
-            private static final long serialVersionUID = 651483473875504715L;
-
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                mainWindow.open(new ExternalResource(
-                    serviceLocation.getEscidocUri() + comp.getContent().getXLinkHref(), comp
-                        .getProperties().getMimeType()), "_new");
-            }
-        });
-        return link;
-    }
-
-    private Label createLabelForMetadata(final Component comp) {
-        String mdrecords = "";
-        for (MetadataRecord metadataRecord : comp.getMetadataRecords()) {
-            mdrecords +=
-                "<a href=\"" + serviceLocation.getEscidocUri() + metadataRecord.getXLinkHref()
-                    + "\" target =\"_blank\">" + metadataRecord.getName() + "</a><br />";
-        }
-        final Label labelMetadata =
-            new Label("<strong>" + comp.getContent().getXLinkTitle() + "</strong>" + "<br />"
-                + comp.getProperties().getContentCategory() + "<hr />" + ViewConstants.CREATED_ON
-                + comp.getProperties().getCreationDate().toString("d.M.y, H:mm") + "<br /> by "
-                + comp.getProperties().getCreatedBy().getXLinkTitle() + "<br /> Mime Type: "
-                + comp.getProperties().getMimeType() + "<br />" + "MD5Checksum " + comp.getProperties().getChecksum()
-                + "<hr />" + mdrecords, Label.CONTENT_RAW);
-        labelMetadata.setStyleName("smallfont");
-        return labelMetadata;
-    }
-
-    private Embedded createEmbeddedImage(final Component comp) {
-        final String currentDir = new File(".").getAbsolutePath();
-        final File file =
-            new File(currentDir.substring(0, currentDir.length() - 1) + AppConstants.MIMETYPE_ICON_LOCATION
-                + getFileType(comp) + ".png");
-        final boolean exists = file.exists();
-        if (exists) {
-            return new Embedded("", new ThemeResource("images/filetypes/" + getFileType(comp) + ".png"));
-        }
-        return new Embedded("", new ThemeResource("images/filetypes/article.png"));
-    }
-
     private String getFileType(final Component itemProperties) {
         final String mimeType = itemProperties.getProperties().getMimeType();
         if (mimeType == null) {
@@ -205,21 +148,6 @@ public class ItemContent extends VerticalLayout {
     }
 
     private ItemComponentsView buildTable() {
-        // table = new Table();
-        // table.setPageLength(0);
-        // table.setWidth("100%");
-        // table.setStyleName("drophere");
-        // table.addContainerProperty("Type", Embedded.class, null);
-        // table.addContainerProperty("Meta", Label.class, null);
-        // table.addContainerProperty("Link", Button.class, null);
-        // int rowIndex = 0;
-        // for (final Component comp : itemProxy.getElements()) {
-        // table.addItem(new Object[] { createEmbeddedImage(comp),
-        // createLabelForMetadata(comp), createDownloadLink(comp) },
-        // Integer.valueOf(rowIndex++));
-        // }
-        // table.setColumnWidth("Type", 20);
-        // table.setColumnWidth("Link", 20);
         table = new ItemComponentsView(itemProxy.getElements(), controller, serviceLocation, mainWindow);
         return table;
     }

@@ -30,6 +30,9 @@
 .paddingtop30 {
 	padding-top: 60.0px;
 }
+.paddingtop3 {
+	padding-top: 3px;
+}
 
 .closeallTabs {
 	z-index: 10;
@@ -370,4 +373,15 @@ ul.horizontal_list li {
 
 .v-tree-node-caption span {
 	white-space: normal;
+}
+
+/* escidocAccordion */
+
+.escidocAccordion .v-accordion-item-caption .addbutton {
+	margin-top: -1px;
+	float: right;
+}
+.escidocAccordion .v-ie .v-accordion-item-caption .addbutton {
+	vertical-align: top;
+	float: right;
 }

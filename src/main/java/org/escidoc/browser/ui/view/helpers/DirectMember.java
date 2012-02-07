@@ -43,16 +43,17 @@ import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.navigation.NavigationTreeView;
 
 import com.google.common.base.Preconditions;
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Reindeer;
+import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -145,23 +146,17 @@ public class DirectMember {
 
     @SuppressWarnings("serial")
     protected void createButtons() throws EscidocClientException {
-        final Label nameofPanel =
-            new Label("<div class=\"v-accordion-item-caption\"><div class=\"v-caption\"><div class=\"v-captiontext\">"
-                + ViewConstants.DIRECT_MEMBERS + "</div><div class=\"v-caption-clearelem\"></div></div></div>",
-                Label.CONTENT_RAW);
+        CssLayout cssLayout = new CssLayout();
+        cssLayout.addStyleName("v-accordion-item-caption v-caption v-captiontext");
+        cssLayout.setWidth("100%");
+        cssLayout.setMargin(false);
+
+        final Label nameofPanel = new Label(ViewConstants.DIRECT_MEMBERS, Label.CONTENT_RAW);
         nameofPanel.setStyleName("accordion v-captiontext");
+        nameofPanel.setWidth("70%");
+        cssLayout.addComponent(nameofPanel);
 
-        nameofPanel.setWidth("100%");
-
-        panel.addComponent(nameofPanel);
-        panel.setStyleName("directmembers");
-        panel.setScrollable(true);
-
-        final VerticalLayout panelLayout = (VerticalLayout) panel.getContent();
-        panelLayout.setSizeUndefined();
-        panelLayout.setWidth("100%");
-        panelLayout.setStyleName(Runo.PANEL_LIGHT);
-
+        ThemeResource ICON = new ThemeResource("images/assets/plus.png");
         if (resourceType == ResourceType.CONTAINER.toString()) {
             resourceProxy = new ContainerProxyImpl(router.getRepositories().container().findContainerById(parentId));
             contextId = resourceProxy.getContext().getObjid();
@@ -171,8 +166,11 @@ public class DirectMember {
             resourceProxy = router.getRepositories().context().findById(parentId);
         }
 
-        final Button addResourceButton = new Button("+Resource  ");
-        addResourceButton.setStyleName(Reindeer.BUTTON_SMALL);
+        final Button addResourceButton = new Button();
+        addResourceButton.setStyleName(BaseTheme.BUTTON_LINK);
+        addResourceButton.addStyleName("floatright paddingtop3");
+        addResourceButton.setWidth("20px");
+        addResourceButton.setIcon(ICON);
         addResourceButton.addListener(new ClickListener() {
 
             @Override
@@ -187,16 +185,16 @@ public class DirectMember {
             }
         });
 
-        final HorizontalLayout hl = new HorizontalLayout();
-        hl.setWidth("200px");
-        hl.setHeight("20px");
+        cssLayout.addComponent(addResourceButton);
 
-        panelLayout.addComponent(hl);
+        panel.addComponent(cssLayout);
+        panel.setStyleName("directmembers");
+        panel.setScrollable(true);
 
-        final HorizontalLayout buttonLayout = new HorizontalLayout();
-        hl.addComponent(buttonLayout);
-        buttonLayout.addComponent(addResourceButton);
-
+        final VerticalLayout panelLayout = (VerticalLayout) panel.getContent();
+        panelLayout.setSizeUndefined();
+        panelLayout.setWidth("100%");
+        panelLayout.setStyleName(Runo.PANEL_LIGHT);
     }
 
     protected void bindDirectMembersInTheContainer(final Component comptoBind) {
