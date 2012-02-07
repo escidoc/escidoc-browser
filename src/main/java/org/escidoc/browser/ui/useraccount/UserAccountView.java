@@ -340,4 +340,36 @@ public class UserAccountView extends View {
         pnl.addComponent(addPreference);
         return pnl;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((userProxy == null) ? 0 : userProxy.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        UserAccountView other = (UserAccountView) obj;
+        if (userProxy == null) {
+            if (other.userProxy != null) {
+                return false;
+            }
+        }
+        else if (!userProxy.equals(other.userProxy)) {
+            return false;
+        }
+        return true;
+    }
+
 }
