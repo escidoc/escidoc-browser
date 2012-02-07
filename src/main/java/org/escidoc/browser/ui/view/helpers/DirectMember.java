@@ -146,6 +146,19 @@ public class DirectMember {
 
     @SuppressWarnings("serial")
     protected void createButtons() throws EscidocClientException {
+        CssLayout cssLayout = headerButton();
+
+        panel.addComponent(cssLayout);
+        panel.setStyleName("directmembers");
+        panel.setScrollable(true);
+
+        final VerticalLayout panelLayout = (VerticalLayout) panel.getContent();
+        panelLayout.setSizeUndefined();
+        panelLayout.setWidth("100%");
+        panelLayout.setStyleName(Runo.PANEL_LIGHT);
+    }
+
+    private CssLayout headerButton() throws EscidocClientException {
         CssLayout cssLayout = new CssLayout();
         cssLayout.addStyleName("v-accordion-item-caption v-caption v-captiontext");
         cssLayout.setWidth("100%");
@@ -184,17 +197,9 @@ public class DirectMember {
 
             }
         });
-
+        cssLayout.addComponent(nameofPanel);
         cssLayout.addComponent(addResourceButton);
-
-        panel.addComponent(cssLayout);
-        panel.setStyleName("directmembers");
-        panel.setScrollable(true);
-
-        final VerticalLayout panelLayout = (VerticalLayout) panel.getContent();
-        panelLayout.setSizeUndefined();
-        panelLayout.setWidth("100%");
-        panelLayout.setStyleName(Runo.PANEL_LIGHT);
+        return cssLayout;
     }
 
     protected void bindDirectMembersInTheContainer(final Component comptoBind) {

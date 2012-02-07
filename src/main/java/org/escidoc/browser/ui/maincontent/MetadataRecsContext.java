@@ -28,20 +28,6 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.terminal.ExternalResource;
-import com.vaadin.ui.Accordion;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Link;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.BaseTheme;
-
 import org.escidoc.browser.controller.ContextController;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
@@ -49,6 +35,23 @@ import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.AddOrgUnitstoContext;
 import org.escidoc.browser.ui.listeners.ContextAdminDescriptorsClickListener;
+
+import com.google.common.base.Preconditions;
+import com.vaadin.terminal.ExternalResource;
+import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Link;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.BaseTheme;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.reference.OrganizationalUnitRef;
@@ -83,6 +86,32 @@ class MetadataRecsContext {
         return metadataRecs;
     }
 
+    public Panel asPanel() {
+        final Panel pnlmetadataRecs = new Panel();
+        pnlmetadataRecs.setSizeFull();
+        VerticalLayout vl = new VerticalLayout();
+        vl.setImmediate(false);
+        vl.setWidth("100.0%");
+        vl.setHeight("100.0%");
+        vl.setMargin(false);
+        vl.addComponent(buildOrganizationUnit());
+        vl.addComponent(buildAdminDescription());
+
+        pnlmetadataRecs.setContent(vl);
+        return pnlmetadataRecs;
+    }
+
+    private void buildPanelHeader(CssLayout cssLayout, String name) {
+        cssLayout.addStyleName("v-accordion-item-caption v-caption v-captiontext");
+        cssLayout.setWidth("100%");
+        cssLayout.setMargin(false);
+
+        final Label nameofPanel = new Label(name, Label.CONTENT_RAW);
+        nameofPanel.setStyleName("accordion v-captiontext");
+        nameofPanel.setWidth("70%");
+        cssLayout.addComponent(nameofPanel);
+    }
+
     private void addComponentAsTabs(final Accordion metadataRecs) {
         metadataRecs.addTab(buildOrganizationUnit(), ViewConstants.ORGANIZATIONAL_UNIT, null);
         metadataRecs.addTab(buildAdminDescription(), ViewConstants.ADMIN_DESCRIPTION, null);
@@ -94,6 +123,44 @@ class MetadataRecsContext {
         admDescriptors.setHeight("100%");
         HorizontalLayout hl = new HorizontalLayout();
         hl.setSizeFull();
+        final CssLayout cssLayout = new CssLayout();
+        buildPanelHeader(cssLayout, ViewConstants.ADMIN_DESCRIPTION);
+        ThemeResource ICON = new ThemeResource("images/assets/plus.png");
+        if (contextController.canAddOUs()) {
+            final Button addResourceButton = new Button();
+            addResourceButton.setStyleName(BaseTheme.BUTTON_LINK);
+            addResourceButton.addStyleName("floatright paddingtop3");
+            addResourceButton.setWidth("20px");
+            addResourceButton.setIcon(ICON);
+            addResourceButton.addListener(new ClickListener() {
+
+                @Override
+                public void buttonClick(final ClickEvent event) {
+                    final Window subwindow = new Window("A modal subwindow");
+                    subwindow.setModal(true);
+                    subwindow.setWidth("650px");
+                    VerticalLayout layout = (VerticalLayout) subwindow.getContent();
+                    layout.setMargin(true);
+                    layout.setSpacing(true);
+
+                    subwindow.addComponent(new Label("Not yet implemented"));
+                    Button close = new Button("Close", new Button.ClickListener() {
+                        @Override
+                        public void buttonClick(ClickEvent event) {
+                            (subwindow.getParent()).removeWindow(subwindow);
+                        }
+                    });
+                    layout.addComponent(close);
+                    layout.setComponentAlignment(close, Alignment.TOP_RIGHT);
+
+                    router.getMainWindow().addWindow(subwindow);
+
+                }
+
+            });
+            cssLayout.addComponent(addResourceButton);
+        }
+        hl.addComponent(cssLayout);
 
         final AdminDescriptors admDesc = resourceProxy.getAdminDescription();
         for (final AdminDescriptor adminDescriptor : admDesc) {
@@ -112,23 +179,24 @@ class MetadataRecsContext {
 
     private Panel buildOrganizationUnit() {
         final Panel pnlOrgUnit = new Panel();
-        pnlOrgUnit.setWidth("100%");
-        pnlOrgUnit.setHeight("100%");
-
+        pnlOrgUnit.setSizeFull();
+        VerticalLayout vl = new VerticalLayout();
+        vl.setSizeFull();
         final OrganizationalUnitRefs orgUnits = resourceProxy.getOrganizationalUnit();
-        for (final OrganizationalUnitRef organizationalUnitRef : orgUnits) {
-            final Button button = new Button(organizationalUnitRef.getXLinkTitle());
-            button.setStyleName(BaseTheme.BUTTON_LINK);
-            button.addListener(new ContextAdminDescriptorsClickListener(organizationalUnitRef, mainWindow));
-            pnlOrgUnit.addComponent(button);
-        }
 
+        final CssLayout cssLayout = new CssLayout();
+        buildPanelHeader(cssLayout, ViewConstants.ORGANIZATIONAL_UNIT);
+        ThemeResource ICON = new ThemeResource("images/assets/plus.png");
         if (contextController.canAddOUs()) {
-            Button btnAdd = new Button("+/-");
-            btnAdd.setStyleName(BaseTheme.BUTTON_LINK);
-            btnAdd.addListener(new Button.ClickListener() {
+            final Button addResourceButton = new Button();
+            addResourceButton.setStyleName(BaseTheme.BUTTON_LINK);
+            addResourceButton.addStyleName("floatright paddingtop3");
+            addResourceButton.setWidth("20px");
+            addResourceButton.setIcon(ICON);
+            addResourceButton.addListener(new ClickListener() {
+
                 @Override
-                public void buttonClick(ClickEvent event) {
+                public void buttonClick(final ClickEvent event) {
                     final Window subwindow = new Window("A modal subwindow");
                     subwindow.setModal(true);
                     subwindow.setWidth("650px");
@@ -158,9 +226,20 @@ class MetadataRecsContext {
                 }
 
             });
-            pnlOrgUnit.addComponent(btnAdd);
+            cssLayout.addComponent(addResourceButton);
         }
+        vl.addComponent(cssLayout);
+        VerticalLayout vl2 = new VerticalLayout();
+        for (final OrganizationalUnitRef organizationalUnitRef : orgUnits) {
+            final Button button = new Button(organizationalUnitRef.getXLinkTitle());
+            button.setStyleName(BaseTheme.BUTTON_LINK);
+            button.addListener(new ContextAdminDescriptorsClickListener(organizationalUnitRef, mainWindow));
+            vl2.addComponent(button);
+            vl2.setComponentAlignment(button, Alignment.TOP_LEFT);
+        }
+        vl.addComponent(vl2);
+        vl.setComponentAlignment(vl2, Alignment.TOP_LEFT);
+        pnlOrgUnit.setContent(vl);
         return pnlOrgUnit;
     }
-
 }

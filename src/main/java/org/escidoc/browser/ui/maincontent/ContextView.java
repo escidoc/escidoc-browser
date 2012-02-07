@@ -28,8 +28,19 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import com.google.common.base.Preconditions;
+import org.escidoc.browser.controller.ContextController;
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.model.internal.ContextProxyImpl;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
+import org.escidoc.browser.ui.view.helpers.CreatePermanentLinkVH;
+import org.escidoc.browser.ui.view.helpers.DirectMember;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.AbstractComponentContainer;
@@ -46,18 +57,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Runo;
-
-import org.escidoc.browser.controller.ContextController;
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.model.ResourceType;
-import org.escidoc.browser.model.internal.ContextProxyImpl;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
-import org.escidoc.browser.ui.view.helpers.CreatePermanentLinkVH;
-import org.escidoc.browser.ui.view.helpers.DirectMember;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.properties.PublicStatus;
@@ -232,7 +231,7 @@ public class ContextView extends View {
         vlRightPanel.setMargin(false);
 
         // metaDataRecsAcc
-        vlRightPanel.addComponent(buildMetaDataRecsAcc());
+        vlRightPanel.addComponent(buildMetaDataRecsPnl());
 
         return vlRightPanel;
     }
@@ -241,6 +240,11 @@ public class ContextView extends View {
         // common part: create layout
         Accordion metaDataRecsAcc = new MetadataRecsContext(resourceProxy, router, contextController).asAccord();
         return metaDataRecsAcc;
+    }
+
+    private Panel buildMetaDataRecsPnl() {
+        Panel metaDataRecsPnl = new MetadataRecsContext(resourceProxy, router, contextController).asPanel();
+        return metaDataRecsPnl;
     }
 
     private Panel buildLeftPanel() throws EscidocClientException {
