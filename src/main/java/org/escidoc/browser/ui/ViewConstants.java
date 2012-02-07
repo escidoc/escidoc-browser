@@ -361,7 +361,7 @@ public class ViewConstants {
     public static final String THE_PREFERENCE_REMOVED =
         "The preference was removed successfully from this users profile";
 
-    public static final String PREFERENCE_REMOVE = "Preference remove";
+    public static final String PREFERENCE_REMOVE = "Preference removed";
 
     public static final String CONTENT_MODELS = "Content Models";
 
@@ -373,7 +373,11 @@ public class ViewConstants {
     public static final String ADD_ORGANIZATIONAL_UNIT_S_METADATA = "Add Organizational Unit's Metadata";
 
     public static final String PARENTS = "Parents";
-    
+
     public static final String FLOAT_RIGHT = "floatright";
 
+    public static final String ATTRIBUTE_REMOVED = "Attribute Removed";
+
+    public static final String ATTRIBUTE_REMOVED_MESSAGE =
+        "The attribute was removed successfully from this users profile";
 }

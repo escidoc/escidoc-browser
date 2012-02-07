@@ -45,6 +45,7 @@ import de.escidoc.core.client.UserAccountHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.client.interfaces.UserAccountHandlerClientInterface;
+import de.escidoc.core.resources.aa.useraccount.Attribute;
 import de.escidoc.core.resources.aa.useraccount.Attributes;
 import de.escidoc.core.resources.aa.useraccount.Preference;
 import de.escidoc.core.resources.aa.useraccount.Preferences;
@@ -150,5 +151,31 @@ public class UserAccountRepository implements Repository {
 
     public void create(UserAccount u, String password) throws EscidocClientException {
         updatePassword(new UserProxy(client.create(u)), password);
+    }
+
+    public void updateName(UserProxy userProxy, String string) throws EscidocClientException {
+        UserAccount ua = client.retrieve(userProxy.getId());
+        ua.getProperties().setName(string);
+        client.update(ua);
+    }
+
+    public void createAttribute(UserProxy userProxy, Attribute attribute) throws EscidocClientException {
+        client.createAttribute(userProxy.getId(), attribute);
+    }
+
+    public void removeAttribute(UserProxy userProxy, String attributeName) throws EscidocClientException {
+        Preconditions.checkNotNull(userProxy, "userProxy is null: %s", userProxy);
+        Preconditions.checkNotNull(attributeName, "attributeName is null: %s", attributeName);
+        client.deleteAttribute(userProxy.getId(),
+            findAttribute(client.retrieveAttributes(userProxy.getId()), attributeName));
+    }
+
+    private static String findAttribute(Attributes list, String attributeName) {
+        for (Attribute attribute : list) {
+            if (attribute.getName().equals(attributeName)) {
+                return attribute.getObjid();
+            }
+        }
+        return null;
     }
 }
