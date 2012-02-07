@@ -1,8 +1,6 @@
 package org.escidoc.browser.controller;
 
-import java.io.IOException;
-
-import javax.xml.parsers.ParserConfigurationException;
+import com.google.common.base.Preconditions;
 
 import org.escidoc.browser.model.ContentModelService;
 import org.escidoc.browser.model.EscidocServiceLocation;
@@ -17,9 +15,13 @@ import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.tools.CreateResourcesView;
 import org.xml.sax.SAXException;
 
-import com.google.common.base.Preconditions;
+import java.io.IOException;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.aa.useraccount.UserAccount;
+import de.escidoc.core.resources.aa.useraccount.UserAccountProperties;
 import de.escidoc.core.resources.cmm.ContentModel;
 import de.escidoc.core.resources.cmm.ContentModelProperties;
 import de.escidoc.core.resources.common.reference.OrganizationalUnitRef;
@@ -98,5 +100,15 @@ public class CreateResourcesController extends Controller {
         getRouter().openControllerView(
             new ContextController(repositories, getRouter(), repositories.context().findById(newContext.getObjid())),
             true);
+    }
+
+    public void createResourceAddUserAccount(final String name, final String loginName, String password)
+        throws EscidocClientException {
+        UserAccount u = new UserAccount();
+        UserAccountProperties p = new UserAccountProperties();
+        p.setName(name);
+        p.setLoginName(loginName);
+        u.setProperties(p);
+        repositories.user().create(u, password);
     }
 }

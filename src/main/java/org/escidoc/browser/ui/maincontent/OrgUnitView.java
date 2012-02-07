@@ -4,12 +4,14 @@ import com.google.common.base.Preconditions;
 
 import com.vaadin.ui.AbstractComponentContainer;
 import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
 
+import org.escidoc.browser.controller.OrgUnitController;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
@@ -20,13 +22,16 @@ public class OrgUnitView extends View {
 
     private final ResourceProxy resourceProxy;
 
-    private Router router;
+    private final Router router;
 
-    public OrgUnitView(Router router, final ResourceProxy resourceProxy) {
+    private OrgUnitController orgUnitController;
+
+    public OrgUnitView(final Router router, final ResourceProxy resourceProxy, OrgUnitController orgUnitController) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         this.router = router;
         this.resourceProxy = resourceProxy;
+        this.orgUnitController = orgUnitController;
     }
 
     public void buildContentPanel() {
@@ -34,45 +39,39 @@ public class OrgUnitView extends View {
         this.setWidth("100.0%");
         this.setHeight("100.0%");
         this.setStyleName(Runo.PANEL_LIGHT);
-
-        // vlContentPanel assign a layout to this panel
         this.setContent(buildVlContentPanel());
     }
 
     private VerticalLayout buildVlContentPanel() {
-        // common part: create layout
-        VerticalLayout vlContentPanel = new VerticalLayout();
-        vlContentPanel.setImmediate(false);
-        vlContentPanel.setWidth("100.0%");
-        vlContentPanel.setHeight("100.0%");
-        vlContentPanel.setMargin(true, true, false, true);
+        VerticalLayout contentPanel = new VerticalLayout();
+        contentPanel.setImmediate(false);
+        contentPanel.setWidth("100.0%");
+        contentPanel.setHeight("100.0%");
+        contentPanel.setMargin(true, true, false, true);
 
         // resourcePropertiesPanel
         Panel resourcePropertiesPanel = buildResourcePropertiesPanel();
-        vlContentPanel.addComponent(resourcePropertiesPanel);
-        vlContentPanel.setExpandRatio(resourcePropertiesPanel, 1.5f);
+        contentPanel.addComponent(resourcePropertiesPanel);
+        contentPanel.setExpandRatio(resourcePropertiesPanel, 1.5f);
 
         // metaViewsPanel contains Panel for the DirectMembers & for the Metas
         Panel metaViewsPanel = buildMetaViewsPanel();
-        vlContentPanel.addComponent(metaViewsPanel);
-        vlContentPanel.setExpandRatio(metaViewsPanel, 8.0f);
+        contentPanel.addComponent(metaViewsPanel);
+        contentPanel.setExpandRatio(metaViewsPanel, 8.0f);
 
-        return vlContentPanel;
+        return contentPanel;
     }
 
     private Panel buildMetaViewsPanel() {
-        // common part: create layout
-        Panel metaViewsPanel = new Panel();
-        metaViewsPanel.setImmediate(false);
-        metaViewsPanel.setWidth("100.0%");
-        metaViewsPanel.setHeight("100.0%");
-        metaViewsPanel.setStyleName(Runo.PANEL_LIGHT);
+        Panel mdView = new Panel();
+        mdView.setImmediate(false);
+        mdView.setWidth("100.0%");
+        mdView.setHeight("100.0%");
+        mdView.setStyleName(Runo.PANEL_LIGHT);
 
-        // hlMetaViews
-        HorizontalLayout hlMetaViews = buildHlMetaViews();
-        metaViewsPanel.setContent(hlMetaViews);
+        mdView.setContent(buildHlMetaViews());
 
-        return metaViewsPanel;
+        return mdView;
     }
 
     private HorizontalLayout buildHlMetaViews() {
@@ -153,8 +152,7 @@ public class OrgUnitView extends View {
         rightPanel.setHeight("100.0%");
 
         // vlRightPanel
-        VerticalLayout vlRightPanel = buildVlRightPanel();
-        rightPanel.setContent(vlRightPanel);
+        rightPanel.setContent(buildVlRightPanel());
 
         return rightPanel;
     }
@@ -168,12 +166,16 @@ public class OrgUnitView extends View {
         vlRightPanel.setMargin(false);
 
         vlRightPanel.addComponent(buildMetaDataRecsAcc());
+        vlRightPanel.addComponent(buildParentsView());
 
         return vlRightPanel;
     }
 
+    private Component buildParentsView() {
+        return new ParentsView(resourceProxy, router.getMainWindow(), router, orgUnitController).asAccord();
+    }
+
     private Accordion buildMetaDataRecsAcc() {
-        // common part: create layout
         return new OrgUnitMetadataRecordsView(resourceProxy, router, this).asAccord();
     }
 
@@ -280,16 +282,27 @@ public class OrgUnitView extends View {
         contentLayout.addComponent(descRuler);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#hashCode()
+     */
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((resourceProxy == null) ? 0 : resourceProxy.hashCode());
+        result = prime * result + ((router == null) ? 0 : router.hashCode());
         return result;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override
-    public boolean equals(final Object obj) {
+    public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
@@ -299,7 +312,7 @@ public class OrgUnitView extends View {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final OrgUnitView other = (OrgUnitView) obj;
+        OrgUnitView other = (OrgUnitView) obj;
         if (resourceProxy == null) {
             if (other.resourceProxy != null) {
                 return false;
@@ -308,11 +321,18 @@ public class OrgUnitView extends View {
         else if (!resourceProxy.equals(other.resourceProxy)) {
             return false;
         }
+        if (router == null) {
+            if (other.router != null) {
+                return false;
+            }
+        }
+        else if (!router.equals(other.router)) {
+            return false;
+        }
         return true;
     }
 
     public void refreshView() {
         // not yet implemented.
     }
-
 }

@@ -28,20 +28,23 @@
  */
 package org.escidoc.browser.model.internal;
 
-import java.util.List;
+import com.google.common.base.Preconditions;
 
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
+
+import java.util.List;
 
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.cmm.ContentModel;
 
 public class ContentModelProxyImpl implements ResourceProxy {
 
-    private Resource resource;
+    private ContentModel resource;
 
     public ContentModelProxyImpl(Resource resource) {
-        this.resource = resource;
+        Preconditions.checkNotNull(resource, "resource is null: %s", resource);
+        this.resource = (ContentModel) resource;
     }
 
     @Override
@@ -61,42 +64,41 @@ public class ContentModelProxyImpl implements ResourceProxy {
 
     @Override
     public String getDescription() {
-        return ((ContentModel) resource).getProperties().getDescription();
+        String d = resource.getProperties().getDescription();
+        if (d == null) {
+            return "";
+        }
+        return d;
     }
 
     @Override
     public String getStatus() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return "";
     }
 
     @Override
     public String getCreator() {
-        throw new UnsupportedOperationException("Not yet implemented");
-
+        return resource.getProperties().getCreatedBy().getXLinkTitle();
     }
 
     @Override
     public String getCreatedOn() {
-        throw new UnsupportedOperationException("Not yet implemented");
-
+        return resource.getProperties().getCreationDate().toString("d.M.y, H:m");
     }
 
     @Override
     public String getModifier() {
-        throw new UnsupportedOperationException("Not yet implemented");
-
+        return "";
     }
 
     @Override
     public String getModifiedOn() {
-        throw new UnsupportedOperationException("Not yet implemented");
-
+        return "";
     }
 
     @Override
     public List<String> getRelations() {
         throw new UnsupportedOperationException("Not yet implemented");
-
     }
 
     @Override
@@ -118,6 +120,37 @@ public class ContentModelProxyImpl implements ResourceProxy {
     @Override
     public Resource getContentModel() {
         return resource;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((resource == null) ? 0 : resource.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        ContentModelProxyImpl other = (ContentModelProxyImpl) obj;
+        if (resource == null) {
+            if (other.resource != null) {
+                return false;
+            }
+        }
+        else if (!resource.equals(other.resource)) {
+            return false;
+        }
+        return true;
     }
 
 }

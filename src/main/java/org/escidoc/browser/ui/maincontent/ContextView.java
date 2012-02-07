@@ -101,6 +101,7 @@ public class ContextView extends View {
         Preconditions.checkNotNull(router, "router is null: %s", router);
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        Preconditions.checkNotNull(contextController, "contextController is null: %s", contextController);
 
         this.serviceLocation = router.getServiceLocation();
         this.router = router;
@@ -155,7 +156,7 @@ public class ContextView extends View {
         return vlContentPanel;
     }
 
-    private void addHorizontalRuler(AbstractComponentContainer contentLayout) {
+    private static void addHorizontalRuler(AbstractComponentContainer contentLayout) {
         final Label descRuler = new Label("<hr />", Label.CONTENT_RAW);
         descRuler.setStyleName("hr");
         contentLayout.addComponent(descRuler);
@@ -231,8 +232,7 @@ public class ContextView extends View {
         vlRightPanel.setMargin(false);
 
         // metaDataRecsAcc
-        Accordion metaDataRecsAcc = buildMetaDataRecsAcc();
-        vlRightPanel.addComponent(metaDataRecsAcc);
+        vlRightPanel.addComponent(buildMetaDataRecsAcc());
 
         return vlRightPanel;
     }

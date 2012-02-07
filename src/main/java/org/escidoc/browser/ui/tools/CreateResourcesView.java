@@ -10,6 +10,7 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -92,7 +93,125 @@ public class CreateResourcesView extends View {
         vlContentPanel.addComponent(pnlCreateOrgUnit);
         vlContentPanel.setExpandRatio(pnlCreateOrgUnit, 0.3f);
 
+        // pnlCreateOrgUnit
+        final Accordion createUserAccount = buildCreateUserAccount();
+        vlContentPanel.addComponent(createUserAccount);
+        vlContentPanel.setExpandRatio(createUserAccount, 0.3f);
+
         return vlContentPanel;
+    }
+
+    private Accordion buildCreateUserAccount() {
+        // common part: create layout
+        final Accordion add = new Accordion();
+        add.setImmediate(false);
+        add.setWidth("100.0%");
+        add.setHeight("100.0%");
+
+        // vlPnlCreateOrgUnit
+        final VerticalLayout layout = new VerticalLayout();
+        layout.setImmediate(false);
+        layout.setWidth("100.0%");
+        layout.setHeight("100.0%");
+        layout.setMargin(false);
+        formAddUser(layout);
+        add.addTab(layout, "Create User Account");
+
+        return add;
+    }
+
+    private void formAddUser(VerticalLayout layout) {
+        layout.addComponent(buildCreateUserAccountForm());
+    }
+
+    private Form buildCreateUserAccountForm() {
+        final Form form = new Form();
+        form.setImmediate(true);
+
+        // loginName
+        final TextField loginNameField = new TextField("Login Name");
+        loginNameField.setImmediate(false);
+        loginNameField.setWidth("-1px");
+        loginNameField.setHeight("-1px");
+        form.addField("loginName", loginNameField);
+
+        // Name
+        final TextField realNameField = new TextField();
+        realNameField.setCaption("Real Name");
+        realNameField.setImmediate(false);
+        realNameField.setWidth("-1px");
+        realNameField.setHeight("-1px");
+        realNameField.setInvalidAllowed(false);
+        realNameField.setRequired(true);
+        form.addField("realName", realNameField);
+
+        // Password
+        final PasswordField txtPassword = new PasswordField("Password");
+        txtPassword.setImmediate(false);
+        txtPassword.setNullSettingAllowed(false);
+        txtPassword.setWidth("-1px");
+        txtPassword.setHeight("-1px");
+        form.addField("txtPassword", txtPassword);
+
+        // Verify Password
+        final PasswordField txtPassword2 = new PasswordField("Verify Password");
+        txtPassword2.setImmediate(false);
+        txtPassword2.setWidth("-1px");
+        txtPassword2.setHeight("-1px");
+        form.addField("txtPassword2", txtPassword2);
+
+        // btnAddContext
+        final Button addButton = new Button("Submit", new Button.ClickListener() {
+            private static final long serialVersionUID = -1373866726572059290L;
+
+            @Override
+            public void buttonClick(final ClickEvent event) {
+                try {
+                    form.commit();
+                    if (!txtPassword.getValue().equals(txtPassword2.getValue())) {
+                        router
+                            .getMainWindow()
+                            .showNotification(
+                                "Password verification failed, please try again and make sure you are typing the same password twice ",
+                                Window.Notification.TYPE_WARNING_MESSAGE);
+                        return;
+                    }
+
+                    controller.createResourceAddUserAccount(realNameField.getValue().toString(), loginNameField
+                        .getValue().toString(), txtPassword.getValue().toString());
+
+                    router.getMainWindow().showNotification(
+                        "User Account" + realNameField.getValue().toString() + " created successfully ",
+                        Window.Notification.TYPE_TRAY_NOTIFICATION);
+
+                    form.getField("loginName").setValue("");
+                    form.getField("realName").setValue("");
+                    form.getField("txtPassword").setValue("");
+                    form.getField("txtPassword2").setValue("");
+                }
+                catch (final EmptyValueException e) {
+                    router.getMainWindow().showNotification("Please fill in all the required elements in the form",
+                        Window.Notification.TYPE_TRAY_NOTIFICATION);
+                }
+                catch (final Exception e) {
+                    router.getMainWindow().showNotification(
+                        ViewConstants.ERROR_CREATING_RESOURCE + e.getLocalizedMessage(),
+                        Window.Notification.TYPE_ERROR_MESSAGE);
+                }
+            }
+        });
+
+        addButton.setWidth("-1px");
+        addButton.setHeight("-1px");
+        form.getLayout().addComponent(addButton);
+
+        form.getField("loginName").setRequired(true);
+        form.getField("loginName").setRequiredError("Login Name is missing");
+
+        form.getField("realName").setRequired(true);
+        form.getField("realName").setRequiredError("Real Name is missing");
+
+        return form;
     }
 
     private Accordion buildPnlCreateContext() {

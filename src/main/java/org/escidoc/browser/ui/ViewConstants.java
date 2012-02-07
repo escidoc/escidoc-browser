@@ -372,6 +372,8 @@ public class ViewConstants {
 
     public static final String ADD_ORGANIZATIONAL_UNIT_S_METADATA = "Add Organizational Unit's Metadata";
 
+    public static final String PARENTS = "Parents";
+    
     public static final String FLOAT_RIGHT = "floatright";
 
 }

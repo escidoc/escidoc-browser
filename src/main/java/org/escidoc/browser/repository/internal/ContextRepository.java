@@ -28,10 +28,7 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import gov.loc.www.zing.srw.SearchRetrieveRequestType;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.base.Preconditions;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
@@ -42,7 +39,8 @@ import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.helper.Util;
 import org.escidoc.browser.util.Utils;
 
-import com.google.common.base.Preconditions;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.escidoc.core.client.ContextHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -56,6 +54,7 @@ import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.om.context.Context;
 import de.escidoc.core.resources.om.context.ContextProperties;
 import de.escidoc.core.resources.om.context.OrganizationalUnitRefs;
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 public class ContextRepository implements Repository {
 
@@ -154,15 +153,14 @@ public class ContextRepository implements Repository {
 
     public Context delOrganizationalUnit(String contextId, String orgUnitId) throws EscidocClientException {
         Context context = client.retrieve(contextId);
-        ContextProperties properties = context.getProperties();
-        OrganizationalUnitRefs organizationalUnitRefs = properties.getOrganizationalUnitRefs();
+        OrganizationalUnitRefs organizationalUnitRefs = context.getProperties().getOrganizationalUnitRefs();
         for (OrganizationalUnitRef organizationalUnitRef : organizationalUnitRefs) {
             if (organizationalUnitRef.getObjid().equals(orgUnitId)) {
                 organizationalUnitRefs.remove(new OrganizationalUnitRef(orgUnitId));
                 break;
             }
         }
-        properties.setOrganizationalUnitRefs(organizationalUnitRefs);
+        context.getProperties().setOrganizationalUnitRefs(organizationalUnitRefs);
         return client.update(context);
     }
 

@@ -33,6 +33,8 @@ import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.maincontent.OrgUnitView;
 
+import de.escidoc.core.client.exceptions.EscidocClientException;
+
 public class OrgUnitController extends Controller {
 
     public OrgUnitController(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
@@ -42,7 +44,28 @@ public class OrgUnitController extends Controller {
 
     @Override
     public void createView() {
-        view = new OrgUnitView(getRouter(), getResourceProxy());
+        view = new OrgUnitView(getRouter(), getResourceProxy(), this);
         ((OrgUnitView) view).buildContentPanel();
+    }
+
+    public void removeParent(ResourceProxy resourceProxy, String parentId) {
+        try {
+            getRepositories().organization().removeParent(resourceProxy, parentId);
+            showTrayMessage("Updated!", "Parent was removed successfully");
+        }
+        catch (EscidocClientException e) {
+            showError("Unable to remove. An error occurred " + e.getMessage());
+        }
+    }
+
+    public void addParent(ResourceProxy resourceProxy, String parentId) {
+        try {
+            getRepositories().organization().addParent(resourceProxy, parentId);
+            showTrayMessage("Updated!", "Organizational Unit was added Successfully");
+        }
+        catch (EscidocClientException e) {
+            showError("Unable to add the OrganizationalUnit. An error occurred " + e.getLocalizedMessage());
+        }
+
     }
 }
