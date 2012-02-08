@@ -1,15 +1,6 @@
 package org.escidoc.browser.ui.maincontent;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.ui.Accordion;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.BaseTheme;
+import java.util.List;
 
 import org.escidoc.browser.controller.OrgUnitController;
 import org.escidoc.browser.model.ResourceModel;
@@ -18,7 +9,19 @@ import org.escidoc.browser.repository.internal.OrgUnitProxy;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 
-import java.util.List;
+import com.google.common.base.Preconditions;
+import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.BaseTheme;
+import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -51,11 +54,46 @@ public class ParentsView {
         return accordion;
     }
 
+    public Panel asPanel() {
+        final Panel pnlmetadataRecs = new Panel();
+        pnlmetadataRecs.setSizeFull();
+        pnlmetadataRecs.setStyleName(Runo.PANEL_LIGHT);
+        VerticalLayout vl = new VerticalLayout();
+        vl.setImmediate(false);
+        vl.setWidth("100.0%");
+        vl.setHeight("100.0%");
+        vl.setMargin(false);
+        vl.addComponent(buildParentsList());
+
+        pnlmetadataRecs.setContent(vl);
+        return pnlmetadataRecs;
+    }
+
+    private void buildPanelHeader(CssLayout cssLayout, String name) {
+        cssLayout.addStyleName("v-accordion-item-caption v-caption v-captiontext");
+        cssLayout.setWidth("100%");
+        cssLayout.setMargin(false);
+
+        final Label nameofPanel = new Label(name, Label.CONTENT_RAW);
+        nameofPanel.setStyleName("accordion v-captiontext");
+        nameofPanel.setWidth("70%");
+        cssLayout.addComponent(nameofPanel);
+    }
+
     @SuppressWarnings("serial")
     private Component buildParentsList() {
+        // ViewConstants.PARENTS
         final Panel panel = new Panel();
-        panel.setWidth("100%");
-        panel.setHeight("100%");
+        panel.setSizeFull();
+        panel.setStyleName(Runo.PANEL_LIGHT);
+
+        VerticalLayout vl = new VerticalLayout();
+        vl.setSizeFull();
+
+        final CssLayout cssLayout = new CssLayout();
+        cssLayout.setHeight("20px");
+        buildPanelHeader(cssLayout, ViewConstants.PARENTS);
+        ThemeResource ICON = new ThemeResource("images/assets/plus.png");
 
         List<ResourceModel> l = orgUnitProxy.getParentList();
         for (ResourceModel rm : l) {
@@ -64,9 +102,11 @@ public class ParentsView {
             panel.addComponent(button);
         }
 
-        Button btnAdd = new Button("+/-");
+        Button btnAdd = new Button();
         btnAdd.setStyleName(BaseTheme.BUTTON_LINK);
-        panel.addComponent(btnAdd);
+        btnAdd.addStyleName("floatright paddingtop3");
+        btnAdd.setWidth("20px");
+        btnAdd.setIcon(ICON);
         btnAdd.addListener(new Button.ClickListener() {
 
             @Override
@@ -100,7 +140,9 @@ public class ParentsView {
                 mainWindow.addWindow(subwindow);
             }
         });
-
+        cssLayout.addComponent(btnAdd);
+        vl.addComponent(cssLayout);
+        panel.setContent(vl);
         return panel;
     }
 }

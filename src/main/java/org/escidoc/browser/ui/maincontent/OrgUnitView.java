@@ -1,21 +1,19 @@
 package org.escidoc.browser.ui.maincontent;
 
-import com.google.common.base.Preconditions;
+import org.escidoc.browser.controller.OrgUnitController;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.ui.AbstractComponentContainer;
-import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
-
-import org.escidoc.browser.controller.OrgUnitController;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
 
 @SuppressWarnings("serial")
 public class OrgUnitView extends View {
@@ -172,11 +170,11 @@ public class OrgUnitView extends View {
     }
 
     private Component buildParentsView() {
-        return new ParentsView(resourceProxy, router.getMainWindow(), router, orgUnitController).asAccord();
+        return new ParentsView(resourceProxy, router.getMainWindow(), router, orgUnitController).asPanel();
     }
 
-    private Accordion buildMetaDataRecsAcc() {
-        return new OrgUnitMetadataRecordsView(resourceProxy, router, this).asAccord();
+    private Panel buildMetaDataRecsAcc() {
+        return new OrgUnitMetadataRecordsView(resourceProxy, router, this).asPanel();
     }
 
     private Panel buildResourcePropertiesPanel() {
