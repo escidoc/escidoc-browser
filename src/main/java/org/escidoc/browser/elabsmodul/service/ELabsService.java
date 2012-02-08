@@ -115,23 +115,17 @@ public class ELabsService implements ILabsService {
             LOG.error(e.getMessage());
         }
 
-        InvestigationBean investigationBean = null;
-        try {
-            investigationBean = resolveInvestigation(investigationProxy);
-            if (investigationBean == null) {
-                LOG.error("InvestigationBean is null");
-                showError("Internal error");
-                return null;
-            }
-
-            if (investigationBean.getRigBean() == null) {
-                LOG.error("RigBean is null");
-                showError("Internal error");
-                return null;
-            }
+        InvestigationBean investigationBean = resolveInvestigation(investigationProxy);
+        if (investigationBean == null) {
+            LOG.error("InvestigationBean is null");
+            showError("Internal error");
+            return null;
         }
-        catch (final EscidocBrowserException e) {
-            LOG.error(e.getMessage());
+
+        if (investigationBean.getRigBean() == null) {
+            LOG.error("RigBean is null");
+            showError("Internal error");
+            return null;
         }
 
         ItemProxy rigProxy = null;
@@ -317,7 +311,7 @@ public class ELabsService implements ILabsService {
         return new StringBuilder(instrumentBean.getName())
             .append(' ')
             .append("(")
-            .append(instrumentBean.getIdentifier())
+            .append(instrumentBean.getObjectId())
             .append(")")
             .toString();
         // @formatter:on
@@ -411,7 +405,7 @@ public class ELabsService implements ILabsService {
         return hasError;
     }
 
-    private void sendStopRequest() {
+    private static void sendStopRequest() {
         LOG.info("Service> Send configuration to stop...");
     }
 
@@ -451,7 +445,7 @@ public class ELabsService implements ILabsService {
         sendStopRequest();
     }
 
-    private InvestigationBean resolveInvestigation(final ContainerProxy containerProxy) throws EscidocBrowserException {
+    private static InvestigationBean resolveInvestigation(final ContainerProxy containerProxy) {
         final String URI_DC = "http://purl.org/dc/elements/1.1/";
         final String URI_EL = "http://escidoc.org/ontologies/bw-elabs/re#";
         final String URI_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
@@ -559,7 +553,7 @@ public class ELabsService implements ILabsService {
         return rigBean;
     }
 
-    private InstrumentBean resolveInstrument(final ResourceProxy resourceProxy) throws EscidocBrowserException {
+    private static InstrumentBean resolveInstrument(final ResourceProxy resourceProxy) throws EscidocBrowserException {
 
         if (resourceProxy == null || !(resourceProxy instanceof ItemProxy)) {
             throw new EscidocBrowserException("NOT an ItemProxy", null);
