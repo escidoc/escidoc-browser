@@ -72,6 +72,9 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class ELabsService implements ILabsService {
 
+    // FIXME read email from user attribute a
+    private static final String FIZ_KARLSRUHE_DE = "@fiz-karlsruhe.de";
+
     private final String investigationId;
 
     private final Repositories repositories;
@@ -120,15 +123,15 @@ public class ELabsService implements ILabsService {
                 showError("Internal error");
                 return null;
             }
+
+            if (investigationBean.getRigBean() == null) {
+                LOG.error("RigBean is null");
+                showError("Internal error");
+                return null;
+            }
         }
         catch (final EscidocBrowserException e) {
             LOG.error(e.getMessage());
-        }
-
-        if (investigationBean.getRigBean() == null) {
-            LOG.error("RigBean is null");
-            showError("Internal error");
-            return null;
         }
 
         ItemProxy rigProxy = null;
@@ -178,13 +181,6 @@ public class ELabsService implements ILabsService {
             final String error = "Infrastructure's endpoint is not set";
             LOG.error(error);
             errorStrings.append(error + "<br/>");
-        }
-
-        final String email = router.getApp().getCurrentUser().getLoginName() + "@fiz-karlsruhe.de";
-        if (email == null || email.isEmpty()) {
-            final String error = "User's email address is not set";
-            LOG.error(error);
-            warningStrings.append(error + "<br/>");
         }
 
         final String contentModelId = ELabsCache.getGeneratedItemCMMId().get(0);
@@ -274,12 +270,15 @@ public class ELabsService implements ILabsService {
             configurationMap.put(ELabsServiceConstants.WORKSPACE_ID, workspaceId);
             configurationMap.put(ELabsServiceConstants.USER_HANDLE, userHandle);
             configurationMap.put(ELabsServiceConstants.INFRASTRUCTURE_ENDPOINT, infrastructureEndpoint);
-            configurationMap.put(ELabsServiceConstants.USER_EMAIL_ADDRESS, email);
+            configurationMap.put(ELabsServiceConstants.USER_EMAIL_ADDRESS, router
+                .getApp().getCurrentUser().getLoginName()
+                + FIZ_KARLSRUHE_DE);
             configurationMap.put(ELabsServiceConstants.CONTENT_MODEL_ID, contentModelId);
             configurationMap.put(ELabsServiceConstants.CHECK_SUM_TYPE, checkSumType);
             configurationMap.put(ELabsServiceConstants.EXPERIMENT_ID, experimentId);
             configurationMap.put(ELabsServiceConstants.EXPERIMENT_NAME, experimentTitle);
             configurationMap.put(ELabsServiceConstants.EXPERIMENT_DESCRIPTION, experimentDescr);
+            configurationMap.put(ELabsServiceConstants.INSTRUMENT_NAME, createInstrumentNameAndId(instrumentBean));
             configurationMap.put(ELabsServiceConstants.MONITORING_DURATION, "" + duration);
             configurationMap.put(ELabsServiceConstants.DEPOSIT_SERVER_ENDPOINT, depositEndpoint);
 
@@ -313,7 +312,18 @@ public class ELabsService implements ILabsService {
         return result;
     }
 
-    private List<String[]> buildConfiguration(final List<Map<String, String>> list) {
+    private static String createInstrumentNameAndId(final InstrumentBean instrumentBean) {
+        // @formatter:off
+        return new StringBuilder(instrumentBean.getName())
+            .append(' ')
+            .append("(")
+            .append(instrumentBean.getIdentifier())
+            .append(")")
+            .toString();
+        // @formatter:on
+    }
+
+    private static List<String[]> buildConfiguration(final List<Map<String, String>> list) {
         Preconditions.checkNotNull(list, "Config list is null");
         final List<String[]> result = new ArrayList<String[]>();
 
@@ -346,7 +356,7 @@ public class ELabsService implements ILabsService {
         return result;
     }
 
-    private boolean sendStartRequest(final List<String[]> propertyList) {
+    private static boolean sendStartRequest(final List<String[]> propertyList) {
         LOG.info("Service> Send configuration to start...");
 
         boolean hasError = false;
@@ -424,11 +434,9 @@ public class ELabsService implements ILabsService {
                 showError("Communication error");
                 throw new EscidocBrowserException();
             }
-            else {
-                this.router
-                    .getApp().getMainWindow()
-                    .showNotification("Success", "Configuration is sent!", Notification.TYPE_TRAY_NOTIFICATION);
-            }
+            this.router
+                .getApp().getMainWindow()
+                .showNotification("Success", "Configuration is sent!", Notification.TYPE_TRAY_NOTIFICATION);
         }
         catch (final EscidocBrowserException e) {
             LOG.error(e.getMessage());
