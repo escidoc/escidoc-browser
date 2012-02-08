@@ -27,7 +27,6 @@ import org.escidoc.browser.ui.maincontent.View;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.aa.useraccount.Attribute;
-import de.escidoc.core.resources.aa.useraccount.Attributes;
 import de.escidoc.core.resources.aa.useraccount.Preference;
 import de.escidoc.core.resources.aa.useraccount.Preferences;
 
@@ -71,8 +70,7 @@ public class UserAccountView extends View {
         contentPanel.setHeight("100.0%");
 
         // vlContentPanel
-        VerticalLayout vlContentPanel = buildVlContentPanel();
-        contentPanel.setContent(vlContentPanel);
+        contentPanel.setContent(buildVlContentPanel());
 
         return contentPanel;
     }
@@ -110,6 +108,7 @@ public class UserAccountView extends View {
 
         try {
             buildEditUserForm(vlAccCreateContext);
+
         }
         catch (EscidocClientException e) {
             router.getMainWindow().showNotification(ViewConstants.ERROR_CREATING_RESOURCE + e.getLocalizedMessage(),
@@ -207,12 +206,14 @@ public class UserAccountView extends View {
         vlAccCreateContext.addComponent(form);
 
         vlAccCreateContext.addComponent(buildPreferencesView());
-        vlAccCreateContext.addComponent(buildAttributesView());
+        Component attributesView = buildAttributesView();
+        vlAccCreateContext.addComponent(attributesView);
     }
 
     private Component buildAttributesView() throws EscidocClientException {
         final Panel panel = new Panel("Attributes");
-        final UserAccountAttributes attributeTable = new UserAccountAttributes(userProxy, ur.getAttributes(userProxy), ur, uac);
+        final UserAccountAttributes attributeTable =
+            new UserAccountAttributes(userProxy, ur.getAttributes(userProxy), ur, uac);
         panel.addComponent(attributeTable);
 
         final Button addAttributeButton = new Button();
@@ -244,22 +245,28 @@ public class UserAccountView extends View {
                 btnadd.addListener(new Button.ClickListener() {
                     @Override
                     public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-                        try {
-                            ur.createAttribute(userProxy, new Attribute(key.getValue().toString(), value
-                                .getValue().toString()));
-                            router.getMainWindow().showNotification("Attribute added successfully ",
-                                Window.Notification.TYPE_TRAY_NOTIFICATION);
-                            hl.removeAllComponents();
-                            addAttributeButton.setEnabled(true);
-                            attributeTable.createItem(attributeTable.getTableContainer(), key.getValue().toString(),
-                                key.getValue().toString(), value.getValue().toString());
+                        if (isValid(key, value)) {
+                            showMessage();
                         }
-                        catch (EscidocClientException e) {
-                            router.getMainWindow().showNotification(
-                                ViewConstants.ERROR_CREATING_USER_PREFERENCE + e.getLocalizedMessage(),
-                                Window.Notification.TYPE_ERROR_MESSAGE);
+                        else {
+                            try {
+                                ur.createAttribute(userProxy, new Attribute(key.getValue().toString(), value
+                                    .getValue().toString()));
+                                router.getMainWindow().showNotification("Attribute added successfully ",
+                                    Window.Notification.TYPE_TRAY_NOTIFICATION);
+                                hl.removeAllComponents();
+                                addAttributeButton.setEnabled(true);
+                                attributeTable.createItem(attributeTable.getTableContainer(),
+                                    key.getValue().toString(), key.getValue().toString(), value.getValue().toString());
+                            }
+                            catch (EscidocClientException e) {
+                                router.getMainWindow().showNotification(
+                                    ViewConstants.ERROR_CREATING_USER_PREFERENCE + e.getLocalizedMessage(),
+                                    Window.Notification.TYPE_ERROR_MESSAGE);
+                            }
                         }
                     }
+
                 });
                 hl.addComponent(key);
                 hl.addComponent(value);
@@ -272,6 +279,20 @@ public class UserAccountView extends View {
 
         panel.addComponent(addAttributeButton);
         return panel;
+    }
+
+    private static boolean isValid(final TextField key, final TextField value) {
+        return lessThanTwoChars(key) || lessThanTwoChars(value);
+    }
+
+    private static boolean lessThanTwoChars(final TextField key) {
+        return key.getValue().toString().length() < 2;
+    }
+
+    private void showMessage() {
+        router.getMainWindow().showNotification(
+            "Both the name and the value are required, please do not leave them blank",
+            Window.Notification.TYPE_ERROR_MESSAGE);
     }
 
     private Panel buildPreferencesView() throws EscidocClientException {
@@ -310,22 +331,28 @@ public class UserAccountView extends View {
                     @Override
                     public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
 
-                        try {
-                            ur.createPreference(userProxy, new Preference(key.getValue().toString(), value
-                                .getValue().toString()));
-                            router.getMainWindow().showNotification("Preference added successfully ",
-                                Window.Notification.TYPE_TRAY_NOTIFICATION);
-                            hl.removeAllComponents();
-                            addPreference.setEnabled(true);
-                            userPrefTable.createItem(userPrefTable.getTableContainer(), key.getValue().toString(), key
-                                .getValue().toString(), value.getValue().toString());
+                        if (isValid(key, value)) {
+                            showMessage();
                         }
-                        catch (EscidocClientException e) {
-                            router.getMainWindow().showNotification(
-                                ViewConstants.ERROR_CREATING_USER_PREFERENCE + e.getLocalizedMessage(),
-                                Window.Notification.TYPE_ERROR_MESSAGE);
+                        else {
+                            try {
+                                ur.createPreference(userProxy, new Preference(key.getValue().toString(), value
+                                    .getValue().toString()));
+                                router.getMainWindow().showNotification("Preference added successfully ",
+                                    Window.Notification.TYPE_TRAY_NOTIFICATION);
+                                hl.removeAllComponents();
+                                addPreference.setEnabled(true);
+                                userPrefTable.createItem(userPrefTable.getTableContainer(), key.getValue().toString(),
+                                    key.getValue().toString(), value.getValue().toString());
+                            }
+                            catch (EscidocClientException e) {
+                                router.getMainWindow().showNotification(
+                                    ViewConstants.ERROR_CREATING_USER_PREFERENCE + e.getLocalizedMessage(),
+                                    Window.Notification.TYPE_ERROR_MESSAGE);
+                            }
                         }
                     }
+
                 });
                 hl.addComponent(key);
                 hl.addComponent(value);
