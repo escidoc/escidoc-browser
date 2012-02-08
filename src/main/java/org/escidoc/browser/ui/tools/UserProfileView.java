@@ -2,7 +2,6 @@ package org.escidoc.browser.ui.tools;
 
 import org.escidoc.browser.controller.UserProfileController;
 import org.escidoc.browser.model.CurrentUser;
-import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.View;
@@ -243,7 +242,7 @@ public class UserProfileView extends View {
                 btnadd.addListener(new Button.ClickListener() {
                     @Override
                     public void buttonClick(ClickEvent event) {
-                        if ((key.getValue() == "") || (value.getValue() == "")) {
+                        if ((key.getValue().toString().length() < 2) || (value.getValue().toString().length() < 2)) {
                             router.getMainWindow().showNotification(
                                 "Both the name and the value are required, please do not leave them blank",
                                 Window.Notification.TYPE_ERROR_MESSAGE);
