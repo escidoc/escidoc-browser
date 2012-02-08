@@ -1,7 +1,6 @@
 package org.escidoc.browser.ui.listeners;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.util.HierarchicalContainer;
+import java.util.Collection;
 
 import org.escidoc.browser.controller.ContextController;
 import org.escidoc.browser.controller.Controller;
@@ -11,7 +10,8 @@ import org.escidoc.browser.repository.internal.OrgUnitService;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.view.helpers.DragnDropHelper;
 
-import java.util.Collection;
+import com.vaadin.data.Item;
+import com.vaadin.data.util.HierarchicalContainer;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.reference.OrganizationalUnitRef;
@@ -59,10 +59,13 @@ public class AddOrgUnitstoContext extends DragnDropHelper {
             Collection<OrganizationalUnit> children = orgUnitService.retrieveChildren(organizationalUnit.getObjid());
             for (OrganizationalUnit childrenOrgUnits : children) {
                 item = orgUnitContainer.addItem(childrenOrgUnits.getObjid());
-                item.getItemProperty(PROPERTY_NAME).setValue(childrenOrgUnits.getProperties().getName());
-                item.getItemProperty(PROPERTY_HREF).setValue(childrenOrgUnits.getXLinkHref());
-                orgUnitContainer.setParent(childrenOrgUnits.getObjid(), organizationalUnit.getObjid());
-                orgUnitContainer.setChildrenAllowed(childrenOrgUnits.getObjid(), false);
+                if (item != null) {
+                    item.getItemProperty(PROPERTY_NAME).setValue(childrenOrgUnits.getProperties().getName());
+                    item.getItemProperty(PROPERTY_HREF).setValue(childrenOrgUnits.getXLinkHref());
+                    orgUnitContainer.setParent(childrenOrgUnits.getObjid(), organizationalUnit.getObjid());
+                    orgUnitContainer.setChildrenAllowed(childrenOrgUnits.getObjid(), false);
+                }
+
             }
         }
         return orgUnitContainer;

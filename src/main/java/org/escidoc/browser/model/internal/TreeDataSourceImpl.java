@@ -28,13 +28,8 @@
  */
 package org.escidoc.browser.model.internal;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.data.Container;
-import com.vaadin.data.Item;
-import com.vaadin.data.util.HierarchicalContainer;
-import com.vaadin.terminal.Resource;
-import com.vaadin.terminal.ThemeResource;
+import java.util.Collection;
+import java.util.List;
 
 import org.escidoc.browser.model.PropertyId;
 import org.escidoc.browser.model.ResourceModel;
@@ -43,8 +38,12 @@ import org.escidoc.browser.model.TreeDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.List;
+import com.google.common.base.Preconditions;
+import com.vaadin.data.Container;
+import com.vaadin.data.Item;
+import com.vaadin.data.util.HierarchicalContainer;
+import com.vaadin.terminal.Resource;
+import com.vaadin.terminal.ThemeResource;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -195,6 +194,8 @@ public class TreeDataSourceImpl implements TreeDataSource {
                 return dataSource.removeItem(resourceModel);
             case ORG_UNIT:
                 return dataSource.removeItem(resourceModel);
+            case CONTEXT:
+                return false;
             default:
                 throw new UnsupportedOperationException("Cannot remove resource with the type: "
                     + resourceModel.getType());
