@@ -28,16 +28,17 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
 import java.io.IOException;
 import java.io.StringReader;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 public class XmlUtil {
 
@@ -70,5 +71,11 @@ public class XmlUtil {
             LOG.error(e.getMessage());
             return !isWellFormed;
         }
+    }
+
+    public static Document string2Dom(final String fileContent) throws SAXException, IOException,
+        ParserConfigurationException {
+        return DocumentBuilderFactory
+            .newInstance().newDocumentBuilder().parse(new InputSource(new StringReader(fileContent)));
     }
 }
