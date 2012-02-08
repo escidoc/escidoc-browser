@@ -332,6 +332,6 @@ public class OrgUnitView extends View {
     }
 
     public void refreshView() {
-        orgUnitController.showViewByReloading();
+        orgUnitController.refreshView();
     }
 }
