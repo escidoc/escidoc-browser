@@ -41,6 +41,8 @@ final public class ELabsServiceConstants {
 
     public static final String WORKSPACE_ID = "WorkspaceID";
 
+    public static final String INSTRUMENT_NAME = "InstrumentName";
+
     public static final String MD5 = "MD5";
 
     public static final String EXPERIMENT_ID = "ExperimentID";
@@ -67,5 +69,4 @@ final public class ELabsServiceConstants {
 
     public static final String FILETYPE = "FileType";
 
-    // public static final String UNEXPECTED_ERROR_OCCURRED = "An unexpected error occurred! See log for details.";
 }
