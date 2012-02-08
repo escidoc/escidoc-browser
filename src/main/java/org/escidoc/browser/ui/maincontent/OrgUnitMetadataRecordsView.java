@@ -1,16 +1,7 @@
 package org.escidoc.browser.ui.maincontent;
 
-import java.net.URISyntaxException;
-
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.repository.internal.ActionIdConstants;
-import org.escidoc.browser.repository.internal.OrgUnitProxy;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Accordion;
@@ -25,6 +16,17 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Runo;
 
+import org.escidoc.browser.controller.OrgUnitController;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.repository.internal.ActionIdConstants;
+import org.escidoc.browser.repository.internal.OrgUnitProxy;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.net.URISyntaxException;
+
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.MetadataRecords;
@@ -33,23 +35,24 @@ public class OrgUnitMetadataRecordsView {
 
     private final static Logger LOG = LoggerFactory.getLogger(OrgUnitMetadataRecordsView.class);
 
-    private VerticalLayout vl = new VerticalLayout();
-
-    private Panel outerPanel = new Panel();
-
     private OrgUnitProxy ou;
 
     private Router router;
 
     private OrgUnitView view;
 
-    public OrgUnitMetadataRecordsView(ResourceProxy resourceProxy, Router router, OrgUnitView view) {
+    private OrgUnitController controller;
+
+    public OrgUnitMetadataRecordsView(ResourceProxy resourceProxy, Router router, OrgUnitController controller,
+        OrgUnitView view) {
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         Preconditions.checkNotNull(router, "router is null: %s", router);
+        Preconditions.checkNotNull(controller, "controller is null: %s", controller);
         Preconditions.checkNotNull(view, "view is null: %s", view);
 
         ou = (OrgUnitProxy) resourceProxy;
         this.router = router;
+        this.controller = controller;
         this.view = view;
     }
 
@@ -88,8 +91,8 @@ public class OrgUnitMetadataRecordsView {
 
         if (canAddMetadata()) {
             final Button addNewOrgUnitBtn = new Button();
-            addNewOrgUnitBtn
-                .addListener(new OnAddOrgUnitMetadata(ou, router.getRepositories(), router.getMainWindow()));
+            addNewOrgUnitBtn.addListener(new OnAddOrgUnitMetadata(ou, controller, router.getRepositories(), router
+                .getMainWindow()));
             addNewOrgUnitBtn.setStyleName(BaseTheme.BUTTON_LINK);
             addNewOrgUnitBtn.addStyleName("floatright paddingtop3");
             addNewOrgUnitBtn.setWidth("20px");

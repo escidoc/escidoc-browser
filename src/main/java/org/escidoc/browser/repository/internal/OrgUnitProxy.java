@@ -121,4 +121,36 @@ public class OrgUnitProxy implements ResourceProxy {
         }
         return list;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((ou == null) ? 0 : ou.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        OrgUnitProxy other = (OrgUnitProxy) obj;
+        if (ou == null) {
+            if (other.ou != null) {
+                return false;
+            }
+        }
+        else if (!ou.equals(other.ou)) {
+            return false;
+        }
+        return true;
+    }
+
 }

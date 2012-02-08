@@ -18,6 +18,7 @@ import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Window;
 
+import org.escidoc.browser.controller.OrgUnitController;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.ViewConstants;
@@ -57,12 +58,17 @@ public final class OnAddOrgUnitMetadata implements Button.ClickListener {
 
     private Window mainWindow;
 
-    public OnAddOrgUnitMetadata(ResourceProxy ou, Repositories repositories, Window mainWindow) {
+    private OrgUnitController controller;
+
+    public OnAddOrgUnitMetadata(ResourceProxy ou, OrgUnitController controller, Repositories repositories,
+        Window mainWindow) {
         Preconditions.checkNotNull(ou, "ou is null: %s", ou);
+        Preconditions.checkNotNull(controller, "controller is null: %s", controller);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
 
         this.ou = ou;
+        this.controller = controller;
         this.repositories = repositories;
         this.mainWindow = mainWindow;
     }
@@ -183,6 +189,7 @@ public final class OnAddOrgUnitMetadata implements Button.ClickListener {
                         try {
                             metadataRecord.setContent(getMetadataContent());
                             repositories.organization().addMetaData(ou, metadataRecord);
+                            controller.refreshView();
                             upload.setEnabled(true);
                             subwindow.getParent().removeWindow(subwindow);
                         }

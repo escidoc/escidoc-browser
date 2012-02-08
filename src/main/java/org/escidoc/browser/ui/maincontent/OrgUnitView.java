@@ -1,12 +1,7 @@
 package org.escidoc.browser.ui.maincontent;
 
-import org.escidoc.browser.controller.OrgUnitController;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.ui.AbstractComponentContainer;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -14,6 +9,12 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
+
+import org.escidoc.browser.controller.OrgUnitController;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
 
 @SuppressWarnings("serial")
 public class OrgUnitView extends View {
@@ -174,7 +175,7 @@ public class OrgUnitView extends View {
     }
 
     private Panel buildMetaDataRecsAcc() {
-        return new OrgUnitMetadataRecordsView(resourceProxy, router, this).asPanel();
+        return new OrgUnitMetadataRecordsView(resourceProxy, router, orgUnitController, this).asPanel();
     }
 
     private Panel buildResourcePropertiesPanel() {
@@ -331,6 +332,6 @@ public class OrgUnitView extends View {
     }
 
     public void refreshView() {
-        // not yet implemented.
+        orgUnitController.showViewByReloading();
     }
 }

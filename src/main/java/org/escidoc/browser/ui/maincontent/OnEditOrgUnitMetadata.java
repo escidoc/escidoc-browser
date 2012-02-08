@@ -158,7 +158,6 @@ public class OnEditOrgUnitMetadata implements ClickListener {
                 try {
                     metadataRecord.setContent(metadataContent);
                     repositories.organization().updateMetaData(resourceProxy, metadataRecord);
-                    // TODO is it needed?
                     view.refreshView();
                     status.setValue("");
                     upload.setEnabled(true);
