@@ -28,12 +28,7 @@
  */
 package org.escidoc.browser.model.internal;
 
-import java.io.IOException;
-import java.io.StringReader;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import com.google.common.base.Preconditions;
 
 import org.escidoc.browser.AppConstants;
 import org.w3c.dom.Document;
@@ -41,7 +36,12 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import com.google.common.base.Preconditions;
+import java.io.IOException;
+import java.io.StringReader;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.MetadataRecords;
@@ -92,7 +92,7 @@ public class ContainerBuilder {
         addDefaultMetadata(createNewDocument(), containerName);
     }
 
-    private Document createNewDocument() throws ParserConfigurationException {
+    private static Document createNewDocument() throws ParserConfigurationException {
         return DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
     }
 
@@ -143,7 +143,7 @@ public class ContainerBuilder {
         }
     }
 
-    private Element buildContentForContainerMetadata(final Document doc, final String containerName) {
+    private static Element buildContentForContainerMetadata(final Document doc, final String containerName) {
         final Element element = doc.createElementNS(AppConstants.DC_NAMESPACE, "dc");
         final Element titleElmt = doc.createElementNS(AppConstants.DC_NAMESPACE, "title");
         titleElmt.setPrefix("dc");
