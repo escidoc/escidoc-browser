@@ -95,13 +95,6 @@ public class ParentsView {
         buildPanelHeader(cssLayout, ViewConstants.PARENTS);
         ThemeResource ICON = new ThemeResource("images/assets/plus.png");
 
-        List<ResourceModel> l = orgUnitProxy.getParentList();
-        for (ResourceModel rm : l) {
-            final Button button = new Button(rm.getName());
-            button.setStyleName(BaseTheme.BUTTON_LINK);
-            panel.addComponent(button);
-        }
-
         Button btnAdd = new Button();
         btnAdd.setStyleName(BaseTheme.BUTTON_LINK);
         btnAdd.addStyleName("floatright paddingtop3");
@@ -142,6 +135,13 @@ public class ParentsView {
         });
         cssLayout.addComponent(btnAdd);
         vl.addComponent(cssLayout);
+        List<ResourceModel> l = orgUnitProxy.getParentList();
+        for (ResourceModel rm : l) {
+            final Button button = new Button(rm.getName());
+            button.setStyleName(BaseTheme.BUTTON_LINK);
+            vl.addComponent(button);
+            vl.setComponentAlignment(button, Alignment.TOP_LEFT);
+        }
         panel.setContent(vl);
         return panel;
     }
