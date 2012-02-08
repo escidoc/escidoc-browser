@@ -77,7 +77,6 @@ public final class AppConstants {
 
     public static final String DC_NAMESPACE = "http://purl.org/dc/elements/1.1/";
 
-    // Anyone wants cookies?
     public static final String COOKIE_NAME = "eSciDocUserHandle";
 
     public static final String COOKIE_PATH = "/browser";
