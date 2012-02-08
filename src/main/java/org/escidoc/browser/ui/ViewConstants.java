@@ -380,4 +380,8 @@ public class ViewConstants {
 
     public static final String ATTRIBUTE_REMOVED_MESSAGE =
         "The attribute was removed successfully from this users profile";
+
+    public static final String CANCEL = "Cancel";
+
+    public static final String SAVE = "Save";
 }
