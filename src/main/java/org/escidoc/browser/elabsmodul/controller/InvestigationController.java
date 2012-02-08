@@ -144,34 +144,27 @@ public class InvestigationController extends Controller implements IInvestigatio
         ContextProxyImpl context;
         final List<String> depositEndPointUrls = new ArrayList<String>();
         try {
-            context =
-                (ContextProxyImpl) getRepositories().context().findById(getResourceProxy().getContext().getObjid());
-            if (context == null) {
-                LOG.error("Context is null");
-                showError("Internal error");
-                return;
-            }
-
+            context = (ContextProxyImpl) repositories.context().findById(resourceProxy.getContext().getObjid());
             final Element content = context.getAdminDescription().get("elabs").getContent();
-            if (content != null) {
-                if (ELabsCache.getDepositEndpoints().isEmpty()) {
-                    final NodeList nodeList = content.getElementsByTagName("el:deposit-endpoint");
-                    if (nodeList != null) {
-                        for (int i = 0; i < nodeList.getLength(); i++) {
-                            final Node node = nodeList.item(i);
-                            depositEndPointUrls.add(node.getTextContent());
-                        }
-                    }
-                    synchronized (ELabsCache.getDepositEndpoints()) {
-                        if (!depositEndPointUrls.isEmpty()) {
-                            ELabsCache.setDepositEndpoints(Collections.unmodifiableList(depositEndPointUrls));
-                        }
+
+            if (ELabsCache.getDepositEndpoints().isEmpty()) {
+                final NodeList nodeList = content.getElementsByTagName("el:deposit-endpoint");
+                for (int i = 0; i < nodeList.getLength(); i++) {
+                    final Node node = nodeList.item(i);
+                    depositEndPointUrls.add(node.getTextContent());
+                }
+                synchronized (ELabsCache.getDepositEndpoints()) {
+                    if (!depositEndPointUrls.isEmpty()) {
+                        ELabsCache.setDepositEndpoints(Collections.unmodifiableList(depositEndPointUrls));
                     }
                 }
             }
         }
         catch (final EscidocClientException e) {
             LOG.error("Could not load Admin Descriptor 'elabs'. " + e.getMessage(), e);
+        }
+        catch (final NullPointerException e) {
+            LOG.debug("Admin Description is null in the context " + resourceProxy.getContext().getObjid());
         }
     }
 
