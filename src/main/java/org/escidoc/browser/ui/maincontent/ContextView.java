@@ -44,7 +44,6 @@ import com.google.common.base.Preconditions;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.AbstractComponentContainer;
-import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
@@ -234,12 +233,6 @@ public class ContextView extends View {
         vlRightPanel.addComponent(buildMetaDataRecsPnl());
 
         return vlRightPanel;
-    }
-
-    private Accordion buildMetaDataRecsAcc() {
-        // common part: create layout
-        Accordion metaDataRecsAcc = new MetadataRecsContext(resourceProxy, router, contextController).asAccord();
-        return metaDataRecsAcc;
     }
 
     private Panel buildMetaDataRecsPnl() {

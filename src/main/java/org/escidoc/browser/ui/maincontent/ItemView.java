@@ -42,7 +42,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
-import com.vaadin.ui.Accordion;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
@@ -182,7 +181,7 @@ public final class ItemView extends View {
         vlRightPanel.setMargin(false);
 
         // metaDataRecsAcc
-        Accordion metaDataRecsAcc = new MetadataRecsItem(resourceProxy, repositories, router, this).asAccord();
+        Panel metaDataRecsAcc = new MetadataRecsItem(resourceProxy, repositories, router, this).asPanel();
         vlRightPanel.addComponent(metaDataRecsAcc);
         return vlRightPanel;
     }

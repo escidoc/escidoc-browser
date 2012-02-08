@@ -28,18 +28,7 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.terminal.ExternalResource;
-import com.vaadin.ui.Accordion;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Link;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.BaseTheme;
+import java.net.URISyntaxException;
 
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.EscidocServiceLocation;
@@ -48,14 +37,28 @@ import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.listeners.OnAddContainerMetadata;
 import org.escidoc.browser.ui.listeners.EditMetaDataFileContainerBehaviour;
-import org.escidoc.browser.ui.listeners.RelationsClickListener;
+import org.escidoc.browser.ui.listeners.OnAddContainerMetadata;
 import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URISyntaxException;
+import com.google.common.base.Preconditions;
+import com.vaadin.terminal.ExternalResource;
+import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Link;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.BaseTheme;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
@@ -102,6 +105,11 @@ public class ContainerMetadataRecordsView {
 
     }
 
+    @Deprecated
+    /**
+     * Using asPanel instead
+     * @return
+     */
     public Accordion asAccord() {
         metadataRecs = new Accordion();
         metadataRecs.setSizeFull();
@@ -116,42 +124,119 @@ public class ContainerMetadataRecordsView {
         metadataRecs.addTab(additionalResourcesPanel, "Additional Resources", null);
     }
 
-    private Panel lblAddtionalResources() {
+    public Panel asPanel() {
+        final Panel pnlmetadataRecs = new Panel();
+        pnlmetadataRecs.setSizeFull();
+        VerticalLayout vl = new VerticalLayout();
+        vl.setImmediate(false);
+        vl.setWidth("100.0%");
+        vl.setHeight("100.0%");
+        vl.setMargin(false);
+        vl.addComponent(lblMetadaRecs());
 
+        pnlmetadataRecs.setContent(vl);
+        return pnlmetadataRecs;
+    }
+
+    private Panel lblAddtionalResources() {
+        final Panel pnl = new Panel();
+        pnl.setSizeFull();
+        VerticalLayout hl = new VerticalLayout();
+        hl.setSizeFull();
         final Button btnVersionHistoryContainer =
             new Button("Container Version History", new VersionHistoryClickListener(resourceProxy, mainWindow,
                 escidocServiceLocation, repositories));
         btnVersionHistoryContainer.setStyleName(BaseTheme.BUTTON_LINK);
         btnVersionHistoryContainer.setDescription("Show Version history in a Pop-up");
 
-        final Button btnContentRelation =
-            new Button("Container Content Relations", new RelationsClickListener(resourceProxy, mainWindow,
-                escidocServiceLocation, repositories, router));
-        btnContentRelation.setStyleName(BaseTheme.BUTTON_LINK);
-        btnContentRelation.setDescription("Show Version history in a Pop-up");
+        final CssLayout cssLayout = new CssLayout();
+        buildPanelHeader(cssLayout, "Additional Resources");
+        ThemeResource ICON = new ThemeResource("images/assets/plus.png");
 
-        final Panel pnl = new Panel();
-        pnl.setHeight("100%");
-        pnl.addComponent(btnVersionHistoryContainer);
-        pnl.addComponent(btnContentRelation);
+        final Button addResourceButton = new Button();
+        addResourceButton.setStyleName(BaseTheme.BUTTON_LINK);
+        addResourceButton.addStyleName("floatright paddingtop3");
+        addResourceButton.setWidth("20px");
+        addResourceButton.setIcon(ICON);
+        addResourceButton.addListener(new ClickListener() {
+
+            @Override
+            public void buttonClick(final ClickEvent event) {
+                final Window subwindow = new Window("A modal subwindow");
+                subwindow.setModal(true);
+                subwindow.setWidth("650px");
+                VerticalLayout layout = (VerticalLayout) subwindow.getContent();
+                layout.setMargin(true);
+                layout.setSpacing(true);
+
+                subwindow.addComponent(new Label("Not yet implemented"));
+                Button close = new Button("Close", new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(ClickEvent event) {
+                        (subwindow.getParent()).removeWindow(subwindow);
+                    }
+                });
+                layout.addComponent(close);
+                layout.setComponentAlignment(close, Alignment.TOP_RIGHT);
+
+                router.getMainWindow().addWindow(subwindow);
+
+            }
+
+        });
+        cssLayout.addComponent(addResourceButton);
+        hl.addComponent(cssLayout);
+        // final Button btnContentRelation =
+        // new Button("Container Content Relations", new RelationsClickListener(resourceProxy, mainWindow,
+        // escidocServiceLocation, repositories, router));
+        // btnContentRelation.setStyleName(BaseTheme.BUTTON_LINK);
+        // btnContentRelation.setDescription("Show Version history in a Pop-up");
+
+        hl.addComponent(btnVersionHistoryContainer);
+        pnl.setContent(hl);
+        // pnl.addComponent(btnContentRelation);
         return pnl;
     }
 
+    private void buildPanelHeader(CssLayout cssLayout, String name) {
+        cssLayout.addStyleName("v-accordion-item-caption v-caption v-captiontext");
+        cssLayout.setWidth("100%");
+        cssLayout.setMargin(false);
+
+        final Label nameofPanel = new Label(name, Label.CONTENT_RAW);
+        nameofPanel.setStyleName("accordion v-captiontext");
+        nameofPanel.setWidth("70%");
+        cssLayout.addComponent(nameofPanel);
+    }
+
     private Panel lblMetadaRecs() {
-        panel.setHeight("100%");
+        panel.setSizeFull();
+        VerticalLayout hl = new VerticalLayout();
+        hl.setSizeFull();
+        final CssLayout cssLayout = new CssLayout();
+        cssLayout.setHeight("20px");
+        buildPanelHeader(cssLayout, ViewConstants.METADATA);
+        ThemeResource ICON = new ThemeResource("images/assets/plus.png");
+
         if (hasAccess()) {
-            final Button btnAddNew =
-                new Button(ViewConstants.ADD_NEW_META_DATA, new OnAddContainerMetadata(mainWindow,
-                    repositories, resourceProxy, this));
+            final Button btnAddNew = new Button();
+            btnAddNew.addListener(new OnAddContainerMetadata(mainWindow, repositories, resourceProxy, this));
             btnAddNew.setStyleName(BaseTheme.BUTTON_LINK);
-            panel.addComponent(btnAddNew);
+            btnAddNew.addStyleName("floatright paddingtop3");
+            btnAddNew.setWidth("20px");
+            btnAddNew.setIcon(ICON);
+            cssLayout.addComponent(btnAddNew);
         }
+        hl.addComponent(cssLayout);
         final MetadataRecords mdRecs = resourceProxy.getMedataRecords();
         for (final MetadataRecord metadataRecord : mdRecs) {
             buildMDButtons(btnaddContainer, metadataRecord);
         }
-        panel.addComponent(new Label("&nbsp;", Label.CONTENT_RAW));
-        panel.addComponent(btnaddContainer);
+        hl.addComponent(new Label("&nbsp;", Label.CONTENT_RAW));
+        hl.addComponent(btnaddContainer);
+        hl.setComponentAlignment(btnaddContainer, Alignment.TOP_LEFT);
+        hl.setExpandRatio(btnaddContainer, 0.9f);
+        panel.setContent(hl);
 
         return panel;
     }

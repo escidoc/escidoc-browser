@@ -35,6 +35,7 @@ import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.AddMetaDataFileItemBehaviour;
 import org.escidoc.browser.ui.listeners.EditMetaDataFileItemBehaviour;
 import org.escidoc.browser.ui.listeners.RelationsClickListener;
@@ -44,8 +45,10 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.terminal.ExternalResource;
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
@@ -105,6 +108,20 @@ public class MetadataRecsItem {
         return metadataRecs;
     }
 
+    public Panel asPanel() {
+        final Panel pnlmetadataRecs = new Panel();
+        pnlmetadataRecs.setSizeFull();
+        VerticalLayout vl = new VerticalLayout();
+        vl.setImmediate(false);
+        vl.setWidth("100.0%");
+        vl.setHeight("100.0%");
+        vl.setMargin(false);
+        vl.addComponent(lblMetadaRecs());
+
+        pnlmetadataRecs.setContent(vl);
+        return pnlmetadataRecs;
+    }
+
     private Panel lblAddtionalResources() {
 
         final Button btnVersionHistory =
@@ -125,21 +142,44 @@ public class MetadataRecsItem {
     }
 
     private Panel lblMetadaRecs() {
-        pnl.setHeight("100%");
+        pnl.setSizeFull();
+        VerticalLayout hl = new VerticalLayout();
+        hl.setSizeFull();
+        final CssLayout cssLayout = new CssLayout();
+        cssLayout.setHeight("20px");
+        buildPanelHeader(cssLayout, ViewConstants.METADATA);
+        ThemeResource ICON = new ThemeResource("images/assets/plus.png");
+
         final MetadataRecords mdRecs = resourceProxy.getMedataRecords();
         for (final MetadataRecord metadataRecord : mdRecs) {
             buildMDButtons(btnaddContainer, metadataRecord);
         }
         if (hasAccess()) {
-            final Button btnAddNew =
-                new Button("Add New Metadata", new AddMetaDataFileItemBehaviour(mainWindow, repositories,
-                    resourceProxy, this));
+            final Button btnAddNew = new Button();
+            btnAddNew.addListener(new AddMetaDataFileItemBehaviour(mainWindow, repositories, resourceProxy, this));
             btnAddNew.setStyleName(BaseTheme.BUTTON_LINK);
-            pnl.addComponent(btnAddNew);
+            btnAddNew.addStyleName("floatright paddingtop3");
+            btnAddNew.setWidth("20px");
+            btnAddNew.setIcon(ICON);
+            cssLayout.addComponent(btnAddNew);
         }
-        pnl.addComponent(new Label("&nbsp;", Label.CONTENT_RAW));
-        pnl.addComponent(btnaddContainer);
+        hl.addComponent(cssLayout);
+        hl.addComponent(new Label("&nbsp;", Label.CONTENT_RAW));
+        hl.addComponent(btnaddContainer);
+        hl.setExpandRatio(btnaddContainer, 9f);
+        pnl.setContent(hl);
         return pnl;
+    }
+
+    private void buildPanelHeader(CssLayout cssLayout, String name) {
+        cssLayout.addStyleName("v-accordion-item-caption v-caption v-captiontext");
+        cssLayout.setWidth("100%");
+        cssLayout.setMargin(false);
+
+        final Label nameofPanel = new Label(name, Label.CONTENT_RAW);
+        nameofPanel.setStyleName("accordion v-captiontext");
+        nameofPanel.setWidth("70%");
+        cssLayout.addComponent(nameofPanel);
     }
 
     /**
