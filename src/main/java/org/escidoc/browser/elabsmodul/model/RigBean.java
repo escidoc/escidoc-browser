@@ -28,16 +28,18 @@
  */
 package org.escidoc.browser.elabsmodul.model;
 
+import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
-
 public class RigBean implements Serializable, IBeanModel {
 
     private static final long serialVersionUID = -3090246006887935097L;
+
+    private List<InstrumentBean> contentList = new ArrayList<InstrumentBean>();
 
     private String objectId;
 
@@ -52,10 +54,6 @@ public class RigBean implements Serializable, IBeanModel {
     private Date modifiedOn;
 
     private String modifiedBy;
-
-    private String complexId;
-
-    private List<InstrumentBean> contentList = new ArrayList<InstrumentBean>();
 
     public String getObjectId() {
         return objectId;
@@ -123,9 +121,5 @@ public class RigBean implements Serializable, IBeanModel {
 
     public String getComplexId() {
         return name + " (" + objectId + ")";
-    }
-
-    public void setComplexId(String complexId) {
-        this.complexId = name + " (" + objectId + ")";
     }
 }
