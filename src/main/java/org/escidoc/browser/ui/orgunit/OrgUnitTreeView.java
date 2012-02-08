@@ -52,7 +52,6 @@ public class OrgUnitTreeView extends VerticalLayout implements NavigationTreeVie
     private TreeDataSource dataSource;
 
     public OrgUnitTreeView() {
-        setSizeFull();
         addComponent(tree);
         tree.setImmediate(true);
     }

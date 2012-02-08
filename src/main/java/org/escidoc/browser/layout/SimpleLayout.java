@@ -382,14 +382,18 @@ public class SimpleLayout extends LayoutDesign {
         // Binding the tree to the NavigationPanel
         mainNavigationTree = addNavigationTree();
 
-        final Accordion accordion = buildAccordion();
-
-        vlNavigationPanel.addComponent(accordion);
-        vlNavigationPanel.setExpandRatio(accordion, 1.0f);
+        addAccordion();
 
         navigationPanel.setContent(vlNavigationPanel);
 
         return navigationPanel;
+    }
+
+    private void addAccordion() throws EscidocClientException, URISyntaxException {
+        final Accordion accordion = buildAccordion();
+
+        vlNavigationPanel.addComponent(accordion);
+        vlNavigationPanel.setExpandRatio(accordion, 1.0f);
     }
 
     private Accordion buildAccordion() throws EscidocClientException, URISyntaxException {
@@ -450,8 +454,7 @@ public class SimpleLayout extends LayoutDesign {
     }
 
     private void addOrgUnitTab(final Accordion accordion) {
-        final OrgUnitTreeView tree = treeBuilder.buildOrgUnitTree();
-        accordion.addTab(tree, ViewConstants.ORG_UNITS, NO_ICON);
+        accordion.addTab(treeBuilder.buildOrgUnitTree(), ViewConstants.ORG_UNITS, NO_ICON);
     }
 
     private void addResourcesTab(final Accordion accordion) {
