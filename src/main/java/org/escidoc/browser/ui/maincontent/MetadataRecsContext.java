@@ -45,7 +45,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Panel;
@@ -121,8 +120,8 @@ class MetadataRecsContext {
         final Panel admDescriptors = new Panel();
         admDescriptors.setWidth("100%");
         admDescriptors.setHeight("100%");
-        HorizontalLayout hl = new HorizontalLayout();
-        hl.setSizeFull();
+        VerticalLayout vl = new VerticalLayout();
+        vl.setSizeFull();
         final CssLayout cssLayout = new CssLayout();
         buildPanelHeader(cssLayout, ViewConstants.ADMIN_DESCRIPTION);
         ThemeResource ICON = new ThemeResource("images/assets/plus.png");
@@ -160,8 +159,9 @@ class MetadataRecsContext {
             });
             cssLayout.addComponent(addResourceButton);
         }
-        hl.addComponent(cssLayout);
+        vl.addComponent(cssLayout);
 
+        VerticalLayout vl2 = new VerticalLayout();
         final AdminDescriptors admDesc = resourceProxy.getAdminDescription();
         for (final AdminDescriptor adminDescriptor : admDesc) {
 
@@ -171,9 +171,11 @@ class MetadataRecsContext {
             admDescBtn.setTargetName("_blank");
             admDescBtn.setStyleName(BaseTheme.BUTTON_LINK);
             admDescBtn.setDescription("Show metadata information in a separate window");
-            hl.addComponent(admDescBtn);
+            vl2.addComponent(admDescBtn);
         }
-        admDescriptors.setContent(hl);
+        vl.addComponent(vl2);
+        vl.setExpandRatio(vl2, 9);
+        admDescriptors.setContent(vl);
         return admDescriptors;
     }
 
@@ -239,6 +241,7 @@ class MetadataRecsContext {
         }
         vl.addComponent(vl2);
         vl.setComponentAlignment(vl2, Alignment.TOP_LEFT);
+        vl.setExpandRatio(vl2, 9);
         pnlOrgUnit.setContent(vl);
         return pnlOrgUnit;
     }
