@@ -348,9 +348,9 @@ ul.horizontal_list li {
 	padding: 0 0;
 }
 
-.drophere{
-	background-image: url(/images/assets/background-drophere.jpg);
-		background: repeat-x; 
+.drophere .v-table .v-table-drophere {
+	background-image: url(images/assets/drag-n-drop-here.png);
+	background: no-repeat; 
 }
 .v-table-drophere > div {
    background: transparent;

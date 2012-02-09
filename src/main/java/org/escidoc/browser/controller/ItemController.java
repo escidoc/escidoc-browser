@@ -28,7 +28,7 @@
  */
 package org.escidoc.browser.controller;
 
-import com.vaadin.ui.Window;
+import java.net.URISyntaxException;
 
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
@@ -36,7 +36,7 @@ import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.maincontent.ItemView;
 
-import java.net.URISyntaxException;
+import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -78,5 +78,11 @@ public class ItemController extends Controller {
             router.getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
             return false;
         }
+    }
+
+    public void removeComponent(Object target) {
+        router.getMainWindow().showNotification("This function will be available in the next release",
+            Window.Notification.TYPE_HUMANIZED_MESSAGE);
+
     }
 }
