@@ -56,8 +56,11 @@ public class ItemComponentsView extends TableContainerVH {
 
     @Override
     protected void removeAction(Object target) {
-        controller.removeComponent(target);
+        controller.removeComponent(target, this);
+    }
 
+    public void removeItemFromTable(String id) {
+        table.removeItem(id);
     }
 
     @Override
