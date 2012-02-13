@@ -200,7 +200,7 @@ public final class FilterButtonListener implements ClickListener {
 
     }
 
-    private boolean isExportPermitted() {
+    private static boolean isExportPermitted() {
         return IS_EXPORT_PERMITTTED;
     }
 
@@ -291,13 +291,15 @@ public final class FilterButtonListener implements ClickListener {
     private Repository getRepository() {
         switch (getSelectedType()) {
             case ITEM:
-                return this.bulkTasksView.repositories.item();
+                return repositories.item();
             case CONTAINER:
-                return this.bulkTasksView.repositories.container();
+                return repositories.container();
             case CONTEXT:
-                return this.bulkTasksView.repositories.context();
+                return repositories.context();
             case CONTENT_MODEL:
-                return this.bulkTasksView.repositories.contentModel();
+                return repositories.contentModel();
+            case ORG_UNIT:
+                return repositories.organization();
             default:
                 this.bulkTasksView.router.getMainWindow().showNotification(getSelectedType() + " not yet supported",
                     Window.Notification.TYPE_WARNING_MESSAGE);

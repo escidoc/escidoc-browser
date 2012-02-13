@@ -58,11 +58,11 @@ import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 public class OrganizationUnitRepository implements Repository {
 
+    public static final Logger LOG = LoggerFactory.getLogger(OrganizationUnitRepository.class);
+
     private final OrganizationalUnitHandlerClientInterface client;
 
-    static final Logger LOG = LoggerFactory.getLogger(OrganizationUnitRepository.class);
-
-    OrganizationUnitRepository(final EscidocServiceLocation escidocServiceLocation) {
+    public OrganizationUnitRepository(final EscidocServiceLocation escidocServiceLocation) {
         Preconditions
             .checkNotNull(escidocServiceLocation, "escidocServiceLocation is null: %s", escidocServiceLocation);
         client = new OrganizationalUnitHandlerClient(escidocServiceLocation.getEscidocUri());
@@ -125,8 +125,10 @@ public class OrganizationUnitRepository implements Repository {
     }
 
     @Override
-    public void delete(final String id) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    public void delete(final String id) throws EscidocClientException {
+        Preconditions.checkNotNull(client, "client is null: %s", client);
+        Preconditions.checkNotNull(id, "id is null: %s", id);
+        client.delete(id);
     }
 
     public OrgUnitModel create(final OrganizationalUnit ou) throws EscidocClientException {

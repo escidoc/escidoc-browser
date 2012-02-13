@@ -28,11 +28,7 @@
  */
 package org.escidoc.browser.repository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.google.common.base.Preconditions;
 
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceType;
@@ -40,10 +36,15 @@ import org.escidoc.browser.repository.internal.ContainerRepository;
 import org.escidoc.browser.repository.internal.ContentModelRepository;
 import org.escidoc.browser.repository.internal.ContextRepository;
 import org.escidoc.browser.repository.internal.ItemRepository;
+import org.escidoc.browser.repository.internal.OrganizationUnitRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -97,18 +98,23 @@ public class BulkRepository {
 
     private final Repository contentModelRepository;
 
+    private final OrganizationUnitRepository orgUnitRepot;
+
     public BulkRepository(final ContextRepository contextRepository, final ContainerRepository containerRepository,
-        final ItemRepository itemRepository, final ContentModelRepository contentModelRepository) {
+        final ItemRepository itemRepository, final ContentModelRepository contentModelRepository,
+        OrganizationUnitRepository orgUnitRepo) {
         Preconditions.checkNotNull(contextRepository, "contextRepository is null: %s", contextRepository);
         Preconditions.checkNotNull(containerRepository, "containerRepository is null: %s", containerRepository);
         Preconditions.checkNotNull(itemRepository, "itemRepository is null: %s", itemRepository);
         Preconditions
             .checkNotNull(contentModelRepository, "contentModelRepository is null: %s", contentModelRepository);
+        Preconditions.checkNotNull(orgUnitRepo, "Org Unit Repository is null: %s", orgUnitRepo);
 
         this.contextRepository = contextRepository;
         this.containerRepository = containerRepository;
         this.itemRepository = itemRepository;
         this.contentModelRepository = contentModelRepository;
+        this.orgUnitRepot = orgUnitRepo;
     }
 
     public DeleteResult delete(final Set<ResourceModel> selectedResources) {
@@ -139,6 +145,8 @@ public class BulkRepository {
                 return itemRepository;
             case CONTENT_MODEL:
                 return contentModelRepository;
+            case ORG_UNIT:
+                return orgUnitRepot;
             default:
                 throw new UnsupportedOperationException("Not yet implemented " + type);
         }
