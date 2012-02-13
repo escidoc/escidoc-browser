@@ -102,8 +102,10 @@ public class UserAccountRepository implements Repository {
     }
 
     @Override
-    public void delete(String id) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    public void delete(String id) throws EscidocClientException {
+        Preconditions.checkNotNull(id, "id is null: %s", id);
+        Preconditions.checkNotNull(client, "client is null: %s", client);
+        client.delete(id);
     }
 
     public void updateName(String newName) throws EscidocClientException {

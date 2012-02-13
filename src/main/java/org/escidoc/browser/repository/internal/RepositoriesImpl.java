@@ -86,7 +86,7 @@ public class RepositoriesImpl implements Repositories {
         orgUnitRepository = new OrganizationUnitRepository(serviceLocation);
         bulkRepo =
             new BulkRepository(contextRepository, containerRepository, itemRepository, contentModelRepository,
-                orgUnitRepository);
+                orgUnitRepository, userAccountRepository);
         return this;
     }
 

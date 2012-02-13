@@ -37,6 +37,7 @@ import org.escidoc.browser.repository.internal.ContentModelRepository;
 import org.escidoc.browser.repository.internal.ContextRepository;
 import org.escidoc.browser.repository.internal.ItemRepository;
 import org.escidoc.browser.repository.internal.OrganizationUnitRepository;
+import org.escidoc.browser.repository.internal.UserAccountRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,9 +101,11 @@ public class BulkRepository {
 
     private final OrganizationUnitRepository orgUnitRepot;
 
+    private final UserAccountRepository userAccountRepository;
+
     public BulkRepository(final ContextRepository contextRepository, final ContainerRepository containerRepository,
         final ItemRepository itemRepository, final ContentModelRepository contentModelRepository,
-        OrganizationUnitRepository orgUnitRepo) {
+        OrganizationUnitRepository orgUnitRepo, UserAccountRepository userAccountRepository) {
         Preconditions.checkNotNull(contextRepository, "contextRepository is null: %s", contextRepository);
         Preconditions.checkNotNull(containerRepository, "containerRepository is null: %s", containerRepository);
         Preconditions.checkNotNull(itemRepository, "itemRepository is null: %s", itemRepository);
@@ -115,6 +118,7 @@ public class BulkRepository {
         this.itemRepository = itemRepository;
         this.contentModelRepository = contentModelRepository;
         this.orgUnitRepot = orgUnitRepo;
+        this.userAccountRepository = userAccountRepository;
     }
 
     public DeleteResult delete(final Set<ResourceModel> selectedResources) {
@@ -147,6 +151,8 @@ public class BulkRepository {
                 return contentModelRepository;
             case ORG_UNIT:
                 return orgUnitRepot;
+            case USER_ACCOUNT:
+                return userAccountRepository;
             default:
                 throw new UnsupportedOperationException("Not yet implemented " + type);
         }

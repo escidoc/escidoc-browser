@@ -140,6 +140,7 @@ public class BulkTasksView extends VerticalLayout {
         list.add(ResourceType.ITEM);
         list.add(ResourceType.CONTENT_MODEL);
         list.add(ResourceType.ORG_UNIT);
+        list.add(ResourceType.USER_ACCOUNT);
         return list;
     }
 

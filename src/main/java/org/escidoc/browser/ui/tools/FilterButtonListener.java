@@ -300,6 +300,8 @@ public final class FilterButtonListener implements ClickListener {
                 return repositories.contentModel();
             case ORG_UNIT:
                 return repositories.organization();
+            case USER_ACCOUNT:
+                return repositories.user();
             default:
                 this.bulkTasksView.router.getMainWindow().showNotification(getSelectedType() + " not yet supported",
                     Window.Notification.TYPE_WARNING_MESSAGE);

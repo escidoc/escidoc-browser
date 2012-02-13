@@ -28,7 +28,15 @@
  */
 package org.escidoc.browser.ui.tools;
 
-import java.util.Map;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Window;
 
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.repository.BulkRepository.DeleteResult;
@@ -38,14 +46,7 @@ import org.escidoc.browser.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Window;
+import java.util.Map;
 
 @SuppressWarnings("serial")
 final class BulkDeleteListener implements ClickListener {
@@ -152,7 +153,7 @@ final class BulkDeleteListener implements ClickListener {
         return builder.toString();
     }
 
-    private Window buildModalWindow() {
+    private static Window buildModalWindow() {
         final Window subWindow = new Window(ViewConstants.WARNING);
         subWindow.setWidth("600px");
         subWindow.setModal(true);
