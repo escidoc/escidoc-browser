@@ -27,11 +27,7 @@ public class ItemComponentsView extends TableContainerVH {
 
     private static final Object COMPONENT_CREATEDDATE = "Created Date";
 
-    private static final Object COMPONENT_METADATA = "MetaData";
-
     private static final Object COMPONENT_ICON = "";
-
-    private static final Object COMPONENT_DOWNLOAD = "Download";
 
     private ItemController controller;
 
@@ -50,14 +46,21 @@ public class ItemComponentsView extends TableContainerVH {
         this.serviceLocation = serviceLocation;
         this.mainWindow = mainWindow;
         table.setContainerDataSource(populateContainerTable());
+
+        table.setWidth("100%");
         table.setHeight("100%");
+
         table.setStyleName(Reindeer.TABLE_BORDERLESS);
+        // table.addStyleName("drophere");
     }
 
     @Override
     protected void removeAction(Object target) {
-        // TODO Auto-generated method stub
+        controller.removeComponent(target, this);
+    }
 
+    public void removeItemFromTable(String id) {
+        table.removeItem(id);
     }
 
     @Override
@@ -88,6 +91,9 @@ public class ItemComponentsView extends TableContainerVH {
         Object[] propertyId = { PROPERTY_NAME, PROPERTY_VALUE };
         tableContainer.sort(propertyId, ascending);
         table.setColumnWidth(COMPONENT_ICON, 20);
+        table.setColumnWidth(COMPONENT_MIMETYPE, 90);
+        table.setColumnWidth(COMPONENT_CATEGORY, 120);
+        table.setColumnWidth(COMPONENT_CREATEDDATE, 120);
         return tableContainer;
     }
 

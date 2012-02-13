@@ -28,22 +28,27 @@
  */
 package org.escidoc.browser.controller;
 
-import com.vaadin.ui.Window;
+import java.net.URISyntaxException;
 
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.maincontent.ItemView;
+import org.escidoc.browser.ui.view.helpers.ItemComponentsView;
 
-import java.net.URISyntaxException;
+import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class ItemController extends Controller {
 
+    private ItemProxyImpl itemProxy;
+
     public ItemController(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
+        this.itemProxy = (ItemProxyImpl) resourceProxy;
         createView();
     }
 
@@ -78,5 +83,18 @@ public class ItemController extends Controller {
             router.getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
             return false;
         }
+    }
+
+    public void removeComponent(Object target, ItemComponentsView table) {
+
+        try {
+            getRepositories().item().deleteComponent(resourceProxy.getId(), target.toString());
+            showTrayMessage("Updated!", "Component was removed successfully");
+            table.removeItemFromTable(target.toString());
+        }
+        catch (EscidocClientException e) {
+            router.getMainWindow().showNotification("Error", e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        }
+
     }
 }

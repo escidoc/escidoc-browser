@@ -229,4 +229,8 @@ public class ItemRepository implements Repository {
     public void delete(final String id) throws EscidocClientException {
         client.delete(id);
     }
+
+    public void deleteComponent(String itemId, final String componentId) throws EscidocClientException {
+        client.deleteComponent(itemId, componentId);
+    }
 }

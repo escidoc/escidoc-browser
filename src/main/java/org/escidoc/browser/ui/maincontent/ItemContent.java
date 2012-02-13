@@ -105,13 +105,17 @@ public class ItemContent extends VerticalLayout {
     private void wrap(final VerticalLayout verticalLayout) {
         try {
             if (userIsPermittedToUpdate()) {
-                verticalLayout.setHeight(mainWindow.getHeight() * 65 / 100 + "px");
-                verticalLayout.setWidth("99%");
+
+                verticalLayout.setHeight("99%");
+                // verticalLayout.setWidth("90%");
 
                 final DragAndDropFileUpload dragAndDropFileUpload =
                     new DragAndDropFileUpload(repositories, itemProxy, this, verticalLayout);
                 dragAndDropFileUpload.setSizeFull();
+
                 addComponent(dragAndDropFileUpload);
+                verticalLayout.getParent().setWidth("99%");
+                verticalLayout.getParent().setHeight("99%");
             }
         }
         catch (final EscidocClientException e) {
