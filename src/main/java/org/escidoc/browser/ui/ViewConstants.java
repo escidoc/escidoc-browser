@@ -308,7 +308,7 @@ public class ViewConstants {
         "Cannot remove the resource as it belongs to a resource which is not deletable";
 
     public static final String DEFAULT_CONTENT_MODEL_URI =
-        "https://www.escidoc.org/smw/images/b/be/ESciDoc-eLab-Content-Models.zip";
+        "https://www.escidoc.org/smw/images/5/5c/ESciDoc-Generic-Content-Models.zip";
 
     public static final String PURGE_WARNING_MESSAGE =
         "Purging resources can cause inconsitencies in the repository. Please use delete instead of purge. Continue with purging?";

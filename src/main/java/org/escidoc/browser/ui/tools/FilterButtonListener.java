@@ -28,16 +28,20 @@
  */
 package org.escidoc.browser.ui.tools;
 
-import java.io.ByteArrayInputStream;
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.terminal.StreamResource;
+import com.vaadin.terminal.StreamResource.StreamSource;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.Reindeer;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.escidoc.browser.AppConstants;
@@ -52,19 +56,16 @@ import org.escidoc.browser.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.terminal.StreamResource;
-import com.vaadin.terminal.StreamResource.StreamSource;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Reindeer;
+import java.io.ByteArrayInputStream;
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -275,7 +276,7 @@ public final class FilterButtonListener implements ClickListener {
         this.bulkTasksView.addComponent(resultLayout);
     }
 
-    private boolean isEmpty(final List<ResourceModel> result) {
+    private static boolean isEmpty(final List<ResourceModel> result) {
         return result.isEmpty();
 
     }
@@ -310,11 +311,7 @@ public final class FilterButtonListener implements ClickListener {
     }
 
     private ResourceType getSelectedType() {
-        final Object value = this.bulkTasksView.resourceOption.getValue();
-        if (value instanceof ResourceType) {
-            return (ResourceType) value;
-        }
-        return ResourceType.ITEM;
+        return bulkTasksView.getSelectedTask();
     }
 
     private String getRawFilter() {

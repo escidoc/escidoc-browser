@@ -28,16 +28,8 @@
  */
 package org.escidoc.browser.ui.tools;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.escidoc.browser.model.ResourceType;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.tools.Style.H2;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
@@ -51,12 +43,21 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Reindeer;
 
+import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.tools.Style.H2;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import de.escidoc.core.resources.adm.MessagesStatus;
 
 @SuppressWarnings("serial")
 public class BulkTasksView extends VerticalLayout {
 
-    final AbstractSelect resourceOption = new NativeSelect();
+    private final AbstractSelect resourceOption = new NativeSelect();
 
     final TextField textField = new TextField();
 
@@ -169,5 +170,13 @@ public class BulkTasksView extends VerticalLayout {
     void showWarningMessage(final String message) {
         router
             .getMainWindow().showNotification(new Notification("Warning", message, Notification.TYPE_WARNING_MESSAGE));
+    }
+
+    public ResourceType getSelectedTask() {
+        final Object value = resourceOption.getValue();
+        if (value instanceof ResourceType) {
+            return (ResourceType) value;
+        }
+        return ResourceType.ITEM;
     }
 }
