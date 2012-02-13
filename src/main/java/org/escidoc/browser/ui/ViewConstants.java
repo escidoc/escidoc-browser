@@ -384,4 +384,7 @@ public class ViewConstants {
     public static final String CANCEL = "Cancel";
 
     public static final String SAVE = "Save";
+
+    public static final String DELETE_CONTENT_MODEL = "Delete Content Model";
+
 }

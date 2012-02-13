@@ -28,29 +28,8 @@
  */
 package org.escidoc.browser.layout;
 
-import java.net.URISyntaxException;
-
-import org.escidoc.browser.AppConstants;
-import org.escidoc.browser.BrowserApplication;
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.PropertyId;
-import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.model.TreeDataSource;
-import org.escidoc.browser.model.internal.TreeDataSourceImpl;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.mainpage.Footer;
-import org.escidoc.browser.ui.mainpage.HeaderContainer;
-import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
-import org.escidoc.browser.ui.navigation.NavigationTreeView;
-import org.escidoc.browser.ui.orgunit.OrgUnitTreeView;
-import org.escidoc.browser.ui.tools.ToolsTreeView;
-import org.escidoc.browser.ui.view.helpers.CloseTabsViewHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.data.Container.Filterable;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
@@ -73,6 +52,28 @@ import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
+
+import org.escidoc.browser.AppConstants;
+import org.escidoc.browser.BrowserApplication;
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.PropertyId;
+import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.TreeDataSource;
+import org.escidoc.browser.model.internal.TreeDataSourceImpl;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.mainpage.Footer;
+import org.escidoc.browser.ui.mainpage.HeaderContainer;
+import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
+import org.escidoc.browser.ui.navigation.NavigationTreeView;
+import org.escidoc.browser.ui.orgunit.OrgUnitTreeView;
+import org.escidoc.browser.ui.tools.ToolsTreeView;
+import org.escidoc.browser.ui.view.helpers.CloseTabsViewHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.net.URISyntaxException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -164,6 +165,7 @@ public class SimpleLayout extends LayoutDesign {
         final Window mainWindow, final EscidocServiceLocation serviceLocation, final BrowserApplication app,
         final Repositories repositories, final Router router) throws EscidocClientException,
         UnsupportedOperationException, URISyntaxException {
+        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         Preconditions.checkNotNull(app, "app is null: %s", app);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
@@ -249,11 +251,12 @@ public class SimpleLayout extends LayoutDesign {
         // 2. Reload the parent Tab
         // 3. Remove the element from the tree
         for (int i = mainContentTabs.getComponentCount() - 1; i >= 0; i--) {
+            String description = mainContentTabs
+                .getTab(i).getDescription();
             final String tabDescription =
-                mainContentTabs
-                    .getTab(i).getDescription()
-                    .substring(mainContentTabs.getTab(i).getDescription().lastIndexOf('#') + 1).toString();
-            LOG.debug("############################ " + tabDescription);
+                description
+                    .substring(description.lastIndexOf('#') + 1).toString();
+            LOG.debug("Tab decription is: " + tabDescription);
             // Remove the tab from the TabSheet
             if (tabDescription.equals(model.getId().toString())) {
                 mainContentTabs.removeTab(mainContentTabs.getTab(i));
@@ -261,7 +264,7 @@ public class SimpleLayout extends LayoutDesign {
 
             // Deleting from the tree, I know the parent and I reload it
             if (parent != null) {
-                LOG.debug("############################ Parent is not null" + parent.getId());
+                LOG.debug("Parent is not null: " + parent.getId());
                 if (tabDescription.equals(parent.getId().toString())) {
                     try {
                         router.show(parent, true);
@@ -274,8 +277,7 @@ public class SimpleLayout extends LayoutDesign {
                 }
             }
             else {
-                final Tree dmTree = (Tree) sender;
-                dmTree.removeItem(model);
+                ((Tree) sender).removeItem(model);
             }
         }
         treeDataSource.remove(model);
@@ -332,8 +334,6 @@ public class SimpleLayout extends LayoutDesign {
         footer.setMargin(false);
         footer.setStyleName("footer");
         final Footer footerHtml = new Footer(footer, serviceLocation);
-        // footer.addComponent(footerHtml);
-
     }
 
     private HorizontalSplitPanel buildContainer() throws EscidocClientException, UnsupportedOperationException,
@@ -429,7 +429,6 @@ public class SimpleLayout extends LayoutDesign {
         TextField filterField = new TextField();
         filterField.setInputPrompt("Type something to filter the list");
         filterField.setWidth("250px");
-        // filterField.focus();
         filterField.addListener(new TextChangeListener() {
 
             private SimpleStringFilter filter;

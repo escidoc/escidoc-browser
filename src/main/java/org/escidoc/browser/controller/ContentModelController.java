@@ -10,7 +10,9 @@ public class ContentModelController extends Controller {
         final ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
         createView();
-        setResourceName(getResourceProxy().getName());
+        if (resourceProxy != null) {
+            setResourceName(resourceProxy.getName() + "#" + resourceProxy.getId());
+        }
     }
 
     @Override

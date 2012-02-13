@@ -83,6 +83,9 @@ class ActionList {
     //
 
     public static final Action ACTION_DELETE_CONTEXT = new Action(ViewConstants.DELETE_CONTEXT);
+
     public static final Action ACTION_ADD_CHILD = new Action(ViewConstants.ADD_CHILD);
+
+    public static final Action ACTION_DELETE_CONTENT_MODEL = new Action(ViewConstants.DELETE_CONTENT_MODEL);
 
 }

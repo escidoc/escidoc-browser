@@ -144,6 +144,7 @@ public class NavigationTreeBuilder {
         BaseNavigationTreeView l = new BaseNavigationTreeView();
         l.setDataSource(createContentModelDataSource());
         l.addClickListener(new TreeClickListener(mainWindow, router));
+        l.addActionHandler(new ActionHandlerImpl(mainWindow, repositories, treeDataSource, router));
         return l;
     }
 

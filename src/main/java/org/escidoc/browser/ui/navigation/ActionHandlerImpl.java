@@ -28,7 +28,15 @@
  */
 package org.escidoc.browser.ui.navigation;
 
-import java.net.URISyntaxException;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.event.Action;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ResourceModel;
@@ -46,14 +54,7 @@ import org.escidoc.browser.ui.navigation.menubar.ShowAddViewCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.event.Action;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
+import java.net.URISyntaxException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -89,7 +90,7 @@ final class ActionHandlerImpl implements Action.Handler {
     }
 
     @Override
-    public Action[] getActions(final Object target, final Object sender) {
+    public Action[] getActions(final Object target, @SuppressWarnings("unused") final Object sender) {
         if (target instanceof ResourceModel) {
             ResourceModel rm = (ResourceModel) target;
             ResourceType type = rm.getType();
@@ -105,6 +106,8 @@ final class ActionHandlerImpl implements Action.Handler {
                 case ORG_UNIT:
                     return new Action[] { ActionList.ACTION_ADD_CHILD };
 
+                case CONTENT_MODEL:
+                    return new Action[] { ActionList.ACTION_DELETE_CONTENT_MODEL };
                 default:
 
                     return new Action[] {};
@@ -137,9 +140,8 @@ final class ActionHandlerImpl implements Action.Handler {
 
     @Override
     public void handleAction(final Action action, final Object sender, final Object target) {
-        final String contextId = findContextId(target);
         try {
-            doActionIfAllowed(action, target, contextId, sender);
+            doActionIfAllowed(action, target, findContextId(target), sender);
         }
         catch (final EscidocClientException e) {
             LOG.error(e.getMessage(), e);
@@ -181,10 +183,75 @@ final class ActionHandlerImpl implements Action.Handler {
                         Window.Notification.TYPE_WARNING_MESSAGE));
             }
         }
+        else if (action.equals(ActionList.ACTION_DELETE_CONTENT_MODEL)) {
+            tryDeleteContentModel(selectedResource, sender);
+        }
         else {
             mainWindow.showNotification("Unknown Action: " + action.getCaption(),
                 Window.Notification.TYPE_ERROR_MESSAGE);
         }
+    }
+
+    private void tryDeleteContentModel(Object target, Object sender) throws EscidocClientException, URISyntaxException {
+        final String cmId = ((ResourceModel) target).getId();
+        if (allowedToDeleteContentModel(cmId)) {
+            deleteContentModel((ResourceModel) target, cmId, sender);
+        }
+        else {
+            mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
+                "You do not have the right to delete a context: " + cmId, Window.Notification.TYPE_WARNING_MESSAGE));
+        }
+    }
+
+    private void deleteContentModel(final ResourceModel model, final String cmId, final Object sender) {
+        final Window subwindow = new Window(ViewConstants.DELETE_RESOURCE_WND_NAME);
+        subwindow.setModal(true);
+        final Label message = new Label(ViewConstants.QUESTION_DELETE_RESOURCE);
+
+        subwindow.addComponent(message);
+
+        final Button okConfirmed = new Button(ViewConstants.YES, new Button.ClickListener() {
+
+            private static final long serialVersionUID = 3919074540805378986L;
+
+            @Override
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
+                (subwindow.getParent()).removeWindow(subwindow);
+                try {
+                    repositories.contentModel().delete(cmId);
+                    // TODO remove from navigation tree/list
+                    // TODO close view
+                    router.getLayout().closeView(model, null, sender);
+                    mainWindow.showNotification(new Window.Notification(ViewConstants.DELETED,
+                        Notification.TYPE_TRAY_NOTIFICATION));
+                }
+                catch (final EscidocClientException e) {
+                    mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
+                        Notification.TYPE_ERROR_MESSAGE));
+                }
+            }
+
+        });
+
+        final Button cancel = new Button(ViewConstants.CANCEL, new Button.ClickListener() {
+            private static final long serialVersionUID = 3919074540805378986L;
+
+            @Override
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
+                (subwindow.getParent()).removeWindow(subwindow);
+            }
+        });
+
+        final HorizontalLayout hl = new HorizontalLayout();
+        hl.addComponent(okConfirmed);
+        hl.addComponent(cancel);
+        subwindow.addComponent(hl);
+        mainWindow.addWindow(subwindow);
+    }
+
+    private boolean allowedToDeleteContentModel(String cmId) throws EscidocClientException, URISyntaxException {
+        return repositories
+            .pdp().forCurrentUser().isAction(ActionIdConstants.DELETE_CONTENT_MODEL).forResource(cmId).permitted();
     }
 
     private void tryDeleteContext(final Object target, Object sender) throws EscidocClientException, URISyntaxException {
@@ -206,12 +273,12 @@ final class ActionHandlerImpl implements Action.Handler {
         final Label message = new Label(ViewConstants.QUESTION_DELETE_RESOURCE);
         subwindow.addComponent(message);
 
-        final Button okConfirmed = new Button("Yes", new Button.ClickListener() {
+        final Button okConfirmed = new Button(ViewConstants.YES, new Button.ClickListener() {
 
             private static final long serialVersionUID = 3919074540805378986L;
 
             @Override
-            public void buttonClick(final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
                 try {
                     repositories.context().delete(model.getId());
@@ -396,7 +463,7 @@ final class ActionHandlerImpl implements Action.Handler {
         Label message = new Label(DELETE_RESOURCE);
         subwindow.addComponent(message);
 
-        Button okConfirmed = new Button("Yes", new Button.ClickListener() {
+        Button okConfirmed = new Button(ViewConstants.YES, new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
@@ -427,15 +494,15 @@ final class ActionHandlerImpl implements Action.Handler {
         mainWindow.addWindow(subwindow);
     }
 
-    public void deleteContainer(final ContainerModel model, final Object sender) throws EscidocClientException {
+    public void deleteContainer(final ContainerModel model, final Object sender) {
         final Window subwindow = new Window(DELETE_RESOURCE_WND_NAME);
         subwindow.setModal(true);
         final Label message = new Label(DELETE_RESOURCE);
         subwindow.addComponent(message);
 
-        final Button okConfirmed = new Button("Yes", new Button.ClickListener() {
+        final Button okConfirmed = new Button(ViewConstants.YES, new Button.ClickListener() {
             @Override
-            public void buttonClick(final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
                 try {
                     repositories.container().finalDelete(model);
@@ -452,7 +519,7 @@ final class ActionHandlerImpl implements Action.Handler {
         });
         final Button cancel = new Button("Cancel", new Button.ClickListener() {
             @Override
-            public void buttonClick(final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
             }
         });
