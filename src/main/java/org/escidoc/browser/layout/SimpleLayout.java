@@ -44,8 +44,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
-import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Tree;
@@ -67,7 +65,6 @@ import org.escidoc.browser.ui.mainpage.Footer;
 import org.escidoc.browser.ui.mainpage.HeaderContainer;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.navigation.NavigationTreeView;
-import org.escidoc.browser.ui.orgunit.OrgUnitTreeView;
 import org.escidoc.browser.ui.tools.ToolsTreeView;
 import org.escidoc.browser.ui.view.helpers.CloseTabsViewHelper;
 import org.slf4j.Logger;
@@ -80,51 +77,7 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 @SuppressWarnings("serial")
 public class SimpleLayout extends LayoutDesign {
 
-    private final class OnTabChange implements SelectedTabChangeListener {
-        @Override
-        public void selectedTabChange(final SelectedTabChangeEvent event) {
-            Preconditions.checkNotNull(event, "event is null: %s", event);
-
-            final Object source = event.getSource();
-
-            Preconditions.checkNotNull(source, "source is null: %s", source);
-            if (!(source instanceof Accordion)) {
-                return;
-            }
-
-            if (isOrgUniTabSelected(source)) {
-                reloadOrgUnitTree(source);
-            }
-        }
-
-        private void reloadOrgUnitTree(final Object source) {
-            try {
-                reloadContent(source);
-            }
-            catch (final EscidocClientException e) {
-                LOG.error("Can not reload data source: " + e.getMessage(), e);
-            }
-        }
-
-        private boolean isOrgUniTabSelected(final Object source) {
-            return getSelectedTabCaption(source).equalsIgnoreCase(ViewConstants.ORG_UNITS)
-                && getTabContent(source) instanceof OrgUnitTreeView;
-        }
-
-        private void reloadContent(final Object source) throws EscidocClientException {
-            ((OrgUnitTreeView) getTabContent(source)).reload();
-        }
-
-        private Component getTabContent(final Object source) {
-            return ((Accordion) source).getSelectedTab();
-        }
-
-        private String getSelectedTabCaption(final Object source) {
-            return ((Accordion) source).getTab(getTabContent(source)).getCaption();
-        }
-    }
-
-    private static final Logger LOG = LoggerFactory.getLogger(SimpleLayout.class);
+    private final static Logger LOG = LoggerFactory.getLogger(SimpleLayout.class);
 
     private Resource NO_ICON;
 
@@ -251,11 +204,8 @@ public class SimpleLayout extends LayoutDesign {
         // 2. Reload the parent Tab
         // 3. Remove the element from the tree
         for (int i = mainContentTabs.getComponentCount() - 1; i >= 0; i--) {
-            String description = mainContentTabs
-                .getTab(i).getDescription();
-            final String tabDescription =
-                description
-                    .substring(description.lastIndexOf('#') + 1).toString();
+            String description = mainContentTabs.getTab(i).getDescription();
+            final String tabDescription = description.substring(description.lastIndexOf('#') + 1).toString();
             LOG.debug("Tab decription is: " + tabDescription);
             // Remove the tab from the TabSheet
             if (tabDescription.equals(model.getId().toString())) {
@@ -399,7 +349,7 @@ public class SimpleLayout extends LayoutDesign {
     private Accordion buildAccordion() throws EscidocClientException, URISyntaxException {
         final Accordion accordion = new Accordion();
         accordion.setSizeFull();
-        accordion.addListener(new OnTabChange());
+        accordion.addListener(new OnNavigationTabChange());
 
         addResourcesTab(accordion);
         addOrgUnitTab(accordion);
