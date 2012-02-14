@@ -300,7 +300,7 @@ public class ViewConstants {
     public static final String DIRECT_MEMBERS = "Direct Members";
 
     /* ItemDeleteConfirmation */
-    public static final String DELETE_RESOURCE_WND_NAME = "Do you really want to delete this resource!?";
+    public static final String DELETE_RESOURCE_WINDOW_NAME = "Do you really want to delete this resource!?";
 
     public static final String QUESTION_DELETE_RESOURCE = "Are you confident to delete this resource!?";
 
@@ -386,5 +386,7 @@ public class ViewConstants {
     public static final String SAVE = "Save";
 
     public static final String DELETE_CONTENT_MODEL = "Delete Content Model";
+
+    public static final String DELETE_USER_ACCOUNT = "Delete User Account";
 
 }

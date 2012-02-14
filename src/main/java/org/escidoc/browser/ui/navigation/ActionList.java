@@ -88,4 +88,6 @@ class ActionList {
 
     public static final Action ACTION_DELETE_CONTENT_MODEL = new Action(ViewConstants.DELETE_CONTENT_MODEL);
 
+    public static final Action ACTION_DELETE_USER_ACCOUNT = new Action(ViewConstants.DELETE_USER_ACCOUNT);
+
 }

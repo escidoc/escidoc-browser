@@ -62,9 +62,6 @@ public abstract class LayoutDesign extends VerticalLayout {
 
     public abstract void closeView(ResourceModel model, ResourceModel parent, Object sender);
 
-    @Deprecated
-    public abstract int getApplicationHeight();
-
     public abstract TreeDataSource getTreeDataSource();
 
     public abstract Component getViewContainer();

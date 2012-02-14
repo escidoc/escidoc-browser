@@ -128,10 +128,15 @@ public class NavigationTreeBuilder {
     }
 
     public BaseNavigationTreeView buildUserAccountTree() {
-        BaseNavigationTreeView l = new BaseNavigationTreeView();
-        l.setDataSource(createUserAccountDataSource());
-        l.addClickListener(new TreeClickListener(mainWindow, router));
-        return l;
+        BaseNavigationTreeView view = new BaseNavigationTreeView();
+        view.setDataSource(createUserAccountDataSource());
+        addEventListeners(view);
+        return view;
+    }
+
+    private void addEventListeners(BaseNavigationTreeView view) {
+        view.addClickListener(new TreeClickListener(mainWindow, router));
+        view.addActionHandler(new ActionHandlerImpl(mainWindow, repositories, treeDataSource, router));
     }
 
     private TreeDataSource createUserAccountDataSource() {
@@ -141,11 +146,10 @@ public class NavigationTreeBuilder {
     }
 
     public BaseNavigationTreeView buildContentModelTree() {
-        BaseNavigationTreeView l = new BaseNavigationTreeView();
-        l.setDataSource(createContentModelDataSource());
-        l.addClickListener(new TreeClickListener(mainWindow, router));
-        l.addActionHandler(new ActionHandlerImpl(mainWindow, repositories, treeDataSource, router));
-        return l;
+        BaseNavigationTreeView view = new BaseNavigationTreeView();
+        view.setDataSource(createContentModelDataSource());
+        addEventListeners(view);
+        return view;
     }
 
     private TreeDataSource createContentModelDataSource() {

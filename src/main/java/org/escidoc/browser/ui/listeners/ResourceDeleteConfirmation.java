@@ -69,7 +69,7 @@ public class ResourceDeleteConfirmation {
 
     private void delete(
         final Container container, final ContainerRepository containerRepository, final Window mainWindow) {
-        final Window subwindow = new Window(ViewConstants.DELETE_RESOURCE_WND_NAME);
+        final Window subwindow = new Window(ViewConstants.DELETE_RESOURCE_WINDOW_NAME);
         subwindow.setModal(true);
         final Label message = new Label(ViewConstants.QUESTION_DELETE_RESOURCE);
         subwindow.addComponent(message);
@@ -107,7 +107,7 @@ public class ResourceDeleteConfirmation {
 
     private void delete(final Item item, final ItemRepository itemRepository, final Window mainWindow)
         throws EscidocClientException {
-        final Window subwindow = new Window(ViewConstants.DELETE_RESOURCE_WND_NAME);
+        final Window subwindow = new Window(ViewConstants.DELETE_RESOURCE_WINDOW_NAME);
         subwindow.setModal(true);
         Label message = new Label(ViewConstants.QUESTION_DELETE_RESOURCE);
         subwindow.addComponent(message);

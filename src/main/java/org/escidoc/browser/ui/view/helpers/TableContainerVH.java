@@ -108,7 +108,7 @@ public abstract class TableContainerVH extends VerticalLayout {
     protected abstract HierarchicalContainer populateContainerTable();
 
     public void confirmActionWindow(final Object target) {
-        final Window subwindow = new Window(ViewConstants.DELETE_RESOURCE_WND_NAME);
+        final Window subwindow = new Window(ViewConstants.DELETE_RESOURCE_WINDOW_NAME);
         subwindow.setModal(true);
         subwindow.setWidth("500px");
 

@@ -136,7 +136,7 @@ public class PdpRepositoryImpl implements PdpRepository {
         }
     }
 
-    private Decision getDecisionFrom(final Results results) {
+    private static Decision getDecisionFrom(final Results results) {
         return results.get(0).getInterpretedDecision();
     }
 

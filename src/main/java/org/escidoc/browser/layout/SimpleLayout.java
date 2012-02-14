@@ -233,13 +233,6 @@ public class SimpleLayout extends LayoutDesign {
         treeDataSource.remove(model);
     }
 
-    @Override
-    @Deprecated
-    public int getApplicationHeight() {
-        // Not really needed for this Layout
-        return 0;
-    }
-
     private AbsoluteLayout buildMainLayout() throws EscidocClientException, UnsupportedOperationException,
         URISyntaxException {
         // common part: create layout
