@@ -28,12 +28,7 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import gov.loc.www.zing.srw.SearchRetrieveRequestType;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Collection;
-import java.util.List;
+import com.google.common.base.Preconditions;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
@@ -44,7 +39,10 @@ import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.helper.Util;
 import org.escidoc.browser.util.Utils;
 
-import com.google.common.base.Preconditions;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Collection;
+import java.util.List;
 
 import de.escidoc.core.client.ContentModelHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -56,6 +54,7 @@ import de.escidoc.core.client.rest.RestContentModelHandlerClient;
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.Relations;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 public class ContentModelRepository implements Repository {
 
@@ -81,10 +80,6 @@ public class ContentModelRepository implements Repository {
     @Override
     public ResourceProxy findById(final String id) throws EscidocClientException {
         return new ContentModelProxyImpl(client.retrieve(id));
-    }
-
-    public String getAsXmlString(final String id) throws EscidocClientException {
-        return new RestContentModelHandlerClient(client.getServiceAddress()).retrieve(id);
     }
 
     @Override
@@ -124,5 +119,10 @@ public class ContentModelRepository implements Repository {
     @Override
     public void delete(final String id) throws EscidocClientException {
         client.delete(id);
+    }
+
+    @Override
+    public String getAsXmlString(String id) throws EscidocClientException {
+        return new RestContentModelHandlerClient(client.getServiceAddress()).retrieve(id);
     }
 }

@@ -51,6 +51,7 @@ import de.escidoc.core.client.exceptions.EscidocException;
 import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.client.exceptions.TransportException;
 import de.escidoc.core.client.interfaces.ContainerHandlerClientInterface;
+import de.escidoc.core.client.rest.RestContainerHandlerClient;
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.MetadataRecords;
@@ -264,5 +265,10 @@ public class ContainerRepository implements Repository {
     @Override
     public void delete(final String id) throws EscidocClientException {
         client.delete(id);
+    }
+
+    @Override
+    public String getAsXmlString(final String id) throws EscidocClientException {
+        return new RestContainerHandlerClient(client.getServiceAddress()).retrieve(id);
     }
 }

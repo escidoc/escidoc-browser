@@ -78,6 +78,8 @@ public final class FilterButtonListener implements ClickListener {
 
     private static final boolean IS_EXPORT_PERMITTTED = true;
 
+    private static final String EXPORT_FILENAME = "escidoc-xml-export.zip";
+
     private final VerticalLayout resultLayout = new VerticalLayout();
 
     private final HorizontalLayout buttonLayout = new HorizontalLayout();
@@ -100,8 +102,6 @@ public final class FilterButtonListener implements ClickListener {
         this.repositories = repositories;
     }
 
-    private static final String EXPORT_FILENAME = "escidoc-xml-export.zip";
-
     @SuppressWarnings("unchecked")
     Set<ResourceModel> getSelectedResources() {
         final Object object = resultTable.getValue();
@@ -112,13 +112,13 @@ public final class FilterButtonListener implements ClickListener {
     }
 
     @Override
-    public void buttonClick(final ClickEvent event) {
+    public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
         try {
             showResult();
             if (isPurgePermitted()) {
                 showPurgeView();
             }
-            if (isContentModelSelected() && isExportPermitted()) {
+            if (isExportPermitted()) {
                 showExportView();
             }
             showDeleteView();
@@ -142,10 +142,6 @@ public final class FilterButtonListener implements ClickListener {
         deleteButton.addListener(new BulkDeleteListener(this, repositories, mainWindow, resultDataSource));
     }
 
-    private boolean isContentModelSelected() {
-        return getSelectedType().equals(ResourceType.CONTENT_MODEL);
-    }
-
     private void showExportView() {
         buttonLayout.setSpacing(true);
 
@@ -155,7 +151,7 @@ public final class FilterButtonListener implements ClickListener {
         exportButton.addListener(new ClickListener() {
 
             @Override
-            public void buttonClick(final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
                 final Set<ResourceModel> selectedResources = getSelectedResources();
                 mainWindow.open(new StreamResource(new StreamSource() {
 
@@ -186,10 +182,10 @@ public final class FilterButtonListener implements ClickListener {
             res = zout;
             for (final ResourceModel resourceModel : set) {
                 zout.putNextEntry(new ZipEntry(resourceModel.getId()));
-                final String asString =
-                    this.bulkTasksView.repositories.contentModel().getAsXmlString(resourceModel.getId());
-                final InputStream is = new ByteArrayInputStream(asString.getBytes("UTF-8"));
-                Utils.copy(is, zout);
+                // TODO
+                String asXmlString =
+                    repositories.findByType(resourceModel.getType()).getAsXmlString(resourceModel.getId());
+                Utils.copy(new ByteArrayInputStream(asXmlString.getBytes("UTF-8")), zout);
                 zout.closeEntry();
             }
         }

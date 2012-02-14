@@ -46,6 +46,7 @@ import de.escidoc.core.client.ContextHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.client.interfaces.ContextHandlerClientInterface;
+import de.escidoc.core.client.rest.RestContextHandlerClient;
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.Relations;
 import de.escidoc.core.resources.common.TaskParam;
@@ -192,6 +193,11 @@ public class ContextRepository implements Repository {
         taskParam.setComment(comment);
         client.close(client.retrieve(contextId), taskParam);
 
+    }
+
+    @Override
+    public String getAsXmlString(String id) throws EscidocClientException {
+        return new RestContextHandlerClient(client.getServiceAddress()).retrieve(id);
     }
 
 }

@@ -28,25 +28,8 @@
  */
 package org.escidoc.browser.ui.tools;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLConnection;
-import java.util.List;
-
-import org.escidoc.browser.repository.IngestRepository;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.tools.Style.H2;
-import org.escidoc.browser.util.Utils;
-import org.escidoc.core.tme.IngestResult;
-import org.escidoc.core.tme.SucessfulIngestResult;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -56,6 +39,24 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
+
+import org.escidoc.browser.repository.IngestRepository;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.tools.Style.H2;
+import org.escidoc.browser.util.Utils;
+import org.escidoc.core.tme.IngestResult;
+import org.escidoc.core.tme.SucessfulIngestResult;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLConnection;
+import java.util.List;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.EscidocException;
@@ -73,7 +74,7 @@ public final class ImportView extends VerticalLayout {
         }
 
         @Override
-        public void buttonClick(final ClickEvent event) {
+        public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
             if (sourceUrlField.getValue() instanceof String) {
                 downloadAndIngestZipFile(sourceUrlField, (String) sourceUrlField.getValue());
             }

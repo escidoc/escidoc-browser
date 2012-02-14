@@ -31,11 +31,13 @@ package org.escidoc.browser.repository.internal;
 import com.google.common.base.Preconditions;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.repository.AdminRepository;
 import org.escidoc.browser.repository.BulkRepository;
 import org.escidoc.browser.repository.IngestRepository;
 import org.escidoc.browser.repository.PdpRepository;
 import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.repository.StagingRepository;
 
 import java.net.MalformedURLException;
@@ -167,5 +169,25 @@ public class RepositoriesImpl implements Repositories {
     @Override
     public OrganizationUnitRepository organization() {
         return orgUnitRepository;
+    }
+
+    @Override
+    public Repository findByType(ResourceType type) {
+        switch (type) {
+            case CONTEXT:
+                return contextRepository;
+            case CONTAINER:
+                return containerRepository;
+            case ITEM:
+                return itemRepository;
+            case CONTENT_MODEL:
+                return contentModelRepository;
+            case ORG_UNIT:
+                return orgUnitRepository;
+            case USER_ACCOUNT:
+                return userAccountRepository;
+            default:
+                throw new UnsupportedOperationException("Not yet implemented " + type);
+        }
     }
 }

@@ -28,10 +28,10 @@
  */
 package org.escidoc.browser.repository;
 
-import java.util.List;
-
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
+
+import java.util.List;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.InternalClientException;
@@ -55,4 +55,6 @@ public interface Repository {
     List<ResourceModel> filterUsingInput(String query) throws EscidocClientException;
 
     void delete(String id) throws EscidocClientException;
+
+    String getAsXmlString(String id) throws EscidocClientException;
 }

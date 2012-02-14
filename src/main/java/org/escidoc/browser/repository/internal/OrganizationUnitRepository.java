@@ -46,6 +46,7 @@ import de.escidoc.core.client.OrganizationalUnitHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.client.interfaces.OrganizationalUnitHandlerClientInterface;
+import de.escidoc.core.client.rest.RestOrganizationalUnitHandlerClient;
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.MetadataRecords;
 import de.escidoc.core.resources.common.Relations;
@@ -179,5 +180,10 @@ public class OrganizationUnitRepository implements Repository {
         }
 
         client.updateParents(ou, parents);
+    }
+
+    @Override
+    public String getAsXmlString(String id) throws EscidocClientException {
+        return new RestOrganizationalUnitHandlerClient(client.getServiceAddress()).retrieve(id);
     }
 }

@@ -28,10 +28,7 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import gov.loc.www.zing.srw.SearchRetrieveRequestType;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.base.Preconditions;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
@@ -47,7 +44,8 @@ import org.escidoc.browser.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.escidoc.core.client.ContainerHandlerClient;
 import de.escidoc.core.client.ItemHandlerClient;
@@ -57,6 +55,7 @@ import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.client.exceptions.TransportException;
 import de.escidoc.core.client.interfaces.ContainerHandlerClientInterface;
 import de.escidoc.core.client.interfaces.ItemHandlerClientInterface;
+import de.escidoc.core.client.rest.RestItemHandlerClient;
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.MetadataRecords;
 import de.escidoc.core.resources.common.Relations;
@@ -64,6 +63,7 @@ import de.escidoc.core.resources.common.TaskParam;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.om.item.Item;
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 public class ItemRepository implements Repository {
     private static final Logger LOG = LoggerFactory.getLogger(ItemRepository.class);
@@ -221,7 +221,7 @@ public class ItemRepository implements Repository {
         return filterUsingInput(findByContentModelQuery(cmId));
     }
 
-    private String findByContentModelQuery(final String cmId) {
+    private static String findByContentModelQuery(final String cmId) {
         return "\"/properties/content-model/id\"=\"" + cmId + "\"";
     }
 
@@ -232,5 +232,10 @@ public class ItemRepository implements Repository {
 
     public void deleteComponent(String itemId, final String componentId) throws EscidocClientException {
         client.deleteComponent(itemId, componentId);
+    }
+
+    @Override
+    public String getAsXmlString(String id) throws EscidocClientException {
+        return new RestItemHandlerClient(client.getServiceAddress()).retrieve(id);
     }
 }

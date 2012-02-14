@@ -45,6 +45,7 @@ import de.escidoc.core.client.UserAccountHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.client.interfaces.UserAccountHandlerClientInterface;
+import de.escidoc.core.client.rest.RestContentModelHandlerClient;
 import de.escidoc.core.resources.aa.useraccount.Attribute;
 import de.escidoc.core.resources.aa.useraccount.Attributes;
 import de.escidoc.core.resources.aa.useraccount.Preference;
@@ -179,5 +180,10 @@ public class UserAccountRepository implements Repository {
             }
         }
         return null;
+    }
+
+    @Override
+    public String getAsXmlString(String id) throws EscidocClientException {
+        return new RestContentModelHandlerClient(client.getServiceAddress()).retrieve(id);
     }
 }

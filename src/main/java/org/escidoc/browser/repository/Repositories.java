@@ -28,6 +28,7 @@
  */
 package org.escidoc.browser.repository;
 
+import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.repository.internal.ContainerRepository;
 import org.escidoc.browser.repository.internal.ContentModelRepository;
 import org.escidoc.browser.repository.internal.ContextRepository;
@@ -63,4 +64,6 @@ public interface Repositories {
     BulkRepository bulkTasks();
 
     OrganizationUnitRepository organization();
+
+    Repository findByType(ResourceType type);
 }
