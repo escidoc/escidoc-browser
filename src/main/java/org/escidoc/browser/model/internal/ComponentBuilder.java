@@ -120,7 +120,7 @@ public class ComponentBuilder {
 
     private void setComponentContent() {
         componentContent.setXLinkHref(contentUri);
-        componentContent.setStorageType(storageType);
+        componentContent.setStorage(storageType);
         component.setContent(componentContent);
     }
 

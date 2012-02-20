@@ -28,12 +28,12 @@
  */
 package org.escidoc.browser.model.internal;
 
+import org.escidoc.browser.AppConstants;
+import org.escidoc.browser.model.EscidocServiceLocation;
+
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-
-import org.escidoc.browser.AppConstants;
-import org.escidoc.browser.model.EscidocServiceLocation;
 
 public class EscidocServiceLocationImpl implements EscidocServiceLocation {
 

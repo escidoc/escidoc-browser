@@ -28,16 +28,16 @@
  */
 package org.escidoc.browser.util;
 
+import org.escidoc.browser.ui.ViewConstants;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.net.Proxy;
 import java.net.ProxySelector;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-
-import org.escidoc.browser.ui.ViewConstants;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class FindHttpProxySpec {
 
@@ -51,7 +51,7 @@ public class FindHttpProxySpec {
         // AssertThat:
     }
 
-    private void bar() {
+    private static void bar() {
         java.util.Properties props = System.getProperties();
         String message = props.getProperty("http.proxyHost", "NONE");
         LOG.debug("proxyHost: " + message);
@@ -61,11 +61,8 @@ public class FindHttpProxySpec {
         List<Proxy> list = ProxySelector.getDefault().select(new URI(ViewConstants.DEFAULT_CONTENT_MODEL_URI));
         for (Proxy proxy : list) {
             // LOG.debug("proxy: " + proxy.address());
-
             System.out.println("proxy: " + proxy.address());
-
         }
-        throw new UnsupportedOperationException("Not yet implemented");
     }
 
 }

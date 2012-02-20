@@ -28,7 +28,20 @@
  */
 package org.escidoc.browser.ui.view.helpers;
 
-import java.net.URISyntaxException;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.BaseTheme;
+import com.vaadin.ui.themes.Runo;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
@@ -42,19 +55,7 @@ import org.escidoc.browser.ui.maincontent.ResourceAddViewImpl;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.navigation.NavigationTreeView;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.BaseTheme;
-import com.vaadin.ui.themes.Runo;
+import java.net.URISyntaxException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -144,7 +145,6 @@ public class DirectMember {
         return navigationTreeBuilder.buildContainerDirectMemberTree(parentId);
     }
 
-    @SuppressWarnings("serial")
     protected void createButtons() throws EscidocClientException {
         CssLayout cssLayout = headerButton();
 
@@ -158,6 +158,7 @@ public class DirectMember {
         panelLayout.setStyleName(Runo.PANEL_LIGHT);
     }
 
+    @SuppressWarnings("serial")
     private CssLayout headerButton() throws EscidocClientException {
         CssLayout cssLayout = new CssLayout();
         cssLayout.addStyleName("v-accordion-item-caption v-caption v-captiontext");
@@ -187,7 +188,7 @@ public class DirectMember {
         addResourceButton.addListener(new ClickListener() {
 
             @Override
-            public void buttonClick(final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
                 try {
                     new ResourceAddViewImpl(resourceProxy, contextId, router).openSubWindow();
                 }
