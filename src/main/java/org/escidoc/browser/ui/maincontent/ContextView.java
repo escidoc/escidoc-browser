@@ -54,6 +54,7 @@ import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.helper.ViewHelper;
 import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
 import org.escidoc.browser.ui.view.helpers.CreatePermanentLinkVH;
 import org.escidoc.browser.ui.view.helpers.DirectMember;
@@ -375,14 +376,7 @@ public class ContextView extends View {
         vlLeft.addComponent(lblStatus);
 
         // RIGHT SIDE
-        final Label descMetadata2 =
-            new Label(ViewConstants.CREATED_BY + " " + resourceProxy.getCreator() + " on "
-                + resourceProxy.getCreatedOn() + "<br/>" + ViewConstants.LAST_MODIFIED_BY + " "
-                + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(), Label.CONTENT_XHTML);
-
-        descMetadata2.setStyleName("floatright columnheight50");
-        descMetadata2.setWidth("65%");
-        vlRight.addComponent(descMetadata2);
+        vlRight.addComponent(ViewHelper.buildCreateAndModifyLabel(resourceProxy));
 
         hlProperties.addComponent(vlLeft);
         hlProperties.setExpandRatio(vlLeft, 0.4f);

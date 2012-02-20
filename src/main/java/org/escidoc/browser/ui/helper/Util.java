@@ -28,30 +28,25 @@
  */
 package org.escidoc.browser.ui.helper;
 
-import gov.loc.www.zing.srw.SearchRetrieveRequestType;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Map;
+import com.google.common.base.Preconditions;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.internal.ContainerModel;
 import org.escidoc.browser.model.internal.ItemModel;
 import org.escidoc.browser.util.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Map;
 
 import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.om.item.Item;
 import de.escidoc.core.resources.sb.search.SearchResult;
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 public final class Util {
-
-    private static final Logger LOG = LoggerFactory.getLogger(Util.class);
 
     /**
      * No instance allowed for utility classes.
