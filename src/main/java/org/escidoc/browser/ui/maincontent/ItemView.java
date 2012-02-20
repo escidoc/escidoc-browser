@@ -28,6 +28,14 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
+import com.google.common.base.Preconditions;
+
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.Runo;
+
 import org.escidoc.browser.controller.ItemController;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
@@ -38,23 +46,12 @@ import org.escidoc.browser.model.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.view.helpers.ItemPropertiesVH;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.om.item.Item;
 
 @SuppressWarnings("serial")
 public final class ItemView extends View {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ItemView.class);
 
     private final Router router;
 
@@ -68,12 +65,12 @@ public final class ItemView extends View {
 
     private ItemPropertiesVH itemPropertiesView;
 
+    @SuppressWarnings("unused")
     private Panel panelView;
 
     private ItemController controller;
 
-    public ItemView(final Router router, final ResourceProxy resourceProxy, final ItemController itemController)
-        throws EscidocClientException {
+    public ItemView(final Router router, final ResourceProxy resourceProxy, final ItemController itemController) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null.");
         Preconditions.checkNotNull(itemController, "itemController is null.");
@@ -88,7 +85,7 @@ public final class ItemView extends View {
         panelView = buildContentPanel();
     }
 
-    public Panel buildContentPanel() throws EscidocClientException {
+    public Panel buildContentPanel() {
         this.setImmediate(false);
         this.setWidth("100.0%");
         this.setHeight("100.0%");
@@ -101,7 +98,7 @@ public final class ItemView extends View {
 
     // the main panel has a Layout.
     // Elements of the view are bound in this layout of the main Panel
-    private VerticalLayout buildVlContentPanel() throws EscidocClientException {
+    private VerticalLayout buildVlContentPanel() {
         // common part: create layout
         VerticalLayout vlContentPanel = new VerticalLayout();
         vlContentPanel.setImmediate(false);
@@ -122,7 +119,7 @@ public final class ItemView extends View {
         return vlContentPanel;
     }
 
-    private Panel buildMetaViewsPanel() throws EscidocClientException {
+    private Panel buildMetaViewsPanel() {
         // common part: create layout
         Panel metaViewsPanel = new Panel();
         metaViewsPanel.setImmediate(false);
@@ -137,7 +134,7 @@ public final class ItemView extends View {
         return metaViewsPanel;
     }
 
-    private HorizontalLayout buildHlMetaViews() throws EscidocClientException {
+    private HorizontalLayout buildHlMetaViews() {
         // common part: create layout
         HorizontalLayout hlMetaViews = new HorizontalLayout();
         hlMetaViews.setImmediate(false);
@@ -186,7 +183,7 @@ public final class ItemView extends View {
         return vlRightPanel;
     }
 
-    private Panel buildLeftPanel() throws EscidocClientException {
+    private Panel buildLeftPanel() {
         // common part: create layout
         Panel leftPanel = new Panel();
         leftPanel.setImmediate(false);
@@ -200,7 +197,7 @@ public final class ItemView extends View {
         return leftPanel;
     }
 
-    private VerticalLayout buildVlLeftPanel() throws EscidocClientException {
+    private VerticalLayout buildVlLeftPanel() {
         // common part: create layout
         VerticalLayout vlLeftPanel = new VerticalLayout();
         vlLeftPanel.setImmediate(false);
@@ -216,7 +213,7 @@ public final class ItemView extends View {
         return vlLeftPanel;
     }
 
-    private Panel buildDirectMembersPanel() throws EscidocClientException {
+    private Panel buildDirectMembersPanel() {
         // common part: create layout
         Panel directMembersPanel = new Panel();
         directMembersPanel.setImmediate(false);
@@ -225,12 +222,22 @@ public final class ItemView extends View {
         directMembersPanel.setStyleName(Runo.PANEL_LIGHT);
 
         // vlDirectMember
-        VerticalLayout vlDirectMember;
-        vlDirectMember = new ItemContent(repositories, resourceProxy, serviceLocation, mainWindow, controller);
+        VerticalLayout vlDirectMember =
+            new ItemContent(repositories, resourceProxy, serviceLocation, mainWindow, controller);
         vlDirectMember.setImmediate(false);
         vlDirectMember.setWidth("100.0%");
         vlDirectMember.setHeight("100.0%");
         vlDirectMember.setMargin(false);
+
+        // vlDirectMember.addComponent(new Button(ViewConstants.ADD_COMPONENT, new Button.ClickListener() {
+        //
+        // @Override
+        // public void buttonClick(ClickEvent event) {
+        // throw new UnsupportedOperationException("not-yet-implemented.");
+        // }
+        // }));
+
+        vlDirectMember.addComponent(new ComponentUploadView(repositories, controller));
         directMembersPanel.setContent(vlDirectMember);
 
         return directMembersPanel;

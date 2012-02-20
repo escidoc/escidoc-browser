@@ -28,7 +28,7 @@
  */
 package org.escidoc.browser.controller;
 
-import java.net.URISyntaxException;
+import com.vaadin.ui.Window;
 
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.ItemProxyImpl;
@@ -38,12 +38,13 @@ import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.maincontent.ItemView;
 import org.escidoc.browser.ui.view.helpers.ItemComponentsView;
 
-import com.vaadin.ui.Window;
+import java.net.URISyntaxException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class ItemController extends Controller {
 
+    @SuppressWarnings("unused")
     private ItemProxyImpl itemProxy;
 
     public ItemController(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
@@ -54,14 +55,7 @@ public class ItemController extends Controller {
 
     @Override
     public void createView() {
-        try {
-            view = new ItemView(getRouter(), getResourceProxy(), this);
-            // view = new ItemView2(getRouter(), getResourceProxy(), this);
-        }
-        catch (EscidocClientException e) {
-            getRouter().getMainWindow().showNotification("Error", e.getMessage(),
-                Window.Notification.TYPE_ERROR_MESSAGE);
-        }
+        view = new ItemView(getRouter(), getResourceProxy(), this);
     }
 
     /**

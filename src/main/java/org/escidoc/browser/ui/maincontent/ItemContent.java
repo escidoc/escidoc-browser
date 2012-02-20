@@ -28,9 +28,12 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import java.net.URISyntaxException;
+import com.google.common.base.Preconditions;
 
-import org.escidoc.browser.AppConstants;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+
 import org.escidoc.browser.controller.ItemController;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
@@ -42,13 +45,9 @@ import org.escidoc.browser.ui.view.helpers.ItemComponentsView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
+import java.net.URISyntaxException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
-import de.escidoc.core.resources.om.item.component.Component;
 
 @SuppressWarnings("serial")
 public class ItemContent extends VerticalLayout {
@@ -83,7 +82,6 @@ public class ItemContent extends VerticalLayout {
         this.mainWindow = mainWindow;
         this.controller = controller;
         initView();
-
     }
 
     private void initView() {
@@ -139,16 +137,6 @@ public class ItemContent extends VerticalLayout {
 
     private boolean hasComponents() {
         return itemProxy.hasComponents().booleanValue();
-    }
-
-    private String getFileType(final Component itemProperties) {
-        final String mimeType = itemProperties.getProperties().getMimeType();
-        if (mimeType == null) {
-            return AppConstants.EMPTY_STRING;
-        }
-        final String[] last = mimeType.split("/");
-        final String lastOne = last[last.length - 1];
-        return lastOne;
     }
 
     private ItemComponentsView buildTable() {
