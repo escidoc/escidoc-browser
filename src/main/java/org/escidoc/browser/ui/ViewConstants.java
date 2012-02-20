@@ -365,6 +365,11 @@ public class ViewConstants {
 
     public static final String PREFERENCE_REMOVE = "Preference removed";
 
+    public static final String ADMINDESCRIPTION_REMOVE = "AdminDescription removed";
+
+    public static final String ADMINDESCRIPTION_REMOVED =
+        "The admin description was removed successfully from this context";
+
     public static final String CONTENT_MODELS = "Content Models";
 
     public static final String ADD_NEW_META_DATA = "Add New MetaData";

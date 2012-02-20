@@ -36,9 +36,9 @@ import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.AddOrgUnitstoContext;
+import org.escidoc.browser.ui.view.helpers.AdminDescriptorsTableVH;
 
 import com.google.common.base.Preconditions;
-import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
@@ -47,7 +47,6 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Link;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
@@ -58,7 +57,6 @@ import com.vaadin.ui.themes.BaseTheme;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.reference.OrganizationalUnitRef;
-import de.escidoc.core.resources.om.context.AdminDescriptor;
 import de.escidoc.core.resources.om.context.AdminDescriptors;
 
 class ContextRightPanel {
@@ -199,16 +197,8 @@ class ContextRightPanel {
 
         VerticalLayout vl2 = new VerticalLayout();
         final AdminDescriptors admDesc = resourceProxy.getAdminDescription();
-        for (final AdminDescriptor adminDescriptor : admDesc) {
-
-            Link admDescBtn =
-                new Link(adminDescriptor.getXLinkTitle(), new ExternalResource(router
-                    .getServiceLocation().getEscidocUri() + adminDescriptor.getXLinkHref()));
-            admDescBtn.setTargetName("_blank");
-            admDescBtn.setStyleName(BaseTheme.BUTTON_LINK);
-            admDescBtn.setDescription("Show metadata information in a separate window");
-            vl2.addComponent(admDescBtn);
-        }
+        final AdminDescriptorsTableVH adminDescriptorTable = new AdminDescriptorsTableVH(contextController, admDesc);
+        vl2.addComponent(adminDescriptorTable);
         vl.addComponent(vl2);
         vl.setExpandRatio(vl2, 9);
         admDescriptors.setContent(vl);

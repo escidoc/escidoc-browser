@@ -41,6 +41,7 @@ import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.ContextView;
 import org.xml.sax.SAXException;
 
@@ -160,6 +161,19 @@ public class ContextController extends Controller {
 
     }
 
+    public void removeAdminDescriptor(String name) {
+        try {
+            getRepositories().context().removeAdminDescriptor(resourceProxy.getId(), name);
+            this.showTrayMessage(ViewConstants.ADMINDESCRIPTION_REMOVE, ViewConstants.ADMINDESCRIPTION_REMOVED);
+
+        }
+        catch (EscidocClientException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+
     /**
      * PDP check if the logged-in user can Remove an Organizational Unit
      * 
@@ -222,4 +236,5 @@ public class ContextController extends Controller {
             return false;
         }
     }
+
 }

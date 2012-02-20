@@ -181,6 +181,15 @@ public class ContextRepository implements Repository {
         return client.update(context);
     }
 
+    public Context removeAdminDescriptor(String contextId, String name) throws EscidocClientException {
+        System.out.println("Name is " + name);
+        Context context = client.retrieve(contextId);
+        AdminDescriptors adminDescriptors = context.getAdminDescriptors();
+        adminDescriptors.del(name);
+        context.setAdminDescriptors(adminDescriptors);
+        return client.update(context);
+    }
+
     public Context delOrganizationalUnit(String contextId, String orgUnitId) throws EscidocClientException {
         Context context = client.retrieve(contextId);
         OrganizationalUnitRefs organizationalUnitRefs = context.getProperties().getOrganizationalUnitRefs();
@@ -227,5 +236,4 @@ public class ContextRepository implements Repository {
     public String getAsXmlString(String id) throws EscidocClientException {
         return new RestContextHandlerClient(client.getServiceAddress()).retrieve(id);
     }
-
 }
