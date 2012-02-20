@@ -122,6 +122,11 @@ public abstract class Controller {
         this.router.getApp().getMainWindow().showNotification("Error", errorMessage, Notification.TYPE_ERROR_MESSAGE);
     }
 
+    public void showError(final Exception e) {
+        Preconditions.checkNotNull(e, "e is null: %s", e);
+        this.router.getApp().getMainWindow().showNotification("Error", e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+    }
+
     /**
      * Show warning message to the user
      * 

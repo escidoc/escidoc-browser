@@ -124,13 +124,12 @@ public class ParentsView {
                         router, orgUnitController));
                 }
                 catch (EscidocClientException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    orgUnitController.showError(e);
                 }
                 Button close = new Button("Close", new Button.ClickListener() {
 
                     @Override
-                    public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+                    public void buttonClick(@SuppressWarnings("unused") com.vaadin.ui.Button.ClickEvent event) {
                         (subwindow.getParent()).removeWindow(subwindow);
                     }
                 });

@@ -28,19 +28,8 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import org.escidoc.browser.controller.ContextController;
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.model.ResourceType;
-import org.escidoc.browser.model.internal.ContextProxyImpl;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
-import org.escidoc.browser.ui.view.helpers.CreatePermanentLinkVH;
-import org.escidoc.browser.ui.view.helpers.DirectMember;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.AbstractComponentContainer;
@@ -57,11 +46,25 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Runo;
 
+import org.escidoc.browser.controller.ContextController;
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.model.internal.ContextProxyImpl;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
+import org.escidoc.browser.ui.view.helpers.CreatePermanentLinkVH;
+import org.escidoc.browser.ui.view.helpers.DirectMember;
+
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.properties.PublicStatus;
 
 @SuppressWarnings("serial")
 public class ContextView extends View {
+
+    private static final String CREATED = "created";
 
     private final Router router;
 
@@ -125,6 +128,7 @@ public class ContextView extends View {
 
     // the main panel has a Layout.
     // Elements of the view are bound in this layout of the main Panel
+    @SuppressWarnings("unused")
     private VerticalLayout buildVlContentPanel() throws EscidocClientException {
         // common part: create layout
         vlContentPanel = new VerticalLayout();
@@ -236,7 +240,7 @@ public class ContextView extends View {
     }
 
     private Panel buildMetaDataRecsPnl() {
-        Panel metaDataRecsPnl = new MetadataRecsContext(resourceProxy, router, contextController).asPanel();
+        Panel metaDataRecsPnl = new ContextRightPanel(resourceProxy, router, contextController).asPanel();
         return metaDataRecsPnl;
     }
 
@@ -326,6 +330,7 @@ public class ContextView extends View {
         vlResourceProperties.addComponent(bindProperties());
     }
 
+    @SuppressWarnings("unused")
     private Panel buildBreadCrumpPanel() {
         // common part: create layout
         Panel breadCrumpPanel = new Panel();
@@ -445,11 +450,8 @@ public class ContextView extends View {
                                 reSwapComponents();
                                 oldComponent = event.getClickedComponent();
                                 swapComponent =
-                                    editStatus(
-                                        child
-                                            .getValue().toString()
-                                            .replace(resourceProxy.getType().getLabel() + " is ", ""),
-                                        ViewConstants.DESC_STATUS);
+                                    editStatus(child
+                                        .getValue().toString().replace(resourceProxy.getType().getLabel() + " is ", ""));
                                 vlLeft.replaceComponent(oldComponent, swapComponent);
                             }
                         }
@@ -461,16 +463,16 @@ public class ContextView extends View {
 
                 private ComboBox cmbStatus;
 
-                private Component editStatus(final String lockStatus, String status) {
+                private Component editStatus(final String lockStatus) {
                     cmbStatus = new ComboBox();
                     cmbStatus.setNullSelectionAllowed(false);
-                    if (lockStatus.contains("created")) {
+                    if (lockStatus.contains(CREATED)) {
                         cmbStatus.addItem(PublicStatus.OPENED.toString().toLowerCase());
                     }
                     else {
                         cmbStatus.addItem(PublicStatus.CLOSED.toString().toLowerCase());
                     }
-                    cmbStatus.select(1);
+                    cmbStatus.select(Integer.valueOf(1));
                     return cmbStatus;
                 }
 
@@ -556,7 +558,7 @@ public class ContextView extends View {
         Button close = new Button("Update", new Button.ClickListener() {
 
             @Override
-            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") com.vaadin.ui.Button.ClickEvent event) {
                 // close the window by removing it from the parent window
                 String comment = editor.getValue().toString();
                 try {
@@ -575,7 +577,7 @@ public class ContextView extends View {
         });
         Button cancel = new Button("Cancel", new Button.ClickListener() {
             @Override
-            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") com.vaadin.ui.Button.ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
 
             }
@@ -589,7 +591,7 @@ public class ContextView extends View {
         mainWindow.addWindow(subwindow);
     }
 
-    private TextField editType(final String contextType, String description) {
+    private static TextField editType(final String contextType, String description) {
         final TextField txtType = new TextField();
         txtType.setInvalidAllowed(false);
         txtType.setValue(contextType);

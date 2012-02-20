@@ -28,15 +28,8 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import org.escidoc.browser.controller.ContextController;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.model.internal.ContextProxyImpl;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.listeners.AddOrgUnitstoContext;
-import org.escidoc.browser.ui.listeners.ContextAdminDescriptorsClickListener;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Accordion;
@@ -52,28 +45,33 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 
+import org.escidoc.browser.controller.ContextController;
+import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.model.internal.ContextProxyImpl;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.listeners.AddOrgUnitstoContext;
+
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.reference.OrganizationalUnitRef;
 import de.escidoc.core.resources.om.context.AdminDescriptor;
 import de.escidoc.core.resources.om.context.AdminDescriptors;
-import de.escidoc.core.resources.om.context.OrganizationalUnitRefs;
 
-class MetadataRecsContext {
+class ContextRightPanel {
 
     private final ContextProxyImpl resourceProxy;
-
-    private final Window mainWindow;
 
     private Router router;
 
     private ContextController contextController;
 
-    MetadataRecsContext(final ResourceProxy resourceProxy, Router router, ContextController contextController) {
+    ContextRightPanel(final ResourceProxy resourceProxy, Router router, ContextController contextController) {
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         Preconditions.checkNotNull(router, "resource is null.");
 
         this.resourceProxy = (ContextProxyImpl) resourceProxy;
-        this.mainWindow = router.getMainWindow();
         this.router = router;
         this.contextController = contextController;
     }
@@ -100,7 +98,7 @@ class MetadataRecsContext {
         return pnlmetadataRecs;
     }
 
-    private void buildPanelHeader(CssLayout cssLayout, String name) {
+    private static void buildPanelHeader(CssLayout cssLayout, String name) {
         cssLayout.addStyleName("v-accordion-item-caption v-caption v-captiontext");
         cssLayout.setWidth("100%");
         cssLayout.setMargin(false);
@@ -116,6 +114,7 @@ class MetadataRecsContext {
         metadataRecs.addTab(buildAdminDescription(), ViewConstants.ADMIN_DESCRIPTION, null);
     }
 
+    @SuppressWarnings("serial")
     private Panel buildAdminDescription() {
         final Panel admDescriptors = new Panel();
         admDescriptors.setWidth("100%");
@@ -134,7 +133,7 @@ class MetadataRecsContext {
             addResourceButton.addListener(new ClickListener() {
 
                 @Override
-                public void buttonClick(final ClickEvent event) {
+                public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
                     final Window subwindow = new Window("A modal subwindow");
                     subwindow.setModal(true);
                     subwindow.setWidth("650px");
@@ -145,7 +144,7 @@ class MetadataRecsContext {
                     subwindow.addComponent(new Label("Not yet implemented"));
                     Button close = new Button("Close", new Button.ClickListener() {
                         @Override
-                        public void buttonClick(ClickEvent event) {
+                        public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
                             (subwindow.getParent()).removeWindow(subwindow);
                         }
                     });
@@ -179,16 +178,17 @@ class MetadataRecsContext {
         return admDescriptors;
     }
 
+    @SuppressWarnings("serial")
     private Panel buildOrganizationUnit() {
         final Panel pnlOrgUnit = new Panel();
         pnlOrgUnit.setSizeFull();
         VerticalLayout vl = new VerticalLayout();
         vl.setSizeFull();
-        final OrganizationalUnitRefs orgUnits = resourceProxy.getOrganizationalUnit();
 
         final CssLayout cssLayout = new CssLayout();
         buildPanelHeader(cssLayout, ViewConstants.ORGANIZATIONAL_UNIT);
         ThemeResource ICON = new ThemeResource("images/assets/plus.png");
+
         if (contextController.canAddOUs()) {
             final Button addResourceButton = new Button();
             addResourceButton.setStyleName(BaseTheme.BUTTON_LINK);
@@ -198,7 +198,7 @@ class MetadataRecsContext {
             addResourceButton.addListener(new ClickListener() {
 
                 @Override
-                public void buttonClick(final ClickEvent event) {
+                public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
                     final Window subwindow = new Window("A modal subwindow");
                     subwindow.setModal(true);
                     subwindow.setWidth("650px");
@@ -208,15 +208,14 @@ class MetadataRecsContext {
 
                     try {
                         subwindow.addComponent(new AddOrgUnitstoContext(router, resourceProxy, contextController,
-                            orgUnits));
+                            resourceProxy.getOrganizationalUnit()));
                     }
                     catch (EscidocClientException e) {
-
-                        e.printStackTrace();
+                        contextController.showError(e);
                     }
                     Button close = new Button("Close", new Button.ClickListener() {
                         @Override
-                        public void buttonClick(ClickEvent event) {
+                        public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
                             (subwindow.getParent()).removeWindow(subwindow);
                         }
                     });
@@ -232,12 +231,40 @@ class MetadataRecsContext {
         }
         vl.addComponent(cssLayout);
         VerticalLayout vl2 = new VerticalLayout();
-        for (final OrganizationalUnitRef organizationalUnitRef : orgUnits) {
-            final Button button = new Button(organizationalUnitRef.getXLinkTitle());
-            button.setStyleName(BaseTheme.BUTTON_LINK);
-            button.addListener(new ContextAdminDescriptorsClickListener(organizationalUnitRef, mainWindow));
-            vl2.addComponent(button);
-            vl2.setComponentAlignment(button, Alignment.TOP_LEFT);
+        for (final OrganizationalUnitRef organizationalUnitRef : resourceProxy.getOrganizationalUnit()) {
+            final Button openInNewTabLink = new Button(organizationalUnitRef.getXLinkTitle());
+            openInNewTabLink.setStyleName(BaseTheme.BUTTON_LINK);
+            openInNewTabLink.addListener(new Button.ClickListener() {
+
+                @Override
+                public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
+                    try {
+                        router.show(new ResourceModel() {
+
+                            @Override
+                            public ResourceType getType() {
+                                return ResourceType.ORG_UNIT;
+                            }
+
+                            @Override
+                            public String getName() {
+                                return organizationalUnitRef.getXLinkTitle();
+                            }
+
+                            @Override
+                            public String getId() {
+                                return organizationalUnitRef.getObjid();
+                            }
+                        }, true);
+                    }
+                    catch (EscidocClientException e) {
+                        contextController.showError(e);
+                    }
+                }
+            });
+
+            vl2.addComponent(openInNewTabLink);
+            vl2.setComponentAlignment(openInNewTabLink, Alignment.TOP_LEFT);
         }
         vl.addComponent(vl2);
         vl.setComponentAlignment(vl2, Alignment.TOP_LEFT);
