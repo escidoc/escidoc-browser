@@ -55,7 +55,7 @@ public class Footer {
         footerLayout.setExpandRatio(lblBaseUrl, 1f);
 
         HorizontalLayout hl = new HorizontalLayout();
-        hl.setWidth("200px");
+        hl.setWidth("150px");
         hl.setStyleName("floatright");
 
         hl.setMargin(false);
@@ -68,7 +68,6 @@ public class Footer {
         });
         btnChange.setStyleName(Reindeer.BUTTON_LINK);
         hl.addComponent(btnChange);
-        hl.setExpandRatio(btnChange, 0.5f);
 
         footerLayout.addComponent(hl);
         // footerLayout.setExpandRatio(hl, 0.1f);
