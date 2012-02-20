@@ -108,6 +108,8 @@ public class ViewConstants {
 
     public static final String ERROR_RETRIEVING_CONTENTMODEL = "Could not retrieve the content model ";
 
+    public static final String PLEASE_ENTER_A_NAME = "Could not retrieve the content model ";
+
     public static final String RESOURCE_LENGTH = "Resource Name must be 3-25 characters";
 
     public static final String ERROR_NO_RESOURCETYPE_IN_CONTENTMODEL =

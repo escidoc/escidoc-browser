@@ -28,8 +28,19 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import com.google.common.base.Preconditions;
+import org.escidoc.browser.controller.ContextController;
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.model.internal.ContextProxyImpl;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
+import org.escidoc.browser.ui.view.helpers.CreatePermanentLinkVH;
+import org.escidoc.browser.ui.view.helpers.DirectMember;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.AbstractComponentContainer;
@@ -45,18 +56,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Runo;
-
-import org.escidoc.browser.controller.ContextController;
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.model.ResourceType;
-import org.escidoc.browser.model.internal.ContextProxyImpl;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
-import org.escidoc.browser.ui.view.helpers.CreatePermanentLinkVH;
-import org.escidoc.browser.ui.view.helpers.DirectMember;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.properties.PublicStatus;
@@ -128,7 +127,6 @@ public class ContextView extends View {
 
     // the main panel has a Layout.
     // Elements of the view are bound in this layout of the main Panel
-    @SuppressWarnings("unused")
     private VerticalLayout buildVlContentPanel() throws EscidocClientException {
         // common part: create layout
         vlContentPanel = new VerticalLayout();
@@ -558,7 +556,8 @@ public class ContextView extends View {
         Button close = new Button("Update", new Button.ClickListener() {
 
             @Override
-            public void buttonClick(@SuppressWarnings("unused") com.vaadin.ui.Button.ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused")
+            com.vaadin.ui.Button.ClickEvent event) {
                 // close the window by removing it from the parent window
                 String comment = editor.getValue().toString();
                 try {
@@ -577,7 +576,8 @@ public class ContextView extends View {
         });
         Button cancel = new Button("Cancel", new Button.ClickListener() {
             @Override
-            public void buttonClick(@SuppressWarnings("unused") com.vaadin.ui.Button.ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused")
+            com.vaadin.ui.Button.ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
 
             }
