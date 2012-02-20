@@ -30,14 +30,27 @@ public abstract class TableContainerVH extends VerticalLayout {
 
     protected static final String PROPERTY_VALUE = "value";
 
-    private static final Action ACTION_DELETE = new Action("Delete");
+    private Action ACTION_DELETE = new Action("Delete");
 
-    private static final Action[] ACTIONS_LIST = new Action[] { ACTION_DELETE };
+    private Action[] ACTIONS_LIST = new Action[] { ACTION_DELETE };
 
     public TableContainerVH() {
         addComponent(table);
         initializeTable();
+        addActionLists();
+        // style generator
+        table.setCellStyleGenerator(new CellStyleGenerator() {
+            @Override
+            public String getStyle(Object itemId, Object propertyId) {
+                if (PROPERTY_NAME.equals(propertyId)) {
+                    return "bold";
+                }
+                return null;
+            }
+        });
+    }
 
+    protected void addActionLists() {
         // Actions (a.k.a context menu)
         table.addActionHandler(new Action.Handler() {
             @Override
@@ -50,17 +63,6 @@ public abstract class TableContainerVH extends VerticalLayout {
                 if (ACTION_DELETE == action) {
                     confirmActionWindow(target);
                 }
-            }
-        });
-
-        // style generator
-        table.setCellStyleGenerator(new CellStyleGenerator() {
-            @Override
-            public String getStyle(Object itemId, Object propertyId) {
-                if (PROPERTY_NAME.equals(propertyId)) {
-                    return "bold";
-                }
-                return null;
             }
         });
     }

@@ -35,6 +35,7 @@ import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.listeners.AdminDescriptorFormListener;
 import org.escidoc.browser.ui.listeners.AddOrgUnitstoContext;
 import org.escidoc.browser.ui.view.helpers.AdminDescriptorsTableVH;
 
@@ -48,11 +49,8 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -131,65 +129,10 @@ class ContextRightPanel {
             addResourceButton.setWidth("20px");
             addResourceButton.setIcon(ICON);
             addResourceButton.addListener(new ClickListener() {
-
                 @Override
-                public void buttonClick(@SuppressWarnings("unused")
-                final ClickEvent event) {
-                    final Window subwindow = new Window("A modal subwindow");
-                    subwindow.setModal(true);
-                    subwindow.setWidth("650px");
-                    VerticalLayout layout = (VerticalLayout) subwindow.getContent();
-                    layout.setMargin(true);
-                    layout.setSpacing(true);
-
-                    final TextField txtName = new TextField("Name");
-                    txtName.setImmediate(true);
-                    txtName.setValidationVisible(true);
-                    final TextArea txtContent = new TextArea("Content");
-                    txtContent.setColumns(30);
-
-                    Button addAdmDescButton = new Button("Add Description");
-                    addAdmDescButton.addListener(new ClickListener() {
-                        @Override
-                        public void buttonClick(ClickEvent event) {
-
-                            if (txtName.getValue().toString() == null) {
-                                router.getMainWindow().showNotification(ViewConstants.PLEASE_ENTER_A_NAME,
-                                    Notification.TYPE_ERROR_MESSAGE);
-
-                            }
-                            else if (!XmlUtil.isWellFormed(txtContent.getValue().toString())) {
-                                router.getMainWindow().showNotification(ViewConstants.XML_IS_NOT_WELL_FORMED,
-                                    Notification.TYPE_ERROR_MESSAGE);
-                            }
-                            else {
-                                contextController.addAdminDescriptor(txtName.getValue().toString(), txtContent
-                                    .getValue().toString());
-                                (subwindow.getParent()).removeWindow(subwindow);
-                                router.getMainWindow().showNotification("Addedd Successfully",
-                                    Notification.TYPE_HUMANIZED_MESSAGE);
-                            }
-                        }
-                    });
-
-                    subwindow.addComponent(txtName);
-                    subwindow.addComponent(txtContent);
-                    subwindow.addComponent(addAdmDescButton);
-
-                    Button close = new Button(ViewConstants.CLOSE, new Button.ClickListener() {
-                        @Override
-                        public void buttonClick(@SuppressWarnings("unused")
-                        ClickEvent event) {
-                            (subwindow.getParent()).removeWindow(subwindow);
-                        }
-                    });
-                    layout.addComponent(close);
-                    layout.setComponentAlignment(close, Alignment.TOP_RIGHT);
-
-                    router.getMainWindow().addWindow(subwindow);
-
+                public void buttonClick(ClickEvent event) {
+                    new AdminDescriptorFormListener(router, contextController).adminDescriptorForm();
                 }
-
             });
             cssLayout.addComponent(addResourceButton);
         }
@@ -197,7 +140,8 @@ class ContextRightPanel {
 
         VerticalLayout vl2 = new VerticalLayout();
         final AdminDescriptors admDesc = resourceProxy.getAdminDescription();
-        final AdminDescriptorsTableVH adminDescriptorTable = new AdminDescriptorsTableVH(contextController, admDesc);
+        final AdminDescriptorsTableVH adminDescriptorTable =
+            new AdminDescriptorsTableVH(contextController, admDesc, router);
         vl2.addComponent(adminDescriptorTable);
         vl.addComponent(vl2);
         vl.setExpandRatio(vl2, 9);
