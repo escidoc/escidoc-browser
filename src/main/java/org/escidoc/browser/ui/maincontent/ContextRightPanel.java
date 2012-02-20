@@ -142,7 +142,7 @@ class ContextRightPanel {
                     layout.setSpacing(true);
 
                     subwindow.addComponent(new Label("Not yet implemented"));
-                    Button close = new Button("Close", new Button.ClickListener() {
+                    Button close = new Button(ViewConstants.CLOSE, new Button.ClickListener() {
                         @Override
                         public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
                             (subwindow.getParent()).removeWindow(subwindow);
@@ -213,10 +213,10 @@ class ContextRightPanel {
                     catch (EscidocClientException e) {
                         contextController.showError(e);
                     }
-                    Button close = new Button("Close", new Button.ClickListener() {
+                    Button close = new Button(ViewConstants.CLOSE, new Button.ClickListener() {
                         @Override
                         public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
-                            (subwindow.getParent()).removeWindow(subwindow);
+                            subwindow.getParent().removeWindow(subwindow);
                         }
                     });
                     layout.addComponent(close);

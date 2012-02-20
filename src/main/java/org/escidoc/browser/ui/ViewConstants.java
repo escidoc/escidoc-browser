@@ -389,4 +389,6 @@ public class ViewConstants {
 
     public static final String DELETE_USER_ACCOUNT = "Delete User Account";
 
+    public static final String CLOSE = "Close";
+
 }
