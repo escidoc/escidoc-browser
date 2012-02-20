@@ -28,15 +28,14 @@
  */
 package org.escidoc.browser.ui.mainpage;
 
-import com.vaadin.terminal.ExternalResource;
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.ui.ViewConstants;
+
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.Reindeer;
-
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.ui.ViewConstants;
 
 @SuppressWarnings("serial")
 public class Footer {
@@ -70,17 +69,6 @@ public class Footer {
         btnChange.setStyleName(Reindeer.BUTTON_LINK);
         hl.addComponent(btnChange);
         hl.setExpandRatio(btnChange, 0.5f);
-
-        final Button btnAdminTl = new Button(ViewConstants.ADMIN_TOOL, new Button.ClickListener() {
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                footerLayout.getWindow().open(new ExternalResource(serviceLocation.getEscidocUri() + "/AdminTool"),
-                    "_self");
-            }
-        });
-        btnAdminTl.setStyleName(Reindeer.BUTTON_LINK);
-        hl.addComponent(btnAdminTl);
-        hl.setExpandRatio(btnAdminTl, 0.5f);
 
         footerLayout.addComponent(hl);
         // footerLayout.setExpandRatio(hl, 0.1f);
