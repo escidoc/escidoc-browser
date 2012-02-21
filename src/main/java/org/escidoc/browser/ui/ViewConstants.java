@@ -85,7 +85,7 @@ public class ViewConstants {
 
     public static final String DELETED = "Resource was deleted succesfully!";
 
-    public static final String ADD = "Create";
+    public static final String CREATE = "Create";
 
     public static final String CREATE_CONTAINER = "Create Container";
 
@@ -397,6 +397,8 @@ public class ViewConstants {
     public static final String DELETE_USER_ACCOUNT = "Delete User Account";
 
     public static final String CLOSE = "Close";
+
+    public static final String ADD = "Add";
 
     public static final String PROPERTY_NAME = "name";
 

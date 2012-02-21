@@ -1,12 +1,6 @@
 package org.escidoc.browser.ui.view.helpers;
 
-import java.io.File;
-
-import org.escidoc.browser.AppConstants;
-import org.escidoc.browser.controller.ItemController;
-import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.ui.ViewConstants;
-
 import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.terminal.ExternalResource;
@@ -16,6 +10,12 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
+
+import org.escidoc.browser.AppConstants;
+import org.escidoc.browser.controller.ItemController;
+import org.escidoc.browser.model.EscidocServiceLocation;
+
+import java.io.File;
 
 import de.escidoc.core.resources.om.item.component.Component;
 import de.escidoc.core.resources.om.item.component.Components;
@@ -52,7 +52,6 @@ public class ItemComponentsView extends TableContainerVH {
         table.setHeight("100%");
 
         table.setStyleName(Reindeer.TABLE_BORDERLESS);
-        // table.addStyleName("drophere");
     }
 
     @Override
@@ -98,7 +97,7 @@ public class ItemComponentsView extends TableContainerVH {
         return tableContainer;
     }
 
-    private ThemeResource createEmbeddedImage(final Component comp) {
+    private static ThemeResource createEmbeddedImage(final Component comp) {
         final String currentDir = new File(".").getAbsolutePath();
         final File file =
             new File(currentDir.substring(0, currentDir.length() - 1) + AppConstants.MIMETYPE_ICON_LOCATION
@@ -110,7 +109,7 @@ public class ItemComponentsView extends TableContainerVH {
         return new ThemeResource("images/filetypes/article.png");
     }
 
-    private String getFileType(final Component itemProperties) {
+    private static String getFileType(final Component itemProperties) {
         final String mimeType = itemProperties.getProperties().getMimeType();
         if (mimeType == null) {
             return AppConstants.EMPTY_STRING;
@@ -129,7 +128,7 @@ public class ItemComponentsView extends TableContainerVH {
             private static final long serialVersionUID = 651483473875504715L;
 
             @Override
-            public void buttonClick(final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
                 mainWindow.open(new ExternalResource(
                     serviceLocation.getEscidocUri() + comp.getContent().getXLinkHref(), comp
                         .getProperties().getMimeType()), "_new");

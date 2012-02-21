@@ -159,7 +159,7 @@ public class OnAddContainerMetadata implements ClickListener {
 
         upload.addListener(new Upload.FailedListener() {
             @Override
-            public void uploadFailed(final FailedEvent event) {
+            public void uploadFailed(@SuppressWarnings("unused") final FailedEvent event) {
                 // This method gets called when the upload failed
                 status.setValue("Uploading interrupted");
             }

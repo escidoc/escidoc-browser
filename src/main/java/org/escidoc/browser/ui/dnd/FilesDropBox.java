@@ -28,15 +28,8 @@
  */
 package org.escidoc.browser.ui.dnd;
 
-import java.util.Collection;
-
-import org.escidoc.browser.model.ItemProxy;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.maincontent.ItemContent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
@@ -49,6 +42,14 @@ import com.vaadin.ui.ProgressIndicator;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
+
+import org.escidoc.browser.model.ItemProxy;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.maincontent.ItemContent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Collection;
 
 import de.escidoc.core.resources.om.item.component.Components;
 
@@ -109,10 +110,8 @@ class FilesDropBox extends DragAndDropWrapper implements DropHandler {
                 showFileSizeWarning();
                 return;
             }
-            else {
-                html5File.setStreamVariable(createStreamVariable(html5File));
-                progressView.setVisible(true);
-            }
+            html5File.setStreamVariable(createStreamVariable(html5File));
+            progressView.setVisible(true);
         }
     }
 
@@ -126,7 +125,7 @@ class FilesDropBox extends DragAndDropWrapper implements DropHandler {
         return AcceptAll.get();
     }
 
-    private void showSourcePath(final DragAndDropEvent dropEvent) {
+    private static void showSourcePath(final DragAndDropEvent dropEvent) {
         final Collection<String> dataFlavors = dropEvent.getTransferable().getDataFlavors();
         for (final String string : dataFlavors) {
             final Object data = dropEvent.getTransferable().getData(string);
@@ -136,7 +135,7 @@ class FilesDropBox extends DragAndDropWrapper implements DropHandler {
         }
     }
 
-    private boolean isFolder(final DragAndDropEvent dropEvent) {
+    private static boolean isFolder(final DragAndDropEvent dropEvent) {
         for (final Html5File html5File : getFilesFrom(dropEvent)) {
             return html5File.getFileSize() == 0;
         }

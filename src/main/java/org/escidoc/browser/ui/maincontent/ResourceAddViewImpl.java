@@ -307,7 +307,7 @@ public class ResourceAddViewImpl implements ResourceAddView {
     }
 
     private void addButton() {
-        addResourceForm.addComponent(new Button(ViewConstants.ADD, new AddResourceListener(this)));
+        addResourceForm.addComponent(new Button(ViewConstants.CREATE, new AddResourceListener(this)));
     }
 
     private void buildSubWindowUsingContainerForm() {

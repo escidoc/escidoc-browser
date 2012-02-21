@@ -177,7 +177,7 @@ public class ItemAddView {
     }
 
     private void addButton() {
-        addForm.addComponent(new Button(ViewConstants.ADD, new AddItemListener(this)));
+        addForm.addComponent(new Button(ViewConstants.CREATE, new AddItemListener(this)));
     }
 
     @SuppressWarnings("serial")
