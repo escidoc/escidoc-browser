@@ -68,6 +68,7 @@ public class ContextController extends Controller {
 
     @Override
     public void refreshView() {
+        System.out.println("REFRESH!?!?!??!");
         try {
             getRouter().show(resourceProxy, true);
         }
