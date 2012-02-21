@@ -68,7 +68,7 @@ public class ContextController extends Controller {
 
     @Override
     public void refreshView() {
-        System.out.println("REFRESH!?!?!??!");
+
         try {
             getRouter().show(resourceProxy, true);
         }
@@ -102,7 +102,7 @@ public class ContextController extends Controller {
      * @param resourceProxy
      * @param orgUnitid
      */
-    public void removeOrgUnitFromContext(ContextProxyImpl resourceProxy, String orgUnitid) {
+    public void removeOrgUnitFromContext(String orgUnitid) {
         try {
             getRepositories().context().delOrganizationalUnit(resourceProxy.getId(), orgUnitid);
             showTrayMessage("Updated!", "Organizational Unit was removed Successfully");

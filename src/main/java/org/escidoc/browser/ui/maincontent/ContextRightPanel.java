@@ -29,15 +29,14 @@
 package org.escidoc.browser.ui.maincontent;
 
 import org.escidoc.browser.controller.ContextController;
-import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.listeners.AdminDescriptorFormListener;
 import org.escidoc.browser.ui.listeners.AddOrgUnitstoContext;
+import org.escidoc.browser.ui.listeners.AdminDescriptorFormListener;
 import org.escidoc.browser.ui.view.helpers.AdminDescriptorsTableVH;
+import org.escidoc.browser.ui.view.helpers.OrganizationalUnitsTableVH;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.terminal.ThemeResource;
@@ -54,7 +53,6 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
-import de.escidoc.core.resources.common.reference.OrganizationalUnitRef;
 import de.escidoc.core.resources.om.context.AdminDescriptors;
 
 class ContextRightPanel {
@@ -203,46 +201,14 @@ class ContextRightPanel {
             cssLayout.addComponent(addResourceButton);
         }
         vl.addComponent(cssLayout);
-        VerticalLayout vl2 = new VerticalLayout();
-        for (final OrganizationalUnitRef organizationalUnitRef : resourceProxy.getOrganizationalUnit()) {
-            final Button openInNewTabLink = new Button(organizationalUnitRef.getXLinkTitle());
-            openInNewTabLink.setStyleName(BaseTheme.BUTTON_LINK);
-            openInNewTabLink.addListener(new Button.ClickListener() {
 
-                @Override
-                public void buttonClick(@SuppressWarnings("unused")
-                ClickEvent event) {
-                    try {
-                        router.show(new ResourceModel() {
+        OrganizationalUnitsTableVH orgUnitTable =
+            new OrganizationalUnitsTableVH(contextController, resourceProxy.getOrganizationalUnit(), router,
+                resourceProxy);
+        vl.addComponent(orgUnitTable);
+        vl.setComponentAlignment(orgUnitTable, Alignment.TOP_LEFT);
+        vl.setExpandRatio(orgUnitTable, 9f);
 
-                            @Override
-                            public ResourceType getType() {
-                                return ResourceType.ORG_UNIT;
-                            }
-
-                            @Override
-                            public String getName() {
-                                return organizationalUnitRef.getXLinkTitle();
-                            }
-
-                            @Override
-                            public String getId() {
-                                return organizationalUnitRef.getObjid();
-                            }
-                        }, true);
-                    }
-                    catch (EscidocClientException e) {
-                        contextController.showError(e);
-                    }
-                }
-            });
-
-            vl2.addComponent(openInNewTabLink);
-            vl2.setComponentAlignment(openInNewTabLink, Alignment.TOP_LEFT);
-        }
-        vl.addComponent(vl2);
-        vl.setComponentAlignment(vl2, Alignment.TOP_LEFT);
-        vl.setExpandRatio(vl2, 9);
         pnlOrgUnit.setContent(vl);
         return pnlOrgUnit;
     }
