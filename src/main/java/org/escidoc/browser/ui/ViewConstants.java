@@ -108,6 +108,8 @@ public class ViewConstants {
 
     public static final String ERROR_RETRIEVING_CONTENTMODEL = "Could not retrieve the content model ";
 
+    public static final String PLEASE_ENTER_A_NAME = "Could not retrieve the content model ";
+
     public static final String RESOURCE_LENGTH = "Resource Name must be 3-25 characters";
 
     public static final String ERROR_NO_RESOURCETYPE_IN_CONTENTMODEL =
@@ -362,6 +364,11 @@ public class ViewConstants {
         "The preference was removed successfully from this users profile";
 
     public static final String PREFERENCE_REMOVE = "Preference removed";
+
+    public static final String ADMINDESCRIPTION_REMOVE = "AdminDescription removed";
+
+    public static final String ADMINDESCRIPTION_REMOVED =
+        "The admin description was removed successfully from this context";
 
     public static final String CONTENT_MODELS = "Content Models";
 

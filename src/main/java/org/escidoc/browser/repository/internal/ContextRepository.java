@@ -28,7 +28,13 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import com.google.common.base.Preconditions;
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
@@ -38,9 +44,9 @@ import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.helper.Util;
 import org.escidoc.browser.util.Utils;
+import org.xml.sax.SAXException;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.base.Preconditions;
 
 import de.escidoc.core.client.ContextHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -52,10 +58,11 @@ import de.escidoc.core.resources.common.Relations;
 import de.escidoc.core.resources.common.TaskParam;
 import de.escidoc.core.resources.common.reference.OrganizationalUnitRef;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
+import de.escidoc.core.resources.om.context.AdminDescriptor;
+import de.escidoc.core.resources.om.context.AdminDescriptors;
 import de.escidoc.core.resources.om.context.Context;
 import de.escidoc.core.resources.om.context.ContextProperties;
 import de.escidoc.core.resources.om.context.OrganizationalUnitRefs;
-import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 public class ContextRepository implements Repository {
 
@@ -152,6 +159,37 @@ public class ContextRepository implements Repository {
         return client.update(context);
     }
 
+    public Context addAdminDescriptor(String id, String txtName, String txtContent) throws EscidocClientException,
+        ParserConfigurationException, SAXException, IOException {
+        Context context = client.retrieve(id);
+        AdminDescriptor adminDescriptor = new AdminDescriptor(txtName);
+        adminDescriptor.setContent(txtContent);
+        AdminDescriptors adminDescriptors = context.getAdminDescriptors();
+        Boolean addNew = true;
+
+        for (AdminDescriptor adminDesc : adminDescriptors) {
+            if (adminDesc.getName().equals(txtName)) {
+                adminDesc.setContent(txtContent);
+                addNew = false;
+            }
+        }
+
+        if (addNew) {
+            adminDescriptors.add(adminDescriptor);
+        }
+        context.setAdminDescriptors(adminDescriptors);
+        return client.update(context);
+    }
+
+    public Context removeAdminDescriptor(String contextId, String name) throws EscidocClientException {
+        System.out.println("Name is " + name);
+        Context context = client.retrieve(contextId);
+        AdminDescriptors adminDescriptors = context.getAdminDescriptors();
+        adminDescriptors.del(name);
+        context.setAdminDescriptors(adminDescriptors);
+        return client.update(context);
+    }
+
     public Context delOrganizationalUnit(String contextId, String orgUnitId) throws EscidocClientException {
         Context context = client.retrieve(contextId);
         OrganizationalUnitRefs organizationalUnitRefs = context.getProperties().getOrganizationalUnitRefs();
@@ -177,7 +215,6 @@ public class ContextRepository implements Repository {
         ContextProperties properties = context.getProperties();
         properties.setName(newName);
         return client.update(context);
-
     }
 
     public void updatePublicStatusOpen(String comment, String contextId) throws EscidocClientException {
@@ -199,5 +236,4 @@ public class ContextRepository implements Repository {
     public String getAsXmlString(String id) throws EscidocClientException {
         return new RestContextHandlerClient(client.getServiceAddress()).retrieve(id);
     }
-
 }
