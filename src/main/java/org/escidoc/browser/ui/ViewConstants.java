@@ -398,4 +398,8 @@ public class ViewConstants {
 
     public static final String CLOSE = "Close";
 
+    public static final String PROPERTY_NAME = "name";
+
+    public static final String PROPERTY_VALUE = "value";
+
 }

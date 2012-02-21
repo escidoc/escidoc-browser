@@ -33,10 +33,7 @@ import java.net.URISyntaxException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.model.TreeDataSource;
-import org.escidoc.browser.model.internal.ContextModel;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
@@ -48,7 +45,8 @@ import org.xml.sax.SAXException;
 import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
-import de.escidoc.core.resources.Resource;
+import de.escidoc.core.resources.om.context.AdminDescriptor;
+import de.escidoc.core.resources.om.context.AdminDescriptors;
 
 public class ContextController extends Controller {
 
@@ -71,17 +69,7 @@ public class ContextController extends Controller {
     @Override
     public void refreshView() {
         try {
-            getRouter().show(getResourceProxy(), true);
-            // refresh tree
-            TreeDataSource treeDS = getRouter().getLayout().getTreeDataSource();
-            ContextModel cnt = new ContextModel(((ContextProxyImpl) getResourceProxy()).getResource());
-            ResourceModel parentModel = treeDS.getParent(cnt);
-
-            boolean isSuccesful = treeDS.remove(cnt);
-            if (isSuccesful) {
-                Resource context = getRepositories().context().findContextById((getResourceProxy().getId()));
-                treeDS.addChild(parentModel, new ContextModel(context));
-            }
+            getRouter().show(resourceProxy, true);
         }
         catch (EscidocClientException e) {
             getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
@@ -142,9 +130,9 @@ public class ContextController extends Controller {
         }
     }
 
-    public void addAdminDescriptor(String txtName, String txtContent) {
+    public AdminDescriptor addAdminDescriptor(String txtName, String txtContent) {
         try {
-            getRepositories().context().addAdminDescriptor(resourceProxy.getId(), txtName, txtContent);
+            return getRepositories().context().addAdminDescriptor(resourceProxy.getId(), txtName, txtContent);
         }
         catch (ParserConfigurationException e) {
             getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
@@ -158,6 +146,7 @@ public class ContextController extends Controller {
         catch (EscidocClientException e) {
             getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
         }
+        return null;
 
     }
 
@@ -168,10 +157,18 @@ public class ContextController extends Controller {
 
         }
         catch (EscidocClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
         }
+    }
 
+    public AdminDescriptors retrieveAdmDescriptors() {
+        try {
+            return getRepositories().context().findContextById(resourceProxy.getId()).getAdminDescriptors();
+        }
+        catch (EscidocClientException e) {
+            getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        }
+        return null;
     }
 
     /**

@@ -1,15 +1,14 @@
 package org.escidoc.browser.ui.useraccount;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.data.Item;
-import com.vaadin.data.util.HierarchicalContainer;
-
 import org.escidoc.browser.controller.UserAccountController;
 import org.escidoc.browser.model.internal.UserProxy;
 import org.escidoc.browser.repository.internal.UserAccountRepository;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.view.helpers.TableContainerVH;
+
+import com.google.common.base.Preconditions;
+import com.vaadin.data.Item;
+import com.vaadin.data.util.HierarchicalContainer;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.aa.useraccount.Preference;
@@ -59,14 +58,14 @@ public class UserAccountPreferences extends TableContainerVH {
         // Create new container
         tableContainer = new HierarchicalContainer();
         // Create container property for name
-        tableContainer.addContainerProperty(PROPERTY_NAME, String.class, null);
-        tableContainer.addContainerProperty(PROPERTY_VALUE, String.class, null);
+        tableContainer.addContainerProperty(ViewConstants.PROPERTY_NAME, String.class, null);
+        tableContainer.addContainerProperty(ViewConstants.PROPERTY_VALUE, String.class, null);
 
         for (Preference preference : preferences) {
             Item item = tableContainer.addItem(preference.getName());
             if (item != null) {
-                item.getItemProperty(PROPERTY_NAME).setValue(preference.getName());
-                item.getItemProperty(PROPERTY_VALUE).setValue(preference.getValue());
+                item.getItemProperty(ViewConstants.PROPERTY_NAME).setValue(preference.getName());
+                item.getItemProperty(ViewConstants.PROPERTY_VALUE).setValue(preference.getValue());
             }
         }
         return tableContainer;
@@ -74,6 +73,11 @@ public class UserAccountPreferences extends TableContainerVH {
 
     public HierarchicalContainer getTableContainer() {
         return tableContainer;
+    }
+
+    @Override
+    protected boolean hasRightstoContextMenu() {
+        return true;
     }
 
 }

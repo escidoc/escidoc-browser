@@ -1,5 +1,6 @@
 package org.escidoc.browser.ui.view.helpers;
 
+import org.escidoc.browser.controller.Controller;
 import org.escidoc.browser.ui.ViewConstants;
 
 import com.vaadin.data.Item;
@@ -26,29 +27,31 @@ public abstract class TableContainerVH extends VerticalLayout {
 
     protected Table table = new Table();
 
-    protected static final String PROPERTY_NAME = "name";
-
-    protected static final String PROPERTY_VALUE = "value";
-
     private Action ACTION_DELETE = new Action("Delete");
 
     private Action[] ACTIONS_LIST = new Action[] { ACTION_DELETE };
 
+    protected Controller controller;
+
     public TableContainerVH() {
         addComponent(table);
         initializeTable();
-        addActionLists();
+        if (hasRightstoContextMenu()) {
+            addActionLists();
+        }
         // style generator
         table.setCellStyleGenerator(new CellStyleGenerator() {
             @Override
             public String getStyle(Object itemId, Object propertyId) {
-                if (PROPERTY_NAME.equals(propertyId)) {
+                if (ViewConstants.PROPERTY_NAME.equals(propertyId)) {
                     return "bold";
                 }
                 return null;
             }
         });
     }
+
+    protected abstract boolean hasRightstoContextMenu();;
 
     protected void addActionLists() {
         // Actions (a.k.a context menu)
@@ -81,15 +84,15 @@ public abstract class TableContainerVH extends VerticalLayout {
 
     public Item createItem(HierarchicalContainer tableContainer, String itemId, String itemName, String itemHref) {
         Item item = tableContainer.addItem(itemId);
-        item.getItemProperty(PROPERTY_NAME).setValue(itemName);
-        item.getItemProperty(PROPERTY_VALUE).setValue(itemHref);
+        item.getItemProperty(ViewConstants.PROPERTY_NAME).setValue(itemName);
+        item.getItemProperty(ViewConstants.PROPERTY_VALUE).setValue(itemHref);
         return item;
     }
 
     /**
      * Just an initialization of the table. Should be overridden
      */
-    private void initializeTable() {
+    protected void initializeTable() {
         // size
         table.setWidth("100%");
         table.setHeight("170px");

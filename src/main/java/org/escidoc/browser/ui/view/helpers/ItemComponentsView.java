@@ -5,6 +5,7 @@ import java.io.File;
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.controller.ItemController;
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.ui.ViewConstants;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
@@ -69,7 +70,7 @@ public class ItemComponentsView extends TableContainerVH {
         tableContainer = new HierarchicalContainer();
         // Create container property for name
         tableContainer.addContainerProperty(COMPONENT_ICON, Button.class, null);
-        tableContainer.addContainerProperty(PROPERTY_NAME, String.class, null);
+        tableContainer.addContainerProperty(ViewConstants.PROPERTY_NAME, String.class, null);
         tableContainer.addContainerProperty(COMPONENT_CATEGORY, String.class, null);
         tableContainer.addContainerProperty(COMPONENT_MIMETYPE, String.class, null);
         tableContainer.addContainerProperty(COMPONENT_CREATEDDATE, String.class, null);
@@ -79,7 +80,7 @@ public class ItemComponentsView extends TableContainerVH {
             Item item = tableContainer.addItem(component.getObjid());
             if (item != null) {
                 item.getItemProperty(COMPONENT_ICON).setValue(createDownloadLink(component));
-                item.getItemProperty(PROPERTY_NAME).setValue(component.getProperties().getFileName());
+                item.getItemProperty(ViewConstants.PROPERTY_NAME).setValue(component.getProperties().getFileName());
                 item.getItemProperty(COMPONENT_CATEGORY).setValue(component.getProperties().getContentCategory());
                 item.getItemProperty(COMPONENT_MIMETYPE).setValue(component.getProperties().getMimeType());
                 item.getItemProperty(COMPONENT_CREATEDDATE).setValue(
@@ -88,7 +89,7 @@ public class ItemComponentsView extends TableContainerVH {
             }
         }
         boolean[] ascending = { true, false };
-        Object[] propertyId = { PROPERTY_NAME, PROPERTY_VALUE };
+        Object[] propertyId = { ViewConstants.PROPERTY_NAME, ViewConstants.PROPERTY_VALUE };
         tableContainer.sort(propertyId, ascending);
         table.setColumnWidth(COMPONENT_ICON, 20);
         table.setColumnWidth(COMPONENT_MIMETYPE, 90);
@@ -135,5 +136,11 @@ public class ItemComponentsView extends TableContainerVH {
             }
         });
         return link;
+    }
+
+    @Override
+    protected boolean hasRightstoContextMenu() {
+        return true;
+        // return controller.canUpdateItem();
     }
 }

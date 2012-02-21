@@ -159,8 +159,8 @@ public class ContextRepository implements Repository {
         return client.update(context);
     }
 
-    public Context addAdminDescriptor(String id, String txtName, String txtContent) throws EscidocClientException,
-        ParserConfigurationException, SAXException, IOException {
+    public AdminDescriptor addAdminDescriptor(String id, String txtName, String txtContent)
+        throws EscidocClientException, ParserConfigurationException, SAXException, IOException {
         Context context = client.retrieve(id);
         AdminDescriptor adminDescriptor = new AdminDescriptor(txtName);
         adminDescriptor.setContent(txtContent);
@@ -178,7 +178,8 @@ public class ContextRepository implements Repository {
             adminDescriptors.add(adminDescriptor);
         }
         context.setAdminDescriptors(adminDescriptors);
-        return client.update(context);
+        client.update(context);
+        return context.getAdminDescriptors().get(txtName);
     }
 
     public Context removeAdminDescriptor(String contextId, String name) throws EscidocClientException {

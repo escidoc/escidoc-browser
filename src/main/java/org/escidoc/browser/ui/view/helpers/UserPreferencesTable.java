@@ -31,18 +31,18 @@ public class UserPreferencesTable extends TableContainerVH {
         // Create new container
         tableContainer = new HierarchicalContainer();
         // Create container property for name
-        tableContainer.addContainerProperty(PROPERTY_NAME, String.class, null);
-        tableContainer.addContainerProperty(PROPERTY_VALUE, String.class, null);
+        tableContainer.addContainerProperty(ViewConstants.PROPERTY_NAME, String.class, null);
+        tableContainer.addContainerProperty(ViewConstants.PROPERTY_VALUE, String.class, null);
 
         for (Preference preference : preferences) {
             Item item = tableContainer.addItem(preference.getName());
             if (item != null) {
-                item.getItemProperty(PROPERTY_NAME).setValue(preference.getName());
-                item.getItemProperty(PROPERTY_VALUE).setValue(preference.getValue());
+                item.getItemProperty(ViewConstants.PROPERTY_NAME).setValue(preference.getName());
+                item.getItemProperty(ViewConstants.PROPERTY_VALUE).setValue(preference.getValue());
             }
         }
         boolean[] ascending = { true, false };
-        Object[] propertyId = { PROPERTY_NAME, PROPERTY_VALUE };
+        Object[] propertyId = { ViewConstants.PROPERTY_NAME, ViewConstants.PROPERTY_VALUE };
         tableContainer.sort(propertyId, ascending);
         return tableContainer;
     }
@@ -62,5 +62,10 @@ public class UserPreferencesTable extends TableContainerVH {
 
     public HierarchicalContainer getTableContainer() {
         return tableContainer;
+    }
+
+    @Override
+    protected boolean hasRightstoContextMenu() {
+        return true;
     }
 }

@@ -15,6 +15,8 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
+import de.escidoc.core.resources.om.context.AdminDescriptor;
+
 public class AdminDescriptorFormListener {
     private Router router;
 
@@ -39,6 +41,7 @@ public class AdminDescriptorFormListener {
         txtName.setValidationVisible(true);
         final TextArea txtContent = new TextArea("Content");
         txtContent.setColumns(30);
+        txtContent.setRows(40);
 
         Button addAdmDescButton = new Button("Add Description");
         addAdmDescButton.addListener(new ClickListener() {
@@ -55,8 +58,9 @@ public class AdminDescriptorFormListener {
                         Notification.TYPE_ERROR_MESSAGE);
                 }
                 else {
-                    contextController.addAdminDescriptor(txtName.getValue().toString(), txtContent
-                        .getValue().toString());
+                    AdminDescriptor newAdmDesc =
+                        contextController.addAdminDescriptor(txtName.getValue().toString(), txtContent
+                            .getValue().toString());
                     (subwindow.getParent()).removeWindow(subwindow);
                     router.getMainWindow().showNotification("Addedd Successfully", Notification.TYPE_HUMANIZED_MESSAGE);
                 }
@@ -84,22 +88,33 @@ public class AdminDescriptorFormListener {
     /**
      * Editing since it has a parameter
      * 
-     * @param name
+     * @param adminDescriptor
      */
-    public void adminDescriptorForm(String name) {
+    public void adminDescriptorForm(AdminDescriptor adminDescriptor) {
 
         // Editing
         final Window subwindow = new Window("A modal subwindow");
         subwindow.setModal(true);
         subwindow.setWidth("650px");
+
         VerticalLayout layout = (VerticalLayout) subwindow.getContent();
         layout.setMargin(true);
         layout.setSpacing(true);
 
         final TextField txtName = new TextField("Name");
+        txtName.setValue(adminDescriptor.getName());
         txtName.setImmediate(true);
         txtName.setValidationVisible(true);
         final TextArea txtContent = new TextArea("Content");
+        txtContent.setColumns(30);
+        txtContent.setRows(40);
+        try {
+            txtContent.setValue(adminDescriptor.getContentAsString());
+        }
+        catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         txtContent.setColumns(30);
 
         Button addAdmDescButton = new Button("Add Description");
