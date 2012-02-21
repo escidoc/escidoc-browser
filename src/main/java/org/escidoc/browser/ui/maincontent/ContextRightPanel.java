@@ -28,9 +28,18 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import com.google.common.base.Preconditions;
+import org.escidoc.browser.controller.ContextController;
+import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.model.internal.ContextProxyImpl;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.listeners.AdminDescriptorFormListener;
+import org.escidoc.browser.ui.listeners.AddOrgUnitstoContext;
+import org.escidoc.browser.ui.view.helpers.AdminDescriptorsTableVH;
 
-import com.vaadin.terminal.ExternalResource;
+import com.google.common.base.Preconditions;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
@@ -39,24 +48,13 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Link;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 
-import org.escidoc.browser.controller.ContextController;
-import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.model.ResourceType;
-import org.escidoc.browser.model.internal.ContextProxyImpl;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.listeners.AddOrgUnitstoContext;
-
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.reference.OrganizationalUnitRef;
-import de.escidoc.core.resources.om.context.AdminDescriptor;
 import de.escidoc.core.resources.om.context.AdminDescriptors;
 
 class ContextRightPanel {
@@ -124,37 +122,17 @@ class ContextRightPanel {
         final CssLayout cssLayout = new CssLayout();
         buildPanelHeader(cssLayout, ViewConstants.ADMIN_DESCRIPTION);
         ThemeResource ICON = new ThemeResource("images/assets/plus.png");
-        if (contextController.canAddOUs()) {
+        if (contextController.canUpdateContext()) {
             final Button addResourceButton = new Button();
             addResourceButton.setStyleName(BaseTheme.BUTTON_LINK);
             addResourceButton.addStyleName("floatright paddingtop3");
             addResourceButton.setWidth("20px");
             addResourceButton.setIcon(ICON);
             addResourceButton.addListener(new ClickListener() {
-
                 @Override
-                public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
-                    final Window subwindow = new Window("A modal subwindow");
-                    subwindow.setModal(true);
-                    subwindow.setWidth("650px");
-                    VerticalLayout layout = (VerticalLayout) subwindow.getContent();
-                    layout.setMargin(true);
-                    layout.setSpacing(true);
-
-                    subwindow.addComponent(new Label("Not yet implemented"));
-                    Button close = new Button(ViewConstants.CLOSE, new Button.ClickListener() {
-                        @Override
-                        public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
-                            (subwindow.getParent()).removeWindow(subwindow);
-                        }
-                    });
-                    layout.addComponent(close);
-                    layout.setComponentAlignment(close, Alignment.TOP_RIGHT);
-
-                    router.getMainWindow().addWindow(subwindow);
-
+                public void buttonClick(ClickEvent event) {
+                    new AdminDescriptorFormListener(router, contextController).adminDescriptorForm();
                 }
-
             });
             cssLayout.addComponent(addResourceButton);
         }
@@ -162,16 +140,9 @@ class ContextRightPanel {
 
         VerticalLayout vl2 = new VerticalLayout();
         final AdminDescriptors admDesc = resourceProxy.getAdminDescription();
-        for (final AdminDescriptor adminDescriptor : admDesc) {
-
-            Link admDescBtn =
-                new Link(adminDescriptor.getXLinkTitle(), new ExternalResource(router
-                    .getServiceLocation().getEscidocUri() + adminDescriptor.getXLinkHref()));
-            admDescBtn.setTargetName("_blank");
-            admDescBtn.setStyleName(BaseTheme.BUTTON_LINK);
-            admDescBtn.setDescription("Show metadata information in a separate window");
-            vl2.addComponent(admDescBtn);
-        }
+        final AdminDescriptorsTableVH adminDescriptorTable =
+            new AdminDescriptorsTableVH(contextController, admDesc, router);
+        vl2.addComponent(adminDescriptorTable);
         vl.addComponent(vl2);
         vl.setExpandRatio(vl2, 9);
         admDescriptors.setContent(vl);
@@ -198,7 +169,8 @@ class ContextRightPanel {
             addResourceButton.addListener(new ClickListener() {
 
                 @Override
-                public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
+                public void buttonClick(@SuppressWarnings("unused")
+                final ClickEvent event) {
                     final Window subwindow = new Window("A modal subwindow");
                     subwindow.setModal(true);
                     subwindow.setWidth("650px");
@@ -215,7 +187,8 @@ class ContextRightPanel {
                     }
                     Button close = new Button(ViewConstants.CLOSE, new Button.ClickListener() {
                         @Override
-                        public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
+                        public void buttonClick(@SuppressWarnings("unused")
+                        ClickEvent event) {
                             subwindow.getParent().removeWindow(subwindow);
                         }
                     });
@@ -237,7 +210,8 @@ class ContextRightPanel {
             openInNewTabLink.addListener(new Button.ClickListener() {
 
                 @Override
-                public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
+                public void buttonClick(@SuppressWarnings("unused")
+                ClickEvent event) {
                     try {
                         router.show(new ResourceModel() {
 

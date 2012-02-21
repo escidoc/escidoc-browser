@@ -28,7 +28,10 @@
  */
 package org.escidoc.browser.controller;
 
-import com.vaadin.ui.Window;
+import java.io.IOException;
+import java.net.URISyntaxException;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
@@ -38,9 +41,11 @@ import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.ContextView;
+import org.xml.sax.SAXException;
 
-import java.net.URISyntaxException;
+import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.Resource;
@@ -135,6 +140,37 @@ public class ContextController extends Controller {
         else if (newStatus.equals("closed")) {
             getRepositories().context().updatePublicStatusClosed(comment, contextId);
         }
+    }
+
+    public void addAdminDescriptor(String txtName, String txtContent) {
+        try {
+            getRepositories().context().addAdminDescriptor(resourceProxy.getId(), txtName, txtContent);
+        }
+        catch (ParserConfigurationException e) {
+            getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        }
+        catch (SAXException e) {
+            getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        }
+        catch (IOException e) {
+            getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        }
+        catch (EscidocClientException e) {
+            getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        }
+
+    }
+
+    public void removeAdminDescriptor(String name) {
+        try {
+            getRepositories().context().removeAdminDescriptor(resourceProxy.getId(), name);
+            this.showTrayMessage(ViewConstants.ADMINDESCRIPTION_REMOVE, ViewConstants.ADMINDESCRIPTION_REMOVED);
+
+        }
+        catch (EscidocClientException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
     }
 
@@ -200,4 +236,5 @@ public class ContextController extends Controller {
             return false;
         }
     }
+
 }
