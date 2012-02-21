@@ -30,10 +30,12 @@ package org.escidoc.browser.ui.maincontent;
 
 import com.google.common.base.Preconditions;
 
+import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.Reindeer;
 import com.vaadin.ui.themes.Runo;
 
 import org.escidoc.browser.controller.ItemController;
@@ -45,6 +47,7 @@ import org.escidoc.browser.model.internal.ItemModel;
 import org.escidoc.browser.model.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.view.helpers.ItemPropertiesVH;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -222,22 +225,30 @@ public final class ItemView extends View {
         directMembersPanel.setStyleName(Runo.PANEL_LIGHT);
 
         // vlDirectMember
-        VerticalLayout vlDirectMember =
+        final VerticalLayout vlDirectMember =
             new ItemContent(repositories, resourceProxy, serviceLocation, mainWindow, controller);
         vlDirectMember.setImmediate(false);
         vlDirectMember.setWidth("100.0%");
         vlDirectMember.setHeight("100.0%");
         vlDirectMember.setMargin(false);
 
-        // vlDirectMember.addComponent(new Button(ViewConstants.ADD_COMPONENT, new Button.ClickListener() {
-        //
-        // @Override
-        // public void buttonClick(ClickEvent event) {
-        // throw new UnsupportedOperationException("not-yet-implemented.");
-        // }
-        // }));
+        Button addComponentButton = new Button(ViewConstants.ADD_COMPONENT, new Button.ClickListener() {
 
-        vlDirectMember.addComponent(new ComponentUploadView(repositories, controller));
+            @SuppressWarnings("unused")
+            @Override
+            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+                Window modalWindow = new Window("Select a file to add.");
+                modalWindow.setWidth("25%");
+                modalWindow.setHeight("20%");
+                modalWindow.setModal(true);
+                modalWindow.addComponent(new ComponentUploadView(repositories, controller, resourceProxy,
+                    (ItemContent) vlDirectMember, mainWindow));
+                mainWindow.addWindow(modalWindow);
+            }
+        });
+        addComponentButton.setStyleName(Reindeer.BUTTON_SMALL);
+        vlDirectMember.addComponent(addComponentButton);
+
         directMembersPanel.setContent(vlDirectMember);
 
         return directMembersPanel;
