@@ -94,7 +94,7 @@ public class AddOrgUnitstoContext extends DragnDropHelper {
 
     @Override
     protected void removeElementController(Object sourceItemId) {
-        controller.removeOrgUnitFromContext(resourceProxy, sourceItemId.toString());
+        controller.removeOrgUnitFromContext(sourceItemId.toString());
         controller.refreshView();
     }
 

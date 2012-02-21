@@ -9,6 +9,7 @@ import com.google.common.base.Preconditions;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.event.Action;
+import com.vaadin.ui.Label;
 
 import de.escidoc.core.resources.om.context.AdminDescriptor;
 import de.escidoc.core.resources.om.context.AdminDescriptors;
@@ -84,15 +85,18 @@ public class AdminDescriptorsTableVH extends TableContainerVH {
         tableContainer = new HierarchicalContainer();
         // Create container property for name
         tableContainer.addContainerProperty(ViewConstants.PROPERTY_NAME, String.class, null);
-        tableContainer.addContainerProperty(ViewConstants.PROPERTY_VALUE, String.class, null);
+        tableContainer.addContainerProperty(ViewConstants.PROPERTY_LINK, Label.class, null);
 
-        for (AdminDescriptor adminDescriptor : adminDescriptors) {
+        for (final AdminDescriptor adminDescriptor : adminDescriptors) {
             Item item = tableContainer.addItem(adminDescriptor.getName());
             if (item != null) {
                 item.getItemProperty(ViewConstants.PROPERTY_NAME).setValue(adminDescriptor.getName());
-                item.getItemProperty(ViewConstants.PROPERTY_VALUE).setValue(adminDescriptor.getXLinkHref());
+                item.getItemProperty(ViewConstants.PROPERTY_LINK).setValue(
+                    new Label("<a href=\"" + router.getServiceLocation().getEscidocUri()
+                        + adminDescriptor.getXLinkHref() + "\" target=\"_blank\">Link</a>", Label.CONTENT_RAW));
             }
         }
+        table.setColumnWidth(ViewConstants.PROPERTY_LINK, 40);
         return tableContainer;
     }
 

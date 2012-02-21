@@ -51,7 +51,6 @@ public class AdminDescriptorFormListener {
                 if (txtName.getValue().toString() == null) {
                     router.getMainWindow().showNotification(ViewConstants.PLEASE_ENTER_A_NAME,
                         Notification.TYPE_ERROR_MESSAGE);
-
                 }
                 else if (!XmlUtil.isWellFormed(txtContent.getValue().toString())) {
                     router.getMainWindow().showNotification(ViewConstants.XML_IS_NOT_WELL_FORMED,
