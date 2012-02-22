@@ -28,16 +28,16 @@
  */
 package org.escidoc.browser.model.internal;
 
-import java.net.URL;
-
-import javax.xml.parsers.ParserConfigurationException;
+import com.google.common.base.Preconditions;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.util.Utils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.google.common.base.Preconditions;
+import java.net.URL;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.MetadataRecords;
