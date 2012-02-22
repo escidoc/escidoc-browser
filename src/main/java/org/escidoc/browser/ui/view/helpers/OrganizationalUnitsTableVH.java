@@ -10,7 +10,12 @@ import com.google.common.base.Preconditions;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.event.Action;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.reference.OrganizationalUnitRef;
@@ -64,15 +69,31 @@ public class OrganizationalUnitsTableVH extends TableContainerVH {
                     confirmActionWindow(target);
                 }
                 else {
+                    final Window subwindow = new Window("A modal subwindow");
+                    subwindow.setModal(true);
+                    subwindow.setWidth("650px");
+                    VerticalLayout layout = (VerticalLayout) subwindow.getContent();
+                    layout.setMargin(true);
+                    layout.setSpacing(true);
+
                     try {
-                        router.getMainWindow().addComponent(
-                            new AddOrgUnitstoContext(router, resourceProxy, controller, resourceProxy
-                                .getOrganizationalUnit()));
+                        subwindow.addComponent(new AddOrgUnitstoContext(router, resourceProxy, controller,
+                            resourceProxy.getOrganizationalUnit()));
                     }
                     catch (EscidocClientException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                        controller.showError(e);
                     }
+                    Button close = new Button(ViewConstants.CLOSE, new Button.ClickListener() {
+                        @Override
+                        public void buttonClick(@SuppressWarnings("unused")
+                        ClickEvent event) {
+                            subwindow.getParent().removeWindow(subwindow);
+                        }
+                    });
+                    layout.addComponent(close);
+                    layout.setComponentAlignment(close, Alignment.TOP_RIGHT);
+
+                    router.getMainWindow().addWindow(subwindow);
                 }
 
             }
@@ -101,7 +122,7 @@ public class OrganizationalUnitsTableVH extends TableContainerVH {
         tableContainer.addContainerProperty(ViewConstants.PROPERTY_LINK, Label.class, null);
 
         for (final OrganizationalUnitRef organizationalUnit : organizationalUnits) {
-            Item item = tableContainer.addItem(organizationalUnit.getXLinkTitle());
+            Item item = tableContainer.addItem(organizationalUnit.getObjid());
             if (item != null) {
                 item.getItemProperty(ViewConstants.PROPERTY_NAME).setValue(organizationalUnit.getXLinkTitle());
                 item.getItemProperty(ViewConstants.PROPERTY_LINK).setValue(
