@@ -30,10 +30,15 @@ package org.escidoc.browser.controller;
 
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.internal.OrgUnitProxy;
 import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.OrgUnitView;
 
+import com.vaadin.ui.Window;
+
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.common.MetadataRecord;
 
 public class OrgUnitController extends Controller {
 
@@ -66,6 +71,43 @@ public class OrgUnitController extends Controller {
         catch (EscidocClientException e) {
             showError("Unable to add the OrganizationalUnit. An error occurred " + e.getLocalizedMessage());
         }
+    }
 
+    public void updateMetadata(MetadataRecord metadataRecord) throws EscidocClientException {
+
+        repositories.organization().updateMetaData((OrgUnitProxy) resourceProxy, metadataRecord);
+        // TODO Success message here
+
+    }
+
+    public MetadataRecord getMetadata(String metadataRecordName) {
+        try {
+            return repositories.organization().getMetadataRecord(resourceProxy.getId(), metadataRecordName);
+        }
+        catch (EscidocClientException e) {
+            getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        }
+        return null;
+
+    }
+
+    public void removeMetadata(String metadataRecordName) {
+        try {
+            repositories.organization().removeMD(resourceProxy.getId(), metadataRecordName);
+            showTrayMessage(ViewConstants.MD_REMOVE, ViewConstants.ADMINDESCRIPTION_REMOVED);
+        }
+        catch (EscidocClientException e) {
+            getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        }
+    }
+
+    public void addMetaData(MetadataRecord metadataRecord) {
+        try {
+            repositories.organization().addMetaData((OrgUnitProxy) resourceProxy, metadataRecord);
+            showTrayMessage(ViewConstants.ADDED_SUCCESSFULLY, ViewConstants.ADDED_SUCCESSFULLY);
+        }
+        catch (EscidocClientException e) {
+            getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        }
     }
 }

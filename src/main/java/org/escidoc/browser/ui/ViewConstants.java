@@ -370,6 +370,12 @@ public class ViewConstants {
     public static final String ADMINDESCRIPTION_REMOVED =
         "The admin description was removed successfully from this context";
 
+    public static final String MD_REMOVE = "Metadata removed";
+
+    public static final String MD_REMOVED = "The metadata was removed successfully";
+
+    public static final String ADDED_SUCCESSFULLY = "The resource was added successfully";
+
     public static final String CONTENT_MODELS = "Content Models";
 
     public static final String ADD_NEW_META_DATA = "Add New MetaData";

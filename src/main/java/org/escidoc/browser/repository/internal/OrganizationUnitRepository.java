@@ -28,7 +28,10 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import com.google.common.base.Preconditions;
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
@@ -39,8 +42,7 @@ import org.escidoc.browser.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.base.Preconditions;
 
 import de.escidoc.core.client.OrganizationalUnitHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -55,7 +57,6 @@ import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.oum.OrganizationalUnit;
 import de.escidoc.core.resources.oum.Parent;
 import de.escidoc.core.resources.oum.Parents;
-import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 public class OrganizationUnitRepository implements Repository {
 
@@ -185,5 +186,17 @@ public class OrganizationUnitRepository implements Repository {
     @Override
     public String getAsXmlString(String id) throws EscidocClientException {
         return new RestOrganizationalUnitHandlerClient(client.getServiceAddress()).retrieve(id);
+    }
+
+    public MetadataRecord getMetadataRecord(String id, String metadataRecordName) throws EscidocClientException {
+        return client.retrieve(id).getMetadataRecords().get(metadataRecordName);
+    }
+
+    public OrganizationalUnit removeMD(String id, String metadataRecordName) throws EscidocClientException {
+        OrganizationalUnit ou = client.retrieve(id);
+        MetadataRecords mdRecords = ou.getMetadataRecords();
+        mdRecords.del(metadataRecordName);
+        ou.setMetadataRecords(mdRecords);
+        return client.update(ou);
     }
 }

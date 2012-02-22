@@ -1,7 +1,21 @@
 package org.escidoc.browser.ui.maincontent;
 
-import com.google.common.base.Preconditions;
+import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.escidoc.browser.controller.OrgUnitController;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.listeners.MetadataFileReceiver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
+
+import com.google.common.base.Preconditions;
 import com.vaadin.terminal.UserError;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Alignment;
@@ -18,27 +32,10 @@ import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Window;
 
-import org.escidoc.browser.controller.OrgUnitController;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.listeners.MetadataFileReceiver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
-
-import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.xml.parsers.ParserConfigurationException;
-
-import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
 
 @SuppressWarnings("serial")
-public final class OnAddOrgUnitMetadata implements Button.ClickListener {
+public final class OnAddOrgUnitMetadata {
 
     private final static Logger LOG = LoggerFactory.getLogger(OnAddOrgUnitMetadata.class);
 
@@ -52,33 +49,24 @@ public final class OnAddOrgUnitMetadata implements Button.ClickListener {
 
     private TextField mdName;
 
-    private Repositories repositories;
-
-    private ResourceProxy ou;
-
     private Window mainWindow;
 
     private OrgUnitController controller;
 
-    public OnAddOrgUnitMetadata(ResourceProxy ou, OrgUnitController controller, Repositories repositories,
-        Window mainWindow) {
-        Preconditions.checkNotNull(ou, "ou is null: %s", ou);
+    private Router router;
+
+    public OnAddOrgUnitMetadata(OrgUnitController controller, Router router) {
+
         Preconditions.checkNotNull(controller, "controller is null: %s", controller);
-        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
-        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
+        Preconditions.checkNotNull(router, "router is null: %s", router);
 
-        this.ou = ou;
         this.controller = controller;
-        this.repositories = repositories;
-        this.mainWindow = mainWindow;
-    }
-
-    @Override
-    public void buttonClick(final ClickEvent event) {
+        this.router = router;
+        this.mainWindow = router.getMainWindow();
         showAddWindow();
     }
 
-    private void showAddWindow() {
+    public void showAddWindow() {
         final Window subwindow = new Window(ViewConstants.ADD_ORGANIZATIONAL_UNIT_S_METADATA);
         subwindow.setWidth("600px");
         subwindow.setModal(true);
@@ -188,15 +176,10 @@ public final class OnAddOrgUnitMetadata implements Button.ClickListener {
                         final MetadataRecord metadataRecord = new MetadataRecord(mdName.getValue().toString());
                         try {
                             metadataRecord.setContent(getMetadataContent());
-                            repositories.organization().addMetaData(ou, metadataRecord);
+                            controller.addMetaData(metadataRecord);
                             controller.refreshView();
                             upload.setEnabled(true);
                             subwindow.getParent().removeWindow(subwindow);
-                        }
-                        catch (final EscidocClientException e) {
-                            LOG.error(e.getMessage());
-                            mdName.setComponentError(new UserError("Failed to add the new Metadata record"
-                                + e.getLocalizedMessage()));
                         }
                         catch (final SAXException e) {
                             LOG.error(e.getMessage());

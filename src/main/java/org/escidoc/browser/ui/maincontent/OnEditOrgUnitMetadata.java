@@ -1,23 +1,14 @@
 package org.escidoc.browser.ui.maincontent;
 
-import com.google.common.base.Preconditions;
+import java.io.IOException;
+import java.io.StringReader;
 
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.ProgressIndicator;
-import com.vaadin.ui.Upload;
-import com.vaadin.ui.Upload.FailedEvent;
-import com.vaadin.ui.Upload.FinishedEvent;
-import com.vaadin.ui.Upload.StartedEvent;
-import com.vaadin.ui.Upload.SucceededEvent;
-import com.vaadin.ui.Window;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
+import org.escidoc.browser.controller.OrgUnitController;
 import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.repository.internal.OrgUnitProxy;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.MetadataFileReceiver;
@@ -28,18 +19,25 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import java.io.IOException;
-import java.io.StringReader;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import com.google.common.base.Preconditions;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.ProgressIndicator;
+import com.vaadin.ui.Upload;
+import com.vaadin.ui.Upload.FailedEvent;
+import com.vaadin.ui.Upload.FinishedEvent;
+import com.vaadin.ui.Upload.StartedEvent;
+import com.vaadin.ui.Upload.SucceededEvent;
+import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
 
 @SuppressWarnings("serial")
-public class OnEditOrgUnitMetadata implements ClickListener {
+public class OnEditOrgUnitMetadata {
 
     private final static Logger LOG = LoggerFactory.getLogger(OnEditOrgUnitMetadata.class);
 
@@ -47,11 +45,9 @@ public class OnEditOrgUnitMetadata implements ClickListener {
 
     private final ProgressIndicator pi = new ProgressIndicator();
 
-    private final MetadataRecord metadataRecord;
+    private final String metadataRecordName;
 
     private final Repositories repositories;
-
-    private final OrgUnitProxy resourceProxy;
 
     private MetadataFileReceiver receiver;
 
@@ -65,24 +61,22 @@ public class OnEditOrgUnitMetadata implements ClickListener {
 
     private Element metadataContent;
 
-    private OrgUnitView view;
+    private OrgUnitController controller;
 
-    public OnEditOrgUnitMetadata(MetadataRecord metadataRecord, Router router, Repositories repositories,
-        OrgUnitProxy ou, OrgUnitView view) {
-        Preconditions.checkNotNull(metadataRecord, "metadataRecord is null: %s", metadataRecord);
+    public OnEditOrgUnitMetadata(String name, Router router, Repositories repositories, OrgUnitController controller) {
+        Preconditions.checkNotNull(name, "metadataRecord is null: %s", name);
         Preconditions.checkNotNull(router, "router is null: %s", router);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
-        Preconditions.checkNotNull(ou, "ou is null: %s", ou);
-        Preconditions.checkNotNull(view, "view is null: %s", view);
-        this.metadataRecord = metadataRecord;
+
+        this.metadataRecordName = name;
         this.mainWindow = router.getMainWindow();
         this.repositories = repositories;
-        this.resourceProxy = ou;
-        this.view = view;
+
+        this.controller = controller;
+        showSubWindow();
     }
 
-    @Override
-    public void buttonClick(ClickEvent event) {
+    public void showSubWindow() {
         final Window subwindow = new Window(ViewConstants.EDIT_METADATA);
         subwindow.setWidth("600px");
         subwindow.setModal(true);
@@ -153,12 +147,16 @@ public class OnEditOrgUnitMetadata implements ClickListener {
 
         final Button saveBtn = new Button(ViewConstants.SAVE, new Button.ClickListener() {
 
+            private MetadataRecord metadata;
+
             @Override
             public void buttonClick(final ClickEvent event) {
                 try {
-                    metadataRecord.setContent(metadataContent);
-                    repositories.organization().updateMetaData(resourceProxy, metadataRecord);
-                    view.refreshView();
+                    metadata = controller.getMetadata(metadataRecordName);
+                    metadata.setContent(metadataContent);
+
+                    controller.updateMetadata(metadata);
+                    controller.refreshView();
                     status.setValue("");
                     upload.setEnabled(true);
                 }
