@@ -1,9 +1,7 @@
 package org.escidoc.browser.ui.maincontent;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.data.Item;
-import com.vaadin.data.util.HierarchicalContainer;
+import java.util.Collection;
+import java.util.List;
 
 import org.escidoc.browser.controller.OrgUnitController;
 import org.escidoc.browser.model.ResourceModel;
@@ -12,8 +10,9 @@ import org.escidoc.browser.repository.internal.OrgUnitService;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.view.helpers.DragnDropHelper;
 
-import java.util.Collection;
-import java.util.List;
+import com.google.common.base.Preconditions;
+import com.vaadin.data.Item;
+import com.vaadin.data.util.HierarchicalContainer;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.oum.OrganizationalUnit;
@@ -87,7 +86,7 @@ public class OrgUnitParentEditView extends DragnDropHelper {
 
     @Override
     protected void removeElementController(Object sourceItemId) {
-        controller.removeParent(resourceProxy, sourceItemId.toString());
+        controller.removeParent(sourceItemId.toString());
         controller.refreshView();
     }
 

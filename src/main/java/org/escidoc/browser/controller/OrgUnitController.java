@@ -53,7 +53,7 @@ public class OrgUnitController extends Controller {
         ((OrgUnitView) view).buildContentPanel();
     }
 
-    public void removeParent(ResourceProxy resourceProxy, String parentId) {
+    public void removeParent(String parentId) {
         try {
             getRepositories().organization().removeParent(resourceProxy, parentId);
             showTrayMessage("Updated!", "Parent was removed successfully");
