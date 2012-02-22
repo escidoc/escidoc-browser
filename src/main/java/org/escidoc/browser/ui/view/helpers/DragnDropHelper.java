@@ -1,5 +1,9 @@
 package org.escidoc.browser.ui.view.helpers;
 
+import org.escidoc.browser.controller.Controller;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.ui.Router;
+
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filterable;
 import com.vaadin.data.Item;
@@ -25,10 +29,6 @@ import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.TreeDragMode;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
-
-import org.escidoc.browser.controller.Controller;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.ui.Router;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -198,9 +198,11 @@ public abstract class DragnDropHelper extends VerticalLayout {
 
         HorizontalLayout hl = new HorizontalLayout();
         hl.addComponent(vlTree);
-        hl.addComponent(table);
+
         VerticalLayout vl = new VerticalLayout();
         vl.setWidth("100%");
+        hl.addComponent(vl);
+        vl.addComponent(table);
 
         if (canRemoveOperation()) {
             initializeDeleteTable(new SourceIs(table));
@@ -208,7 +210,7 @@ public abstract class DragnDropHelper extends VerticalLayout {
             vl.setComponentAlignment(tableDelete, Alignment.TOP_RIGHT);
         }
         addComponent(hl);
-        addComponent(vl);
+        // addComponent(vl);
     }
 
     /**
