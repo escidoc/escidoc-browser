@@ -1,15 +1,10 @@
 package org.escidoc.browser.ui.maincontent;
 
-import com.google.common.base.Preconditions;
+import java.io.ByteArrayInputStream;
+import java.io.OutputStream;
+import java.net.URL;
 
-import com.vaadin.ui.Upload;
-import com.vaadin.ui.Upload.Receiver;
-import com.vaadin.ui.Upload.SucceededEvent;
-import com.vaadin.ui.Upload.SucceededListener;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
-import com.vaadin.ui.themes.Reindeer;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.escidoc.browser.AppConstants;
@@ -20,11 +15,15 @@ import org.escidoc.browser.model.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.ViewConstants;
 
-import java.io.ByteArrayInputStream;
-import java.io.OutputStream;
-import java.net.URL;
-
-import javax.xml.parsers.ParserConfigurationException;
+import com.google.common.base.Preconditions;
+import com.vaadin.ui.Upload;
+import com.vaadin.ui.Upload.Receiver;
+import com.vaadin.ui.Upload.SucceededEvent;
+import com.vaadin.ui.Upload.SucceededListener;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.themes.Reindeer;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.om.item.Item;
@@ -58,18 +57,19 @@ public class ComponentUploadView extends VerticalLayout {
         private Window mainWindow;
 
         private onUploadSucceed(Repositories repositories, OnUploadReceive uploadReceiver, Controller controller,
-            ResourceModel itemProxy, ItemContent componentListView, Window mainWindow) {
+            ResourceModel itemProxy, ItemContent vlDirectMember, Window mainWindow) {
 
             this.repositories = repositories;
             this.uploadReceiver = uploadReceiver;
             this.controller = controller;
             this.itemProxy = itemProxy;
-            this.componentListView = componentListView;
+            this.componentListView = vlDirectMember;
             this.mainWindow = mainWindow;
         }
 
         @Override
-        public void uploadSucceeded(@SuppressWarnings("unused") SucceededEvent event) {
+        public void uploadSucceeded(@SuppressWarnings("unused")
+        SucceededEvent event) {
             try {
                 URL contentUrl = putInStagingServer();
                 if (contentUrl == null) {
@@ -143,24 +143,24 @@ public class ComponentUploadView extends VerticalLayout {
     }
 
     public ComponentUploadView(final Repositories repositories, final Controller controller, ResourceModel itemProxy,
-        ItemContent componentListView, Window mainWindow) {
+        ItemContent vlDirectMember, Window mainWindow) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(controller, "controller is null: %s", controller);
         Preconditions.checkNotNull(itemProxy, "itemProxy is null: %s", itemProxy);
-        Preconditions.checkNotNull(componentListView, "componentListView is null: %s", componentListView);
+        Preconditions.checkNotNull(vlDirectMember, "componentListView is null: %s", vlDirectMember);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
 
         upload.setButtonCaption(ViewConstants.SAVE);
         upload.setStyleName(Reindeer.BUTTON_SMALL);
-        addListener(repositories, controller, itemProxy, componentListView, mainWindow);
+        addListener(repositories, controller, itemProxy, vlDirectMember, mainWindow);
         setMargin(true);
         addComponent(upload);
     }
 
     private void addListener(
         final Repositories repositories, final Controller controller, ResourceModel itemProxy,
-        ItemContent componentListView, Window mainWindow) {
-        upload.addListener(new onUploadSucceed(repositories, uploadReceiver, controller, itemProxy, componentListView,
+        ItemContent vlDirectMember, Window mainWindow) {
+        upload.addListener(new onUploadSucceed(repositories, uploadReceiver, controller, itemProxy, vlDirectMember,
             mainWindow));
     }
 }

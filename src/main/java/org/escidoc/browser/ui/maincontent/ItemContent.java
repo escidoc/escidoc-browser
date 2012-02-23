@@ -28,11 +28,7 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
+import java.net.URISyntaxException;
 
 import org.escidoc.browser.controller.ItemController;
 import org.escidoc.browser.model.EscidocServiceLocation;
@@ -40,12 +36,20 @@ import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
+import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.dnd.DragAndDropFileUpload;
 import org.escidoc.browser.ui.view.helpers.ItemComponentsView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URISyntaxException;
+import com.google.common.base.Preconditions;
+import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.BaseTheme;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -86,6 +90,33 @@ public class ItemContent extends VerticalLayout {
 
     private void initView() {
         verticalLayout.addStyleName("drophere");
+        final CssLayout cssLayout = new CssLayout();
+        cssLayout.setHeight("20px");
+        buildPanelHeader(cssLayout, ViewConstants.COMPONENTS);
+        ThemeResource ICON = new ThemeResource("images/assets/plus.png");
+
+        if (true) {
+            final Button btnAddNew = new Button();
+            btnAddNew.addListener(new Button.ClickListener() {
+                @Override
+                public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+                    Window modalWindow = new Window("Select a file to add.");
+                    modalWindow.setWidth("25%");
+                    modalWindow.setHeight("20%");
+                    modalWindow.setModal(true);
+                    modalWindow.addComponent(new ComponentUploadView(repositories, controller, itemProxy,
+                        ItemContent.this, mainWindow));
+                    mainWindow.addWindow(modalWindow);
+                }
+            });
+            btnAddNew.setStyleName(BaseTheme.BUTTON_LINK);
+            btnAddNew.addStyleName("floatright paddingtop3");
+            btnAddNew.setWidth("20px");
+            btnAddNew.setIcon(ICON);
+            cssLayout.addComponent(btnAddNew);
+        }
+
+        verticalLayout.addComponent(cssLayout);
         wrap(verticalLayout);
         if (hasComponents()) {
             verticalLayout.addComponent(buildTable());
@@ -98,6 +129,18 @@ public class ItemContent extends VerticalLayout {
             lblNoComponents.setStyleName("skybluetext");
             verticalLayout.addComponent(lblNoComponents);
         }
+    }
+
+    private void buildPanelHeader(CssLayout cssLayout, String name) {
+        cssLayout.addStyleName("v-accordion-item-caption v-caption v-captiontext");
+        cssLayout.setWidth("100%");
+        cssLayout.setMargin(false);
+
+        final Label nameofPanel = new Label(name, Label.CONTENT_RAW);
+        nameofPanel.setStyleName("accordion v-captiontext");
+        nameofPanel.setWidth("70%");
+        cssLayout.addComponent(nameofPanel);
+
     }
 
     private void wrap(final VerticalLayout verticalLayout) {

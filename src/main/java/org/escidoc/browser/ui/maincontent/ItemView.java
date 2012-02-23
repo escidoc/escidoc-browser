@@ -28,16 +28,6 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Reindeer;
-import com.vaadin.ui.themes.Runo;
-
 import org.escidoc.browser.controller.ItemController;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
@@ -47,8 +37,14 @@ import org.escidoc.browser.model.internal.ItemModel;
 import org.escidoc.browser.model.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.view.helpers.ItemPropertiesVH;
+
+import com.google.common.base.Preconditions;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.om.item.Item;
@@ -231,23 +227,6 @@ public final class ItemView extends View {
         vlDirectMember.setWidth("100.0%");
         vlDirectMember.setHeight("100.0%");
         vlDirectMember.setMargin(false);
-
-        Button addComponentButton = new Button(ViewConstants.ADD_COMPONENT, new Button.ClickListener() {
-
-            @SuppressWarnings("unused")
-            @Override
-            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-                Window modalWindow = new Window("Select a file to add.");
-                modalWindow.setWidth("25%");
-                modalWindow.setHeight("20%");
-                modalWindow.setModal(true);
-                modalWindow.addComponent(new ComponentUploadView(repositories, controller, resourceProxy,
-                    (ItemContent) vlDirectMember, mainWindow));
-                mainWindow.addWindow(modalWindow);
-            }
-        });
-        addComponentButton.setStyleName(Reindeer.BUTTON_SMALL);
-        vlDirectMember.addComponent(addComponentButton);
 
         directMembersPanel.setContent(vlDirectMember);
 

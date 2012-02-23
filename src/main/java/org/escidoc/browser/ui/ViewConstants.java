@@ -172,6 +172,8 @@ public class ViewConstants {
 
     public static final String METADATA = "Metadata";
 
+    public static final String COMPONENTS = "Components";
+
     public static final String UPLOAD_A_WELLFORMED_XML_FILE_TO_REPLACE_METADATA =
         "Upload a wellformed XML file to replace metadata!";
 
