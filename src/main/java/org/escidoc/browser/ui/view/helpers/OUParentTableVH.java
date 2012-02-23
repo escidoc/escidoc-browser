@@ -7,6 +7,7 @@ import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.repository.internal.OrgUnitProxy;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.maincontent.OrgUnitParentEditView;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
@@ -75,13 +76,13 @@ public class OUParentTableVH extends TableContainerVH {
                 layout.setMargin(true);
                 layout.setSpacing(true);
 
-                // try {
-                // // subwindow.addComponent(new AddOrgUnitstoContext(router, resourceProxy, controller, resourceProxy
-                // // .getOrganizationalUnit()));
-                // }
-                // // catch (EscidocClientException e) {
-                // // controller.showError(e);
-                // // }
+                try {
+                    subwindow.addComponent(new OrgUnitParentEditView(orgUnitProxy, orgUnitProxy.getParentList(),
+                        router, controller));
+                }
+                catch (EscidocClientException e) {
+                    controller.showError(e);
+                }
                 Button close = new Button(ViewConstants.CLOSE, new Button.ClickListener() {
                     @Override
                     public void buttonClick(@SuppressWarnings("unused")
@@ -143,7 +144,7 @@ public class OUParentTableVH extends TableContainerVH {
         table.setColumnWidth(ViewConstants.PROPERTY_LINK, 40);
         return tableContainer;
     }
-    
+
     protected void initializeTable() {
         // size
         table.setWidth("100%");

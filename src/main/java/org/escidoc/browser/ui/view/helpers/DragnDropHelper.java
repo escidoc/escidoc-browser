@@ -210,7 +210,7 @@ public abstract class DragnDropHelper extends VerticalLayout {
             vl.setComponentAlignment(tableDelete, Alignment.TOP_RIGHT);
         }
         addComponent(hl);
-        // addComponent(vl);
+
     }
 
     /**

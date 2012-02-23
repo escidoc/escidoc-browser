@@ -26,6 +26,7 @@ public class OrgUnitParentEditView extends DragnDropHelper {
 
     public OrgUnitParentEditView(ResourceProxy resourceProxy, List<ResourceModel> parentList, Router router,
         OrgUnitController controller) throws EscidocClientException {
+        Preconditions.checkNotNull(resourceProxy, "parentList is null: %s", resourceProxy);
         Preconditions.checkNotNull(parentList, "parentList is null: %s", parentList);
         Preconditions.checkNotNull(router, "router is null: %s", router);
         Preconditions.checkNotNull(controller, "controller is null: %s", controller);
@@ -75,10 +76,12 @@ public class OrgUnitParentEditView extends DragnDropHelper {
             Collection<OrganizationalUnit> children = orgUnitService.retrieveChildren(organizationalUnit.getObjid());
             for (OrganizationalUnit childrenOrgUnits : children) {
                 item = orgUnitContainer.addItem(childrenOrgUnits.getObjid());
-                item.getItemProperty(PROPERTY_NAME).setValue(childrenOrgUnits.getProperties().getName());
-                item.getItemProperty(PROPERTY_HREF).setValue(childrenOrgUnits.getXLinkHref());
-                orgUnitContainer.setParent(childrenOrgUnits.getObjid(), organizationalUnit.getObjid());
-                orgUnitContainer.setChildrenAllowed(childrenOrgUnits.getObjid(), false);
+                if (item != null) {
+                    item.getItemProperty(PROPERTY_NAME).setValue(childrenOrgUnits.getProperties().getName());
+                    item.getItemProperty(PROPERTY_HREF).setValue(childrenOrgUnits.getXLinkHref());
+                    orgUnitContainer.setParent(childrenOrgUnits.getObjid(), organizationalUnit.getObjid());
+                    orgUnitContainer.setChildrenAllowed(childrenOrgUnits.getObjid(), false);
+                }
             }
         }
         return orgUnitContainer;
