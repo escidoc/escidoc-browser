@@ -1,4 +1,5 @@
 .project
+.DS_Store
 .classpath
 .settings
 .settings/*
@@ -19,6 +20,5 @@ script/*
 *.sh
 .mymetadata
 pom.xml.versionsBackup
-/.checkstyle
-/pom.xml
-/.gitignore
+.checkstyle
+pom.xml
