@@ -14,15 +14,11 @@ import de.escidoc.core.resources.aa.useraccount.Preferences;
 
 public class UserProfileController extends Controller {
 
-    private Router router;
-
     private UserRepositoryImpl userRep;
 
     public UserProfileController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
-        this.router = router;
         this.userRep = getUserRepository();
-        createView();
         this.setResourceName(ViewConstants.EDIT_PROFILE);
     }
 
@@ -31,21 +27,19 @@ public class UserProfileController extends Controller {
     }
 
     private UserRepositoryImpl getUserRepository() {
-        userRep = new UserRepositoryImpl(this.router.getServiceLocation());
-        userRep.withToken(this.router.getApp().getCurrentUser().getToken());
+        userRep = new UserRepositoryImpl(getRouter().getServiceLocation());
+        userRep.withToken(getRouter().getApp().getCurrentUser().getToken());
         return userRep;
     }
 
     @Override
     public void createView() {
-        view = new UserProfileView(router, this, getCurrentUser());
-        // view = new TestView();
+        view = new UserProfileView(getRouter(), this, getCurrentUser());
     }
 
     public void updateProfile(String name, String password) throws EscidocClientException {
         updateProfile(name);
         userRep.updatePassword(password);
-
     }
 
     public void updateProfile(String name) throws EscidocClientException {
