@@ -209,14 +209,14 @@ public class Router {
      * The router should be passed a controller and the controller should open its personal view Should be the default
      * method for binding ControllerViews to the Layout. + Should be the default call
      * 
-     * @param cnt
+     * @param controller
      */
-    public void openControllerView(final Controller cnt, final Boolean doReloadView) {
-        if (!doReloadView) {
-            cnt.showView();
+    public void openControllerView(final Controller controller, final Boolean doReloadView) {
+        if (doReloadView.booleanValue()) {
+            controller.showViewByReloading();
         }
         else {
-            cnt.showViewByReloading();
+            controller.showView();
         }
     }
 
