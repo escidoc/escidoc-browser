@@ -46,21 +46,27 @@ import com.vaadin.ui.PopupView.PopupVisibilityEvent;
 import com.vaadin.ui.PopupView.PopupVisibilityListener;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 
 import org.escidoc.browser.BrowserApplication;
-import org.escidoc.browser.controller.UserProfileController;
+import org.escidoc.browser.controller.UserAccountController;
 import org.escidoc.browser.layout.LayoutDesign;
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.LogoutListener;
 import org.escidoc.browser.ui.maincontent.SearchResultsView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import de.escidoc.core.client.exceptions.EscidocClientException;
 
 /**
  * This is the Header of the page. Main Search comes here, also the login ability
@@ -71,7 +77,7 @@ import java.util.regex.Pattern;
 @SuppressWarnings("serial")
 public class HeaderContainer extends VerticalLayout implements UserChangeListener, PopupVisibilityListener {
 
-    private static final String GUEST = "Guest";
+    private final static Logger LOG = LoggerFactory.getLogger(HeaderContainer.class);
 
     // The HTML file can be found at myTheme/layouts/header.html
     private final CustomLayout custom = new CustomLayout(ViewConstants.HEADER);
@@ -122,8 +128,8 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
 
     public void setUser(final CurrentUser user) {
         Component name;
-        if (user.getLoginName().equals(GUEST)) {
-            name = new Label(GUEST);
+        if (user.getLoginName().equals(ViewConstants.GUEST)) {
+            name = new Label(ViewConstants.GUEST);
         }
         else {
             name = new Button(user.getLoginName());
@@ -131,9 +137,17 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
             ((Button) name).addListener(new Button.ClickListener() {
                 @Override
                 public void buttonClick(ClickEvent event) {
-                    UserProfileController controller = new UserProfileController(repositories, router, null);
-                    controller.createView();
-                    router.openControllerView(controller, Boolean.FALSE);
+                    ResourceProxy userProxy;
+                    try {
+                        userProxy = repositories.user().findById(user.getUserId());
+                        UserAccountController controller = new UserAccountController(repositories, router, userProxy);
+                        router.openControllerView(controller, Boolean.FALSE);
+                    }
+                    catch (EscidocClientException e) {
+                        LOG.error("Can not find user " + e.getMessage());
+                        router.getMainWindow().showNotification(ViewConstants.ERROR, e.getMessage(),
+                            Window.Notification.TYPE_ERROR_MESSAGE);
+                    }
                 }
             });
         }

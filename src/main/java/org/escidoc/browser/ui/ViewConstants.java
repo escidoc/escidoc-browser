@@ -414,4 +414,6 @@ public class ViewConstants {
 
     public static final String PROPERTY_LINK = "link";
 
+    public static final Object SYSADMIN = "sysadmin";
+
 }

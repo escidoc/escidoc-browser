@@ -1,3 +1,31 @@
+/**
+ * CDDL HEADER START
+ *
+ * The contents of this file are subject to the terms of the
+ * Common Development and Distribution License, Version 1.0 only
+ * (the "License").  You may not use this file except in compliance
+ * with the License.
+ *
+ * You can obtain a copy of the license at license/ESCIDOC.LICENSE
+ * or https://www.escidoc.org/license/ESCIDOC.LICENSE .
+ * See the License for the specific language governing permissions
+ * and limitations under the License.
+ *
+ * When distributing Covered Code, include this CDDL HEADER in each
+ * file and include the License file at license/ESCIDOC.LICENSE.
+ * If applicable, add the following below this CDDL HEADER, with the
+ * fields enclosed by brackets "[]" replaced with your own identifying
+ * information: Portions Copyright [yyyy] [name of copyright owner]
+ *
+ * CDDL HEADER END
+ *
+ *
+ *
+ * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * fuer wissenschaftlich-technische Information mbH and Max-Planck-
+ * Gesellschaft zur Foerderung der Wissenschaft e.V.
+ * All rights reserved.  Use is subject to license terms.
+ */
 package org.escidoc.browser.ui.useraccount;
 
 import com.google.common.base.Preconditions;
@@ -40,6 +68,8 @@ public class UserAccountView extends View {
     private UserAccountRepository ur;
 
     private UserAccountController uac;
+
+    private Panel attributePanel;
 
     public UserAccountView(Router router, UserProxy userProxy, UserAccountRepository ur, UserAccountController uac) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
@@ -211,10 +241,10 @@ public class UserAccountView extends View {
     }
 
     private Component buildAttributesView() throws EscidocClientException {
-        final Panel panel = new Panel("Attributes");
+        attributePanel = new Panel("Attributes");
         final UserAccountAttributes attributeTable =
             new UserAccountAttributes(userProxy, ur.getAttributes(userProxy), ur, uac);
-        panel.addComponent(attributeTable);
+        attributePanel.addComponent(attributeTable);
 
         final Button addAttributeButton = new Button();
         addAttributeButton.setDescription("Add new Attribute");
@@ -245,7 +275,7 @@ public class UserAccountView extends View {
                 btnadd.addListener(new Button.ClickListener() {
                     @Override
                     public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-                        if (isValid(key, value)) {
+                        if (isNotValid(key, value)) {
                             showMessage();
                         }
                         else {
@@ -266,22 +296,21 @@ public class UserAccountView extends View {
                             }
                         }
                     }
-
                 });
                 hl.addComponent(key);
                 hl.addComponent(value);
                 hl.addComponent(btnadd);
                 hl.setComponentAlignment(btnadd, Alignment.BOTTOM_RIGHT);
-                panel.addComponent(hl);
+                attributePanel.addComponent(hl);
             }
 
         });
 
-        panel.addComponent(addAttributeButton);
-        return panel;
+        attributePanel.addComponent(addAttributeButton);
+        return attributePanel;
     }
 
-    private static boolean isValid(final TextField key, final TextField value) {
+    private static boolean isNotValid(final TextField key, final TextField value) {
         return lessThanTwoChars(key) || lessThanTwoChars(value);
     }
 
@@ -296,10 +325,10 @@ public class UserAccountView extends View {
     }
 
     private Panel buildPreferencesView() throws EscidocClientException {
-        final Panel pnl = new Panel("Preferences");
+        final Panel preferencePanel = new Panel("Preferences");
         Preferences preferences = ur.getPreferences(userProxy);
         final UserAccountPreferences userPrefTable = new UserAccountPreferences(userProxy, preferences, ur, uac);
-        pnl.addComponent(userPrefTable);
+        preferencePanel.addComponent(userPrefTable);
 
         final Button addPreference = new Button();
         addPreference.setDescription("Add new Preference");
@@ -325,13 +354,12 @@ public class UserAccountView extends View {
                 value.setInvalidAllowed(false);
                 value.setRequired(true);
 
-                final Button btnadd = new Button();
-                btnadd.setIcon(new ThemeResource("images/assets/plus.png"));
-                btnadd.addListener(new Button.ClickListener() {
+                final Button addButton = new Button();
+                addButton.setIcon(new ThemeResource("images/assets/plus.png"));
+                addButton.addListener(new Button.ClickListener() {
                     @Override
                     public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-
-                        if (isValid(key, value)) {
+                        if (isNotValid(key, value)) {
                             showMessage();
                         }
                         else {
@@ -356,15 +384,15 @@ public class UserAccountView extends View {
                 });
                 hl.addComponent(key);
                 hl.addComponent(value);
-                hl.addComponent(btnadd);
-                hl.setComponentAlignment(btnadd, Alignment.BOTTOM_RIGHT);
-                pnl.addComponent(hl);
+                hl.addComponent(addButton);
+                hl.setComponentAlignment(addButton, Alignment.BOTTOM_RIGHT);
+                preferencePanel.addComponent(hl);
             }
 
         });
 
-        pnl.addComponent(addPreference);
-        return pnl;
+        preferencePanel.addComponent(addPreference);
+        return preferencePanel;
     }
 
     @Override
@@ -398,4 +426,7 @@ public class UserAccountView extends View {
         return true;
     }
 
+    public void hideAttributeView() {
+        attributePanel.setVisible(false);
+    }
 }
