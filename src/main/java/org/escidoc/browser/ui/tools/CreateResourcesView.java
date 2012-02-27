@@ -138,9 +138,9 @@ public class CreateResourcesView extends View {
         // vlPnlCreateOrgUnit
         final VerticalLayout layout = new VerticalLayout();
         layout.setImmediate(false);
-        layout.setWidth("100.0%");
-        layout.setHeight("100.0%");
+        layout.setSizeUndefined();
         layout.setMargin(false);
+
         formAddUser(layout);
         add.addTab(layout, "Create User Account");
 
@@ -251,8 +251,6 @@ public class CreateResourcesView extends View {
         // vlPnlCreateContext
         final VerticalLayout vlAccCreateContext = new VerticalLayout();
         vlAccCreateContext.setImmediate(false);
-        vlAccCreateContext.setWidth("100.0%");
-        vlAccCreateContext.setHeight("100.0%");
         vlAccCreateContext.setMargin(false);
         vlAccCreateContext.setSpacing(false);
         vlAccCreateContext.setSizeUndefined();
@@ -280,9 +278,9 @@ public class CreateResourcesView extends View {
         // vlPnlCreate
         final VerticalLayout vlAccCreate = new VerticalLayout();
         vlAccCreate.setImmediate(false);
-        vlAccCreate.setWidth("100.0%");
-        vlAccCreate.setHeight("100.0%");
         vlAccCreate.setMargin(false);
+        vlAccCreate.setSpacing(false);
+        vlAccCreate.setSizeUndefined();
         formAddContentModel(vlAccCreate);
         accCreateContentModel.addTab(vlAccCreate, "Create Content Model");
 
@@ -299,9 +297,9 @@ public class CreateResourcesView extends View {
         // vlPnlCreateOrgUnit
         final VerticalLayout vlAccCreateOrgUnit = new VerticalLayout();
         vlAccCreateOrgUnit.setImmediate(false);
-        vlAccCreateOrgUnit.setWidth("100.0%");
-        vlAccCreateOrgUnit.setHeight("100.0%");
         vlAccCreateOrgUnit.setMargin(false);
+        vlAccCreateOrgUnit.setSpacing(false);
+        vlAccCreateOrgUnit.setSizeUndefined();
         formAddOrgUnit(vlAccCreateOrgUnit);
         accCreateOrgUnit.addTab(vlAccCreateOrgUnit, "Create Organizational Units");
 
