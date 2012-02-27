@@ -28,13 +28,14 @@
  */
 package org.escidoc.browser.ui.navigation;
 
-import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.model.TreeDataSource;
-
+import com.vaadin.data.Container;
 import com.vaadin.event.Action.Handler;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Tree.ExpandListener;
+
+import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.TreeDataSource;
 
 public interface NavigationTreeView extends Component {
 
@@ -46,6 +47,10 @@ public interface NavigationTreeView extends Component {
 
     void setDataSource(TreeDataSource container);
 
+    Container getDataSource();
+
     void addActionHandler(Handler handler);
+
+    void setClickListener(ItemClickListener clickListener);
 
 }

@@ -30,6 +30,7 @@ package org.escidoc.browser.ui.orgunit;
 
 import com.google.common.base.Preconditions;
 
+import com.vaadin.data.Container;
 import com.vaadin.event.Action.Handler;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.AbstractSelect;
@@ -51,6 +52,8 @@ public class OrgUnitTreeView extends VerticalLayout implements NavigationTreeVie
 
     private TreeDataSource dataSource;
 
+    private ItemClickListener icl;
+
     public OrgUnitTreeView() {
         addComponent(tree);
         tree.setImmediate(true);
@@ -70,7 +73,15 @@ public class OrgUnitTreeView extends VerticalLayout implements NavigationTreeVie
     @Override
     public void addClickListener(final ItemClickListener clickListener) {
         Preconditions.checkNotNull(clickListener, "clickListener is null: %s", clickListener);
+        icl = clickListener;
         tree.addListener(clickListener);
+    }
+
+    @Override
+    public void setClickListener(final ItemClickListener clickListener) {
+        Preconditions.checkNotNull(clickListener, "clickListener is null: %s", clickListener);
+        tree.removeListener(icl);
+        addClickListener(clickListener);
     }
 
     @Override
@@ -96,5 +107,10 @@ public class OrgUnitTreeView extends VerticalLayout implements NavigationTreeVie
         if (isSucessful) {
             dataSource.reload();
         }
+    }
+
+    @Override
+    public Container getDataSource() {
+        return dataSource.getContainer();
     }
 }
