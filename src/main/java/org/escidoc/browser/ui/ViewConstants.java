@@ -418,4 +418,6 @@ public class ViewConstants {
 
     public static final String User_Groups = "Groups";
 
+    public static final String CREATE_A_NEW_GROUP = "Create a new Group";
+
 }

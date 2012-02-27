@@ -359,12 +359,17 @@ public class SimpleLayout extends LayoutDesign {
         accordion.addTab(buildListWithFilter2(treeBuilder.buildGroupTree()), ViewConstants.User_Groups, NO_ICON);
     }
 
+    // FIXME rename the method.
     private Component buildListWithFilter2(final BaseNavigationTreeView list) {
+        // TODO this is a temporary create button, it is to redesign.
         Button createButton = new Button("+", new ClickListener() {
 
+            @SuppressWarnings("unused")
             @Override
             public void buttonClick(ClickEvent event) {
-                throw new UnsupportedOperationException("not-yet-implemented.");
+                CreateGroupView view = new CreateGroupView(treeBuilder);
+                view.buildContentPanel();
+                router.openTab(view, ViewConstants.CREATE_A_NEW_GROUP);
             }
         });
         createButton.setStyleName(Reindeer.BUTTON_SMALL);
