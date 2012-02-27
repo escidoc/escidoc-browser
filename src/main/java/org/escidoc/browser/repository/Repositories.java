@@ -66,4 +66,6 @@ public interface Repositories {
     OrganizationUnitRepository organization();
 
     Repository findByType(ResourceType type);
+
+    GroupRepository group();
 }

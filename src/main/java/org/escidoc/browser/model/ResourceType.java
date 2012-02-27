@@ -33,7 +33,7 @@ import com.google.common.base.Preconditions;
 public enum ResourceType {
 
     CONTEXT("Context"), CONTAINER("Container"), ITEM("Item"), CONTENT_MODEL("Content Model"), ORG_UNIT(
-        "Organizational Unit"), USER_ACCOUNT("User Account");
+        "Organizational Unit"), USER_ACCOUNT("User Account"), USER_GROUP("Group");
 
     private String label;
 

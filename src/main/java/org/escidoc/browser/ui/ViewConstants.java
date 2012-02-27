@@ -416,4 +416,6 @@ public class ViewConstants {
 
     public static final Object SYSADMIN = "sysadmin";
 
+    public static final String User_Groups = "Groups";
+
 }

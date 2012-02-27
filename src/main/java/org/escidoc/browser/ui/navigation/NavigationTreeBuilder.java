@@ -158,4 +158,17 @@ public class NavigationTreeBuilder {
         return ds;
     }
 
+    public BaseNavigationTreeView buildGroupTree() {
+        BaseNavigationTreeView view = new BaseNavigationTreeView();
+        view.setDataSource(createGroupsSource());
+        addEventListeners(view);
+        return view;
+    }
+
+    private TreeDataSource createGroupsSource() {
+        BaseTreeDataSource ds = new BaseTreeDataSource(repositories.group());
+        ds.init();
+        return ds;
+    }
+
 }

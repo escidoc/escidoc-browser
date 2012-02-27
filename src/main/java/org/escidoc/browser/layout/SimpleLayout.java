@@ -38,6 +38,9 @@ import com.vaadin.terminal.Resource;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -49,6 +52,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.Reindeer;
 import com.vaadin.ui.themes.Runo;
 
 import org.escidoc.browser.AppConstants;
@@ -324,11 +328,8 @@ public class SimpleLayout extends LayoutDesign {
 
         // Binding the tree to the NavigationPanel
         mainNavigationTree = addNavigationTree();
-
         addAccordion();
-
         navigationPanel.setContent(vlNavigationPanel);
-
         return navigationPanel;
     }
 
@@ -347,27 +348,28 @@ public class SimpleLayout extends LayoutDesign {
         addResourcesTab(accordion);
         addOrgUnitTab(accordion);
         addUserAccountsTab(accordion);
+        addGroupsTab(accordion);
         addContentModelsTab(accordion);
         addToolsTab(accordion);
 
         return accordion;
     }
 
-    private void addUserAccountsTab(Accordion accordion) {
-        if (isSysAdmin()) {
-            accordion.addTab(buildListWithFilter(treeBuilder.buildUserAccountTree()), ViewConstants.USER_ACCOUNTS,
-                NO_ICON);
-        }
+    private void addGroupsTab(Accordion accordion) {
+        accordion.addTab(buildListWithFilter2(treeBuilder.buildGroupTree()), ViewConstants.User_Groups, NO_ICON);
     }
 
-    private void addContentModelsTab(Accordion accordion) {
-        accordion.addTab(buildListWithFilter(treeBuilder.buildContentModelTree()), ViewConstants.CONTENT_MODELS,
-            NO_ICON);
-    }
+    private Component buildListWithFilter2(final BaseNavigationTreeView list) {
+        Button createButton = new Button("+", new ClickListener() {
 
-    private VerticalLayout buildListWithFilter(final BaseNavigationTreeView list) {
-        VerticalLayout vl = new VerticalLayout();
-        vl.setMargin(true, false, false, true);
+            @Override
+            public void buttonClick(ClickEvent event) {
+                throw new UnsupportedOperationException("not-yet-implemented.");
+            }
+        });
+        createButton.setStyleName(Reindeer.BUTTON_SMALL);
+        VerticalLayout layout = new VerticalLayout();
+        layout.setMargin(true, false, false, true);
 
         TextField filterField = new TextField();
         filterField.setInputPrompt("Type something to filter the list");
@@ -386,9 +388,48 @@ public class SimpleLayout extends LayoutDesign {
             }
         });
 
-        vl.addComponent(filterField);
-        vl.addComponent(list);
-        return vl;
+        layout.addComponent(createButton);
+        layout.addComponent(filterField);
+        layout.addComponent(list);
+        return layout;
+    }
+
+    private void addUserAccountsTab(Accordion accordion) {
+        if (isSysAdmin()) {
+            accordion.addTab(buildListWithFilter(treeBuilder.buildUserAccountTree()), ViewConstants.USER_ACCOUNTS,
+                NO_ICON);
+        }
+    }
+
+    private void addContentModelsTab(Accordion accordion) {
+        accordion.addTab(buildListWithFilter(treeBuilder.buildContentModelTree()), ViewConstants.CONTENT_MODELS,
+            NO_ICON);
+    }
+
+    private VerticalLayout buildListWithFilter(final BaseNavigationTreeView list) {
+        VerticalLayout layout = new VerticalLayout();
+        layout.setMargin(true, false, false, true);
+
+        TextField filterField = new TextField();
+        filterField.setInputPrompt("Type something to filter the list");
+        filterField.setWidth("250px");
+        filterField.addListener(new TextChangeListener() {
+
+            private SimpleStringFilter filter;
+
+            @Override
+            public void textChange(TextChangeEvent event) {
+                // TODO refactor this, the list should not return the data source
+                Filterable ds = (Filterable) list.getDataSource();
+                ds.removeAllContainerFilters();
+                filter = new SimpleStringFilter(PropertyId.NAME, event.getText(), true, false);
+                ds.addContainerFilter(filter);
+            }
+        });
+
+        layout.addComponent(filterField);
+        layout.addComponent(list);
+        return layout;
     }
 
     private boolean isSysAdmin() {

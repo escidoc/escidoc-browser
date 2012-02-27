@@ -34,6 +34,7 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.repository.AdminRepository;
 import org.escidoc.browser.repository.BulkRepository;
+import org.escidoc.browser.repository.GroupRepository;
 import org.escidoc.browser.repository.IngestRepository;
 import org.escidoc.browser.repository.PdpRepository;
 import org.escidoc.browser.repository.Repositories;
@@ -70,6 +71,10 @@ public class RepositoriesImpl implements Repositories {
 
     private OrganizationUnitRepository orgUnitRepository;
 
+    private GroupRepository gr;
+
+    private GroupRepository groupRepository;
+
     public RepositoriesImpl(final EscidocServiceLocation serviceLocation) {
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         this.serviceLocation = serviceLocation;
@@ -86,6 +91,7 @@ public class RepositoriesImpl implements Repositories {
         adminRepository = new AdminRepository(serviceLocation);
         ingestRepository = new IngestRepository(serviceLocation);
         orgUnitRepository = new OrganizationUnitRepository(serviceLocation);
+        groupRepository = new GroupRepository(serviceLocation);
         bulkRepo =
             new BulkRepository(contextRepository, containerRepository, itemRepository, contentModelRepository,
                 orgUnitRepository, userAccountRepository);
@@ -104,6 +110,7 @@ public class RepositoriesImpl implements Repositories {
         ingestRepository.loginWith(token);
         orgUnitRepository.loginWith(token);
         contentModelRepository.loginWith(token);
+        groupRepository.loginWith(token);
     }
 
     @Override
@@ -189,5 +196,10 @@ public class RepositoriesImpl implements Repositories {
             default:
                 throw new UnsupportedOperationException("Not yet implemented " + type);
         }
+    }
+
+    @Override
+    public GroupRepository group() {
+        return groupRepository;
     }
 }
