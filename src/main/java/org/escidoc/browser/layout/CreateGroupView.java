@@ -6,6 +6,8 @@ import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
@@ -14,10 +16,13 @@ import com.vaadin.ui.themes.Runo;
 
 import org.escidoc.browser.model.PropertyId;
 import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.repository.GroupRepository;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.View;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.orgunit.OrgUnitTreeView;
+
+import java.util.List;
 
 @SuppressWarnings("serial")
 public class CreateGroupView extends View {
@@ -25,6 +30,10 @@ public class CreateGroupView extends View {
     private OrgUnitTreeView tree;
 
     private TextField orgUnitFilter;
+
+    private GroupRepository repo;
+
+    List list;
 
     public CreateGroupView(NavigationTreeBuilder builder) {
         super();
@@ -39,6 +48,7 @@ public class CreateGroupView extends View {
             public void itemClick(ItemClickEvent event) {
                 Object itemId = event.getItemId();
                 ResourceModel rm = (ResourceModel) itemId;
+                list.add(rm);
                 orgUnitFilter.setValue(rm.getName());
             }
         });
@@ -53,9 +63,22 @@ public class CreateGroupView extends View {
 
     private ComponentContainer buildVlContentPanel() {
         VerticalLayout layout = createMainLayout();
+        addSaveButton(layout);
         addNameField(layout);
         addOrgUnitSelection(layout);
         return layout;
+    }
+
+    private void addSaveButton(VerticalLayout layout) {
+        Button saveButton = new Button(ViewConstants.SAVE, new Button.ClickListener() {
+            GroupRepository r;
+
+            @Override
+            public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
+                r.createGroup("name", list);
+            }
+        });
+        layout.addComponent(saveButton);
     }
 
     private void addOrgUnitSelection(VerticalLayout layout) {
@@ -81,7 +104,6 @@ public class CreateGroupView extends View {
 
     private void addOrgTree(VerticalLayout layout) {
         VerticalLayout vl = new VerticalLayout();
-        vl.setHeight("60%");
 
         vl.addComponent(tree);
         layout.addComponent(vl);

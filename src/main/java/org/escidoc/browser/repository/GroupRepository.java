@@ -13,8 +13,11 @@ import java.util.List;
 
 import de.escidoc.core.client.UserGroupHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.client.exceptions.EscidocException;
 import de.escidoc.core.client.exceptions.InternalClientException;
+import de.escidoc.core.client.exceptions.TransportException;
 import de.escidoc.core.client.interfaces.UserGroupHandlerClientInterface;
+import de.escidoc.core.resources.aa.usergroup.UserGroup;
 import de.escidoc.core.resources.common.Relations;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 
@@ -70,5 +73,11 @@ public class GroupRepository implements Repository {
     @Override
     public String getAsXmlString(String id) throws EscidocClientException {
         throw new UnsupportedOperationException("not-yet-implemented.");
+    }
+
+    public void createGroup(String string, List list) throws EscidocException, InternalClientException,
+        TransportException {
+        UserGroup ug = new UserGroup();
+        c.create(ug);
     }
 }
