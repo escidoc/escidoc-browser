@@ -1,5 +1,7 @@
 package org.escidoc.browser.layout;
 
+import com.google.common.base.Preconditions;
+
 import com.vaadin.data.Container.Filterable;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
@@ -12,32 +14,55 @@ import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
 
+import org.escidoc.browser.model.GroupModel;
 import org.escidoc.browser.model.PropertyId;
 import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.repository.GroupRepository;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.View;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.orgunit.OrgUnitTreeView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.aa.usergroup.UserGroup;
+
 @SuppressWarnings("serial")
 public class CreateGroupView extends View {
+
+    private static final String GROUP_NAME = "Group Name";
+
+    private final static Logger LOG = LoggerFactory.getLogger(CreateGroupView.class);
 
     private OrgUnitTreeView tree;
 
     private TextField orgUnitFilter;
 
-    private GroupRepository repo;
+    private GroupRepository r;
 
-    List list;
+    private List<ResourceModel> list;
 
-    public CreateGroupView(NavigationTreeBuilder builder) {
+    private TreeDataSource ds;
+
+    private Window mw;
+
+    public CreateGroupView(Window mw, NavigationTreeBuilder builder, GroupRepository r, TreeDataSource ds) {
         super();
+        Preconditions.checkNotNull(mw, "mw is null: %s", mw);
+        Preconditions.checkNotNull(builder, "builder is null: %s", builder);
+        Preconditions.checkNotNull(r, "r is null: %s", r);
+        Preconditions.checkNotNull(ds, "ds is null: %s", ds);
+        this.mw = mw;
         tree = builder.buildOrgUnitTree();
+        this.r = r;
+        this.ds = ds;
     }
 
     public Panel buildContentPanel() {
@@ -71,11 +96,20 @@ public class CreateGroupView extends View {
 
     private void addSaveButton(VerticalLayout layout) {
         Button saveButton = new Button(ViewConstants.SAVE, new Button.ClickListener() {
-            GroupRepository r;
 
             @Override
             public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
-                r.createGroup("name", list);
+                try {
+                    ds.addTopLevelResource(new GroupModel(r.createGroup(GROUP_NAME, list)));
+                }
+                catch (EscidocClientException e) {
+                    StringBuilder errorMessage = new StringBuilder();
+                    errorMessage.append("Can not create a group. Reason: ");
+                    errorMessage.append(e.getMessage());
+                    LOG.warn(errorMessage.toString());
+                    mw.showNotification(ViewConstants.ERROR, errorMessage.toString(),
+                        Window.Notification.TYPE_ERROR_MESSAGE);
+                }
             }
         });
         layout.addComponent(saveButton);

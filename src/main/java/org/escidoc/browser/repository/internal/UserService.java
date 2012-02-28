@@ -28,7 +28,10 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import gov.loc.www.zing.srw.SearchRetrieveRequestType;
+import com.google.common.base.Preconditions;
+
+import org.escidoc.browser.util.Utils;
+import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,13 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.apache.axis.types.NonNegativeInteger;
-import org.escidoc.browser.AppConstants;
-import org.escidoc.browser.util.Utils;
-import org.joda.time.DateTime;
-
-import com.google.common.base.Preconditions;
 
 import de.escidoc.core.client.TransportProtocol;
 import de.escidoc.core.client.UserAccountHandlerClient;
@@ -60,6 +56,7 @@ import de.escidoc.core.resources.common.TaskParam;
 import de.escidoc.core.resources.common.reference.ContextRef;
 import de.escidoc.core.resources.common.reference.Reference;
 import de.escidoc.core.resources.common.reference.RoleRef;
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 public class UserService {
 
@@ -112,18 +109,6 @@ public class UserService {
         return client.retrieve(userObjectId);
     }
 
-    // public UserAccount update(final String objid, final String newName) throws EscidocClientException {
-    // assert !(newName == null || newName.isEmpty()) : "name must not be null or empty";
-    //
-    // final UserAccount userAccount = retrieve(objid);
-    // // TODO name the class with its responsibility
-    // // final UserAccount updatedUserAccount =
-    // // new UserAccountFactory().update(getSelectedUser(objid)).name(newName).build();
-    // final UserAccount updatedUserAccount = new UserAccountFactory().update(userAccount).name(newName).build();
-    //
-    // return client.update(updatedUserAccount);
-    // }
-
     public void deactivate(final UserAccount userAccount) throws EscidocClientException {
         final TaskParam taskParam = new TaskParam();
         taskParam.setLastModificationDate(userAccount.getLastModificationDate());
@@ -135,24 +120,6 @@ public class UserService {
         taskParam.setLastModificationDate(updatedUserAccount.getLastModificationDate());
         client.activate(updatedUserAccount.getObjid(), taskParam);
     }
-
-    // public UserAccount create(final String name, final String loginName) throws EscidocException,
-    // InternalClientException, TransportException {
-    // assert !(name == null || name.isEmpty()) : "name can not be null or empty";
-    // assert !(loginName == null || loginName.isEmpty()) : "Login name can not be null or empty";
-    //
-    // final UserAccount backedUserAccount = new UserAccountFactory().create(name, loginName).build();
-    //
-    // final UserAccount createdUserAccount = client.create(backedUserAccount);
-    // assert createdUserAccount != null : "Got null reference from the server.";
-    // assert createdUserAccount.getObjid() != null : "ObjectID can not be null.";
-    // assert userAccountById != null : "userAccountById is null";
-    // final int sizeBefore = userAccountById.size();
-    // userAccountById.put(createdUserAccount.getObjid(), createdUserAccount);
-    // final int sizeAfter = userAccountById.size();
-    // assert sizeAfter > sizeBefore : "user account is not added to map.";
-    // return createdUserAccount;
-    // }
 
     public UserAccount delete(final String objectId) throws EscidocClientException {
         client.delete(objectId);

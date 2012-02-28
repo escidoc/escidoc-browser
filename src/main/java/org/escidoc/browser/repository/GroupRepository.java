@@ -7,21 +7,33 @@ import org.escidoc.browser.model.ModelConverter;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.ui.helper.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
 import java.util.List;
+import java.util.UUID;
 
 import de.escidoc.core.client.UserGroupHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
-import de.escidoc.core.client.exceptions.EscidocException;
 import de.escidoc.core.client.exceptions.InternalClientException;
-import de.escidoc.core.client.exceptions.TransportException;
 import de.escidoc.core.client.interfaces.UserGroupHandlerClientInterface;
+import de.escidoc.core.resources.aa.usergroup.Selector;
+import de.escidoc.core.resources.aa.usergroup.SelectorType;
+import de.escidoc.core.resources.aa.usergroup.Selectors;
 import de.escidoc.core.resources.aa.usergroup.UserGroup;
+import de.escidoc.core.resources.aa.usergroup.UserGroupProperties;
 import de.escidoc.core.resources.common.Relations;
+import de.escidoc.core.resources.common.TaskParam;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 
 public class GroupRepository implements Repository {
+
+    private static final String ORGANIZATIONL_UNIT = "organizational-unit";
+
+    private static final String FIZ_OU_ID = "escidoc:14";
+
+    private final static Logger LOG = LoggerFactory.getLogger(GroupRepository.class);
 
     private UserGroupHandlerClientInterface c;
 
@@ -75,9 +87,31 @@ public class GroupRepository implements Repository {
         throw new UnsupportedOperationException("not-yet-implemented.");
     }
 
-    public void createGroup(String string, List list) throws EscidocException, InternalClientException,
-        TransportException {
+    public UserGroup createGroup(String name, List list) throws EscidocClientException {
         UserGroup ug = new UserGroup();
-        c.create(ug);
+
+        addProperties(name, ug);
+
+        Selectors s = new Selectors();
+        s.add(new Selector(FIZ_OU_ID, ORGANIZATIONL_UNIT, SelectorType.INTERNAL));
+        ug.setSelectors(s);
+
+        UserGroup created = c.create(ug);
+
+        TaskParam tp = new TaskParam();
+        c.addSelectors(created, tp);
+        LOG.debug("A user group is created with an id: " + created.getObjid());
+        return created;
+    }
+
+    private static void addProperties(String name, UserGroup ug) {
+        UserGroupProperties p = new UserGroupProperties();
+        p.setName(name);
+        p.setLabel(name + "_" + UUID.randomUUID());
+        ug.setProperties(p);
+
+        p.setDescription("Description, automated generated .");
+        p.setEmail("E-mail, automated generated email.");
+        p.setType("Group type, automated generated");
     }
 }

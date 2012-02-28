@@ -67,6 +67,7 @@ import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.mainpage.Footer;
 import org.escidoc.browser.ui.mainpage.HeaderContainer;
+import org.escidoc.browser.ui.navigation.BaseTreeDataSource;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.navigation.NavigationTreeView;
 import org.escidoc.browser.ui.tools.ToolsTreeView;
@@ -356,18 +357,20 @@ public class SimpleLayout extends LayoutDesign {
     }
 
     private void addGroupsTab(Accordion accordion) {
-        accordion.addTab(buildListWithFilter2(treeBuilder.buildGroupTree()), ViewConstants.User_Groups, NO_ICON);
+        TreeDataSource ds = new BaseTreeDataSource(repositories.group());
+        ds.init();
+
+        accordion.addTab(buildListWithFilter2(treeBuilder.buildGroupTree(ds), ds), ViewConstants.User_Groups, NO_ICON);
     }
 
     // FIXME rename the method.
-    private Component buildListWithFilter2(final BaseNavigationTreeView list) {
+    private Component buildListWithFilter2(final BaseNavigationTreeView list, final TreeDataSource ds) {
         // TODO this is a temporary create button, it is to redesign.
         Button createButton = new Button("+", new ClickListener() {
 
-            @SuppressWarnings("unused")
             @Override
             public void buttonClick(ClickEvent event) {
-                CreateGroupView view = new CreateGroupView(treeBuilder);
+                CreateGroupView view = new CreateGroupView(mainWindow, treeBuilder, repositories.group(), ds);
                 view.buildContentPanel();
                 router.openTab(view, ViewConstants.CREATE_A_NEW_GROUP);
             }
