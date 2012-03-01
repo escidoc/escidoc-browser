@@ -100,7 +100,13 @@ public class BaseNavigationTreeView extends VerticalLayout implements Navigation
         tree.addActionHandler(handler);
     }
 
+    @Override
     public Container getDataSource() {
         return dataSource.getContainer();
+    }
+
+    @Override
+    public void setClickListener(ItemClickListener clickListener) {
+        throw new UnsupportedOperationException("not-yet-implemented.");
     }
 }

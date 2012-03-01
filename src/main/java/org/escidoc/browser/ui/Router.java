@@ -71,17 +71,7 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class Router {
 
-    private static final String ITEM_CONTROLLER_ID = "org.escidoc.browser.Item";
-
-    private static final String CONTAINER_CONTROLLER_ID = "org.escidoc.browser.Container";
-
-    private static final String CONTEXT_CONTROLLER_ID = "org.escidoc.browser.Context";
-
-    private static final String ORG_UNIT_CONTROLLER_ID = "org.escidoc.browser.OrgUnit";
-
-    private static final String USER_ACCOUNT_CONTROLLER_ID = "org.escidoc.browser.UserAccount";
-
-    private static final String CONTENT_MODEL_CONTROLLER_ID = "org.escidoc.browser.ContentModel";
+    private static final Logger LOG = LoggerFactory.getLogger(Router.class);
 
     private static final String FAIL_RETRIEVING_RESOURCE =
         "Cannot retrieve resource, or you don't have access to see this resource";
@@ -97,8 +87,6 @@ public class Router {
     private LayoutDesign layout;
 
     private Properties browserProperties;
-
-    private static final Logger LOG = LoggerFactory.getLogger(Router.class);
 
     /**
      * The mainWindow should be revised whether we need it or not the appHeight is the Height of the Application and I
@@ -360,24 +348,27 @@ public class Router {
         String controllerId = null;
         switch (type) {
             case CONTEXT:
-                controllerId = CONTEXT_CONTROLLER_ID;
+                controllerId = ControllerIdList.CONTEXT_CONTROLLER_ID;
                 break;
             case CONTAINER:
-                controllerId = CONTAINER_CONTROLLER_ID;
+                controllerId = ControllerIdList.CONTAINER_CONTROLLER_ID;
                 controllerId = findContollerId(clickedResource, controllerId);
                 break;
             case ITEM:
-                controllerId = ITEM_CONTROLLER_ID;
+                controllerId = ControllerIdList.ITEM_CONTROLLER_ID;
                 controllerId = findContollerId(clickedResource, controllerId);
                 break;
             case ORG_UNIT:
-                controllerId = ORG_UNIT_CONTROLLER_ID;
+                controllerId = ControllerIdList.ORG_UNIT_CONTROLLER_ID;
                 break;
             case USER_ACCOUNT:
-                controllerId = USER_ACCOUNT_CONTROLLER_ID;
+                controllerId = ControllerIdList.USER_ACCOUNT_CONTROLLER_ID;
                 break;
             case CONTENT_MODEL:
-                controllerId = CONTENT_MODEL_CONTROLLER_ID;
+                controllerId = ControllerIdList.CONTENT_MODEL_CONTROLLER_ID;
+                break;
+            case USER_GROUP:
+                controllerId = ControllerIdList.USER_GROUP_CONTROLLER_ID;
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown resource type: "
@@ -424,6 +415,8 @@ public class Router {
                 return repositories.user().findById(clickedResource.getId());
             case CONTENT_MODEL:
                 return repositories.contentModel().findById(clickedResource.getId());
+            case USER_GROUP:
+                return repositories.group().findById(clickedResource.getId());
             default:
                 throw new UnsupportedOperationException(clickedResource.getType() + " is unsupported");
         }

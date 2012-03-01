@@ -28,17 +28,19 @@
  */
 package org.escidoc.browser.ui.navigation;
 
-import org.escidoc.browser.model.PropertyId;
-import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.model.TreeDataSource;
-
 import com.google.common.base.Preconditions;
+
+import com.vaadin.data.Container;
 import com.vaadin.event.Action.Handler;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.ExpandListener;
+
+import org.escidoc.browser.model.PropertyId;
+import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.TreeDataSource;
 
 @SuppressWarnings("serial")
 public class ResourceTreeView extends CustomComponent implements NavigationTreeView {
@@ -121,5 +123,15 @@ public class ResourceTreeView extends CustomComponent implements NavigationTreeV
             return false;
         }
         return true;
+    }
+
+    @Override
+    public Container getDataSource() {
+        throw new UnsupportedOperationException("not-yet-implemented.");
+    }
+
+    @Override
+    public void setClickListener(@SuppressWarnings("unused") ItemClickListener clickListener) {
+        throw new UnsupportedOperationException("not-yet-implemented.");
     }
 }

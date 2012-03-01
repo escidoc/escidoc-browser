@@ -29,10 +29,10 @@ import org.escidoc.browser.ui.orgunit.OrgUnitTreeView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
-import de.escidoc.core.resources.aa.usergroup.UserGroup;
 
 @SuppressWarnings("serial")
 public class CreateGroupView extends View {
@@ -47,7 +47,7 @@ public class CreateGroupView extends View {
 
     private GroupRepository r;
 
-    private List<ResourceModel> list;
+    private List<ResourceModel> list = new ArrayList<ResourceModel>();
 
     private TreeDataSource ds;
 

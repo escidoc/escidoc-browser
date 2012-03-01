@@ -59,7 +59,8 @@ public class GroupRepository implements Repository {
 
     @Override
     public ResourceProxy findById(String id) throws EscidocClientException {
-        throw new UnsupportedOperationException("not-yet-implemented.");
+        UserGroup userGroup = c.retrieve(id);
+        return new UserGroupModel(userGroup);
     }
 
     @Override
@@ -87,18 +88,22 @@ public class GroupRepository implements Repository {
         throw new UnsupportedOperationException("not-yet-implemented.");
     }
 
-    public UserGroup createGroup(String name, List list) throws EscidocClientException {
+    public UserGroup createGroup(String name, List<ResourceModel> list) throws EscidocClientException {
         UserGroup ug = new UserGroup();
 
         addProperties(name, ug);
 
         Selectors s = new Selectors();
-        s.add(new Selector(FIZ_OU_ID, ORGANIZATIONL_UNIT, SelectorType.INTERNAL));
+        for (ResourceModel rm : list) {
+            s.add(new Selector(rm.getId(), ORGANIZATIONL_UNIT, SelectorType.INTERNAL));
+        }
         ug.setSelectors(s);
 
         UserGroup created = c.create(ug);
 
         TaskParam tp = new TaskParam();
+        tp.setLastModificationDate(created.getLastModificationDate());
+
         c.addSelectors(created, tp);
         LOG.debug("A user group is created with an id: " + created.getObjid());
         return created;
