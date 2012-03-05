@@ -38,7 +38,7 @@ public abstract class AbstractResourceModel implements ResourceModel {
 
     private final String name;
 
-    private final Resource resource;
+    private Resource resource;
 
     public AbstractResourceModel(final Resource resource) {
         Preconditions.checkNotNull(resource, "resource is null: %s", resource);

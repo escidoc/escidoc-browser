@@ -38,6 +38,7 @@ import org.escidoc.browser.repository.IngestRepository;
 import org.escidoc.browser.repository.PdpRepository;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.Repository;
+import org.escidoc.browser.repository.RoleRepository;
 import org.escidoc.browser.repository.StagingRepository;
 
 import java.net.MalformedURLException;
@@ -70,11 +71,14 @@ public class RepositoriesImpl implements Repositories {
 
     private OrganizationUnitRepository orgUnitRepository;
 
+    private RoleRepository roleRepository;
+
     public RepositoriesImpl(final EscidocServiceLocation serviceLocation) {
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         this.serviceLocation = serviceLocation;
     }
 
+    // TODO find a better way to make this code simpler. Too much repetition.
     public Repositories createAllRepositories() throws MalformedURLException {
         contextRepository = new ContextRepository(serviceLocation);
         containerRepository = new ContainerRepository(serviceLocation);
@@ -86,6 +90,7 @@ public class RepositoriesImpl implements Repositories {
         adminRepository = new AdminRepository(serviceLocation);
         ingestRepository = new IngestRepository(serviceLocation);
         orgUnitRepository = new OrganizationUnitRepository(serviceLocation);
+        roleRepository = new RoleRepository(serviceLocation);
         bulkRepo =
             new BulkRepository(contextRepository, containerRepository, itemRepository, contentModelRepository,
                 orgUnitRepository, userAccountRepository);
@@ -104,6 +109,7 @@ public class RepositoriesImpl implements Repositories {
         ingestRepository.loginWith(token);
         orgUnitRepository.loginWith(token);
         contentModelRepository.loginWith(token);
+        roleRepository.loginWith(token);
     }
 
     @Override
@@ -189,5 +195,11 @@ public class RepositoriesImpl implements Repositories {
             default:
                 throw new UnsupportedOperationException("Not yet implemented " + type);
         }
+    }
+
+    @Override
+    public RoleRepository role() {
+        Preconditions.checkNotNull(roleRepository, "roleRepository is null: %s", roleRepository);
+        return roleRepository;
     }
 }

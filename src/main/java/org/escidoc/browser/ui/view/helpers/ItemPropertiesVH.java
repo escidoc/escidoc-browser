@@ -227,7 +227,7 @@ public class ItemPropertiesVH {
 	}
 
 	private void bindNametoHeader() {
-		nameLabel = new Label(ViewConstants.RESOURCE_NAME
+		nameLabel = new Label(ViewConstants.ITEM_LABEL
 				+ resourceProxy.getName());
 		nameLabel.setDescription("header");
 		nameLabel.setStyleName("h2 fullwidth");
