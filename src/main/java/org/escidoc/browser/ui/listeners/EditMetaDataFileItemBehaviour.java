@@ -38,7 +38,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.ItemView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -92,10 +91,8 @@ public class EditMetaDataFileItemBehaviour implements ClickListener {
 
     private Element metadataContent;
 
-    private ItemView itemView;
-
     public EditMetaDataFileItemBehaviour(final MetadataRecord metadataRecord, final Window mainWindow,
-        final Repositories repositories, final ResourceProxy resourceProxy, ItemView itemView) {
+        final Repositories repositories, final ResourceProxy resourceProxy) {
         Preconditions.checkNotNull(metadataRecord, "metadataRecord is null: %s", metadataRecord);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
@@ -104,7 +101,6 @@ public class EditMetaDataFileItemBehaviour implements ClickListener {
         this.mainWindow = mainWindow;
         this.repositories = repositories;
         this.resourceProxy = resourceProxy;
-        this.itemView = itemView;
 
     }
 
@@ -113,7 +109,7 @@ public class EditMetaDataFileItemBehaviour implements ClickListener {
         showWindow();
     }
 
-    private void showWindow() {
+    public void showWindow() {
         final Window subwindow = new Window(ViewConstants.EDIT_METADATA);
         subwindow.setWidth("600px");
         subwindow.setModal(true);
@@ -191,7 +187,6 @@ public class EditMetaDataFileItemBehaviour implements ClickListener {
                     item = repositories.item().findItemById(resourceProxy.getId());
                     metadataRecord.setContent(metadataContent);
                     repositories.item().updateMetaData(metadataRecord, item);
-                    itemView.reloadView();
                     upload.setEnabled(true);
                 }
                 catch (final EscidocClientException e) {

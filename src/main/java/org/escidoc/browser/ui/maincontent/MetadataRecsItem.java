@@ -28,18 +28,17 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import java.net.URISyntaxException;
-
+import org.escidoc.browser.controller.ItemController;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.AddMetaDataFileItemBehaviour;
 import org.escidoc.browser.ui.listeners.EditMetaDataFileItemBehaviour;
 import org.escidoc.browser.ui.listeners.RelationsClickListener;
 import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
+import org.escidoc.browser.ui.view.helpers.ItemMetadataTableVH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,9 +56,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 
-import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
-import de.escidoc.core.resources.common.MetadataRecords;
 
 public class MetadataRecsItem {
 
@@ -79,18 +76,18 @@ public class MetadataRecsItem {
 
     private final Router router;
 
-    private ItemView itemView;
+    private ItemController itemController;
 
     MetadataRecsItem(final ItemProxy resourceProxy, final Repositories repositories, final Router router,
-        ItemView itemView) {
+        ItemController controller) {
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null.");
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         this.router = router;
         this.resourceProxy = resourceProxy;
         this.mainWindow = router.getMainWindow();
         this.repositories = repositories;
+        this.itemController = controller;
         this.escidocServiceLocation = router.getServiceLocation();
-        this.itemView = itemView;
 
     }
 
@@ -143,31 +140,27 @@ public class MetadataRecsItem {
 
     private Panel lblMetadaRecs() {
         pnl.setSizeFull();
-        VerticalLayout hl = new VerticalLayout();
-        hl.setSizeFull();
+        VerticalLayout vl = new VerticalLayout();
+        vl.setSizeFull();
         final CssLayout cssLayout = new CssLayout();
         cssLayout.setHeight("20px");
         buildPanelHeader(cssLayout, ViewConstants.METADATA);
         ThemeResource ICON = new ThemeResource("images/assets/plus.png");
 
-        final MetadataRecords mdRecs = resourceProxy.getMedataRecords();
-        for (final MetadataRecord metadataRecord : mdRecs) {
-            buildMDButtons(btnaddContainer, metadataRecord);
-        }
-        if (hasAccess()) {
+        ItemMetadataTableVH metadataItem = new ItemMetadataTableVH(itemController, router, resourceProxy, repositories);
+        if (itemController.hasAccess()) {
             final Button btnAddNew = new Button();
-            btnAddNew.addListener(new AddMetaDataFileItemBehaviour(mainWindow, repositories, resourceProxy, this));
+            btnAddNew.addListener(new AddMetaDataFileItemBehaviour(mainWindow, repositories, resourceProxy));
             btnAddNew.setStyleName(BaseTheme.BUTTON_LINK);
             btnAddNew.addStyleName("floatright paddingtop3");
             btnAddNew.setWidth("20px");
             btnAddNew.setIcon(ICON);
             cssLayout.addComponent(btnAddNew);
         }
-        hl.addComponent(cssLayout);
-        hl.addComponent(new Label("&nbsp;", Label.CONTENT_RAW));
-        hl.addComponent(btnaddContainer);
-        hl.setExpandRatio(btnaddContainer, 9f);
-        pnl.setContent(hl);
+        vl.addComponent(cssLayout);
+        vl.addComponent(metadataItem);
+        vl.setExpandRatio(metadataItem, 9f);
+        pnl.setContent(vl);
         return pnl;
     }
 
@@ -201,10 +194,10 @@ public class MetadataRecsItem {
         btnmdRec.setDescription("Show metadata information in a separate window");
         hl.addComponent(btnmdRec);
         hl.addComponent(new Label("&nbsp; | &nbsp;", Label.CONTENT_RAW));
-        if (hasAccess()) {
+        if (itemController.hasAccess()) {
             final Button btnEditActualMetaData =
                 new Button("edit", new EditMetaDataFileItemBehaviour(metadataRecord, mainWindow, repositories,
-                    resourceProxy, itemView));
+                    resourceProxy));
             btnEditActualMetaData.setStyleName(BaseTheme.BUTTON_LINK);
             btnEditActualMetaData.setDescription("Replace the metadata with a new content file");
             // btnEditActualMetaData.setIcon(new ThemeResource("../myTheme/runo/icons/16/reload.png"));
@@ -223,19 +216,4 @@ public class MetadataRecsItem {
         buildMDButtons(btnaddContainer, metadataRecord);
     }
 
-    private boolean hasAccess() {
-        try {
-            return repositories
-                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_ITEM).forResource(resourceProxy.getId())
-                .permitted();
-        }
-        catch (final EscidocClientException e) {
-            LOG.debug(e.getLocalizedMessage());
-            return false;
-        }
-        catch (final URISyntaxException e) {
-            LOG.debug(e.getLocalizedMessage());
-            return false;
-        }
-    }
 }

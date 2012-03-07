@@ -28,6 +28,21 @@
  */
 package org.escidoc.browser.ui.listeners;
 
+import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.maincontent.XmlUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
+
 import com.vaadin.terminal.UserError;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -43,22 +58,6 @@ import com.vaadin.ui.Upload.FinishedEvent;
 import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Window;
-
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.MetadataRecsItem;
-import org.escidoc.browser.ui.maincontent.XmlUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
-
-import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
@@ -88,14 +87,11 @@ public class AddMetaDataFileItemBehaviour implements ClickListener {
 
     private TextField mdName;
 
-    private final MetadataRecsItem metadataRecs;
-
     public AddMetaDataFileItemBehaviour(final Window mainWindow, final Repositories repositories,
-        final ResourceProxy resourceProxy, final MetadataRecsItem metadataRecs) {
+        final ResourceProxy resourceProxy) {
         this.mainWindow = mainWindow;
         this.repositories = repositories;
         this.resourceProxy = resourceProxy;
-        this.metadataRecs = metadataRecs;
     }
 
     @Override
@@ -103,7 +99,7 @@ public class AddMetaDataFileItemBehaviour implements ClickListener {
         showAddWindow();
     }
 
-    private void showAddWindow() {
+    public void showAddWindow() {
         final Window subwindow = new Window(ViewConstants.ADD_ITEM_S_METADATA);
         subwindow.setWidth("600px");
         subwindow.setModal(true);
@@ -210,7 +206,6 @@ public class AddMetaDataFileItemBehaviour implements ClickListener {
                             item = repositories.item().findItemById(resourceProxy.getId());
                             metadataRecord.setContent(getMetadataContent());
                             repositories.item().addMetaData(metadataRecord, item);
-                            metadataRecs.addButtons(metadataRecord);
                             upload.setEnabled(true);
                             subwindow.getParent().removeWindow(subwindow);
                         }

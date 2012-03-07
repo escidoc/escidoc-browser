@@ -28,7 +28,7 @@
  */
 package org.escidoc.browser.controller;
 
-import com.vaadin.ui.Window;
+import java.net.URISyntaxException;
 
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.ItemProxyImpl;
@@ -37,8 +37,10 @@ import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.maincontent.ItemView;
 import org.escidoc.browser.ui.view.helpers.ItemComponentsView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.net.URISyntaxException;
+import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -46,6 +48,8 @@ public class ItemController extends Controller {
 
     @SuppressWarnings("unused")
     private ItemProxyImpl itemProxy;
+
+    private static final Logger LOG = LoggerFactory.getLogger(ItemController.class);
 
     public ItemController(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
@@ -91,4 +95,31 @@ public class ItemController extends Controller {
         }
 
     }
+
+    public void removeMetadata(String mdId) {
+        try {
+            repositories.item().removeMetadata(resourceProxy.getId(), mdId);
+            showTrayMessage("Removed!", "Metadata " + mdId + " was removed successfully!");
+        }
+        catch (EscidocClientException e) {
+            showError("Unable to remove metadata " + e.getLocalizedMessage());
+        }
+    }
+
+    public boolean hasAccess() {
+        try {
+            return repositories
+                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_ITEM).forResource(resourceProxy.getId())
+                .permitted();
+        }
+        catch (final EscidocClientException e) {
+            LOG.debug(e.getLocalizedMessage());
+            return false;
+        }
+        catch (final URISyntaxException e) {
+            LOG.debug(e.getLocalizedMessage());
+            return false;
+        }
+    }
+
 }
