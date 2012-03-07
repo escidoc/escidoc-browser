@@ -521,4 +521,5 @@ public class Router {
     public BrowserApplication getApp() {
         return this.app;
     }
+
 }

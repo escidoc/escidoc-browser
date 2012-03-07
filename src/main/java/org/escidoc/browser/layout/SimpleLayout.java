@@ -38,6 +38,8 @@ import com.vaadin.terminal.Resource;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -59,12 +61,15 @@ import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.TreeDataSourceImpl;
 import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.mainpage.Footer;
 import org.escidoc.browser.ui.mainpage.HeaderContainer;
+import org.escidoc.browser.ui.navigation.BaseNavigationTreeView;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.navigation.NavigationTreeView;
+import org.escidoc.browser.ui.role.RoleAssignView;
 import org.escidoc.browser.ui.tools.ToolsTreeView;
 import org.escidoc.browser.ui.view.helpers.CloseTabsViewHelper;
 import org.slf4j.Logger;
@@ -136,7 +141,7 @@ public class SimpleLayout extends LayoutDesign {
     }
 
     @Override
-    public void openView(final Component cmp, String tabname) {
+    public void openView(final Component component, String tabname) {
         final String description = tabname;
         final int p = tabname.lastIndexOf('#');
         // FIXME parameter should not be reassigned.
@@ -148,10 +153,10 @@ public class SimpleLayout extends LayoutDesign {
             tabname = tabname.substring(0, 50) + "...";
         }
 
-        final Tab tb = mainContentTabs.addTab(cmp);
+        final Tab tb = mainContentTabs.addTab(component);
         tb.setDescription(description);
         tb.setCaption(tabname);
-        mainContentTabs.setSelectedTab(cmp);
+        mainContentTabs.setSelectedTab(component);
         tb.setClosable(true);
     }
 
@@ -347,10 +352,31 @@ public class SimpleLayout extends LayoutDesign {
         addResourcesTab(accordion);
         addOrgUnitTab(accordion);
         addUserAccountsTab(accordion);
+        addRolesTab(accordion);
         addContentModelsTab(accordion);
         addToolsTab(accordion);
 
         return accordion;
+    }
+
+    private void addRolesTab(Accordion accordion) throws EscidocClientException, URISyntaxException {
+        if (isAssignRoleAllowed()) {
+            accordion.addTab(new Button(ViewConstants.ASSIGN_ROLES, new Button.ClickListener() {
+
+                @Override
+                public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
+                    final RoleAssignView component = new RoleAssignView(mainWindow, repositories);
+                    component.init();
+                    router.openTab(component, ViewConstants.ROLE_MANAGEMENT);
+                }
+            }));
+        }
+    }
+
+    private boolean isAssignRoleAllowed() throws EscidocClientException, URISyntaxException {
+        return repositories
+            .pdp().forCurrentUser().isAction(ActionIdConstants.CREATE_GRANT).forResource(AppConstants.EMPTY_STRING)
+            .permitted();
     }
 
     private void addUserAccountsTab(Accordion accordion) {

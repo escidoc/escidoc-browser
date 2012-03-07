@@ -26,7 +26,7 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.layout;
+package org.escidoc.browser.ui.navigation;
 
 import com.google.common.base.Preconditions;
 
@@ -41,7 +41,6 @@ import com.vaadin.ui.VerticalLayout;
 import org.escidoc.browser.model.PropertyId;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.TreeDataSource;
-import org.escidoc.browser.ui.navigation.NavigationTreeView;
 import org.escidoc.browser.ui.orgunit.Reloadable;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;

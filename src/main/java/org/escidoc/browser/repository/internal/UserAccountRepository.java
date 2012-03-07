@@ -34,12 +34,18 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.model.UserModel;
 import org.escidoc.browser.model.internal.UserProxy;
 import org.escidoc.browser.repository.Repository;
+import org.escidoc.browser.repository.RoleRepository.RoleModel;
 import org.escidoc.browser.ui.helper.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
 import java.util.List;
+import java.util.Set;
 
 import de.escidoc.core.client.UserAccountHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -48,17 +54,31 @@ import de.escidoc.core.client.interfaces.UserAccountHandlerClientInterface;
 import de.escidoc.core.client.rest.RestContentModelHandlerClient;
 import de.escidoc.core.resources.aa.useraccount.Attribute;
 import de.escidoc.core.resources.aa.useraccount.Attributes;
+import de.escidoc.core.resources.aa.useraccount.Grant;
+import de.escidoc.core.resources.aa.useraccount.GrantProperties;
 import de.escidoc.core.resources.aa.useraccount.Preference;
 import de.escidoc.core.resources.aa.useraccount.Preferences;
 import de.escidoc.core.resources.aa.useraccount.UserAccount;
 import de.escidoc.core.resources.aa.useraccount.UserAccountProperties;
 import de.escidoc.core.resources.common.Relations;
 import de.escidoc.core.resources.common.TaskParam;
+import de.escidoc.core.resources.common.reference.ContainerRef;
+import de.escidoc.core.resources.common.reference.ContextRef;
+import de.escidoc.core.resources.common.reference.ItemRef;
+import de.escidoc.core.resources.common.reference.Reference;
+import de.escidoc.core.resources.common.reference.RoleRef;
+import de.escidoc.core.resources.common.reference.UserAccountRef;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 
 public class UserAccountRepository implements Repository {
 
+    private final static Logger LOG = LoggerFactory.getLogger(UserAccountRepository.class);
+
     private final UserAccountHandlerClientInterface client;
+
+    private UserModel user;
+
+    private GrantProperties grantProps;
 
     public UserAccountRepository(final EscidocServiceLocation escidocServiceLocation) throws MalformedURLException {
         Preconditions
@@ -185,5 +205,56 @@ public class UserAccountRepository implements Repository {
     @Override
     public String getAsXmlString(String id) throws EscidocClientException {
         return new RestContentModelHandlerClient(client.getServiceAddress()).retrieve(id);
+    }
+
+    public UserAccountRepository assign(UserModel user) {
+        if (user == null) {
+            throw new IllegalArgumentException("UserAccount can not be null.");
+        }
+        this.user = user;
+        return this;
+    }
+
+    public UserAccountRepository withRole(RoleModel role) {
+        Preconditions.checkNotNull(role, "role is null: %s", role);
+        Preconditions.checkNotNull(user, "user is null: %s", user);
+        grantProps = new GrantProperties();
+        grantProps.setRole(new RoleRef(role.getId()));
+        return this;
+    }
+
+    public UserAccountRepository onResources(Set<ResourceModel> resources) {
+        for (final ResourceModel rm : resources) {
+            ResourceType type = rm.getType();
+            Reference ref = null;
+
+            switch (type) {
+                case CONTEXT:
+                    ref = new ContextRef(rm.getId());
+                    break;
+                case CONTAINER:
+                    ref = new ContainerRef(rm.getId());
+                    break;
+                case ITEM:
+                    ref = new ItemRef(rm.getId());
+                    break;
+                case USER_ACCOUNT:
+                    ref = new UserAccountRef(rm.getId());
+                    break;
+                default:
+                    break;
+            }
+
+            grantProps.setAssignedOn(ref);
+        }
+        return this;
+    }
+
+    public Grant execute() throws EscidocClientException {
+        final Grant grant = new Grant();
+        grant.setProperties(grantProps);
+        Grant createdGrant = client.createGrant(user.getId(), grant);
+        LOG.debug("Grant created: " + createdGrant.getObjid());
+        return createdGrant;
     }
 }
