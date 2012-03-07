@@ -199,4 +199,11 @@ public class OrganizationUnitRepository implements Repository {
         ou.setMetadataRecords(mdRecords);
         return client.update(ou);
     }
+
+    public void open(OrganizationalUnit oU) throws EscidocClientException {
+        final TaskParam taskParam = new TaskParam();
+        taskParam.setLastModificationDate(oU.getLastModificationDate());
+        taskParam.setComment("Initially Open");
+        client.open(oU, taskParam);
+    }
 }

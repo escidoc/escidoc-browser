@@ -16,4 +16,7 @@ public class ControllerIdList {
     static final String CONTENT_MODEL_CONTROLLER_ID = "org.escidoc.browser.ContentModel";
 
     static final String USER_GROUP_CONTROLLER_ID = "org.escidoc.browser.UserGroup";
+
+    static final String INVESTIGATION_CONTROLLER_ID = "org.escidoc.bwelabs.Investigation";
+
 }

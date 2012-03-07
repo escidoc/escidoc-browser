@@ -39,6 +39,7 @@ import org.escidoc.browser.repository.IngestRepository;
 import org.escidoc.browser.repository.PdpRepository;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.Repository;
+import org.escidoc.browser.repository.RoleRepository;
 import org.escidoc.browser.repository.StagingRepository;
 
 import java.net.MalformedURLException;
@@ -71,7 +72,7 @@ public class RepositoriesImpl implements Repositories {
 
     private OrganizationUnitRepository orgUnitRepository;
 
-    private GroupRepository gr;
+    private RoleRepository roleRepository;
 
     private GroupRepository groupRepository;
 
@@ -80,6 +81,7 @@ public class RepositoriesImpl implements Repositories {
         this.serviceLocation = serviceLocation;
     }
 
+    // TODO find a better way to make this code simpler. Too much repetition.
     public Repositories createAllRepositories() throws MalformedURLException {
         contextRepository = new ContextRepository(serviceLocation);
         containerRepository = new ContainerRepository(serviceLocation);
@@ -92,6 +94,7 @@ public class RepositoriesImpl implements Repositories {
         ingestRepository = new IngestRepository(serviceLocation);
         orgUnitRepository = new OrganizationUnitRepository(serviceLocation);
         groupRepository = new GroupRepository(serviceLocation);
+        roleRepository = new RoleRepository(serviceLocation);
         bulkRepo =
             new BulkRepository(contextRepository, containerRepository, itemRepository, contentModelRepository,
                 orgUnitRepository, userAccountRepository);
@@ -111,6 +114,7 @@ public class RepositoriesImpl implements Repositories {
         orgUnitRepository.loginWith(token);
         contentModelRepository.loginWith(token);
         groupRepository.loginWith(token);
+        roleRepository.loginWith(token);
     }
 
     @Override
@@ -199,6 +203,11 @@ public class RepositoriesImpl implements Repositories {
     }
 
     @Override
+    public RoleRepository role() {
+        Preconditions.checkNotNull(roleRepository, "roleRepository is null: %s", roleRepository);
+        return roleRepository;
+    }
+        
     public GroupRepository group() {
         return groupRepository;
     }

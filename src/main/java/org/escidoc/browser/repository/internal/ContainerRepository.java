@@ -28,7 +28,10 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import com.google.common.base.Preconditions;
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
@@ -42,8 +45,7 @@ import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.helper.Util;
 import org.escidoc.browser.util.Utils;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.base.Preconditions;
 
 import de.escidoc.core.client.ContainerHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -60,7 +62,6 @@ import de.escidoc.core.resources.common.TaskParam;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.sb.search.SearchResultRecord;
-import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 public class ContainerRepository implements Repository {
 
@@ -270,5 +271,16 @@ public class ContainerRepository implements Repository {
     @Override
     public String getAsXmlString(final String id) throws EscidocClientException {
         return new RestContainerHandlerClient(client.getServiceAddress()).retrieve(id);
+    }
+
+    public void removeMetadata(String id, String mdId) throws EscidocClientException {
+        Container container = client.retrieve(id);
+
+        final MetadataRecords containerMetadataList = container.getMetadataRecords();
+        containerMetadataList.del(mdId);
+        container.setMetadataRecords(containerMetadataList);
+
+        client.update(container);
+
     }
 }

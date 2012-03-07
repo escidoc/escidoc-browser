@@ -28,7 +28,9 @@
  */
 package org.escidoc.browser.controller;
 
-import com.google.common.base.Preconditions;
+import java.io.IOException;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.escidoc.browser.model.ContentModelService;
 import org.escidoc.browser.model.EscidocServiceLocation;
@@ -43,9 +45,7 @@ import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.tools.CreateResourcesView;
 import org.xml.sax.SAXException;
 
-import java.io.IOException;
-
-import javax.xml.parsers.ParserConfigurationException;
+import com.google.common.base.Preconditions;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.aa.useraccount.UserAccount;
@@ -55,6 +55,7 @@ import de.escidoc.core.resources.cmm.ContentModelProperties;
 import de.escidoc.core.resources.common.reference.OrganizationalUnitRef;
 import de.escidoc.core.resources.om.context.Context;
 import de.escidoc.core.resources.om.context.OrganizationalUnitRefs;
+import de.escidoc.core.resources.oum.OrganizationalUnit;
 
 public class CreateResourcesController extends Controller {
 
@@ -71,8 +72,9 @@ public class CreateResourcesController extends Controller {
     }
 
     public void createResourceAddOrgUnit(
-        final String name, final String description, final Router router, final EscidocServiceLocation serviceLocation)
-        throws EscidocClientException, ParserConfigurationException, SAXException, IOException {
+        final String name, final String description, Boolean openedOu, final Router router,
+        final EscidocServiceLocation serviceLocation) throws EscidocClientException, ParserConfigurationException,
+        SAXException, IOException {
         Preconditions.checkNotNull(name, "Name of Context is Null");
         Preconditions.checkNotNull(description, "txtDescContext is Null");
 
@@ -81,7 +83,15 @@ public class CreateResourcesController extends Controller {
         final OrgUnitService orgService =
             new OrgUnitService(serviceLocation.getEscidocUri(), router.getApp().getCurrentUser().getToken());
 
-        orgService.create(orgBuilder.with(name, description).build());
+        OrganizationalUnit OU = orgService.create(orgBuilder.with(name, description).build());
+
+        if (openedOu) {
+            repositories.organization().open(OU);
+        }
+        getRouter()
+            .openControllerView(
+                new OrgUnitController(repositories, getRouter(), repositories.organization().findById(OU.getObjid())),
+                true);
     }
 
     public void createResourceAddContentModel(

@@ -30,6 +30,7 @@ package org.escidoc.browser.ui.maincontent;
 
 import java.net.URISyntaxException;
 
+import org.escidoc.browser.controller.ContainerController;
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
@@ -107,8 +108,11 @@ public class ContainerView extends View {
 
     private static final Logger LOG = LoggerFactory.getLogger(ContainerView.class);
 
-    public ContainerView(final Router router, final ResourceProxy resourceProxy, final Repositories repositories)
-        throws EscidocClientException {
+    private final ContainerController containerController;
+
+    public ContainerView(final Router router, final ResourceProxy resourceProxy, final Repositories repositories,
+        ContainerController containerController) throws EscidocClientException {
+        this.containerController = containerController;
         Preconditions.checkNotNull(router, "Router is null: %s", router);
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         Preconditions.checkArgument(resourceProxy instanceof ContainerProxy, resourceProxy.getClass()
@@ -220,7 +224,8 @@ public class ContainerView extends View {
         vlRightPanel.setMargin(false);
 
         // metaDataRecsAcc
-        Panel metaDataRecsAcc = new ContainerMetadataRecordsView(resourceProxy, repositories, router, this).asPanel();
+        Panel metaDataRecsAcc =
+            new ContainerMetadataRecordsView(resourceProxy, repositories, router, this, containerController).asPanel();
         vlRightPanel.addComponent(metaDataRecsAcc);
         return vlRightPanel;
     }

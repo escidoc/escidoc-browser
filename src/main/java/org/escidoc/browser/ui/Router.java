@@ -351,12 +351,10 @@ public class Router {
                 controllerId = ControllerIdList.CONTEXT_CONTROLLER_ID;
                 break;
             case CONTAINER:
-                controllerId = ControllerIdList.CONTAINER_CONTROLLER_ID;
-                controllerId = findContollerId(clickedResource, controllerId);
+                controllerId = findIdForContainer(clickedResource);
                 break;
             case ITEM:
-                controllerId = ControllerIdList.ITEM_CONTROLLER_ID;
-                controllerId = findContollerId(clickedResource, controllerId);
+                controllerId = findIdForItem(clickedResource);
                 break;
             case ORG_UNIT:
                 controllerId = ControllerIdList.ORG_UNIT_CONTROLLER_ID;
@@ -379,6 +377,20 @@ public class Router {
         return controllerId;
     }
 
+    private String findIdForContainer(final ResourceModel clickedResource) throws EscidocClientException {
+        String controllerId;
+        controllerId = ControllerIdList.CONTAINER_CONTROLLER_ID;
+        controllerId = findContollerId(clickedResource, controllerId);
+        return controllerId;
+    }
+
+    private String findIdForItem(final ResourceModel clickedResource) throws EscidocClientException {
+        String controllerId;
+        controllerId = ControllerIdList.ITEM_CONTROLLER_ID;
+        controllerId = findContollerId(clickedResource, controllerId);
+        return controllerId;
+    }
+
     private String findContollerId(final ResourceModel clickedResource, final String oldId)
         throws EscidocClientException {
 
@@ -390,7 +402,12 @@ public class Router {
         final Matcher controllerIdMatcher =
             Pattern.compile("org.escidoc.browser.Controller=([^;]*);").matcher(contentModelDescription);
         if (controllerIdMatcher.find()) {
-            return controllerIdMatcher.group(1);
+            String id = controllerIdMatcher.group(1);
+            if (id.equals(ControllerIdList.INVESTIGATION_CONTROLLER_ID)
+                && !clickedResource.getType().equals(ResourceType.CONTAINER)) {
+                return oldId;
+            }
+            return id;
         }
 
         return oldId;
@@ -496,4 +513,5 @@ public class Router {
     public BrowserApplication getApp() {
         return this.app;
     }
+
 }

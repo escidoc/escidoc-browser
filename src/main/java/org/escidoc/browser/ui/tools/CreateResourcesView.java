@@ -28,8 +28,16 @@
  */
 package org.escidoc.browser.ui.tools;
 
-import com.google.common.base.Preconditions;
+import java.util.Collection;
 
+import org.escidoc.browser.controller.CreateResourcesController;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.internal.OrgUnitService;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.maincontent.View;
+
+import com.google.common.base.Preconditions;
 import com.vaadin.data.Validator.EmptyValueException;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
@@ -43,15 +51,6 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
-
-import org.escidoc.browser.controller.CreateResourcesController;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.repository.internal.OrgUnitService;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.View;
-
-import java.util.Collection;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.oum.OrganizationalUnit;
@@ -139,9 +138,9 @@ public class CreateResourcesView extends View {
         // vlPnlCreateOrgUnit
         final VerticalLayout layout = new VerticalLayout();
         layout.setImmediate(false);
-        layout.setWidth("100.0%");
-        layout.setHeight("100.0%");
+        layout.setSizeUndefined();
         layout.setMargin(false);
+
         formAddUser(layout);
         add.addTab(layout, "Create User Account");
 
@@ -252,8 +251,6 @@ public class CreateResourcesView extends View {
         // vlPnlCreateContext
         final VerticalLayout vlAccCreateContext = new VerticalLayout();
         vlAccCreateContext.setImmediate(false);
-        vlAccCreateContext.setWidth("100.0%");
-        vlAccCreateContext.setHeight("100.0%");
         vlAccCreateContext.setMargin(false);
         vlAccCreateContext.setSpacing(false);
         vlAccCreateContext.setSizeUndefined();
@@ -281,9 +278,9 @@ public class CreateResourcesView extends View {
         // vlPnlCreate
         final VerticalLayout vlAccCreate = new VerticalLayout();
         vlAccCreate.setImmediate(false);
-        vlAccCreate.setWidth("100.0%");
-        vlAccCreate.setHeight("100.0%");
         vlAccCreate.setMargin(false);
+        vlAccCreate.setSpacing(false);
+        vlAccCreate.setSizeUndefined();
         formAddContentModel(vlAccCreate);
         accCreateContentModel.addTab(vlAccCreate, "Create Content Model");
 
@@ -300,9 +297,9 @@ public class CreateResourcesView extends View {
         // vlPnlCreateOrgUnit
         final VerticalLayout vlAccCreateOrgUnit = new VerticalLayout();
         vlAccCreateOrgUnit.setImmediate(false);
-        vlAccCreateOrgUnit.setWidth("100.0%");
-        vlAccCreateOrgUnit.setHeight("100.0%");
         vlAccCreateOrgUnit.setMargin(false);
+        vlAccCreateOrgUnit.setSpacing(false);
+        vlAccCreateOrgUnit.setSizeUndefined();
         formAddOrgUnit(vlAccCreateOrgUnit);
         accCreateOrgUnit.addTab(vlAccCreateOrgUnit, "Create Organizational Units");
 
@@ -334,6 +331,10 @@ public class CreateResourcesView extends View {
         txtDescContext.setHeight("-1px");
         form.addField("txtDescContext", txtDescContext);
 
+        final CheckBox checkStatusOpened = new CheckBox("Create OrgUnit in Status opened?", true);
+        checkStatusOpened.setImmediate(true);
+        form.addField("checkStatusOpened", checkStatusOpened);
+
         // btnAddContext
         final Button btnAddContext = new Button("Submit", new Button.ClickListener() {
             private static final long serialVersionUID = -1373866726572059290L;
@@ -343,7 +344,8 @@ public class CreateResourcesView extends View {
                 try {
                     form.commit();
                     controller.createResourceAddOrgUnit(txtNameContext.getValue().toString(), txtDescContext
-                        .getValue().toString(), router, router.getServiceLocation());
+                        .getValue().toString(), (Boolean) checkStatusOpened.getValue(), router, router
+                        .getServiceLocation());
                     router.getMainWindow().showNotification(
                         "Organizational Unit " + txtNameContext.getValue().toString() + " created successfully ",
                         Window.Notification.TYPE_TRAY_NOTIFICATION);

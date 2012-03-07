@@ -32,7 +32,6 @@ import com.google.common.base.Preconditions;
 
 import com.vaadin.ui.Window;
 
-import org.escidoc.browser.layout.BaseNavigationTreeView;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.TreeDataSourceImpl;
 import org.escidoc.browser.repository.Repositories;

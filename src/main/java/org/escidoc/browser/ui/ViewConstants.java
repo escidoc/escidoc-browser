@@ -142,7 +142,7 @@ public class ViewConstants {
 
     public static final String LAST_MODIFIED_BY = "Last modification by";
 
-    public static final String RESOURCE_NAME = "Item: ";
+    public static final String ITEM_LABEL = "Item: ";
 
     public static final String CREATED_ON = "Created on ";
 
@@ -417,7 +417,18 @@ public class ViewConstants {
     public static final Object SYSADMIN = "sysadmin";
 
     public static final String User_Groups = "Groups";
+    
+    public static final String ROLE_MANAGEMENT = "Role Management";
 
     public static final String CREATE_A_NEW_GROUP = "Create a new Group";
+    
+    public static final String SEARCH_LABEL = "Search";
 
+    public static final String USER_NAME = "Login Name:";
+
+    public static final String SELECT_ROLE_LABEL = "Select Role";
+
+    public static final String ASSIGN_ROLES = "Assign Roles";
+
+    public static final String RESOURCE_NAME = "Resource Name: ";
 }

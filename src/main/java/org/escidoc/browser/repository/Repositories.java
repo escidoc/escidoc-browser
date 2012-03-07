@@ -68,4 +68,6 @@ public interface Repositories {
     Repository findByType(ResourceType type);
 
     GroupRepository group();
+    
+    RoleRepository role();
 }

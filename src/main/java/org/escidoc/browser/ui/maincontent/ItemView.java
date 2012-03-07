@@ -177,7 +177,7 @@ public final class ItemView extends View {
         vlRightPanel.setMargin(false);
 
         // metaDataRecsAcc
-        Panel metaDataRecsAcc = new MetadataRecsItem(resourceProxy, repositories, router, this).asPanel();
+        Panel metaDataRecsAcc = new MetadataRecsItem(resourceProxy, repositories, router, controller).asPanel();
         vlRightPanel.addComponent(metaDataRecsAcc);
         return vlRightPanel;
     }

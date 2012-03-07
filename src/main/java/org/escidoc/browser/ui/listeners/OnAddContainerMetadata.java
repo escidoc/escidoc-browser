@@ -28,6 +28,21 @@
  */
 package org.escidoc.browser.ui.listeners;
 
+import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.maincontent.XmlUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
+
 import com.vaadin.terminal.UserError;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -43,22 +58,6 @@ import com.vaadin.ui.Upload.FinishedEvent;
 import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Window;
-
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.ContainerMetadataRecordsView;
-import org.escidoc.browser.ui.maincontent.XmlUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
-
-import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
@@ -89,14 +88,11 @@ public class OnAddContainerMetadata implements ClickListener {
 
     private TextField mdName;
 
-    private final ContainerMetadataRecordsView containerMetadataRecordsView;
-
     public OnAddContainerMetadata(final Window mainWindow, final Repositories repositories,
-        final ResourceProxy resourceProxy, final ContainerMetadataRecordsView containerMetadataRecordsView) {
+        final ResourceProxy resourceProxy) {
         this.mainWindow = mainWindow;
         this.repositories = repositories;
         this.resourceProxy = resourceProxy;
-        this.containerMetadataRecordsView = containerMetadataRecordsView;
     }
 
     @Override
@@ -104,7 +100,7 @@ public class OnAddContainerMetadata implements ClickListener {
         showAddWindow();
     }
 
-    private void showAddWindow() {
+    public void showAddWindow() {
         final Window subwindow = new Window(ViewConstants.ADD_CONTAINER_S_METADATA);
         subwindow.setWidth("600px");
         subwindow.setModal(true);
@@ -159,7 +155,8 @@ public class OnAddContainerMetadata implements ClickListener {
 
         upload.addListener(new Upload.FailedListener() {
             @Override
-            public void uploadFailed(@SuppressWarnings("unused") final FailedEvent event) {
+            public void uploadFailed(@SuppressWarnings("unused")
+            final FailedEvent event) {
                 // This method gets called when the upload failed
                 status.setValue("Uploading interrupted");
             }
@@ -215,7 +212,7 @@ public class OnAddContainerMetadata implements ClickListener {
                             container = repositories.container().findContainerById(resourceProxy.getId());
                             metadataRecord.setContent(getMetadataContent());
                             repositories.container().addMetaData(metadataRecord, container);
-                            containerMetadataRecordsView.addButtons(metadataRecord);
+
                             upload.setEnabled(true);
                             subwindow.getParent().removeWindow(subwindow);
                         }
