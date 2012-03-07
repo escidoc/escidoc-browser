@@ -108,4 +108,21 @@ public class UserAccountPreferences extends TableContainerVH {
         return true;
     }
 
+    /**
+     * Just an initialization of the table. Should be overridden
+     */
+    protected void initializeTable() {
+        // size
+        table.setWidth("100%");
+        table.setHeight("170px");
+
+        // selectable
+        table.setSelectable(true);
+        table.setMultiSelect(true);
+        table.setImmediate(true); // react at once when something is selected
+        // turn on column reordering and collapsing
+        table.setColumnReorderingAllowed(true);
+        table.setColumnCollapsingAllowed(true);
+    }
+
 }

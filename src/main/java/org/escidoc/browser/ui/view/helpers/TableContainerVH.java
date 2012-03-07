@@ -123,7 +123,7 @@ public abstract class TableContainerVH extends VerticalLayout {
     protected void initializeTable() {
         // size
         table.setWidth("100%");
-        table.setHeight("170px");
+
         // selectable
         table.setSelectable(true);
         table.setMultiSelect(true);
