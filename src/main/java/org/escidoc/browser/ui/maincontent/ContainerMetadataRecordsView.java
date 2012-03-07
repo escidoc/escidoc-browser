@@ -28,23 +28,20 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import java.net.URISyntaxException;
-
+import org.escidoc.browser.controller.ContainerController;
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.listeners.EditMetaDataFileContainerBehaviour;
 import org.escidoc.browser.ui.listeners.OnAddContainerMetadata;
 import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
+import org.escidoc.browser.ui.view.helpers.ContainerMetadataTableVH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
-import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
@@ -52,17 +49,11 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Link;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
-
-import de.escidoc.core.client.exceptions.EscidocClientException;
-import de.escidoc.core.resources.common.MetadataRecord;
-import de.escidoc.core.resources.common.MetadataRecords;
 
 public class ContainerMetadataRecordsView {
 
@@ -88,9 +79,12 @@ public class ContainerMetadataRecordsView {
 
     private ContainerView containerView;
 
-    public ContainerMetadataRecordsView(final ResourceProxy resourceProxy, final Repositories repositories,
-        final Router router, ContainerView containerView) {
+    private final ContainerController containerController;
 
+    public ContainerMetadataRecordsView(final ResourceProxy resourceProxy, final Repositories repositories,
+        final Router router, ContainerView containerView, ContainerController containerController) {
+
+        this.containerController = containerController;
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(router, "mainSite is null: %s", router);
@@ -186,15 +180,9 @@ public class ContainerMetadataRecordsView {
         });
         cssLayout.addComponent(addResourceButton);
         hl.addComponent(cssLayout);
-        // final Button btnContentRelation =
-        // new Button("Container Content Relations", new RelationsClickListener(resourceProxy, mainWindow,
-        // escidocServiceLocation, repositories, router));
-        // btnContentRelation.setStyleName(BaseTheme.BUTTON_LINK);
-        // btnContentRelation.setDescription("Show Version history in a Pop-up");
 
         hl.addComponent(btnVersionHistoryContainer);
         pnl.setContent(hl);
-        // pnl.addComponent(btnContentRelation);
         return pnl;
     }
 
@@ -211,90 +199,31 @@ public class ContainerMetadataRecordsView {
 
     private Panel lblMetadaRecs() {
         panel.setSizeFull();
-        VerticalLayout hl = new VerticalLayout();
-        hl.setSizeFull();
+        VerticalLayout vl = new VerticalLayout();
+        vl.setSizeFull();
         final CssLayout cssLayout = new CssLayout();
         cssLayout.setHeight("20px");
         buildPanelHeader(cssLayout, ViewConstants.METADATA);
         ThemeResource ICON = new ThemeResource("images/assets/plus.png");
 
-        if (hasAccess()) {
+        if (containerController.hasAccess()) {
             final Button btnAddNew = new Button();
-            btnAddNew.addListener(new OnAddContainerMetadata(mainWindow, repositories, resourceProxy, this));
+            btnAddNew.addListener(new OnAddContainerMetadata(mainWindow, repositories, resourceProxy));
             btnAddNew.setStyleName(BaseTheme.BUTTON_LINK);
             btnAddNew.addStyleName("floatright paddingtop3");
             btnAddNew.setWidth("20px");
             btnAddNew.setIcon(ICON);
             cssLayout.addComponent(btnAddNew);
         }
-        hl.addComponent(cssLayout);
-        final MetadataRecords mdRecs = resourceProxy.getMedataRecords();
-        for (final MetadataRecord metadataRecord : mdRecs) {
-            buildMDButtons(btnaddContainer, metadataRecord);
-        }
-        hl.addComponent(new Label("&nbsp;", Label.CONTENT_RAW));
-        hl.addComponent(btnaddContainer);
-        hl.setComponentAlignment(btnaddContainer, Alignment.TOP_LEFT);
-        hl.setExpandRatio(btnaddContainer, 0.9f);
-        panel.setContent(hl);
+        vl.addComponent(cssLayout);
+        ContainerMetadataTableVH metadataTable =
+            new ContainerMetadataTableVH(containerController, router, resourceProxy, repositories);
+
+        vl.addComponent(metadataTable);
+        vl.setComponentAlignment(metadataTable, Alignment.TOP_LEFT);
+        vl.setExpandRatio(metadataTable, 0.9f);
+        panel.setContent(vl);
 
         return panel;
-    }
-
-    /**
-     * Create the buttons to be shown on the MetaDataRecords Accordion
-     * 
-     * @param panel
-     * @param metadataRecord
-     */
-    public void buildMDButtons(final VerticalLayout btnaddContainer, final MetadataRecord metadataRecord) {
-        final HorizontalLayout hl = new HorizontalLayout();
-        hl.setStyleName("metadata");
-        Link btnmdRec =
-            new Link(metadataRecord.getName(), new ExternalResource(escidocServiceLocation.getEscidocUri()
-                + metadataRecord.getXLinkHref()));
-        btnmdRec.setTargetName("_blank");
-        btnmdRec.setStyleName(BaseTheme.BUTTON_LINK);
-        btnmdRec.setDescription("Show metadata information in a separate window");
-        hl.addComponent(btnmdRec);
-
-        hl.addComponent(new Label("&nbsp; | &nbsp;", Label.CONTENT_RAW));
-
-        if (hasAccess()) {
-            final Button btnEditActualMetaData =
-                new Button("edit", new EditMetaDataFileContainerBehaviour(metadataRecord, router, repositories,
-                    resourceProxy, containerView));
-            btnEditActualMetaData.setStyleName(BaseTheme.BUTTON_LINK);
-            btnEditActualMetaData.setDescription("Replace the metadata with a new content file");
-            // btnEditActualMetaData.setIcon(new ThemeResource("../myTheme/runo/icons/16/reload.png"));
-            hl.addComponent(btnEditActualMetaData);
-        }
-
-        btnaddContainer.addComponent(hl);
-    }
-
-    /**
-     * Used to bind new buttons on the view Usually when adding a new record
-     * 
-     * @param metadataRecord
-     */
-    public void addButtons(final MetadataRecord metadataRecord) {
-        buildMDButtons(btnaddContainer, metadataRecord);
-    }
-
-    private boolean hasAccess() {
-        try {
-            return repositories
-                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER).forResource(resourceProxy.getId())
-                .permitted();
-        }
-        catch (final EscidocClientException e) {
-            LOG.debug(e.getLocalizedMessage());
-            return false;
-        }
-        catch (final URISyntaxException e) {
-            LOG.debug(e.getLocalizedMessage());
-            return false;
-        }
     }
 }

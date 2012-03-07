@@ -28,6 +28,25 @@
  */
 package org.escidoc.browser.ui.listeners;
 
+import java.io.IOException;
+import java.io.StringReader;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.escidoc.browser.controller.ContainerController;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -41,25 +60,6 @@ import com.vaadin.ui.Upload.FinishedEvent;
 import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Window;
-
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.ContainerView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-import java.io.IOException;
-import java.io.StringReader;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
@@ -92,15 +92,16 @@ public class EditMetaDataFileContainerBehaviour implements ClickListener {
 
     private Element metadataContent;
 
-    private ContainerView containerView;
+    private ContainerController containerController;
 
     public EditMetaDataFileContainerBehaviour(final MetadataRecord metadataRecord, final Router router,
-        final Repositories repositories, final ResourceProxy resourceProxy, ContainerView containerView) {
+        final Repositories repositories, final ResourceProxy resourceProxy, ContainerController containerController) {
         this.metadataRecord = metadataRecord;
         this.mainWindow = router.getMainWindow();
         this.repositories = repositories;
         this.resourceProxy = resourceProxy;
-        this.containerView = containerView;
+        this.containerController = containerController;
+
     }
 
     @Override
@@ -108,7 +109,7 @@ public class EditMetaDataFileContainerBehaviour implements ClickListener {
         showWindow();
     }
 
-    private void showWindow() {
+    public void showWindow() {
         final Window subwindow = new Window(ViewConstants.EDIT_METADATA);
         subwindow.setWidth("600px");
         subwindow.setModal(true);
@@ -186,7 +187,7 @@ public class EditMetaDataFileContainerBehaviour implements ClickListener {
                     container = repositories.container().findContainerById(resourceProxy.getId());
                     metadataRecord.setContent(metadataContent);
                     repositories.container().updateMetaData(metadataRecord, container);
-                    containerView.refreshView();
+                    containerController.refreshView();
                     status.setValue("");
                     upload.setEnabled(true);
                 }

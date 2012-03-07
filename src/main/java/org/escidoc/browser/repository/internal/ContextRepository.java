@@ -183,7 +183,7 @@ public class ContextRepository implements Repository {
     }
 
     public Context removeAdminDescriptor(String contextId, String name) throws EscidocClientException {
-        System.out.println("Name is " + name);
+
         Context context = client.retrieve(contextId);
         AdminDescriptors adminDescriptors = context.getAdminDescriptors();
         adminDescriptors.del(name);
