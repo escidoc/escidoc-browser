@@ -29,6 +29,7 @@
 package org.escidoc.browser.ui.navigation;
 
 import java.net.URISyntaxException;
+import java.util.List;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ResourceModel;
@@ -403,7 +404,7 @@ public final class ActionHandlerImpl implements Action.Handler {
     private void tryDeleteContainer(final Object target, Object sender) throws EscidocClientException,
         URISyntaxException {
         final String containerId = ((ContainerModel) target).getId();
-        if (allowedToDeleteContainer(containerId)) {
+        if ((allowedToDeleteContainer(containerId)) && (canDeleteContainer(containerId))) {
             deleteContainer((ContainerModel) target, sender);
         }
         else {
@@ -411,6 +412,19 @@ public final class ActionHandlerImpl implements Action.Handler {
                 "You do not have the right to delete a container: " + containerId,
                 Window.Notification.TYPE_WARNING_MESSAGE));
         }
+    }
+
+    private boolean canDeleteContainer(String containerId) throws EscidocClientException {
+        List<ResourceModel> members = repositories.container().findDirectMembers(containerId);
+        for (ResourceModel resourceModel : members) {
+            if (resourceModel.getType().equals(ResourceType.CONTAINER)) {
+                // TODO more code here
+            }
+            else {
+
+            }
+        }
+        return false;
     }
 
     private void tryShowCreateResourceView(final Object target, final String contextId) throws EscidocClientException,

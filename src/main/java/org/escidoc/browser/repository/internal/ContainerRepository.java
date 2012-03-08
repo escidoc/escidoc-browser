@@ -90,8 +90,7 @@ public class ContainerRepository implements Repository {
         return findDirectMembers(id);
     }
 
-    private List<ResourceModel> findDirectMembers(final String id) throws EscidocException, InternalClientException,
-        TransportException {
+    public List<ResourceModel> findDirectMembers(final String id) throws EscidocClientException {
 
         final List<ResourceModel> results = new ArrayList<ResourceModel>();
         for (final SearchResultRecord record : findAllDirectMembers(id)) {
@@ -282,5 +281,20 @@ public class ContainerRepository implements Repository {
 
         client.update(container);
 
+    }
+
+    public boolean hasMembersNotInStatusPending(String id) throws EscidocClientException {
+        List<ResourceModel> members = findDirectMembers(id);
+        for (ResourceModel resourceModel : members) {
+            if (resourceModel.getType().equals(ResourceType.CONTAINER)) {
+                if (!client.retrieve(resourceModel.getId()).getProperties().getPublicStatus().equals("pending")) {
+                    return true;
+                }
+            }
+            else {
+
+            }
+        }
+        return false;
     }
 }
