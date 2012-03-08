@@ -50,6 +50,7 @@ import com.vaadin.ui.AbstractSelect.AcceptItem;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.TextField;
@@ -78,7 +79,7 @@ public abstract class DragnDropHelper extends VerticalLayout {
 
     private TextField tf;
 
-    private Tree tree;
+    protected Tree tree;
 
     protected Controller controller;
 
@@ -161,16 +162,17 @@ public abstract class DragnDropHelper extends VerticalLayout {
         });
     }
 
-    private void initializeTree(final ClientSideCriterion acceptCriterion) throws EscidocClientException {
+    protected void initializeTree(final ClientSideCriterion acceptCriterion) throws EscidocClientException {
         treeFilter();
         tree.setContainerDataSource(populateContainerTree());
         tree.setItemCaptionPropertyId(PROPERTY_NAME);
-
         // Expand all nodes
-        for (Object name : tree.rootItemIds()) {
-            tree.expandItemsRecursively(name);
-        }
+        // for (Object name : tree.rootItemIds()) {
+        // tree.expandItemsRecursively(name);
+        // }
         tree.setDragMode(TreeDragMode.NODE);
+
+        addActionListener();
     }
 
     @SuppressWarnings("serial")
@@ -219,13 +221,17 @@ public abstract class DragnDropHelper extends VerticalLayout {
         initializeTree(new SourceIs(table));
         initializeTable(new SourceIs(tree));
 
+        Panel pn = new Panel();
+        pn.setHeight("100%");
         VerticalLayout vlTree = new VerticalLayout();
         vlTree.addComponent(new Label("Drag from Tree to Table to add new OU"));
+
         vlTree.addComponent(tf);
         vlTree.addComponent(tree);
 
         HorizontalLayout hl = new HorizontalLayout();
-        hl.addComponent(vlTree);
+        pn.setContent(vlTree);
+        hl.addComponent(pn);
 
         VerticalLayout vl = new VerticalLayout();
         vl.setWidth("100%");
@@ -238,6 +244,10 @@ public abstract class DragnDropHelper extends VerticalLayout {
             vl.setComponentAlignment(tableDelete, Alignment.TOP_RIGHT);
         }
         addComponent(hl);
+
+    }
+
+    protected void addActionListener() throws EscidocClientException {
 
     }
 
