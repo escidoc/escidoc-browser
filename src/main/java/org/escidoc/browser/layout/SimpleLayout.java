@@ -51,7 +51,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
 
-import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.PropertyId;
@@ -72,6 +71,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URISyntaxException;
+import java.util.List;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -354,11 +354,20 @@ public class SimpleLayout extends LayoutDesign {
         return accordion;
     }
 
-    private void addUserAccountsTab(Accordion accordion) {
-        if (isSysAdmin()) {
+    private void addUserAccountsTab(Accordion accordion) throws EscidocClientException {
+        if (isAllowedToRetrieveUserAccounts()) {
             accordion.addTab(buildListWithFilter(treeBuilder.buildUserAccountTree()), ViewConstants.USER_ACCOUNTS,
                 NO_ICON);
         }
+    }
+
+    private boolean isAllowedToRetrieveUserAccounts() throws EscidocClientException {
+        List<ResourceModel> list = repositories.user().findAll();
+
+        if (list == null || list.isEmpty()) {
+            return false;
+        }
+        return true;
     }
 
     private void addContentModelsTab(Accordion accordion) {
@@ -390,10 +399,6 @@ public class SimpleLayout extends LayoutDesign {
         vl.addComponent(filterField);
         vl.addComponent(list);
         return vl;
-    }
-
-    private boolean isSysAdmin() {
-        return router.getApp().getCurrentUser().getLoginName().equals(AppConstants.SYSADMIN);
     }
 
     private void addOrgUnitTab(final Accordion accordion) {
