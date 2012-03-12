@@ -65,6 +65,8 @@ import de.escidoc.core.resources.common.TaskParam;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.om.item.Item;
+import de.escidoc.core.resources.om.item.component.Component;
+import de.escidoc.core.resources.om.item.component.Components;
 
 public class ItemRepository implements Repository {
     private static final Logger LOG = LoggerFactory.getLogger(ItemRepository.class);
@@ -246,6 +248,45 @@ public class ItemRepository implements Repository {
         final MetadataRecords containerMetadataList = item.getMetadataRecords();
         containerMetadataList.del(mdId);
         item.setMetadataRecords(containerMetadataList);
+        client.update(item);
+
+    }
+
+    public void updateComponent(Component component, String id) throws EscidocClientException {
+        Item item = client.retrieve(id);
+        Components components = item.getComponents();
+        components.del(component.getObjid());
+        components.add(component);
+        item.setComponents(components);
+        client.update(item);
+
+    }
+
+    public void removeComponentMetadata(String mdId, String itemId, String componentId) throws EscidocClientException {
+        Item item = client.retrieve(itemId);
+        Components components = item.getComponents();
+        Component component = components.get(componentId);
+        MetadataRecords mdRecs = component.getMetadataRecords();
+        mdRecs.del(mdRecs.get(mdId).getName());
+        component.setMetadataRecords(mdRecs);
+        components.del(componentId);
+        components.add(component);
+        item.setComponents(components);
+        client.update(item);
+
+    }
+
+    public void updateComponentMetadata(Component component, String id, MetadataRecord metadataRecord)
+        throws EscidocClientException {
+        Item item = client.retrieve(id);
+        Components components = item.getComponents();
+        MetadataRecords mdRecs = component.getMetadataRecords();
+        mdRecs.del(metadataRecord.getName());
+        mdRecs.add(metadataRecord);
+        component.setMetadataRecords(mdRecs);
+        components.del(component.getObjid());
+        components.add(component);
+        item.setComponents(components);
         client.update(item);
 
     }

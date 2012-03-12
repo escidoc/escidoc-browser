@@ -221,8 +221,7 @@ public final class ItemView extends View {
         directMembersPanel.setStyleName(Runo.PANEL_LIGHT);
 
         // vlDirectMember
-        final VerticalLayout vlDirectMember =
-            new ItemContent(repositories, resourceProxy, serviceLocation, mainWindow, controller);
+        final VerticalLayout vlDirectMember = new ItemContent(repositories, resourceProxy, router, controller);
         vlDirectMember.setImmediate(false);
         vlDirectMember.setWidth("100.0%");
         vlDirectMember.setHeight("100.0%");

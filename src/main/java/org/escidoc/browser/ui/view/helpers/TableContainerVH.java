@@ -131,6 +131,7 @@ public abstract class TableContainerVH extends VerticalLayout {
         // turn on column reordering and collapsing
         table.setColumnReorderingAllowed(true);
         table.setColumnCollapsingAllowed(true);
+
     }
 
     /**

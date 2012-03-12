@@ -40,6 +40,7 @@ import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.event.Action;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
 
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.MetadataRecords;
@@ -137,6 +138,10 @@ public class ContainerMetadataTableVH extends TableContainerVH {
         }
         table.setColumnWidth(ViewConstants.PROPERTY_LINK, 40);
         return tableContainer;
+    }
+
+    protected void initializeTable() {
+        table.setColumnHeaderMode(Table.COLUMN_HEADER_MODE_HIDDEN);
     }
 
 }

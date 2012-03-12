@@ -43,6 +43,8 @@ import org.slf4j.LoggerFactory;
 import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.common.MetadataRecord;
+import de.escidoc.core.resources.om.item.component.Component;
 
 public class ItemController extends Controller {
 
@@ -120,6 +122,34 @@ public class ItemController extends Controller {
             LOG.debug(e.getLocalizedMessage());
             return false;
         }
+    }
+
+    public void removeComponentMetadata(String mdId, String itemId, String compId) {
+        try {
+            repositories.item().removeComponentMetadata(mdId, itemId, compId);
+            showTrayMessage("Removed!", "Metadata " + mdId + " was removed successfully!");
+        }
+        catch (EscidocClientException e) {
+            showError("Unable to remove metadata " + e.getLocalizedMessage());
+        }
+
+    }
+
+    public void updateComponent(Component component, String id) throws EscidocClientException {
+        repositories.item().updateComponent(component, id);
+
+    }
+
+    public void updateMetaDataComponent(MetadataRecord metadataRecord, ItemProxyImpl itemProxy, Component component) {
+        try {
+            repositories.item().updateComponentMetadata(component, itemProxy.getId(), metadataRecord);
+            showTrayMessage("Updated!", "Metadata " + metadataRecord.getName() + " was updated successfully!");
+        }
+        catch (EscidocClientException e) {
+            showError("Unable to update metadata " + e.getLocalizedMessage());
+
+        }
+
     }
 
 }
