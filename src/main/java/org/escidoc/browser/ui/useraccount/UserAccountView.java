@@ -48,18 +48,89 @@ import com.vaadin.ui.themes.Runo;
 
 import org.escidoc.browser.controller.UserAccountController;
 import org.escidoc.browser.model.internal.UserProxy;
+import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.repository.internal.UserAccountRepository;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.View;
 
+import java.net.URISyntaxException;
+
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.aa.useraccount.Attribute;
 import de.escidoc.core.resources.aa.useraccount.Preference;
-import de.escidoc.core.resources.aa.useraccount.Preferences;
 
 @SuppressWarnings("serial")
 public class UserAccountView extends View {
+
+    private final class OnAddPreference implements ClickListener {
+        private final Panel preferencePanel;
+
+        private final UserAccountPreferences userPrefTable;
+
+        private final Button addPreference;
+
+        private OnAddPreference(Panel preferencePanel, UserAccountPreferences userPrefTable, Button addPreference) {
+            this.preferencePanel = preferencePanel;
+            this.userPrefTable = userPrefTable;
+            this.addPreference = addPreference;
+        }
+
+        @Override
+        public void buttonClick(@SuppressWarnings("unused") final com.vaadin.ui.Button.ClickEvent event) {
+            addPreference.setEnabled(false);
+            final HorizontalLayout hl = new HorizontalLayout();
+            final TextField key = new TextField();
+            key.setCaption("Name");
+            key.setImmediate(false);
+            key.setWidth("-1px");
+            key.setHeight("-1px");
+            key.setInvalidAllowed(false);
+            key.setRequired(true);
+
+            final TextField value = new TextField();
+            value.setCaption("Value");
+            value.setImmediate(false);
+            value.setWidth("-1px");
+            value.setHeight("-1px");
+            value.setInvalidAllowed(false);
+            value.setRequired(true);
+
+            final Button addButton = new Button();
+            addButton.setIcon(new ThemeResource("images/assets/plus.png"));
+            addButton.addListener(new Button.ClickListener() {
+                @Override
+                public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
+                    if (isNotValid(key, value)) {
+                        showMessage();
+                    }
+                    else {
+                        try {
+                            ur.createPreference(userProxy, new Preference(key.getValue().toString(), value
+                                .getValue().toString()));
+                            router.getMainWindow().showNotification("Preference added successfully ",
+                                Window.Notification.TYPE_TRAY_NOTIFICATION);
+                            hl.removeAllComponents();
+                            addPreference.setEnabled(true);
+                            userPrefTable.createItem(userPrefTable.getTableContainer(), key.getValue().toString(), key
+                                .getValue().toString(), value.getValue().toString());
+                        }
+                        catch (final EscidocClientException e) {
+                            router.getMainWindow().showNotification(
+                                ViewConstants.ERROR_CREATING_USER_PREFERENCE + e.getLocalizedMessage(),
+                                Window.Notification.TYPE_ERROR_MESSAGE);
+                        }
+                    }
+                }
+
+            });
+            hl.addComponent(key);
+            hl.addComponent(value);
+            hl.addComponent(addButton);
+            hl.setComponentAlignment(addButton, Alignment.BOTTOM_RIGHT);
+            preferencePanel.addComponent(hl);
+        }
+    }
 
     private Router router;
 
@@ -70,6 +141,8 @@ public class UserAccountView extends View {
     private UserAccountController uac;
 
     private Panel attributePanel;
+
+    private Button addPreferenceButton;
 
     public UserAccountView(Router router, UserProxy userProxy, UserAccountRepository ur, UserAccountController uac) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
@@ -138,10 +211,13 @@ public class UserAccountView extends View {
 
         try {
             buildEditUserForm(vlAccCreateContext);
-
         }
         catch (EscidocClientException e) {
-            router.getMainWindow().showNotification(ViewConstants.ERROR_CREATING_RESOURCE + e.getLocalizedMessage(),
+            router.getMainWindow().showNotification(ViewConstants.ERROR_CREATING_RESOURCE + e.getMessage(),
+                Window.Notification.TYPE_ERROR_MESSAGE);
+        }
+        catch (URISyntaxException e) {
+            router.getMainWindow().showNotification(ViewConstants.ERROR_CREATING_RESOURCE + e.getMessage(),
                 Window.Notification.TYPE_ERROR_MESSAGE);
         }
         accCreateContext.addTab(vlAccCreateContext, " ");
@@ -149,55 +225,22 @@ public class UserAccountView extends View {
         return accCreateContext;
     }
 
-    private void buildEditUserForm(VerticalLayout vlAccCreateContext) throws EscidocClientException {
+    private void buildEditUserForm(VerticalLayout vlAccCreateContext) throws EscidocClientException, URISyntaxException {
         final Form form = new Form();
         form.setImmediate(true);
 
-        // Name
-        final TextField txtLoginName = new TextField();
-        txtLoginName.setCaption("Login Name");
-        txtLoginName.setValue(userProxy.getLoginName());
-        txtLoginName.setEnabled(false);
-        txtLoginName.setImmediate(false);
-        txtLoginName.setWidth("-1px");
-        txtLoginName.setHeight("-1px");
-        txtLoginName.setInvalidAllowed(false);
-        txtLoginName.setRequired(true);
-        form.addField("txtLoginName", txtLoginName);
-
-        // Name
-        final TextField txtNameContext = new TextField();
-        txtNameContext.setCaption("Real Name");
-        txtNameContext.setValue(userProxy.getName());
-        txtNameContext.setImmediate(false);
-        txtNameContext.setWidth("-1px");
-        txtNameContext.setHeight("-1px");
-        txtNameContext.setInvalidAllowed(false);
-        txtNameContext.setRequired(true);
-        form.addField("txtNameContext", txtNameContext);
-
-        // Password
-        final PasswordField txtPassword = new PasswordField("Password");
-        txtPassword.setImmediate(false);
-        txtPassword.setNullSettingAllowed(false);
-        txtPassword.setWidth("-1px");
-        txtPassword.setHeight("-1px");
-        form.addField("txtPassword", txtPassword);
-
-        // Description
-        final PasswordField txtPassword2 = new PasswordField("Verify Password");
-        txtPassword2.setImmediate(false);
-        txtPassword2.setWidth("-1px");
-        txtPassword2.setHeight("-1px");
-        form.addField("txtPassword2", txtPassword2);
+        buildLoginNameField(form);
+        final TextField realNameField = buildRealNameField(form);
+        final PasswordField passwordField = buildPasswordField(form);
+        final PasswordField verifyPasswordField = buildVerifyPasswordField(form);
 
         Button submitButton = new Button("Submit", new Button.ClickListener() {
 
             @Override
-            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") com.vaadin.ui.Button.ClickEvent event) {
                 try {
                     form.commit();
-                    if (!txtPassword.getValue().equals(txtPassword2.getValue())) {
+                    if (!passwordField.getValue().equals(verifyPasswordField.getValue())) {
                         router
                             .getMainWindow()
                             .showNotification(
@@ -205,11 +248,11 @@ public class UserAccountView extends View {
                                 Window.Notification.TYPE_TRAY_NOTIFICATION);
                         return;
                     }
-                    if (txtPassword.getValue().toString() != "") {
-                        ur.updatePassword(userProxy, txtPassword.getValue().toString());
+                    if (passwordField.getValue().toString() != "") {
+                        ur.updatePassword(userProxy, passwordField.getValue().toString());
                     }
                     else {
-                        ur.updateName(userProxy, txtNameContext.getValue().toString());
+                        ur.updateName(userProxy, realNameField.getValue().toString());
                     }
                     router.getMainWindow().showNotification("User updateds successfully ",
                         Window.Notification.TYPE_TRAY_NOTIFICATION);
@@ -234,10 +277,72 @@ public class UserAccountView extends View {
         form.getField("txtNameContext").setRequiredError("Name is missing");
 
         vlAccCreateContext.addComponent(form);
-
         vlAccCreateContext.addComponent(buildPreferencesView());
-        Component attributesView = buildAttributesView();
-        vlAccCreateContext.addComponent(attributesView);
+        vlAccCreateContext.addComponent(buildAttributesView());
+
+        setEnability(realNameField, passwordField, verifyPasswordField);
+    }
+
+    private void setEnability(
+        final TextField realNameField, final PasswordField passwordField, final PasswordField verifyPasswordField)
+        throws EscidocClientException, URISyntaxException {
+
+        boolean allowedToUpdate = isAllowedToUpdate();
+        realNameField.setEnabled(allowedToUpdate);
+        passwordField.setEnabled(allowedToUpdate);
+        verifyPasswordField.setEnabled(allowedToUpdate);
+        addPreferenceButton.setEnabled(allowedToUpdate);
+    }
+
+    private static PasswordField buildVerifyPasswordField(final Form form) {
+        final PasswordField verifyPasswordField = new PasswordField("Verify Password");
+        verifyPasswordField.setImmediate(false);
+        verifyPasswordField.setWidth("-1px");
+        verifyPasswordField.setHeight("-1px");
+        form.addField("txtPassword2", verifyPasswordField);
+        return verifyPasswordField;
+    }
+
+    private static PasswordField buildPasswordField(final Form form) {
+        final PasswordField passwordField = new PasswordField("Password");
+        passwordField.setImmediate(false);
+        passwordField.setNullSettingAllowed(false);
+        passwordField.setWidth("-1px");
+        passwordField.setHeight("-1px");
+        form.addField("txtPassword", passwordField);
+        return passwordField;
+    }
+
+    private TextField buildRealNameField(final Form form) {
+        final TextField realNameField = new TextField();
+        realNameField.setCaption("Real Name");
+        realNameField.setValue(userProxy.getName());
+        realNameField.setImmediate(false);
+        realNameField.setWidth("-1px");
+        realNameField.setHeight("-1px");
+        realNameField.setInvalidAllowed(false);
+        realNameField.setRequired(true);
+        form.addField("txtNameContext", realNameField);
+        return realNameField;
+    }
+
+    private void buildLoginNameField(final Form form) {
+        final TextField loginNameField = new TextField();
+        loginNameField.setCaption("Login Name");
+        loginNameField.setValue(userProxy.getLoginName());
+        loginNameField.setEnabled(false);
+        loginNameField.setImmediate(false);
+        loginNameField.setWidth("-1px");
+        loginNameField.setHeight("-1px");
+        loginNameField.setInvalidAllowed(false);
+        loginNameField.setRequired(true);
+        form.addField("txtLoginName", loginNameField);
+    }
+
+    private boolean isAllowedToUpdate() throws EscidocClientException, URISyntaxException {
+        return router
+            .getRepositories().pdp().isAction(ActionIdConstants.UPDATE_USER_ACCOUNT).forCurrentUser()
+            .forResource(userProxy.getId()).permitted();
     }
 
     private Component buildAttributesView() throws EscidocClientException {
@@ -251,7 +356,7 @@ public class UserAccountView extends View {
         addAttributeButton.setIcon(new ThemeResource("images/assets/plus.png"));
         addAttributeButton.addListener(new ClickListener() {
             @Override
-            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") com.vaadin.ui.Button.ClickEvent event) {
                 addAttributeButton.setEnabled(false);
                 final HorizontalLayout hl = new HorizontalLayout();
                 final TextField key = new TextField();
@@ -274,7 +379,7 @@ public class UserAccountView extends View {
                 btnadd.setIcon(new ThemeResource("images/assets/plus.png"));
                 btnadd.addListener(new Button.ClickListener() {
                     @Override
-                    public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+                    public void buttonClick(@SuppressWarnings("unused") com.vaadin.ui.Button.ClickEvent event) {
                         if (isNotValid(key, value)) {
                             showMessage();
                         }
@@ -291,7 +396,7 @@ public class UserAccountView extends View {
                             }
                             catch (EscidocClientException e) {
                                 router.getMainWindow().showNotification(
-                                    ViewConstants.ERROR_CREATING_USER_PREFERENCE + e.getLocalizedMessage(),
+                                    ViewConstants.ERROR_CREATING_USER_ATTRIBUTE + e.getLocalizedMessage(),
                                     Window.Notification.TYPE_ERROR_MESSAGE);
                             }
                         }
@@ -325,74 +430,28 @@ public class UserAccountView extends View {
     }
 
     private Panel buildPreferencesView() throws EscidocClientException {
-        final Panel preferencePanel = new Panel("Preferences");
-        Preferences preferences = ur.getPreferences(userProxy);
-        final UserAccountPreferences userPrefTable = new UserAccountPreferences(userProxy, preferences, ur, uac);
-        preferencePanel.addComponent(userPrefTable);
+        final Panel preferencePanel = new Panel(ViewConstants.PREFERENCES);
 
-        final Button addPreference = new Button();
-        addPreference.setDescription("Add new Preference");
-        addPreference.setIcon(new ThemeResource("images/assets/plus.png"));
-        addPreference.addListener(new ClickListener() {
-            @Override
-            public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-                addPreference.setEnabled(false);
-                final HorizontalLayout hl = new HorizontalLayout();
-                final TextField key = new TextField();
-                key.setCaption("Name");
-                key.setImmediate(false);
-                key.setWidth("-1px");
-                key.setHeight("-1px");
-                key.setInvalidAllowed(false);
-                key.setRequired(true);
+        final UserAccountPreferences userPreferenceTable = buildPreferenceTable();
+        addPreferenceButton = buildAddPreferenceButton(preferencePanel, userPreferenceTable);
 
-                final TextField value = new TextField();
-                value.setCaption("Value");
-                value.setImmediate(false);
-                value.setWidth("-1px");
-                value.setHeight("-1px");
-                value.setInvalidAllowed(false);
-                value.setRequired(true);
-
-                final Button addButton = new Button();
-                addButton.setIcon(new ThemeResource("images/assets/plus.png"));
-                addButton.addListener(new Button.ClickListener() {
-                    @Override
-                    public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-                        if (isNotValid(key, value)) {
-                            showMessage();
-                        }
-                        else {
-                            try {
-                                ur.createPreference(userProxy, new Preference(key.getValue().toString(), value
-                                    .getValue().toString()));
-                                router.getMainWindow().showNotification("Preference added successfully ",
-                                    Window.Notification.TYPE_TRAY_NOTIFICATION);
-                                hl.removeAllComponents();
-                                addPreference.setEnabled(true);
-                                userPrefTable.createItem(userPrefTable.getTableContainer(), key.getValue().toString(),
-                                    key.getValue().toString(), value.getValue().toString());
-                            }
-                            catch (EscidocClientException e) {
-                                router.getMainWindow().showNotification(
-                                    ViewConstants.ERROR_CREATING_USER_PREFERENCE + e.getLocalizedMessage(),
-                                    Window.Notification.TYPE_ERROR_MESSAGE);
-                            }
-                        }
-                    }
-
-                });
-                hl.addComponent(key);
-                hl.addComponent(value);
-                hl.addComponent(addButton);
-                hl.setComponentAlignment(addButton, Alignment.BOTTOM_RIGHT);
-                preferencePanel.addComponent(hl);
-            }
-
-        });
-
-        preferencePanel.addComponent(addPreference);
+        preferencePanel.addComponent(userPreferenceTable);
+        preferencePanel.addComponent(addPreferenceButton);
         return preferencePanel;
+    }
+
+    private UserAccountPreferences buildPreferenceTable() throws EscidocClientException {
+        final UserAccountPreferences userPrefTable =
+            new UserAccountPreferences(userProxy, ur.getPreferences(userProxy), ur, uac);
+        return userPrefTable;
+    }
+
+    private Button buildAddPreferenceButton(final Panel preferencePanel, final UserAccountPreferences userPrefTable) {
+        final Button addPreferenceButton = new Button();
+        addPreferenceButton.setDescription("Add new Preference");
+        addPreferenceButton.setIcon(new ThemeResource("images/assets/plus.png"));
+        addPreferenceButton.addListener(new OnAddPreference(preferencePanel, userPrefTable, addPreferenceButton));
+        return addPreferenceButton;
     }
 
     @Override

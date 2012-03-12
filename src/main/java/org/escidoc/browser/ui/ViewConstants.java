@@ -335,6 +335,8 @@ public class ViewConstants {
 
     public static final String ERROR_CREATING_USER_PREFERENCE = "Error creating user profile preference";
 
+    public static final String ERROR_CREATING_USER_ATTRIBUTE = "Error creating user attribute";
+
     // Container
     public static final String DESC_LOCKSTATUS = "lockstatus";
 
@@ -427,4 +429,6 @@ public class ViewConstants {
     public static final String ASSIGN_ROLES = "Assign Roles";
 
     public static final String RESOURCE_NAME = "Resource Name: ";
+
+    public static final String PREFERENCES = "Preferences";
 }
