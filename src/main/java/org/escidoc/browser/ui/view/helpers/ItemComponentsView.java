@@ -45,6 +45,7 @@ import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
@@ -131,6 +132,14 @@ public class ItemComponentsView extends TableContainerVH {
             }
         });
         // }
+    }
+
+    @Override
+    protected void initializeTable() {
+        table.setWidth("100%");
+        table.setSelectable(true);
+        table.setImmediate(true); // react at once when something is selected
+        table.setColumnHeaderMode(Table.COLUMN_HEADER_MODE_HIDDEN);
     }
 
     @Override
