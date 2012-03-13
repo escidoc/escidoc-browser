@@ -60,6 +60,7 @@ public class RepositoryInfoView extends VerticalLayout {
         for (final Entry<String, String> entry : adminRepository.getRepositoryInfo().entrySet()) {
             formLayout.addComponent(createReadOnlyField(entry));
         }
+
         addComponent(formLayout);
     }
 

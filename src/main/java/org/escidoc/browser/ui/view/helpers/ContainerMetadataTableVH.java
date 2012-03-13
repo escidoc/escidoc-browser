@@ -133,7 +133,7 @@ public class ContainerMetadataTableVH extends TableContainerVH {
                 item.getItemProperty(ViewConstants.PROPERTY_NAME).setValue(metadataRecord.getXLinkTitle());
                 item.getItemProperty(ViewConstants.PROPERTY_LINK).setValue(
                     new Label("<a href=\"" + router.getServiceLocation().getEscidocUri()
-                        + metadataRecord.getXLinkHref() + "\" target=\"_blank\">Link</a>", Label.CONTENT_RAW));
+                        + metadataRecord.getXLinkHref() + "\" target=\"_blank\">View</a>", Label.CONTENT_RAW));
             }
         }
         table.setColumnWidth(ViewConstants.PROPERTY_LINK, 40);

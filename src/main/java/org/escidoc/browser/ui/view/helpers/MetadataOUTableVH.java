@@ -40,6 +40,7 @@ import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.event.Action;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Link;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.BaseTheme;
 
 import de.escidoc.core.resources.common.MetadataRecord;
@@ -118,7 +119,7 @@ public class MetadataOUTableVH extends TableContainerVH {
             Item item = tableContainer.addItem(metadataRecord.getName());
 
             Link mdLink =
-                new Link("Link", new ExternalResource(router.getServiceLocation().getEscidocUri()
+                new Link("View", new ExternalResource(router.getServiceLocation().getEscidocUri()
                     + metadataRecord.getXLinkHref()));
             mdLink.setTargetName("_blank");
             mdLink.setStyleName(BaseTheme.BUTTON_LINK);
@@ -142,6 +143,8 @@ public class MetadataOUTableVH extends TableContainerVH {
         // turn on column reordering and collapsing
         table.setColumnReorderingAllowed(true);
         table.setColumnCollapsingAllowed(true);
+        table.setColumnHeaderMode(Table.COLUMN_HEADER_MODE_HIDDEN);
+
     }
 
 }

@@ -121,7 +121,7 @@ public class AdminDescriptorsTableVH extends TableContainerVH {
                 item.getItemProperty(ViewConstants.PROPERTY_NAME).setValue(adminDescriptor.getName());
                 item.getItemProperty(ViewConstants.PROPERTY_LINK).setValue(
                     new Label("<a href=\"" + router.getServiceLocation().getEscidocUri()
-                        + adminDescriptor.getXLinkHref() + "\" target=\"_blank\">Link</a>", Label.CONTENT_RAW));
+                        + adminDescriptor.getXLinkHref() + "\" target=\"_blank\">View</a>", Label.CONTENT_RAW));
             }
         }
         table.setColumnWidth(ViewConstants.PROPERTY_LINK, 40);
