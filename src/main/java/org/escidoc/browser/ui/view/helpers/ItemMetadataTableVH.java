@@ -142,6 +142,10 @@ public class ItemMetadataTableVH extends TableContainerVH {
     }
 
     protected void initializeTable() {
+        table.setWidth("100%");
+
+        // selectable
+        table.setSelectable(true);
         table.setColumnHeaderMode(Table.COLUMN_HEADER_MODE_HIDDEN);
     }
 
