@@ -58,27 +58,24 @@ import java.net.URISyntaxException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.aa.useraccount.Attribute;
-import de.escidoc.core.resources.aa.useraccount.Preference;
 
 @SuppressWarnings("serial")
 public class UserAccountView extends View {
 
-    private final class OnAddPreference implements ClickListener {
-        private final Panel preferencePanel;
+    private final class OnAddAttribute implements ClickListener {
 
-        private final UserAccountPreferences userPrefTable;
+        private final Button addAttributeButton;
 
-        private final Button addPreference;
+        private final UserAccountAttributes attributeTable;
 
-        private OnAddPreference(Panel preferencePanel, UserAccountPreferences userPrefTable, Button addPreference) {
-            this.preferencePanel = preferencePanel;
-            this.userPrefTable = userPrefTable;
-            this.addPreference = addPreference;
+        private OnAddAttribute(Button addAttributeButton, UserAccountAttributes attributeTable) {
+            this.addAttributeButton = addAttributeButton;
+            this.attributeTable = attributeTable;
         }
 
         @Override
         public void buttonClick(@SuppressWarnings("unused") final com.vaadin.ui.Button.ClickEvent event) {
-            addPreference.setEnabled(false);
+            addAttributeButton.setEnabled(false);
             final HorizontalLayout hl = new HorizontalLayout();
             final TextField key = new TextField();
             key.setCaption("Name");
@@ -96,47 +93,96 @@ public class UserAccountView extends View {
             value.setInvalidAllowed(false);
             value.setRequired(true);
 
-            final Button addButton = new Button();
-            addButton.setIcon(new ThemeResource("images/assets/plus.png"));
-            addButton.addListener(new Button.ClickListener() {
+            final Button btnadd = new Button();
+            btnadd.setIcon(new ThemeResource("images/assets/plus.png"));
+            btnadd.addListener(new Button.ClickListener() {
                 @Override
-                public void buttonClick(final com.vaadin.ui.Button.ClickEvent event) {
+                public void buttonClick(@SuppressWarnings("unused") final com.vaadin.ui.Button.ClickEvent event) {
                     if (isNotValid(key, value)) {
                         showMessage();
                     }
                     else {
                         try {
-                            ur.createPreference(userProxy, new Preference(key.getValue().toString(), value
+                            ur.createAttribute(userProxy, new Attribute(key.getValue().toString(), value
                                 .getValue().toString()));
-                            router.getMainWindow().showNotification("Preference added successfully ",
+                            router.getMainWindow().showNotification("Attribute added successfully ",
                                 Window.Notification.TYPE_TRAY_NOTIFICATION);
                             hl.removeAllComponents();
-                            addPreference.setEnabled(true);
-                            userPrefTable.createItem(userPrefTable.getTableContainer(), key.getValue().toString(), key
-                                .getValue().toString(), value.getValue().toString());
+                            addAttributeButton.setEnabled(true);
+                            attributeTable.createItem(attributeTable.getTableContainer(), key.getValue().toString(),
+                                key.getValue().toString(), value.getValue().toString());
                         }
                         catch (final EscidocClientException e) {
                             router.getMainWindow().showNotification(
-                                ViewConstants.ERROR_CREATING_USER_PREFERENCE + e.getLocalizedMessage(),
+                                ViewConstants.ERROR_CREATING_USER_ATTRIBUTE + e.getLocalizedMessage(),
                                 Window.Notification.TYPE_ERROR_MESSAGE);
                         }
                     }
                 }
-
             });
             hl.addComponent(key);
             hl.addComponent(value);
-            hl.addComponent(addButton);
-            hl.setComponentAlignment(addButton, Alignment.BOTTOM_RIGHT);
-            preferencePanel.addComponent(hl);
+            hl.addComponent(btnadd);
+            hl.setComponentAlignment(btnadd, Alignment.BOTTOM_RIGHT);
+            attributePanel.addComponent(hl);
         }
     }
 
-    private Router router;
+    private final class OnSaveClick implements Button.ClickListener {
 
-    private UserProxy userProxy;
+        private final TextField realNameField;
 
-    private UserAccountRepository ur;
+        private final PasswordField passwordField;
+
+        private final Form form;
+
+        private final PasswordField verifyPasswordField;
+
+        private OnSaveClick(TextField realNameField, PasswordField passwordField, Form form,
+            PasswordField verifyPasswordField) {
+            this.realNameField = realNameField;
+            this.passwordField = passwordField;
+            this.form = form;
+            this.verifyPasswordField = verifyPasswordField;
+        }
+
+        @Override
+        public void buttonClick(@SuppressWarnings("unused") com.vaadin.ui.Button.ClickEvent event) {
+            try {
+                form.commit();
+                if (!passwordField.getValue().equals(verifyPasswordField.getValue())) {
+                    router
+                        .getMainWindow()
+                        .showNotification(
+                            "Password verification failed, please try again and make sure you are typing the same password twice ",
+                            Window.Notification.TYPE_TRAY_NOTIFICATION);
+                    return;
+                }
+                if (passwordField.getValue().toString() != "") {
+                    ur.updatePassword(userProxy, passwordField.getValue().toString());
+                }
+                else {
+                    ur.updateName(userProxy, realNameField.getValue().toString());
+                }
+                router.getMainWindow().showNotification("User updateds successfully ",
+                    Window.Notification.TYPE_TRAY_NOTIFICATION);
+            }
+            catch (EmptyValueException e) {
+                router.getMainWindow().showNotification("Please fill in all the required elements in the form",
+                    Window.Notification.TYPE_TRAY_NOTIFICATION);
+            }
+            catch (EscidocClientException e) {
+                router.getMainWindow().showNotification(ViewConstants.ERROR_UPDATING_USER + e.getLocalizedMessage(),
+                    Window.Notification.TYPE_ERROR_MESSAGE);
+            }
+        }
+    }
+
+    Router router;
+
+    UserProxy userProxy;
+
+    UserAccountRepository ur;
 
     private UserAccountController uac;
 
@@ -158,23 +204,20 @@ public class UserAccountView extends View {
     }
 
     public void init() {
-        this.setImmediate(false);
-        this.setWidth("100.0%");
-        this.setHeight("100.0%");
-        this.setStyleName(Runo.PANEL_LIGHT);
-        this.setContent(buildContentPanel());
+        setImmediate(false);
+        setStyleName(Runo.PANEL_LIGHT);
+
+        Panel contentPanel = createContentPanel();
+        contentPanel.setContent(buildVlContentPanel());
+
+        setContent(contentPanel);
     }
 
-    private Panel buildContentPanel() {
-        // common part: create layout
+    private static Panel createContentPanel() {
         Panel contentPanel = new Panel();
         contentPanel.setImmediate(false);
         contentPanel.setWidth("100.0%");
         contentPanel.setHeight("100.0%");
-
-        // vlContentPanel
-        contentPanel.setContent(buildVlContentPanel());
-
         return contentPanel;
     }
 
@@ -187,14 +230,14 @@ public class UserAccountView extends View {
         vlContentPanel.setMargin(false);
 
         // pnlCreateContext
-        Accordion pnlCreateContext = buildPnlCreateContext();
-        vlContentPanel.addComponent(pnlCreateContext);
-        vlContentPanel.setExpandRatio(pnlCreateContext, 1f);
+        Accordion accordion = buildPanel();
+        vlContentPanel.addComponent(accordion);
+        vlContentPanel.setExpandRatio(accordion, 1f);
 
         return vlContentPanel;
     }
 
-    private Accordion buildPnlCreateContext() {
+    private Accordion buildPanel() {
         // common part: create layout
         Accordion accCreateContext = new Accordion();
         accCreateContext.setImmediate(false);
@@ -206,6 +249,7 @@ public class UserAccountView extends View {
         vlAccCreateContext.setImmediate(false);
         vlAccCreateContext.setWidth("100.0%");
         vlAccCreateContext.setHeight("100.0%");
+
         vlAccCreateContext.setMargin(false);
         vlAccCreateContext.setSpacing(false);
 
@@ -234,44 +278,12 @@ public class UserAccountView extends View {
         final PasswordField passwordField = buildPasswordField(form);
         final PasswordField verifyPasswordField = buildVerifyPasswordField(form);
 
-        Button submitButton = new Button("Submit", new Button.ClickListener() {
+        Button saveButton =
+            new Button(ViewConstants.SAVE, new OnSaveClick(realNameField, passwordField, form, verifyPasswordField));
 
-            @Override
-            public void buttonClick(@SuppressWarnings("unused") com.vaadin.ui.Button.ClickEvent event) {
-                try {
-                    form.commit();
-                    if (!passwordField.getValue().equals(verifyPasswordField.getValue())) {
-                        router
-                            .getMainWindow()
-                            .showNotification(
-                                "Password verification failed, please try again and make sure you are typing the same password twice ",
-                                Window.Notification.TYPE_TRAY_NOTIFICATION);
-                        return;
-                    }
-                    if (passwordField.getValue().toString() != "") {
-                        ur.updatePassword(userProxy, passwordField.getValue().toString());
-                    }
-                    else {
-                        ur.updateName(userProxy, realNameField.getValue().toString());
-                    }
-                    router.getMainWindow().showNotification("User updateds successfully ",
-                        Window.Notification.TYPE_TRAY_NOTIFICATION);
-                }
-                catch (EmptyValueException e) {
-                    router.getMainWindow().showNotification("Please fill in all the required elements in the form",
-                        Window.Notification.TYPE_TRAY_NOTIFICATION);
-                }
-                catch (EscidocClientException e) {
-                    router.getMainWindow().showNotification(
-                        ViewConstants.ERROR_UPDATING_USER + e.getLocalizedMessage(),
-                        Window.Notification.TYPE_ERROR_MESSAGE);
-                }
-            }
-        });
-
-        submitButton.setWidth("-1px");
-        submitButton.setHeight("-1px");
-        form.getLayout().addComponent(submitButton);
+        saveButton.setWidth("-1px");
+        saveButton.setHeight("-1px");
+        form.getLayout().addComponent(saveButton);
 
         form.getField("txtNameContext").setRequired(true);
         form.getField("txtNameContext").setRequiredError("Name is missing");
@@ -346,76 +358,29 @@ public class UserAccountView extends View {
     }
 
     private Component buildAttributesView() throws EscidocClientException {
-        attributePanel = new Panel("Attributes");
-        final UserAccountAttributes attributeTable =
-            new UserAccountAttributes(userProxy, ur.getAttributes(userProxy), ur, uac);
+        attributePanel = new Panel(ViewConstants.ATTRIBUTES);
+
+        final UserAccountAttributes attributeTable = buildAttributeTable();
+        final Button addAttributeButton = buildAddAttributeButton(attributeTable);
+
         attributePanel.addComponent(attributeTable);
-
-        final Button addAttributeButton = new Button();
-        addAttributeButton.setDescription("Add new Attribute");
-        addAttributeButton.setIcon(new ThemeResource("images/assets/plus.png"));
-        addAttributeButton.addListener(new ClickListener() {
-            @Override
-            public void buttonClick(@SuppressWarnings("unused") com.vaadin.ui.Button.ClickEvent event) {
-                addAttributeButton.setEnabled(false);
-                final HorizontalLayout hl = new HorizontalLayout();
-                final TextField key = new TextField();
-                key.setCaption("Name");
-                key.setImmediate(false);
-                key.setWidth("-1px");
-                key.setHeight("-1px");
-                key.setInvalidAllowed(false);
-                key.setRequired(true);
-
-                final TextField value = new TextField();
-                value.setCaption("Value");
-                value.setImmediate(false);
-                value.setWidth("-1px");
-                value.setHeight("-1px");
-                value.setInvalidAllowed(false);
-                value.setRequired(true);
-
-                final Button btnadd = new Button();
-                btnadd.setIcon(new ThemeResource("images/assets/plus.png"));
-                btnadd.addListener(new Button.ClickListener() {
-                    @Override
-                    public void buttonClick(@SuppressWarnings("unused") com.vaadin.ui.Button.ClickEvent event) {
-                        if (isNotValid(key, value)) {
-                            showMessage();
-                        }
-                        else {
-                            try {
-                                ur.createAttribute(userProxy, new Attribute(key.getValue().toString(), value
-                                    .getValue().toString()));
-                                router.getMainWindow().showNotification("Attribute added successfully ",
-                                    Window.Notification.TYPE_TRAY_NOTIFICATION);
-                                hl.removeAllComponents();
-                                addAttributeButton.setEnabled(true);
-                                attributeTable.createItem(attributeTable.getTableContainer(),
-                                    key.getValue().toString(), key.getValue().toString(), value.getValue().toString());
-                            }
-                            catch (EscidocClientException e) {
-                                router.getMainWindow().showNotification(
-                                    ViewConstants.ERROR_CREATING_USER_ATTRIBUTE + e.getLocalizedMessage(),
-                                    Window.Notification.TYPE_ERROR_MESSAGE);
-                            }
-                        }
-                    }
-                });
-                hl.addComponent(key);
-                hl.addComponent(value);
-                hl.addComponent(btnadd);
-                hl.setComponentAlignment(btnadd, Alignment.BOTTOM_RIGHT);
-                attributePanel.addComponent(hl);
-            }
-
-        });
-
         attributePanel.addComponent(addAttributeButton);
         return attributePanel;
     }
 
-    private static boolean isNotValid(final TextField key, final TextField value) {
+    private UserAccountAttributes buildAttributeTable() throws EscidocClientException {
+        return new UserAccountAttributes(userProxy, ur.getAttributes(userProxy), ur, uac);
+    }
+
+    private Button buildAddAttributeButton(final UserAccountAttributes attributeTable) {
+        final Button addAttributeButton = new Button();
+        addAttributeButton.setDescription("Add new Attribute");
+        addAttributeButton.setIcon(new ThemeResource("images/assets/plus.png"));
+        addAttributeButton.addListener(new OnAddAttribute(addAttributeButton, attributeTable));
+        return addAttributeButton;
+    }
+
+    static boolean isNotValid(final TextField key, final TextField value) {
         return lessThanTwoChars(key) || lessThanTwoChars(value);
     }
 
@@ -423,7 +388,7 @@ public class UserAccountView extends View {
         return key.getValue().toString().length() < 2;
     }
 
-    private void showMessage() {
+    void showMessage() {
         router.getMainWindow().showNotification(
             "Both the name and the value are required, please do not leave them blank",
             Window.Notification.TYPE_ERROR_MESSAGE);
@@ -450,7 +415,7 @@ public class UserAccountView extends View {
         final Button addPreferenceButton = new Button();
         addPreferenceButton.setDescription("Add new Preference");
         addPreferenceButton.setIcon(new ThemeResource("images/assets/plus.png"));
-        addPreferenceButton.addListener(new OnAddPreference(preferencePanel, userPrefTable, addPreferenceButton));
+        addPreferenceButton.addListener(new OnAddPreference(this, preferencePanel, userPrefTable, addPreferenceButton));
         return addPreferenceButton;
     }
 

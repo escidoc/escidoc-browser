@@ -431,4 +431,6 @@ public class ViewConstants {
     public static final String RESOURCE_NAME = "Resource Name: ";
 
     public static final String PREFERENCES = "Preferences";
+
+    public static final String ATTRIBUTES = "Attributes";
 }
