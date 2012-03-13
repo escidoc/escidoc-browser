@@ -66,6 +66,7 @@ import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.om.item.Item;
 import de.escidoc.core.resources.om.item.component.Component;
+import de.escidoc.core.resources.om.item.component.ComponentProperties;
 import de.escidoc.core.resources.om.item.component.Components;
 
 public class ItemRepository implements Repository {
@@ -289,5 +290,19 @@ public class ItemRepository implements Repository {
         item.setComponents(components);
         client.update(item);
 
+    }
+
+    public void updateComponentCategoryType(String componentId, String newCatType, String itemId)
+        throws EscidocClientException {
+        Item item = client.retrieve(itemId);
+        Components components = item.getComponents();
+        Component component = components.get(componentId);
+        ComponentProperties prop = component.getProperties();
+        prop.setContentCategory(newCatType);
+        component.setProperties(prop);
+        components.del(componentId);
+        components.add(component);
+        item.setComponents(components);
+        client.update(item);
     }
 }

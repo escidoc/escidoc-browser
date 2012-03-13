@@ -125,7 +125,9 @@ public class ItemComponentsView extends TableContainerVH {
                     confirmActionWindow(target);
                 }
                 else if (ACTION_CHANGE_CATEGORY == action) {
-                    // TODO Implement change Category here
+                    new ChangeComponentCategoryTypeHelper(router, tableContainer
+                        .getItem(target.toString()).getItemProperty(COMPONENT_CATEGORY).getValue().toString(), target
+                        .toString(), controller, itemProxy.getId()).showWindow();
                     controller.refreshView();
                 }
 

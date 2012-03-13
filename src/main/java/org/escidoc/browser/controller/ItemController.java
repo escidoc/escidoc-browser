@@ -152,4 +152,15 @@ public class ItemController extends Controller {
 
     }
 
+    public void updateComponentCategory(String componentId, String newCatType, String itemId) {
+        try {
+            repositories.item().updateComponentCategoryType(componentId, newCatType, itemId);
+            showTrayMessage("Updated!", "Component category type was updated successfully!");
+        }
+        catch (EscidocClientException e) {
+            showError("Unable to update metadata " + e.getLocalizedMessage());
+        }
+
+    }
+
 }
