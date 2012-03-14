@@ -31,7 +31,7 @@ package org.escidoc.browser.ui;
 public class ViewConstants {
 
     // Footer
-    public static final String VERSION = "0.4.2-SNAPSHOT";
+    public static final String VERSION = "0.4.3-SNAPSHOT";
 
     public static final String PRODUCT_NAME = " eSciDoc Browser ";
 
