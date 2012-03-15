@@ -134,6 +134,8 @@ public abstract class DragnDropHelper extends VerticalLayout {
         final HierarchicalContainer tableContainer = populateContainerTable();
         table.setContainerDataSource(tableContainer);
         table.setItemCaptionPropertyId(PROPERTY_NAME);
+        table.setColumnHeaderMode(Table.COLUMN_HEADER_MODE_HIDDEN);
+
         table.setVisibleColumns(new Object[] { PROPERTY_NAME, PROPERTY_HREF });
 
         // Handle drop in table: move hardware item or subtree to the table
