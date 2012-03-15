@@ -40,6 +40,7 @@ import com.vaadin.ui.themes.Runo;
 
 import org.escidoc.browser.controller.OrgUnitController;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.repository.internal.OrgUnitProxy;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
@@ -56,6 +57,7 @@ public class OrgUnitView extends View {
     public OrgUnitView(final Router router, final ResourceProxy resourceProxy, OrgUnitController orgUnitController) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
+        Preconditions.checkNotNull(orgUnitController, "orgUnitController is null: %s", orgUnitController);
         this.router = router;
         this.resourceProxy = resourceProxy;
         this.orgUnitController = orgUnitController;
@@ -192,7 +194,7 @@ public class OrgUnitView extends View {
         vlRightPanel.setHeight("100.0%");
         vlRightPanel.setMargin(false);
 
-        vlRightPanel.addComponent(buildMetaDataRecsAcc());
+        vlRightPanel.addComponent(buildMetaDataView());
         vlRightPanel.addComponent(buildParentsView());
 
         return vlRightPanel;
@@ -202,8 +204,8 @@ public class OrgUnitView extends View {
         return new ParentsView(resourceProxy, router.getMainWindow(), router, orgUnitController).asPanel();
     }
 
-    private Panel buildMetaDataRecsAcc() {
-        return new OrgUnitMetadataRecordsView(resourceProxy, router, orgUnitController, this).asPanel();
+    private Panel buildMetaDataView() {
+        return new OrgUnitMetadataRecordsView((OrgUnitProxy) resourceProxy, router, orgUnitController).asPanel();
     }
 
     private Panel buildResourcePropertiesPanel() {

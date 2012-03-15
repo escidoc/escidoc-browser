@@ -28,20 +28,8 @@
  */
 package org.escidoc.browser.ui.listeners;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLConnection;
-
-import org.escidoc.browser.BrowserApplication;
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.data.Validator.EmptyValueException;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
@@ -49,6 +37,19 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
+
+import org.escidoc.browser.BrowserApplication;
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
 
 @SuppressWarnings("serial")
 public final class StartButtonListener implements Button.ClickListener {
@@ -88,7 +89,6 @@ public final class StartButtonListener implements Button.ClickListener {
             try {
                 serviceLocation.setEscidocUri(new URI((String) inputField.getValue()));
                 showMainView();
-
             }
             catch (final URISyntaxException e) {
                 mainWindow.showNotification(new Notification(e.getMessage(), Notification.TYPE_ERROR_MESSAGE));
@@ -107,7 +107,8 @@ public final class StartButtonListener implements Button.ClickListener {
             return testConnection(inputField);
         }
         catch (final EmptyValueException e) {
-            mainWindow.showNotification(new Notification(e.getMessage(), Notification.TYPE_ERROR_MESSAGE));
+            mainWindow.showNotification(new Notification("eSciDoc URI can not be empty. " + e.getMessage(),
+                Notification.TYPE_ERROR_MESSAGE));
         }
         return false;
     }
@@ -116,9 +117,22 @@ public final class StartButtonListener implements Button.ClickListener {
         if (validateConnection(escidocUriField)) {
             return true;
         }
-        mainWindow.showNotification(new Window.Notification("Can not connect to: " + escidocUriField.getValue()
-            + ", cause: " + responseMessage, Notification.TYPE_ERROR_MESSAGE));
+
+        mainWindow.showNotification(new Window.Notification(buildMessage(escidocUriField),
+            Notification.TYPE_ERROR_MESSAGE));
         return false;
+    }
+
+    private String buildMessage(final AbstractField escidocUriField) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Can not connect to: ").append(escidocUriField.getValue());
+
+        if (responseMessage != null) {
+            builder.append(", cause: ").append(responseMessage);
+        }
+
+        String message = builder.toString();
+        return message;
     }
 
     private boolean validateConnection(final AbstractField escidocUriField) {
@@ -134,17 +148,14 @@ public final class StartButtonListener implements Button.ClickListener {
         }
         catch (final IllegalArgumentException e) {
             LOG.warn("Malformed URL: " + e);
-            mainWindow.showNotification(new Notification(e.getMessage(), Notification.TYPE_ERROR_MESSAGE));
             return false;
         }
         catch (final MalformedURLException e) {
             LOG.warn("Malformed URL: " + e);
-            mainWindow.showNotification(new Notification(e.getMessage(), Notification.TYPE_ERROR_MESSAGE));
             return false;
         }
         catch (final IOException e) {
             LOG.warn("IOException: " + e);
-            mainWindow.showNotification(new Notification(e.getMessage(), Notification.TYPE_ERROR_MESSAGE));
             return false;
         }
     }

@@ -28,19 +28,8 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import java.net.URISyntaxException;
-
-import org.escidoc.browser.controller.OrgUnitController;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.repository.internal.ActionIdConstants;
-import org.escidoc.browser.repository.internal.OrgUnitProxy;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.view.helpers.MetadataOUTableVH;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
@@ -53,31 +42,37 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Runo;
 
+import org.escidoc.browser.controller.OrgUnitController;
+import org.escidoc.browser.repository.internal.ActionIdConstants;
+import org.escidoc.browser.repository.internal.OrgUnitProxy;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.view.helpers.OrgUnitMetadataTable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.net.URISyntaxException;
+
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class OrgUnitMetadataRecordsView {
 
     private final static Logger LOG = LoggerFactory.getLogger(OrgUnitMetadataRecordsView.class);
 
-    private OrgUnitProxy ou;
+    private OrgUnitProxy orgUnit;
 
     private Router router;
 
-    private OrgUnitView view;
-
     private OrgUnitController controller;
 
-    public OrgUnitMetadataRecordsView(ResourceProxy resourceProxy, Router router, OrgUnitController controller,
-        OrgUnitView view) {
-        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
+    public OrgUnitMetadataRecordsView(OrgUnitProxy orgUnit, Router router, OrgUnitController controller) {
+        Preconditions.checkNotNull(orgUnit, "resourceProxy is null: %s", orgUnit);
         Preconditions.checkNotNull(router, "router is null: %s", router);
         Preconditions.checkNotNull(controller, "controller is null: %s", controller);
-        Preconditions.checkNotNull(view, "view is null: %s", view);
 
-        ou = (OrgUnitProxy) resourceProxy;
+        this.orgUnit = orgUnit;
         this.router = router;
         this.controller = controller;
-        this.view = view;
     }
 
     public Accordion asAccord() {
@@ -88,9 +83,9 @@ public class OrgUnitMetadataRecordsView {
     }
 
     public Panel asPanel() {
-        final Panel pnlmetadataRecs = new Panel();
-        pnlmetadataRecs.setSizeFull();
-        pnlmetadataRecs.setStyleName(Runo.PANEL_LIGHT);
+        final Panel panel = new Panel();
+        panel.setSizeFull();
+        panel.setStyleName(Runo.PANEL_LIGHT);
         VerticalLayout vl = new VerticalLayout();
         vl.setImmediate(false);
         vl.setWidth("100.0%");
@@ -98,10 +93,11 @@ public class OrgUnitMetadataRecordsView {
         vl.setMargin(false);
         vl.addComponent(buildMetaDataTab());
 
-        pnlmetadataRecs.setContent(vl);
-        return pnlmetadataRecs;
+        panel.setContent(vl);
+        return panel;
     }
 
+    @SuppressWarnings("serial")
     private Component buildMetaDataTab() {
         Panel innerPanel = new Panel();
         innerPanel.setSizeFull();
@@ -118,9 +114,9 @@ public class OrgUnitMetadataRecordsView {
             addNewOrgUnitBtn.addListener(new Button.ClickListener() {
 
                 @Override
-                public void buttonClick(ClickEvent event) {
-                    new OnAddOrgUnitMetadata(controller, router);
-
+                public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
+                    OnAddOrgUnitMetadata view = new OnAddOrgUnitMetadata(controller, router.getMainWindow());
+                    view.showAddWindow();
                 }
             });
             addNewOrgUnitBtn.setStyleName(BaseTheme.BUTTON_LINK);
@@ -130,14 +126,14 @@ public class OrgUnitMetadataRecordsView {
             cssLayout.addComponent(addNewOrgUnitBtn);
         }
         vl.addComponent(cssLayout);
-        MetadataOUTableVH metadataTable = new MetadataOUTableVH(ou.getMedataRecords(), controller, router);
+        OrgUnitMetadataTable metadataTable = new OrgUnitMetadataTable(orgUnit.getMedataRecords(), controller, router);
         vl.addComponent(metadataTable);
         vl.setExpandRatio(metadataTable, 9);
         innerPanel.setContent(vl);
         return innerPanel;
     }
 
-    private void buildPanelHeader(CssLayout cssLayout, String name) {
+    private static void buildPanelHeader(CssLayout cssLayout, String name) {
         cssLayout.addStyleName("v-accordion-item-caption v-caption v-captiontext");
         cssLayout.setWidth("100%");
         cssLayout.setMargin(false);
@@ -152,7 +148,7 @@ public class OrgUnitMetadataRecordsView {
         try {
             return router
                 .getRepositories().pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_ORG_UNIT)
-                .forResource(ou.getId()).permitted();
+                .forResource(orgUnit.getId()).permitted();
         }
         catch (final EscidocClientException e) {
             LOG.debug(e.getLocalizedMessage());
@@ -163,5 +159,4 @@ public class OrgUnitMetadataRecordsView {
             return false;
         }
     }
-
 }

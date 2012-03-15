@@ -28,9 +28,6 @@
  */
 package org.escidoc.browser.ui.view.helpers;
 
-import org.escidoc.browser.controller.Controller;
-import org.escidoc.browser.ui.ViewConstants;
-
 import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.event.Action;
@@ -43,11 +40,14 @@ import com.vaadin.ui.Table.CellStyleGenerator;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
+import org.escidoc.browser.controller.Controller;
+import org.escidoc.browser.ui.ViewConstants;
+
 /**
  * This is a table container. <br >
  * It lists a set of elements and provides a remove operation on each element.
  * 
- * @author ajb
+ * @author arb
  * 
  */
 @SuppressWarnings("serial")
@@ -79,7 +79,7 @@ public abstract class TableContainerVH extends VerticalLayout {
         });
     }
 
-    protected abstract boolean hasRightstoContextMenu();;
+    protected abstract boolean hasRightstoContextMenu();
 
     protected void addActionLists() {
         // Actions (a.k.a context menu)
@@ -121,17 +121,12 @@ public abstract class TableContainerVH extends VerticalLayout {
      * Just an initialization of the table. Should be overridden
      */
     protected void initializeTable() {
-        // size
         table.setWidth("100%");
-
-        // selectable
         table.setSelectable(true);
         table.setMultiSelect(true);
-        table.setImmediate(true); // react at once when something is selected
-        // turn on column reordering and collapsing
+        table.setImmediate(true);
         table.setColumnReorderingAllowed(true);
         table.setColumnCollapsingAllowed(true);
-
     }
 
     /**

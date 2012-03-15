@@ -28,15 +28,24 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import java.io.IOException;
-import java.io.StringReader;
+import com.google.common.base.Preconditions;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import com.vaadin.terminal.ExternalResource;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Link;
+import com.vaadin.ui.ProgressIndicator;
+import com.vaadin.ui.Upload;
+import com.vaadin.ui.Upload.FailedEvent;
+import com.vaadin.ui.Upload.FinishedEvent;
+import com.vaadin.ui.Upload.StartedEvent;
+import com.vaadin.ui.Upload.SucceededEvent;
+import com.vaadin.ui.Window;
 
 import org.escidoc.browser.controller.OrgUnitController;
-import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.MetadataFileReceiver;
@@ -47,19 +56,12 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.ProgressIndicator;
-import com.vaadin.ui.Upload;
-import com.vaadin.ui.Upload.FailedEvent;
-import com.vaadin.ui.Upload.FinishedEvent;
-import com.vaadin.ui.Upload.StartedEvent;
-import com.vaadin.ui.Upload.SucceededEvent;
-import com.vaadin.ui.Window;
+import java.io.IOException;
+import java.io.StringReader;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
@@ -73,59 +75,136 @@ public class OnEditOrgUnitMetadata {
 
     private final ProgressIndicator pi = new ProgressIndicator();
 
-    private final String metadataRecordName;
-
-    private final Repositories repositories;
+    private final String name;
 
     private MetadataFileReceiver receiver;
 
     private Upload upload;
 
-    private Label status;
+    private Label message;
 
     private Window mainWindow;
 
-    private HorizontalLayout hl;
+    private HorizontalLayout buttonLayout;
 
     private Element metadataContent;
 
     private OrgUnitController controller;
 
-    public OnEditOrgUnitMetadata(String name, Router router, Repositories repositories, OrgUnitController controller) {
-        Preconditions.checkNotNull(name, "metadataRecord is null: %s", name);
+    private String id;
+
+    public OnEditOrgUnitMetadata(String name, Router router, OrgUnitController controller, String id) {
+        Preconditions.checkNotNull(name, "name is null: %s", name);
         Preconditions.checkNotNull(router, "router is null: %s", router);
-        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        Preconditions.checkNotNull(controller, "controller is null: %s", controller);
+        Preconditions.checkNotNull(id, "id is null: %s", id);
 
-        this.metadataRecordName = name;
+        this.name = name;
         this.mainWindow = router.getMainWindow();
-        this.repositories = repositories;
-
         this.controller = controller;
-        showSubWindow();
+        this.id = id;
     }
 
-    public void showSubWindow() {
-        final Window subwindow = new Window(ViewConstants.EDIT_METADATA);
-        subwindow.setWidth("600px");
-        subwindow.setModal(true);
+    public void showEditWindow() {
+        final Window modalWindow = buildModalWindow();
+        message = new Label(ViewConstants.EDIT_METADATA_UPLOAD_MESSAGE);
 
-        status = new Label(ViewConstants.UPLOAD_A_WELLFORMED_XML_FILE_TO_REPLACE_METADATA);
-        // Make uploading start immediately when file is selected
+        buildMetadataReceiver();
+        buildUpload();
+        buildProgressLayout();
+        buildSaveAndCancelButtons(modalWindow);
+
+        modalWindow.addComponent(message);
+        modalWindow.addComponent(upload);
+        modalWindow.addComponent(new Label("OR"));
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("http://localhost:8082/rest/v0.9/organizations/");
+        builder.append(id);
+        builder.append("/metadata/escidoc?escidocurl=http://esfedrep1.fiz-karlsruhe.de:8080");
+        modalWindow.addComponent(new Link("Open Metadata in Editor", new ExternalResource(builder.toString())));
+
+        modalWindow.addComponent(progressLayout);
+        modalWindow.addComponent(buttonLayout);
+
+        mainWindow.addWindow(modalWindow);
+    }
+
+    private void buildSaveAndCancelButtons(final Window modalWindow) {
+        final Button saveBtn = buildSaveButton(modalWindow);
+        final Button cancelBtn = buildCancelButton(modalWindow);
+
+        buttonLayout = new HorizontalLayout();
+        buttonLayout.setVisible(false);
+
+        buttonLayout.addComponent(saveBtn);
+        buttonLayout.addComponent(cancelBtn);
+    }
+
+    private void buildMetadataReceiver() {
         receiver = new MetadataFileReceiver();
         receiver.clearBuffer();
-        upload = new Upload("", receiver);
-        upload.setImmediate(true);
-        upload.setButtonCaption("Select file");
+    }
 
+    private static Button buildCancelButton(final Window modalWindow) {
+        final Button cancelBtn = new Button(ViewConstants.CANCEL, new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
+                modalWindow.getParent().removeWindow(modalWindow);
+            }
+        });
+        return cancelBtn;
+    }
+
+    private Button buildSaveButton(final Window modalWindow) {
+        final Button saveBtn = new Button(ViewConstants.SAVE, new Button.ClickListener() {
+
+            private MetadataRecord metadata;
+
+            @Override
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
+                try {
+                    metadata = controller.getMetadata(name);
+                    metadata.setContent(metadataContent);
+
+                    controller.updateMetadata(metadata);
+                    controller.refreshView();
+                    message.setValue("");
+                    upload.setEnabled(true);
+                }
+                catch (final EscidocClientException e) {
+                    LOG.error(e.getMessage());
+                    mainWindow.showNotification(e.getMessage());
+                }
+                modalWindow.getParent().removeWindow(modalWindow);
+            }
+        });
+        return saveBtn;
+    }
+
+    private void buildProgressLayout() {
         progressLayout.setSpacing(true);
         progressLayout.setVisible(false);
         progressLayout.addComponent(pi);
         progressLayout.setComponentAlignment(pi, Alignment.MIDDLE_LEFT);
+    }
 
-        /**
-         * =========== Add needed listener for the upload component: start, progress, finish, success, fail ===========
-         */
+    private static Window buildModalWindow() {
+        final Window subwindow = new Window(ViewConstants.EDIT_METADATA);
+        subwindow.setWidth("600px");
+        subwindow.setModal(true);
+        return subwindow;
+    }
 
+    private void buildUpload() {
+        upload = new Upload("", receiver);
+        upload.setImmediate(true);
+        upload.setButtonCaption(ViewConstants.SELECT_FILE);
+        addListeners();
+    }
+
+    private void addListeners() {
         upload.addListener(new Upload.StartedListener() {
             @Override
             public void uploadStarted(final StartedEvent event) {
@@ -133,7 +212,7 @@ public class OnEditOrgUnitMetadata {
                 progressLayout.setVisible(true);
                 pi.setValue(Float.valueOf(0f));
                 pi.setPollingInterval(500);
-                status.setValue("Uploading file \"" + event.getFilename() + "\"");
+                message.setValue("Uploading file \"" + event.getFilename() + "\"");
             }
         });
 
@@ -141,14 +220,14 @@ public class OnEditOrgUnitMetadata {
             @Override
             public void uploadSucceeded(final SucceededEvent event) {
                 // This method gets called when the upload finished successfully
-                status.setValue("Uploading file \"" + event.getFilename() + "\" succeeded");
+                message.setValue("Uploading file \"" + event.getFilename() + "\" succeeded");
                 if (isWellFormed(receiver.getFileContent())) {
-                    status.setValue(ViewConstants.XML_IS_WELL_FORMED);
-                    hl.setVisible(true);
+                    message.setValue(ViewConstants.XML_IS_WELL_FORMED);
+                    buttonLayout.setVisible(true);
                     upload.setEnabled(false);
                 }
                 else {
-                    status.setValue(ViewConstants.XML_IS_NOT_WELL_FORMED);
+                    message.setValue(ViewConstants.XML_IS_NOT_WELL_FORMED);
                     receiver.clearBuffer();
                 }
             }
@@ -158,7 +237,7 @@ public class OnEditOrgUnitMetadata {
             @Override
             public void uploadFailed(final FailedEvent event) {
                 // This method gets called when the upload failed
-                status.setValue("Uploading interrupted");
+                message.setValue("Uploading interrupted");
             }
         });
 
@@ -172,48 +251,6 @@ public class OnEditOrgUnitMetadata {
                 upload.setCaption("Select another file");
             }
         });
-
-        final Button saveBtn = new Button(ViewConstants.SAVE, new Button.ClickListener() {
-
-            private MetadataRecord metadata;
-
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                try {
-                    metadata = controller.getMetadata(metadataRecordName);
-                    metadata.setContent(metadataContent);
-
-                    controller.updateMetadata(metadata);
-                    controller.refreshView();
-                    status.setValue("");
-                    upload.setEnabled(true);
-                }
-                catch (final EscidocClientException e) {
-                    LOG.error(e.getMessage());
-                    mainWindow.showNotification(e.getMessage());
-                }
-                subwindow.getParent().removeWindow(subwindow);
-            }
-        });
-
-        final Button cancelBtn = new Button(ViewConstants.CANCEL, new Button.ClickListener() {
-
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                subwindow.getParent().removeWindow(subwindow);
-            }
-        });
-
-        hl = new HorizontalLayout();
-        hl.setVisible(false);
-        hl.addComponent(saveBtn);
-        hl.addComponent(cancelBtn);
-
-        subwindow.addComponent(status);
-        subwindow.addComponent(upload);
-        subwindow.addComponent(progressLayout);
-        subwindow.addComponent(hl);
-        mainWindow.addWindow(subwindow);
     }
 
     /**

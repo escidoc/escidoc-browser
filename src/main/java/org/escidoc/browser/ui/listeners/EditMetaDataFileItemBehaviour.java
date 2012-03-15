@@ -113,7 +113,7 @@ public class EditMetaDataFileItemBehaviour implements ClickListener {
         final Window subwindow = new Window(ViewConstants.EDIT_METADATA);
         subwindow.setWidth("600px");
         subwindow.setModal(true);
-        status = new Label(ViewConstants.UPLOAD_A_WELLFORMED_XML_FILE_TO_REPLACE_METADATA);
+        status = new Label(ViewConstants.EDIT_METADATA_UPLOAD_MESSAGE);
 
         // Make uploading start immediately when file is selected
         receiver = new MetadataFileReceiver();

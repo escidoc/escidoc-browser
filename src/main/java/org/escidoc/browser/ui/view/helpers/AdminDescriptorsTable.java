@@ -28,22 +28,24 @@
  */
 package org.escidoc.browser.ui.view.helpers;
 
-import org.escidoc.browser.controller.ContextController;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.listeners.AdminDescriptorFormListener;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.event.Action;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 
+import org.escidoc.browser.controller.ContextController;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.listeners.AdminDescriptorFormListener;
+
 import de.escidoc.core.resources.om.context.AdminDescriptor;
 import de.escidoc.core.resources.om.context.AdminDescriptors;
 
-public class AdminDescriptorsTableVH extends TableContainerVH {
+@SuppressWarnings("serial")
+public class AdminDescriptorsTable extends TableContainerVH {
 
     protected ContextController controller;
 
@@ -61,12 +63,12 @@ public class AdminDescriptorsTableVH extends TableContainerVH {
 
     private Router router;
 
-    public AdminDescriptorsTableVH(ContextController contextController, AdminDescriptors adminDescriptors, Router router) {
+    public AdminDescriptorsTable(ContextController controller, AdminDescriptors adminDescriptors, Router router) {
+        Preconditions.checkNotNull(controller, "contextController is null: %s", controller);
+        Preconditions.checkNotNull(adminDescriptors, "adminDescriptors is null: %s", adminDescriptors);
+        Preconditions.checkNotNull(router, "router is null: %s", router);
 
-        Preconditions.checkNotNull(contextController, "contextController is null: %s", contextController);
-        Preconditions.checkNotNull(adminDescriptors, "preferences is null: %s", adminDescriptors);
-
-        this.controller = contextController;
+        this.controller = controller;
         this.adminDescriptors = adminDescriptors;
         this.router = router;
         table.setContainerDataSource(populateContainerTable());
@@ -74,15 +76,19 @@ public class AdminDescriptorsTableVH extends TableContainerVH {
 
     @Override
     protected void addActionLists() {
-        // if (contextController.canUpdateContext()) {
         table.addActionHandler(new Action.Handler() {
             @Override
-            public Action[] getActions(Object target, Object sender) {
+            public Action[] getActions(
+                @SuppressWarnings("unused") final Object target, @SuppressWarnings("unused") final Object sender) {
                 return ACTIONS_LIST;
             }
 
             @Override
-            public void handleAction(Action action, Object sender, Object target) {
+            public void handleAction(
+                final Action action, @SuppressWarnings("unused") final Object sender, final Object target) {
+
+                Preconditions.checkNotNull(action, "action is null: %s", action);
+
                 if (ACTION_DELETE == action) {
                     confirmActionWindow(target);
                 }
@@ -91,15 +97,14 @@ public class AdminDescriptorsTableVH extends TableContainerVH {
                     controller.refreshView();
                 }
                 else if (ACTION_EDIT == action) {
-                    new AdminDescriptorFormListener(router, controller).adminDescriptorForm(adminDescriptors.get(target
-                        .toString()));
-                    controller.refreshView();
-
+                    if (target != null) {
+                        new AdminDescriptorFormListener(router, controller).adminDescriptorForm(adminDescriptors
+                            .get(target.toString()));
+                        controller.refreshView();
+                    }
                 }
-
             }
         });
-        // }
     }
 
     @Override
@@ -134,6 +139,7 @@ public class AdminDescriptorsTableVH extends TableContainerVH {
         return true;
     }
 
+    @Override
     protected void initializeTable() {
         table.setWidth("100%");
         table.setSelectable(true);

@@ -136,7 +136,7 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
             name.setStyleName(BaseTheme.BUTTON_LINK);
             ((Button) name).addListener(new Button.ClickListener() {
                 @Override
-                public void buttonClick(ClickEvent event) {
+                public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
                     ResourceProxy userProxy;
                     try {
                         userProxy = repositories.user().findById(user.getUserId());
@@ -173,7 +173,7 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
         configureButton(login);
     }
 
-    private void configureButton(final Button button) {
+    private static void configureButton(final Button button) {
         button.setStyleName(BaseTheme.BUTTON_LINK);
         button.setWidth("60px");
         button.setHeight("15px");
@@ -211,7 +211,6 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
         popup.setHideOnMouseOut(true);
         popup.addListener(this);
         custom.addComponent(popup, "searchTip");
-
     }
 
     /**
@@ -220,7 +219,7 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
      * 
      * @param event
      */
-    public void onClick(final Button.ClickEvent event) {
+    public void onClick(@SuppressWarnings("unused") final Button.ClickEvent event) {
         redirectToLoginView();
     }
 
@@ -242,7 +241,7 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
      * @param searchString
      * @return boolean
      */
-    private boolean validate(final String searchString) {
+    private static boolean validate(final String searchString) {
         final Pattern p = Pattern.compile("[A-Za-z0-9_.\\s\":#]{3,}");
         final Matcher m = p.matcher(searchString);
         return m.matches();

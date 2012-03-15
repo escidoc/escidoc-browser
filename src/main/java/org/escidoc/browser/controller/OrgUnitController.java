@@ -28,14 +28,14 @@
  */
 package org.escidoc.browser.controller;
 
+import com.vaadin.ui.Window;
+
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.OrgUnitProxy;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.OrgUnitView;
-
-import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
@@ -74,7 +74,6 @@ public class OrgUnitController extends Controller {
     }
 
     public void updateMetadata(MetadataRecord metadataRecord) throws EscidocClientException {
-
         repositories.organization().updateMetaData((OrgUnitProxy) resourceProxy, metadataRecord);
         // TODO Success message here
 
@@ -103,7 +102,7 @@ public class OrgUnitController extends Controller {
 
     public void addMetaData(MetadataRecord metadataRecord) {
         try {
-            repositories.organization().addMetaData((OrgUnitProxy) resourceProxy, metadataRecord);
+            repositories.organization().addMetaData(resourceProxy, metadataRecord);
             showTrayMessage(ViewConstants.ADDED_SUCCESSFULLY, ViewConstants.ADDED_SUCCESSFULLY);
         }
         catch (EscidocClientException e) {

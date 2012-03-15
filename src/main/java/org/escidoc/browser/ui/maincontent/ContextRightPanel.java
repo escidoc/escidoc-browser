@@ -35,7 +35,7 @@ import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.AddOrgUnitstoContext;
 import org.escidoc.browser.ui.listeners.AdminDescriptorFormListener;
-import org.escidoc.browser.ui.view.helpers.AdminDescriptorsTableVH;
+import org.escidoc.browser.ui.view.helpers.AdminDescriptorsTable;
 import org.escidoc.browser.ui.view.helpers.OrganizationalUnitsTableVH;
 
 import com.google.common.base.Preconditions;
@@ -138,8 +138,8 @@ class ContextRightPanel {
 
         VerticalLayout vl2 = new VerticalLayout();
         final AdminDescriptors admDesc = resourceProxy.getAdminDescription();
-        final AdminDescriptorsTableVH adminDescriptorTable =
-            new AdminDescriptorsTableVH(contextController, admDesc, router);
+        final AdminDescriptorsTable adminDescriptorTable =
+            new AdminDescriptorsTable(contextController, admDesc, router);
         vl2.addComponent(adminDescriptorTable);
         vl.addComponent(vl2);
         vl.setExpandRatio(vl2, 9);
