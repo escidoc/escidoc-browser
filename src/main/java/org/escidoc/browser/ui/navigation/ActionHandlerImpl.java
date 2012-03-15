@@ -29,6 +29,8 @@
 package org.escidoc.browser.ui.navigation;
 
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.escidoc.browser.AppConstants;
@@ -44,6 +46,7 @@ import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.CreateOrgUnitView;
 import org.escidoc.browser.ui.navigation.menubar.ShowAddViewCommand;
+import org.escidoc.browser.ui.view.helpers.DeleteContainerShowLogsHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,6 +77,8 @@ public final class ActionHandlerImpl implements Action.Handler {
     private static final String DELETE_RESOURCE = "Are you confident to delete this resource!?";
 
     private Router router;
+
+    private List<ResourceModel> results;
 
     public ActionHandlerImpl(final Window mainWindow, final Repositories repositories,
         final TreeDataSource treeDataSource, Router router) {
@@ -404,7 +409,7 @@ public final class ActionHandlerImpl implements Action.Handler {
     private void tryDeleteContainer(final Object target, Object sender) throws EscidocClientException,
         URISyntaxException {
         final String containerId = ((ContainerModel) target).getId();
-        if ((allowedToDeleteContainer(containerId)) && (canDeleteContainer(containerId))) {
+        if ((allowedToDeleteContainer(containerId))) {
             deleteContainer((ContainerModel) target, sender);
         }
         else {
@@ -414,17 +419,68 @@ public final class ActionHandlerImpl implements Action.Handler {
         }
     }
 
-    private boolean canDeleteContainer(String containerId) throws EscidocClientException {
-        List<ResourceModel> members = repositories.container().findDirectMembers(containerId);
-        for (ResourceModel resourceModel : members) {
-            if (resourceModel.getType().equals(ResourceType.CONTAINER)) {
-                // TODO more code here
-            }
-            else {
-
+    /**
+     * Attempt to put the leafs or empty containers at the beginning of the list
+     * 
+     * @param resource
+     * @return
+     * @throws EscidocClientException
+     */
+    private List<ResourceModel> findAllChildren(final ResourceModel resource) throws EscidocClientException {
+        results.add(resource);
+        if (resource.getType().equals(ResourceType.CONTAINER)) {
+            final List<ResourceModel> children = repositories.container().findDirectMembers(resource.getId());
+            if (!children.isEmpty()) {
+                for (ResourceModel child : children) {
+                    System.out.println("look what I found " + child);
+                    return findAllChildren(child);
+                }
             }
         }
-        return false;
+
+        return results;
+    }
+
+    private void deleteAllChildrenOfContainer(ResourceModel resource) {
+        HashMap<String, String> listDeleted = new HashMap<String, String>();
+        HashMap<String, String> listNotDeleted = new HashMap<String, String>();
+        results = new ArrayList<ResourceModel>();
+        try {
+            System.out.println(results);
+            results = findAllChildren(resource);
+
+            for (ResourceModel resourceModel : results) {
+
+                if (resourceModel.getType().equals(ResourceType.CONTAINER)) {
+                    try {
+
+                        repositories.container().finalDelete(resourceModel);
+                        listDeleted.put(resourceModel.getId(), resourceModel.getType().toString().toLowerCase());
+                    }
+                    catch (EscidocClientException e) {
+                        listNotDeleted.put(resourceModel.getId(),
+                            resourceModel.getType() + " " + e.getLocalizedMessage());
+                    }
+                }
+                else {
+                    try {
+                        repositories.item().finalDelete(resourceModel);
+                        listDeleted.put(resourceModel.getId(), resourceModel.getType().toString());
+                    }
+                    catch (EscidocClientException e) {
+                        listNotDeleted.put(resourceModel.getId(), e.getLocalizedMessage());
+                    }
+                }
+            }
+        }
+        catch (EscidocClientException e1) {
+            mainWindow.showNotification(new Window.Notification("Could not retrieve members",
+                Window.Notification.TYPE_WARNING_MESSAGE));
+        }
+        new DeleteContainerShowLogsHelper(listDeleted, listNotDeleted, router).showWindow();
+        LOG.debug(listDeleted.toString());
+        LOG.debug(listNotDeleted.toString());
+
     }
 
     private void tryShowCreateResourceView(final Object target, final String contextId) throws EscidocClientException,
@@ -563,6 +619,7 @@ public final class ActionHandlerImpl implements Action.Handler {
             public void buttonClick(@SuppressWarnings("unused")
             final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
+                deleteAllChildrenOfContainer(model);
                 try {
                     repositories.container().finalDelete(model);
                     router.getLayout().closeView(model, treeDataSource.getParent(model), sender);
