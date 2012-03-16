@@ -114,22 +114,18 @@ public class OrgUnitMetadataTable extends TableContainerVH {
         });
     }
 
-    static class Metadata {
+    public static class Metadata {
 
         String name;
 
         String uri;
 
-        static Metadata newInstance(String name, String uri) {
+        public static Metadata newInstance(MetadataRecord metadataRecord) {
             Metadata m = new Metadata();
-            m.name = name;
-            m.uri = uri;
+            m.name = metadataRecord.getName();
+            m.uri = metadataRecord.getXLinkHref();
             return m;
         }
-
-        public static Metadata newInstance(MetadataRecord metadataRecord) {
-            throw new UnsupportedOperationException("not-yet-implemented.");
-        }
     }
 
     @Override
@@ -139,30 +135,18 @@ public class OrgUnitMetadataTable extends TableContainerVH {
         dataSource.addContainerProperty(ViewConstants.PROPERTY_NAME, String.class, null);
         dataSource.addContainerProperty(ViewConstants.PROPERTY_LINK, Link.class, null);
 
-        for (final MetadataRecord metadataRecord : mdList) {
-            Metadata md = Metadata.newInstance(metadataRecord);
-
-            Item item = dataSource.addItem(metadataRecord.getName());
-            if (item != null) {
-                item.getItemProperty(ViewConstants.PROPERTY_NAME).setValue(metadataRecord.getName());
-                item.getItemProperty(ViewConstants.PROPERTY_LINK).setValue(buildLink(metadataRecord));
-            }
-        }
-        table.setColumnWidth(ViewConstants.PROPERTY_LINK, 40);
-        return dataSource;
-    }
-
-    @Override
-    protected HierarchicalContainer populateContainerTable() {
-        dataSource = new HierarchicalContainer();
-
-        dataSource.addContainerProperty(ViewConstants.PROPERTY_NAME, String.class, null);
-        dataSource.addContainerProperty(ViewConstants.PROPERTY_LINK, Link.class, null);
+        // for (final MetadataRecord metadataRecord : mdList) {
+        // Metadata md = Metadata.newInstance(metadataRecord);
+        // Item item = dataSource.addItem(metadataRecord.getXLinkTitle());
+        // if (item != null) {
+        // item.getItemProperty(ViewConstants.PROPERTY_NAME).setValue(md.name);
+        // item.getItemProperty(ViewConstants.PROPERTY_LINK).setValue(md.uri);
+        // }
+        // }
 
         for (final MetadataRecord metadataRecord : mdList) {
             Metadata md = Metadata.newInstance(metadataRecord);
-
-            Item item = dataSource.addItem(metadataRecord.getName());
+            Item item = dataSource.addItem(md);
             if (item != null) {
                 item.getItemProperty(ViewConstants.PROPERTY_NAME).setValue(metadataRecord.getName());
                 item.getItemProperty(ViewConstants.PROPERTY_LINK).setValue(buildLink(metadataRecord));
@@ -173,17 +157,30 @@ public class OrgUnitMetadataTable extends TableContainerVH {
     }
 
     private Link buildLink(final MetadataRecord metadataRecord) {
-        Link mdLink =
-            new Link("View", new ExternalResource(router.getServiceLocation().getEscidocUri()
-                + metadataRecord.getXLinkHref()));
+        Link mdLink = new Link("View", new ExternalResource(buildUri(metadataRecord)));
         mdLink.setTargetName("_blank");
         mdLink.setStyleName(BaseTheme.BUTTON_LINK);
         mdLink.setDescription("Show metadata information in a separate window");
         return mdLink;
     }
 
+    private String buildUri(final MetadataRecord metadataRecord) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(router.getServiceLocation().getEscidocUri());
+        builder.append(metadataRecord.getXLinkHref());
+        String metadataUri = builder.toString();
+        return metadataUri;
+    }
+
     @Override
     protected void initializeTable() {
+        table.setWidth("100%");
+        table.setSelectable(true);
+        table.setMultiSelect(true);
+        table.setImmediate(true);
+        table.setColumnReorderingAllowed(true);
+        table.setColumnCollapsingAllowed(true);
         table.setColumnHeaderMode(Table.COLUMN_HEADER_MODE_HIDDEN);
+        table.setColumnWidth(ViewConstants.PROPERTY_LINK, 40);
     }
 }

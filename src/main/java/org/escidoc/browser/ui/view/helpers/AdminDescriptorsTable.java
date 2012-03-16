@@ -146,5 +146,4 @@ public class AdminDescriptorsTable extends TableContainerVH {
         table.setImmediate(true); // react at once when something is selected
         table.setColumnHeaderMode(Table.COLUMN_HEADER_MODE_HIDDEN);
     }
-
 }

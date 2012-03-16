@@ -118,12 +118,14 @@ public class OnEditOrgUnitMetadata {
         modalWindow.addComponent(upload);
         modalWindow.addComponent(new Label("OR"));
 
+        String escidocUrl = "http://esfedrep1.fiz-karlsruhe.de:8080";
+
         StringBuilder builder = new StringBuilder();
         builder.append("http://localhost:8082/rest/v0.9/organizations/");
         builder.append(id);
-        builder.append("/metadata/escidoc?escidocurl=http://esfedrep1.fiz-karlsruhe.de:8080");
-        modalWindow.addComponent(new Link("Open Metadata in Editor", new ExternalResource(builder.toString())));
+        builder.append("/metadata/escidoc?escidocurl=" + escidocUrl);
 
+        modalWindow.addComponent(new Link("Open Metadata in Editor", new ExternalResource(builder.toString())));
         modalWindow.addComponent(progressLayout);
         modalWindow.addComponent(buttonLayout);
 
@@ -167,7 +169,6 @@ public class OnEditOrgUnitMetadata {
                 try {
                     metadata = controller.getMetadata(name);
                     metadata.setContent(metadataContent);
-
                     controller.updateMetadata(metadata);
                     controller.refreshView();
                     message.setValue("");
@@ -219,7 +220,6 @@ public class OnEditOrgUnitMetadata {
         upload.addListener(new Upload.SucceededListener() {
             @Override
             public void uploadSucceeded(final SucceededEvent event) {
-                // This method gets called when the upload finished successfully
                 message.setValue("Uploading file \"" + event.getFilename() + "\" succeeded");
                 if (isWellFormed(receiver.getFileContent())) {
                     message.setValue(ViewConstants.XML_IS_WELL_FORMED);
@@ -236,7 +236,6 @@ public class OnEditOrgUnitMetadata {
         upload.addListener(new Upload.FailedListener() {
             @Override
             public void uploadFailed(final FailedEvent event) {
-                // This method gets called when the upload failed
                 message.setValue("Uploading interrupted");
             }
         });
@@ -244,8 +243,6 @@ public class OnEditOrgUnitMetadata {
         upload.addListener(new Upload.FinishedListener() {
             @Override
             public void uploadFinished(final FinishedEvent event) {
-                // This method gets called always when the upload finished,
-                // either succeeding or failing
                 progressLayout.setVisible(false);
                 upload.setVisible(true);
                 upload.setCaption("Select another file");

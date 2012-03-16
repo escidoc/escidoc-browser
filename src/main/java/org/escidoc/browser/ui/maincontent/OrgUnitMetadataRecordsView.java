@@ -31,7 +31,6 @@ package org.escidoc.browser.ui.maincontent;
 import com.google.common.base.Preconditions;
 
 import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
@@ -73,13 +72,6 @@ public class OrgUnitMetadataRecordsView {
         this.orgUnit = orgUnit;
         this.router = router;
         this.controller = controller;
-    }
-
-    public Accordion asAccord() {
-        final Accordion accordion = new Accordion();
-        accordion.setSizeFull();
-        accordion.addTab(buildMetaDataTab(), ViewConstants.METADATA, null);
-        return accordion;
     }
 
     public Panel asPanel() {
