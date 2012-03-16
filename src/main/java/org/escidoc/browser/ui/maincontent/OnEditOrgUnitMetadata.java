@@ -69,6 +69,9 @@ import de.escidoc.core.resources.common.MetadataRecord;
 @SuppressWarnings("serial")
 public class OnEditOrgUnitMetadata {
 
+    // public static final String SERVICE_BASE_URI = "http://escidev6.fiz-karlsruhe.de:8082";
+    public static final String SERVICE_BASE_URI = "http://localhost:8082";
+
     private final static Logger LOG = LoggerFactory.getLogger(OnEditOrgUnitMetadata.class);
 
     private final HorizontalLayout progressLayout = new HorizontalLayout();
@@ -95,17 +98,18 @@ public class OnEditOrgUnitMetadata {
 
     private Router router;
 
-    public OnEditOrgUnitMetadata(String name, Router router, OrgUnitController controller, String id) {
-        Preconditions.checkNotNull(name, "name is null: %s", name);
+    public OnEditOrgUnitMetadata(String metadataName, Router router, OrgUnitController controller, String orgUnitId) {
+
+        Preconditions.checkNotNull(metadataName, "name is null: %s", metadataName);
         Preconditions.checkNotNull(router, "router is null: %s", router);
         Preconditions.checkNotNull(controller, "controller is null: %s", controller);
-        Preconditions.checkNotNull(id, "id is null: %s", id);
+        Preconditions.checkNotNull(orgUnitId, "id is null: %s", orgUnitId);
 
-        this.name = name;
+        this.name = metadataName;
         this.router = router;
         this.mainWindow = router.getMainWindow();
         this.controller = controller;
-        this.id = id;
+        this.id = orgUnitId;
     }
 
     public void showEditWindow() {
@@ -121,19 +125,20 @@ public class OnEditOrgUnitMetadata {
         modalWindow.addComponent(upload);
         modalWindow.addComponent(new Label("OR"));
 
-        modalWindow.addComponent(new Link("Open Metadata in Editor", new ExternalResource(
-            buildMdUpdateUri(name))));
+        modalWindow.addComponent(new Link("Open Metadata in Editor", new ExternalResource(buildMdUpdateUri(
+            SERVICE_BASE_URI, name))));
         modalWindow.addComponent(progressLayout);
         modalWindow.addComponent(buttonLayout);
 
         mainWindow.addWindow(modalWindow);
     }
 
-    private String buildMdUpdateUri(String metadataName) {
+    private String buildMdUpdateUri(String baseUri, String metadataName) {
         Preconditions.checkNotNull(router.getServiceLocation().getEscidocUri(), "escidocUrl is null: %s", router
             .getServiceLocation().getEscidocUri());
+
         StringBuilder builder = new StringBuilder();
-        builder.append("http://localhost:8082/rest/v0.9/organizations/");
+        builder.append(baseUri + "/rest/v0.9/organizations/");
         builder.append(id);
         builder.append("/metadata/");
         builder.append(metadataName);

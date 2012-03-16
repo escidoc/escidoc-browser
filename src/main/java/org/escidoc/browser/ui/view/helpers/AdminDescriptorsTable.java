@@ -71,6 +71,7 @@ public class AdminDescriptorsTable extends TableContainerVH {
         this.controller = controller;
         this.adminDescriptors = adminDescriptors;
         this.router = router;
+
         table.setContainerDataSource(populateContainerTable());
     }
 
@@ -86,8 +87,8 @@ public class AdminDescriptorsTable extends TableContainerVH {
             @Override
             public void handleAction(
                 final Action action, @SuppressWarnings("unused") final Object sender, final Object target) {
-
                 Preconditions.checkNotNull(action, "action is null: %s", action);
+                Preconditions.checkNotNull(target, "target is null: %s", target);
 
                 if (ACTION_DELETE == action) {
                     confirmActionWindow(target);
