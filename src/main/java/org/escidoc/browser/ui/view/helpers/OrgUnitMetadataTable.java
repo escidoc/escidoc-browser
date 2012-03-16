@@ -105,11 +105,16 @@ public class OrgUnitMetadataTable extends TableContainerVH {
                     confirmActionWindow(target);
                 }
                 else if (ACTION_EDIT == action) {
-                    new OnEditOrgUnitMetadata(target.toString(), router, controller, "escidoc:3718").showEditWindow();
+                    Metadata md = (Metadata) target;
+                    new OnEditOrgUnitMetadata(md.name, router, controller, findId(target)).showEditWindow();
                 }
                 else if (ACTION_ADD == action) {
                     new OnAddOrgUnitMetadata(controller, router.getMainWindow()).showAddWindow();
                 }
+            }
+
+            private String findId(Object target) {
+                return ((Metadata) target).uri.split("/")[3];
             }
         });
     }
@@ -126,6 +131,12 @@ public class OrgUnitMetadataTable extends TableContainerVH {
             m.uri = metadataRecord.getXLinkHref();
             return m;
         }
+
+        @Override
+        public String toString() {
+            return "Metadata [name=" + name + ", uri=" + uri + "]";
+        }
+
     }
 
     @Override

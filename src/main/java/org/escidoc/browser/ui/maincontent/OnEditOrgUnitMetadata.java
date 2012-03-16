@@ -93,6 +93,8 @@ public class OnEditOrgUnitMetadata {
 
     private String id;
 
+    private Router router;
+
     public OnEditOrgUnitMetadata(String name, Router router, OrgUnitController controller, String id) {
         Preconditions.checkNotNull(name, "name is null: %s", name);
         Preconditions.checkNotNull(router, "router is null: %s", router);
@@ -100,6 +102,7 @@ public class OnEditOrgUnitMetadata {
         Preconditions.checkNotNull(id, "id is null: %s", id);
 
         this.name = name;
+        this.router = router;
         this.mainWindow = router.getMainWindow();
         this.controller = controller;
         this.id = id;
@@ -118,18 +121,26 @@ public class OnEditOrgUnitMetadata {
         modalWindow.addComponent(upload);
         modalWindow.addComponent(new Label("OR"));
 
-        String escidocUrl = "http://esfedrep1.fiz-karlsruhe.de:8080";
-
-        StringBuilder builder = new StringBuilder();
-        builder.append("http://localhost:8082/rest/v0.9/organizations/");
-        builder.append(id);
-        builder.append("/metadata/escidoc?escidocurl=" + escidocUrl);
-
-        modalWindow.addComponent(new Link("Open Metadata in Editor", new ExternalResource(builder.toString())));
+        modalWindow.addComponent(new Link("Open Metadata in Editor", new ExternalResource(
+            buildMdUpdateUri(name))));
         modalWindow.addComponent(progressLayout);
         modalWindow.addComponent(buttonLayout);
 
         mainWindow.addWindow(modalWindow);
+    }
+
+    private String buildMdUpdateUri(String metadataName) {
+        Preconditions.checkNotNull(router.getServiceLocation().getEscidocUri(), "escidocUrl is null: %s", router
+            .getServiceLocation().getEscidocUri());
+        StringBuilder builder = new StringBuilder();
+        builder.append("http://localhost:8082/rest/v0.9/organizations/");
+        builder.append(id);
+        builder.append("/metadata/");
+        builder.append(metadataName);
+        builder.append("?escidocurl=");
+        builder.append(router.getServiceLocation().getEscidocUri());
+        String mdUpdateUri = builder.toString();
+        return mdUpdateUri;
     }
 
     private void buildSaveAndCancelButtons(final Window modalWindow) {
