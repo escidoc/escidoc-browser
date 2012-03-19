@@ -28,10 +28,7 @@
  */
 package org.escidoc.browser.ui.listeners;
 
-import org.escidoc.browser.controller.ContextController;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.XmlUtil;
+import com.google.common.base.Preconditions;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -43,20 +40,26 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
+import org.escidoc.browser.controller.ContextController;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.maincontent.XmlUtil;
+
 import de.escidoc.core.resources.om.context.AdminDescriptor;
 
-public class AdminDescriptorFormListener {
+public class OnContextAdminDescriptor {
     private Router router;
 
-    private ContextController contextController;
+    private ContextController controller;
 
-    public AdminDescriptorFormListener(Router router, ContextController contextController) {
+    public OnContextAdminDescriptor(Router router, ContextController controller) {
+        Preconditions.checkNotNull(router, "router is null: %s", router);
+        Preconditions.checkNotNull(controller, "contextController is null: %s", controller);
         this.router = router;
-        this.contextController = contextController;
+        this.controller = controller;
     }
 
     public void adminDescriptorForm() {
-
         final Window subwindow = new Window("A modal subwindow");
         subwindow.setModal(true);
         subwindow.setWidth("650px");
@@ -86,8 +89,7 @@ public class AdminDescriptorFormListener {
                 }
                 else {
                     AdminDescriptor newAdmDesc =
-                        contextController.addAdminDescriptor(txtName.getValue().toString(), txtContent
-                            .getValue().toString());
+                        controller.addAdminDescriptor(txtName.getValue().toString(), txtContent.getValue().toString());
                     (subwindow.getParent()).removeWindow(subwindow);
                     router.getMainWindow().showNotification("Addedd Successfully", Notification.TYPE_HUMANIZED_MESSAGE);
                 }
@@ -100,8 +102,7 @@ public class AdminDescriptorFormListener {
 
         Button close = new Button(ViewConstants.CLOSE, new Button.ClickListener() {
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
             }
         });
@@ -159,8 +160,7 @@ public class AdminDescriptorFormListener {
                         Notification.TYPE_ERROR_MESSAGE);
                 }
                 else {
-                    contextController.addAdminDescriptor(txtName.getValue().toString(), txtContent
-                        .getValue().toString());
+                    controller.addAdminDescriptor(txtName.getValue().toString(), txtContent.getValue().toString());
                     (subwindow.getParent()).removeWindow(subwindow);
                     router.getMainWindow().showNotification("Addedd Successfully", Notification.TYPE_HUMANIZED_MESSAGE);
                 }
@@ -173,8 +173,7 @@ public class AdminDescriptorFormListener {
 
         Button close = new Button(ViewConstants.CLOSE, new Button.ClickListener() {
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
             }
         });

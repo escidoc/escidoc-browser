@@ -46,6 +46,7 @@ import org.escidoc.browser.ui.maincontent.OnEditOrgUnitMetadata;
 
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.MetadataRecords;
+import de.escidoc.core.resources.om.context.AdminDescriptor;
 
 @SuppressWarnings("serial")
 public class OrgUnitMetadataTable extends TableContainerVH {
@@ -106,24 +107,23 @@ public class OrgUnitMetadataTable extends TableContainerVH {
                 }
                 else if (ACTION_EDIT == action) {
                     Metadata md = (Metadata) target;
-                    new OnEditOrgUnitMetadata(md.name, router, controller, findId(target)).showEditWindow();
+
+                    new OnEditOrgUnitMetadata(router, controller, router.getMainWindow(), md).showEditWindow();
+
+                    controller.refreshView();
                 }
                 else if (ACTION_ADD == action) {
                     new OnAddOrgUnitMetadata(controller, router.getMainWindow()).showAddWindow();
                 }
-            }
-
-            private String findId(Object target) {
-                return ((Metadata) target).uri.split("/")[3];
             }
         });
     }
 
     public static class Metadata {
 
-        String name;
+        public String name;
 
-        String uri;
+        public String uri;
 
         public static Metadata newInstance(MetadataRecord metadataRecord) {
             Metadata m = new Metadata();
@@ -132,11 +132,21 @@ public class OrgUnitMetadataTable extends TableContainerVH {
             return m;
         }
 
+        public static String getId(Metadata md) {
+            return md.uri.split("/")[3];
+        }
+
         @Override
         public String toString() {
             return "Metadata [name=" + name + ", uri=" + uri + "]";
         }
 
+        public static Metadata newInstance(AdminDescriptor metadataRecord) {
+            Metadata m = new Metadata();
+            m.name = metadataRecord.getName();
+            m.uri = metadataRecord.getXLinkHref();
+            return m;
+        }
     }
 
     @Override
@@ -146,15 +156,6 @@ public class OrgUnitMetadataTable extends TableContainerVH {
         dataSource.addContainerProperty(ViewConstants.PROPERTY_NAME, String.class, null);
         dataSource.addContainerProperty(ViewConstants.PROPERTY_LINK, Link.class, null);
 
-        // for (final MetadataRecord metadataRecord : mdList) {
-        // Metadata md = Metadata.newInstance(metadataRecord);
-        // Item item = dataSource.addItem(metadataRecord.getXLinkTitle());
-        // if (item != null) {
-        // item.getItemProperty(ViewConstants.PROPERTY_NAME).setValue(md.name);
-        // item.getItemProperty(ViewConstants.PROPERTY_LINK).setValue(md.uri);
-        // }
-        // }
-
         for (final MetadataRecord metadataRecord : mdList) {
             Metadata md = Metadata.newInstance(metadataRecord);
             Item item = dataSource.addItem(md);
@@ -163,7 +164,7 @@ public class OrgUnitMetadataTable extends TableContainerVH {
                 item.getItemProperty(ViewConstants.PROPERTY_LINK).setValue(buildLink(metadataRecord));
             }
         }
-        table.setColumnWidth(ViewConstants.PROPERTY_LINK, 40);
+
         return dataSource;
     }
 
@@ -179,8 +180,7 @@ public class OrgUnitMetadataTable extends TableContainerVH {
         StringBuilder builder = new StringBuilder();
         builder.append(router.getServiceLocation().getEscidocUri());
         builder.append(metadataRecord.getXLinkHref());
-        String metadataUri = builder.toString();
-        return metadataUri;
+        return builder.toString();
     }
 
     @Override

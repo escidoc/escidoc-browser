@@ -34,7 +34,7 @@ import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.AddOrgUnitstoContext;
-import org.escidoc.browser.ui.listeners.AdminDescriptorFormListener;
+import org.escidoc.browser.ui.listeners.OnContextAdminDescriptor;
 import org.escidoc.browser.ui.view.helpers.AdminDescriptorsTable;
 import org.escidoc.browser.ui.view.helpers.OrganizationalUnitsTableVH;
 
@@ -129,7 +129,7 @@ class ContextRightPanel {
             addResourceButton.addListener(new ClickListener() {
                 @Override
                 public void buttonClick(ClickEvent event) {
-                    new AdminDescriptorFormListener(router, contextController).adminDescriptorForm();
+                    new OnContextAdminDescriptor(router, contextController).adminDescriptorForm();
                 }
             });
             cssLayout.addComponent(addResourceButton);

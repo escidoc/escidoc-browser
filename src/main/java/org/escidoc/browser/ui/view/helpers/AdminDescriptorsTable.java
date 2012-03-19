@@ -33,13 +33,17 @@ import com.google.common.base.Preconditions;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.event.Action;
+import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Link;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.themes.BaseTheme;
 
 import org.escidoc.browser.controller.ContextController;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.listeners.AdminDescriptorFormListener;
+import org.escidoc.browser.ui.listeners.OnContextAdminDescriptor;
+import org.escidoc.browser.ui.view.helpers.OrgUnitMetadataTable.Metadata;
 
 import de.escidoc.core.resources.om.context.AdminDescriptor;
 import de.escidoc.core.resources.om.context.AdminDescriptors;
@@ -49,27 +53,27 @@ public class AdminDescriptorsTable extends TableContainerVH {
 
     protected ContextController controller;
 
-    private AdminDescriptors adminDescriptors;
+    private AdminDescriptors adList;
 
-    private HierarchicalContainer tableContainer;
+    private HierarchicalContainer dataSource;
 
-    private Action ACTION_DELETE = new Action("Delete AdminDescriptor");
+    private Action ACTION_DELETE = new Action("Delete");
 
-    private Action ACTION_ADD = new Action("Add AdminDescriptor");
+    private Action ACTION_ADD = new Action("Add");
 
-    private Action ACTION_EDIT = new Action("Edit AdminDescriptor");
+    private Action ACTION_EDIT = new Action("Edit");
 
     private Action[] ACTIONS_LIST = new Action[] { ACTION_ADD, ACTION_EDIT, ACTION_DELETE };
 
     private Router router;
 
-    public AdminDescriptorsTable(ContextController controller, AdminDescriptors adminDescriptors, Router router) {
+    public AdminDescriptorsTable(ContextController controller, AdminDescriptors adList, Router router) {
         Preconditions.checkNotNull(controller, "contextController is null: %s", controller);
-        Preconditions.checkNotNull(adminDescriptors, "adminDescriptors is null: %s", adminDescriptors);
+        Preconditions.checkNotNull(adList, "adminDescriptors is null: %s", adList);
         Preconditions.checkNotNull(router, "router is null: %s", router);
 
         this.controller = controller;
-        this.adminDescriptors = adminDescriptors;
+        this.adList = adList;
         this.router = router;
 
         table.setContainerDataSource(populateContainerTable());
@@ -94,13 +98,14 @@ public class AdminDescriptorsTable extends TableContainerVH {
                     confirmActionWindow(target);
                 }
                 else if (ACTION_ADD == action) {
-                    new AdminDescriptorFormListener(router, controller).adminDescriptorForm();
+                    new OnContextAdminDescriptor(router, controller).adminDescriptorForm();
                     controller.refreshView();
                 }
                 else if (ACTION_EDIT == action) {
                     if (target != null) {
-                        new AdminDescriptorFormListener(router, controller).adminDescriptorForm(adminDescriptors
-                            .get(target.toString()));
+                        Metadata md = (Metadata) target;
+                        new OnEditContextMetadata(router, controller, router.getMainWindow(), md).showEditWindow();
+                        // TODO what is this method doing?
                         controller.refreshView();
                     }
                 }
@@ -111,28 +116,39 @@ public class AdminDescriptorsTable extends TableContainerVH {
     @Override
     protected void removeAction(Object target) {
         controller.removeAdminDescriptor(target.toString());
-        tableContainer.removeItem(target);
+        dataSource.removeItem(target);
     }
 
     @Override
     protected HierarchicalContainer populateContainerTable() {
-        // Create new container
-        tableContainer = new HierarchicalContainer();
-        // Create container property for name
-        tableContainer.addContainerProperty(ViewConstants.PROPERTY_NAME, String.class, null);
-        tableContainer.addContainerProperty(ViewConstants.PROPERTY_LINK, Label.class, null);
+        dataSource = new HierarchicalContainer();
+        dataSource.addContainerProperty(ViewConstants.PROPERTY_NAME, String.class, null);
+        dataSource.addContainerProperty(ViewConstants.PROPERTY_LINK, Label.class, null);
 
-        for (final AdminDescriptor adminDescriptor : adminDescriptors) {
-            Item item = tableContainer.addItem(adminDescriptor.getName());
+        for (final AdminDescriptor adminDescriptor : adList) {
+            Metadata md = Metadata.newInstance(adminDescriptor);
+            Item item = dataSource.addItem(md);
             if (item != null) {
-                item.getItemProperty(ViewConstants.PROPERTY_NAME).setValue(adminDescriptor.getName());
-                item.getItemProperty(ViewConstants.PROPERTY_LINK).setValue(
-                    new Label("<a href=\"" + router.getServiceLocation().getEscidocUri()
-                        + adminDescriptor.getXLinkHref() + "\" target=\"_blank\">View</a>", Label.CONTENT_RAW));
+                item.getItemProperty(ViewConstants.PROPERTY_NAME).setValue(md.name);
+                item.getItemProperty(ViewConstants.PROPERTY_LINK).setValue(buildLink(adminDescriptor));
             }
         }
-        table.setColumnWidth(ViewConstants.PROPERTY_LINK, 40);
-        return tableContainer;
+        return dataSource;
+    }
+
+    private Link buildLink(AdminDescriptor ad) {
+        Link mdLink = new Link("View", new ExternalResource(buildUri(ad)));
+        mdLink.setTargetName("_blank");
+        mdLink.setStyleName(BaseTheme.BUTTON_LINK);
+        mdLink.setDescription("Show Admin Descriptor information in a separate window");
+        return mdLink;
+    }
+
+    private String buildUri(AdminDescriptor ad) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(router.getServiceLocation().getEscidocUri());
+        builder.append(ad.getXLinkHref());
+        return builder.toString();
     }
 
     @Override
@@ -144,7 +160,8 @@ public class AdminDescriptorsTable extends TableContainerVH {
     protected void initializeTable() {
         table.setWidth("100%");
         table.setSelectable(true);
-        table.setImmediate(true); // react at once when something is selected
+        table.setImmediate(true);
         table.setColumnHeaderMode(Table.COLUMN_HEADER_MODE_HIDDEN);
+        table.setColumnWidth(ViewConstants.PROPERTY_LINK, 40);
     }
 }
