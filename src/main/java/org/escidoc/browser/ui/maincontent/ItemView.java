@@ -224,9 +224,7 @@ public final class ItemView extends View {
         final VerticalLayout vlDirectMember = new ItemContent(repositories, resourceProxy, router, controller);
         vlDirectMember.setImmediate(false);
         vlDirectMember.setWidth("100.0%");
-        vlDirectMember.setHeight("100.0%");
         vlDirectMember.setMargin(false);
-
         directMembersPanel.setContent(vlDirectMember);
 
         return directMembersPanel;

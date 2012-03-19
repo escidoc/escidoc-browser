@@ -92,7 +92,6 @@ public class ItemContent extends VerticalLayout {
     }
 
     private void initView() {
-        verticalLayout.addStyleName("drophere");
         final CssLayout cssLayout = new CssLayout();
         cssLayout.setHeight("20px");
         buildPanelHeader(cssLayout, ViewConstants.COMPONENTS);
