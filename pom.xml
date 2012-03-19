@@ -248,6 +248,13 @@
         <configuration>
           <configFile>${project.basedir}/etc/eSciDoc_codestyle.xml</configFile>
         </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>format</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
 
