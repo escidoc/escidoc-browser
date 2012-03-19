@@ -426,19 +426,24 @@ public final class ActionHandlerImpl implements Action.Handler {
      * @return
      * @throws EscidocClientException
      */
-    private List<ResourceModel> findAllChildren(final ResourceModel resource) throws EscidocClientException {
-        results.add(resource);
+    private void findAllChildren(final ResourceModel resource) throws EscidocClientException {
+        if (resource.getType().equals(ResourceType.ITEM)) {
+            results.add(0, resource);
+        }
         if (resource.getType().equals(ResourceType.CONTAINER)) {
+
             final List<ResourceModel> children = repositories.container().findDirectMembers(resource.getId());
             if (!children.isEmpty()) {
+                results.add(resource);
                 for (ResourceModel child : children) {
-                    System.out.println("look what I found " + child);
-                    return findAllChildren(child);
+                    findAllChildren(child);
                 }
+            }
+            else {
+                results.add(0, resource);
             }
         }
 
-        return results;
     }
 
     private void deleteAllChildrenOfContainer(ResourceModel resource) {
@@ -446,15 +451,14 @@ public final class ActionHandlerImpl implements Action.Handler {
         HashMap<String, String> listNotDeleted = new HashMap<String, String>();
         results = new ArrayList<ResourceModel>();
         try {
-            System.out.println(results);
-            results = findAllChildren(resource);
-
+            findAllChildren(resource);
+            router.getMainWindow().showNotification(results.toString(), Notification.TYPE_ERROR_MESSAGE);
             for (ResourceModel resourceModel : results) {
 
                 if (resourceModel.getType().equals(ResourceType.CONTAINER)) {
                     try {
-
                         repositories.container().finalDelete(resourceModel);
+                        treeDataSource.remove(resourceModel);
                         listDeleted.put(resourceModel.getId(), resourceModel.getType().toString().toLowerCase());
                     }
                     catch (EscidocClientException e) {
@@ -465,6 +469,7 @@ public final class ActionHandlerImpl implements Action.Handler {
                 else {
                     try {
                         repositories.item().finalDelete(resourceModel);
+                        treeDataSource.remove(resourceModel);
                         listDeleted.put(resourceModel.getId(), resourceModel.getType().toString());
                     }
                     catch (EscidocClientException e) {
