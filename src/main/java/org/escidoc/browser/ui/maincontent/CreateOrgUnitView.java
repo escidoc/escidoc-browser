@@ -28,14 +28,11 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import com.google.common.base.Preconditions;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
-import com.vaadin.data.Validator.EmptyValueException;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Form;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.Window;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.TreeDataSource;
@@ -45,11 +42,16 @@ import org.escidoc.browser.repository.internal.OrganizationUnitRepository;
 import org.escidoc.browser.ui.ViewConstants;
 import org.xml.sax.SAXException;
 
-import java.io.IOException;
-
-import javax.xml.parsers.ParserConfigurationException;
+import com.google.common.base.Preconditions;
+import com.vaadin.data.Validator.EmptyValueException;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Form;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.oum.OrganizationalUnit;
 
 public class CreateOrgUnitView {
 
@@ -155,8 +157,15 @@ public class CreateOrgUnitView {
             private OrgUnitModel storeInRepository(final TextField txtNameContext, final TextField txtDescContext)
                 throws EscidocClientException, ParserConfigurationException, SAXException, IOException {
                 final OrgUnitBuilder orgBuilder = new OrgUnitBuilder();
-                return repo.create(orgBuilder.with(txtNameContext.getValue().toString(),
-                    txtDescContext.getValue().toString()).build());
+                OrganizationalUnit orgUnit =
+                    orgBuilder.with(txtNameContext.getValue().toString(), txtDescContext.getValue().toString()).build();
+
+                if (parent != null) {
+                    Set set = new HashSet();
+                    set.add(parent.getId());
+                    orgBuilder.parents(set);
+                }
+                return repo.create(orgUnit);
 
             }
         });

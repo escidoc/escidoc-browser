@@ -82,8 +82,8 @@ public class DragAndDropFileUpload extends VerticalLayout {
     }
 
     private void addImageDropBoxInPanel() {
-        panel.addStyleName("no-vertical-drag-hints");
-        panel.addStyleName("no-horizontal-drag-hints");
+        panel.addStyleName("no-vertical-drag-hints drophere");
+        panel.addStyleName("no-horizontal-drag-hints drophere");
         panel.setContent(filesDropBox());
         addComponent(panel);
     }

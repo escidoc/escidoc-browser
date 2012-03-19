@@ -348,11 +348,11 @@ ul.horizontal_list li {
 	padding: 0 0;
 }
 
-.drophere .v-table .v-table-drophere {
+.drophere .v-panel .v-panel-drophere {
 	background-image: url(images/assets/drag-n-drop-here.png);
 	background: no-repeat; 
 }
-.v-table-drophere > div {
+.v-panel-drophere > div {
    background: transparent;
 }
 .deleteTable .v-table-body{

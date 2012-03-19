@@ -150,7 +150,6 @@ public class ItemContent extends VerticalLayout {
             if (userIsPermittedToUpdate()) {
 
                 verticalLayout.setHeight("99%");
-                // verticalLayout.setWidth("90%");
 
                 final DragAndDropFileUpload dragAndDropFileUpload =
                     new DragAndDropFileUpload(repositories, itemProxy, this, verticalLayout);
