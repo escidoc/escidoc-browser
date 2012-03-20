@@ -189,8 +189,8 @@ public class UserAccountRepository implements Repository {
     public void removeAttribute(UserProxy userProxy, String attributeName) throws EscidocClientException {
         Preconditions.checkNotNull(userProxy, "userProxy is null: %s", userProxy);
         Preconditions.checkNotNull(attributeName, "attributeName is null: %s", attributeName);
-        client.deleteAttribute(userProxy.getId(),
-            findAttribute(client.retrieveAttributes(userProxy.getId()), attributeName));
+        client.deleteAttribute(userProxy.getId(), findAttribute(client.retrieveAttributes(userProxy.getId()),
+            attributeName));
     }
 
     private static String findAttribute(Attributes list, String attributeName) {

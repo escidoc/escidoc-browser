@@ -74,9 +74,8 @@ public class ContainerController extends Controller {
 
     public boolean hasAccess() {
         try {
-            return repositories
-                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER).forResource(resourceProxy.getId())
-                .permitted();
+            return repositories.pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER).forResource(
+                resourceProxy.getId()).permitted();
         }
         catch (final EscidocClientException e) {
             LOG.debug(e.getLocalizedMessage());

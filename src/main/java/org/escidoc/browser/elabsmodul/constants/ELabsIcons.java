@@ -41,8 +41,8 @@ final public class ELabsIcons {
 
     public static final ThemeResource MODIFY_ELEMENT_ICON = new ThemeResource("../myTheme/runo/icons/0L/magnifier.png");
 
-    public static final ThemeResource DELETE_ELEMENT_ICON = new ThemeResource(
-        "../myTheme/runo/icons/0L/close-btn-ie6.png");
+    public static final ThemeResource DELETE_ELEMENT_ICON =
+        new ThemeResource("../myTheme/runo/icons/0L/close-btn-ie6.png");
 
     // View button icons
     public static final ThemeResource SAVE_BUTTON_ICON = new ThemeResource("../myTheme/runo/icons/16/ok.png");
@@ -65,11 +65,11 @@ final public class ELabsIcons {
 
     public static final ThemeResource TAB_RESULTS_ICON = new ThemeResource("../myTheme/runo/icons/32/document-txt.png");
 
-    public static final ThemeResource TAB_INVESTIGATION_SERIES_ICON = new ThemeResource(
-        "../myTheme/runo/icons/32/note.png");
+    public static final ThemeResource TAB_INVESTIGATION_SERIES_ICON =
+        new ThemeResource("../myTheme/runo/icons/32/note.png");
 
-    public static final ThemeResource TAB_INVESTIGATION_ICON = new ThemeResource(
-        "../myTheme/runo/icons/32/arrow-down.png");
+    public static final ThemeResource TAB_INVESTIGATION_ICON =
+        new ThemeResource("../myTheme/runo/icons/32/arrow-down.png");
 
     public static final Resource ADD_ICON = new ThemeResource("icons/32/All_Complete_PlusAdd_15_Active.gif");
 

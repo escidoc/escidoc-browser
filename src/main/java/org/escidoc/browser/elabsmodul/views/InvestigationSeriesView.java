@@ -149,8 +149,8 @@ public class InvestigationSeriesView extends View implements ILabsPanel, ILabsAc
         this.dynamicLayout.setStyleName(ELabsViewContants.STYLE_ELABS_FORM);
         this.buttonLayout = createButtonLayout();
         HorizontalLayout name =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_TITLE,
-                this.beanItem.getItemProperty("name"), true);
+            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_TITLE, this.beanItem
+                .getItemProperty("name"), true);
         HorizontalLayout description =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_DESCRIPTION,
                 this.beanItem.getItemProperty("description"), true);
@@ -242,9 +242,8 @@ public class InvestigationSeriesView extends View implements ILabsPanel, ILabsAc
         vl.setMargin(false);
         vl.setSizeFull();
         leftPanel.setContent(vl);
-        new DirectMember(this.router.getServiceLocation(), this.router, this.containerProxy.getId(),
-            this.router.getMainWindow(), router.getRepositories(), leftPanel, ResourceType.CONTAINER.toString())
-            .containerAsTree();
+        new DirectMember(this.router.getServiceLocation(), this.router, this.containerProxy.getId(), this.router
+            .getMainWindow(), router.getRepositories(), leftPanel, ResourceType.CONTAINER.toString()).containerAsTree();
         this.directMemberInvSeriesContainer.addComponent(leftPanel);
         this.directMemberInvSeriesContainer.setExpandRatio(leftPanel, 3.0f);
     }

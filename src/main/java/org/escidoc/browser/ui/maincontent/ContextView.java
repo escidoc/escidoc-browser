@@ -397,9 +397,8 @@ public class ContextView extends View {
                                 reSwapComponents();
                                 oldComponent = event.getClickedComponent();
                                 swapComponent =
-                                    editName(
-                                        child.getValue().toString().replace(ViewConstants.RESOURCE_NAME_CONTEXT, ""),
-                                        ViewConstants.RESOURCE_NAME_CONTEXT);
+                                    editName(child.getValue().toString().replace(ViewConstants.RESOURCE_NAME_CONTEXT,
+                                        ""), ViewConstants.RESOURCE_NAME_CONTEXT);
                                 headerLayout.replaceComponent(oldComponent, swapComponent);
                             }
                         }
@@ -442,8 +441,8 @@ public class ContextView extends View {
                                 reSwapComponents();
                                 oldComponent = event.getClickedComponent();
                                 swapComponent =
-                                    editStatus(child
-                                        .getValue().toString().replace(resourceProxy.getType().getLabel() + " is ", ""));
+                                    editStatus(child.getValue().toString().replace(
+                                        resourceProxy.getType().getLabel() + " is ", ""));
                                 vlLeft.replaceComponent(oldComponent, swapComponent);
                             }
                         }
@@ -492,9 +491,8 @@ public class ContextView extends View {
                         Notification.TYPE_TRAY_NOTIFICATION);
                 }
                 catch (EscidocClientException e) {
-                    mainWindow.showNotification(
-                        "Could not update Context Type, an error occurred" + e.getLocalizedMessage(),
-                        Notification.TYPE_ERROR_MESSAGE);
+                    mainWindow.showNotification("Could not update Context Type, an error occurred"
+                        + e.getLocalizedMessage(), Notification.TYPE_ERROR_MESSAGE);
                 }
                 vlLeft.replaceComponent(swapComponent, oldComponent);
             }
@@ -516,9 +514,8 @@ public class ContextView extends View {
                     contextController.refreshView();
                 }
                 catch (EscidocClientException e) {
-                    mainWindow.showNotification(
-                        "Could not update Context Name, an error occurred" + e.getLocalizedMessage(),
-                        Notification.TYPE_ERROR_MESSAGE);
+                    mainWindow.showNotification("Could not update Context Name, an error occurred"
+                        + e.getLocalizedMessage(), Notification.TYPE_ERROR_MESSAGE);
                 }
                 headerLayout.replaceComponent(swapComponent, oldComponent);
             }
@@ -560,9 +557,8 @@ public class ContextView extends View {
                         Notification.TYPE_TRAY_NOTIFICATION);
                 }
                 catch (EscidocClientException e) {
-                    mainWindow.showNotification(
-                        "Could not update Context Type, an error occurred" + e.getLocalizedMessage(),
-                        Notification.TYPE_ERROR_MESSAGE);
+                    mainWindow.showNotification("Could not update Context Type, an error occurred"
+                        + e.getLocalizedMessage(), Notification.TYPE_ERROR_MESSAGE);
                 }
                 (subwindow.getParent()).removeWindow(subwindow);
 

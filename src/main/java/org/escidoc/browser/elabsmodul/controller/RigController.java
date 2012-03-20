@@ -306,9 +306,8 @@ public final class RigController extends Controller implements IRigAction {
     @Override
     public boolean hasUpdateAccess() {
         try {
-            return getRepositories()
-                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_ITEM).forResource(getResourceProxy().getId())
-                .permitted();
+            return getRepositories().pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_ITEM).forResource(
+                getResourceProxy().getId()).permitted();
         }
         catch (final UnsupportedOperationException e) {
             showError("Internal error");

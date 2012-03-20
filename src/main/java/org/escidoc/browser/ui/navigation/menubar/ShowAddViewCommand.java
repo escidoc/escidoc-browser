@@ -133,21 +133,20 @@ public final class ShowAddViewCommand implements Command {
 
     private boolean allowedToCreateContainer(final String contextId) throws EscidocClientException, URISyntaxException {
         return repositories
-            .pdp().forCurrentUser().isAction(ActionIdConstants.CREATE_CONTAINER).forResource("")
-            .withTypeAndInContext(ResourceType.CONTAINER, contextId).permitted();
+            .pdp().forCurrentUser().isAction(ActionIdConstants.CREATE_CONTAINER).forResource("").withTypeAndInContext(
+                ResourceType.CONTAINER, contextId).permitted();
     }
 
     private boolean allowedToCreateITem(final String contextId) throws EscidocClientException, URISyntaxException {
         return repositories
-            .pdp().forCurrentUser().isAction(ActionIdConstants.CREATE_ITEM).forResource("")
-            .withTypeAndInContext(ResourceType.ITEM, contextId).permitted();
+            .pdp().forCurrentUser().isAction(ActionIdConstants.CREATE_ITEM).forResource("").withTypeAndInContext(
+                ResourceType.ITEM, contextId).permitted();
     }
 
     private boolean isUserAllowedToAddMembers(final ResourceModel selectedItem) throws EscidocClientException,
         URISyntaxException {
-        return repositories
-            .pdp().forCurrentUser().isAction(ActionIdConstants.ADD_MEMBERS_TO_CONTAINER)
-            .forResource(selectedItem.getId()).permitted();
+        return repositories.pdp().forCurrentUser().isAction(ActionIdConstants.ADD_MEMBERS_TO_CONTAINER).forResource(
+            selectedItem.getId()).permitted();
     }
 
     private void showWarning(final String message) {

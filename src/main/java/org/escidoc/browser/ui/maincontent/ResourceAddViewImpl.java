@@ -184,8 +184,8 @@ public class ResourceAddViewImpl implements ResourceAddView {
     }
 
     private void addContentModelSelect() throws EscidocException, InternalClientException, TransportException {
-        Preconditions.checkNotNull(repositories.contentModel(), "ContentModelRepository is null: %s",
-            repositories.contentModel());
+        Preconditions.checkNotNull(repositories.contentModel(), "ContentModelRepository is null: %s", repositories
+            .contentModel());
         contentModelSelect.setRequired(true);
         bindData();
         addResourceForm.addComponent(contentModelSelect);
@@ -405,9 +405,8 @@ public class ResourceAddViewImpl implements ResourceAddView {
                 createNewResource(ResourceType.ITEM.toString());
             }
             else {
-                mainWindow.showNotification(
-                    ViewConstants.ERROR_NO_RESOURCETYPE_IN_CONTENTMODEL + contentModelSelect.getValue() + "\"",
-                    Window.Notification.TYPE_ERROR_MESSAGE);
+                mainWindow.showNotification(ViewConstants.ERROR_NO_RESOURCETYPE_IN_CONTENTMODEL
+                    + contentModelSelect.getValue() + "\"", Window.Notification.TYPE_ERROR_MESSAGE);
             }
         }
         catch (EscidocClientException e) {

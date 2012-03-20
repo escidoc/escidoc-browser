@@ -69,59 +69,43 @@ public class StartInvestigationViewHelper {
             @Override
             public void buttonClick(final ClickEvent event) {
                 if (event.getButton().getCaption().equals(ELabsViewContants.BTN_START)) {
-                    labsPanel
-                        .getReference()
-                        .getApplication()
-                        .getMainWindow()
-                        .addWindow(
-                            new YesNoDialog("Start investigation", "Really want to start the investigation?",
-                                new YesNoDialog.Callback() {
-                                    @Override
-                                    public void onDialogResult(boolean resultIsYes) {
-                                        if (resultIsYes) {
-                                            try {
-                                                investigationAction.getLabsService().start();
-                                                event.getButton().setCaption(ELabsViewContants.BTN_STOP);
-                                                labsPanel
-                                                    .getReference()
-                                                    .getApplication()
-                                                    .getMainWindow()
-                                                    .getWindow()
-                                                    .showNotification("Starting", "Starting process...",
-                                                        Notification.TYPE_TRAY_NOTIFICATION);
-                                            }
-                                            catch (EscidocBrowserException e) {
-                                                event.getButton().setCaption(ELabsViewContants.BTN_START);
-                                                labsPanel
-                                                    .getReference()
-                                                    .getApplication()
-                                                    .getMainWindow()
-                                                    .getWindow()
-                                                    .showNotification("Problem", "Starting process... cancelled",
-                                                        Notification.TYPE_TRAY_NOTIFICATION);
-                                            }
+                    labsPanel.getReference().getApplication().getMainWindow().addWindow(
+                        new YesNoDialog("Start investigation", "Really want to start the investigation?",
+                            new YesNoDialog.Callback() {
+                                @Override
+                                public void onDialogResult(boolean resultIsYes) {
+                                    if (resultIsYes) {
+                                        try {
+                                            investigationAction.getLabsService().start();
+                                            event.getButton().setCaption(ELabsViewContants.BTN_STOP);
+                                            labsPanel
+                                                .getReference().getApplication().getMainWindow().getWindow()
+                                                .showNotification("Starting", "Starting process...",
+                                                    Notification.TYPE_TRAY_NOTIFICATION);
+                                        }
+                                        catch (EscidocBrowserException e) {
+                                            event.getButton().setCaption(ELabsViewContants.BTN_START);
+                                            labsPanel
+                                                .getReference().getApplication().getMainWindow().getWindow()
+                                                .showNotification("Problem", "Starting process... cancelled",
+                                                    Notification.TYPE_TRAY_NOTIFICATION);
                                         }
                                     }
-                                }));
+                                }
+                            }));
                 }
                 else if (event.getButton().getCaption().equals(ELabsViewContants.BTN_STOP)) {
 
                     try {
                         investigationAction.getLabsService().stop();
                         event.getButton().setCaption(ELabsViewContants.BTN_START);
-                        labsPanel
-                            .getReference().getApplication().getMainWindow().getWindow()
-                            .showNotification("Stopping", "Halting process...", Notification.TYPE_TRAY_NOTIFICATION);
+                        labsPanel.getReference().getApplication().getMainWindow().getWindow().showNotification(
+                            "Stopping", "Halting process...", Notification.TYPE_TRAY_NOTIFICATION);
                     }
                     catch (EscidocBrowserException e) {
                         event.getButton().setCaption(ELabsViewContants.BTN_STOP);
-                        labsPanel
-                            .getReference()
-                            .getApplication()
-                            .getMainWindow()
-                            .getWindow()
-                            .showNotification("Problem", "Halting process... cancelled",
-                                Notification.TYPE_TRAY_NOTIFICATION);
+                        labsPanel.getReference().getApplication().getMainWindow().getWindow().showNotification(
+                            "Problem", "Halting process... cancelled", Notification.TYPE_TRAY_NOTIFICATION);
                     }
                 }
                 else {

@@ -169,7 +169,8 @@ public class OnEditOrgUnitMetadata {
         final Button cancelBtn = new Button(ViewConstants.CANCEL, new Button.ClickListener() {
 
             @Override
-            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused")
+            final ClickEvent event) {
                 modalWindow.getParent().removeWindow(modalWindow);
             }
         });
@@ -182,7 +183,8 @@ public class OnEditOrgUnitMetadata {
             private MetadataRecord metadata;
 
             @Override
-            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused")
+            final ClickEvent event) {
                 try {
                     metadata = controller.getMetadata(md.name);
                     metadata.setContent(metadataContent);

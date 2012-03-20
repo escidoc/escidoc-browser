@@ -230,9 +230,8 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
     @Override
     public boolean hasUpdateAccess() {
         try {
-            return getRepositories()
-                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER)
-                .forResource(containerProxy.getId()).permitted();
+            return getRepositories().pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER).forResource(
+                containerProxy.getId()).permitted();
         }
         catch (final UnsupportedOperationException e) {
             showError("Internal error");

@@ -173,8 +173,8 @@ public class ItemContent extends VerticalLayout {
     }
 
     private boolean userIsPermittedToUpdate() throws EscidocClientException, URISyntaxException {
-        return repositories
-            .pdp().isAction(ActionIdConstants.UPDATE_ITEM).forCurrentUser().forResource(itemProxy.getId()).permitted();
+        return repositories.pdp().isAction(ActionIdConstants.UPDATE_ITEM).forCurrentUser().forResource(
+            itemProxy.getId()).permitted();
     }
 
     private void showError(final Exception e) {

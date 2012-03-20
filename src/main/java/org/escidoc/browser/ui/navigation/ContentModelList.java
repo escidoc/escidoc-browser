@@ -28,7 +28,6 @@
  */
 package org.escidoc.browser.ui.navigation;
 
-
 @SuppressWarnings("serial")
 public class ContentModelList extends BaseNavigationTreeView {
 

@@ -277,8 +277,8 @@ public class StudyView extends View implements ILabsPanel, ILabsAction {
         vlLeftPanel.setSizeFull();
         vlLeftPanel.setMargin(false);
         leftPanel.setContent(vlLeftPanel);
-        new DirectMember(this.router.getServiceLocation(), this.router, this.containerProxy.getId(),
-            this.router.getMainWindow(), this.router.getRepositories(), leftPanel, ResourceType.CONTAINER.toString())
+        new DirectMember(this.router.getServiceLocation(), this.router, this.containerProxy.getId(), this.router
+            .getMainWindow(), this.router.getRepositories(), leftPanel, ResourceType.CONTAINER.toString())
             .containerAsTree();
         this.directMemberExperimentContainer.addComponent(leftPanel);
         this.directMemberExperimentContainer.setExpandRatio(leftPanel, 3.0f);
@@ -288,8 +288,8 @@ public class StudyView extends View implements ILabsPanel, ILabsAction {
      * Build the read-only layout of the eLabsElement
      */
     private void buildPropertiesGUI() {
-        addComponent(new ResourcePropertiesViewHelper(this.containerProxy, this.breadCrumbModel, "Study",
-            this.router.getServiceLocation()).generatePropertiesView());
+        addComponent(new ResourcePropertiesViewHelper(this.containerProxy, this.breadCrumbModel, "Study", this.router
+            .getServiceLocation()).generatePropertiesView());
     }
 
     @Override

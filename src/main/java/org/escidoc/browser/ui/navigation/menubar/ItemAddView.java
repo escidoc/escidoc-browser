@@ -153,8 +153,8 @@ public class ItemAddView {
     }
 
     private void addContentModelSelect() throws EscidocException, InternalClientException, TransportException {
-        Preconditions.checkNotNull(repositories.contentModel(), "ContentModelRepository is null: %s",
-            repositories.contentModel());
+        Preconditions.checkNotNull(repositories.contentModel(), "ContentModelRepository is null: %s", repositories
+            .contentModel());
         contentModelSelect.setRequired(true);
         bindData();
         addForm.addComponent(contentModelSelect);

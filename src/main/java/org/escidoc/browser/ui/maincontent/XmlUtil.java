@@ -75,7 +75,7 @@ public class XmlUtil {
 
     public static Document string2Dom(final String fileContent) throws SAXException, IOException,
         ParserConfigurationException {
-        return DocumentBuilderFactory
-            .newInstance().newDocumentBuilder().parse(new InputSource(new StringReader(fileContent)));
+        return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(
+            new InputSource(new StringReader(fileContent)));
     }
 }

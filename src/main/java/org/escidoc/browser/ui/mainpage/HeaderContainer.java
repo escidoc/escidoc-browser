@@ -136,7 +136,8 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
             name.setStyleName(BaseTheme.BUTTON_LINK);
             ((Button) name).addListener(new Button.ClickListener() {
                 @Override
-                public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
+                public void buttonClick(@SuppressWarnings("unused")
+                ClickEvent event) {
                     ResourceProxy userProxy;
                     try {
                         userProxy = repositories.user().findById(user.getUserId());
@@ -219,7 +220,8 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
      * 
      * @param event
      */
-    public void onClick(@SuppressWarnings("unused") final Button.ClickEvent event) {
+    public void onClick(@SuppressWarnings("unused")
+    final Button.ClickEvent event) {
         redirectToLoginView();
     }
 

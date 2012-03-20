@@ -162,35 +162,31 @@ public final class LabsRigTableHelper {
                     rigTable.requestRepaint();
                 }
                 else if (event.getButton().getCaption().equals(ADD_BUTTON)) {
-                    rigTable
-                        .getApplication()
-                        .getMainWindow()
-                        .addWindow(
-                            new AddNewInstrumentsWindow(rigBean, controller, new AddNewInstrumentsWindow.Callback() {
-                                @Override
-                                public void onAcceptRigAction(
-                                    final List<InstrumentBean> assignableInstruments,
-                                    final Set<String> instrumentIdentifiers) {
-                                    if (assignableInstruments == null || assignableInstruments.isEmpty()) {
-                                        return;
-                                    }
-                                    if (instrumentIdentifiers == null || instrumentIdentifiers.isEmpty()) {
-                                        return;
-                                    }
-                                    for (Iterator<String> iterator = instrumentIdentifiers.iterator(); iterator
+                    rigTable.getApplication().getMainWindow().addWindow(
+                        new AddNewInstrumentsWindow(rigBean, controller, new AddNewInstrumentsWindow.Callback() {
+                            @Override
+                            public void onAcceptRigAction(
+                                final List<InstrumentBean> assignableInstruments,
+                                final Set<String> instrumentIdentifiers) {
+                                if (assignableInstruments == null || assignableInstruments.isEmpty()) {
+                                    return;
+                                }
+                                if (instrumentIdentifiers == null || instrumentIdentifiers.isEmpty()) {
+                                    return;
+                                }
+                                for (Iterator<String> iterator = instrumentIdentifiers.iterator(); iterator.hasNext();) {
+                                    final String id = iterator.next();
+                                    for (Iterator<InstrumentBean> iterator2 = assignableInstruments.iterator(); iterator2
                                         .hasNext();) {
-                                        final String id = iterator.next();
-                                        for (Iterator<InstrumentBean> iterator2 = assignableInstruments.iterator(); iterator2
-                                            .hasNext();) {
-                                            InstrumentBean instrumentBean = iterator2.next();
-                                            if (instrumentBean.getObjectId().equals(id)) {
-                                                LabsRigTableHelper.this.rigBean.getContentList().add(instrumentBean);
-                                                LabsRigTableHelper.this.addnewItemToRigTable(instrumentBean);
-                                            }
+                                        InstrumentBean instrumentBean = iterator2.next();
+                                        if (instrumentBean.getObjectId().equals(id)) {
+                                            LabsRigTableHelper.this.rigBean.getContentList().add(instrumentBean);
+                                            LabsRigTableHelper.this.addnewItemToRigTable(instrumentBean);
                                         }
                                     }
                                 }
-                            }));
+                            }
+                        }));
                 }
             }
         };

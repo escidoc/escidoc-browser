@@ -152,9 +152,9 @@ public class Base64Coder {
      */
     public static char[] encode(final byte[] in, final int iOff, final int iLen) {
         final int oDataLen = (iLen * 4 + 2) / 3; // output length without
-                                                 // padding
+        // padding
         final int oLen = ((iLen + 2) / 3) * 4; // output length including
-                                               // padding
+        // padding
         final char[] out = new char[oLen];
         int ip = iOff;
         final int iEnd = iOff + iLen;

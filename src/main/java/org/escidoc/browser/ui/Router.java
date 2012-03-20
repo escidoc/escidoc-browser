@@ -325,9 +325,8 @@ public class Router {
                 throw new IllegalArgumentException(msg);
             }
 
-            return (Controller) Class
-                .forName(controllerClassName).getConstructor(Repositories.class, Router.class, ResourceProxy.class)
-                .newInstance(repositories, this, fetchResource(clickedResource));
+            return (Controller) Class.forName(controllerClassName).getConstructor(Repositories.class, Router.class,
+                ResourceProxy.class).newInstance(repositories, this, fetchResource(clickedResource));
         }
         catch (final ClassNotFoundException e) {
             this.getMainWindow().showNotification(ViewConstants.CONTROLLER_ERR_CANNOT_FIND_CLASS,

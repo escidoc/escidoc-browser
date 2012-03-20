@@ -167,9 +167,8 @@ public final class LabsStudyTableHelper {
                 }
                 else if (event.getButton().getCaption().equals(ADD_BUTTON)) {
                     LabsStudyTableHelper.this.labsAction.showButtonLayout();
-                    motPubTable
-                        .getApplication().getMainWindow()
-                        .addWindow(new AddNewStudyPublicationWindow(new AddNewStudyPublicationWindow.Callback() {
+                    motPubTable.getApplication().getMainWindow().addWindow(
+                        new AddNewStudyPublicationWindow(new AddNewStudyPublicationWindow.Callback() {
                             @Override
                             public void onAcceptAction(String inputURLText) {
                                 // add to table
@@ -284,9 +283,8 @@ public final class LabsStudyTableHelper {
                 }
                 else if (event.getButton().getCaption().equals(ADD_BUTTON)) {
                     LabsStudyTableHelper.this.labsAction.showButtonLayout();
-                    resPubTable
-                        .getApplication().getMainWindow()
-                        .addWindow(new AddNewStudyPublicationWindow(new AddNewStudyPublicationWindow.Callback() {
+                    resPubTable.getApplication().getMainWindow().addWindow(
+                        new AddNewStudyPublicationWindow(new AddNewStudyPublicationWindow.Callback() {
                             @Override
                             public void onAcceptAction(String inputURLText) {
                                 // add to table

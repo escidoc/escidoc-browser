@@ -492,9 +492,8 @@ public final class InstrumentController extends Controller implements ISaveActio
     @Override
     public boolean hasUpdateAccess() {
         try {
-            return getRepositories()
-                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_ITEM).forResource(getResourceProxy().getId())
-                .permitted();
+            return getRepositories().pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_ITEM).forResource(
+                getResourceProxy().getId()).permitted();
         }
         catch (final UnsupportedOperationException e) {
             showError("Internal error");

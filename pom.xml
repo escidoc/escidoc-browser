@@ -247,6 +247,7 @@
         <version>0.3.1</version>
         <configuration>
           <configFile>${project.basedir}/etc/eSciDoc_codestyle.xml</configFile>
+          <overrideConfigCompilerVersion>true</overrideConfigCompilerVersion>
         </configuration>
         <executions>
           <execution>
@@ -288,6 +289,23 @@
                   <action>
                     <ignore></ignore>
                   </action>
+                </pluginExecution>
+                <pluginExecution>
+                	<pluginExecutionFilter>
+                		<groupId>
+                			com.googlecode.maven-java-formatter-plugin
+                		</groupId>
+                		<artifactId>
+                			maven-java-formatter-plugin
+                		</artifactId>
+                		<versionRange>[0.3.1,)</versionRange>
+                		<goals>
+                			<goal>format</goal>
+                		</goals>
+                	</pluginExecutionFilter>
+                	<action>
+                		<ignore></ignore>
+                	</action>
                 </pluginExecution>
               </pluginExecutions>
             </lifecycleMappingMetadata>

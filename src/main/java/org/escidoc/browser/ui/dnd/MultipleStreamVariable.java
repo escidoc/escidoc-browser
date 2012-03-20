@@ -198,8 +198,8 @@ class MultipleStreamVariable implements StreamVariable {
     }
 
     private Component buildNewComponent(final URL contentUrl) throws ParserConfigurationException {
-        return new ComponentBuilder(html5File.getFileName(), StorageType.INTERNAL_MANAGED)
-            .withMimeType(html5File.getType()).withContentUrl(contentUrl).build();
+        return new ComponentBuilder(html5File.getFileName(), StorageType.INTERNAL_MANAGED).withMimeType(
+            html5File.getType()).withContentUrl(contentUrl).build();
     }
 
     private URL putInStagingServer() throws EscidocClientException {

@@ -135,8 +135,8 @@ public abstract class Controller {
      */
     protected void showWarning(final String warningMessage) {
         Preconditions.checkNotNull(warningMessage, "Warningmessage is null");
-        this.router
-            .getApp().getMainWindow().showNotification("Warning", warningMessage, Notification.TYPE_WARNING_MESSAGE);
+        this.router.getApp().getMainWindow().showNotification("Warning", warningMessage,
+            Notification.TYPE_WARNING_MESSAGE);
     }
 
     /**
@@ -150,8 +150,8 @@ public abstract class Controller {
     public void showTrayMessage(final String trayTitle, final String trayMessage) {
         Preconditions.checkNotNull(trayMessage, "Traymessage is null");
         Preconditions.checkNotNull(trayTitle, "trayTitle is null");
-        this.router
-            .getApp().getMainWindow().showNotification(trayTitle, trayMessage, Notification.TYPE_TRAY_NOTIFICATION);
+        this.router.getApp().getMainWindow().showNotification(trayTitle, trayMessage,
+            Notification.TYPE_TRAY_NOTIFICATION);
     }
 
     public abstract void createView() throws EscidocClientException;

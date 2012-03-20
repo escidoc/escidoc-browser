@@ -159,9 +159,8 @@ public class BulkTasksView extends VerticalLayout {
     }
 
     void showErrorMessage(final Exception e) {
-        router
-            .getApp().getMainWindow()
-            .showNotification(ViewConstants.ERROR, e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        router.getApp().getMainWindow().showNotification(ViewConstants.ERROR, e.getMessage(),
+            Window.Notification.TYPE_ERROR_MESSAGE);
     }
 
     void showErrorMessage(final MessagesStatus status) {

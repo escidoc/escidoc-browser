@@ -450,9 +450,8 @@ public final class ActionHandlerImpl implements Action.Handler {
     }
 
     private boolean allowedToAddMember(final ResourceModel target) throws EscidocClientException, URISyntaxException {
-        return repositories
-            .pdp().forCurrentUser().isAction(ActionIdConstants.ADD_MEMBERS_TO_CONTAINER).forResource(target.getId())
-            .permitted();
+        return repositories.pdp().forCurrentUser().isAction(ActionIdConstants.ADD_MEMBERS_TO_CONTAINER).forResource(
+            target.getId()).permitted();
     }
 
     private boolean allowedToDeleteContainer(final String containerId) throws EscidocClientException,
@@ -463,14 +462,14 @@ public final class ActionHandlerImpl implements Action.Handler {
 
     private boolean allowedToCreateItem(final String contextId) throws EscidocClientException, URISyntaxException {
         return repositories
-            .pdp().forCurrentUser().isAction(ActionIdConstants.CREATE_ITEM).forResource("")
-            .withTypeAndInContext(ResourceType.ITEM, contextId).permitted();
+            .pdp().forCurrentUser().isAction(ActionIdConstants.CREATE_ITEM).forResource("").withTypeAndInContext(
+                ResourceType.ITEM, contextId).permitted();
     }
 
     private boolean allowedToCreateContainer(final String contextId) throws EscidocClientException, URISyntaxException {
         return repositories
-            .pdp().forCurrentUser().isAction(ActionIdConstants.CREATE_CONTAINER).forResource("")
-            .withTypeAndInContext(ResourceType.CONTAINER, contextId).permitted();
+            .pdp().forCurrentUser().isAction(ActionIdConstants.CREATE_CONTAINER).forResource("").withTypeAndInContext(
+                ResourceType.CONTAINER, contextId).permitted();
     }
 
     private String findContextId(final Object target) {

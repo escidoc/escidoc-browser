@@ -117,10 +117,7 @@ public class ESyncDaemonEndpointSelectionLayoutListener implements LayoutClickLi
                             public void valueChange(ValueChangeEvent event) {
                                 if (event.getProperty().getValue().equals(addNewItemProperty) && addOnWindow == null) {
                                     ESyncDaemonEndpointSelectionLayoutListener.this.labsPanel
-                                        .getReference()
-                                        .getApplication()
-                                        .getMainWindow()
-                                        .addWindow(
+                                        .getReference().getApplication().getMainWindow().addWindow(
                                             addOnWindow =
                                                 new AddNewEndpointURIWindow(new AddNewEndpointURIWindow.Callback() {
                                                     @Override

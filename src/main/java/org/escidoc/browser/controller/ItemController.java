@@ -71,9 +71,8 @@ public class ItemController extends Controller {
      */
     public boolean canUpdateItem() {
         try {
-            return repositories
-                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_ITEM).forResource(resourceProxy.getId())
-                .permitted();
+            return repositories.pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_ITEM).forResource(
+                resourceProxy.getId()).permitted();
         }
         catch (final EscidocClientException e) {
             router.getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
@@ -110,9 +109,8 @@ public class ItemController extends Controller {
 
     public boolean hasAccess() {
         try {
-            return repositories
-                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_ITEM).forResource(resourceProxy.getId())
-                .permitted();
+            return repositories.pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_ITEM).forResource(
+                resourceProxy.getId()).permitted();
         }
         catch (final EscidocClientException e) {
             LOG.debug(e.getLocalizedMessage());

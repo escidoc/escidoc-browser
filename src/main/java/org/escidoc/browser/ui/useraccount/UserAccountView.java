@@ -74,7 +74,8 @@ public class UserAccountView extends View {
         }
 
         @Override
-        public void buttonClick(@SuppressWarnings("unused") final com.vaadin.ui.Button.ClickEvent event) {
+        public void buttonClick(@SuppressWarnings("unused")
+        final com.vaadin.ui.Button.ClickEvent event) {
             addAttributeButton.setEnabled(false);
             final HorizontalLayout hl = new HorizontalLayout();
             final TextField key = new TextField();
@@ -97,7 +98,8 @@ public class UserAccountView extends View {
             btnadd.setIcon(new ThemeResource("images/assets/plus.png"));
             btnadd.addListener(new Button.ClickListener() {
                 @Override
-                public void buttonClick(@SuppressWarnings("unused") final com.vaadin.ui.Button.ClickEvent event) {
+                public void buttonClick(@SuppressWarnings("unused")
+                final com.vaadin.ui.Button.ClickEvent event) {
                     if (isNotValid(key, value)) {
                         showMessage();
                     }
@@ -147,7 +149,8 @@ public class UserAccountView extends View {
         }
 
         @Override
-        public void buttonClick(@SuppressWarnings("unused") com.vaadin.ui.Button.ClickEvent event) {
+        public void buttonClick(@SuppressWarnings("unused")
+        com.vaadin.ui.Button.ClickEvent event) {
             try {
                 form.commit();
                 if (!passwordField.getValue().equals(verifyPasswordField.getValue())) {
@@ -353,8 +356,8 @@ public class UserAccountView extends View {
 
     private boolean isAllowedToUpdate() throws EscidocClientException, URISyntaxException {
         return router
-            .getRepositories().pdp().isAction(ActionIdConstants.UPDATE_USER_ACCOUNT).forCurrentUser()
-            .forResource(userProxy.getId()).permitted();
+            .getRepositories().pdp().isAction(ActionIdConstants.UPDATE_USER_ACCOUNT).forCurrentUser().forResource(
+                userProxy.getId()).permitted();
     }
 
     private Component buildAttributesView() throws EscidocClientException {

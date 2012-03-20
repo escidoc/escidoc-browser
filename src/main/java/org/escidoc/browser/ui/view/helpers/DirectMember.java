@@ -188,7 +188,8 @@ public class DirectMember {
         addResourceButton.addListener(new ClickListener() {
 
             @Override
-            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused")
+            final ClickEvent event) {
                 try {
                     new ResourceAddViewImpl(resourceProxy, contextId, router).openSubWindow();
                 }

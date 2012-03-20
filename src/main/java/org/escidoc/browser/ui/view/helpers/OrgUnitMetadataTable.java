@@ -93,13 +93,15 @@ public class OrgUnitMetadataTable extends TableContainerVH {
     protected void addActionLists() {
         table.addActionHandler(new Action.Handler() {
             @Override
-            public Action[] getActions(
-                @SuppressWarnings("unused") Object target, @SuppressWarnings("unused") Object sender) {
+            public Action[] getActions(@SuppressWarnings("unused")
+            Object target, @SuppressWarnings("unused")
+            Object sender) {
                 return ACTIONS_LIST;
             }
 
             @Override
-            public void handleAction(Action action, @SuppressWarnings("unused") Object sender, Object target) {
+            public void handleAction(Action action, @SuppressWarnings("unused")
+            Object sender, Object target) {
                 Preconditions.checkNotNull(action, "action is null: %s", action);
 
                 if (ACTION_DELETE == action) {

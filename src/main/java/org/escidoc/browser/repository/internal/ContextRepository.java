@@ -92,8 +92,8 @@ public class ContextRepository implements Repository {
     }
 
     private List<ResourceModel> findTopLevelMemberList(final String id) throws EscidocClientException {
-        return ModelConverter.genericResourcetoModel(client.retrieveMembersAsList(id,
-            Util.createQueryForTopLevelContainersAndItems(id)));
+        return ModelConverter.genericResourcetoModel(client.retrieveMembersAsList(id, Util
+            .createQueryForTopLevelContainersAndItems(id)));
     }
 
     @Override

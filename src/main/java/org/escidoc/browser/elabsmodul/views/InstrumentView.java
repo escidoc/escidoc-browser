@@ -203,8 +203,8 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
                 getPojoItem().getItemProperty(ELabsViewContants.P_INSTRUMENT_FOLDER), true);
         HorizontalLayout h7 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(
-                ELabsViewContants.L_INSTRUMENT_FILE_FORMAT,
-                getPojoItem().getItemProperty(ELabsViewContants.P_INSTRUMENT_FILEFORMAT), false);
+                ELabsViewContants.L_INSTRUMENT_FILE_FORMAT, getPojoItem().getItemProperty(
+                    ELabsViewContants.P_INSTRUMENT_FILEFORMAT), false);
         HorizontalLayout h8 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelComplexData(
                 ELabsViewContants.L_INSTRUMENT_DEVICE_SUPERVISOR, supervisorText, false);

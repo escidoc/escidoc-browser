@@ -126,8 +126,8 @@ public class ComponentUploadView extends VerticalLayout {
         }
 
         private Component buildNewComponent(final URL contentUrl) throws ParserConfigurationException {
-            return new ComponentBuilder(uploadReceiver.getFileName(), StorageType.INTERNAL_MANAGED)
-                .withMimeType(uploadReceiver.getMimeType()).withContentUrl(contentUrl).build();
+            return new ComponentBuilder(uploadReceiver.getFileName(), StorageType.INTERNAL_MANAGED).withMimeType(
+                uploadReceiver.getMimeType()).withContentUrl(contentUrl).build();
         }
 
         private Item updateItem(final Item toBeUpdate) throws EscidocClientException {

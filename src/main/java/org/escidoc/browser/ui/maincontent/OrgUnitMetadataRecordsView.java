@@ -106,7 +106,8 @@ public class OrgUnitMetadataRecordsView {
             addNewOrgUnitBtn.addListener(new Button.ClickListener() {
 
                 @Override
-                public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
+                public void buttonClick(@SuppressWarnings("unused")
+                ClickEvent event) {
                     OnAddOrgUnitMetadata view = new OnAddOrgUnitMetadata(controller, router.getMainWindow());
                     view.showAddWindow();
                 }
@@ -139,8 +140,8 @@ public class OrgUnitMetadataRecordsView {
     private boolean canAddMetadata() {
         try {
             return router
-                .getRepositories().pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_ORG_UNIT)
-                .forResource(orgUnit.getId()).permitted();
+                .getRepositories().pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_ORG_UNIT).forResource(
+                    orgUnit.getId()).permitted();
         }
         catch (final EscidocClientException e) {
             LOG.debug(e.getLocalizedMessage());

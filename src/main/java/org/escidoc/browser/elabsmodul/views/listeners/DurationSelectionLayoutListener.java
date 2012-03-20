@@ -71,9 +71,8 @@ public class DurationSelectionLayoutListener implements LayoutClickListener {
             if ((dataComponent = ((HorizontalLayout) component).getComponent(1)) == null) {
                 return;
             }
-            this.labsPanel
-                .getReference().getApplication().getMainWindow()
-                .addWindow(new DatePickerWindow("Add investigation duration", new DatePickerWindow.Callback() {
+            this.labsPanel.getReference().getApplication().getMainWindow().addWindow(
+                new DatePickerWindow("Add investigation duration", new DatePickerWindow.Callback() {
 
                     @Override
                     public void onDialogResult(boolean resultIsOk, final DurationBean durationBean) {

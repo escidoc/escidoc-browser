@@ -62,7 +62,8 @@ final class OnAddPreference implements ClickListener {
     }
 
     @Override
-    public void buttonClick(@SuppressWarnings("unused") final com.vaadin.ui.Button.ClickEvent event) {
+    public void buttonClick(@SuppressWarnings("unused")
+    final com.vaadin.ui.Button.ClickEvent event) {
         addPreference.setEnabled(false);
         final HorizontalLayout hl = new HorizontalLayout();
         final TextField key = new TextField();
@@ -85,7 +86,8 @@ final class OnAddPreference implements ClickListener {
         addButton.setIcon(new ThemeResource("images/assets/plus.png"));
         addButton.addListener(new Button.ClickListener() {
             @Override
-            public void buttonClick(@SuppressWarnings("unused") final com.vaadin.ui.Button.ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused")
+            final com.vaadin.ui.Button.ClickEvent event) {
                 if (UserAccountView.isNotValid(key, value)) {
                     OnAddPreference.this.userAccountView.showMessage();
                 }

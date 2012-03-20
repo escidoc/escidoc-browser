@@ -259,9 +259,8 @@ public class StudyController extends Controller implements ISaveAction {
     @Override
     public boolean hasUpdateAccess() {
         try {
-            return getRepositories()
-                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER)
-                .forResource(getResourceProxy().getId()).permitted();
+            return getRepositories().pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER).forResource(
+                getResourceProxy().getId()).permitted();
         }
         catch (UnsupportedOperationException e) {
             showError("Internal error");

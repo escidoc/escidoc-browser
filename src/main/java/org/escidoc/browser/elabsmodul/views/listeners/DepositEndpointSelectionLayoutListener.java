@@ -116,10 +116,7 @@ public class DepositEndpointSelectionLayoutListener implements LayoutClickListen
                             public void valueChange(ValueChangeEvent event) {
                                 if (event.getProperty().getValue().equals(addNewItemProperty) && addOnWindow == null) {
                                     DepositEndpointSelectionLayoutListener.this.labsPanel
-                                        .getReference()
-                                        .getApplication()
-                                        .getMainWindow()
-                                        .addWindow(
+                                        .getReference().getApplication().getMainWindow().addWindow(
                                             addOnWindow =
                                                 new AddNewEndpointURIWindow(new AddNewEndpointURIWindow.Callback() {
                                                     @Override

@@ -94,9 +94,8 @@ public class UtilRepositoryImpl implements UtilRepository {
     @Override
     public ResourceModel findParent(final HasNoNameResource resource) throws EscidocClientException {
         Preconditions.checkNotNull(resource, "resource is null: %s", resource);
-        Preconditions.checkArgument(
-            resource.getType().equals(ResourceType.ITEM) || resource.getType().equals(ResourceType.CONTAINER),
-            "Only Item and Container is supported");
+        Preconditions.checkArgument(resource.getType().equals(ResourceType.ITEM)
+            || resource.getType().equals(ResourceType.CONTAINER), "Only Item and Container is supported");
 
         final List<Container> parents = repositories.container().findParents(resource);
 

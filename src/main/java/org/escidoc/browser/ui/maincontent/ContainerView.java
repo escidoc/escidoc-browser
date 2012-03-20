@@ -547,8 +547,8 @@ public class ContainerView extends View {
                 private boolean hasAccessDelResource() {
                     try {
                         return repositories
-                            .pdp().forCurrentUser().isAction(ActionIdConstants.DELETE_CONTAINER)
-                            .forResource(resourceProxy.getId()).permitted();
+                            .pdp().forCurrentUser().isAction(ActionIdConstants.DELETE_CONTAINER).forResource(
+                                resourceProxy.getId()).permitted();
                     }
                     catch (UnsupportedOperationException e) {
                         mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
@@ -722,9 +722,8 @@ public class ContainerView extends View {
     // TODO Move to Controller
     private boolean hasAccess() {
         try {
-            return repositories
-                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER).forResource(resourceProxy.getId())
-                .permitted();
+            return repositories.pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER).forResource(
+                resourceProxy.getId()).permitted();
         }
         catch (EscidocClientException e) {
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);

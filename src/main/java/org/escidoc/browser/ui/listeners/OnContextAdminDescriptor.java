@@ -102,7 +102,8 @@ public class OnContextAdminDescriptor {
 
         Button close = new Button(ViewConstants.CLOSE, new Button.ClickListener() {
             @Override
-            public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused")
+            ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
             }
         });
@@ -173,7 +174,8 @@ public class OnContextAdminDescriptor {
 
         Button close = new Button(ViewConstants.CLOSE, new Button.ClickListener() {
             @Override
-            public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused")
+            ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
             }
         });
