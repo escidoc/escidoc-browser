@@ -36,8 +36,9 @@ public class DeleteContainerShowLogsHelper {
         layout.setSpacing(true);
 
         Table tblDeleted = new Table("Successfully deleted resources");
-        tblDeleted.addContainerProperty("Resource Id", String.class, null);
-        tblDeleted.addContainerProperty("Resource Type", String.class, null);
+        tblDeleted.setWidth("90%");
+        tblDeleted.addContainerProperty("Id", String.class, null);
+        tblDeleted.addContainerProperty("Resource ", String.class, null);
 
         for (Map.Entry<String, String> entry : listDeleted.entrySet()) {
             tblDeleted.addItem(new Object[] { entry.getKey(), entry.getValue() }, entry.getKey());
@@ -45,8 +46,9 @@ public class DeleteContainerShowLogsHelper {
         layout.addComponent(tblDeleted);
 
         Table tblNotDeleted = new Table("Resources that could not be deleted");
+        tblNotDeleted.setWidth("90%");
         tblNotDeleted.addContainerProperty("Resource Id", String.class, null);
-        tblNotDeleted.addContainerProperty("Resource Type & Error", String.class, null);
+        tblNotDeleted.addContainerProperty("Resource & Error", String.class, null);
 
         for (Map.Entry<String, String> entry : listNotDeleted.entrySet()) {
             tblNotDeleted.addItem(new Object[] { entry.getKey(), entry.getValue() }, entry.getKey());

@@ -30,6 +30,7 @@ package org.escidoc.browser.ui.navigation;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -427,20 +428,13 @@ public final class ActionHandlerImpl implements Action.Handler {
      * @throws EscidocClientException
      */
     private void findAllChildren(final ResourceModel resource) throws EscidocClientException {
-        if (resource.getType().equals(ResourceType.ITEM)) {
-            results.add(0, resource);
-        }
+        results.add(resource);
         if (resource.getType().equals(ResourceType.CONTAINER)) {
-
             final List<ResourceModel> children = repositories.container().findDirectMembers(resource.getId());
             if (!children.isEmpty()) {
-                results.add(resource);
                 for (ResourceModel child : children) {
                     findAllChildren(child);
                 }
-            }
-            else {
-                results.add(0, resource);
             }
         }
 
@@ -452,40 +446,41 @@ public final class ActionHandlerImpl implements Action.Handler {
         results = new ArrayList<ResourceModel>();
         try {
             findAllChildren(resource);
-            router.getMainWindow().showNotification(results.toString(), Notification.TYPE_ERROR_MESSAGE);
-            for (ResourceModel resourceModel : results) {
-
-                if (resourceModel.getType().equals(ResourceType.CONTAINER)) {
-                    try {
-                        repositories.container().finalDelete(resourceModel);
-                        treeDataSource.remove(resourceModel);
-                        listDeleted.put(resourceModel.getId(), resourceModel.getType().toString().toLowerCase());
+            Collections.reverse(results);
+            if (!results.isEmpty()) {
+                for (ResourceModel resourceModel : results) {
+                    if (resourceModel.getType().equals(ResourceType.CONTAINER)) {
+                        try {
+                            repositories.container().finalDelete(resourceModel);
+                            treeDataSource.remove(resourceModel);
+                            listDeleted.put(resourceModel.getId(), resourceModel.getName().toString() + " "
+                                + resourceModel.getType().toString().toLowerCase());
+                        }
+                        catch (EscidocClientException e) {
+                            listNotDeleted.put(resourceModel.getId(), resourceModel.getName().toString() + " "
+                                + resourceModel.getType() + " " + e.getLocalizedMessage());
+                        }
                     }
-                    catch (EscidocClientException e) {
-                        listNotDeleted.put(resourceModel.getId(),
-                            resourceModel.getType() + " " + e.getLocalizedMessage());
+                    else {
+                        try {
+                            repositories.item().finalDelete(resourceModel);
+                            treeDataSource.remove(resourceModel);
+                            listDeleted.put(resourceModel.getId(), resourceModel.getName().toString() + " "
+                                + resourceModel.getType().toString());
+                        }
+                        catch (EscidocClientException e) {
+                            listNotDeleted.put(resourceModel.getId(),
+                                resourceModel.getName().toString() + " " + e.getLocalizedMessage());
+                        }
                     }
                 }
-                else {
-                    try {
-                        repositories.item().finalDelete(resourceModel);
-                        treeDataSource.remove(resourceModel);
-                        listDeleted.put(resourceModel.getId(), resourceModel.getType().toString());
-                    }
-                    catch (EscidocClientException e) {
-                        listNotDeleted.put(resourceModel.getId(), e.getLocalizedMessage());
-                    }
-                }
+                new DeleteContainerShowLogsHelper(listDeleted, listNotDeleted, router).showWindow();
             }
         }
         catch (EscidocClientException e1) {
             mainWindow.showNotification(new Window.Notification("Could not retrieve members",
                 Window.Notification.TYPE_WARNING_MESSAGE));
         }
-        new DeleteContainerShowLogsHelper(listDeleted, listNotDeleted, router).showWindow();
-        LOG.debug(listDeleted.toString());
-        LOG.debug(listNotDeleted.toString());
-
     }
 
     private void tryShowCreateResourceView(final Object target, final String contextId) throws EscidocClientException,
