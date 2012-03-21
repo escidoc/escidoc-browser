@@ -422,7 +422,7 @@ public class ViewConstants {
 
     public static final String SEARCH_LABEL = "Search";
 
-    public static final String USER_NAME = "Login Name:";
+    public static final String USER_NAME = "Name:";
 
     public static final String SELECT_ROLE_LABEL = "Select Role";
 

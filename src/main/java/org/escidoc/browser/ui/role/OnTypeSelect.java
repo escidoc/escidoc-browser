@@ -28,15 +28,10 @@
  */
 package org.escidoc.browser.ui.role;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.ListSelect;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 
 import org.escidoc.browser.model.PropertyId;
 import org.escidoc.browser.model.ResourceModel;
@@ -44,8 +39,14 @@ import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.ViewConstants;
 
-import java.util.Iterator;
-import java.util.List;
+import com.google.common.base.Preconditions;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.ListSelect;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -113,7 +114,19 @@ public class OnTypeSelect implements ValueChangeListener {
     }
 
     private List<ResourceModel> findAll(ResourceType type) throws EscidocClientException {
-        return repositories.findByType(type).findAll();
+        List<ResourceModel> list = repositories.findByType(type).findAll();
+        Collections.sort(list, new Comparator<ResourceModel>() {
+
+            @Override
+            public int compare(ResourceModel o1, ResourceModel o2) {
+                ResourceModel p1 = (ResourceModel) o1;
+                ResourceModel p2 = (ResourceModel) o2;
+                return p1.getName().compareToIgnoreCase(p2.getName());
+            }
+
+        });
+
+        return list;
     }
 
     private static BeanItemContainer<ResourceModel> newContainer() {
