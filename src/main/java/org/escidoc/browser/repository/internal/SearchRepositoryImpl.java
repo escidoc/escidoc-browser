@@ -28,19 +28,17 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import gov.loc.www.zing.srw.ExplainRequestType;
+import com.google.common.base.Preconditions;
+
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
 
 import de.escidoc.core.client.SearchHandlerClient;
 import de.escidoc.core.client.TransportProtocol;
@@ -49,6 +47,7 @@ import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.client.interfaces.SearchHandlerClientInterface;
 import de.escidoc.core.resources.sb.explain.ExplainResponse;
 import de.escidoc.core.resources.sb.search.SearchRetrieveResponse;
+import gov.loc.www.zing.srw.ExplainRequestType;
 
 public class SearchRepositoryImpl {
     private static final Logger LOG = LoggerFactory.getLogger(SearchRepositoryImpl.class);

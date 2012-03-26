@@ -28,9 +28,9 @@
  */
 package org.escidoc.browser.model;
 
-import org.escidoc.browser.repository.Repositories;
-
 import com.google.common.base.Preconditions;
+
+import org.escidoc.browser.repository.Repositories;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 

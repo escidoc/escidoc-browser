@@ -28,17 +28,17 @@
  */
 package org.escidoc.browser.ui.tools;
 
-import java.util.Map.Entry;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
 
 import org.escidoc.browser.repository.AdminRepository;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.tools.Style.H2;
 import org.escidoc.browser.ui.tools.Style.Ruler;
 
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
+import java.util.Map.Entry;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 

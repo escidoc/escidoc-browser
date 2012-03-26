@@ -28,7 +28,10 @@
  */
 package org.escidoc.browser.ui.listeners;
 
-import java.util.List;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.ui.Tree;
+import com.vaadin.ui.Tree.ExpandEvent;
 
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.TreeDataSource;
@@ -39,9 +42,7 @@ import org.escidoc.browser.repository.Repositories;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.Tree;
-import com.vaadin.ui.Tree.ExpandEvent;
+import java.util.List;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 

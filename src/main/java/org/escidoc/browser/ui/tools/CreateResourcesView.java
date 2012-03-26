@@ -28,16 +28,8 @@
  */
 package org.escidoc.browser.ui.tools;
 
-import java.util.Collection;
-
-import org.escidoc.browser.controller.CreateResourcesController;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.repository.internal.OrgUnitService;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.View;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.data.Validator.EmptyValueException;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
@@ -51,6 +43,15 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
+
+import org.escidoc.browser.controller.CreateResourcesController;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.internal.OrgUnitService;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.maincontent.View;
+
+import java.util.Collection;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.oum.OrganizationalUnit;

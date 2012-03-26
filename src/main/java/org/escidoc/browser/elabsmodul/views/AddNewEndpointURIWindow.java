@@ -28,11 +28,8 @@
  */
 package org.escidoc.browser.elabsmodul.views;
 
-import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.Button;
@@ -44,6 +41,10 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+
+import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AddNewEndpointURIWindow extends Window implements Button.ClickListener {
 

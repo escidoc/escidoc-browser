@@ -39,7 +39,6 @@ public class ViewConstants {
 
     public static final String CHANGE = "Switch Instance of eSciDoc";
 
-    //
     public static final String BREAD_CRUMP_CONTENT =
         "<ul id='crumbs'><li><a href='#'>Home</a></li><li><a href='#'>Main section</a></li><li><a href='#'>Sub section</a></li><li><a href='#'>Sub sub section</a></li><li>The page you are on right now</li></ul>";
 
@@ -419,11 +418,11 @@ public class ViewConstants {
     public static final Object SYSADMIN = "sysadmin";
 
     public static final String User_Groups = "Groups";
-    
+
     public static final String ROLE_MANAGEMENT = "Role Management";
 
     public static final String CREATE_A_NEW_GROUP = "Create a new Group";
-    
+
     public static final String SEARCH_LABEL = "Search";
 
     public static final String USER_NAME = "Name:";

@@ -28,13 +28,8 @@
  */
 package org.escidoc.browser.ui.tools;
 
-import org.escidoc.browser.repository.AdminRepository;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.tools.Style.H2;
-import org.escidoc.browser.ui.tools.Style.Ruler;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
@@ -43,6 +38,12 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.ProgressIndicator;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
+
+import org.escidoc.browser.repository.AdminRepository;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.tools.Style.H2;
+import org.escidoc.browser.ui.tools.Style.Ruler;
 
 @SuppressWarnings("serial")
 public class ReindexView extends VerticalLayout {

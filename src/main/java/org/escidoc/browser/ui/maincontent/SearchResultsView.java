@@ -28,7 +28,19 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import java.util.List;
+import com.google.common.base.Preconditions;
+
+import com.jensjansson.pagedtable.PagedTable;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.BaseTheme;
 
 import org.escidoc.browser.controller.ContainerController;
 import org.escidoc.browser.controller.ContextController;
@@ -45,18 +57,7 @@ import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.SearchRepositoryImpl;
 import org.escidoc.browser.ui.Router;
 
-import com.google.common.base.Preconditions;
-import com.jensjansson.pagedtable.PagedTable;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.util.IndexedContainer;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.BaseTheme;
+import java.util.List;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.Resource;

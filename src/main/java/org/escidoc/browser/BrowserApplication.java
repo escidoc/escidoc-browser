@@ -28,12 +28,12 @@
  */
 package org.escidoc.browser;
 
-import java.net.MalformedURLException;
-import java.util.Map;
+import com.google.common.base.Preconditions;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import com.vaadin.Application;
+import com.vaadin.terminal.gwt.server.HttpServletRequestListener;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
@@ -53,11 +53,12 @@ import org.escidoc.browser.ui.listeners.WindowResizeObserverImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.Application;
-import com.vaadin.terminal.gwt.server.HttpServletRequestListener;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
+import java.net.MalformedURLException;
+import java.util.Map;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 

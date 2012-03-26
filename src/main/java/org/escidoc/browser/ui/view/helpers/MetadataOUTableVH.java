@@ -28,13 +28,8 @@
  */
 package org.escidoc.browser.ui.view.helpers;
 
-import org.escidoc.browser.controller.OrgUnitController;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.OnAddOrgUnitMetadata;
-import org.escidoc.browser.ui.maincontent.OnEditOrgUnitMetadata;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.event.Action;
@@ -42,6 +37,12 @@ import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.BaseTheme;
+
+import org.escidoc.browser.controller.OrgUnitController;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.maincontent.OnAddOrgUnitMetadata;
+import org.escidoc.browser.ui.maincontent.OnEditOrgUnitMetadata;
 
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.MetadataRecords;

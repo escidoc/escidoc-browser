@@ -28,7 +28,7 @@
  */
 package org.escidoc.browser.controller;
 
-import java.net.URISyntaxException;
+import com.vaadin.ui.Window;
 
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
@@ -38,7 +38,7 @@ import org.escidoc.browser.ui.maincontent.ContainerView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.ui.Window;
+import java.net.URISyntaxException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 

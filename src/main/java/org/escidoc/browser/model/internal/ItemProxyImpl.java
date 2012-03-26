@@ -28,11 +28,11 @@
  */
 package org.escidoc.browser.model.internal;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.ResourceType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.MetadataRecords;

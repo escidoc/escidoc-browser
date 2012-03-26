@@ -28,9 +28,6 @@
  */
 package org.escidoc.browser.ui.view.helpers;
 
-import org.escidoc.browser.controller.Controller;
-import org.escidoc.browser.ui.ViewConstants;
-
 import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.event.Action;
@@ -42,6 +39,9 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.CellStyleGenerator;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+
+import org.escidoc.browser.controller.Controller;
+import org.escidoc.browser.ui.ViewConstants;
 
 /**
  * This is a table container. <br >

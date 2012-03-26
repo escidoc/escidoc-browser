@@ -28,20 +28,8 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import org.escidoc.browser.controller.ContainerController;
-import org.escidoc.browser.model.ContainerProxy;
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.listeners.OnAddContainerMetadata;
-import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
-import org.escidoc.browser.ui.view.helpers.ContainerMetadataTableVH;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
@@ -54,6 +42,19 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
+
+import org.escidoc.browser.controller.ContainerController;
+import org.escidoc.browser.model.ContainerProxy;
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.listeners.OnAddContainerMetadata;
+import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
+import org.escidoc.browser.ui.view.helpers.ContainerMetadataTableVH;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ContainerMetadataRecordsView {
 

@@ -28,15 +28,16 @@
  */
 package org.escidoc.browser.ui.useraccount;
 
+import com.google.common.base.Preconditions;
+
+import com.vaadin.data.Item;
+import com.vaadin.data.util.HierarchicalContainer;
+
 import org.escidoc.browser.controller.UserAccountController;
 import org.escidoc.browser.model.internal.UserProxy;
 import org.escidoc.browser.repository.internal.UserAccountRepository;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.view.helpers.TableContainerVH;
-
-import com.google.common.base.Preconditions;
-import com.vaadin.data.Item;
-import com.vaadin.data.util.HierarchicalContainer;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.aa.useraccount.Attribute;

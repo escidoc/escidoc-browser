@@ -28,13 +28,13 @@
  */
 package org.escidoc.browser.ui.listeners;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import com.vaadin.ui.Upload.Receiver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.ui.Upload.Receiver;
+import java.io.IOException;
+import java.io.OutputStream;
 
 @SuppressWarnings("serial")
 public class MetadataFileReceiver implements Receiver {

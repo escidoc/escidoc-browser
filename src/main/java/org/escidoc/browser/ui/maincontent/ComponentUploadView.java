@@ -28,11 +28,16 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import java.io.ByteArrayInputStream;
-import java.io.OutputStream;
-import java.net.URL;
+import com.google.common.base.Preconditions;
 
-import javax.xml.parsers.ParserConfigurationException;
+import com.vaadin.ui.Upload;
+import com.vaadin.ui.Upload.Receiver;
+import com.vaadin.ui.Upload.SucceededEvent;
+import com.vaadin.ui.Upload.SucceededListener;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.themes.Reindeer;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.escidoc.browser.AppConstants;
@@ -43,15 +48,11 @@ import org.escidoc.browser.model.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.ViewConstants;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.Upload;
-import com.vaadin.ui.Upload.Receiver;
-import com.vaadin.ui.Upload.SucceededEvent;
-import com.vaadin.ui.Upload.SucceededListener;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
-import com.vaadin.ui.themes.Reindeer;
+import java.io.ByteArrayInputStream;
+import java.io.OutputStream;
+import java.net.URL;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.om.item.Item;

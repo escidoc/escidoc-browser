@@ -28,15 +28,6 @@
  */
 package org.escidoc.browser.ui.view.helpers;
 
-import java.util.List;
-
-import org.escidoc.browser.controller.OrgUnitController;
-import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.repository.internal.OrgUnitProxy;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.OrgUnitParentEditView;
-
 import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.event.Action;
@@ -47,6 +38,15 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
+
+import org.escidoc.browser.controller.OrgUnitController;
+import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.repository.internal.OrgUnitProxy;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.maincontent.OrgUnitParentEditView;
+
+import java.util.List;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.om.context.OrganizationalUnitRefs;

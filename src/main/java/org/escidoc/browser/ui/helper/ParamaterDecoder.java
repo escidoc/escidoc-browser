@@ -28,11 +28,11 @@
  */
 package org.escidoc.browser.ui.helper;
 
-import java.util.Map;
-
 import org.escidoc.browser.AppConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 import biz.source_code.base64Coder.Base64Coder;
 

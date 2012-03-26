@@ -28,11 +28,11 @@
  */
 package org.escidoc.browser.ui.tools;
 
+import com.google.common.base.Preconditions;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
-import com.google.common.base.Preconditions;
 
 public enum IndexName {
 

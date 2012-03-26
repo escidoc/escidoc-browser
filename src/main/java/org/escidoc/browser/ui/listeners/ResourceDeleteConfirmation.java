@@ -28,16 +28,16 @@
  */
 package org.escidoc.browser.ui.listeners;
 
-import org.escidoc.browser.repository.internal.ContainerRepository;
-import org.escidoc.browser.repository.internal.ItemRepository;
-import org.escidoc.browser.ui.ViewConstants;
-
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
+
+import org.escidoc.browser.repository.internal.ContainerRepository;
+import org.escidoc.browser.repository.internal.ItemRepository;
+import org.escidoc.browser.ui.ViewConstants;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.om.container.Container;

@@ -28,10 +28,10 @@
  */
 package org.escidoc.browser.model.internal;
 
+import com.google.common.base.Preconditions;
+
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.CurrentUser;
-
-import com.google.common.base.Preconditions;
 
 import de.escidoc.core.resources.aa.useraccount.UserAccount;
 

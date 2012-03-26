@@ -28,18 +28,19 @@
  */
 package org.escidoc.browser.elabsmodul.views.listeners;
 
+import com.google.common.base.Preconditions;
+
+import com.vaadin.event.LayoutEvents.LayoutClickEvent;
+import com.vaadin.event.LayoutEvents.LayoutClickListener;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+
 import org.escidoc.browser.elabsmodul.interfaces.ILabsInvestigationAction;
 import org.escidoc.browser.elabsmodul.interfaces.ILabsPanel;
 import org.escidoc.browser.elabsmodul.model.DurationBean;
 import org.escidoc.browser.elabsmodul.views.DatePickerWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
-import com.vaadin.event.LayoutEvents.LayoutClickEvent;
-import com.vaadin.event.LayoutEvents.LayoutClickListener;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
 
 public class DurationSelectionLayoutListener implements LayoutClickListener {
 

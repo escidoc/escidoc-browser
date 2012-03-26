@@ -28,8 +28,9 @@
  */
 package org.escidoc.browser.util;
 
-import static org.hamcrest.Matchers.is;
 import junit.framework.Assert;
+
+import static org.hamcrest.Matchers.is;
 
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceType;

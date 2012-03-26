@@ -1,15 +1,15 @@
 package org.escidoc.browser.ui.view.helpers;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.escidoc.browser.ui.Router;
-
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+
+import org.escidoc.browser.ui.Router;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class DeleteContainerShowLogsHelper {
 

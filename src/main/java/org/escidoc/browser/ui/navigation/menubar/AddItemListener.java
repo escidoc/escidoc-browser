@@ -29,6 +29,7 @@
 package org.escidoc.browser.ui.navigation.menubar;
 
 import com.google.common.base.Preconditions;
+
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 

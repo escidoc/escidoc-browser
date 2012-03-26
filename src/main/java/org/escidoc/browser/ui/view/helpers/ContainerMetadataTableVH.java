@@ -28,6 +28,12 @@
  */
 package org.escidoc.browser.ui.view.helpers;
 
+import com.vaadin.data.Item;
+import com.vaadin.data.util.HierarchicalContainer;
+import com.vaadin.event.Action;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
+
 import org.escidoc.browser.controller.ContainerController;
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.repository.Repositories;
@@ -35,12 +41,6 @@ import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.EditMetaDataFileContainerBehaviour;
 import org.escidoc.browser.ui.listeners.OnAddContainerMetadata;
-
-import com.vaadin.data.Item;
-import com.vaadin.data.util.HierarchicalContainer;
-import com.vaadin.event.Action;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
 
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.MetadataRecords;

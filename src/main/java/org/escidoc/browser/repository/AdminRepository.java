@@ -28,13 +28,13 @@
  */
 package org.escidoc.browser.repository;
 
-import java.net.MalformedURLException;
-import java.util.List;
-import java.util.Set;
+import com.google.common.base.Preconditions;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 
-import com.google.common.base.Preconditions;
+import java.net.MalformedURLException;
+import java.util.List;
+import java.util.Set;
 
 import de.escidoc.core.client.AdminHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;

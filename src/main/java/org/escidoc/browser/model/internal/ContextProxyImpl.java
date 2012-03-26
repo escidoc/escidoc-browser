@@ -28,10 +28,10 @@
  */
 package org.escidoc.browser.model.internal;
 
-import java.util.List;
-
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
+
+import java.util.List;
 
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.om.context.AdminDescriptors;

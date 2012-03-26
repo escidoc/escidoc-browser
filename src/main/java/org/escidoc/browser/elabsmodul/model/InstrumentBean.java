@@ -28,10 +28,10 @@
  */
 package org.escidoc.browser.elabsmodul.model;
 
+import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
+
 import java.io.Serializable;
 import java.util.Date;
-
-import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
 
 public class InstrumentBean implements Serializable, IBeanModel {
 

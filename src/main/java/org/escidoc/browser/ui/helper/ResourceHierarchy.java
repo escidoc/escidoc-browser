@@ -28,9 +28,7 @@
  */
 package org.escidoc.browser.ui.helper;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import com.google.common.base.Preconditions;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
@@ -42,7 +40,9 @@ import org.escidoc.browser.repository.internal.UtilRepositoryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 

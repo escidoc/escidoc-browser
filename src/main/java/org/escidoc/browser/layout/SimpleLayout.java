@@ -38,7 +38,8 @@ import com.vaadin.terminal.Resource;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
-import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -64,8 +65,8 @@ import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.mainpage.Footer;
 import org.escidoc.browser.ui.mainpage.HeaderContainer;
-import org.escidoc.browser.ui.navigation.BaseTreeDataSource;
 import org.escidoc.browser.ui.navigation.BaseNavigationTreeView;
+import org.escidoc.browser.ui.navigation.BaseTreeDataSource;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.navigation.NavigationTreeView;
 import org.escidoc.browser.ui.tools.ToolsTreeView;
@@ -353,6 +354,52 @@ public class SimpleLayout extends LayoutDesign {
         addToolsTab(accordion);
 
         return accordion;
+    }
+
+    private void addGroupsTab(Accordion accordion) {
+        TreeDataSource ds = new BaseTreeDataSource(repositories.group());
+        ds.init();
+
+        accordion.addTab(buildListWithFilter2(treeBuilder.buildGroupTree(ds), ds), ViewConstants.User_Groups, NO_ICON);
+    }
+
+    // FIXME rename the method.
+    private Component buildListWithFilter2(final BaseNavigationTreeView list, final TreeDataSource ds) {
+        // TODO this is a temporary create button, it is to redesign.
+        Button createButton = new Button("+", new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
+                CreateGroupView view = new CreateGroupView(mainWindow, treeBuilder, repositories.group(), ds);
+                view.buildContentPanel();
+                router.openTab(view, ViewConstants.CREATE_A_NEW_GROUP);
+            }
+        });
+        createButton.setStyleName(Reindeer.BUTTON_SMALL);
+        VerticalLayout layout = new VerticalLayout();
+        layout.setMargin(true, false, false, true);
+
+        TextField filterField = new TextField();
+        filterField.setInputPrompt("Type something to filter the list");
+        filterField.setWidth("250px");
+        filterField.addListener(new TextChangeListener() {
+
+            private SimpleStringFilter filter;
+
+            @Override
+            public void textChange(TextChangeEvent event) {
+                // TODO refactor this, the list should not return the data source
+                Filterable ds = (Filterable) list.getDataSource();
+                ds.removeAllContainerFilters();
+                filter = new SimpleStringFilter(PropertyId.NAME, event.getText(), true, false);
+                ds.addContainerFilter(filter);
+            }
+        });
+
+        layout.addComponent(createButton);
+        layout.addComponent(filterField);
+        layout.addComponent(list);
+        return layout;
     }
 
     private void addUserAccountsTab(Accordion accordion) throws EscidocClientException {

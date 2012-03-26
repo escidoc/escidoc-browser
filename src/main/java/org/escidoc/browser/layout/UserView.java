@@ -28,9 +28,6 @@
  */
 package org.escidoc.browser.layout;
 
-import java.util.Calendar;
-import java.util.Date;
-
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.Button;
@@ -40,6 +37,9 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.TreeTable;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
+
+import java.util.Calendar;
+import java.util.Date;
 
 @SuppressWarnings("serial")
 public class UserView extends HorizontalLayout {

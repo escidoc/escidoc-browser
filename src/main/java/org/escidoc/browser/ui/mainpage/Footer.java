@@ -28,14 +28,14 @@
  */
 package org.escidoc.browser.ui.mainpage;
 
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.ui.ViewConstants;
-
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.Reindeer;
+
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.ui.ViewConstants;
 
 @SuppressWarnings("serial")
 public class Footer {

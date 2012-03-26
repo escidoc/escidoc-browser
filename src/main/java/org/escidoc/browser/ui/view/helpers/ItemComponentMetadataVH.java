@@ -1,18 +1,19 @@
 package org.escidoc.browser.ui.view.helpers;
 
+import com.google.common.base.Preconditions;
+
+import com.vaadin.data.Item;
+import com.vaadin.data.util.HierarchicalContainer;
+import com.vaadin.event.Action;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
+
 import org.escidoc.browser.controller.ItemController;
 import org.escidoc.browser.model.internal.ItemProxyImpl;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.AddMetaDataFileItemComponentBehaviour;
 import org.escidoc.browser.ui.listeners.EditMetaDataFileItemComponentBehaviour;
-
-import com.google.common.base.Preconditions;
-import com.vaadin.data.Item;
-import com.vaadin.data.util.HierarchicalContainer;
-import com.vaadin.event.Action;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
 
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.MetadataRecords;
