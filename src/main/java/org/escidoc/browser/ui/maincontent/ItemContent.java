@@ -92,7 +92,6 @@ public class ItemContent extends VerticalLayout {
     }
 
     private void initView() {
-        verticalLayout.addStyleName("drophere");
         final CssLayout cssLayout = new CssLayout();
         cssLayout.setHeight("20px");
         buildPanelHeader(cssLayout, ViewConstants.COMPONENTS);
@@ -151,7 +150,6 @@ public class ItemContent extends VerticalLayout {
             if (userIsPermittedToUpdate()) {
 
                 verticalLayout.setHeight("99%");
-                // verticalLayout.setWidth("90%");
 
                 final DragAndDropFileUpload dragAndDropFileUpload =
                     new DragAndDropFileUpload(repositories, itemProxy, this, verticalLayout);

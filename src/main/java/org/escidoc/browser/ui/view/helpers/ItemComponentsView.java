@@ -178,6 +178,7 @@ public class ItemComponentsView extends TableContainerVH {
         table.setColumnWidth(COMPONENT_MIMETYPE, 90);
         table.setColumnWidth(COMPONENT_CATEGORY, 120);
         table.setColumnWidth(COMPONENT_CREATEDDATE, 120);
+        table.setColumnWidth(COMPONENT_METADATA, 180);
         return tableContainer;
     }
 

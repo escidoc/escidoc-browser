@@ -153,12 +153,6 @@ public class SearchResultsView extends VerticalLayout {
 
     private void createPaginationTblResults(final CssLayout cssLayout) throws EscidocClientException {
 
-        // The ResourceModelFactory will not be used once Michael corrects the
-        // search indexes to index XLinkTitle
-        // ResourceModelFactory rmf =
-        // new ResourceModelFactory(new ItemRepository(serviceLocation), new
-        // ContainerRepository(serviceLocation),
-        // new ContextRepository(serviceLocation));
         ResourceProxy resourceProxy = null;
 
         tblPagedResults = createPagedTable(cssLayout);

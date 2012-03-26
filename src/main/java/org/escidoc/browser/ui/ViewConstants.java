@@ -421,7 +421,7 @@ public class ViewConstants {
 
     public static final String SEARCH_LABEL = "Search";
 
-    public static final String USER_NAME = "Login Name:";
+    public static final String USER_NAME = "Name:";
 
     public static final String SELECT_ROLE_LABEL = "Select Role";
 
@@ -433,4 +433,9 @@ public class ViewConstants {
 
     public static final String ATTRIBUTES = "Attributes";
 
+<<<<<<< HEAD
+=======
+    public static final String NO_INDEXES_DEFINED =
+        "No Indexes are defined in the eSciDoc, this application cannot operate";
+>>>>>>> master
 }

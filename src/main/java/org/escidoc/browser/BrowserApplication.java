@@ -40,6 +40,7 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.internal.EscidocServiceLocationImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.RepositoriesImpl;
+import org.escidoc.browser.repository.internal.SearchRepositoryImpl;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.helper.EscidocParameterHandler;
@@ -86,7 +87,25 @@ public class BrowserApplication extends Application implements HttpServletReques
         setApplicationTheme();
         setMainWindow();
         addParameterHandler();
+
         addWindowDimensionDetection();
+    }
+
+    /**
+     * If no indexes are found, the browser should not operate
+     */
+    private void hasIndexes() {
+        try {
+            if (!(new SearchRepositoryImpl(serviceLocation).hasIndex())) {
+                mainWindow.showNotification(new Window.Notification(ViewConstants.NO_INDEXES_DEFINED,
+                    Notification.TYPE_ERROR_MESSAGE));
+            }
+        }
+        catch (EscidocClientException e) {
+            mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
+                Notification.TYPE_ERROR_MESSAGE));
+        }
+
     }
 
     private void setApplicationTheme() {
@@ -127,6 +146,7 @@ public class BrowserApplication extends Application implements HttpServletReques
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         mainWindow.setImmediate(true);
         mainWindow.setScrollable(true);
+        hasIndexes();
         setMainWindowContent(serviceLocation);
         setMainWindowHeight();
     }

@@ -28,6 +28,8 @@
  */
 package org.escidoc.browser.repository.internal;
 
+import gov.loc.www.zing.srw.ExplainRequestType;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -45,6 +47,7 @@ import de.escidoc.core.client.TransportProtocol;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.client.interfaces.SearchHandlerClientInterface;
+import de.escidoc.core.resources.sb.explain.ExplainResponse;
 import de.escidoc.core.resources.sb.search.SearchRetrieveResponse;
 
 public class SearchRepositoryImpl {
@@ -172,6 +175,13 @@ public class SearchRepositoryImpl {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public boolean hasIndex() throws EscidocClientException {
+        ExplainResponse exResponse = client.explain(new ExplainRequestType(), SRCH_INDEX);
+        if (exResponse.getRecord().getRecordData().getIndexInfo().getIndexes().size() > 0)
+            return true;
+        return false;
     }
 
     private String convertDateToTime(final Date date) {
