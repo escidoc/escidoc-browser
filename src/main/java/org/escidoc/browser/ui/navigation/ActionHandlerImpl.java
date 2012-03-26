@@ -469,8 +469,8 @@ public final class ActionHandlerImpl implements Action.Handler {
                                 + resourceModel.getType().toString());
                         }
                         catch (EscidocClientException e) {
-                            listNotDeleted.put(resourceModel.getId(),
-                                resourceModel.getName().toString() + " " + e.getLocalizedMessage());
+                            listNotDeleted.put(resourceModel.getId(), resourceModel.getName().toString() + " "
+                                + e.getLocalizedMessage());
                         }
                     }
                 }

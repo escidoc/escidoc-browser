@@ -433,9 +433,6 @@ public class ViewConstants {
 
     public static final String ATTRIBUTES = "Attributes";
 
-<<<<<<< HEAD
-=======
     public static final String NO_INDEXES_DEFINED =
         "No Indexes are defined in the eSciDoc, this application cannot operate";
->>>>>>> master
 }
