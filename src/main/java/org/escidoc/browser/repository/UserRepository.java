@@ -50,5 +50,4 @@ public interface UserRepository {
     void updatePassword(UserProxy userProxy, String string) throws EscidocClientException;
 
     void updateName(String string) throws EscidocClientException;
-
 }

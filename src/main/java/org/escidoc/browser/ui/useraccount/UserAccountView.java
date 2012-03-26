@@ -28,8 +28,17 @@
  */
 package org.escidoc.browser.ui.useraccount;
 
-import com.google.common.base.Preconditions;
+import java.net.URISyntaxException;
 
+import org.escidoc.browser.controller.UserAccountController;
+import org.escidoc.browser.model.internal.UserProxy;
+import org.escidoc.browser.repository.internal.ActionIdConstants;
+import org.escidoc.browser.repository.internal.UserAccountRepository;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.maincontent.View;
+
+import com.google.common.base.Preconditions;
 import com.vaadin.data.Validator.EmptyValueException;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Accordion;
@@ -46,21 +55,45 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
 
-import org.escidoc.browser.controller.UserAccountController;
-import org.escidoc.browser.model.internal.UserProxy;
-import org.escidoc.browser.repository.internal.ActionIdConstants;
-import org.escidoc.browser.repository.internal.UserAccountRepository;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.View;
-
-import java.net.URISyntaxException;
-
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.aa.useraccount.Attribute;
 
 @SuppressWarnings("serial")
 public class UserAccountView extends View {
+    Router router;
+
+    UserProxy userProxy;
+
+    UserAccountRepository ur;
+
+    private UserAccountController uac;
+
+    private Panel attributePanel;
+
+    private Button addPreferenceButton;
+
+    public UserAccountView(Router router, UserProxy userProxy, UserAccountRepository ur, UserAccountController uac) {
+        Preconditions.checkNotNull(router, "router is null: %s", router);
+        Preconditions.checkNotNull(userProxy, "userProxy is null: %s", userProxy);
+        Preconditions.checkNotNull(ur, "ur is null: %s", ur);
+        Preconditions.checkNotNull(uac, "uac is null: %s", uac);
+
+        this.router = router;
+        this.userProxy = userProxy;
+        this.ur = ur;
+        this.uac = uac;
+        init();
+    }
+
+    public void init() {
+        setImmediate(false);
+        setStyleName(Runo.PANEL_LIGHT);
+
+        Panel contentPanel = createContentPanel();
+        contentPanel.setContent(buildVlContentPanel());
+
+        setContent(contentPanel);
+    }
 
     private final class OnAddAttribute implements ClickListener {
 
@@ -181,41 +214,6 @@ public class UserAccountView extends View {
         }
     }
 
-    Router router;
-
-    UserProxy userProxy;
-
-    UserAccountRepository ur;
-
-    private UserAccountController uac;
-
-    private Panel attributePanel;
-
-    private Button addPreferenceButton;
-
-    public UserAccountView(Router router, UserProxy userProxy, UserAccountRepository ur, UserAccountController uac) {
-        Preconditions.checkNotNull(router, "router is null: %s", router);
-        Preconditions.checkNotNull(userProxy, "userProxy is null: %s", userProxy);
-        Preconditions.checkNotNull(ur, "ur is null: %s", ur);
-        Preconditions.checkNotNull(uac, "uac is null: %s", uac);
-
-        this.router = router;
-        this.userProxy = userProxy;
-        this.ur = ur;
-        this.uac = uac;
-        init();
-    }
-
-    public void init() {
-        setImmediate(false);
-        setStyleName(Runo.PANEL_LIGHT);
-
-        Panel contentPanel = createContentPanel();
-        contentPanel.setContent(buildVlContentPanel());
-
-        setContent(contentPanel);
-    }
-
     private static Panel createContentPanel() {
         Panel contentPanel = new Panel();
         contentPanel.setImmediate(false);
@@ -293,7 +291,9 @@ public class UserAccountView extends View {
 
         vlAccCreateContext.addComponent(form);
         vlAccCreateContext.addComponent(buildPreferencesView());
-        vlAccCreateContext.addComponent(buildAttributesView());
+        if (uac.hasAccessOnAttributes(router.getApp().getCurrentUser().getUserId())) {
+            vlAccCreateContext.addComponent(buildAttributesView());
+        }
 
         setEnability(realNameField, passwordField, verifyPasswordField);
     }
@@ -356,8 +356,8 @@ public class UserAccountView extends View {
 
     private boolean isAllowedToUpdate() throws EscidocClientException, URISyntaxException {
         return router
-            .getRepositories().pdp().isAction(ActionIdConstants.UPDATE_USER_ACCOUNT).forCurrentUser().forResource(
-                userProxy.getId()).permitted();
+            .getRepositories().pdp().isAction(ActionIdConstants.UPDATE_USER_ACCOUNT).forCurrentUser()
+            .forResource(userProxy.getId()).permitted();
     }
 
     private Component buildAttributesView() throws EscidocClientException {
@@ -451,9 +451,5 @@ public class UserAccountView extends View {
             return false;
         }
         return true;
-    }
-
-    public void hideAttributeView() {
-        attributePanel.setVisible(false);
     }
 }

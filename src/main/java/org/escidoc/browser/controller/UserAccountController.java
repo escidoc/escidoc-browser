@@ -28,12 +28,20 @@
  */
 package org.escidoc.browser.controller;
 
+import java.util.Iterator;
+
+import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.UserProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.useraccount.UserAccountView;
+
+import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.aa.useraccount.Grant;
+import de.escidoc.core.resources.aa.useraccount.Grants;
+import de.escidoc.core.resources.common.reference.RoleRef;
 
 public class UserAccountController extends Controller {
 
@@ -47,7 +55,31 @@ public class UserAccountController extends Controller {
         view = new UserAccountView(getRouter(), (UserProxy) getResourceProxy(), getRepositories().user(), this);
         if (!((UserProxy) getResourceProxy()).getLoginName().equals(ViewConstants.SYSADMIN)) {
             view = new UserAccountView(getRouter(), (UserProxy) getResourceProxy(), getRepositories().user(), this);
-            ((UserAccountView) view).hideAttributeView();
         }
     }
+
+    /**
+     * Check if the user can access attributes Right now, only the SysAdmin (role administrator) can access this
+     * resource
+     * 
+     * @param userId
+     * @return
+     */
+    public boolean hasAccessOnAttributes(String userId) {
+        try {
+            Grants grants = getRepositories().user().getGrants(userId);
+            for (Iterator iterator = grants.iterator(); iterator.hasNext();) {
+                Grant grant = (Grant) iterator.next();
+                RoleRef userRole = grant.getProperties().getRole();
+                System.out.println(userRole.getObjid());
+                return userRole.getObjid().equals(AppConstants.ESCIDOC_ADMIN_ROLE);
+            }
+        }
+        catch (EscidocClientException e) {
+            showError(ViewConstants.ERROR);
+        }
+        return false;
+
+    }
+
 }

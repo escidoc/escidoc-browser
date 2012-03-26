@@ -100,4 +100,6 @@ public final class AppConstants {
     public static final String CMM_DESCRIPTION_INVESTIGATION_RESULTS = "org.escidoc.bwelabs.InvestigationResult";
 
     public static final String ESCIDOC_DEFAULT_METADATA_NAME = "escidoc";
+
+    public static final String ESCIDOC_ADMIN_ROLE = "escidoc:role-administrator";
 }

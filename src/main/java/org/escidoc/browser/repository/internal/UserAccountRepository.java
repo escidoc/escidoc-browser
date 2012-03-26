@@ -28,7 +28,9 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import com.google.common.base.Preconditions;
+import java.net.MalformedURLException;
+import java.util.List;
+import java.util.Set;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
@@ -43,9 +45,7 @@ import org.escidoc.browser.ui.helper.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.MalformedURLException;
-import java.util.List;
-import java.util.Set;
+import com.google.common.base.Preconditions;
 
 import de.escidoc.core.client.UserAccountHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -56,6 +56,7 @@ import de.escidoc.core.resources.aa.useraccount.Attribute;
 import de.escidoc.core.resources.aa.useraccount.Attributes;
 import de.escidoc.core.resources.aa.useraccount.Grant;
 import de.escidoc.core.resources.aa.useraccount.GrantProperties;
+import de.escidoc.core.resources.aa.useraccount.Grants;
 import de.escidoc.core.resources.aa.useraccount.Preference;
 import de.escidoc.core.resources.aa.useraccount.Preferences;
 import de.escidoc.core.resources.aa.useraccount.UserAccount;
@@ -256,5 +257,9 @@ public class UserAccountRepository implements Repository {
         Grant createdGrant = client.createGrant(user.getId(), grant);
         LOG.debug("Grant created: " + createdGrant.getObjid());
         return createdGrant;
+    }
+
+    public Grants getGrants(String userId) throws EscidocClientException {
+        return client.retrieveCurrentGrants(userId);
     }
 }
