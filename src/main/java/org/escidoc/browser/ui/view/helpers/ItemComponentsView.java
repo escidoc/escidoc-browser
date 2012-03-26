@@ -28,22 +28,28 @@
  */
 package org.escidoc.browser.ui.view.helpers;
 
-import org.escidoc.browser.ui.ViewConstants;
-import com.vaadin.data.Item;
-import com.vaadin.data.util.HierarchicalContainer;
-import com.vaadin.terminal.ExternalResource;
-import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.BaseTheme;
-import com.vaadin.ui.themes.Reindeer;
+import java.io.File;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.controller.ItemController;
 import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ItemProxy;
+import org.escidoc.browser.model.internal.ItemProxyImpl;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
 
-import java.io.File;
+import com.vaadin.data.Item;
+import com.vaadin.data.util.HierarchicalContainer;
+import com.vaadin.event.Action;
+import com.vaadin.terminal.ExternalResource;
+import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.BaseTheme;
+import com.vaadin.ui.themes.Reindeer;
 
 import de.escidoc.core.resources.om.item.component.Component;
 import de.escidoc.core.resources.om.item.component.Components;
@@ -58,6 +64,14 @@ public class ItemComponentsView extends TableContainerVH {
 
     private static final Object COMPONENT_ICON = "";
 
+    private static final Object COMPONENT_METADATA = "Metadata";
+
+    private Action ACTION_DELETE = new Action("Delete Component");
+
+    private Action ACTION_CHANGE_CATEGORY = new Action("Change Category Type");
+
+    private Action[] ACTIONS_LIST = new Action[] { ACTION_DELETE, ACTION_CHANGE_CATEGORY };
+
     private ItemController controller;
 
     private Components componentsList;
@@ -68,12 +82,17 @@ public class ItemComponentsView extends TableContainerVH {
 
     private Window mainWindow;
 
-    public ItemComponentsView(Components components, ItemController controller, EscidocServiceLocation serviceLocation,
-        Window mainWindow) {
+    private final Router router;
+
+    private final ItemProxyImpl itemProxy;
+
+    public ItemComponentsView(Components components, ItemController controller, Router router, ItemProxy itemProxy) {
         this.componentsList = components;
         this.controller = controller;
-        this.serviceLocation = serviceLocation;
-        this.mainWindow = mainWindow;
+        this.router = router;
+        this.itemProxy = (ItemProxyImpl) itemProxy;
+        this.serviceLocation = router.getServiceLocation();
+        this.mainWindow = router.getMainWindow();
         table.setContainerDataSource(populateContainerTable());
 
         table.setWidth("100%");
@@ -92,6 +111,40 @@ public class ItemComponentsView extends TableContainerVH {
     }
 
     @Override
+    protected void addActionLists() {
+        // if (contextController.canUpdateContext()) {
+        table.addActionHandler(new Action.Handler() {
+            @Override
+            public Action[] getActions(Object target, Object sender) {
+                return ACTIONS_LIST;
+            }
+
+            @Override
+            public void handleAction(Action action, Object sender, Object target) {
+                if (ACTION_DELETE == action) {
+                    confirmActionWindow(target);
+                }
+                else if (ACTION_CHANGE_CATEGORY == action) {
+                    new ChangeComponentCategoryTypeHelper(router, tableContainer
+                        .getItem(target.toString()).getItemProperty(COMPONENT_CATEGORY).getValue().toString(), target
+                        .toString(), controller, itemProxy.getId()).showWindow();
+                    controller.refreshView();
+                }
+
+            }
+        });
+        // }
+    }
+
+    @Override
+    protected void initializeTable() {
+        table.setWidth("100%");
+        table.setSelectable(true);
+        table.setImmediate(true); // react at once when something is selected
+        table.setColumnHeaderMode(Table.COLUMN_HEADER_MODE_HIDDEN);
+    }
+
+    @Override
     protected HierarchicalContainer populateContainerTable() {
         // Create new container
         tableContainer = new HierarchicalContainer();
@@ -101,7 +154,7 @@ public class ItemComponentsView extends TableContainerVH {
         tableContainer.addContainerProperty(COMPONENT_CATEGORY, String.class, null);
         tableContainer.addContainerProperty(COMPONENT_MIMETYPE, String.class, null);
         tableContainer.addContainerProperty(COMPONENT_CREATEDDATE, String.class, null);
-        // tableContainer.addContainerProperty(COMPONENT_METADATA, String.class, null);
+        tableContainer.addContainerProperty(COMPONENT_METADATA, VerticalLayout.class, null);
 
         for (Component component : componentsList) {
             Item item = tableContainer.addItem(component.getObjid());
@@ -112,7 +165,10 @@ public class ItemComponentsView extends TableContainerVH {
                 item.getItemProperty(COMPONENT_MIMETYPE).setValue(component.getProperties().getMimeType());
                 item.getItemProperty(COMPONENT_CREATEDDATE).setValue(
                     component.getProperties().getCreationDate().toString("d.M.y, H:mm"));
-                // item.getItemProperty(COMPONENT_METADATA).setValue("metadata");
+
+                item.getItemProperty(COMPONENT_METADATA).setValue(
+                    new ItemComponentMetadataVH(component.getMetadataRecords(), controller, router, itemProxy,
+                        component));
             }
         }
         boolean[] ascending = { true, false };
@@ -122,6 +178,7 @@ public class ItemComponentsView extends TableContainerVH {
         table.setColumnWidth(COMPONENT_MIMETYPE, 90);
         table.setColumnWidth(COMPONENT_CATEGORY, 120);
         table.setColumnWidth(COMPONENT_CREATEDDATE, 120);
+        table.setColumnWidth(COMPONENT_METADATA, 180);
         return tableContainer;
     }
 
@@ -156,7 +213,8 @@ public class ItemComponentsView extends TableContainerVH {
             private static final long serialVersionUID = 651483473875504715L;
 
             @Override
-            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused")
+            final ClickEvent event) {
                 mainWindow.open(new ExternalResource(
                     serviceLocation.getEscidocUri() + comp.getContent().getXLinkHref(), comp
                         .getProperties().getMimeType()), "_new");

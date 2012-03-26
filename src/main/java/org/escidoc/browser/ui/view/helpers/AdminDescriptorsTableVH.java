@@ -38,6 +38,7 @@ import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.event.Action;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
 
 import de.escidoc.core.resources.om.context.AdminDescriptor;
 import de.escidoc.core.resources.om.context.AdminDescriptors;
@@ -121,7 +122,7 @@ public class AdminDescriptorsTableVH extends TableContainerVH {
                 item.getItemProperty(ViewConstants.PROPERTY_NAME).setValue(adminDescriptor.getName());
                 item.getItemProperty(ViewConstants.PROPERTY_LINK).setValue(
                     new Label("<a href=\"" + router.getServiceLocation().getEscidocUri()
-                        + adminDescriptor.getXLinkHref() + "\" target=\"_blank\">Link</a>", Label.CONTENT_RAW));
+                        + adminDescriptor.getXLinkHref() + "\" target=\"_blank\">View</a>", Label.CONTENT_RAW));
             }
         }
         table.setColumnWidth(ViewConstants.PROPERTY_LINK, 40);
@@ -131,6 +132,13 @@ public class AdminDescriptorsTableVH extends TableContainerVH {
     @Override
     protected boolean hasRightstoContextMenu() {
         return true;
+    }
+
+    protected void initializeTable() {
+        table.setWidth("100%");
+        table.setSelectable(true);
+        table.setImmediate(true); // react at once when something is selected
+        table.setColumnHeaderMode(Table.COLUMN_HEADER_MODE_HIDDEN);
     }
 
 }

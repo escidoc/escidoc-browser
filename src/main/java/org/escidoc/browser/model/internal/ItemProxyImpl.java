@@ -224,4 +224,8 @@ public class ItemProxyImpl implements ItemProxy {
     public Resource getResource() {
         return itemFromCore;
     }
+
+    public Component getComponent(String id) {
+        return itemFromCore.getComponents().get(id);
+    }
 }

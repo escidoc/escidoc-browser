@@ -28,18 +28,19 @@
  */
 package org.escidoc.browser;
 
-import com.google.common.base.Preconditions;
+import java.net.MalformedURLException;
+import java.util.Map;
 
-import com.vaadin.Application;
-import com.vaadin.terminal.gwt.server.HttpServletRequestListener;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.escidoc.browser.model.CurrentUser;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.internal.EscidocServiceLocationImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.RepositoriesImpl;
+import org.escidoc.browser.repository.internal.SearchRepositoryImpl;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.helper.EscidocParameterHandler;
@@ -52,12 +53,11 @@ import org.escidoc.browser.ui.listeners.WindowResizeObserverImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.MalformedURLException;
-import java.util.Map;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import com.google.common.base.Preconditions;
+import com.vaadin.Application;
+import com.vaadin.terminal.gwt.server.HttpServletRequestListener;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -87,7 +87,25 @@ public class BrowserApplication extends Application implements HttpServletReques
         setApplicationTheme();
         setMainWindow();
         addParameterHandler();
+
         addWindowDimensionDetection();
+    }
+
+    /**
+     * If no indexes are found, the browser should not operate
+     */
+    private void hasIndexes() {
+        try {
+            if (!(new SearchRepositoryImpl(serviceLocation).hasIndex())) {
+                mainWindow.showNotification(new Window.Notification(ViewConstants.NO_INDEXES_DEFINED,
+                    Notification.TYPE_ERROR_MESSAGE));
+            }
+        }
+        catch (EscidocClientException e) {
+            mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
+                Notification.TYPE_ERROR_MESSAGE));
+        }
+
     }
 
     private void setApplicationTheme() {
@@ -128,6 +146,7 @@ public class BrowserApplication extends Application implements HttpServletReques
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         mainWindow.setImmediate(true);
         mainWindow.setScrollable(true);
+        hasIndexes();
         setMainWindowContent(serviceLocation);
         setMainWindowHeight();
     }
@@ -174,6 +193,7 @@ public class BrowserApplication extends Application implements HttpServletReques
         mainWindow.getContent().setHeight(getApplicationHeight() + "px");
     }
 
+    @Deprecated
     public int getApplicationHeight() {
         Preconditions.checkArgument(observer.getDimension().getHeight() > 0, "Can not get window size");
         return Math.round(observer.getDimension().getHeight());

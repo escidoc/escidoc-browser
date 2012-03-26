@@ -31,7 +31,7 @@ package org.escidoc.browser.ui;
 public class ViewConstants {
 
     // Footer
-    public static final String VERSION = "0.4.2-SNAPSHOT";
+    public static final String VERSION = "0.4.3-SNAPSHOT";
 
     public static final String PRODUCT_NAME = " eSciDoc Browser ";
 
@@ -335,6 +335,8 @@ public class ViewConstants {
 
     public static final String ERROR_CREATING_USER_PREFERENCE = "Error creating user profile preference";
 
+    public static final String ERROR_CREATING_USER_ATTRIBUTE = "Error creating user attribute";
+
     // Container
     public static final String DESC_LOCKSTATUS = "lockstatus";
 
@@ -412,7 +414,7 @@ public class ViewConstants {
 
     public static final String PROPERTY_VALUE = "value";
 
-    public static final String PROPERTY_LINK = "link";
+    public static final String PROPERTY_LINK = "view";
 
     public static final Object SYSADMIN = "sysadmin";
 
@@ -424,11 +426,18 @@ public class ViewConstants {
     
     public static final String SEARCH_LABEL = "Search";
 
-    public static final String USER_NAME = "Login Name:";
+    public static final String USER_NAME = "Name:";
 
     public static final String SELECT_ROLE_LABEL = "Select Role";
 
     public static final String ASSIGN_ROLES = "Assign Roles";
 
     public static final String RESOURCE_NAME = "Resource Name: ";
+
+    public static final String PREFERENCES = "Preferences";
+
+    public static final String ATTRIBUTES = "Attributes";
+
+    public static final String NO_INDEXES_DEFINED =
+        "No Indexes are defined in the eSciDoc, this application cannot operate";
 }

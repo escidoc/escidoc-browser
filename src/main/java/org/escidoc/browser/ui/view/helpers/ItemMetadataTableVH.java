@@ -1,3 +1,31 @@
+/**
+ * CDDL HEADER START
+ *
+ * The contents of this file are subject to the terms of the
+ * Common Development and Distribution License, Version 1.0 only
+ * (the "License").  You may not use this file except in compliance
+ * with the License.
+ *
+ * You can obtain a copy of the license at license/ESCIDOC.LICENSE
+ * or https://www.escidoc.org/license/ESCIDOC.LICENSE .
+ * See the License for the specific language governing permissions
+ * and limitations under the License.
+ *
+ * When distributing Covered Code, include this CDDL HEADER in each
+ * file and include the License file at license/ESCIDOC.LICENSE.
+ * If applicable, add the following below this CDDL HEADER, with the
+ * fields enclosed by brackets "[]" replaced with your own identifying
+ * information: Portions Copyright [yyyy] [name of copyright owner]
+ *
+ * CDDL HEADER END
+ *
+ *
+ *
+ * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * fuer wissenschaftlich-technische Information mbH and Max-Planck-
+ * Gesellschaft zur Foerderung der Wissenschaft e.V.
+ * All rights reserved.  Use is subject to license terms.
+ */
 package org.escidoc.browser.ui.view.helpers;
 
 import org.escidoc.browser.controller.ItemController;
@@ -12,6 +40,7 @@ import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.event.Action;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
 
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.MetadataRecords;
@@ -105,11 +134,19 @@ public class ItemMetadataTableVH extends TableContainerVH {
                 item.getItemProperty(ViewConstants.PROPERTY_NAME).setValue(metadataRecord.getXLinkTitle());
                 item.getItemProperty(ViewConstants.PROPERTY_LINK).setValue(
                     new Label("<a href=\"" + router.getServiceLocation().getEscidocUri()
-                        + metadataRecord.getXLinkHref() + "\" target=\"_blank\">Link</a>", Label.CONTENT_RAW));
+                        + metadataRecord.getXLinkHref() + "\" target=\"_blank\">View</a>", Label.CONTENT_RAW));
             }
         }
         table.setColumnWidth(ViewConstants.PROPERTY_LINK, 40);
         return tableContainer;
+    }
+
+    protected void initializeTable() {
+        table.setWidth("100%");
+
+        // selectable
+        table.setSelectable(true);
+        table.setColumnHeaderMode(Table.COLUMN_HEADER_MODE_HIDDEN);
     }
 
 }

@@ -28,8 +28,15 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import com.google.common.base.Preconditions;
+import org.escidoc.browser.controller.ItemController;
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.internal.ItemProxyImpl;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
@@ -38,14 +45,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 import com.vaadin.ui.themes.Runo;
-
-import org.escidoc.browser.controller.ItemController;
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.model.internal.ItemProxyImpl;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -123,7 +122,7 @@ public class ItemView2 extends View {
         final HorizontalSplitPanel horiz = new HorizontalSplitPanel();
         horiz.setStyleName(Runo.SPLITPANEL_SMALL);
         horiz.setSplitPosition(80); // percent
-        horiz.addComponent(new ItemContent(repositories, resourceProxy, serviceLocation, mainWindow, controller));
+        horiz.addComponent(new ItemContent(repositories, resourceProxy, router, controller));
         VerticalLayout sidebar = buildSidebar();
         horiz.addComponent(sidebar);
 

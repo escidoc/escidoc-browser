@@ -149,7 +149,7 @@ public class OUParentTableVH extends TableContainerVH {
         for (final ResourceModel rm : l) {
             Item item = tableContainer.addItem(rm.getId());
 
-            final Button parentOrgUnitLink = new Button("Link");
+            final Button parentOrgUnitLink = new Button("View");
             parentOrgUnitLink.setStyleName(BaseTheme.BUTTON_LINK);
             parentOrgUnitLink.addListener(new ClickListener() {
                 @Override

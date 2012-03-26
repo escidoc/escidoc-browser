@@ -43,6 +43,7 @@ import com.vaadin.event.Action;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
@@ -159,7 +160,7 @@ public class OrganizationalUnitsTableVH extends TableContainerVH {
             Item item = tableContainer.addItem(organizationalUnit.getObjid());
             if (item != null) {
                 item.getItemProperty(ViewConstants.PROPERTY_NAME).setValue(organizationalUnit.getXLinkTitle());
-                final Button openInNewTabLink = new Button("Link");
+                final Button openInNewTabLink = new Button("View");
                 openInNewTabLink.setStyleName(BaseTheme.BUTTON_LINK);
                 openInNewTabLink.addListener(new Button.ClickListener() {
 
@@ -195,6 +196,13 @@ public class OrganizationalUnitsTableVH extends TableContainerVH {
         }
         table.setColumnWidth(ViewConstants.PROPERTY_LINK, 40);
         return tableContainer;
+    }
+
+    protected void initializeTable() {
+        table.setWidth("100%");
+        table.setSelectable(true);
+        table.setImmediate(true); // react at once when something is selected
+        table.setColumnHeaderMode(Table.COLUMN_HEADER_MODE_HIDDEN);
     }
 
 }

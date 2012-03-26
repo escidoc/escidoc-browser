@@ -36,6 +36,7 @@ import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
+import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.dnd.DragAndDropFileUpload;
 import org.escidoc.browser.ui.view.helpers.ItemComponentsView;
@@ -72,24 +73,25 @@ public class ItemContent extends VerticalLayout {
 
     private ItemController controller;
 
-    public ItemContent(final Repositories repositories, final ItemProxyImpl itemProxy,
-        final EscidocServiceLocation serviceLocation, final Window mainWindow, ItemController controller) {
+    private final Router router;
+
+    public ItemContent(final Repositories repositories, final ItemProxyImpl itemProxy, final Router router,
+        ItemController controller) {
+        this.router = router;
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(itemProxy, "resourceProxy is null.");
-        Preconditions.checkNotNull(serviceLocation, "serviceLocation is null.");
-        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
+        Preconditions.checkNotNull(router, "router is null.");
         Preconditions.checkNotNull(controller, "controller is null: %s", controller);
 
         this.repositories = repositories;
         this.itemProxy = itemProxy;
-        this.serviceLocation = serviceLocation;
-        this.mainWindow = mainWindow;
+        this.serviceLocation = router.getServiceLocation();
+        this.mainWindow = router.getMainWindow();
         this.controller = controller;
         initView();
     }
 
     private void initView() {
-        verticalLayout.addStyleName("drophere");
         final CssLayout cssLayout = new CssLayout();
         cssLayout.setHeight("20px");
         buildPanelHeader(cssLayout, ViewConstants.COMPONENTS);
@@ -148,7 +150,6 @@ public class ItemContent extends VerticalLayout {
             if (userIsPermittedToUpdate()) {
 
                 verticalLayout.setHeight("99%");
-                // verticalLayout.setWidth("90%");
 
                 final DragAndDropFileUpload dragAndDropFileUpload =
                     new DragAndDropFileUpload(repositories, itemProxy, this, verticalLayout);
@@ -183,7 +184,7 @@ public class ItemContent extends VerticalLayout {
     }
 
     private ItemComponentsView buildTable() {
-        table = new ItemComponentsView(itemProxy.getElements(), controller, serviceLocation, mainWindow);
+        table = new ItemComponentsView(itemProxy.getElements(), controller, router, itemProxy);
         return table;
     }
 

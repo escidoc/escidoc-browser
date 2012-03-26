@@ -5,7 +5,7 @@
 
 	<groupId>org.escidoc</groupId>
 	<artifactId>browser</artifactId>
-	<version>0.4.2-SNAPSHOT</version>
+	<version>0.4.3-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<dependencies>
 		<!-- Vaadin -->
@@ -40,7 +40,7 @@
 		<dependency>
 			<groupId>org.escidoc.core</groupId>
 			<artifactId>escidoc-ijc</artifactId>
-			<version>1.4</version>
+			<version>1.4.1</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-discovery</groupId>
@@ -95,7 +95,7 @@
 		<compiler.level>1.6</compiler.level>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jetty.port>8084</jetty.port>
-		<jetty.scan.sec>0</jetty.scan.sec>
+		<jetty.scan.sec>5</jetty.scan.sec>
 		<vaadin-widgets-dir>src/main/webapp/VAADIN/widgetsets
 		</vaadin-widgets-dir>
 	</properties>

@@ -28,7 +28,13 @@
  */
 package org.escidoc.browser.ui.tools;
 
-import java.net.URISyntaxException;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.ui.Tree;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.controller.CreateResourcesController;
@@ -36,13 +42,9 @@ import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.role.RoleAssignView;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
-import com.vaadin.ui.Tree;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
+import java.net.URISyntaxException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -71,7 +73,7 @@ public class ToolsTreeView extends VerticalLayout {
 
         LOAD_EXAMPLE(ViewConstants.LOAD_EXAMPLE), REPO_INFO(ViewConstants.REPOSITORY_INFORMATION), REINDEX(
             ViewConstants.REINDEX), BULK_TASKS(ViewConstants.BULK_TASKS), CREATE_RESOURCES(
-            ViewConstants.CREATE_RESOURCES);
+            ViewConstants.CREATE_RESOURCES), ASSIGN_ROLES(ViewConstants.ASSIGN_ROLES);
 
         private String label;
 
@@ -134,7 +136,13 @@ public class ToolsTreeView extends VerticalLayout {
                         router.openTab(purgeView, getType(event).getLabel());
                         break;
                     case CREATE_RESOURCES:
-                        router.openControllerView(new CreateResourcesController(repositories, router, null), true);
+                        router.openControllerView(new CreateResourcesController(repositories, router, null),
+                            Boolean.TRUE);
+                        break;
+                    case ASSIGN_ROLES:
+                        final RoleAssignView component = new RoleAssignView(router.getMainWindow(), repositories);
+                        component.init();
+                        router.openTab(component, ViewConstants.ROLE_MANAGEMENT);
                         break;
                     default:
                         break;
@@ -166,6 +174,11 @@ public class ToolsTreeView extends VerticalLayout {
         }
         for (final Object object : tree.getContainerDataSource().getItemIds()) {
             tree.setChildrenAllowed(object, false);
+        }
+        if (hasGrantTo(ActionIdConstants.CREATE_GRANT)) {
+            Node node = new Node(NODE_TYPE.ASSIGN_ROLES);
+            tree.addItem(node);
+            tree.setChildrenAllowed(node, false);
         }
     }
 

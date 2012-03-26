@@ -38,8 +38,6 @@ import com.vaadin.terminal.Resource;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
@@ -55,7 +53,6 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 import com.vaadin.ui.themes.Runo;
 
-import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.PropertyId;
@@ -63,7 +60,6 @@ import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.TreeDataSourceImpl;
 import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.mainpage.Footer;
@@ -72,13 +68,13 @@ import org.escidoc.browser.ui.navigation.BaseTreeDataSource;
 import org.escidoc.browser.ui.navigation.BaseNavigationTreeView;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.navigation.NavigationTreeView;
-import org.escidoc.browser.ui.role.RoleAssignView;
 import org.escidoc.browser.ui.tools.ToolsTreeView;
 import org.escidoc.browser.ui.view.helpers.CloseTabsViewHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URISyntaxException;
+import java.util.List;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -353,84 +349,26 @@ public class SimpleLayout extends LayoutDesign {
         addOrgUnitTab(accordion);
         addUserAccountsTab(accordion);
         addGroupsTab(accordion);
-        addRolesTab(accordion);
         addContentModelsTab(accordion);
         addToolsTab(accordion);
 
         return accordion;
     }
 
-    private void addRolesTab(Accordion accordion) throws EscidocClientException, URISyntaxException {
-        if (isAssignRoleAllowed()) {
-            accordion.addTab(new Button(ViewConstants.ASSIGN_ROLES, new Button.ClickListener() {
-
-                @Override
-                public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
-                    final RoleAssignView component = new RoleAssignView(mainWindow, repositories);
-                    component.init();
-                    router.openTab(component, ViewConstants.ROLE_MANAGEMENT);
-                }
-            }));
-        }
-    }
-
-    private boolean isAssignRoleAllowed() throws EscidocClientException, URISyntaxException {
-        return repositories
-            .pdp().forCurrentUser().isAction(ActionIdConstants.CREATE_GRANT).forResource(AppConstants.EMPTY_STRING)
-            .permitted();
-    }
-
-    private void addGroupsTab(Accordion accordion) {
-        TreeDataSource ds = new BaseTreeDataSource(repositories.group());
-        ds.init();
-
-        accordion.addTab(buildListWithFilter2(treeBuilder.buildGroupTree(ds), ds), ViewConstants.User_Groups, NO_ICON);
-    }
-
-    // FIXME rename the method.
-    private Component buildListWithFilter2(final BaseNavigationTreeView list, final TreeDataSource ds) {
-        // TODO this is a temporary create button, it is to redesign.
-        Button createButton = new Button("+", new ClickListener() {
-
-            @Override
-            public void buttonClick(ClickEvent event) {
-                CreateGroupView view = new CreateGroupView(mainWindow, treeBuilder, repositories.group(), ds);
-                view.buildContentPanel();
-                router.openTab(view, ViewConstants.CREATE_A_NEW_GROUP);
-            }
-        });
-        createButton.setStyleName(Reindeer.BUTTON_SMALL);
-        VerticalLayout layout = new VerticalLayout();
-        layout.setMargin(true, false, false, true);
-
-        TextField filterField = new TextField();
-        filterField.setInputPrompt("Type something to filter the list");
-        filterField.setWidth("250px");
-        filterField.addListener(new TextChangeListener() {
-
-            private SimpleStringFilter filter;
-
-            @Override
-            public void textChange(TextChangeEvent event) {
-                // TODO refactor this, the list should not return the data source
-                Filterable ds = (Filterable) list.getDataSource();
-                ds.removeAllContainerFilters();
-                filter = new SimpleStringFilter(PropertyId.NAME, event.getText(), true, false);
-                ds.addContainerFilter(filter);
-            }
-        });
-
-        layout.addComponent(createButton);
-        layout.addComponent(filterField);
-        layout.addComponent(list);
-        return layout;
-    }
-
-    private void addUserAccountsTab(Accordion accordion) {
-        if (isSysAdmin()) {
+    private void addUserAccountsTab(Accordion accordion) throws EscidocClientException {
+        if (isAllowedToRetrieveUserAccounts()) {
             accordion.addTab(buildListWithFilter(treeBuilder.buildUserAccountTree()), ViewConstants.USER_ACCOUNTS,
                 NO_ICON);
         }
+    }
+
+    private boolean isAllowedToRetrieveUserAccounts() throws EscidocClientException {
+        List<ResourceModel> list = repositories.user().findAll();
+
+        if (list == null || list.isEmpty()) {
+            return false;
+        }
+        return true;
     }
 
     private void addContentModelsTab(Accordion accordion) {
@@ -462,10 +400,6 @@ public class SimpleLayout extends LayoutDesign {
         layout.addComponent(filterField);
         layout.addComponent(list);
         return layout;
-    }
-
-    private boolean isSysAdmin() {
-        return router.getApp().getCurrentUser().getLoginName().equals(AppConstants.SYSADMIN);
     }
 
     private void addOrgUnitTab(final Accordion accordion) {
