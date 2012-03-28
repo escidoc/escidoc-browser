@@ -357,23 +357,26 @@ public class SimpleLayout extends LayoutDesign {
     }
 
     private void addGroupsTab(Accordion accordion) {
-        TreeDataSource ds = new BaseTreeDataSource(repositories.group());
-        ds.init();
-
-        accordion.addTab(buildListWithFilter2(treeBuilder.buildGroupTree(ds), ds), ViewConstants.User_Groups, NO_ICON);
+        BaseTreeDataSource groupDataSource = new BaseTreeDataSource(repositories.group());
+        groupDataSource.init();
+        accordion.addTab(buildGroupListWithFilter(treeBuilder.buildGroupTree(groupDataSource), groupDataSource),
+            ViewConstants.User_Groups, NO_ICON);
     }
 
     // FIXME rename the method.
-    private Component buildListWithFilter2(final BaseNavigationTreeView list, final TreeDataSource ds) {
+    private Component buildGroupListWithFilter(final BaseNavigationTreeView list, final TreeDataSource ds) {
         // TODO this is a temporary create button, it is to redesign.
         Button createButton = new Button("+", new Button.ClickListener() {
 
             @Override
             public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
-                CreateGroupView view = new CreateGroupView(mainWindow, treeBuilder, repositories.group(), ds);
-                view.buildContentPanel();
-                router.openTab(view, ViewConstants.CREATE_A_NEW_GROUP);
+                showCreateGroupView();
             }
+
+            private void showCreateGroupView() {
+                mainWindow.addWindow(new CreateGroupView(repositories.group(), mainWindow, ds).modalWindow());
+            }
+
         });
         createButton.setStyleName(Reindeer.BUTTON_SMALL);
         VerticalLayout layout = new VerticalLayout();

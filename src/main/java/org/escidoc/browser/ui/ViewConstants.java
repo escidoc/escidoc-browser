@@ -191,7 +191,7 @@ public class ViewConstants {
 
     public static final String LAYOUT_ERR_ILLEG_EXEP = "Could not load the layout because of an Illegal Exception ";
 
-    public static final String CONTROLLER_ERR_CANNOT_FIND_CLASS = "Could not load the class name for the controller ";
+    public static final String CONTROLLER_ERR_CANNOT_FIND_CLASS = "Can not find class";
 
     public static final String CONTROLLER_ERR_INSTANTIATE_CLASS =
         "Could not create an instance out of the controller class ";

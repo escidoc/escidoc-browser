@@ -7,6 +7,7 @@ import org.escidoc.browser.model.ResourceType;
 import java.util.List;
 
 import de.escidoc.core.resources.Resource;
+import de.escidoc.core.resources.aa.usergroup.Selectors;
 import de.escidoc.core.resources.aa.usergroup.UserGroup;
 
 public class UserGroupModel extends AbstractResourceModel implements ResourceProxy {
@@ -78,4 +79,9 @@ public class UserGroupModel extends AbstractResourceModel implements ResourcePro
     public ResourceType getType() {
         throw new UnsupportedOperationException("not-yet-implemented.");
     }
+
+    public Selectors getSelector() {
+        return userGroup.getSelectors();
+    }
+
 }

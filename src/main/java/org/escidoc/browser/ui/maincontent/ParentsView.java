@@ -103,7 +103,7 @@ public class ParentsView {
         return pnlmetadataRecs;
     }
 
-    private void buildPanelHeader(CssLayout cssLayout, String name) {
+    private static void buildPanelHeader(CssLayout cssLayout, String name) {
         cssLayout.addStyleName("v-accordion-item-caption v-caption v-captiontext");
         cssLayout.setWidth("100%");
         cssLayout.setMargin(false);
@@ -156,8 +156,7 @@ public class ParentsView {
                 Button close = new Button("Close", new Button.ClickListener() {
 
                     @Override
-                    public void buttonClick(@SuppressWarnings("unused")
-                    com.vaadin.ui.Button.ClickEvent event) {
+                    public void buttonClick(@SuppressWarnings("unused") com.vaadin.ui.Button.ClickEvent event) {
                         (subwindow.getParent()).removeWindow(subwindow);
                     }
                 });

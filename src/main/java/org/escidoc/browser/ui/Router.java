@@ -50,6 +50,7 @@ import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceModelFactory;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.ContentModelProxyImpl;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.repository.Repositories;
@@ -87,6 +88,8 @@ public class Router {
     private LayoutDesign layout;
 
     private Properties browserProperties;
+
+    private TreeDataSource ds;
 
     /**
      * The mainWindow should be revised whether we need it or not the appHeight is the Height of the Application and I
@@ -242,7 +245,7 @@ public class Router {
                 try {
                     final ContextProxyImpl context =
                         (ContextProxyImpl) resourceFactory.find(escidocID, ResourceType.CONTEXT);
-                    openControllerView(new ContextController(repositories, this, context), true);
+                    openControllerView(new ContextController(repositories, this, context), Boolean.TRUE);
                 }
                 catch (final EscidocClientException e) {
                     showError(FAIL_RETRIEVING_RESOURCE);
@@ -252,7 +255,7 @@ public class Router {
                 try {
                     final ContainerProxy container =
                         (ContainerProxy) resourceFactory.find(escidocID, ResourceType.CONTAINER);
-                    openControllerView(new ContainerController(repositories, this, container), true);
+                    openControllerView(new ContainerController(repositories, this, container), Boolean.TRUE);
                 }
                 catch (final EscidocClientException e) {
                     showError(FAIL_RETRIEVING_RESOURCE);
@@ -261,7 +264,7 @@ public class Router {
             else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("ITEM")) {
                 try {
                     final ItemProxy item = (ItemProxy) resourceFactory.find(escidocID, ResourceType.ITEM);
-                    openControllerView(new ItemController(repositories, this, item), true);
+                    openControllerView(new ItemController(repositories, this, item), Boolean.TRUE);
                 }
                 catch (final EscidocClientException e) {
                     showError(FAIL_RETRIEVING_RESOURCE);
@@ -295,8 +298,11 @@ public class Router {
         }
     }
 
-    // FIXME we should only use the reflection if ResourceModel.type is either container or item, otherwise use a normal
-    // constructor.
+    // FIXME we should only use the reflection iff ResourceModel.type is either container or item, otherwise use a
+    // normal constructor.
+    // FIXME this is so wrong, we can not inject another object into a controller to create a view. It is impossible?
+    // to inject, for example, the organization data source into another view.
+
     private Controller buildController(final ResourceModel clickedResource) throws EscidocClientException {
         final Controller controller = null;
         try {
@@ -318,7 +324,7 @@ public class Router {
         catch (final ClassNotFoundException e) {
             this.getMainWindow().showNotification(ViewConstants.CONTROLLER_ERR_CANNOT_FIND_CLASS,
                 Notification.TYPE_ERROR_MESSAGE);
-            LOG.error(ViewConstants.CONTROLLER_ERR_CANNOT_FIND_CLASS + e.getLocalizedMessage());
+            LOG.error(ViewConstants.CONTROLLER_ERR_CANNOT_FIND_CLASS + e.getMessage());
         }
         catch (final InstantiationException e) {
             this.getMainWindow().showNotification(ViewConstants.CONTROLLER_ERR_INSTANTIATE_CLASS,
@@ -513,5 +519,4 @@ public class Router {
     public BrowserApplication getApp() {
         return this.app;
     }
-
 }

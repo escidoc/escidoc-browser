@@ -127,5 +127,4 @@ public class OrgUnitParentEditView extends DragnDropHelper {
         controller.addParent(resourceProxy, sourceItemId.toString());
         controller.refreshView();
     }
-
 }
