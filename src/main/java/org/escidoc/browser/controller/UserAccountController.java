@@ -28,8 +28,6 @@
  */
 package org.escidoc.browser.controller;
 
-import java.util.Iterator;
-
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.UserProxy;
@@ -40,8 +38,6 @@ import org.escidoc.browser.ui.useraccount.UserAccountView;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.aa.useraccount.Grant;
-import de.escidoc.core.resources.aa.useraccount.Grants;
-import de.escidoc.core.resources.common.reference.RoleRef;
 
 public class UserAccountController extends Controller {
 
@@ -67,19 +63,19 @@ public class UserAccountController extends Controller {
      */
     public boolean hasAccessOnAttributes(String userId) {
         try {
-            Grants grants = getRepositories().user().getGrants(userId);
-            for (Iterator iterator = grants.iterator(); iterator.hasNext();) {
-                Grant grant = (Grant) iterator.next();
-                RoleRef userRole = grant.getProperties().getRole();
-                System.out.println(userRole.getObjid());
-                return userRole.getObjid().equals(AppConstants.ESCIDOC_ADMIN_ROLE);
+            for (Grant grant : repositories.user().getGrants(userId)) {
+                if (hasSysAdminRole(grant)) {
+                    return hasSysAdminRole(grant);
+                }
             }
         }
         catch (EscidocClientException e) {
-            showError(ViewConstants.ERROR);
+            showError(e);
         }
         return false;
-
     }
 
+    private static boolean hasSysAdminRole(Grant grant) {
+        return grant.getProperties().getRole().getObjid().equals(AppConstants.ESCIDOC_ADMIN_ROLE);
+    }
 }

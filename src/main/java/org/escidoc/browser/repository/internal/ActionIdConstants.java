@@ -94,4 +94,6 @@ public class ActionIdConstants {
     public static final String ADD_MEMBERS_TO_CONTAINER = "info:escidoc/names:aa:1.0:action:add-members-to-container";
 
     public static final String UPDATE_ORG_UNIT = "info:escidoc/names:aa:1.0:action:update-organizational-unit";
+
+    public static final String CREATE_GROUP = "info:escidoc/names:aa:1.0:action:create-user-group";
 }

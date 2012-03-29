@@ -438,4 +438,6 @@ public class ViewConstants {
 
     public static final String NO_INDEXES_DEFINED =
         "No Indexes are defined in the eSciDoc, this application cannot operate";
+
+    public static final String CREATE_GROUP = "Create Group";
 }

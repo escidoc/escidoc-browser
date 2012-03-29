@@ -73,7 +73,8 @@ public class ToolsTreeView extends VerticalLayout {
 
         LOAD_EXAMPLE(ViewConstants.LOAD_EXAMPLE), REPO_INFO(ViewConstants.REPOSITORY_INFORMATION), REINDEX(
             ViewConstants.REINDEX), BULK_TASKS(ViewConstants.BULK_TASKS), CREATE_RESOURCES(
-            ViewConstants.CREATE_RESOURCES), ASSIGN_ROLES(ViewConstants.ASSIGN_ROLES);
+            ViewConstants.CREATE_RESOURCES), ASSIGN_ROLES(ViewConstants.ASSIGN_ROLES), CREATE_GROUP(
+            ViewConstants.CREATE_GROUP);
 
         private String label;
 
@@ -176,9 +177,8 @@ public class ToolsTreeView extends VerticalLayout {
             tree.setChildrenAllowed(object, false);
         }
         if (hasGrantTo(ActionIdConstants.CREATE_GRANT)) {
-            Node node = new Node(NODE_TYPE.ASSIGN_ROLES);
-            tree.addItem(node);
-            tree.setChildrenAllowed(node, false);
+            tree.addItem(new Node(NODE_TYPE.ASSIGN_ROLES));
+            tree.setChildrenAllowed(new Node(NODE_TYPE.ASSIGN_ROLES), false);
         }
     }
 

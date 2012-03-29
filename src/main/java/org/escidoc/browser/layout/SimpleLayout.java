@@ -54,6 +54,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 import com.vaadin.ui.themes.Runo;
 
+import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.BrowserApplication;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.PropertyId;
@@ -75,9 +76,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URISyntaxException;
-import java.util.List;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.aa.useraccount.Grant;
 
 @SuppressWarnings("serial")
 public class SimpleLayout extends LayoutDesign {
@@ -356,11 +357,28 @@ public class SimpleLayout extends LayoutDesign {
         return accordion;
     }
 
-    private void addGroupsTab(Accordion accordion) {
-        BaseTreeDataSource groupDataSource = new BaseTreeDataSource(repositories.group());
-        groupDataSource.init();
-        accordion.addTab(buildGroupListWithFilter(treeBuilder.buildGroupTree(groupDataSource), groupDataSource),
-            ViewConstants.User_Groups, NO_ICON);
+    private void addGroupsTab(Accordion accordion) throws EscidocClientException {
+        if (isCurrentUserHasSysAdminRole()) {
+            BaseTreeDataSource groupDataSource = new BaseTreeDataSource(repositories.group());
+            groupDataSource.init();
+            accordion.addTab(buildGroupListWithFilter(treeBuilder.buildGroupTree(groupDataSource), groupDataSource),
+                ViewConstants.User_Groups, NO_ICON);
+        }
+    }
+
+    private boolean isCurrentUserHasSysAdminRole() throws EscidocClientException {
+        if (!app.getCurrentUser().isGuest()) {
+            for (Grant grant : repositories.user().getGrants(app.getCurrentUser().getUserId())) {
+                if (hasSysAdminRole(grant)) {
+                    return hasSysAdminRole(grant);
+                }
+            }
+        }
+        return false;
+    }
+
+    private static boolean hasSysAdminRole(Grant grant) {
+        return grant.getProperties().getRole().getObjid().equals(AppConstants.ESCIDOC_ADMIN_ROLE);
     }
 
     // FIXME rename the method.
@@ -381,6 +399,7 @@ public class SimpleLayout extends LayoutDesign {
         createButton.setStyleName(Reindeer.BUTTON_SMALL);
         VerticalLayout layout = new VerticalLayout();
         layout.setMargin(true, false, false, true);
+        layout.setSpacing(true);
 
         TextField filterField = new TextField();
         filterField.setInputPrompt("Type something to filter the list");
@@ -414,12 +433,7 @@ public class SimpleLayout extends LayoutDesign {
     }
 
     private boolean isAllowedToRetrieveUserAccounts() throws EscidocClientException {
-        List<ResourceModel> list = repositories.user().findAll();
-
-        if (list == null || list.isEmpty()) {
-            return false;
-        }
-        return true;
+        return isCurrentUserHasSysAdminRole();
     }
 
     private void addContentModelsTab(Accordion accordion) {
