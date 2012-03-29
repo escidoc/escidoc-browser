@@ -241,6 +241,9 @@
           <descriptor>src/main/assembly/dep.xml</descriptor>
         </configuration>
       </plugin>
+
+      <!-- The Maven Java Formatter does not work as expected. It is deactivated until we solve this issue -->
+      <!--
       <plugin>
         <groupId>com.googlecode.maven-java-formatter-plugin</groupId>
         <artifactId>maven-java-formatter-plugin</artifactId>
@@ -257,6 +260,7 @@
           </execution>
         </executions>
       </plugin>
+      -->
     </plugins>
 
     <finalName>${project.artifactId}</finalName>
@@ -290,23 +294,27 @@
                     <ignore></ignore>
                   </action>
                 </pluginExecution>
+
+                <!-- The Maven Java Formatter does not work as expected. It is deactivated until we solve this issue -->
+                <!--
                 <pluginExecution>
-                	<pluginExecutionFilter>
-                		<groupId>
-                			com.googlecode.maven-java-formatter-plugin
-                		</groupId>
-                		<artifactId>
-                			maven-java-formatter-plugin
-                		</artifactId>
-                		<versionRange>[0.3.1,)</versionRange>
-                		<goals>
-                			<goal>format</goal>
-                		</goals>
-                	</pluginExecutionFilter>
-                	<action>
-                		<ignore></ignore>
-                	</action>
+                  <pluginExecutionFilter>
+                    <groupId>
+                      com.googlecode.maven-java-formatter-plugin
+                    </groupId>
+                    <artifactId>
+                      maven-java-formatter-plugin
+                    </artifactId>
+                    <versionRange>[0.3.1,)</versionRange>
+                    <goals>
+                      <goal>format</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
                 </pluginExecution>
+                -->
               </pluginExecutions>
             </lifecycleMappingMetadata>
           </configuration>

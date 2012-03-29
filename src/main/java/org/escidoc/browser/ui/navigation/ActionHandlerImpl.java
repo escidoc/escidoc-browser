@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -97,8 +97,7 @@ public final class ActionHandlerImpl implements Action.Handler {
     }
 
     @Override
-    public Action[] getActions(final Object target, @SuppressWarnings("unused")
-    final Object sender) {
+    public Action[] getActions(final Object target, @SuppressWarnings("unused") final Object sender) {
         if (target instanceof ResourceModel) {
             ResourceModel rm = (ResourceModel) target;
             ResourceType type = rm.getType();
@@ -222,8 +221,7 @@ public final class ActionHandlerImpl implements Action.Handler {
         final Button okConfirmed = new Button(ViewConstants.YES, new Button.ClickListener() {
 
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
                 try {
                     repositories.user().delete(id);
@@ -241,8 +239,7 @@ public final class ActionHandlerImpl implements Action.Handler {
         final Button cancel = new Button(ViewConstants.CANCEL, new Button.ClickListener() {
 
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
             }
         });
@@ -272,8 +269,7 @@ public final class ActionHandlerImpl implements Action.Handler {
         final Button okConfirmed = new Button(ViewConstants.YES, new Button.ClickListener() {
 
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
                 try {
                     repositories.contentModel().delete(cmId);
@@ -291,8 +287,7 @@ public final class ActionHandlerImpl implements Action.Handler {
         final Button cancel = new Button(ViewConstants.CANCEL, new Button.ClickListener() {
 
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
             }
         });
@@ -328,8 +323,7 @@ public final class ActionHandlerImpl implements Action.Handler {
         final Button okConfirmed = new Button(ViewConstants.YES, new Button.ClickListener() {
 
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
                 try {
                     repositories.context().delete(model.getId());
@@ -347,8 +341,7 @@ public final class ActionHandlerImpl implements Action.Handler {
         final Button cancel = new Button("Cancel", new Button.ClickListener() {
 
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
             }
         });
@@ -470,8 +463,8 @@ public final class ActionHandlerImpl implements Action.Handler {
                                 + resourceModel.getType().toString());
                         }
                         catch (EscidocClientException e) {
-                            listNotDeleted.put(resourceModel.getId(), resourceModel.getName().toString() + " "
-                                + e.getLocalizedMessage());
+                            listNotDeleted.put(resourceModel.getId(),
+                                resourceModel.getName().toString() + " " + e.getLocalizedMessage());
                         }
                     }
                 }
@@ -507,8 +500,9 @@ public final class ActionHandlerImpl implements Action.Handler {
     }
 
     private boolean allowedToAddMember(final ResourceModel target) throws EscidocClientException, URISyntaxException {
-        return repositories.pdp().forCurrentUser().isAction(ActionIdConstants.ADD_MEMBERS_TO_CONTAINER).forResource(
-            target.getId()).permitted();
+        return repositories
+            .pdp().forCurrentUser().isAction(ActionIdConstants.ADD_MEMBERS_TO_CONTAINER).forResource(target.getId())
+            .permitted();
     }
 
     private boolean allowedToDeleteContainer(final String containerId) throws EscidocClientException,
@@ -519,14 +513,14 @@ public final class ActionHandlerImpl implements Action.Handler {
 
     private boolean allowedToCreateItem(final String contextId) throws EscidocClientException, URISyntaxException {
         return repositories
-            .pdp().forCurrentUser().isAction(ActionIdConstants.CREATE_ITEM).forResource("").withTypeAndInContext(
-                ResourceType.ITEM, contextId).permitted();
+            .pdp().forCurrentUser().isAction(ActionIdConstants.CREATE_ITEM).forResource("")
+            .withTypeAndInContext(ResourceType.ITEM, contextId).permitted();
     }
 
     private boolean allowedToCreateContainer(final String contextId) throws EscidocClientException, URISyntaxException {
         return repositories
-            .pdp().forCurrentUser().isAction(ActionIdConstants.CREATE_CONTAINER).forResource("").withTypeAndInContext(
-                ResourceType.CONTAINER, contextId).permitted();
+            .pdp().forCurrentUser().isAction(ActionIdConstants.CREATE_CONTAINER).forResource("")
+            .withTypeAndInContext(ResourceType.CONTAINER, contextId).permitted();
     }
 
     private String findContextId(final Object target) {
@@ -577,8 +571,7 @@ public final class ActionHandlerImpl implements Action.Handler {
 
         Button okConfirmed = new Button(ViewConstants.YES, new Button.ClickListener() {
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
                 try {
                     repositories.item().finalDelete(selectedItem);
@@ -596,8 +589,7 @@ public final class ActionHandlerImpl implements Action.Handler {
 
         Button cancel = new Button("Cancel", new Button.ClickListener() {
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
             }
         });
@@ -616,8 +608,7 @@ public final class ActionHandlerImpl implements Action.Handler {
 
         final Button okConfirmed = new Button(ViewConstants.YES, new Button.ClickListener() {
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
                 deleteAllChildrenOfContainer(model);
                 try {
@@ -635,8 +626,7 @@ public final class ActionHandlerImpl implements Action.Handler {
         });
         final Button cancel = new Button("Cancel", new Button.ClickListener() {
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
             }
         });

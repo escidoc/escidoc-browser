@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -84,7 +84,8 @@ public class RoleAssignView extends CustomComponent {
 
     private final TextField searchBox = new TextField(ViewConstants.RESOURCE_NAME);
 
-    // private final Button searchButton = new Button(ViewConstants.SEARCH_LABEL);
+    // private final Button searchButton = new
+    // Button(ViewConstants.SEARCH_LABEL);
 
     private final Window mainWindow;
 
@@ -289,8 +290,7 @@ public class RoleAssignView extends CustomComponent {
     private class SaveBtnListener implements Button.ClickListener {
 
         @Override
-        public void buttonClick(@SuppressWarnings("unused")
-        final ClickEvent event) {
+        public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
             onSaveClick();
         }
 
@@ -316,8 +316,9 @@ public class RoleAssignView extends CustomComponent {
         }
 
         private Grant assignRole() throws EscidocClientException {
-            return repositories.user().assign(getSelectedUser()).withRole(getSelectedRole()).onResources(
-                getSelectedResources()).execute();
+            return repositories
+                .user().assign(getSelectedUser()).withRole(getSelectedRole()).onResources(getSelectedResources())
+                .execute();
         }
 
         private UserModel getSelectedUser() {

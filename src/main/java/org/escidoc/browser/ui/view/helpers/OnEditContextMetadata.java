@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -169,8 +169,7 @@ public class OnEditContextMetadata {
             private MetadataRecord metadata;
 
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
                 // try {
                 // metadata = controller.getMetadata(md.name);
                 // metadata.setContent(metadataContent);
@@ -193,8 +192,7 @@ public class OnEditContextMetadata {
         final Button cancelBtn = new Button(ViewConstants.CANCEL, new Button.ClickListener() {
 
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
                 modalWindow.getParent().removeWindow(modalWindow);
             }
         });

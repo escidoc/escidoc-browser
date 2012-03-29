@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -398,8 +398,9 @@ public class ContextView extends View {
                                 reSwapComponents();
                                 oldComponent = event.getClickedComponent();
                                 swapComponent =
-                                    editName(child.getValue().toString().replace(ViewConstants.RESOURCE_NAME_CONTEXT,
-                                        ""), ViewConstants.RESOURCE_NAME_CONTEXT);
+                                    editName(
+                                        child.getValue().toString().replace(ViewConstants.RESOURCE_NAME_CONTEXT, ""),
+                                        ViewConstants.RESOURCE_NAME_CONTEXT);
                                 headerLayout.replaceComponent(oldComponent, swapComponent);
                             }
                         }
@@ -442,8 +443,8 @@ public class ContextView extends View {
                                 reSwapComponents();
                                 oldComponent = event.getClickedComponent();
                                 swapComponent =
-                                    editStatus(child.getValue().toString().replace(
-                                        resourceProxy.getType().getLabel() + " is ", ""));
+                                    editStatus(child
+                                        .getValue().toString().replace(resourceProxy.getType().getLabel() + " is ", ""));
                                 vlLeft.replaceComponent(oldComponent, swapComponent);
                             }
                         }
@@ -492,8 +493,9 @@ public class ContextView extends View {
                         Notification.TYPE_TRAY_NOTIFICATION);
                 }
                 catch (EscidocClientException e) {
-                    mainWindow.showNotification("Could not update Context Type, an error occurred"
-                        + e.getLocalizedMessage(), Notification.TYPE_ERROR_MESSAGE);
+                    mainWindow.showNotification(
+                        "Could not update Context Type, an error occurred" + e.getLocalizedMessage(),
+                        Notification.TYPE_ERROR_MESSAGE);
                 }
                 vlLeft.replaceComponent(swapComponent, oldComponent);
             }
@@ -515,8 +517,9 @@ public class ContextView extends View {
                     contextController.refreshView();
                 }
                 catch (EscidocClientException e) {
-                    mainWindow.showNotification("Could not update Context Name, an error occurred"
-                        + e.getLocalizedMessage(), Notification.TYPE_ERROR_MESSAGE);
+                    mainWindow.showNotification(
+                        "Could not update Context Name, an error occurred" + e.getLocalizedMessage(),
+                        Notification.TYPE_ERROR_MESSAGE);
                 }
                 headerLayout.replaceComponent(swapComponent, oldComponent);
             }
@@ -548,8 +551,7 @@ public class ContextView extends View {
         Button close = new Button("Update", new Button.ClickListener() {
 
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            com.vaadin.ui.Button.ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") com.vaadin.ui.Button.ClickEvent event) {
                 // close the window by removing it from the parent window
                 String comment = editor.getValue().toString();
                 try {
@@ -558,8 +560,9 @@ public class ContextView extends View {
                         Notification.TYPE_TRAY_NOTIFICATION);
                 }
                 catch (EscidocClientException e) {
-                    mainWindow.showNotification("Could not update Context Type, an error occurred"
-                        + e.getLocalizedMessage(), Notification.TYPE_ERROR_MESSAGE);
+                    mainWindow.showNotification(
+                        "Could not update Context Type, an error occurred" + e.getLocalizedMessage(),
+                        Notification.TYPE_ERROR_MESSAGE);
                 }
                 (subwindow.getParent()).removeWindow(subwindow);
 
@@ -567,8 +570,7 @@ public class ContextView extends View {
         });
         Button cancel = new Button("Cancel", new Button.ClickListener() {
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            com.vaadin.ui.Button.ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") com.vaadin.ui.Button.ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
 
             }

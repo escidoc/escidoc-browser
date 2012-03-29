@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -94,8 +94,9 @@ public class UtilRepositoryImpl implements UtilRepository {
     @Override
     public ResourceModel findParent(final HasNoNameResource resource) throws EscidocClientException {
         Preconditions.checkNotNull(resource, "resource is null: %s", resource);
-        Preconditions.checkArgument(resource.getType().equals(ResourceType.ITEM)
-            || resource.getType().equals(ResourceType.CONTAINER), "Only Item and Container is supported");
+        Preconditions.checkArgument(
+            resource.getType().equals(ResourceType.ITEM) || resource.getType().equals(ResourceType.CONTAINER),
+            "Only Item and Container is supported");
 
         final List<Container> parents = repositories.container().findParents(resource);
 
@@ -150,8 +151,10 @@ public class UtilRepositoryImpl implements UtilRepository {
     }
 
     // @Override
-    // public List<Container> findParent(final ResourceModel model) throws EscidocClientException {
-    // return repositories.container().findParents(new HasNoNameResourceImpl(model.getId(), model.getType()));
+    // public List<Container> findParent(final ResourceModel model) throws
+    // EscidocClientException {
+    // return repositories.container().findParents(new
+    // HasNoNameResourceImpl(model.getId(), model.getType()));
     // }
 
 }

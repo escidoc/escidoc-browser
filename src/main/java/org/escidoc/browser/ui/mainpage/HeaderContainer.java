@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -136,8 +136,7 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
             name.setStyleName(BaseTheme.BUTTON_LINK);
             ((Button) name).addListener(new Button.ClickListener() {
                 @Override
-                public void buttonClick(@SuppressWarnings("unused")
-                ClickEvent event) {
+                public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
                     ResourceProxy userProxy;
                     try {
                         userProxy = repositories.user().findById(user.getUserId());
@@ -220,8 +219,7 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
      * 
      * @param event
      */
-    public void onClick(@SuppressWarnings("unused")
-    final Button.ClickEvent event) {
+    public void onClick(@SuppressWarnings("unused") final Button.ClickEvent event) {
         redirectToLoginView();
     }
 

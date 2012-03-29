@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -188,8 +188,7 @@ public class DirectMember {
         addResourceButton.addListener(new ClickListener() {
 
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
                 try {
                     new ResourceAddViewImpl(resourceProxy, contextId, router).openSubWindow();
                 }

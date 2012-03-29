@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -207,7 +207,7 @@ public class RepositoriesImpl implements Repositories {
         Preconditions.checkNotNull(roleRepository, "roleRepository is null: %s", roleRepository);
         return roleRepository;
     }
-        
+
     public GroupRepository group() {
         return groupRepository;
     }

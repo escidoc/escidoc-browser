@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -121,7 +121,8 @@ public class Router {
      * Read the Plugins from a directory
      */
     private void initiatePlugins() {
-        // Determine here the Layout and additional Controllers that have to be used
+        // Determine here the Layout and additional Controllers that have to be
+        // used
         try {
             browserProperties = new Properties();
             browserProperties.load(this.getClass().getClassLoader().getResourceAsStream("browser.properties"));
@@ -298,9 +299,11 @@ public class Router {
         }
     }
 
-    // FIXME we should only use the reflection iff ResourceModel.type is either container or item, otherwise use a
+    // FIXME we should only use the reflection iff ResourceModel.type is either
+    // container or item, otherwise use a
     // normal constructor.
-    // FIXME this is so wrong, we can not inject another object into a controller to create a view. It is impossible?
+    // FIXME this is so wrong, we can not inject another object into a
+    // controller to create a view. It is impossible?
     // to inject, for example, the organization data source into another view.
 
     private Controller buildController(final ResourceModel clickedResource) throws EscidocClientException {
@@ -317,8 +320,9 @@ public class Router {
                 throw new IllegalArgumentException(msg);
             }
 
-            return (Controller) Class.forName(controllerClassName).getConstructor(Repositories.class, Router.class,
-                ResourceProxy.class).newInstance(repositories, this, fetchResource(clickedResource));
+            return (Controller) Class
+                .forName(controllerClassName).getConstructor(Repositories.class, Router.class, ResourceProxy.class)
+                .newInstance(repositories, this, fetchResource(clickedResource));
         }
         catch (final ClassNotFoundException e) {
             this.getMainWindow().showNotification(ViewConstants.CONTROLLER_ERR_CANNOT_FIND_CLASS,

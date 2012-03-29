@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -172,8 +172,8 @@ public class ItemContent extends VerticalLayout {
     }
 
     private boolean userIsPermittedToUpdate() throws EscidocClientException, URISyntaxException {
-        return repositories.pdp().isAction(ActionIdConstants.UPDATE_ITEM).forCurrentUser().forResource(
-            itemProxy.getId()).permitted();
+        return repositories
+            .pdp().isAction(ActionIdConstants.UPDATE_ITEM).forCurrentUser().forResource(itemProxy.getId()).permitted();
     }
 
     private void showError(final Exception e) {

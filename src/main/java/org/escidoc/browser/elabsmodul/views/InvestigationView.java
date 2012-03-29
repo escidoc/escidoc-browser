@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -153,8 +153,8 @@ public class InvestigationView extends View implements ILabsPanel, ILabsAction, 
         vl.setMargin(false);
         vl.setSizeFull();
         leftPanel.setContent(vl);
-        new DirectMember(this.router.getServiceLocation(), this.router, containerProxy.getId(), this.router
-            .getMainWindow(), this.router.getRepositories(), leftPanel, ResourceType.CONTAINER.toString())
+        new DirectMember(this.router.getServiceLocation(), this.router, containerProxy.getId(),
+            this.router.getMainWindow(), this.router.getRepositories(), leftPanel, ResourceType.CONTAINER.toString())
             .containerAsTree();
         directMemberInvestigationContainer.addComponent(leftPanel);
         directMemberInvestigationContainer.setExpandRatio(leftPanel, 3.0f);
@@ -280,8 +280,8 @@ public class InvestigationView extends View implements ILabsPanel, ILabsAction, 
         this.dynamicLayout.setStyleName(ELabsViewContants.STYLE_ELABS_FORM);
         this.buttonLayout = LabsLayoutHelper.createButtonLayout();
         final HorizontalLayout h1 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_TITLE, this.pojoItem
-                .getItemProperty(ELabsViewContants.P_INVESTIGATION_TITLE), true);
+            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_TITLE,
+                this.pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_TITLE), true);
         final HorizontalLayout h2 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_DESCRIPTION,
                 this.pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_DESC), true);
@@ -293,8 +293,8 @@ public class InvestigationView extends View implements ILabsPanel, ILabsAction, 
                 ELabsViewContants.L_INVESTIGATION_INVESTIGATOR, investigatorText, false);
         final HorizontalLayout h5 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(
-                ELabsViewContants.L_INVESTIGATION_DURATION, this.pojoItem
-                    .getItemProperty(ELabsViewContants.P_INVESTIGATION_DURATION), true);
+                ELabsViewContants.L_INVESTIGATION_DURATION,
+                this.pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_DURATION), true);
         final HorizontalLayout h6 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_INVESTIGATION_RIG,
                 this.pojoItem.getItemProperty(ELabsViewContants.P_INVESTIGATION_RIG), true);

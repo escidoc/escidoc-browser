@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -199,8 +199,8 @@ class MultipleStreamVariable implements StreamVariable {
     }
 
     private Component buildNewComponent(final URL contentUrl) throws ParserConfigurationException {
-        return new ComponentBuilder(html5File.getFileName(), StorageType.INTERNAL_MANAGED).withMimeType(
-            html5File.getType()).withContentUrl(contentUrl).build();
+        return new ComponentBuilder(html5File.getFileName(), StorageType.INTERNAL_MANAGED)
+            .withMimeType(html5File.getType()).withContentUrl(contentUrl).build();
     }
 
     private URL putInStagingServer() throws EscidocClientException {

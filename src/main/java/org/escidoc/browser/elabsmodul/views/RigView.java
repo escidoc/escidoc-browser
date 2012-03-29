@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -154,8 +154,8 @@ public class RigView extends View implements ILabsPanel, ILabsAction {
 
         this.buttonLayout = LabsLayoutHelper.createButtonLayout();
         HorizontalLayout h1 =
-            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_TITLE, pojoItem
-                .getItemProperty(ELabsViewContants.P_RIG_TITLE), true);
+            LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_TITLE,
+                pojoItem.getItemProperty(ELabsViewContants.P_RIG_TITLE), true);
         HorizontalLayout h2 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(ELabsViewContants.L_DESCRIPTION,
                 getPojoItem().getItemProperty(ELabsViewContants.P_RIG_DESC), true);

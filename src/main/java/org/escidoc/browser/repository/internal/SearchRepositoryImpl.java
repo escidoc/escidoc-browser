@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -99,12 +99,15 @@ public class SearchRepositoryImpl {
             }
         }
 
-        // escidoc.fulltext, escidoc.metadata escidoc.context.name escidoc.creator.name.
+        // escidoc.fulltext, escidoc.metadata escidoc.context.name
+        // escidoc.creator.name.
         // final String queryString = "1=1 ";
         // final StringBuffer buf = new StringBuffer();
         // for (final String string : allMatches) {
-        // buf.append(" or escidoc.any-title=\"" + string + "\" or escidoc.fulltext=\"" + string
-        // + "\" or escidoc.metadata=\"" + string + "\" or escidoc.context.name=\"" + string
+        // buf.append(" or escidoc.any-title=\"" + string +
+        // "\" or escidoc.fulltext=\"" + string
+        // + "\" or escidoc.metadata=\"" + string +
+        // "\" or escidoc.context.name=\"" + string
         // + "\" or escidoc.creator.name=\"" + string + "\"");
         // }
         final String queryString = "";

@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -70,7 +70,8 @@ import de.escidoc.core.resources.common.MetadataRecord;
 @SuppressWarnings("serial")
 public class OnEditOrgUnitMetadata {
 
-    // public static final String SERVICE_BASE_URI = "http://escidev6.fiz-karlsruhe.de:8082";
+    // public static final String SERVICE_BASE_URI =
+    // "http://escidev6.fiz-karlsruhe.de:8082";
     public static final String SERVICE_BASE_URI = "http://localhost:8082";
 
     private final static Logger LOG = LoggerFactory.getLogger(OnEditOrgUnitMetadata.class);

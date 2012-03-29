@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -121,7 +121,7 @@ public class InvestigationController extends Controller implements IInvestigatio
     /*
      * (non-Javadoc)
      * 
-     * @see org.escidoc.browser.controller.Controller#init(org.escidoc.browser.model.EscidocServiceLocation,
+     * @see org.escidoc.browser.controller.Controller#init(org.escidoc.browser.model .EscidocServiceLocation,
      * org.escidoc.browser.repository.Repositories, org.escidoc.browser.ui.Router,
      * org.escidoc.browser.model.ResourceProxy, com.vaadin.ui.Window, org.escidoc.browser.model.CurrentUser)
      */
@@ -378,9 +378,8 @@ public class InvestigationController extends Controller implements IInvestigatio
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * org.escidoc.browser.elabsmodul.interfaces.ISaveAction#saveAction(org.escidoc.browser.elabsmodul.interfaces.IBeanModel
-     * )
+     * @see org.escidoc.browser.elabsmodul.interfaces.ISaveAction#saveAction(org.
+     * escidoc.browser.elabsmodul.interfaces.IBeanModel )
      */
     @Override
     public void saveAction(final IBeanModel model) {
@@ -505,8 +504,9 @@ public class InvestigationController extends Controller implements IInvestigatio
     @Override
     public boolean hasUpdateAccess() {
         try {
-            return getRepositories().pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER).forResource(
-                getResourceProxy().getId()).permitted();
+            return getRepositories()
+                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER)
+                .forResource(getResourceProxy().getId()).permitted();
         }
         catch (final UnsupportedOperationException e) {
             showError("Inernal error");

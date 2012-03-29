@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -204,8 +204,8 @@ public class InstrumentView extends Panel implements ILabsPanel, ILabsAction, IL
                 getPojoItem().getItemProperty(ELabsViewContants.P_INSTRUMENT_FOLDER), true);
         HorizontalLayout h7 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelData(
-                ELabsViewContants.L_INSTRUMENT_FILE_FORMAT, getPojoItem().getItemProperty(
-                    ELabsViewContants.P_INSTRUMENT_FILEFORMAT), false);
+                ELabsViewContants.L_INSTRUMENT_FILE_FORMAT,
+                getPojoItem().getItemProperty(ELabsViewContants.P_INSTRUMENT_FILEFORMAT), false);
         HorizontalLayout h8 =
             LabsLayoutHelper.createHorizontalLayoutWithELabsLabelAndLabelComplexData(
                 ELabsViewContants.L_INSTRUMENT_DEVICE_SUPERVISOR, supervisorText, false);

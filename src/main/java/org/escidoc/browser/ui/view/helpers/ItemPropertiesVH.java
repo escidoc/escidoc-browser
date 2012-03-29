@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -264,8 +264,7 @@ public class ItemPropertiesVH {
                 }
 
                 /**
-                 * Switch the component back to the original component (Label)
-                 * after inline editing
+                 * Switch the component back to the original component (Label) after inline editing
                  */
                 private void reSwapComponents() {
 
@@ -347,8 +346,8 @@ public class ItemPropertiesVH {
                 private boolean hasAccessDelResource() {
                     try {
                         return repositories
-                            .pdp().forCurrentUser().isAction(ActionIdConstants.DELETE_CONTAINER).forResource(
-                                resourceProxy.getId()).permitted();
+                            .pdp().forCurrentUser().isAction(ActionIdConstants.DELETE_CONTAINER)
+                            .forResource(resourceProxy.getId()).permitted();
                     }
                     catch (final UnsupportedOperationException e) {
                         mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);

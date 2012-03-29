@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -391,7 +391,8 @@ public class SimpleLayout extends LayoutDesign {
 
             @Override
             public void textChange(TextChangeEvent event) {
-                // TODO refactor this, the list should not return the data source
+                // TODO refactor this, the list should not return the data
+                // source
                 Filterable ds = (Filterable) list.getDataSource();
                 ds.removeAllContainerFilters();
                 filter = new SimpleStringFilter(PropertyId.NAME, event.getText(), true, false);
@@ -439,7 +440,8 @@ public class SimpleLayout extends LayoutDesign {
 
             @Override
             public void textChange(TextChangeEvent event) {
-                // TODO refactor this, the list should not return the data source
+                // TODO refactor this, the list should not return the data
+                // source
                 Filterable ds = (Filterable) list.getDataSource();
                 ds.removeAllContainerFilters();
                 filter = new SimpleStringFilter(PropertyId.NAME, event.getText(), true, false);

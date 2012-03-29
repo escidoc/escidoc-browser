@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -110,7 +110,8 @@ public class ReindexView extends VerticalLayout {
     private void addIndexNameSelection() {
         indexNameSelect.setNullSelectionAllowed(false);
 
-        // TODO replace hardcoded IndexName with adminRepository.getIndexConfiguration(
+        // TODO replace hardcoded IndexName with
+        // adminRepository.getIndexConfiguration(
         indexNameSelect.select(IndexName.REINDEX_ALL.asInternalName());
         formLayout.addComponent(indexNameSelect);
     }

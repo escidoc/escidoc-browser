@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -160,8 +160,11 @@ public class DatePickerWindow extends Window implements Button.ClickListener {
                                 tfDays.setValue(0);
                                 tfDays.setInputPrompt("!");
                                 tfDays.focus();
-                                DatePickerWindow.this.getApplication().getMainWindow().showNotification("Wrong input",
-                                    "Should be between 0 and 14", Notification.TYPE_WARNING_MESSAGE);
+                                DatePickerWindow.this
+                                    .getApplication()
+                                    .getMainWindow()
+                                    .showNotification("Wrong input", "Should be between 0 and 14",
+                                        Notification.TYPE_WARNING_MESSAGE);
                                 lDay.setValue((days == 0 || days == 1) ? "day" : "days");
                             }
                             tfMinutes.commit();
@@ -172,8 +175,9 @@ public class DatePickerWindow extends Window implements Button.ClickListener {
                     LOG.error(e.getMessage());
                 }
                 catch (NumberFormatException e) {
-                    DatePickerWindow.this.getApplication().getMainWindow().showNotification("Only Number",
-                        "Only numbers are allowed", Notification.TYPE_WARNING_MESSAGE);
+                    DatePickerWindow.this
+                        .getApplication().getMainWindow()
+                        .showNotification("Only Number", "Only numbers are allowed", Notification.TYPE_WARNING_MESSAGE);
                     ((TextField) event.getSource()).setValue(0);
                     ((TextField) event.getSource()).setInputPrompt("!");
                 }
@@ -202,8 +206,11 @@ public class DatePickerWindow extends Window implements Button.ClickListener {
                                 tfHours.setValue(0);
                                 tfHours.setInputPrompt("!");
                                 tfHours.focus();
-                                DatePickerWindow.this.getApplication().getMainWindow().showNotification("Wrong input",
-                                    "Should be between 0 and 23", Notification.TYPE_WARNING_MESSAGE);
+                                DatePickerWindow.this
+                                    .getApplication()
+                                    .getMainWindow()
+                                    .showNotification("Wrong input", "Should be between 0 and 23",
+                                        Notification.TYPE_WARNING_MESSAGE);
                                 lHour.setValue((hours == 0 || hours == 1) ? "hour" : "hours");
                             }
                             tfMinutes.commit();
@@ -214,8 +221,9 @@ public class DatePickerWindow extends Window implements Button.ClickListener {
                     LOG.error(e.getMessage());
                 }
                 catch (NumberFormatException e) {
-                    DatePickerWindow.this.getApplication().getMainWindow().showNotification("Only Number",
-                        "Only numbers are allowed", Notification.TYPE_WARNING_MESSAGE);
+                    DatePickerWindow.this
+                        .getApplication().getMainWindow()
+                        .showNotification("Only Number", "Only numbers are allowed", Notification.TYPE_WARNING_MESSAGE);
                     ((TextField) event.getSource()).setValue(0);
                     ((TextField) event.getSource()).setInputPrompt("!");
                 }
@@ -243,8 +251,11 @@ public class DatePickerWindow extends Window implements Button.ClickListener {
                                 tfMinutes.setValue(0);
                                 tfMinutes.setInputPrompt("!");
                                 tfMinutes.focus();
-                                DatePickerWindow.this.getApplication().getMainWindow().showNotification("Wrong input",
-                                    "Should be between 0 and 59", Notification.TYPE_WARNING_MESSAGE);
+                                DatePickerWindow.this
+                                    .getApplication()
+                                    .getMainWindow()
+                                    .showNotification("Wrong input", "Should be between 0 and 59",
+                                        Notification.TYPE_WARNING_MESSAGE);
                                 lMinutes.setValue((minutes == 0 || minutes == 1) ? "minute" : "minutes");
                             }
                             tfMinutes.commit();
@@ -255,8 +266,9 @@ public class DatePickerWindow extends Window implements Button.ClickListener {
                     LOG.error(e.getMessage());
                 }
                 catch (NumberFormatException e) {
-                    DatePickerWindow.this.getApplication().getMainWindow().showNotification("Only Number",
-                        "Only numbers are allowed", Notification.TYPE_WARNING_MESSAGE);
+                    DatePickerWindow.this
+                        .getApplication().getMainWindow()
+                        .showNotification("Only Number", "Only numbers are allowed", Notification.TYPE_WARNING_MESSAGE);
                     ((TextField) event.getSource()).setValue(0);
                     ((TextField) event.getSource()).setInputPrompt("!");
                 }
@@ -333,8 +345,11 @@ public class DatePickerWindow extends Window implements Button.ClickListener {
                 Calendar limit = (Calendar) now.clone();
                 limit.add(Calendar.DAY_OF_YEAR, 14);
                 if (selected.before(now) || selected.after(limit)) {
-                    DatePickerWindow.this.getApplication().getMainWindow().showNotification("Wrong date",
-                        "Selected Date must be in the next two weeks from now", Notification.TYPE_WARNING_MESSAGE);
+                    DatePickerWindow.this
+                        .getApplication()
+                        .getMainWindow()
+                        .showNotification("Wrong date", "Selected Date must be in the next two weeks from now",
+                            Notification.TYPE_WARNING_MESSAGE);
                 }
             }
         });
@@ -388,8 +403,10 @@ public class DatePickerWindow extends Window implements Button.ClickListener {
                 }
             }
             else {
-                this.getApplication().getMainWindow().showNotification("Wrong date",
-                    "Selected Date must be in the next two weeks from now", Notification.TYPE_WARNING_MESSAGE);
+                this.getApplication()
+                    .getMainWindow()
+                    .showNotification("Wrong date", "Selected Date must be in the next two weeks from now",
+                        Notification.TYPE_WARNING_MESSAGE);
             }
         }
 

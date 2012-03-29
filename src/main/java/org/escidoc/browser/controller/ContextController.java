@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -180,8 +180,8 @@ public class ContextController extends Controller {
     public boolean canRemoveOUs() {
         try {
             return getRepositories()
-                .pdp().forCurrentUser().isAction(ActionIdConstants.DELETE_ORGANIZATIONAL_UNIT_ACTION).forResource(
-                    getResourceProxy().getId()).permitted();
+                .pdp().forCurrentUser().isAction(ActionIdConstants.DELETE_ORGANIZATIONAL_UNIT_ACTION)
+                .forResource(getResourceProxy().getId()).permitted();
         }
         catch (final EscidocClientException e) {
             getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
@@ -200,8 +200,9 @@ public class ContextController extends Controller {
      */
     public boolean canAddOUs() {
         try {
-            return getRepositories().pdp().forCurrentUser().isAction(ActionIdConstants.CREATE_ORG_UNIT).forResource(
-                getResourceProxy().getId()).permitted();
+            return getRepositories()
+                .pdp().forCurrentUser().isAction(ActionIdConstants.CREATE_ORG_UNIT)
+                .forResource(getResourceProxy().getId()).permitted();
         }
         catch (EscidocClientException e) {
             getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
@@ -220,8 +221,9 @@ public class ContextController extends Controller {
      */
     public boolean canUpdateContext() {
         try {
-            return getRepositories().pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER).forResource(
-                getResourceProxy().getId()).permitted();
+            return getRepositories()
+                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER)
+                .forResource(getResourceProxy().getId()).permitted();
         }
         catch (EscidocClientException e) {
             getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);

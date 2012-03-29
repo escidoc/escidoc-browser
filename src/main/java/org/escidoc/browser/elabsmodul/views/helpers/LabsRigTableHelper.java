@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -103,7 +103,10 @@ public final class LabsRigTableHelper {
         this.rigTable.setColumnCollapsingAllowed(false);
         this.rigTable.setRowHeaderMode(Table.ROW_HEADER_MODE_HIDDEN);
         this.rigTable.setContainerDataSource(fillRigTableData(rigBean.getContentList()));
-        this.rigTable.setColumnHeaders(new String[] { "Name", "Id" }); // put these into ELabsViewContants
+        this.rigTable.setColumnHeaders(new String[] { "Name", "Id" }); // put
+                                                                       // these
+                                                                       // into
+                                                                       // ELabsViewContants
         this.rigTable.addListener(new Table.ValueChangeListener() {
             private static final long serialVersionUID = 2000562132182698589L;
 
@@ -163,31 +166,35 @@ public final class LabsRigTableHelper {
                     rigTable.requestRepaint();
                 }
                 else if (event.getButton().getCaption().equals(ADD_BUTTON)) {
-                    rigTable.getApplication().getMainWindow().addWindow(
-                        new AddNewInstrumentsWindow(rigBean, controller, new AddNewInstrumentsWindow.Callback() {
-                            @Override
-                            public void onAcceptRigAction(
-                                final List<InstrumentBean> assignableInstruments,
-                                final Set<String> instrumentIdentifiers) {
-                                if (assignableInstruments == null || assignableInstruments.isEmpty()) {
-                                    return;
-                                }
-                                if (instrumentIdentifiers == null || instrumentIdentifiers.isEmpty()) {
-                                    return;
-                                }
-                                for (Iterator<String> iterator = instrumentIdentifiers.iterator(); iterator.hasNext();) {
-                                    final String id = iterator.next();
-                                    for (Iterator<InstrumentBean> iterator2 = assignableInstruments.iterator(); iterator2
+                    rigTable
+                        .getApplication()
+                        .getMainWindow()
+                        .addWindow(
+                            new AddNewInstrumentsWindow(rigBean, controller, new AddNewInstrumentsWindow.Callback() {
+                                @Override
+                                public void onAcceptRigAction(
+                                    final List<InstrumentBean> assignableInstruments,
+                                    final Set<String> instrumentIdentifiers) {
+                                    if (assignableInstruments == null || assignableInstruments.isEmpty()) {
+                                        return;
+                                    }
+                                    if (instrumentIdentifiers == null || instrumentIdentifiers.isEmpty()) {
+                                        return;
+                                    }
+                                    for (Iterator<String> iterator = instrumentIdentifiers.iterator(); iterator
                                         .hasNext();) {
-                                        InstrumentBean instrumentBean = iterator2.next();
-                                        if (instrumentBean.getObjectId().equals(id)) {
-                                            LabsRigTableHelper.this.rigBean.getContentList().add(instrumentBean);
-                                            LabsRigTableHelper.this.addnewItemToRigTable(instrumentBean);
+                                        final String id = iterator.next();
+                                        for (Iterator<InstrumentBean> iterator2 = assignableInstruments.iterator(); iterator2
+                                            .hasNext();) {
+                                            InstrumentBean instrumentBean = iterator2.next();
+                                            if (instrumentBean.getObjectId().equals(id)) {
+                                                LabsRigTableHelper.this.rigBean.getContentList().add(instrumentBean);
+                                                LabsRigTableHelper.this.addnewItemToRigTable(instrumentBean);
+                                            }
                                         }
                                     }
                                 }
-                            }
-                        }));
+                            }));
                 }
             }
         };

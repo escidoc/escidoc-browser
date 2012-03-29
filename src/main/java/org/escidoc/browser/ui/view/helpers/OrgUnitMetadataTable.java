@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -93,15 +93,13 @@ public class OrgUnitMetadataTable extends TableContainerVH {
     protected void addActionLists() {
         table.addActionHandler(new Action.Handler() {
             @Override
-            public Action[] getActions(@SuppressWarnings("unused")
-            Object target, @SuppressWarnings("unused")
-            Object sender) {
+            public Action[] getActions(
+                @SuppressWarnings("unused") Object target, @SuppressWarnings("unused") Object sender) {
                 return ACTIONS_LIST;
             }
 
             @Override
-            public void handleAction(Action action, @SuppressWarnings("unused")
-            Object sender, Object target) {
+            public void handleAction(Action action, @SuppressWarnings("unused") Object sender, Object target) {
                 Preconditions.checkNotNull(action, "action is null: %s", action);
 
                 if (ACTION_DELETE == action) {
@@ -110,7 +108,8 @@ public class OrgUnitMetadataTable extends TableContainerVH {
                 else if (ACTION_EDIT == action) {
                     Metadata md = (Metadata) target;
 
-                    // new OnEditOrgUnitMetadata(router, controller, router.getMainWindow(), md).showEditWindow();
+                    // new OnEditOrgUnitMetadata(router, controller,
+                    // router.getMainWindow(), md).showEditWindow();
                     new OnEditOrgUnitMetadata(router, controller, router.getMainWindow(), md).showEditWindow();
 
                     controller.refreshView();

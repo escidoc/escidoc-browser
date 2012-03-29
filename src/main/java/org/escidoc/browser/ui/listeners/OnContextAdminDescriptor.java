@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -106,8 +106,7 @@ public class OnContextAdminDescriptor {
 
         Button close = new Button(ViewConstants.CLOSE, new Button.ClickListener() {
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
             }
         });
@@ -178,8 +177,7 @@ public class OnContextAdminDescriptor {
 
         Button close = new Button(ViewConstants.CLOSE, new Button.ClickListener() {
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
             }
         });

@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -107,8 +107,7 @@ public class UserAccountView extends View {
         }
 
         @Override
-        public void buttonClick(@SuppressWarnings("unused")
-        final com.vaadin.ui.Button.ClickEvent event) {
+        public void buttonClick(@SuppressWarnings("unused") final com.vaadin.ui.Button.ClickEvent event) {
             addAttributeButton.setEnabled(false);
             final HorizontalLayout hl = new HorizontalLayout();
             final TextField key = new TextField();
@@ -131,8 +130,7 @@ public class UserAccountView extends View {
             btnadd.setIcon(new ThemeResource("images/assets/plus.png"));
             btnadd.addListener(new Button.ClickListener() {
                 @Override
-                public void buttonClick(@SuppressWarnings("unused")
-                final com.vaadin.ui.Button.ClickEvent event) {
+                public void buttonClick(@SuppressWarnings("unused") final com.vaadin.ui.Button.ClickEvent event) {
                     if (isNotValid(key, value)) {
                         showMessage();
                     }
@@ -182,8 +180,7 @@ public class UserAccountView extends View {
         }
 
         @Override
-        public void buttonClick(@SuppressWarnings("unused")
-        com.vaadin.ui.Button.ClickEvent event) {
+        public void buttonClick(@SuppressWarnings("unused") com.vaadin.ui.Button.ClickEvent event) {
             try {
                 form.commit();
                 if (!passwordField.getValue().equals(verifyPasswordField.getValue())) {

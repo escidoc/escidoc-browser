@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -112,8 +112,7 @@ public final class FilterButtonListener implements ClickListener {
     }
 
     @Override
-    public void buttonClick(@SuppressWarnings("unused")
-    final ClickEvent event) {
+    public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
         try {
             showResult();
             if (isPurgePermitted()) {
@@ -152,8 +151,7 @@ public final class FilterButtonListener implements ClickListener {
         exportButton.addListener(new ClickListener() {
 
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
                 final Set<ResourceModel> selectedResources = getSelectedResources();
                 mainWindow.open(new StreamResource(new StreamSource() {
 

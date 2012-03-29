@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -62,8 +62,7 @@ final class OnAddPreference implements ClickListener {
     }
 
     @Override
-    public void buttonClick(@SuppressWarnings("unused")
-    final com.vaadin.ui.Button.ClickEvent event) {
+    public void buttonClick(@SuppressWarnings("unused") final com.vaadin.ui.Button.ClickEvent event) {
         addPreference.setEnabled(false);
         final HorizontalLayout hl = new HorizontalLayout();
         final TextField key = new TextField();
@@ -86,8 +85,7 @@ final class OnAddPreference implements ClickListener {
         addButton.setIcon(new ThemeResource("images/assets/plus.png"));
         addButton.addListener(new Button.ClickListener() {
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            final com.vaadin.ui.Button.ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") final com.vaadin.ui.Button.ClickEvent event) {
                 if (UserAccountView.isNotValid(key, value)) {
                     OnAddPreference.this.userAccountView.showMessage();
                 }

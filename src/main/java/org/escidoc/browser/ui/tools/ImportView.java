@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -74,8 +74,7 @@ public final class ImportView extends VerticalLayout {
         }
 
         @Override
-        public void buttonClick(@SuppressWarnings("unused")
-        final ClickEvent event) {
+        public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
             if (sourceUrlField.getValue() instanceof String) {
                 downloadAndIngestZipFile(sourceUrlField, (String) sourceUrlField.getValue());
             }
@@ -112,8 +111,11 @@ public final class ImportView extends VerticalLayout {
         }
 
         private void showTimeoutWarning() {
-            router.getApp().getMainWindow().showNotification("Connection Timeout",
-                "Is HTTP Proxy properly configured?", Window.Notification.TYPE_WARNING_MESSAGE);
+            router
+                .getApp()
+                .getMainWindow()
+                .showNotification("Connection Timeout", "Is HTTP Proxy properly configured?",
+                    Window.Notification.TYPE_WARNING_MESSAGE);
         }
 
         private boolean isZipFile(final URLConnection connection) {
@@ -143,8 +145,9 @@ public final class ImportView extends VerticalLayout {
         }
 
         private void showErrorMessage(final Exception e) {
-            router.getApp().getMainWindow().showNotification(ViewConstants.ERROR, e.getMessage(),
-                Window.Notification.TYPE_ERROR_MESSAGE);
+            router
+                .getApp().getMainWindow()
+                .showNotification(ViewConstants.ERROR, e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
         }
     }
 

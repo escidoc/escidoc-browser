@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -493,8 +493,9 @@ public final class InstrumentController extends Controller implements ISaveActio
     @Override
     public boolean hasUpdateAccess() {
         try {
-            return getRepositories().pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_ITEM).forResource(
-                getResourceProxy().getId()).permitted();
+            return getRepositories()
+                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_ITEM).forResource(getResourceProxy().getId())
+                .permitted();
         }
         catch (final UnsupportedOperationException e) {
             showError("Internal error");

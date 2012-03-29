@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -457,7 +457,8 @@ public class ContainerView extends View {
                         }
                         // else {
                         // // getWindow().showNotification(
-                        // // "The click was over a " + event.getChildComponent().getClass().getCanonicalName()
+                        // // "The click was over a " +
+                        // event.getChildComponent().getClass().getCanonicalName()
                         // // + event.getChildComponent().getStyleName());
                         // }
                     }
@@ -477,7 +478,8 @@ public class ContainerView extends View {
                         }
                         else if ((swapComponent instanceof ComboBox) && ((ComboBox) swapComponent).getValue() != null) {
                             ((Label) oldComponent).setValue(status + ((ComboBox) swapComponent).getValue());
-                            // Because there should be no comment-window on Delete Operation
+                            // Because there should be no comment-window on
+                            // Delete Operation
                             if (!(((ComboBox) swapComponent).getValue().equals("delete"))) {
                                 addCommentWindow();
                             }
@@ -548,8 +550,8 @@ public class ContainerView extends View {
                 private boolean hasAccessDelResource() {
                     try {
                         return repositories
-                            .pdp().forCurrentUser().isAction(ActionIdConstants.DELETE_CONTAINER).forResource(
-                                resourceProxy.getId()).permitted();
+                            .pdp().forCurrentUser().isAction(ActionIdConstants.DELETE_CONTAINER)
+                            .forResource(resourceProxy.getId()).permitted();
                     }
                     catch (UnsupportedOperationException e) {
                         mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
@@ -587,7 +589,8 @@ public class ContainerView extends View {
                         // inline click-listener
                         @Override
                         public void buttonClick(ClickEvent event) {
-                            // close the window by removing it from the parent window
+                            // close the window by removing it from the
+                            // parent window
                             updateContainer(editor.getValue().toString());
                             (subwindow.getParent()).removeWindow(subwindow);
                         }
@@ -680,7 +683,8 @@ public class ContainerView extends View {
                         container = repositories.container().findContainerById(resourceProxy.getId());
                         if (resourceProxy.getLockStatus().contains("unlocked")) {
                             updatePublicStatus(container, comment);
-                            // retrive the container to get the last modifiaction date.
+                            // retrive the container to get the last
+                            // modifiaction date.
                             container = repositories.container().findContainerById(resourceProxy.getId());
                             updateLockStatus(container, comment);
                         }
@@ -723,8 +727,9 @@ public class ContainerView extends View {
     // TODO Move to Controller
     private boolean hasAccess() {
         try {
-            return repositories.pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER).forResource(
-                resourceProxy.getId()).permitted();
+            return repositories
+                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER).forResource(resourceProxy.getId())
+                .permitted();
         }
         catch (EscidocClientException e) {
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);

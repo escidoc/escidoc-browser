@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -97,8 +97,7 @@ public class ComponentUploadView extends VerticalLayout {
         }
 
         @Override
-        public void uploadSucceeded(@SuppressWarnings("unused")
-        SucceededEvent event) {
+        public void uploadSucceeded(@SuppressWarnings("unused") SucceededEvent event) {
             try {
                 URL contentUrl = putInStagingServer();
                 if (contentUrl == null) {
@@ -127,8 +126,8 @@ public class ComponentUploadView extends VerticalLayout {
         }
 
         private Component buildNewComponent(final URL contentUrl) throws ParserConfigurationException {
-            return new ComponentBuilder(uploadReceiver.getFileName(), StorageType.INTERNAL_MANAGED).withMimeType(
-                uploadReceiver.getMimeType()).withContentUrl(contentUrl).build();
+            return new ComponentBuilder(uploadReceiver.getFileName(), StorageType.INTERNAL_MANAGED)
+                .withMimeType(uploadReceiver.getMimeType()).withContentUrl(contentUrl).build();
         }
 
         private Item updateItem(final Item toBeUpdate) throws EscidocClientException {

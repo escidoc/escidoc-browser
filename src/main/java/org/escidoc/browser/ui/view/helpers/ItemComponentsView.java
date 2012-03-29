@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -213,8 +213,7 @@ public class ItemComponentsView extends TableContainerVH {
             private static final long serialVersionUID = 651483473875504715L;
 
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
                 mainWindow.open(new ExternalResource(
                     serviceLocation.getEscidocUri() + comp.getContent().getXLinkHref(), comp
                         .getProperties().getMimeType()), "_new");

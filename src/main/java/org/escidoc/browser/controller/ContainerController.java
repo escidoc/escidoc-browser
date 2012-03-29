@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -74,8 +74,9 @@ public class ContainerController extends Controller {
 
     public boolean hasAccess() {
         try {
-            return repositories.pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER).forResource(
-                resourceProxy.getId()).permitted();
+            return repositories
+                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER).forResource(resourceProxy.getId())
+                .permitted();
         }
         catch (final EscidocClientException e) {
             LOG.debug(e.getLocalizedMessage());

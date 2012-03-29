@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -159,8 +159,9 @@ public class BulkTasksView extends VerticalLayout {
     }
 
     void showErrorMessage(final Exception e) {
-        router.getApp().getMainWindow().showNotification(ViewConstants.ERROR, e.getMessage(),
-            Window.Notification.TYPE_ERROR_MESSAGE);
+        router
+            .getApp().getMainWindow()
+            .showNotification(ViewConstants.ERROR, e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
     }
 
     void showErrorMessage(final MessagesStatus status) {

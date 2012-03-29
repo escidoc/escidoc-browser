@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -210,7 +210,8 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
     // @Override
     // protected void createView() {
     // view =
-    // new InvestigationSeriesView((ContainerProxy) getResourceProxy(), this.investigationSeriesBean,
+    // new InvestigationSeriesView((ContainerProxy) getResourceProxy(),
+    // this.investigationSeriesBean,
     // createBreadCrumbModel(), this, getRouter());
     // }
 
@@ -231,8 +232,9 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
     @Override
     public boolean hasUpdateAccess() {
         try {
-            return getRepositories().pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER).forResource(
-                containerProxy.getId()).permitted();
+            return getRepositories()
+                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER)
+                .forResource(containerProxy.getId()).permitted();
         }
         catch (final UnsupportedOperationException e) {
             showError("Internal error");

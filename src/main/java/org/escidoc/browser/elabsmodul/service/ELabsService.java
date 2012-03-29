@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -309,7 +309,8 @@ public class ELabsService implements ILabsService {
     private static String createInstrumentNameAndId(final InstrumentBean instrumentBean) {
         // @formatter:off
         return new StringBuilder(instrumentBean.getName())
-            .append(' ').append("(").append(instrumentBean.getObjectId()).append(")").toString();
+            .append(' ').append("(").append(instrumentBean.getObjectId())
+            .append(")").toString();
         // @formatter:on
     }
 
@@ -424,8 +425,9 @@ public class ELabsService implements ILabsService {
                 showError("Communication error");
                 throw new EscidocBrowserException();
             }
-            this.router.getApp().getMainWindow().showNotification("Success", "Configuration is sent!",
-                Notification.TYPE_TRAY_NOTIFICATION);
+            this.router
+                .getApp().getMainWindow()
+                .showNotification("Success", "Configuration is sent!", Notification.TYPE_TRAY_NOTIFICATION);
         }
         catch (final EscidocBrowserException e) {
             LOG.error(e.getMessage());
@@ -634,7 +636,7 @@ public class ELabsService implements ILabsService {
 
     private void showWarning(final String warningMessage) {
         Preconditions.checkNotNull(warningMessage, "Warningmessage is null");
-        this.router.getApp().getMainWindow().showNotification("Warning", warningMessage,
-            Notification.TYPE_WARNING_MESSAGE);
+        this.router
+            .getApp().getMainWindow().showNotification("Warning", warningMessage, Notification.TYPE_WARNING_MESSAGE);
     }
 }

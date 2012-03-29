@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -156,7 +156,8 @@ final class ReindexListener implements ClickListener {
                 // over application instance. For normal requests this is done
                 // by the servlet. Here we are changing the application state
                 // via a separate thread.
-                // Application application = reindexResourceViewImpl.getApplication();
+                // Application application =
+                // reindexResourceViewImpl.getApplication();
                 synchronized (application) {
                     updateProgressIndicator();
                 }

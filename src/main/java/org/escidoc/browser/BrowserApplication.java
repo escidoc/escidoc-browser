@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -243,7 +243,8 @@ public class BrowserApplication extends Application implements HttpServletReques
 
     @Override
     public void onRequestEnd(HttpServletRequest request, HttpServletResponse response) {
-        // Just ignore this! I am not going to write anywhere else but the browser!
+        // Just ignore this! I am not going to write anywhere else but the
+        // browser!
     }
 
     public void setCookie(String cookieName, String cookieValue) {

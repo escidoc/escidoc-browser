@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -201,7 +201,8 @@ public class MetadataRecsItem {
                     resourceProxy));
             btnEditActualMetaData.setStyleName(BaseTheme.BUTTON_LINK);
             btnEditActualMetaData.setDescription("Replace the metadata with a new content file");
-            // btnEditActualMetaData.setIcon(new ThemeResource("../myTheme/runo/icons/16/reload.png"));
+            // btnEditActualMetaData.setIcon(new
+            // ThemeResource("../myTheme/runo/icons/16/reload.png"));
             hl.addComponent(btnEditActualMetaData);
         }
 

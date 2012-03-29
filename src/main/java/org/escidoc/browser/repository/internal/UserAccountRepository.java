@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -190,8 +190,8 @@ public class UserAccountRepository implements Repository {
     public void removeAttribute(UserProxy userProxy, String attributeName) throws EscidocClientException {
         Preconditions.checkNotNull(userProxy, "userProxy is null: %s", userProxy);
         Preconditions.checkNotNull(attributeName, "attributeName is null: %s", attributeName);
-        client.deleteAttribute(userProxy.getId(), findAttribute(client.retrieveAttributes(userProxy.getId()),
-            attributeName));
+        client.deleteAttribute(userProxy.getId(),
+            findAttribute(client.retrieveAttributes(userProxy.getId()), attributeName));
     }
 
     private static String findAttribute(Attributes list, String attributeName) {

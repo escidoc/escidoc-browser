@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -91,8 +91,8 @@ public class ContextRepository implements Repository {
     }
 
     private List<ResourceModel> findTopLevelMemberList(final String id) throws EscidocClientException {
-        return ModelConverter.genericResourcetoModel(client.retrieveMembersAsList(id, Util
-            .createQueryForTopLevelContainersAndItems(id)));
+        return ModelConverter.genericResourcetoModel(client.retrieveMembersAsList(id,
+            Util.createQueryForTopLevelContainersAndItems(id)));
     }
 
     @Override

@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -154,8 +154,8 @@ public class ItemAddView {
     }
 
     private void addContentModelSelect() throws EscidocException, InternalClientException, TransportException {
-        Preconditions.checkNotNull(repositories.contentModel(), "ContentModelRepository is null: %s", repositories
-            .contentModel());
+        Preconditions.checkNotNull(repositories.contentModel(), "ContentModelRepository is null: %s",
+            repositories.contentModel());
         contentModelSelect.setRequired(true);
         bindData();
         addForm.addComponent(contentModelSelect);

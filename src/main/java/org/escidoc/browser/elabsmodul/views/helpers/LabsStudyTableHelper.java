@@ -21,7 +21,7 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
@@ -158,7 +158,8 @@ public final class LabsStudyTableHelper {
                     LabsStudyTableHelper.this.labsAction.showButtonLayout();
                     @SuppressWarnings("unchecked")
                     Set<String> selectedIdSet = (Set<String>) motPubTable.getValue();
-                    // delete motivationg publication relations from the model
+                    // delete motivationg publication relations from the
+                    // model
                     LabsStudyTableHelper.this.synchronizeStudyModel(selectedIdSet, true);
                     // instant delete from table containerdatasource
                     for (String idToDelete : selectedIdSet) {
@@ -168,8 +169,9 @@ public final class LabsStudyTableHelper {
                 }
                 else if (event.getButton().getCaption().equals(ADD_BUTTON)) {
                     LabsStudyTableHelper.this.labsAction.showButtonLayout();
-                    motPubTable.getApplication().getMainWindow().addWindow(
-                        new AddNewStudyPublicationWindow(new AddNewStudyPublicationWindow.Callback() {
+                    motPubTable
+                        .getApplication().getMainWindow()
+                        .addWindow(new AddNewStudyPublicationWindow(new AddNewStudyPublicationWindow.Callback() {
                             @Override
                             public void onAcceptAction(String inputURLText) {
                                 // add to table
@@ -274,7 +276,8 @@ public final class LabsStudyTableHelper {
                     LabsStudyTableHelper.this.labsAction.showButtonLayout();
                     @SuppressWarnings("unchecked")
                     Set<String> selectedIdSet = (Set<String>) resPubTable.getValue();
-                    // delete motivationg publication relations from the model
+                    // delete motivationg publication relations from the
+                    // model
                     LabsStudyTableHelper.this.synchronizeStudyModel(selectedIdSet, false);
                     // instant delete from table containerdatasource
                     for (String idToDelete : selectedIdSet) {
@@ -284,8 +287,9 @@ public final class LabsStudyTableHelper {
                 }
                 else if (event.getButton().getCaption().equals(ADD_BUTTON)) {
                     LabsStudyTableHelper.this.labsAction.showButtonLayout();
-                    resPubTable.getApplication().getMainWindow().addWindow(
-                        new AddNewStudyPublicationWindow(new AddNewStudyPublicationWindow.Callback() {
+                    resPubTable
+                        .getApplication().getMainWindow()
+                        .addWindow(new AddNewStudyPublicationWindow(new AddNewStudyPublicationWindow.Callback() {
                             @Override
                             public void onAcceptAction(String inputURLText) {
                                 // add to table
