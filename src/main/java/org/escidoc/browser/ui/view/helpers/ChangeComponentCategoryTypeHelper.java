@@ -28,15 +28,15 @@
  */
 package org.escidoc.browser.ui.view.helpers;
 
-import org.escidoc.browser.controller.ItemController;
-import org.escidoc.browser.ui.Router;
-
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+
+import org.escidoc.browser.controller.ItemController;
+import org.escidoc.browser.ui.Router;
 
 public class ChangeComponentCategoryTypeHelper {
     private Window subwindow;

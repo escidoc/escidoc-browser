@@ -28,8 +28,10 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import java.util.Collection;
-import java.util.List;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.data.Item;
+import com.vaadin.data.util.HierarchicalContainer;
 
 import org.escidoc.browser.controller.OrgUnitController;
 import org.escidoc.browser.model.ResourceModel;
@@ -38,9 +40,8 @@ import org.escidoc.browser.repository.internal.OrgUnitService;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.view.helpers.DragnDropHelper;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.data.Item;
-import com.vaadin.data.util.HierarchicalContainer;
+import java.util.Collection;
+import java.util.List;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.oum.OrganizationalUnit;
@@ -126,5 +127,4 @@ public class OrgUnitParentEditView extends DragnDropHelper {
         controller.addParent(resourceProxy, sourceItemId.toString());
         controller.refreshView();
     }
-
 }

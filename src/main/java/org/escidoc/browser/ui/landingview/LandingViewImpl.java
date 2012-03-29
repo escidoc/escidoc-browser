@@ -28,11 +28,8 @@
  */
 package org.escidoc.browser.ui.landingview;
 
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.listeners.StartButtonListener;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -43,6 +40,10 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
+
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.listeners.StartButtonListener;
 
 @SuppressWarnings("serial")
 public class LandingViewImpl extends CustomComponent implements LandingView {

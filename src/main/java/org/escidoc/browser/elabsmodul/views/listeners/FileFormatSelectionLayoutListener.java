@@ -28,19 +28,8 @@
  */
 package org.escidoc.browser.elabsmodul.views.listeners;
 
-import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_HOR_LAYOUT_TO_SAVE;
-import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_LABEL_TO_SAVE;
-
-import java.util.Iterator;
-
-import org.escidoc.browser.elabsmodul.cache.ELabsCache;
-import org.escidoc.browser.elabsmodul.interfaces.ILabsInstrumentAction;
-import org.escidoc.browser.elabsmodul.model.FileFormatBean;
-import org.escidoc.browser.elabsmodul.views.helpers.LabsLayoutHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
@@ -49,6 +38,18 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+
+import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_HOR_LAYOUT_TO_SAVE;
+import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_LABEL_TO_SAVE;
+
+import org.escidoc.browser.elabsmodul.cache.ELabsCache;
+import org.escidoc.browser.elabsmodul.interfaces.ILabsInstrumentAction;
+import org.escidoc.browser.elabsmodul.model.FileFormatBean;
+import org.escidoc.browser.elabsmodul.views.helpers.LabsLayoutHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Iterator;
 
 public class FileFormatSelectionLayoutListener implements LayoutClickListener {
 

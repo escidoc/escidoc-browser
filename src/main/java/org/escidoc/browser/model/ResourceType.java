@@ -36,8 +36,8 @@ import java.util.Map;
 public enum ResourceType {
 
     CONTEXT("Context"), CONTAINER("Container"), ITEM("Item"), CONTENT_MODEL("Content Model"), ORG_UNIT(
-        "Organizational Unit"), USER_ACCOUNT("User Account"), ROLE("Role"), CONTENT_RELATION("Content Relation"), USER_GROUP(
-        "User Group"), COMPONENT("Component");
+        "Organizational Unit"), USER_ACCOUNT("User Account"), ROLE("Role"), CONTENT_RELATION("Content Relation"), 
+        USER_GROUP("User Group"), COMPONENT("Component");
 
     @SuppressWarnings("serial")
     private static final Map<de.escidoc.core.resources.ResourceType, ResourceType> map =

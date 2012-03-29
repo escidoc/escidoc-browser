@@ -30,11 +30,11 @@ package org.escidoc.browser.util;
 
 import static org.junit.Assert.assertEquals;
 
-import java.net.URL;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.net.URL;
 
 import de.escidoc.core.client.Authentication;
 import de.escidoc.core.client.ContainerHandlerClient;

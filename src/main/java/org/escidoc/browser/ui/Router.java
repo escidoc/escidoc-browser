@@ -50,6 +50,7 @@ import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceModelFactory;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.ContentModelProxyImpl;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.repository.Repositories;
@@ -71,19 +72,7 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class Router {
 
-    private static final String INVESTIGATION_CONTROLLER_ID = "org.escidoc.bwelabs.Investigation";
-
-    private static final String ITEM_CONTROLLER_ID = "org.escidoc.browser.Item";
-
-    private static final String CONTAINER_CONTROLLER_ID = "org.escidoc.browser.Container";
-
-    private static final String CONTEXT_CONTROLLER_ID = "org.escidoc.browser.Context";
-
-    private static final String ORG_UNIT_CONTROLLER_ID = "org.escidoc.browser.OrgUnit";
-
-    private static final String USER_ACCOUNT_CONTROLLER_ID = "org.escidoc.browser.UserAccount";
-
-    private static final String CONTENT_MODEL_CONTROLLER_ID = "org.escidoc.browser.ContentModel";
+    private static final Logger LOG = LoggerFactory.getLogger(Router.class);
 
     private static final String FAIL_RETRIEVING_RESOURCE =
         "Cannot retrieve resource, or you don't have access to see this resource";
@@ -100,7 +89,7 @@ public class Router {
 
     private Properties browserProperties;
 
-    private static final Logger LOG = LoggerFactory.getLogger(Router.class);
+    private TreeDataSource ds;
 
     /**
      * The mainWindow should be revised whether we need it or not the appHeight is the Height of the Application and I
@@ -256,7 +245,7 @@ public class Router {
                 try {
                     final ContextProxyImpl context =
                         (ContextProxyImpl) resourceFactory.find(escidocID, ResourceType.CONTEXT);
-                    openControllerView(new ContextController(repositories, this, context), true);
+                    openControllerView(new ContextController(repositories, this, context), Boolean.TRUE);
                 }
                 catch (final EscidocClientException e) {
                     showError(FAIL_RETRIEVING_RESOURCE);
@@ -266,7 +255,7 @@ public class Router {
                 try {
                     final ContainerProxy container =
                         (ContainerProxy) resourceFactory.find(escidocID, ResourceType.CONTAINER);
-                    openControllerView(new ContainerController(repositories, this, container), true);
+                    openControllerView(new ContainerController(repositories, this, container), Boolean.TRUE);
                 }
                 catch (final EscidocClientException e) {
                     showError(FAIL_RETRIEVING_RESOURCE);
@@ -275,7 +264,7 @@ public class Router {
             else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("ITEM")) {
                 try {
                     final ItemProxy item = (ItemProxy) resourceFactory.find(escidocID, ResourceType.ITEM);
-                    openControllerView(new ItemController(repositories, this, item), true);
+                    openControllerView(new ItemController(repositories, this, item), Boolean.TRUE);
                 }
                 catch (final EscidocClientException e) {
                     showError(FAIL_RETRIEVING_RESOURCE);
@@ -309,8 +298,11 @@ public class Router {
         }
     }
 
-    // FIXME we should only use the reflection if ResourceModel.type is either container or item, otherwise use a normal
-    // constructor.
+    // FIXME we should only use the reflection iff ResourceModel.type is either container or item, otherwise use a
+    // normal constructor.
+    // FIXME this is so wrong, we can not inject another object into a controller to create a view. It is impossible?
+    // to inject, for example, the organization data source into another view.
+
     private Controller buildController(final ResourceModel clickedResource) throws EscidocClientException {
         final Controller controller = null;
         try {
@@ -331,7 +323,7 @@ public class Router {
         catch (final ClassNotFoundException e) {
             this.getMainWindow().showNotification(ViewConstants.CONTROLLER_ERR_CANNOT_FIND_CLASS,
                 Notification.TYPE_ERROR_MESSAGE);
-            LOG.error(ViewConstants.CONTROLLER_ERR_CANNOT_FIND_CLASS + e.getLocalizedMessage());
+            LOG.error(ViewConstants.CONTROLLER_ERR_CANNOT_FIND_CLASS + e.getMessage());
         }
         catch (final InstantiationException e) {
             this.getMainWindow().showNotification(ViewConstants.CONTROLLER_ERR_INSTANTIATE_CLASS,
@@ -361,7 +353,7 @@ public class Router {
         String controllerId = null;
         switch (type) {
             case CONTEXT:
-                controllerId = CONTEXT_CONTROLLER_ID;
+                controllerId = ControllerIdList.CONTEXT_CONTROLLER_ID;
                 break;
             case CONTAINER:
                 controllerId = findIdForContainer(clickedResource);
@@ -370,13 +362,16 @@ public class Router {
                 controllerId = findIdForItem(clickedResource);
                 break;
             case ORG_UNIT:
-                controllerId = ORG_UNIT_CONTROLLER_ID;
+                controllerId = ControllerIdList.ORG_UNIT_CONTROLLER_ID;
                 break;
             case USER_ACCOUNT:
-                controllerId = USER_ACCOUNT_CONTROLLER_ID;
+                controllerId = ControllerIdList.USER_ACCOUNT_CONTROLLER_ID;
                 break;
             case CONTENT_MODEL:
-                controllerId = CONTENT_MODEL_CONTROLLER_ID;
+                controllerId = ControllerIdList.CONTENT_MODEL_CONTROLLER_ID;
+                break;
+            case USER_GROUP:
+                controllerId = ControllerIdList.USER_GROUP_CONTROLLER_ID;
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown resource type: "
@@ -389,14 +384,14 @@ public class Router {
 
     private String findIdForContainer(final ResourceModel clickedResource) throws EscidocClientException {
         String controllerId;
-        controllerId = CONTAINER_CONTROLLER_ID;
+        controllerId = ControllerIdList.CONTAINER_CONTROLLER_ID;
         controllerId = findContollerId(clickedResource, controllerId);
         return controllerId;
     }
 
     private String findIdForItem(final ResourceModel clickedResource) throws EscidocClientException {
         String controllerId;
-        controllerId = ITEM_CONTROLLER_ID;
+        controllerId = ControllerIdList.ITEM_CONTROLLER_ID;
         controllerId = findContollerId(clickedResource, controllerId);
         return controllerId;
     }
@@ -413,7 +408,8 @@ public class Router {
             Pattern.compile("org.escidoc.browser.Controller=([^;]*);").matcher(contentModelDescription);
         if (controllerIdMatcher.find()) {
             String id = controllerIdMatcher.group(1);
-            if (id.equals(INVESTIGATION_CONTROLLER_ID) && !clickedResource.getType().equals(ResourceType.CONTAINER)) {
+            if (id.equals(ControllerIdList.INVESTIGATION_CONTROLLER_ID)
+                && !clickedResource.getType().equals(ResourceType.CONTAINER)) {
                 return oldId;
             }
             return id;
@@ -441,6 +437,8 @@ public class Router {
                 return repositories.user().findById(clickedResource.getId());
             case CONTENT_MODEL:
                 return repositories.contentModel().findById(clickedResource.getId());
+            case USER_GROUP:
+                return repositories.group().findById(clickedResource.getId());
             default:
                 throw new UnsupportedOperationException(clickedResource.getType() + " is unsupported");
         }
@@ -520,5 +518,4 @@ public class Router {
     public BrowserApplication getApp() {
         return this.app;
     }
-
 }

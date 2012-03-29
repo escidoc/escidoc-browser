@@ -28,12 +28,14 @@
  */
 package org.escidoc.browser.ui.dnd;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
-import java.net.URL;
+import com.google.common.base.Preconditions;
 
-import javax.xml.parsers.ParserConfigurationException;
+import com.vaadin.terminal.StreamVariable;
+import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Html5File;
+import com.vaadin.ui.ProgressIndicator;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.internal.ComponentBuilder;
@@ -43,13 +45,12 @@ import org.escidoc.browser.ui.maincontent.ItemContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.terminal.StreamVariable;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.Html5File;
-import com.vaadin.ui.ProgressIndicator;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.net.URL;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.om.item.Item;

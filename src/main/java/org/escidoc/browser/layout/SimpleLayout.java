@@ -38,6 +38,8 @@ import com.vaadin.terminal.Resource;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -49,6 +51,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.Reindeer;
 import com.vaadin.ui.themes.Runo;
 
 import org.escidoc.browser.BrowserApplication;
@@ -63,6 +66,7 @@ import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.mainpage.Footer;
 import org.escidoc.browser.ui.mainpage.HeaderContainer;
 import org.escidoc.browser.ui.navigation.BaseNavigationTreeView;
+import org.escidoc.browser.ui.navigation.BaseTreeDataSource;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.navigation.NavigationTreeView;
 import org.escidoc.browser.ui.tools.ToolsTreeView;
@@ -325,11 +329,8 @@ public class SimpleLayout extends LayoutDesign {
 
         // Binding the tree to the NavigationPanel
         mainNavigationTree = addNavigationTree();
-
         addAccordion();
-
         navigationPanel.setContent(vlNavigationPanel);
-
         return navigationPanel;
     }
 
@@ -348,10 +349,60 @@ public class SimpleLayout extends LayoutDesign {
         addResourcesTab(accordion);
         addOrgUnitTab(accordion);
         addUserAccountsTab(accordion);
+        addGroupsTab(accordion);
         addContentModelsTab(accordion);
         addToolsTab(accordion);
 
         return accordion;
+    }
+
+    private void addGroupsTab(Accordion accordion) {
+        BaseTreeDataSource groupDataSource = new BaseTreeDataSource(repositories.group());
+        groupDataSource.init();
+        accordion.addTab(buildGroupListWithFilter(treeBuilder.buildGroupTree(groupDataSource), groupDataSource),
+            ViewConstants.User_Groups, NO_ICON);
+    }
+
+    // FIXME rename the method.
+    private Component buildGroupListWithFilter(final BaseNavigationTreeView list, final TreeDataSource ds) {
+        // TODO this is a temporary create button, it is to redesign.
+        Button createButton = new Button("+", new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
+                showCreateGroupView();
+            }
+
+            private void showCreateGroupView() {
+                mainWindow.addWindow(new CreateGroupView(repositories.group(), mainWindow, ds).modalWindow());
+            }
+
+        });
+        createButton.setStyleName(Reindeer.BUTTON_SMALL);
+        VerticalLayout layout = new VerticalLayout();
+        layout.setMargin(true, false, false, true);
+
+        TextField filterField = new TextField();
+        filterField.setInputPrompt("Type something to filter the list");
+        filterField.setWidth("250px");
+        filterField.addListener(new TextChangeListener() {
+
+            private SimpleStringFilter filter;
+
+            @Override
+            public void textChange(TextChangeEvent event) {
+                // TODO refactor this, the list should not return the data source
+                Filterable ds = (Filterable) list.getDataSource();
+                ds.removeAllContainerFilters();
+                filter = new SimpleStringFilter(PropertyId.NAME, event.getText(), true, false);
+                ds.addContainerFilter(filter);
+            }
+        });
+
+        layout.addComponent(createButton);
+        layout.addComponent(filterField);
+        layout.addComponent(list);
+        return layout;
     }
 
     private void addUserAccountsTab(Accordion accordion) throws EscidocClientException {
@@ -376,8 +427,8 @@ public class SimpleLayout extends LayoutDesign {
     }
 
     private VerticalLayout buildListWithFilter(final BaseNavigationTreeView list) {
-        VerticalLayout vl = new VerticalLayout();
-        vl.setMargin(true, false, false, true);
+        VerticalLayout layout = new VerticalLayout();
+        layout.setMargin(true, false, false, true);
 
         TextField filterField = new TextField();
         filterField.setInputPrompt("Type something to filter the list");
@@ -396,9 +447,9 @@ public class SimpleLayout extends LayoutDesign {
             }
         });
 
-        vl.addComponent(filterField);
-        vl.addComponent(list);
-        return vl;
+        layout.addComponent(filterField);
+        layout.addComponent(list);
+        return layout;
     }
 
     private void addOrgUnitTab(final Accordion accordion) {

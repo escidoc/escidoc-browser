@@ -28,11 +28,11 @@
  */
 package org.escidoc.browser.elabsmodul.model;
 
+import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.escidoc.browser.elabsmodul.interfaces.IBeanModel;
 
 /**
  * 

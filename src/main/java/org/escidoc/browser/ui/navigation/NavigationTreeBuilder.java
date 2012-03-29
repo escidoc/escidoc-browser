@@ -157,4 +157,10 @@ public class NavigationTreeBuilder {
         return ds;
     }
 
+    public BaseNavigationTreeView buildGroupTree(TreeDataSource ds) {
+        BaseNavigationTreeView view = new BaseNavigationTreeView();
+        view.setDataSource(ds);
+        addEventListeners(view);
+        return view;
+    }
 }

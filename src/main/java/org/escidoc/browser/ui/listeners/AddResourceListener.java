@@ -28,11 +28,12 @@
  */
 package org.escidoc.browser.ui.listeners;
 
-import org.escidoc.browser.ui.maincontent.ResourceAddView;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+
+import org.escidoc.browser.ui.maincontent.ResourceAddView;
 
 @SuppressWarnings("serial")
 public final class AddResourceListener implements Button.ClickListener {

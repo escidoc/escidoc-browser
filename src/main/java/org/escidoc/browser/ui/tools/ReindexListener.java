@@ -28,13 +28,8 @@
  */
 package org.escidoc.browser.ui.tools;
 
-import java.util.List;
-
-import org.escidoc.browser.repository.AdminRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.Application;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
@@ -45,6 +40,12 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.ProgressIndicator;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
+
+import org.escidoc.browser.repository.AdminRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.adm.AdminStatus;

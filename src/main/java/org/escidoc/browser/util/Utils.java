@@ -28,7 +28,14 @@
  */
 package org.escidoc.browser.util;
 
-import gov.loc.www.zing.srw.SearchRetrieveRequestType;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Label;
+
+import org.apache.axis.types.NonNegativeInteger;
+import org.escidoc.browser.AppConstants;
+import org.w3c.dom.Document;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,13 +50,7 @@ import java.text.DecimalFormat;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.axis.types.NonNegativeInteger;
-import org.escidoc.browser.AppConstants;
-import org.w3c.dom.Document;
-
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Label;
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 public final class Utils {
 

@@ -28,16 +28,16 @@
  */
 package org.escidoc.browser.repository;
 
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.core.client.ingest.zip.ZipIngester;
+import org.escidoc.core.tme.IngestResult;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
-
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.core.client.ingest.zip.ZipIngester;
-import org.escidoc.core.tme.IngestResult;
 
 import de.escidoc.core.client.exceptions.EscidocException;
 import de.escidoc.core.client.exceptions.InternalClientException;

@@ -28,6 +28,8 @@
  */
 package org.escidoc.browser.model;
 
+import com.google.common.base.Preconditions;
+
 import org.escidoc.browser.model.internal.ContainerModel;
 import org.escidoc.browser.model.internal.ContentModelProxyImpl;
 import org.escidoc.browser.model.internal.ContextModel;
@@ -43,6 +45,7 @@ import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.ResourceType;
 import de.escidoc.core.resources.VersionableResource;
 import de.escidoc.core.resources.aa.useraccount.UserAccount;
+import de.escidoc.core.resources.aa.usergroup.UserGroup;
 import de.escidoc.core.resources.cmm.ContentModel;
 import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.om.context.Context;
@@ -131,9 +134,19 @@ public final class ModelConverter {
     }
 
     public static List<ResourceModel> userAccountToList(List<UserAccount> list) {
+        Preconditions.checkNotNull(list, "list is null: %s", list);
         final List<ResourceModel> models = new ArrayList<ResourceModel>(list.size());
         for (final Resource resource : list) {
             models.add(new UserModel(resource));
+        }
+        return models;
+    }
+
+    public static List<ResourceModel> groupToList(List<UserGroup> list) {
+        Preconditions.checkNotNull(list, "list is null: %s", list);
+        final List<ResourceModel> models = new ArrayList<ResourceModel>(list.size());
+        for (final Resource resource : list) {
+            models.add(new GroupModel(resource));
         }
         return models;
     }

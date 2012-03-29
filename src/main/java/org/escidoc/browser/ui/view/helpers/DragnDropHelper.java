@@ -28,10 +28,6 @@
  */
 package org.escidoc.browser.ui.view.helpers;
 
-import org.escidoc.browser.controller.Controller;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.ui.Router;
-
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filterable;
 import com.vaadin.data.Item;
@@ -58,6 +54,10 @@ import com.vaadin.ui.Tree;
 import com.vaadin.ui.Tree.TreeDragMode;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
+
+import org.escidoc.browser.controller.Controller;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.ui.Router;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 

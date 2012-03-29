@@ -28,12 +28,6 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.ui.Router;
-
 import com.vaadin.terminal.UserError;
 import com.vaadin.ui.AbstractSelect.Filtering;
 import com.vaadin.ui.Button;
@@ -43,6 +37,12 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.ui.Router;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SearchAdvancedView extends VerticalLayout {
 

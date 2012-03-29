@@ -34,6 +34,7 @@ import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.repository.AdminRepository;
 import org.escidoc.browser.repository.BulkRepository;
+import org.escidoc.browser.repository.GroupRepository;
 import org.escidoc.browser.repository.IngestRepository;
 import org.escidoc.browser.repository.PdpRepository;
 import org.escidoc.browser.repository.Repositories;
@@ -73,6 +74,8 @@ public class RepositoriesImpl implements Repositories {
 
     private RoleRepository roleRepository;
 
+    private GroupRepository groupRepository;
+
     public RepositoriesImpl(final EscidocServiceLocation serviceLocation) {
         Preconditions.checkNotNull(serviceLocation, "serviceLocation is null: %s", serviceLocation);
         this.serviceLocation = serviceLocation;
@@ -90,6 +93,7 @@ public class RepositoriesImpl implements Repositories {
         adminRepository = new AdminRepository(serviceLocation);
         ingestRepository = new IngestRepository(serviceLocation);
         orgUnitRepository = new OrganizationUnitRepository(serviceLocation);
+        groupRepository = new GroupRepository(serviceLocation);
         roleRepository = new RoleRepository(serviceLocation);
         bulkRepo =
             new BulkRepository(contextRepository, containerRepository, itemRepository, contentModelRepository,
@@ -109,6 +113,7 @@ public class RepositoriesImpl implements Repositories {
         ingestRepository.loginWith(token);
         orgUnitRepository.loginWith(token);
         contentModelRepository.loginWith(token);
+        groupRepository.loginWith(token);
         roleRepository.loginWith(token);
     }
 
@@ -201,5 +206,9 @@ public class RepositoriesImpl implements Repositories {
     public RoleRepository role() {
         Preconditions.checkNotNull(roleRepository, "roleRepository is null: %s", roleRepository);
         return roleRepository;
+    }
+        
+    public GroupRepository group() {
+        return groupRepository;
     }
 }

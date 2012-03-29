@@ -47,6 +47,21 @@ import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Window;
 
 import org.escidoc.browser.controller.OrgUnitController;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.listeners.MetadataFileReceiver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.escidoc.browser.controller.OrgUnitController;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.MetadataFileReceiver;
 import org.slf4j.Logger;

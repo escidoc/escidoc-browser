@@ -28,17 +28,17 @@
  */
 package org.escidoc.browser.ui.view.helpers;
 
-import java.net.MalformedURLException;
+import com.vaadin.terminal.ExternalResource;
+import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.AbstractComponentContainer;
+import com.vaadin.ui.Link;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.ui.ViewConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.terminal.ExternalResource;
-import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.AbstractComponentContainer;
-import com.vaadin.ui.Link;
+import java.net.MalformedURLException;
 
 public class CreatePermanentLinkVH {
 

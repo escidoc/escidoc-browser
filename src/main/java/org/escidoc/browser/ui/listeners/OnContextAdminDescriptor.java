@@ -29,7 +29,6 @@
 package org.escidoc.browser.ui.listeners;
 
 import com.google.common.base.Preconditions;
-
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -39,6 +38,11 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
+
+import org.escidoc.browser.controller.ContextController;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.maincontent.XmlUtil;
 
 import org.escidoc.browser.controller.ContextController;
 import org.escidoc.browser.ui.Router;

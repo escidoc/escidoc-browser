@@ -28,17 +28,17 @@
  */
 package org.escidoc.browser.elabsmodul.views.helpers;
 
-import java.util.List;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.themes.Runo;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
 
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.themes.Runo;
+import java.util.List;
 
 public class ResourcePropertiesViewHelper {
 

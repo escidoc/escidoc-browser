@@ -28,18 +28,8 @@
  */
 package org.escidoc.browser.elabsmodul.views.helpers;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
-import org.escidoc.browser.elabsmodul.interfaces.ILabsAction;
-import org.escidoc.browser.elabsmodul.model.StudyBean;
-import org.escidoc.browser.elabsmodul.views.AddNewStudyPublicationWindow;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.util.IndexedContainer;
@@ -52,6 +42,17 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
+
+import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
+import org.escidoc.browser.elabsmodul.interfaces.ILabsAction;
+import org.escidoc.browser.elabsmodul.model.StudyBean;
+import org.escidoc.browser.elabsmodul.views.AddNewStudyPublicationWindow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public final class LabsStudyTableHelper {
 

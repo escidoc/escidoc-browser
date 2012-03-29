@@ -28,9 +28,9 @@
  */
 package org.escidoc.browser.elabsmodul.interfaces;
 
-import java.util.List;
-
 import org.escidoc.browser.elabsmodul.model.RigBean;
+
+import java.util.List;
 
 public interface IInvestigationAction extends ISaveAction {
     /**

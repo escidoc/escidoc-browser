@@ -28,6 +28,22 @@
  */
 package org.escidoc.browser.elabsmodul.views.helpers;
 
+import com.google.common.base.Preconditions;
+
+import com.vaadin.data.Container;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
+
 import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.COMBOBOX_WIDTH;
 import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.DIV_ALIGN_RIGHT;
 import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.DIV_END;
@@ -54,21 +70,6 @@ import org.escidoc.browser.elabsmodul.model.UserBean;
 import org.escidoc.browser.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
-import com.vaadin.data.Container;
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
 
 /**
  * Utility class.

@@ -28,19 +28,8 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import java.util.List;
-
-import org.escidoc.browser.controller.OrgUnitController;
-import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.repository.internal.OrgUnitProxy;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.view.helpers.OUParentTableVH;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
@@ -53,6 +42,18 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Runo;
+
+import org.escidoc.browser.controller.OrgUnitController;
+import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.repository.internal.OrgUnitProxy;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.view.helpers.OUParentTableVH;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -102,7 +103,7 @@ public class ParentsView {
         return pnlmetadataRecs;
     }
 
-    private void buildPanelHeader(CssLayout cssLayout, String name) {
+    private static void buildPanelHeader(CssLayout cssLayout, String name) {
         cssLayout.addStyleName("v-accordion-item-caption v-caption v-captiontext");
         cssLayout.setWidth("100%");
         cssLayout.setMargin(false);
@@ -155,8 +156,7 @@ public class ParentsView {
                 Button close = new Button("Close", new Button.ClickListener() {
 
                     @Override
-                    public void buttonClick(@SuppressWarnings("unused")
-                    com.vaadin.ui.Button.ClickEvent event) {
+                    public void buttonClick(@SuppressWarnings("unused") com.vaadin.ui.Button.ClickEvent event) {
                         (subwindow.getParent()).removeWindow(subwindow);
                     }
                 });

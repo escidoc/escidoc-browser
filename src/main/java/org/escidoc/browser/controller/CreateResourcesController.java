@@ -28,9 +28,7 @@
  */
 package org.escidoc.browser.controller;
 
-import java.io.IOException;
-
-import javax.xml.parsers.ParserConfigurationException;
+import com.google.common.base.Preconditions;
 
 import org.escidoc.browser.model.ContentModelService;
 import org.escidoc.browser.model.EscidocServiceLocation;
@@ -45,7 +43,9 @@ import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.tools.CreateResourcesView;
 import org.xml.sax.SAXException;
 
-import com.google.common.base.Preconditions;
+import java.io.IOException;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.aa.useraccount.UserAccount;

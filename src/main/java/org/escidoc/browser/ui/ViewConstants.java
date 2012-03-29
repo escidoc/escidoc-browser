@@ -39,7 +39,6 @@ public class ViewConstants {
 
     public static final String CHANGE = "Switch Instance of eSciDoc";
 
-    //
     public static final String BREAD_CRUMP_CONTENT =
         "<ul id='crumbs'><li><a href='#'>Home</a></li><li><a href='#'>Main section</a></li><li><a href='#'>Sub section</a></li><li><a href='#'>Sub sub section</a></li><li>The page you are on right now</li></ul>";
 
@@ -191,7 +190,7 @@ public class ViewConstants {
 
     public static final String LAYOUT_ERR_ILLEG_EXEP = "Could not load the layout because of an Illegal Exception ";
 
-    public static final String CONTROLLER_ERR_CANNOT_FIND_CLASS = "Could not load the class name for the controller ";
+    public static final String CONTROLLER_ERR_CANNOT_FIND_CLASS = "Can not find class";
 
     public static final String CONTROLLER_ERR_INSTANTIATE_CLASS =
         "Could not create an instance out of the controller class ";
@@ -417,7 +416,11 @@ public class ViewConstants {
 
     public static final Object SYSADMIN = "sysadmin";
 
+    public static final String User_Groups = "Groups";
+
     public static final String ROLE_MANAGEMENT = "Role Management";
+
+    public static final String CREATE_A_NEW_GROUP = "Create a new Group";
 
     public static final String SEARCH_LABEL = "Search";
 

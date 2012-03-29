@@ -28,16 +28,6 @@
  */
 package org.escidoc.browser.ui.view.helpers;
 
-import java.io.File;
-
-import org.escidoc.browser.AppConstants;
-import org.escidoc.browser.controller.ItemController;
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.ItemProxy;
-import org.escidoc.browser.model.internal.ItemProxyImpl;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-
 import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.event.Action;
@@ -50,6 +40,16 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
+
+import org.escidoc.browser.AppConstants;
+import org.escidoc.browser.controller.ItemController;
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ItemProxy;
+import org.escidoc.browser.model.internal.ItemProxyImpl;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+
+import java.io.File;
 
 import de.escidoc.core.resources.om.item.component.Component;
 import de.escidoc.core.resources.om.item.component.Components;

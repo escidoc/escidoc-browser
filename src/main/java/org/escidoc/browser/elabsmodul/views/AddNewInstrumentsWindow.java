@@ -28,17 +28,8 @@
  */
 package org.escidoc.browser.elabsmodul.views;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
-import org.escidoc.browser.elabsmodul.interfaces.IRigAction;
-import org.escidoc.browser.elabsmodul.model.InstrumentBean;
-import org.escidoc.browser.elabsmodul.model.RigBean;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -52,6 +43,16 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+
+import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
+import org.escidoc.browser.elabsmodul.interfaces.IRigAction;
+import org.escidoc.browser.elabsmodul.model.InstrumentBean;
+import org.escidoc.browser.elabsmodul.model.RigBean;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 public class AddNewInstrumentsWindow extends Window implements Button.ClickListener {
 

@@ -28,19 +28,19 @@
  */
 package org.escidoc.browser.ui.listeners;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-import org.escidoc.browser.model.EscidocServiceLocation;
-
 import com.vaadin.Application;
 import com.vaadin.terminal.DownloadStream;
 import com.vaadin.terminal.FileResource;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Window;
+
+import org.escidoc.browser.model.EscidocServiceLocation;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import de.escidoc.core.resources.om.item.component.Component;
 

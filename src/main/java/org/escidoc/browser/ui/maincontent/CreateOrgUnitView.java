@@ -28,11 +28,14 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import com.google.common.base.Preconditions;
 
-import javax.xml.parsers.ParserConfigurationException;
+import com.vaadin.data.Validator.EmptyValueException;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Form;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.Window;
 
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.TreeDataSource;
@@ -42,13 +45,11 @@ import org.escidoc.browser.repository.internal.OrganizationUnitRepository;
 import org.escidoc.browser.ui.ViewConstants;
 import org.xml.sax.SAXException;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.data.Validator.EmptyValueException;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Form;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.Window;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.oum.OrganizationalUnit;

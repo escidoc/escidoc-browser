@@ -103,4 +103,22 @@ public abstract class AbstractResourceModel implements ResourceModel {
         }
         return true;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("AbstractResourceModel [");
+        if (id != null) {
+            builder.append("id=").append(id).append(", ");
+        }
+        if (name != null) {
+            builder.append("name=").append(name).append(", ");
+        }
+        if (resource != null) {
+            builder.append("resource=").append(resource);
+        }
+        builder.append("]");
+        return builder.toString();
+    }
+
 }

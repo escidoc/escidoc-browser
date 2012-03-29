@@ -28,6 +28,8 @@
  */
 package org.escidoc.browser.elabsmodul.controller.utils;
 
+import org.w3c.dom.Element;
+
 import java.io.StringWriter;
 
 import javax.xml.transform.Transformer;
@@ -35,8 +37,6 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
-import org.w3c.dom.Element;
 
 /**
  * Utility class to serialize any DOM element

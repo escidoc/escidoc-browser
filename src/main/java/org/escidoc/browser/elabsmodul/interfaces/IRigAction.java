@@ -28,9 +28,9 @@
  */
 package org.escidoc.browser.elabsmodul.interfaces;
 
-import java.util.List;
-
 import org.escidoc.browser.elabsmodul.model.InstrumentBean;
+
+import java.util.List;
 
 /**
  * Interface for the rig controller.

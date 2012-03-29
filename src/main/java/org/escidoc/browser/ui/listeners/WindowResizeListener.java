@@ -28,10 +28,10 @@
  */
 package org.escidoc.browser.ui.listeners;
 
-import org.escidoc.browser.ui.helper.internal.WindowDimensionImpl;
-
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.ResizeEvent;
+
+import org.escidoc.browser.ui.helper.internal.WindowDimensionImpl;
 
 @SuppressWarnings("serial")
 public final class WindowResizeListener implements Window.ResizeListener {

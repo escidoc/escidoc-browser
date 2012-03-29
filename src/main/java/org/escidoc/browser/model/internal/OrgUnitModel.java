@@ -28,10 +28,10 @@
  */
 package org.escidoc.browser.model.internal;
 
+import com.google.common.base.Preconditions;
+
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceType;
-
-import com.google.common.base.Preconditions;
 
 import de.escidoc.core.resources.oum.OrganizationalUnit;
 

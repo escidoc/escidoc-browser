@@ -28,16 +28,16 @@
  */
 package org.escidoc.browser.ui.helper.internal;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import com.google.common.base.Preconditions;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.BrowserApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public class CookieHandler {
     private static final Logger LOG = LoggerFactory.getLogger(CookieHandler.class);

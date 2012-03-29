@@ -83,15 +83,14 @@ public class AdminDescriptorsTable extends TableContainerVH {
     protected void addActionLists() {
         table.addActionHandler(new Action.Handler() {
             @Override
-            public Action[] getActions(@SuppressWarnings("unused")
-            final Object target, @SuppressWarnings("unused")
-            final Object sender) {
+            public Action[] getActions(
+                @SuppressWarnings("unused") final Object target, @SuppressWarnings("unused") final Object sender) {
                 return ACTIONS_LIST;
             }
 
             @Override
-            public void handleAction(final Action action, @SuppressWarnings("unused")
-            final Object sender, final Object target) {
+            public void handleAction(
+                final Action action, @SuppressWarnings("unused") final Object sender, final Object target) {
                 Preconditions.checkNotNull(action, "action is null: %s", action);
                 Preconditions.checkNotNull(target, "target is null: %s", target);
 

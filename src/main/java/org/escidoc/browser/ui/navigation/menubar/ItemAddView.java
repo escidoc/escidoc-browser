@@ -28,24 +28,8 @@
  */
 package org.escidoc.browser.ui.navigation.menubar;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import org.escidoc.browser.AppConstants;
-import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.model.TreeDataSource;
-import org.escidoc.browser.model.internal.ItemBuilder;
-import org.escidoc.browser.model.internal.ItemModel;
-import org.escidoc.browser.model.internal.ResourceDisplay;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.listeners.MetadataFileReceiver;
-import org.escidoc.browser.ui.maincontent.XmlUtil;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.Alignment;
@@ -63,6 +47,23 @@ import com.vaadin.ui.Upload.FinishedEvent;
 import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Window;
+
+import org.escidoc.browser.AppConstants;
+import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.TreeDataSource;
+import org.escidoc.browser.model.internal.ItemBuilder;
+import org.escidoc.browser.model.internal.ItemModel;
+import org.escidoc.browser.model.internal.ResourceDisplay;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.listeners.MetadataFileReceiver;
+import org.escidoc.browser.ui.maincontent.XmlUtil;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.EscidocException;

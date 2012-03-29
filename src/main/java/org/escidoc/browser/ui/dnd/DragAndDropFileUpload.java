@@ -28,18 +28,19 @@
  */
 package org.escidoc.browser.ui.dnd;
 
-import org.escidoc.browser.AppConstants;
-import org.escidoc.browser.model.ItemProxy;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.maincontent.ItemContent;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.terminal.gwt.server.AbstractWebApplicationContext;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.ProgressIndicator;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
+
+import org.escidoc.browser.AppConstants;
+import org.escidoc.browser.model.ItemProxy;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.maincontent.ItemContent;
 
 @SuppressWarnings("serial")
 public class DragAndDropFileUpload extends VerticalLayout {

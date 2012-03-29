@@ -28,9 +28,9 @@
  */
 package org.escidoc.browser.repository;
 
-import java.net.URISyntaxException;
-
 import org.escidoc.browser.model.ResourceType;
+
+import java.net.URISyntaxException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 

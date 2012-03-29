@@ -28,12 +28,12 @@
  */
 package org.escidoc.browser.ui.listeners;
 
-import javax.xml.transform.TransformerException;
-
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
+
+import javax.xml.transform.TransformerException;
 
 import de.escidoc.core.resources.common.reference.OrganizationalUnitRef;
 import de.escidoc.core.resources.om.context.AdminDescriptor;

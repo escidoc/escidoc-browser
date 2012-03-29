@@ -28,21 +28,6 @@
  */
 package org.escidoc.browser.elabsmodul.views.listeners;
 
-import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_FORM_LAYOUT_TO_SAVE;
-import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_HOR_LAYOUT_TO_SAVE;
-import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_LABEL_TO_SAVE;
-import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_TEXTFIELD_TO_SAVE_OR_CANCEL;
-
-import java.util.List;
-
-import org.escidoc.browser.elabsmodul.cache.ELabsCache;
-import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
-import org.escidoc.browser.elabsmodul.interfaces.ILabsAction;
-import org.escidoc.browser.elabsmodul.interfaces.ILabsPanel;
-import org.escidoc.browser.elabsmodul.views.helpers.LabsLayoutHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.vaadin.event.Action;
 import com.vaadin.event.Action.Handler;
 import com.vaadin.event.ItemClickEvent;
@@ -58,6 +43,21 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+
+import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_FORM_LAYOUT_TO_SAVE;
+import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_HOR_LAYOUT_TO_SAVE;
+import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_LABEL_TO_SAVE;
+import static org.escidoc.browser.elabsmodul.constants.ELabsViewContants.USER_DESCR_ON_TEXTFIELD_TO_SAVE_OR_CANCEL;
+
+import org.escidoc.browser.elabsmodul.cache.ELabsCache;
+import org.escidoc.browser.elabsmodul.constants.ELabsViewContants;
+import org.escidoc.browser.elabsmodul.interfaces.ILabsAction;
+import org.escidoc.browser.elabsmodul.interfaces.ILabsPanel;
+import org.escidoc.browser.elabsmodul.views.helpers.LabsLayoutHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * Listener to handle all events of the integrated former eLabs Components

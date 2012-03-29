@@ -28,12 +28,13 @@
  */
 package org.escidoc.browser.ui.listeners;
 
-import org.escidoc.browser.AppConstants;
-import org.escidoc.browser.BrowserApplication;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+
+import org.escidoc.browser.AppConstants;
+import org.escidoc.browser.BrowserApplication;
 
 @SuppressWarnings("serial")
 public final class LogoutListener implements Button.ClickListener {

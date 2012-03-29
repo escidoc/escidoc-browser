@@ -28,17 +28,8 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import org.escidoc.browser.controller.ContextController;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.model.internal.ContextProxyImpl;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.listeners.AddOrgUnitstoContext;
-import org.escidoc.browser.ui.listeners.OnContextAdminDescriptor;
-import org.escidoc.browser.ui.view.helpers.AdminDescriptorsTable;
-import org.escidoc.browser.ui.view.helpers.OrganizationalUnitsTableVH;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
@@ -51,6 +42,16 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
+
+import org.escidoc.browser.controller.ContextController;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.internal.ContextProxyImpl;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.listeners.AddOrgUnitstoContext;
+import org.escidoc.browser.ui.listeners.OnContextAdminDescriptor;
+import org.escidoc.browser.ui.view.helpers.AdminDescriptorsTable;
+import org.escidoc.browser.ui.view.helpers.OrganizationalUnitsTableVH;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.om.context.AdminDescriptors;
@@ -167,8 +168,7 @@ class ContextRightPanel {
             addResourceButton.addListener(new ClickListener() {
 
                 @Override
-                public void buttonClick(@SuppressWarnings("unused")
-                final ClickEvent event) {
+                public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
                     final Window subwindow = new Window("A modal subwindow");
                     subwindow.setModal(true);
                     subwindow.setWidth("650px");
@@ -185,8 +185,7 @@ class ContextRightPanel {
                     }
                     Button close = new Button(ViewConstants.CLOSE, new Button.ClickListener() {
                         @Override
-                        public void buttonClick(@SuppressWarnings("unused")
-                        ClickEvent event) {
+                        public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
                             subwindow.getParent().removeWindow(subwindow);
                         }
                     });

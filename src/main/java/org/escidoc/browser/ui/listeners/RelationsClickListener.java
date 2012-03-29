@@ -28,6 +28,18 @@
  */
 package org.escidoc.browser.ui.listeners;
 
+import com.google.common.base.Preconditions;
+
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Layout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.BaseTheme;
+
 import org.escidoc.browser.controller.ContainerController;
 import org.escidoc.browser.controller.ItemController;
 import org.escidoc.browser.layout.LayoutDesign;
@@ -39,17 +51,6 @@ import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.Router;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Layout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.BaseTheme;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.ResourceType;

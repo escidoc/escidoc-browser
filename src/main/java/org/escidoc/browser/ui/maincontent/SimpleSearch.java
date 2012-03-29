@@ -28,17 +28,18 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import org.escidoc.browser.layout.LayoutDesign;
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.Router;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
+
+import org.escidoc.browser.layout.LayoutDesign;
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.Router;
 
 /**
  * @author ARB
