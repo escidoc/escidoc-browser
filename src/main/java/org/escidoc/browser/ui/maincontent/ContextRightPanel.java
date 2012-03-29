@@ -129,7 +129,7 @@ class ContextRightPanel {
             addResourceButton.setIcon(ICON);
             addResourceButton.addListener(new ClickListener() {
                 @Override
-                public void buttonClick(ClickEvent event) {
+                public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
                     new OnContextAdminDescriptor(router, contextController).adminDescriptorForm();
                 }
             });

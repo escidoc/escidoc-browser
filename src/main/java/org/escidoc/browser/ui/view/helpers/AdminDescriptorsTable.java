@@ -34,7 +34,6 @@ import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.event.Action;
 import com.vaadin.terminal.ExternalResource;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.BaseTheme;
@@ -123,7 +122,7 @@ public class AdminDescriptorsTable extends TableContainerVH {
     protected HierarchicalContainer populateContainerTable() {
         dataSource = new HierarchicalContainer();
         dataSource.addContainerProperty(ViewConstants.PROPERTY_NAME, String.class, null);
-        dataSource.addContainerProperty(ViewConstants.PROPERTY_LINK, Label.class, null);
+        dataSource.addContainerProperty(ViewConstants.PROPERTY_LINK, Link.class, null);
 
         for (final AdminDescriptor adminDescriptor : adList) {
             Metadata md = Metadata.newInstance(adminDescriptor);
