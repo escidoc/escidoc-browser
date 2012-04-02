@@ -440,4 +440,6 @@ public class ViewConstants {
         "No Indexes are defined in the eSciDoc, this application cannot operate";
 
     public static final String CREATE_GROUP = "Create Group";
+
+    public static final String OPEN_METADATA_IN_EDITOR = "Open Metadata in Editor";
 }

@@ -70,10 +70,6 @@ import de.escidoc.core.resources.common.MetadataRecord;
 @SuppressWarnings("serial")
 public class OnEditOrgUnitMetadata {
 
-    // public static final String SERVICE_BASE_URI =
-    // "http://escidev6.fiz-karlsruhe.de:8082";
-    public static final String SERVICE_BASE_URI = "http://localhost:8082";
-
     private final static Logger LOG = LoggerFactory.getLogger(OnEditOrgUnitMetadata.class);
 
     private final HorizontalLayout progressLayout = new HorizontalLayout();
@@ -121,8 +117,8 @@ public class OnEditOrgUnitMetadata {
         modalWindow.addComponent(upload);
         modalWindow.addComponent(new Label("OR"));
 
-        modalWindow.addComponent(new Link("Open Metadata in Editor", new ExternalResource(
-            buildMdUpdateUri(SERVICE_BASE_URI))));
+        modalWindow.addComponent(new Link(ViewConstants.OPEN_METADATA_IN_EDITOR, new ExternalResource(buildMdUpdateUri(mainWindow
+            .getApplication().getURL().getAuthority()))));
         modalWindow.addComponent(progressLayout);
         modalWindow.addComponent(buttonLayout);
 

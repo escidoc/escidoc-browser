@@ -29,6 +29,7 @@
 package org.escidoc.browser.ui.listeners;
 
 import com.google.common.base.Preconditions;
+
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -38,11 +39,6 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
-
-import org.escidoc.browser.controller.ContextController;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.XmlUtil;
 
 import org.escidoc.browser.controller.ContextController;
 import org.escidoc.browser.ui.Router;
@@ -63,6 +59,7 @@ public class OnContextAdminDescriptor {
         this.controller = controller;
     }
 
+    @SuppressWarnings("serial")
     public void adminDescriptorForm() {
         final Window subwindow = new Window("A modal subwindow");
         subwindow.setModal(true);
@@ -81,7 +78,7 @@ public class OnContextAdminDescriptor {
         Button addAdmDescButton = new Button("Add Description");
         addAdmDescButton.addListener(new ClickListener() {
             @Override
-            public void buttonClick(ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
 
                 if (txtName.getValue().toString() == null) {
                     router.getMainWindow().showNotification(ViewConstants.PLEASE_ENTER_A_NAME,

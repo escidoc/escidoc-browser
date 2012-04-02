@@ -236,4 +236,14 @@ public class ContextRepository implements Repository {
     public String getAsXmlString(String id) throws EscidocClientException {
         return new RestContextHandlerClient(client.getServiceAddress()).retrieve(id);
     }
+
+    public AdminDescriptor getAdminDescriptor(String id, String metadataName) throws EscidocClientException {
+        return client.retrieve(id).getAdminDescriptors().get(metadataName);
+    }
+
+    public void updateAdminDescriptor(String id, AdminDescriptor metadata) throws EscidocClientException {
+        Context context = client.retrieve(id);
+        context.getAdminDescriptors().get(metadata.getName()).setContent(metadata.getContent());
+        client.update(context);
+    }
 }

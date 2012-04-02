@@ -28,6 +28,8 @@
  */
 package org.escidoc.browser.controller;
 
+import com.google.common.base.Preconditions;
+
 import com.vaadin.ui.Window;
 
 import org.escidoc.browser.model.ResourceProxy;
@@ -68,7 +70,6 @@ public class ContextController extends Controller {
 
     @Override
     public void refreshView() {
-
         try {
             getRouter().show(resourceProxy, true);
         }
@@ -235,4 +236,13 @@ public class ContextController extends Controller {
         }
     }
 
+    public void updateMetadata(AdminDescriptor metadata) throws EscidocClientException {
+        Preconditions.checkNotNull(metadata, "metadata is null: %s", metadata);
+        repositories.context().updateAdminDescriptor(resourceProxy.getId(), metadata);
+    }
+
+    public AdminDescriptor getMetadata(String metadataName) throws EscidocClientException {
+        Preconditions.checkNotNull(metadataName, "metadataName is null: %s", metadataName);
+        return repositories.context().getAdminDescriptor(resourceProxy.getId(), metadataName);
+    }
 }

@@ -106,12 +106,8 @@ public class OrgUnitMetadataTable extends TableContainerVH {
                     confirmActionWindow(target);
                 }
                 else if (ACTION_EDIT == action) {
-                    Metadata md = (Metadata) target;
-
-                    // new OnEditOrgUnitMetadata(router, controller,
-                    // router.getMainWindow(), md).showEditWindow();
-                    new OnEditOrgUnitMetadata(router, controller, router.getMainWindow(), md).showEditWindow();
-
+                    new OnEditOrgUnitMetadata(router, controller, router.getMainWindow(), (Metadata) target)
+                        .showEditWindow();
                     controller.refreshView();
                 }
                 else if (ACTION_ADD == action) {

@@ -28,6 +28,8 @@
  */
 package org.escidoc.browser.controller;
 
+import com.google.common.base.Preconditions;
+
 import com.vaadin.ui.Window;
 
 import org.escidoc.browser.model.ResourceProxy;
@@ -74,12 +76,13 @@ public class OrgUnitController extends Controller {
     }
 
     public void updateMetadata(MetadataRecord metadataRecord) throws EscidocClientException {
+        Preconditions.checkNotNull(metadataRecord, "metadataRecord is null: %s", metadataRecord);
         repositories.organization().updateMetaData((OrgUnitProxy) resourceProxy, metadataRecord);
-        // TODO Success message here
 
     }
 
     public MetadataRecord getMetadata(String metadataRecordName) {
+        Preconditions.checkNotNull(metadataRecordName, "metadataRecordName is null: %s", metadataRecordName);
         try {
             return repositories.organization().getMetadataRecord(resourceProxy.getId(), metadataRecordName);
         }
@@ -91,6 +94,7 @@ public class OrgUnitController extends Controller {
     }
 
     public void removeMetadata(String metadataRecordName) {
+        Preconditions.checkNotNull(metadataRecordName, "metadataRecordName is null: %s", metadataRecordName);
         try {
             repositories.organization().removeMD(resourceProxy.getId(), metadataRecordName);
             showTrayMessage(ViewConstants.MD_REMOVE, ViewConstants.ADMINDESCRIPTION_REMOVED);
@@ -101,6 +105,7 @@ public class OrgUnitController extends Controller {
     }
 
     public void addMetaData(MetadataRecord metadataRecord) {
+        Preconditions.checkNotNull(metadataRecord, "metadataRecord is null: %s", metadataRecord);
         try {
             repositories.organization().addMetaData(resourceProxy, metadataRecord);
             showTrayMessage(ViewConstants.ADDED_SUCCESSFULLY, ViewConstants.ADDED_SUCCESSFULLY);
