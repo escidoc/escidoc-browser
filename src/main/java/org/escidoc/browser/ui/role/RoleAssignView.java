@@ -28,9 +28,24 @@
  */
 package org.escidoc.browser.ui.role;
 
-import com.google.common.base.Preconditions;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
+import org.escidoc.browser.model.PropertyId;
+import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.UserModel;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.RoleRepository.RoleModel;
+import org.escidoc.browser.ui.ViewConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Preconditions;
 import com.vaadin.data.Container;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.terminal.UserError;
@@ -43,24 +58,13 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.NativeSelect;
+import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 import com.vaadin.ui.themes.Runo;
-
-import org.escidoc.browser.model.PropertyId;
-import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.model.UserModel;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.repository.RoleRepository.RoleModel;
-import org.escidoc.browser.ui.ViewConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.Collections;
-import java.util.Set;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.aa.useraccount.Grant;
@@ -103,6 +107,22 @@ public class RoleAssignView extends CustomComponent {
 
     private Repositories repositories;
 
+    private ComponentContainer mainLayoutGroupRoles;
+
+    private NativeSelect groupSelection;
+
+    private NativeSelect groupRoleSelection;
+
+    private NativeSelect groupResourcetypeSelection = new NativeSelect(ViewConstants.TYPE);
+
+    private ListSelect groupResourceSelection = new ListSelect();
+
+    private HorizontalLayout groupFooter = new HorizontalLayout();
+
+    private VerticalLayout groupFooterLayout = new VerticalLayout();
+
+    private VerticalLayout groupResourceContainer = new VerticalLayout();
+
     // TODO: add logged in user;
     public RoleAssignView(Window mw, Repositories repositories) {
         Preconditions.checkNotNull(mw, "mw is null: %s", mw);
@@ -119,6 +139,150 @@ public class RoleAssignView extends CustomComponent {
         addResourceSelection();
         addFooter();
         tryToBindData();
+
+        addGroupField();
+        addGroupRoleSelection();
+        addGroupTypeSelection();
+        addGroupResourceSelection();
+        addGroupFooter();
+        tryToBindGroupData();
+    }
+
+    private void tryToBindGroupData() {
+        try {
+            bindGroupData();
+        }
+        catch (EscidocClientException e) {
+            LOG.warn(e.getMessage());
+            mainWindow.showNotification(e.getMessage());
+        }
+    }
+
+    private void bindGroupData() throws EscidocClientException {
+        bindGroupAccountData();
+        bindGroupRoleData();
+        bindGroupType();
+    }
+
+    private void bindGroupAccountData() throws EscidocClientException {
+        Container groupContainer =
+            new BeanItemContainer<ResourceModel>(ResourceModel.class, repositories.group().findAll());
+        groupSelection.setContainerDataSource(groupContainer);
+        groupSelection.setItemCaptionPropertyId(PropertyId.NAME);
+    }
+
+    private void bindGroupRoleData() throws EscidocClientException {
+        BeanItemContainer<ResourceModel> container = new BeanItemContainer<ResourceModel>(ResourceModel.class);
+        for (ResourceModel resourceModel : repositories.role().findAll()) {
+            if (RoleModel.isValid(resourceModel)) {
+                BeanItem<ResourceModel> item = container.addItem(resourceModel);
+                Preconditions.checkNotNull(item, "item is null: %s", item);
+            }
+            container.addItem(resourceModel.getName());
+        }
+        groupRoleSelection.setContainerDataSource(container);
+        groupRoleSelection.setItemCaptionPropertyId(PropertyId.NAME);
+    }
+
+    private void bindGroupType() {
+        groupResourcetypeSelection.addListener(new OnTypeSelect(mainWindow, groupResourceContainer,
+            groupResourceSelection, repositories));
+    }
+
+    private void addGroupFooter() {
+        groupFooter = new HorizontalLayout();
+        groupFooter.addComponent(saveBtn);
+        groupFooterLayout.addComponent(groupFooter);
+        groupFooterLayout.setComponentAlignment(groupFooter, Alignment.MIDDLE_RIGHT);
+        groupFooter.setVisible(false);
+        mainLayoutGroupRoles.addComponent(groupFooterLayout);
+
+    }
+
+    private void addGroupResourceSelection() {
+        groupResourceSelection.setSizeFull();
+        groupResourceSelection.setNullSelectionAllowed(false);
+        groupResourceSelection.setHeight("400px");
+        groupResourceSelection.setImmediate(true);
+        groupResourceSelection.addListener(new OnResourceSelect(searchBox));
+        groupResourceContainer.setStyleName(Reindeer.PANEL_LIGHT);
+        groupResourceContainer.setWidth(Integer.toString(3 / 2 * 300) + "px");
+        groupResourceContainer.setHeight("400px");
+        mainLayoutGroupRoles.addComponent(groupResourceContainer);
+    }
+
+    private void addResourceSelection() {
+        resourceSelection.setSizeFull();
+        resourceSelection.setNullSelectionAllowed(false);
+        resourceSelection.setHeight("400px");
+        resourceSelection.setImmediate(true);
+        resourceSelection.addListener(new OnResourceSelect(searchBox));
+        resourceContainer.setStyleName(Reindeer.PANEL_LIGHT);
+        resourceContainer.setWidth(Integer.toString(3 / 2 * 300) + "px");
+        resourceContainer.setHeight("400px");
+        mainLayout.addComponent(resourceContainer);
+    }
+
+    private void addGroupTypeSelection() {
+        groupResourcetypeSelection.setEnabled(false);
+        groupResourcetypeSelection.setWidth(300 + "px");
+        groupResourcetypeSelection.setImmediate(true);
+        groupResourcetypeSelection.setNullSelectionAllowed(false);
+        mainLayoutGroupRoles.addComponent(groupResourcetypeSelection);
+
+    }
+
+    private void addTypeSelection() {
+        resourcetypeSelection.setEnabled(false);
+        resourcetypeSelection.setWidth(300 + "px");
+        resourcetypeSelection.setImmediate(true);
+        resourcetypeSelection.setNullSelectionAllowed(false);
+        mainLayout.addComponent(resourcetypeSelection);
+    }
+
+    private void addGroupRoleSelection() {
+        groupRoleSelection = new NativeSelect(ViewConstants.SELECT_ROLE_LABEL);
+        groupRoleSelection.setWidth(300 + "px");
+        groupRoleSelection.setNullSelectionAllowed(false);
+        groupRoleSelection.setImmediate(true);
+        groupRoleSelection.setRequired(true);
+        groupRoleSelection.addListener(new OnRoleSelect(groupResourcetypeSelection, footer, resourceSelection));
+        mainLayoutGroupRoles.addComponent(groupRoleSelection);
+    }
+
+    private void addRoleSelection() {
+        roleSelection = new NativeSelect(ViewConstants.SELECT_ROLE_LABEL);
+        roleSelection.setWidth(300 + "px");
+        roleSelection.setNullSelectionAllowed(false);
+        roleSelection.setImmediate(true);
+        roleSelection.setRequired(true);
+        roleSelection.addListener(new OnRoleSelect(resourcetypeSelection, footer, resourceSelection));
+        mainLayout.addComponent(roleSelection);
+    }
+
+    private void addGroupField() {
+        groupSelection = new NativeSelect(ViewConstants.USER_NAME);
+        groupSelection.setWidth("300px");
+        groupSelection.setNullSelectionAllowed(false);
+        groupSelection.setMultiSelect(false);
+        groupSelection.setRequired(true);
+        groupSelection.setNewItemsAllowed(false);
+        groupSelection.setImmediate(true);
+        groupSelection.setRequiredError("User is required");
+        mainLayoutGroupRoles.addComponent(groupSelection);
+
+    }
+
+    private void addUserField() {
+        userSelection = new NativeSelect(ViewConstants.USER_NAME);
+        userSelection.setWidth("300px");
+        userSelection.setNullSelectionAllowed(false);
+        userSelection.setMultiSelect(false);
+        userSelection.setRequired(true);
+        userSelection.setNewItemsAllowed(false);
+        userSelection.setImmediate(true);
+        userSelection.setRequiredError("User is required");
+        mainLayout.addComponent(userSelection);
     }
 
     private void tryToBindData() {
@@ -144,43 +308,42 @@ public class RoleAssignView extends CustomComponent {
         mainLayout = new FormLayout();
         mainLayout.setWidth(400, UNITS_PIXELS);
 
+        mainLayoutGroupRoles = new FormLayout();
+        mainLayoutGroupRoles.setWidth(400, UNITS_PIXELS);
+
         panel.setContent(verticalLayout);
 
         // TODO how to make panel take the whole vertical screen, if it does not
         // contain any child component;
         verticalLayout.setSpacing(true);
         verticalLayout.setMargin(true, false, false, true);
+        verticalLayout.addComponent(selectionButton());
         verticalLayout.addComponent(mainLayout);
     }
 
-    private void addUserField() {
-        userSelection = new NativeSelect(ViewConstants.USER_NAME);
-        userSelection.setWidth("300px");
-        userSelection.setNullSelectionAllowed(false);
-        userSelection.setMultiSelect(false);
-        userSelection.setRequired(true);
-        userSelection.setNewItemsAllowed(false);
-        userSelection.setImmediate(true);
-        userSelection.setRequiredError("User is required");
-        mainLayout.addComponent(userSelection);
-    }
+    private OptionGroup selectionButton() {
+        List<String> choice = Arrays.asList(new String[] { "User", "Group" });
+        OptionGroup choiceSelect = new OptionGroup("Please select a role to manage", choice);
 
-    private void addRoleSelection() {
-        roleSelection = new NativeSelect(ViewConstants.SELECT_ROLE_LABEL);
-        roleSelection.setWidth(300 + "px");
-        roleSelection.setNullSelectionAllowed(false);
-        roleSelection.setImmediate(true);
-        roleSelection.setRequired(true);
-        roleSelection.addListener(new OnRoleSelect(resourcetypeSelection, footer, resourceSelection));
-        mainLayout.addComponent(roleSelection);
-    }
+        choiceSelect.setNullSelectionAllowed(false); // user can not 'unselect'
+        choiceSelect.select("User"); // select this by default
+        choiceSelect.setImmediate(true); // send the change to the server at once
+        choiceSelect.addListener(new ValueChangeListener() {
 
-    private void addTypeSelection() {
-        resourcetypeSelection.setEnabled(false);
-        resourcetypeSelection.setWidth(300 + "px");
-        resourcetypeSelection.setImmediate(true);
-        resourcetypeSelection.setNullSelectionAllowed(false);
-        mainLayout.addComponent(resourcetypeSelection);
+            @Override
+            public void valueChange(ValueChangeEvent event) {
+                getWindow().showNotification(" Picked " + event.getProperty());
+                if (event.getProperty().toString().equals("User")) {
+                    verticalLayout.replaceComponent(mainLayoutGroupRoles, mainLayout);
+                }
+                else {
+                    verticalLayout.replaceComponent(mainLayout, mainLayoutGroupRoles);
+                }
+
+            }
+        });
+        return choiceSelect;
+
     }
 
     // private void addResourceSearchBox() {
@@ -190,18 +353,6 @@ public class RoleAssignView extends CustomComponent {
     // searchBox.setReadOnly(true);
     // mainLayout.addComponent(searchBox);
     // }
-
-    private void addResourceSelection() {
-        resourceSelection.setSizeFull();
-        resourceSelection.setNullSelectionAllowed(false);
-        resourceSelection.setHeight("400px");
-        resourceSelection.setImmediate(true);
-        resourceSelection.addListener(new OnResourceSelect(searchBox));
-        resourceContainer.setStyleName(Reindeer.PANEL_LIGHT);
-        resourceContainer.setWidth(Integer.toString(3 / 2 * 300) + "px");
-        resourceContainer.setHeight("400px");
-        mainLayout.addComponent(resourceContainer);
-    }
 
     private void addFooter() {
         footer.addComponent(saveBtn);
@@ -290,7 +441,8 @@ public class RoleAssignView extends CustomComponent {
     private class SaveBtnListener implements Button.ClickListener {
 
         @Override
-        public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
+        public void buttonClick(@SuppressWarnings("unused")
+        final ClickEvent event) {
             onSaveClick();
         }
 
