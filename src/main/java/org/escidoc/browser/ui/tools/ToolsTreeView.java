@@ -28,13 +28,7 @@
  */
 package org.escidoc.browser.ui.tools;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
-import com.vaadin.ui.Tree;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
+import java.net.URISyntaxException;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.controller.CreateResourcesController;
@@ -44,7 +38,12 @@ import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.role.RoleAssignView;
 
-import java.net.URISyntaxException;
+import com.google.common.base.Preconditions;
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.ui.Tree;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -173,13 +172,13 @@ public class ToolsTreeView extends VerticalLayout {
         if (hasGrantTo(ActionIdConstants.CREATE_CONTEXT)) {
             tree.addItem(new Node(NODE_TYPE.CREATE_RESOURCES));
         }
+        if (hasGrantTo(ActionIdConstants.CREATE_GRANT)) {
+            tree.addItem(new Node(NODE_TYPE.ASSIGN_ROLES));
+        }
         for (final Object object : tree.getContainerDataSource().getItemIds()) {
             tree.setChildrenAllowed(object, false);
         }
-        if (hasGrantTo(ActionIdConstants.CREATE_GRANT)) {
-            tree.addItem(new Node(NODE_TYPE.ASSIGN_ROLES));
-            tree.setChildrenAllowed(new Node(NODE_TYPE.ASSIGN_ROLES), false);
-        }
+
     }
 
     private boolean hasGrantTo(final String actionId) throws EscidocClientException, URISyntaxException {
