@@ -117,8 +117,8 @@ public class OnEditOrgUnitMetadata {
         modalWindow.addComponent(upload);
         modalWindow.addComponent(new Label("OR"));
 
-        modalWindow.addComponent(new Link(ViewConstants.OPEN_METADATA_IN_EDITOR, new ExternalResource(buildMdUpdateUri(mainWindow
-            .getApplication().getURL().getAuthority()))));
+        modalWindow.addComponent(new Link(ViewConstants.OPEN_METADATA_IN_EDITOR, new ExternalResource(
+            buildMdUpdateUri("http://" + mainWindow.getApplication().getURL().getAuthority()))));
         modalWindow.addComponent(progressLayout);
         modalWindow.addComponent(buttonLayout);
 

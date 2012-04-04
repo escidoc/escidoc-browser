@@ -59,6 +59,7 @@ import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.URI;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -82,6 +83,8 @@ public class OnEditContextMetadata {
     private Label message;
 
     private ContextController controller;
+
+    private URI uri;
 
     public OnEditContextMetadata(Router router, ContextController controller, Window mainWindow, Metadata md) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
@@ -107,7 +110,7 @@ public class OnEditContextMetadata {
         modalWindow.addComponent(new Label("OR"));
 
         modalWindow.addComponent(new Link(ViewConstants.OPEN_METADATA_IN_EDITOR, new ExternalResource(
-            buildMdUpdateUri(mainWindow.getApplication().getURL().getAuthority()))));
+            buildMdUpdateUri("http://" + mainWindow.getApplication().getURL().getAuthority()))));
 
         modalWindow.addComponent(progressLayout);
         modalWindow.addComponent(buildSaveAndCancelButtons(modalWindow));
