@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.escidoc.browser.model.GroupModel;
 import org.escidoc.browser.model.PropertyId;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.UserModel;
@@ -82,6 +83,8 @@ public class RoleAssignView extends CustomComponent {
 
     private final Button saveBtn = new Button(ViewConstants.SAVE, new SaveBtnListener());
 
+    private final Button saveGroupBtn = new Button(ViewConstants.SAVE, new SaveGroupBtnListener());
+
     private final VerticalLayout footerLayout = new VerticalLayout();
 
     private final VerticalLayout resourceContainer = new VerticalLayout();
@@ -104,6 +107,8 @@ public class RoleAssignView extends CustomComponent {
     private NativeSelect roleSelection;
 
     private UserModel selectedUser;
+
+    private GroupModel selectedGroup;
 
     private Repositories repositories;
 
@@ -190,11 +195,10 @@ public class RoleAssignView extends CustomComponent {
     }
 
     private void addGroupFooter() {
-        groupFooter = new HorizontalLayout();
-        groupFooter.addComponent(saveBtn);
+        groupFooter.addComponent(saveGroupBtn);
         groupFooterLayout.addComponent(groupFooter);
         groupFooterLayout.setComponentAlignment(groupFooter, Alignment.MIDDLE_RIGHT);
-        groupFooter.setVisible(false);
+        groupFooter.setVisible(true);
         mainLayoutGroupRoles.addComponent(groupFooterLayout);
 
     }
@@ -229,7 +233,6 @@ public class RoleAssignView extends CustomComponent {
         groupResourcetypeSelection.setImmediate(true);
         groupResourcetypeSelection.setNullSelectionAllowed(false);
         mainLayoutGroupRoles.addComponent(groupResourcetypeSelection);
-
     }
 
     private void addTypeSelection() {
@@ -332,14 +335,12 @@ public class RoleAssignView extends CustomComponent {
 
             @Override
             public void valueChange(ValueChangeEvent event) {
-                getWindow().showNotification(" Picked " + event.getProperty());
                 if (event.getProperty().toString().equals("User")) {
                     verticalLayout.replaceComponent(mainLayoutGroupRoles, mainLayout);
                 }
                 else {
                     verticalLayout.replaceComponent(mainLayout, mainLayoutGroupRoles);
                 }
-
             }
         });
         return choiceSelect;
@@ -358,7 +359,7 @@ public class RoleAssignView extends CustomComponent {
         footer.addComponent(saveBtn);
         footerLayout.addComponent(footer);
         footerLayout.setComponentAlignment(footer, Alignment.MIDDLE_RIGHT);
-        footer.setVisible(false);
+        footer.setVisible(true);
         mainLayout.addComponent(footerLayout);
     }
 
@@ -482,6 +483,65 @@ public class RoleAssignView extends CustomComponent {
 
         private RoleModel getSelectedRole() {
             final Object value = roleSelection.getValue();
+            if (value instanceof RoleModel) {
+                return (RoleModel) value;
+            }
+            return null;
+        }
+
+        private Set<ResourceModel> getSelectedResources() {
+            final Object value = resourceSelection.getValue();
+            if (value instanceof ResourceModel) {
+                return Collections.singleton((ResourceModel) value);
+            }
+            return Collections.emptySet();
+        }
+    }
+
+    private class SaveGroupBtnListener implements Button.ClickListener {
+
+        @Override
+        public void buttonClick(@SuppressWarnings("unused")
+        final ClickEvent event) {
+            onSaveClick();
+        }
+
+        private void onSaveClick() {
+            if (getSelectedGroup() != null) {
+                try {
+                    Grant grant = assignRole();
+                    showMessage(grant);
+                }
+                catch (EscidocClientException e) {
+                    mainWindow.showNotification("Failed to grant the role. Reason: " + e.getMessage(),
+                        Window.Notification.TYPE_ERROR_MESSAGE);
+                }
+            }
+            else {
+                userSelection.setComponentError(new UserError("User is required"));
+            }
+        }
+
+        private void showMessage(Grant grant) {
+            mainWindow.showNotification("Role " + grant.getXLinkTitle() + " have been granted to "
+                + getSelectedGroup().getName(), Window.Notification.TYPE_TRAY_NOTIFICATION);
+        }
+
+        private Grant assignRole() throws EscidocClientException {
+            return repositories
+                .group().assign(getSelectedGroup()).withRole(getSelectedRole()).onResources(getSelectedResources())
+                .execute();
+        }
+
+        private GroupModel getSelectedGroup() {
+            if (selectedGroup == null) {
+                return (GroupModel) groupSelection.getValue();
+            }
+            return selectedGroup;
+        }
+
+        private RoleModel getSelectedRole() {
+            final Object value = groupRoleSelection.getValue();
             if (value instanceof RoleModel) {
                 return (RoleModel) value;
             }

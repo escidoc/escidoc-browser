@@ -28,20 +28,23 @@
  */
 package org.escidoc.browser.repository;
 
-import com.google.common.base.Preconditions;
+import java.net.MalformedURLException;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.GroupModel;
 import org.escidoc.browser.model.ModelConverter;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.repository.RoleRepository.RoleModel;
 import org.escidoc.browser.ui.helper.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.MalformedURLException;
-import java.util.List;
-import java.util.UUID;
+import com.google.common.base.Preconditions;
 
 import de.escidoc.core.client.UserGroupHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -49,6 +52,8 @@ import de.escidoc.core.client.exceptions.EscidocException;
 import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.client.exceptions.TransportException;
 import de.escidoc.core.client.interfaces.UserGroupHandlerClientInterface;
+import de.escidoc.core.resources.aa.useraccount.Grant;
+import de.escidoc.core.resources.aa.useraccount.GrantProperties;
 import de.escidoc.core.resources.aa.usergroup.Selector;
 import de.escidoc.core.resources.aa.usergroup.SelectorType;
 import de.escidoc.core.resources.aa.usergroup.Selectors;
@@ -56,6 +61,12 @@ import de.escidoc.core.resources.aa.usergroup.UserGroup;
 import de.escidoc.core.resources.aa.usergroup.UserGroupProperties;
 import de.escidoc.core.resources.common.Relations;
 import de.escidoc.core.resources.common.TaskParam;
+import de.escidoc.core.resources.common.reference.ContainerRef;
+import de.escidoc.core.resources.common.reference.ContextRef;
+import de.escidoc.core.resources.common.reference.ItemRef;
+import de.escidoc.core.resources.common.reference.Reference;
+import de.escidoc.core.resources.common.reference.RoleRef;
+import de.escidoc.core.resources.common.reference.UserAccountRef;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 
 public class GroupRepository implements Repository {
@@ -65,6 +76,10 @@ public class GroupRepository implements Repository {
     private final static Logger LOG = LoggerFactory.getLogger(GroupRepository.class);
 
     private UserGroupHandlerClientInterface c;
+
+    private GroupModel group;
+
+    private GrantProperties grantProps;
 
     public GroupRepository(EscidocServiceLocation esl) throws MalformedURLException {
         Preconditions.checkNotNull(esl, "esl is null: %s", esl);
@@ -218,5 +233,56 @@ public class GroupRepository implements Repository {
 
         LOG.debug("A user group is with an id: " + updated.getObjid() + " is updated.");
         return updated;
+    }
+
+    public GroupRepository assign(GroupModel group) {
+        if (group == null) {
+            throw new IllegalArgumentException("UserAccount can not be null.");
+        }
+        this.group = group;
+        return this;
+    }
+
+    public GroupRepository withRole(RoleModel role) {
+        Preconditions.checkNotNull(role, "role is null: %s", role);
+        Preconditions.checkNotNull(group, "user is null: %s", group);
+        grantProps = new GrantProperties();
+        grantProps.setRole(new RoleRef(role.getId()));
+        return this;
+    }
+
+    public GroupRepository onResources(Set<ResourceModel> resources) {
+        for (final ResourceModel rm : resources) {
+            ResourceType type = rm.getType();
+            Reference ref = null;
+
+            switch (type) {
+                case CONTEXT:
+                    ref = new ContextRef(rm.getId());
+                    break;
+                case CONTAINER:
+                    ref = new ContainerRef(rm.getId());
+                    break;
+                case ITEM:
+                    ref = new ItemRef(rm.getId());
+                    break;
+                case USER_ACCOUNT:
+                    ref = new UserAccountRef(rm.getId());
+                    break;
+                default:
+                    break;
+            }
+
+            grantProps.setAssignedOn(ref);
+        }
+        return this;
+    }
+
+    public Grant execute() throws EscidocClientException {
+        final Grant grant = new Grant();
+        grant.setProperties(grantProps);
+        Grant createdGrant = c.createGrant(group.getId(), grant);
+        LOG.debug("Grant created: " + createdGrant.getObjid());
+        return createdGrant;
     }
 }
