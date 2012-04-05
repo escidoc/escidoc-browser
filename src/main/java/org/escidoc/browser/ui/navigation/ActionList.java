@@ -90,4 +90,6 @@ class ActionList {
 
     public static final Action ACTION_DELETE_USER_ACCOUNT = new Action(ViewConstants.DELETE_USER_ACCOUNT);
 
+    public static final Action ACTION_DELETE_USER_GROUP = new Action(ViewConstants.DELETE_USER_GROUP);
+
 }

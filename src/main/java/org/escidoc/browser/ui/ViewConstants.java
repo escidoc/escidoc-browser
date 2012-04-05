@@ -442,4 +442,6 @@ public class ViewConstants {
     public static final String CREATE_GROUP = "Create Group";
 
     public static final String OPEN_METADATA_IN_EDITOR = "Open Metadata in Editor";
+
+    public static final String DELETE_USER_GROUP = "Delete Group";
 }

@@ -28,10 +28,7 @@
  */
 package org.escidoc.browser.repository;
 
-import java.net.MalformedURLException;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import com.google.common.base.Preconditions;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.GroupModel;
@@ -44,7 +41,10 @@ import org.escidoc.browser.ui.helper.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
+import java.net.MalformedURLException;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import de.escidoc.core.client.UserGroupHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -128,7 +128,7 @@ public class GroupRepository implements Repository {
 
     @Override
     public void delete(String id) throws EscidocClientException {
-        throw new UnsupportedOperationException("not-yet-implemented.");
+        c.delete(id);
     }
 
     @Override
