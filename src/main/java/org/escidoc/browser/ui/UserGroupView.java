@@ -28,10 +28,25 @@
  */
 package org.escidoc.browser.ui;
 
-import com.google.common.base.Preconditions;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.escidoc.browser.controller.UserGroupController;
+import org.escidoc.browser.model.PropertyId;
+import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.UserGroupModel;
+import org.escidoc.browser.ui.listeners.AddOrgUnitstoGroup;
+import org.escidoc.browser.ui.maincontent.View;
+import org.escidoc.browser.ui.orgunit.OrgUnitTreeView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Preconditions;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.Action;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComponentContainer;
@@ -41,20 +56,6 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
-
-import org.escidoc.browser.controller.UserGroupController;
-import org.escidoc.browser.model.PropertyId;
-import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.repository.UserGroupModel;
-import org.escidoc.browser.ui.maincontent.View;
-import org.escidoc.browser.ui.orgunit.OrgUnitTreeView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.aa.usergroup.Selector;
@@ -146,16 +147,19 @@ public class UserGroupView extends View {
             selectorTable.addActionHandler(new Action.Handler() {
 
                 @Override
-                public Action[] getActions(
-                    @SuppressWarnings("unused") Object target, @SuppressWarnings("unused") Object sender) {
+                public Action[] getActions(@SuppressWarnings("unused")
+                Object target, @SuppressWarnings("unused")
+                Object sender) {
                     return ACTIONS_LIST;
                 }
 
                 @Override
-                public void handleAction(Action action, @SuppressWarnings("unused") Object sender, Object target) {
+                public void handleAction(Action action, @SuppressWarnings("unused")
+                Object sender, Object target) {
                     if (action.equals(ACTION_ADD)) {
-                        mainWindow.addWindow(new OrganizationSelectionView(repositories, resourceProxy, nameField,
-                            mainWindow, dataSource).modalWindow());
+                        // mainWindow.addWindow(new OrganizationSelectionView(repositories, resourceProxy, nameField,
+                        // mainWindow, dataSource).modalWindow());
+                        openViewAddRemoveOUs();
                     }
                     else {
                         try {
@@ -172,8 +176,37 @@ public class UserGroupView extends View {
                         }
                     }
                 }
+
+                private void openViewAddRemoveOUs() {
+                    final Window subwindow = new Window("A modal subwindow");
+                    subwindow.setModal(true);
+                    subwindow.setWidth("650px");
+                    VerticalLayout layout = (VerticalLayout) subwindow.getContent();
+                    layout.setMargin(true);
+                    layout.setSpacing(true);
+
+                    try {
+                        subwindow.addComponent(new AddOrgUnitstoGroup(router, resourceProxy, controller));
+                    }
+                    catch (EscidocClientException e) {
+                        controller.showError(e);
+                    }
+                    Button close = new Button(ViewConstants.CLOSE, new Button.ClickListener() {
+                        @Override
+                        public void buttonClick(@SuppressWarnings("unused")
+                        ClickEvent event) {
+                            subwindow.getParent().removeWindow(subwindow);
+                        }
+                    });
+                    layout.addComponent(close);
+                    layout.setComponentAlignment(close, Alignment.TOP_RIGHT);
+
+                    router.getMainWindow().addWindow(subwindow);
+
+                }
             });
             layout.addComponent(selectorTable);
+
         }
         catch (EscidocClientException e1) {
             StringBuilder errorMessage = new StringBuilder();
@@ -183,6 +216,7 @@ public class UserGroupView extends View {
             mainWindow.showNotification(ViewConstants.ERROR, errorMessage.toString(),
                 Window.Notification.TYPE_ERROR_MESSAGE);
         }
+
     }
 
     protected BeanItemContainer<ResourceModel> populateContainerTable() throws EscidocClientException {
@@ -213,7 +247,8 @@ public class UserGroupView extends View {
         Button saveButton = new Button(ViewConstants.SAVE, new Button.ClickListener() {
 
             @Override
-            public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused")
+            ClickEvent event) {
                 try {
                     if (!nameField.isValid()) {
                         mainWindow.showNotification("A group name is required",

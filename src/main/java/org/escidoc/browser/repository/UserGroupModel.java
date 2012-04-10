@@ -28,11 +28,11 @@
  */
 package org.escidoc.browser.repository;
 
+import java.util.List;
+
 import org.escidoc.browser.model.AbstractResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
-
-import java.util.List;
 
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.aa.usergroup.Selectors;
@@ -105,7 +105,7 @@ public class UserGroupModel extends AbstractResourceModel implements ResourcePro
 
     @Override
     public ResourceType getType() {
-        throw new UnsupportedOperationException("not-yet-implemented.");
+        return ResourceType.USER_GROUP;
     }
 
     public Selectors getSelector() {

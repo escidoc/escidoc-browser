@@ -28,15 +28,14 @@
  */
 package org.escidoc.browser.controller;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Window.Notification;
-
 import org.escidoc.browser.layout.LayoutDesign;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
+
+import com.google.common.base.Preconditions;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 

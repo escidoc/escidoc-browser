@@ -30,6 +30,7 @@ package org.escidoc.browser.controller;
 
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.UserGroupModel;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.UserGroupView;
 
@@ -47,5 +48,19 @@ public class UserGroupController extends Controller {
     public void createView() throws EscidocClientException {
         view = new UserGroupView(getRouter(), getResourceProxy(), getRepositories(), this);
         ((UserGroupView) view).buildContentPanel();
+    }
+
+    public boolean canRemoveOUs() {
+        // TODO PDP Implement
+        return true;
+    }
+
+    public void removeOrgUnitFromGroup(String string) {
+        // TODO Auto-generated method stub
+
+    }
+
+    public void addOrgUnitToGroup(UserGroupModel resourceProxy, String id) throws EscidocClientException {
+        repositories.group().addOrgUnit(resourceProxy.getId(), id);
     }
 }

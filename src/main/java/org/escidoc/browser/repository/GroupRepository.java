@@ -28,7 +28,10 @@
  */
 package org.escidoc.browser.repository;
 
-import com.google.common.base.Preconditions;
+import java.net.MalformedURLException;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.GroupModel;
@@ -41,10 +44,7 @@ import org.escidoc.browser.ui.helper.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.MalformedURLException;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import com.google.common.base.Preconditions;
 
 import de.escidoc.core.client.UserGroupHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -205,22 +205,14 @@ public class GroupRepository implements Repository {
     public void removeOrganization(String groupId, String id) throws EscidocClientException {
         TaskParam tp = new TaskParam();
         UserGroup updated = c.retrieve(groupId);
-        tp.setLastModificationDate(updated.getLastModificationDate());
-        tp.addResourceRef(id);
 
-        // Selectors selectors = updated.getSelectors();
-        //
-        // Selectors selectorList = new Selectors();
-        // // FIXME not optimal
-        // for (Selector selector : selectors) {
-        // if (selector.getContent().equals(id)) {
-        // // selectorList.add(selector);
-        //
-        // selectorList.add(new Selector(id, "o", SelectorType.USER_ATTRIBUTE));
-        // }
-        //
-        // }
-        // tp.setSelectors(selectorList);
+        tp.setLastModificationDate(updated.getLastModificationDate());
+
+        for (Selector selector : updated.getSelectors()) {
+            if (selector.getContent().equals(id)) {
+                tp.addResourceRef(selector.getObjid());
+            }
+        }
         c.removeSelectors(groupId, tp);
     }
 
@@ -284,5 +276,25 @@ public class GroupRepository implements Repository {
         Grant createdGrant = c.createGrant(group.getId(), grant);
         LOG.debug("Grant created: " + createdGrant.getObjid());
         return createdGrant;
+    }
+
+    /**
+     * Add Organizational units to the User-Group
+     * 
+     * @param uGroupId
+     * @param orgUnitId
+     * @return
+     * @throws EscidocClientException
+     */
+    public UserGroup addOrgUnit(String uGroupId, String orgUnitId) throws EscidocClientException {
+        UserGroup userGroup = c.retrieve(uGroupId);
+
+        TaskParam tp = new TaskParam();
+        tp.setLastModificationDate(userGroup.getLastModificationDate());
+        Selector selector = new Selector(orgUnitId, ORGANIZATIONL_UNIT, SelectorType.USER_ATTRIBUTE);
+        List<Selector> selectors = tp.getSelectors();
+        selectors.add(selector);
+        tp.setSelectors(selectors);
+        return c.addSelectors(uGroupId, tp);
     }
 }
