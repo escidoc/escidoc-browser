@@ -28,11 +28,7 @@
  */
 package org.escidoc.browser.ui.navigation;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.data.Container;
-import com.vaadin.data.Item;
-import com.vaadin.data.util.HierarchicalContainer;
+import java.util.List;
 
 import org.escidoc.browser.model.PropertyId;
 import org.escidoc.browser.model.ResourceModel;
@@ -42,7 +38,10 @@ import org.escidoc.browser.repository.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
+import com.google.common.base.Preconditions;
+import com.vaadin.data.Container;
+import com.vaadin.data.Item;
+import com.vaadin.data.util.HierarchicalContainer;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.Resource;
@@ -134,7 +133,7 @@ public class BaseTreeDataSource implements TreeDataSource {
         Preconditions.checkNotNull(resource, "resource is null: %s", resource);
 
         item.getItemProperty(PropertyId.OBJECT_ID).setValue(resource.getId());
-        item.getItemProperty(PropertyId.NAME).setValue(resource.getName());
+        item.getItemProperty(PropertyId.NAME).setValue(resource.getName() + " (" + resource.getId() + ")");
         item.getItemProperty(PropertyId.TYPE).setValue(resource.getType());
     }
 
