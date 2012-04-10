@@ -65,6 +65,47 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 @SuppressWarnings("serial")
 public final class ActionHandlerImpl implements Action.Handler {
 
+    private final class OnConfirmDelete implements Button.ClickListener {
+        private final Window subwindow;
+
+        private final Object sender;
+
+        private final ResourceModel target;
+
+        private final String id;
+
+        private OnConfirmDelete(Window subwindow, Object sender, ResourceModel target, String id) {
+            this.subwindow = subwindow;
+            this.sender = sender;
+            this.target = target;
+            this.id = id;
+        }
+
+        @Override
+        public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
+            try {
+                deleteUserOrGroup();
+                subwindow.getParent().removeWindow(subwindow);
+                router.getLayout().closeView(target, null, sender);
+                mainWindow.showNotification(new Window.Notification(ViewConstants.DELETED,
+                    Notification.TYPE_TRAY_NOTIFICATION));
+            }
+            catch (final EscidocClientException e) {
+                mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
+                    Notification.TYPE_ERROR_MESSAGE));
+            }
+        }
+
+        private void deleteUserOrGroup() throws EscidocClientException {
+            if (target.getType() == ResourceType.USER_ACCOUNT) {
+                repositories.user().delete(id);
+            }
+            else if (target.getType() == ResourceType.USER_GROUP) {
+                repositories.group().delete(id);
+            }
+        }
+    }
+
     private final static Logger LOG = LoggerFactory.getLogger(ActionHandlerImpl.class);
 
     private final Window mainWindow;
@@ -114,6 +155,8 @@ public final class ActionHandlerImpl implements Action.Handler {
                     return new Action[] { ActionList.ACTION_DELETE_CONTENT_MODEL };
                 case USER_ACCOUNT:
                     return new Action[] { ActionList.ACTION_DELETE_USER_ACCOUNT };
+                case USER_GROUP:
+                    return new Action[] { ActionList.ACTION_DELETE_USER_GROUP };
                 default:
                     return new Action[] {};
             }
@@ -176,7 +219,6 @@ public final class ActionHandlerImpl implements Action.Handler {
             tryShowAddChildOrgUnit((ResourceModel) selectedResource);
         }
         else if (action.equals(ActionList.ACTION_DELETE_CONTEXT)) {
-            mainWindow.showNotification("TEST");
             if (canContextbeRemoved(((ContextModel) selectedResource).getId())) {
                 tryDeleteContext(selectedResource, sender);
             }
@@ -193,20 +235,40 @@ public final class ActionHandlerImpl implements Action.Handler {
         else if (action.equals(ActionList.ACTION_DELETE_USER_ACCOUNT)) {
             tryDeleteUserAccount(selectedResource, sender);
         }
+        else if (action.equals(ActionList.ACTION_DELETE_USER_GROUP)) {
+            tryDeleteUserGroup(selectedResource, sender);
+        }
         else {
             mainWindow.showNotification("Unknown Action: " + action.getCaption(),
                 Window.Notification.TYPE_ERROR_MESSAGE);
         }
     }
 
-    private void tryDeleteUserAccount(Object target, Object sender) throws EscidocClientException, URISyntaxException {
+    private void tryDeleteUserGroup(Object target, Object sender) throws EscidocClientException, URISyntaxException {
         final String id = ((ResourceModel) target).getId();
-        if (allowedToDeleteUserAccount(id)) {
-            deleteUserAccount((ResourceModel) target, id, sender);
+        if (isAllowedToDeleteGroup(id)) {
+            deleteResource((ResourceModel) target, id, sender);
         }
         else {
             mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
-                "You do not have the right to delete a context: " + id, Window.Notification.TYPE_WARNING_MESSAGE));
+                "You do not have the right to delete the Group: " + id, Window.Notification.TYPE_WARNING_MESSAGE));
+        }
+    }
+
+    private boolean isAllowedToDeleteGroup(String id) throws EscidocClientException, URISyntaxException {
+        return repositories
+            .pdp().forCurrentUser().isAction(ActionIdConstants.DELETE_USER_GROUP).forResource(id).permitted();
+    }
+
+    private void tryDeleteUserAccount(Object target, Object sender) throws EscidocClientException, URISyntaxException {
+        final String id = ((ResourceModel) target).getId();
+        if (allowedToDeleteUserAccount(id)) {
+            deleteResource((ResourceModel) target, id, sender);
+        }
+        else {
+            mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
+                "You do not have the right to delete the User Account : " + id,
+                Window.Notification.TYPE_WARNING_MESSAGE));
         }
     }
 
@@ -215,7 +277,7 @@ public final class ActionHandlerImpl implements Action.Handler {
             .pdp().forCurrentUser().isAction(ActionIdConstants.DELETE_USER_ACCOUNT).forResource(id).permitted();
     }
 
-    private void deleteUserAccount(final ResourceModel target, final String id, final Object sender) {
+    private void deleteResource(final ResourceModel target, final String id, final Object sender) {
         final Window subwindow = buildSubWindow();
 
         final Button okConfirmed = new Button(ViewConstants.YES, new Button.ClickListener() {

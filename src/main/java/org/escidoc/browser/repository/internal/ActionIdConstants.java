@@ -96,4 +96,6 @@ public class ActionIdConstants {
     public static final String UPDATE_ORG_UNIT = "info:escidoc/names:aa:1.0:action:update-organizational-unit";
 
     public static final String CREATE_GROUP = "info:escidoc/names:aa:1.0:action:create-user-group";
+
+    public static final String DELETE_USER_GROUP = "info:escidoc/names:aa:1.0:action:delete-user-group";
 }
