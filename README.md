@@ -6,7 +6,6 @@ The eSciDoc Browser is a Rich Internet Application that allows browsing of digit
 * Copy the file browser.war into a Java web container, such as, Apache Tomcat.
 * Configure the web container and JAVA_OPTS to use your local proxy settings. Please refer to your web container documentation how to configure the proxy settings. For example: <pre>JAVA_OPTS=-Dhttp.proxyHost=proxy.fiz-karlsruhe.de -Dhttp.proxyPort=8888 -Dhttp.nonProxyHosts=escidev6|escidev4|localhost|127.0.0.1|141.66.11.*|*.fiz-karlsruhe.de|www.escidoc.org|www.escidoc.de|escidev6.fiz-karlsruhe.de -Xmx1500m -XX:MaxPermSize=750m</pre>
 * Start the web container.
-* Open eSciDoc Browser in Webbrowser, log in as user ''sysadmin'', at left bottom click on ''Tools'', click on ''Bulk Tasks'', and ingest Content Models from https://www.escidoc.org/smw/images/5/5c/ESciDoc-Generic-Content-Models.zip
 
 ## Configuration
 There is no configuration file for the eSciDoc Browser. All configuration is done via eSciDoc Resources.
