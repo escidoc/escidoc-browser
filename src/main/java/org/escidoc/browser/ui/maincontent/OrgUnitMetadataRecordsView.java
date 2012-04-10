@@ -28,18 +28,7 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.BaseTheme;
-import com.vaadin.ui.themes.Runo;
+import java.net.URISyntaxException;
 
 import org.escidoc.browser.controller.OrgUnitController;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
@@ -50,7 +39,17 @@ import org.escidoc.browser.ui.view.helpers.OrgUnitMetadataTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URISyntaxException;
+import com.google.common.base.Preconditions;
+import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.BaseTheme;
+import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -106,7 +105,8 @@ public class OrgUnitMetadataRecordsView {
             addNewOrgUnitBtn.addListener(new Button.ClickListener() {
 
                 @Override
-                public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
+                public void buttonClick(@SuppressWarnings("unused")
+                ClickEvent event) {
                     OnAddOrgUnitMetadata view = new OnAddOrgUnitMetadata(controller, router.getMainWindow());
                     view.showAddWindow();
                 }
@@ -143,11 +143,11 @@ public class OrgUnitMetadataRecordsView {
                 .forResource(orgUnit.getId()).permitted();
         }
         catch (final EscidocClientException e) {
-            LOG.debug(e.getLocalizedMessage());
+            LOG.debug("Infrastructure Exception " + e.getLocalizedMessage());
             return false;
         }
         catch (final URISyntaxException e) {
-            LOG.debug(e.getLocalizedMessage());
+            LOG.debug("URI Exception " + e.getLocalizedMessage());
             return false;
         }
     }

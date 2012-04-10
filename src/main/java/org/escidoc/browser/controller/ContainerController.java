@@ -28,7 +28,7 @@
  */
 package org.escidoc.browser.controller;
 
-import com.vaadin.ui.Window;
+import java.net.URISyntaxException;
 
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
@@ -38,7 +38,7 @@ import org.escidoc.browser.ui.maincontent.ContainerView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URISyntaxException;
+import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -79,11 +79,11 @@ public class ContainerController extends Controller {
                 .permitted();
         }
         catch (final EscidocClientException e) {
-            LOG.debug(e.getLocalizedMessage());
+            LOG.debug("No Access" + e.getLocalizedMessage());
             return false;
         }
         catch (final URISyntaxException e) {
-            LOG.debug(e.getLocalizedMessage());
+            LOG.debug("Wrong URI " + e.getLocalizedMessage());
             return false;
         }
     }

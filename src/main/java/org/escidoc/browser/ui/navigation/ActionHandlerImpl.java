@@ -82,7 +82,8 @@ public final class ActionHandlerImpl implements Action.Handler {
         }
 
         @Override
-        public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
+        public void buttonClick(@SuppressWarnings("unused")
+        final ClickEvent event) {
             try {
                 deleteUserOrGroup();
                 subwindow.getParent().removeWindow(subwindow);
@@ -293,8 +294,8 @@ public final class ActionHandlerImpl implements Action.Handler {
                         Notification.TYPE_TRAY_NOTIFICATION));
                 }
                 catch (final EscidocClientException e) {
-                    mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
-                        Notification.TYPE_ERROR_MESSAGE));
+                    mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR + " trying to delete user",
+                        e.getLocalizedMessage(), Notification.TYPE_ERROR_MESSAGE));
                 }
             }
         });
@@ -689,7 +690,7 @@ public final class ActionHandlerImpl implements Action.Handler {
                         Notification.TYPE_TRAY_NOTIFICATION));
                 }
                 catch (final EscidocClientException e) {
-                    mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
+                    mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getLocalizedMessage(),
                         Notification.TYPE_ERROR_MESSAGE));
                 }
             }
