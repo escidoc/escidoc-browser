@@ -170,7 +170,7 @@ public class DirectMember {
         nameofPanel.setWidth("70%");
         cssLayout.addComponent(nameofPanel);
 
-        ThemeResource ICON = new ThemeResource("images/assets/plus.png");
+        ThemeResource plusIcon = new ThemeResource("images/assets/plus.png");
         if (resourceType == ResourceType.CONTAINER.toString()) {
             resourceProxy = new ContainerProxyImpl(router.getRepositories().container().findContainerById(parentId));
             contextId = resourceProxy.getContext().getObjid();
@@ -184,7 +184,7 @@ public class DirectMember {
         addResourceButton.setStyleName(BaseTheme.BUTTON_LINK);
         addResourceButton.addStyleName("floatright paddingtop3");
         addResourceButton.setWidth("20px");
-        addResourceButton.setIcon(ICON);
+        addResourceButton.setIcon(plusIcon);
         addResourceButton.addListener(new ClickListener() {
 
             @Override

@@ -36,10 +36,12 @@ import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.terminal.Resource;
 import com.vaadin.terminal.Sizeable;
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -51,7 +53,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Reindeer;
+import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Runo;
 
 import org.escidoc.browser.AppConstants;
@@ -381,22 +383,13 @@ public class SimpleLayout extends LayoutDesign {
         return grant.getProperties().getRole().getObjid().equals(AppConstants.ESCIDOC_ADMIN_ROLE);
     }
 
-    // FIXME rename the method.
     private Component buildGroupListWithFilter(final BaseNavigationTreeView list, final TreeDataSource ds) {
         // TODO this is a temporary create button, it is to redesign.
-        Button createButton = new Button("+", new Button.ClickListener() {
 
-            @Override
-            public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
-                showCreateGroupView();
-            }
+        VerticalLayout vl = new VerticalLayout();
 
-            private void showCreateGroupView() {
-                mainWindow.addWindow(new CreateGroupView(repositories.group(), mainWindow, ds).modalWindow());
-            }
+        CssLayout headerButton = newHeaderButton(ds);
 
-        });
-        createButton.setStyleName(Reindeer.BUTTON_SMALL);
         VerticalLayout layout = new VerticalLayout();
         layout.setMargin(true, false, false, true);
         layout.setSpacing(true);
@@ -419,10 +412,40 @@ public class SimpleLayout extends LayoutDesign {
             }
         });
 
-        layout.addComponent(createButton);
         layout.addComponent(filterField);
         layout.addComponent(list);
-        return layout;
+
+        vl.addComponent(headerButton);
+        vl.addComponent(layout);
+        return vl;
+    }
+
+    private CssLayout newHeaderButton(final TreeDataSource ds) {
+        CssLayout cssLayout = new CssLayout();
+        cssLayout.setWidth("97%");
+        cssLayout.setMargin(false);
+
+        ThemeResource plusIcon = new ThemeResource("images/assets/plus.png");
+
+        final Button createGroupButton = new Button();
+        createGroupButton.setStyleName(BaseTheme.BUTTON_LINK);
+        createGroupButton.addStyleName("floatright paddingtop3");
+        createGroupButton.setWidth("20px");
+        createGroupButton.setIcon(plusIcon);
+        createGroupButton.addListener(new ClickListener() {
+
+            @Override
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
+                showCreateGroupView();
+            }
+
+            private void showCreateGroupView() {
+                mainWindow.addWindow(new CreateGroupView(repositories.group(), mainWindow, ds).modalWindow());
+            }
+
+        });
+        cssLayout.addComponent(createGroupButton);
+        return cssLayout;
     }
 
     private void addUserAccountsTab(Accordion accordion) throws EscidocClientException {
