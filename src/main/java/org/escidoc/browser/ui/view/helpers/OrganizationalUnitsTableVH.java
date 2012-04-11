@@ -28,8 +28,15 @@
  */
 package org.escidoc.browser.ui.view.helpers;
 
-import com.google.common.base.Preconditions;
+import org.escidoc.browser.controller.ContextController;
+import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.model.internal.ContextProxyImpl;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.listeners.AddOrgUnitstoContext;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.event.Action;
@@ -40,14 +47,6 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
-
-import org.escidoc.browser.controller.ContextController;
-import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.model.ResourceType;
-import org.escidoc.browser.model.internal.ContextProxyImpl;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.listeners.AddOrgUnitstoContext;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.reference.OrganizationalUnitRef;
@@ -63,11 +62,9 @@ public class OrganizationalUnitsTableVH extends TableContainerVH {
 
     private Action ACTION_DELETE = new Action("Delete Organizational Unit");
 
-    private Action ACTION_ADD = new Action("Add Organizational Unit");
+    private Action ACTION_ADD = new Action("Add/Edit Organizational Units");
 
-    private Action ACTION_EDIT = new Action("Edit Organizational Unit");
-
-    private Action[] ACTIONS_LIST = new Action[] { ACTION_ADD, ACTION_EDIT, ACTION_DELETE };
+    private Action[] ACTIONS_LIST = new Action[] { ACTION_ADD, ACTION_DELETE };
 
     private HierarchicalContainer tableContainer;
 
@@ -123,7 +120,8 @@ public class OrganizationalUnitsTableVH extends TableContainerVH {
                 }
                 Button close = new Button(ViewConstants.CLOSE, new Button.ClickListener() {
                     @Override
-                    public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
+                    public void buttonClick(@SuppressWarnings("unused")
+                    ClickEvent event) {
                         subwindow.getParent().removeWindow(subwindow);
                     }
                 });
@@ -165,7 +163,8 @@ public class OrganizationalUnitsTableVH extends TableContainerVH {
                 openInNewTabLink.addListener(new Button.ClickListener() {
 
                     @Override
-                    public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
+                    public void buttonClick(@SuppressWarnings("unused")
+                    ClickEvent event) {
                         try {
                             router.show(new ResourceModel() {
                                 @Override
