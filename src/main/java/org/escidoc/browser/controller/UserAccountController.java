@@ -76,6 +76,6 @@ public class UserAccountController extends Controller {
     }
 
     private static boolean hasSysAdminRole(Grant grant) {
-        return grant.getProperties().getRole().getObjid().equals(AppConstants.ESCIDOC_ADMIN_ROLE);
+        return grant.getProperties().getRole().getObjid().equals(AppConstants.ESCIDOC_SYSADMIN_ROLE);
     }
 }

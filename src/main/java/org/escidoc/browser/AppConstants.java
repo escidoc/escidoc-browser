@@ -102,4 +102,6 @@ public final class AppConstants {
     public static final String ESCIDOC_DEFAULT_METADATA_NAME = "escidoc";
 
     public static final String ESCIDOC_ADMIN_ROLE = "escidoc:role-administrator";
+
+    public static final String ESCIDOC_SYSADMIN_ROLE = "escidoc:role-system-administrator";
 }
