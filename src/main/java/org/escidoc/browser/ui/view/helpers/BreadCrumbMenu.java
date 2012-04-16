@@ -28,14 +28,9 @@
  */
 package org.escidoc.browser.ui.view.helpers;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.ui.AbstractComponentContainer;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.ComponentContainer;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Window;
+import java.net.MalformedURLException;
+import java.util.Collections;
+import java.util.List;
 
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.EscidocServiceLocation;
@@ -45,9 +40,13 @@ import org.escidoc.browser.model.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.helper.ResourceHierarchy;
 
-import java.net.MalformedURLException;
-import java.util.Collections;
-import java.util.List;
+import com.google.common.base.Preconditions;
+import com.vaadin.ui.AbstractComponentContainer;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -153,6 +152,14 @@ public class BreadCrumbMenu {
                 + this.generateLink(resourceModel.getId(), resourceModel.getType().getLabel().toUpperCase(),
                     escidocServiceLocation.getEscidocUri().toString()) + "'>" + resourceModel.getName() + "</a></li>");
         }
+        ((ComponentContainer) component).addComponent(new Label(bCstring + buf.toString() + "<li></ul>",
+            Label.CONTENT_RAW));
+    }
+
+    public BreadCrumbMenu(final Component component, String title) {
+        final StringBuffer buf = new StringBuffer();
+        Preconditions.checkNotNull(component, "###BreadCrumbModel component is null");
+        buf.append("<li><a href='#'>" + title + "</a></li>");
         ((ComponentContainer) component).addComponent(new Label(bCstring + buf.toString() + "<li></ul>",
             Label.CONTENT_RAW));
     }

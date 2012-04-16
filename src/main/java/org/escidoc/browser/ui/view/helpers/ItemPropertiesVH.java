@@ -113,12 +113,15 @@ public class ItemPropertiesVH {
 
     private ItemController controller;
 
+    private Router router;
+
     public ItemPropertiesVH(ItemProxyImpl resourceProxy, Router router, ItemController controller) {
         this.resourceProxy = resourceProxy;
         this.repositories = router.getRepositories();
         this.mainWindow = router.getMainWindow();
         this.serviceLocation = router.getServiceLocation();
         this.controller = controller;
+        this.router = router;
         buildViews();
     }
 
@@ -140,11 +143,11 @@ public class ItemPropertiesVH {
         cssLayout = new CssLayout();
         cssLayout.setWidth("100%");
         cssLayout.setHeight("100%");
+        cssLayout.setMargin(false);
     }
 
     private void createPermanentLink() {
-        new CreatePermanentLinkVH(mainWindow.getURL().toString(), resourceProxy.getId(), resourceProxy
-            .getType().toString(), cssLayout, serviceLocation);
+        new CreateResourceLinksVH(mainWindow.getURL().toString(), resourceProxy, cssLayout, router);
     }
 
     private void bindProperties() {

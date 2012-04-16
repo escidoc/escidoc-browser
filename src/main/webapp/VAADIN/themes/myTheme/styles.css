@@ -27,6 +27,10 @@
 	padding-top: 10.0px;
 }
 
+.paddingright10{
+	padding-right: 10.0px;
+}
+
 .paddingtop30 {
 	padding-top: 60.0px;
 }
@@ -122,6 +126,7 @@ ul.horizontal_list li {
 #crumbs {
 	height: 2em;
 	border: 1px solid #dedede;
+	margin-top:2px
 }
 
 #crumbs li {
@@ -319,7 +324,14 @@ ul.horizontal_list li {
 	z-index: 10;
 	position: absolute;
 	margin-right: 18px;
-	top: 0px;
+	top: 27px;
+	right: 0;
+}
+.permanentLinkItem {
+	z-index: 10;
+	position: absolute;
+	margin-right: 1px;
+	top: 27px;
 	right: 0;
 }
 .userformpadding{

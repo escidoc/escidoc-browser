@@ -28,21 +28,6 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.Accordion;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.BaseTheme;
-
 import org.escidoc.browser.controller.ContainerController;
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.EscidocServiceLocation;
@@ -55,6 +40,20 @@ import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
 import org.escidoc.browser.ui.view.helpers.ContainerMetadataTableVH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Preconditions;
+import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.BaseTheme;
 
 public class ContainerMetadataRecordsView {
 
@@ -140,7 +139,7 @@ public class ContainerMetadataRecordsView {
         hl.setSizeFull();
         final Button btnVersionHistoryContainer =
             new Button("Container Version History", new VersionHistoryClickListener(resourceProxy, mainWindow,
-                escidocServiceLocation, repositories));
+                repositories));
         btnVersionHistoryContainer.setStyleName(BaseTheme.BUTTON_LINK);
         btnVersionHistoryContainer.setDescription("Show Version history in a Pop-up");
 

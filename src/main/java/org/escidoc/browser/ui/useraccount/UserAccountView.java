@@ -37,6 +37,7 @@ import org.escidoc.browser.repository.internal.UserAccountRepository;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.View;
+import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.data.Validator.EmptyValueException;
@@ -72,6 +73,8 @@ public class UserAccountView extends View {
 
     private Button addPreferenceButton;
 
+    private Panel breadCrump;
+
     public UserAccountView(Router router, UserProxy userProxy, UserAccountRepository ur, UserAccountController uac) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
         Preconditions.checkNotNull(userProxy, "userProxy is null: %s", userProxy);
@@ -88,10 +91,8 @@ public class UserAccountView extends View {
     public void init() {
         setImmediate(false);
         setStyleName(Runo.PANEL_LIGHT);
-
         Panel contentPanel = createContentPanel();
         contentPanel.setContent(buildVlContentPanel());
-
         setContent(contentPanel);
     }
 
@@ -107,7 +108,8 @@ public class UserAccountView extends View {
         }
 
         @Override
-        public void buttonClick(@SuppressWarnings("unused") final com.vaadin.ui.Button.ClickEvent event) {
+        public void buttonClick(@SuppressWarnings("unused")
+        final com.vaadin.ui.Button.ClickEvent event) {
             addAttributeButton.setEnabled(false);
             final HorizontalLayout hl = new HorizontalLayout();
             final TextField key = new TextField();
@@ -130,7 +132,8 @@ public class UserAccountView extends View {
             btnadd.setIcon(new ThemeResource("images/assets/plus.png"));
             btnadd.addListener(new Button.ClickListener() {
                 @Override
-                public void buttonClick(@SuppressWarnings("unused") final com.vaadin.ui.Button.ClickEvent event) {
+                public void buttonClick(@SuppressWarnings("unused")
+                final com.vaadin.ui.Button.ClickEvent event) {
                     if (isNotValid(key, value)) {
                         showMessage();
                     }
@@ -180,7 +183,8 @@ public class UserAccountView extends View {
         }
 
         @Override
-        public void buttonClick(@SuppressWarnings("unused") com.vaadin.ui.Button.ClickEvent event) {
+        public void buttonClick(@SuppressWarnings("unused")
+        com.vaadin.ui.Button.ClickEvent event) {
             try {
                 form.commit();
                 if (!passwordField.getValue().equals(verifyPasswordField.getValue())) {
@@ -213,6 +217,7 @@ public class UserAccountView extends View {
 
     private static Panel createContentPanel() {
         Panel contentPanel = new Panel();
+        contentPanel.setStyleName(Runo.PANEL_LIGHT);
         contentPanel.setImmediate(false);
         contentPanel.setWidth("100.0%");
         contentPanel.setHeight("100.0%");
@@ -225,19 +230,45 @@ public class UserAccountView extends View {
         vlContentPanel.setImmediate(false);
         vlContentPanel.setWidth("100.0%");
         vlContentPanel.setHeight("100.0%");
-        vlContentPanel.setMargin(false);
-
+        vlContentPanel.setMargin(false, true, false, true);
+        // breadCrumpPanel
+        breadCrump = buildBreadCrumpPanel();
+        vlContentPanel.addComponent(breadCrump);
         // pnlCreateContext
         Accordion accordion = buildPanel();
+        accordion.setStyleName(Runo.ACCORDION_LIGHT);
         vlContentPanel.addComponent(accordion);
         vlContentPanel.setExpandRatio(accordion, 1f);
 
         return vlContentPanel;
     }
 
+    private Panel buildBreadCrumpPanel() {
+        // common part: create layout
+        Panel breadCrumpPanel = new Panel();
+        breadCrumpPanel.setImmediate(false);
+        breadCrumpPanel.setWidth("100.0%");
+        breadCrumpPanel.setHeight("30px");
+        breadCrumpPanel.setStyleName(Runo.PANEL_LIGHT);
+
+        // vlBreadCrump
+        VerticalLayout vlBreadCrump = new VerticalLayout();
+        vlBreadCrump.setImmediate(false);
+        vlBreadCrump.setWidth("100.0%");
+        vlBreadCrump.setHeight("100.0%");
+        vlBreadCrump.setMargin(false);
+        breadCrumpPanel.setContent(vlBreadCrump);
+
+        // BreadCreumb
+        new BreadCrumbMenu(breadCrumpPanel, userProxy.getName());
+
+        return breadCrumpPanel;
+    }
+
     private Accordion buildPanel() {
         // common part: create layout
         Accordion accCreateContext = new Accordion();
+        accCreateContext.setStyleName(Runo.ACCORDION_LIGHT);
         accCreateContext.setImmediate(false);
         accCreateContext.setWidth("100.0%");
         accCreateContext.setHeight("100.0%");

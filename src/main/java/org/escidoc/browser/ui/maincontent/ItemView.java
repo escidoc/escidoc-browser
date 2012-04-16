@@ -28,16 +28,7 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Runo;
-
 import org.escidoc.browser.controller.ItemController;
-import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.TreeDataSource;
@@ -46,6 +37,13 @@ import org.escidoc.browser.model.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.view.helpers.ItemPropertiesVH;
+
+import com.google.common.base.Preconditions;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.om.item.Item;
@@ -58,8 +56,6 @@ public final class ItemView extends View {
     private final ItemProxyImpl resourceProxy;
 
     private final Window mainWindow;
-
-    private final EscidocServiceLocation serviceLocation;
 
     private final Repositories repositories;
 
@@ -80,7 +76,6 @@ public final class ItemView extends View {
         this.setViewName(resourceProxy.getName());
         this.mainWindow = router.getMainWindow();
         this.router = router;
-        this.serviceLocation = router.getServiceLocation();
         this.controller = itemController;
         panelView = buildContentPanel();
     }
@@ -104,7 +99,7 @@ public final class ItemView extends View {
         vlContentPanel.setImmediate(false);
         vlContentPanel.setWidth("100.0%");
         vlContentPanel.setHeight("100.0%");
-        vlContentPanel.setMargin(true, true, false, true);
+        vlContentPanel.setMargin(false, true, false, true);
 
         // resourcePropertiesPanel
         Panel resourcePropertiesPanel = buildResourcePropertiesPanel();
@@ -319,18 +314,4 @@ public final class ItemView extends View {
         }
     }
 
-    // private void reloadParent(ResourceModel parentModel) throws
-    // EscidocClientException {
-    // TabSheet ts = (TabSheet) router.getLayout().getViewContainer();
-    // for (int i = ts.getComponentCount() - 1; i >= 0; i--) {
-    // String tabDescription =
-    // ts.getTab(i).getDescription().substring(ts.getTab(i).getDescription().lastIndexOf('#')
-    // + 1).toString();
-    // LOG.debug("############################ " + tabDescription);
-    // // Remove the tab from the TabSheet
-    // if (tabDescription.equals(parentModel.getId().toString())) {
-    // router.show(parentModel, true);
-    // }
-    // }
-    // }
 }
