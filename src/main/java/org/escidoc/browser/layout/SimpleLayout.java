@@ -28,30 +28,8 @@
  */
 package org.escidoc.browser.layout;
 
-import java.net.URISyntaxException;
-
-import org.escidoc.browser.AppConstants;
-import org.escidoc.browser.BrowserApplication;
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.PropertyId;
-import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.model.TreeDataSource;
-import org.escidoc.browser.model.internal.TreeDataSourceImpl;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.mainpage.Footer;
-import org.escidoc.browser.ui.mainpage.HeaderContainer;
-import org.escidoc.browser.ui.navigation.BaseNavigationTreeView;
-import org.escidoc.browser.ui.navigation.BaseTreeDataSource;
-import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
-import org.escidoc.browser.ui.navigation.NavigationTreeView;
-import org.escidoc.browser.ui.tools.ToolsTreeView;
-import org.escidoc.browser.ui.view.helpers.CloseTabsViewHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.data.Container.Filterable;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
@@ -78,8 +56,29 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Runo;
 
+import org.escidoc.browser.BrowserApplication;
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.PropertyId;
+import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.TreeDataSource;
+import org.escidoc.browser.model.internal.TreeDataSourceImpl;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.mainpage.Footer;
+import org.escidoc.browser.ui.mainpage.HeaderContainer;
+import org.escidoc.browser.ui.navigation.BaseNavigationTreeView;
+import org.escidoc.browser.ui.navigation.BaseTreeDataSource;
+import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
+import org.escidoc.browser.ui.navigation.NavigationTreeView;
+import org.escidoc.browser.ui.tools.ToolsTreeView;
+import org.escidoc.browser.ui.view.helpers.CloseTabsViewHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.net.URISyntaxException;
+
 import de.escidoc.core.client.exceptions.EscidocClientException;
-import de.escidoc.core.resources.aa.useraccount.Grant;
 
 @SuppressWarnings("serial")
 public class SimpleLayout extends LayoutDesign {
@@ -359,28 +358,13 @@ public class SimpleLayout extends LayoutDesign {
     }
 
     private void addGroupsTab(Accordion accordion) throws EscidocClientException {
-
-        if (isCurrentUserHasSysAdminRole()) {
-            BaseTreeDataSource groupDataSource = new BaseTreeDataSource(repositories.group());
-            groupDataSource.init();
-            accordion.addTab(buildGroupListWithFilter(treeBuilder.buildGroupTree(groupDataSource), groupDataSource),
-                ViewConstants.User_Groups, NO_ICON);
+        if (app.getCurrentUser().isGuest()) {
+            return;
         }
-    }
-
-    private boolean isCurrentUserHasSysAdminRole() throws EscidocClientException {
-        if (!app.getCurrentUser().isGuest()) {
-            for (Grant grant : repositories.user().getGrants(app.getCurrentUser().getUserId())) {
-                if (hasSysAdminRole(grant)) {
-                    return hasSysAdminRole(grant);
-                }
-            }
-        }
-        return false;
-    }
-
-    private static boolean hasSysAdminRole(Grant grant) {
-        return grant.getProperties().getRole().getObjid().equals(AppConstants.ESCIDOC_SYSADMIN_ROLE);
+        BaseTreeDataSource groupDataSource = new BaseTreeDataSource(repositories.group());
+        groupDataSource.init();
+        accordion.addTab(buildGroupListWithFilter(treeBuilder.buildGroupTree(groupDataSource), groupDataSource),
+            ViewConstants.User_Groups, NO_ICON);
     }
 
     private Component buildGroupListWithFilter(final BaseNavigationTreeView list, final TreeDataSource ds) {
@@ -435,8 +419,7 @@ public class SimpleLayout extends LayoutDesign {
         createGroupButton.addListener(new ClickListener() {
 
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
                 showCreateGroupView();
             }
 
@@ -449,15 +432,12 @@ public class SimpleLayout extends LayoutDesign {
         return cssLayout;
     }
 
-    private void addUserAccountsTab(Accordion accordion) throws EscidocClientException {
-        if (isAllowedToRetrieveUserAccounts()) {
-            accordion.addTab(buildListWithFilter(treeBuilder.buildUserAccountTree()), ViewConstants.USER_ACCOUNTS,
-                NO_ICON);
+    private void addUserAccountsTab(Accordion accordion) {
+        if (app.getCurrentUser().isGuest()) {
+            return;
         }
-    }
 
-    private boolean isAllowedToRetrieveUserAccounts() throws EscidocClientException {
-        return isCurrentUserHasSysAdminRole();
+        accordion.addTab(buildListWithFilter(treeBuilder.buildUserAccountTree()), ViewConstants.USER_ACCOUNTS, NO_ICON);
     }
 
     private void addContentModelsTab(Accordion accordion) {

@@ -104,4 +104,8 @@ public final class AppConstants {
     public static final String ESCIDOC_ADMIN_ROLE = "escidoc:role-administrator";
 
     public static final String ESCIDOC_SYSADMIN_ROLE = "escidoc:role-system-administrator";
+
+    public static final Object ESCIDOC_SYS_INSPECTOR_ROLE = "escidoc:role-system-inspector";
+
+    public static final String ESCIDOC_USER_ADMIN_ROLE = "escidoc:role-user-account-administrator";
 }

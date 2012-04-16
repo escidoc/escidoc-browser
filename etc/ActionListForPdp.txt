@@ -144,7 +144,6 @@
 "info:escidoc/names:aa:1.0:action:query-semantic-store"
 "info:escidoc/names:aa:1.0:action:retrieve-set-definition"
 "info:escidoc/names:aa:1.0:action:delete-user-account";
-"info:escidoc/names:aa:1.0:action:update-user-account";
 "info:escidoc/names:aa:1.0:action:deactivate-user-account";
 "info:escidoc/names:aa:1.0:action:update-role";
 "info:escidoc/names:aa:1.0:action:create-grant";
