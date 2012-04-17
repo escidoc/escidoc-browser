@@ -40,6 +40,7 @@ import org.escidoc.browser.repository.UserGroupModel;
 import org.escidoc.browser.ui.listeners.AddOrgUnitstoGroup;
 import org.escidoc.browser.ui.maincontent.View;
 import org.escidoc.browser.ui.orgunit.OrgUnitTreeView;
+import org.escidoc.browser.ui.view.helpers.ResourcePropertiesVH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,6 +89,8 @@ public class UserGroupView extends View {
 
     private Table selectorTable;
 
+    private ResourcePropertiesVH resoucePropertiesView;
+
     public UserGroupView(Router router, ResourceProxy resourceProxy, Repositories repositories,
         UserGroupController controller) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
@@ -104,6 +107,7 @@ public class UserGroupView extends View {
     public Panel buildContentPanel() {
         setImmediate(false);
         setStyleName(Runo.PANEL_LIGHT);
+        setSizeFull();
         Panel contentPanel = createContentPanel();
         contentPanel.setContent(buildVlContentPanel());
         setContent(contentPanel);
@@ -115,20 +119,35 @@ public class UserGroupView extends View {
         nameField.setValue(resourceProxy.getName());
     }
 
-    // TODO why do we need another panel?
     private static Panel createContentPanel() {
         Panel contentPanel = new Panel();
         contentPanel.setImmediate(false);
         contentPanel.setSizeFull();
+
         return contentPanel;
     }
 
     private ComponentContainer buildVlContentPanel() {
         VerticalLayout layout = createMainLayout();
+        layout.addComponent(buildVlResourceProperties());
         addNameField(layout);
         addOrgUnitTable(layout);
         addSaveButton(layout);
         return layout;
+    }
+
+    private VerticalLayout buildVlResourceProperties() {
+        // common part: create layout
+        VerticalLayout vlResourceProperties = new VerticalLayout();
+        vlResourceProperties.setImmediate(false);
+        vlResourceProperties.setWidth("100.0%");
+        vlResourceProperties.setHeight("100.0%");
+        vlResourceProperties.setMargin(false);
+
+        // creating the properties / without the breadcrump
+        resoucePropertiesView = new ResourcePropertiesVH(resourceProxy, router);
+        vlResourceProperties.addComponent(resoucePropertiesView.getContentLayout());
+        return vlResourceProperties;
     }
 
     private void addOrgUnitTable(VerticalLayout layout) {

@@ -38,7 +38,6 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
 
 public class ResourcePropertiesVH {
@@ -47,26 +46,18 @@ public class ResourcePropertiesVH {
 
     private String status;
 
-    private Label lblLockstatus;
-
     private Label lblStatus;
 
     private ResourceProxy resourceProxy;
 
     private CssLayout cssLayout;
 
-    private Window mainWindow;
-
     private final VerticalLayout vlPropertiesLeft = new VerticalLayout();
 
     private Label nameLabel;
 
-    private Router router;
-
     public ResourcePropertiesVH(ResourceProxy resourceProxy, Router router) {
         this.resourceProxy = resourceProxy;
-        this.mainWindow = router.getMainWindow();
-        this.router = router;
         buildViews();
     }
 
@@ -124,7 +115,7 @@ public class ResourcePropertiesVH {
     private Panel buildLeftPropertiesPnl() {
         final Panel pnlPropertiesLeft = new Panel();
         pnlPropertiesLeft.setWidth("40%");
-        pnlPropertiesLeft.setHeight("60px");
+        pnlPropertiesLeft.setHeight("50px");
         pnlPropertiesLeft.setStyleName(ViewConstants.FLOAT_LEFT);
         pnlPropertiesLeft.addStyleName(Runo.PANEL_LIGHT);
         pnlPropertiesLeft.getLayout().setMargin(false);
@@ -134,7 +125,7 @@ public class ResourcePropertiesVH {
     private Panel buildRightPnlProperties() {
         final Panel pnlPropertiesRight = new Panel();
         pnlPropertiesRight.setWidth("60%");
-        pnlPropertiesRight.setHeight("60px");
+        pnlPropertiesRight.setHeight("50px");
         pnlPropertiesRight.setStyleName(ViewConstants.FLOAT_RIGHT);
         pnlPropertiesRight.addStyleName(Runo.PANEL_LIGHT);
         pnlPropertiesRight.getLayout().setMargin(false);

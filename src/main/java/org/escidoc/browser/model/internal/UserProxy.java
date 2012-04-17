@@ -81,7 +81,7 @@ public class UserProxy implements ResourceProxy {
 
     @Override
     public String getCreator() {
-        return ua.getProperties().getCreatedBy().toString();
+        return ua.getProperties().getCreatedBy().getXLinkTitle();
     }
 
     @Override
@@ -91,7 +91,7 @@ public class UserProxy implements ResourceProxy {
 
     @Override
     public String getModifier() {
-        return ua.getProperties().getModifiedBy().toString();
+        return ua.getProperties().getModifiedBy().getXLinkTitle();
     }
 
     @Override

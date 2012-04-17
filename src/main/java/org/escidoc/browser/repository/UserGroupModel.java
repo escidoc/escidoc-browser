@@ -80,7 +80,10 @@ public class UserGroupModel extends AbstractResourceModel implements ResourcePro
 
     @Override
     public String getStatus() {
-        throw new UnsupportedOperationException("not-yet-implemented.");
+        if (userGroup.getProperties().isActive()) {
+            return "Active";
+        }
+        return "Not-Active";
     }
 
     @Override
