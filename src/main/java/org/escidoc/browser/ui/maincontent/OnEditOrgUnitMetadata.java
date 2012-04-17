@@ -36,7 +36,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Link;
 import com.vaadin.ui.ProgressIndicator;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.Upload.FailedEvent;
@@ -44,6 +43,7 @@ import com.vaadin.ui.Upload.FinishedEvent;
 import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.BaseTheme;
 
 import org.escidoc.browser.controller.OrgUnitController;
 import org.escidoc.browser.ui.Router;
@@ -59,6 +59,7 @@ import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.URL;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -116,13 +117,47 @@ public class OnEditOrgUnitMetadata {
         modalWindow.addComponent(message);
         modalWindow.addComponent(upload);
         modalWindow.addComponent(new Label("OR"));
-
-        modalWindow.addComponent(new Link(ViewConstants.OPEN_METADATA_IN_EDITOR, new ExternalResource(
-            buildMdUpdateUri("http://" + mainWindow.getApplication().getURL().getAuthority()))));
+        modalWindow.addComponent(buildMdUpdateLink(modalWindow));
         modalWindow.addComponent(progressLayout);
         modalWindow.addComponent(buttonLayout);
 
         mainWindow.addWindow(modalWindow);
+    }
+
+    private Button buildMdUpdateLink(final Window modalWindow) {
+        Button mdUpdateLink = new Button(ViewConstants.OPEN_METADATA_IN_EDITOR, new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
+                closeModalWindow(modalWindow);
+                openMetadataEditor();
+            }
+
+            private void openMetadataEditor() {
+                mainWindow.open(new ExternalResource(buildMdUpdateUri(getAppBaseUri()), "_blank"));
+            }
+
+            private String getAppBaseUri() {
+                StringBuilder builder = new StringBuilder();
+                // @formatter:off
+                builder
+                  .append(getAppUrl().getProtocol())
+                  .append("://")
+                  .append(getAppUrl().getAuthority());
+        	   // @formatter:on
+                return builder.toString();
+            }
+
+            private URL getAppUrl() {
+                return mainWindow.getApplication().getURL();
+            }
+
+            private void closeModalWindow(final Window modalWindow) {
+                mainWindow.removeWindow(modalWindow);
+            }
+        });
+        mdUpdateLink.setStyleName(BaseTheme.BUTTON_LINK);
+        return mdUpdateLink;
     }
 
     private void buildUploadComponent() {
@@ -132,9 +167,6 @@ public class OnEditOrgUnitMetadata {
     }
 
     private String buildMdUpdateUri(String baseUri) {
-        Preconditions.checkNotNull(router.getServiceLocation().getEscidocUri(), "escidocUrl is null: %s", router
-            .getServiceLocation().getEscidocUri());
-
         StringBuilder builder = new StringBuilder();
         builder.append(baseUri + "/rest/v0.9/organizations/");
         builder.append(Metadata.getId(md));
@@ -249,14 +281,14 @@ public class OnEditOrgUnitMetadata {
 
         upload.addListener(new Upload.FailedListener() {
             @Override
-            public void uploadFailed(final FailedEvent event) {
+            public void uploadFailed(@SuppressWarnings("unused") final FailedEvent event) {
                 message.setValue("Uploading interrupted");
             }
         });
 
         upload.addListener(new Upload.FinishedListener() {
             @Override
-            public void uploadFinished(final FinishedEvent event) {
+            public void uploadFinished(@SuppressWarnings("unused") final FinishedEvent event) {
                 progressLayout.setVisible(false);
                 upload.setVisible(true);
                 upload.setCaption("Select another file");
