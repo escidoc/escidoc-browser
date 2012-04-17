@@ -28,12 +28,12 @@
  */
 package org.escidoc.browser.model.internal;
 
-import com.google.common.base.Preconditions;
+import java.util.List;
 
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
 
-import java.util.List;
+import com.google.common.base.Preconditions;
 
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.aa.useraccount.UserAccount;
@@ -73,27 +73,30 @@ public class UserProxy implements ResourceProxy {
 
     @Override
     public String getStatus() {
-        throw new UnsupportedOperationException("not-yet-implemented.");
+        if (ua.getProperties().isActive()) {
+            return "Active";
+        }
+        return "Not-Active";
     }
 
     @Override
     public String getCreator() {
-        throw new UnsupportedOperationException("not-yet-implemented.");
+        return ua.getProperties().getCreatedBy().toString();
     }
 
     @Override
     public String getCreatedOn() {
-        throw new UnsupportedOperationException("not-yet-implemented.");
+        return ua.getProperties().getCreationDate().toString("d.M.y, H:mm");
     }
 
     @Override
     public String getModifier() {
-        throw new UnsupportedOperationException("not-yet-implemented.");
+        return ua.getProperties().getModifiedBy().toString();
     }
 
     @Override
     public String getModifiedOn() {
-        throw new UnsupportedOperationException("not-yet-implemented.");
+        return ua.getProperties().getCreationDate().toString("d.M.y, H:mm");
     }
 
     @Override
@@ -108,17 +111,17 @@ public class UserProxy implements ResourceProxy {
 
     @Override
     public String getLockStatus() {
-        throw new UnsupportedOperationException("not-yet-implemented.");
+        return "Information not valid for this resource";
     }
 
     @Override
     public String getVersionStatus() {
-        throw new UnsupportedOperationException("not-yet-implemented.");
+        return "Information not valid for this resource";
     }
 
     @Override
     public Resource getContentModel() {
-        throw new UnsupportedOperationException("not-yet-implemented.");
+        throw new UnsupportedOperationException("Information not valid for this resource");
     }
 
     public UserAccount getResource() {

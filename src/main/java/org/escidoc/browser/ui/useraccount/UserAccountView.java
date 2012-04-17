@@ -37,12 +37,11 @@ import org.escidoc.browser.repository.internal.UserAccountRepository;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.View;
-import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
+import org.escidoc.browser.ui.view.helpers.ResourcePropertiesVH;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.data.Validator.EmptyValueException;
 import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
@@ -74,6 +73,8 @@ public class UserAccountView extends View {
     private Button addPreferenceButton;
 
     private Panel breadCrump;
+
+    private ResourcePropertiesVH resoucePropertiesView;
 
     public UserAccountView(Router router, UserProxy userProxy, UserAccountRepository ur, UserAccountController uac) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
@@ -231,44 +232,21 @@ public class UserAccountView extends View {
         vlContentPanel.setWidth("100.0%");
         vlContentPanel.setHeight("100.0%");
         vlContentPanel.setMargin(false, true, false, true);
-        // breadCrumpPanel
-        breadCrump = buildBreadCrumpPanel();
-        vlContentPanel.addComponent(breadCrump);
+
+        vlContentPanel.addComponent(buildVlResourceProperties());
         // pnlCreateContext
-        Accordion accordion = buildPanel();
-        accordion.setStyleName(Runo.ACCORDION_LIGHT);
-        vlContentPanel.addComponent(accordion);
-        vlContentPanel.setExpandRatio(accordion, 1f);
+        Panel panel = buildPanel();
+
+        vlContentPanel.addComponent(panel);
+        vlContentPanel.setExpandRatio(panel, 1f);
 
         return vlContentPanel;
     }
 
-    private Panel buildBreadCrumpPanel() {
+    private Panel buildPanel() {
         // common part: create layout
-        Panel breadCrumpPanel = new Panel();
-        breadCrumpPanel.setImmediate(false);
-        breadCrumpPanel.setWidth("100.0%");
-        breadCrumpPanel.setHeight("30px");
-        breadCrumpPanel.setStyleName(Runo.PANEL_LIGHT);
-
-        // vlBreadCrump
-        VerticalLayout vlBreadCrump = new VerticalLayout();
-        vlBreadCrump.setImmediate(false);
-        vlBreadCrump.setWidth("100.0%");
-        vlBreadCrump.setHeight("100.0%");
-        vlBreadCrump.setMargin(false);
-        breadCrumpPanel.setContent(vlBreadCrump);
-
-        // BreadCreumb
-        new BreadCrumbMenu(breadCrumpPanel, userProxy.getName());
-
-        return breadCrumpPanel;
-    }
-
-    private Accordion buildPanel() {
-        // common part: create layout
-        Accordion accCreateContext = new Accordion();
-        accCreateContext.setStyleName(Runo.ACCORDION_LIGHT);
+        Panel accCreateContext = new Panel();
+        // accCreateContext.setStyleName(Runo.PANEL_LIGHT);
         accCreateContext.setImmediate(false);
         accCreateContext.setWidth("100.0%");
         accCreateContext.setHeight("100.0%");
@@ -278,7 +256,6 @@ public class UserAccountView extends View {
         vlAccCreateContext.setImmediate(false);
         vlAccCreateContext.setWidth("100.0%");
         vlAccCreateContext.setHeight("100.0%");
-
         vlAccCreateContext.setMargin(false);
         vlAccCreateContext.setSpacing(false);
 
@@ -293,7 +270,7 @@ public class UserAccountView extends View {
             router.getMainWindow().showNotification(ViewConstants.ERROR_CREATING_RESOURCE + e.getMessage(),
                 Window.Notification.TYPE_ERROR_MESSAGE);
         }
-        accCreateContext.addTab(vlAccCreateContext, " ");
+        accCreateContext.addComponent(vlAccCreateContext);
 
         return accCreateContext;
     }
@@ -316,8 +293,12 @@ public class UserAccountView extends View {
 
         form.getField("txtNameContext").setRequired(true);
         form.getField("txtNameContext").setRequiredError("Name is missing");
-
-        vlAccCreateContext.addComponent(form);
+        Panel formPnl = new Panel(ViewConstants.USER_PASS_FORM);
+        VerticalLayout vl = new VerticalLayout();
+        vl.setMargin(false, true, false, true);
+        vl.addComponent(form);
+        formPnl.setContent(vl);
+        vlAccCreateContext.addComponent(formPnl);
         vlAccCreateContext.addComponent(buildPreferencesView());
         if (uac.hasAccessOnAttributes(router.getApp().getCurrentUser().getUserId())) {
             vlAccCreateContext.addComponent(buildAttributesView());
@@ -448,6 +429,20 @@ public class UserAccountView extends View {
         addPreferenceButton.setIcon(new ThemeResource("images/assets/plus.png"));
         addPreferenceButton.addListener(new OnAddPreference(this, preferencePanel, userPrefTable, addPreferenceButton));
         return addPreferenceButton;
+    }
+
+    private VerticalLayout buildVlResourceProperties() {
+        // common part: create layout
+        VerticalLayout vlResourceProperties = new VerticalLayout();
+        vlResourceProperties.setImmediate(false);
+        vlResourceProperties.setWidth("100.0%");
+        vlResourceProperties.setHeight("100.0%");
+        vlResourceProperties.setMargin(false);
+
+        // creating the properties / without the breadcrump
+        resoucePropertiesView = new ResourcePropertiesVH(userProxy, router);
+        vlResourceProperties.addComponent(resoucePropertiesView.getContentLayout());
+        return vlResourceProperties;
     }
 
     @Override

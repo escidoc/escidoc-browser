@@ -50,7 +50,7 @@ public class CreateResourceLinksVH {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateResourceLinksVH.class);
 
-    private static final ThemeResource ICON_HISTORY = new ThemeResource("../runo/icons/16/calendar.png");
+    private static final ThemeResource ICON_HISTORY = new ThemeResource("images/wpzoom/clock.png");
 
     public CreateResourceLinksVH(String url, ResourceProxy resourceProxy,
         AbstractComponentContainer componentContainer, Router router) {
@@ -81,7 +81,7 @@ public class CreateResourceLinksVH {
                         + resourceProxy.getType().toString() + "&escidocurl="
                         + router.getServiceLocation().getEscidocUrl()));
             l.setDescription(ViewConstants.PERMANENT_LINK);
-            l.setIcon(new ThemeResource("images/assets/link.png"));
+            l.setIcon(new ThemeResource("images/wpzoom/globe-1.png"));
             vl.addComponent(l);
             componentContainer.addComponent(vl);
         }

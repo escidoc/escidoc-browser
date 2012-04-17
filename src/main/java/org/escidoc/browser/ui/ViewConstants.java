@@ -28,6 +28,7 @@
  */
 package org.escidoc.browser.ui;
 
+
 public class ViewConstants {
 
     // Footer
@@ -444,4 +445,11 @@ public class ViewConstants {
     public static final String OPEN_METADATA_IN_EDITOR = "Open Metadata in Editor";
 
     public static final String DELETE_USER_GROUP = "Delete Group";
+
+    public static final String USER_PASS_FORM = "Update user information";
+
+    public static final String FLOAT_LEFT = "floatleft";
+
+    public static final String DESC_STATUS2 = "status";
+
 }

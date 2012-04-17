@@ -65,20 +65,6 @@ import de.escidoc.core.resources.om.item.Item;
 
 public class ItemPropertiesVH {
 
-    private static final String FLOAT_LEFT = "floatleft";
-
-    private static final String FLOAT_RIGHT = "floatright";
-
-    private static final String DESC_LOCKSTATUS = "lockstatus";
-
-    private static final String DESC_STATUS2 = "status";
-
-    private static final String SUBWINDOW_EDIT = "Add Comment to the Edit operation";
-
-    private static final String CREATED_BY = "Created by ";
-
-    private static final String LAST_MODIFIED_BY = "Last modification by ";
-
     private static final Logger LOG = LoggerFactory.getLogger(ItemPropertiesVH.class);
 
     private String status;
@@ -160,24 +146,25 @@ public class ItemPropertiesVH {
         status = resourceProxy.getType().getLabel() + " is ";
         lockStatus = status;
         lblStatus = new Label(status + resourceProxy.getStatus(), Label.CONTENT_RAW);
-        lblStatus.setDescription(DESC_STATUS2);
+        lblStatus.setDescription(ViewConstants.DESC_STATUS2);
 
         lblLockstatus = new Label(status + resourceProxy.getLockStatus(), Label.CONTENT_RAW);
-        lblLockstatus.setDescription(DESC_LOCKSTATUS);
+        lblLockstatus.setDescription(ViewConstants.DESC_LOCKSTATUS);
         if (controller.canUpdateItem()) {
             lblLockstatus.setStyleName("inset");
         }
         final Label descMetadata2 =
-            new Label(CREATED_BY + " " + resourceProxy.getCreator() + " on " + resourceProxy.getCreatedOn() + "<br/>"
-                + LAST_MODIFIED_BY + " " + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn()
-                + "<br/>" + "Released by " + resourceProxy.getReleasedBy() + " on "
-                + resourceProxy.getLatestVersionModifiedOn(), Label.CONTENT_XHTML);
+            new Label(ViewConstants.CREATED_BY + " " + resourceProxy.getCreator() + " on "
+                + resourceProxy.getCreatedOn() + "<br/>" + ViewConstants.LAST_MODIFIED_BY + " "
+                + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn() + "<br/>" + "Released by "
+                + resourceProxy.getReleasedBy() + " on " + resourceProxy.getLatestVersionModifiedOn(),
+                Label.CONTENT_XHTML);
 
         vlPropertiesLeft.addComponent(descMetadata1);
         if (controller.canUpdateItem()) {
             status = "Latest status is ";
             lblCurrentVersionStatus = new Label(status + resourceProxy.getVersionStatus());
-            lblCurrentVersionStatus.setDescription(DESC_STATUS2);
+            lblCurrentVersionStatus.setDescription(ViewConstants.DESC_STATUS2);
             lblCurrentVersionStatus.setStyleName("inset");
             vlPropertiesLeft.addComponent(lblCurrentVersionStatus);
 
@@ -199,7 +186,7 @@ public class ItemPropertiesVH {
         final Panel pnlPropertiesLeft = new Panel();
         pnlPropertiesLeft.setWidth("40%");
         pnlPropertiesLeft.setHeight("60px");
-        pnlPropertiesLeft.setStyleName(FLOAT_LEFT);
+        pnlPropertiesLeft.setStyleName(ViewConstants.FLOAT_LEFT);
         pnlPropertiesLeft.addStyleName(Runo.PANEL_LIGHT);
         pnlPropertiesLeft.getLayout().setMargin(false);
         return pnlPropertiesLeft;
@@ -209,7 +196,7 @@ public class ItemPropertiesVH {
         final Panel pnlPropertiesRight = new Panel();
         pnlPropertiesRight.setWidth("60%");
         pnlPropertiesRight.setHeight("60px");
-        pnlPropertiesRight.setStyleName(FLOAT_RIGHT);
+        pnlPropertiesRight.setStyleName(ViewConstants.FLOAT_RIGHT);
         pnlPropertiesRight.addStyleName(Runo.PANEL_LIGHT);
         pnlPropertiesRight.getLayout().setMargin(false);
         return pnlPropertiesRight;
@@ -245,14 +232,14 @@ public class ItemPropertiesVH {
                         // Is Label?
                         if (event.getChildComponent().getClass().getCanonicalName().equals("com.vaadin.ui.Label")) {
                             final Label child = (Label) event.getChildComponent();
-                            if ((child.getDescription() == DESC_STATUS2)
+                            if ((child.getDescription() == ViewConstants.DESC_STATUS2)
                                 && (!lblStatus.getValue().equals(status + "withdrawn"))) {
                                 reSwapComponents();
                                 oldComponent = event.getClickedComponent();
                                 swapComponent = editStatus(child.getValue().toString().replace(status, ""));
                                 vlPropertiesLeft.replaceComponent(oldComponent, swapComponent);
                             }
-                            else if (child.getDescription() == DESC_LOCKSTATUS) {
+                            else if (child.getDescription() == ViewConstants.DESC_LOCKSTATUS) {
                                 reSwapComponents();
                                 oldComponent = event.getClickedComponent();
                                 swapComponent = editLockStatus(child.getValue().toString().replace(status, ""));
@@ -369,7 +356,7 @@ public class ItemPropertiesVH {
                 }
 
                 public void addCommentWindow() {
-                    subwindow = new Window(SUBWINDOW_EDIT);
+                    subwindow = new Window(ViewConstants.SUBWINDOW_EDIT);
                     subwindow.setModal(true);
                     // Configure the windws layout; by default a VerticalLayout
                     final VerticalLayout layout = (VerticalLayout) subwindow.getContent();
