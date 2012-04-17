@@ -318,19 +318,4 @@ public final class ItemView extends View {
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
         }
     }
-
-    // private void reloadParent(ResourceModel parentModel) throws
-    // EscidocClientException {
-    // TabSheet ts = (TabSheet) router.getLayout().getViewContainer();
-    // for (int i = ts.getComponentCount() - 1; i >= 0; i--) {
-    // String tabDescription =
-    // ts.getTab(i).getDescription().substring(ts.getTab(i).getDescription().lastIndexOf('#')
-    // + 1).toString();
-    // LOG.debug("############################ " + tabDescription);
-    // // Remove the tab from the TabSheet
-    // if (tabDescription.equals(parentModel.getId().toString())) {
-    // router.show(parentModel, true);
-    // }
-    // }
-    // }
 }

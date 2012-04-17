@@ -36,7 +36,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Link;
 import com.vaadin.ui.ProgressIndicator;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.Upload.FailedEvent;
@@ -44,6 +43,7 @@ import com.vaadin.ui.Upload.FinishedEvent;
 import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.BaseTheme;
 
 import org.escidoc.browser.controller.ContextController;
 import org.escidoc.browser.ui.Router;
@@ -59,7 +59,7 @@ import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.URI;
+import java.net.URL;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -84,7 +84,15 @@ public class OnEditContextMetadata {
 
     private ContextController controller;
 
-    private URI uri;
+    private ProgressIndicator pi;
+
+    private HorizontalLayout progressLayout;
+
+    private MetadataFileReceiver receiver;
+
+    private Element metadataContent;
+
+    private Upload upload;
 
     public OnEditContextMetadata(Router router, ContextController controller, Window mainWindow, Metadata md) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
@@ -109,8 +117,7 @@ public class OnEditContextMetadata {
         modalWindow.addComponent(upload);
         modalWindow.addComponent(new Label("OR"));
 
-        modalWindow.addComponent(new Link(ViewConstants.OPEN_METADATA_IN_EDITOR, new ExternalResource(
-            buildMdUpdateUri("http://" + mainWindow.getApplication().getURL().getAuthority()))));
+        modalWindow.addComponent(buildMdUpdateLink(modalWindow));
 
         modalWindow.addComponent(progressLayout);
         modalWindow.addComponent(buildSaveAndCancelButtons(modalWindow));
@@ -118,15 +125,42 @@ public class OnEditContextMetadata {
         mainWindow.addWindow(modalWindow);
     }
 
-    private ProgressIndicator pi;
+    @SuppressWarnings("serial")
+    private Button buildMdUpdateLink(final Window modalWindow) {
+        Button mdUpdateLink = new Button(ViewConstants.OPEN_METADATA_IN_EDITOR, new Button.ClickListener() {
 
-    private HorizontalLayout progressLayout;
+            @Override
+            public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
+                closeModalWindow(modalWindow);
+                openMetadataEditor();
+            }
 
-    private MetadataFileReceiver receiver;
+            private void openMetadataEditor() {
+                mainWindow.open(new ExternalResource(buildMdUpdateUri(getAppBaseUri()), "_blank"));
+            }
 
-    private Element metadataContent;
+            private String getAppBaseUri() {
+                StringBuilder builder = new StringBuilder();
+                // @formatter:off
+                builder
+                  .append(getAppUrl().getProtocol())
+                  .append("://")
+                  .append(getAppUrl().getAuthority());
+        	   // @formatter:on
+                return builder.toString();
+            }
 
-    private Upload upload;
+            private URL getAppUrl() {
+                return mainWindow.getApplication().getURL();
+            }
+
+            private void closeModalWindow(final Window modalWindow) {
+                mainWindow.removeWindow(modalWindow);
+            }
+        });
+        mdUpdateLink.setStyleName(BaseTheme.BUTTON_LINK);
+        return mdUpdateLink;
+    }
 
     private HorizontalLayout buildProgressLayout() {
         progressLayout = new HorizontalLayout();
@@ -141,9 +175,6 @@ public class OnEditContextMetadata {
     }
 
     private String buildMdUpdateUri(String baseUri) {
-        Preconditions.checkNotNull(router.getServiceLocation().getEscidocUri(), "escidocUrl is null: %s", router
-            .getServiceLocation().getEscidocUri());
-
         StringBuilder builder = new StringBuilder();
         builder.append(baseUri + "/rest/v0.9/contexts/");
         builder.append(Metadata.getId(md));
@@ -167,6 +198,7 @@ public class OnEditContextMetadata {
     }
 
     private Button buildSaveButton(final Window modalWindow) {
+        @SuppressWarnings("serial")
         final Button saveBtn = new Button(ViewConstants.SAVE, new Button.ClickListener() {
 
             private AdminDescriptor metadata;
