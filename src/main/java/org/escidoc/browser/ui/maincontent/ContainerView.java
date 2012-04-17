@@ -44,7 +44,7 @@ import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.ResourceDeleteConfirmation;
 import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
-import org.escidoc.browser.ui.view.helpers.CreatePermanentLinkVH;
+import org.escidoc.browser.ui.view.helpers.CreateResourceLinksVH;
 import org.escidoc.browser.ui.view.helpers.DirectMember;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -147,10 +147,9 @@ public class ContainerView extends View {
         vlContentPanel.setImmediate(false);
         vlContentPanel.setWidth("100.0%");
         vlContentPanel.setHeight("100.0%");
-        vlContentPanel.setMargin(true, true, false, true);
+        vlContentPanel.setMargin(false, true, false, true);
 
-        new CreatePermanentLinkVH(mainWindow.getURL().toString(), resourceProxy.getId(), resourceProxy
-            .getType().toString(), vlContentPanel, serviceLocation);
+        new CreateResourceLinksVH(mainWindow.getURL().toString(), resourceProxy, vlContentPanel, router);
 
         // resourcePropertiesPanel
         Panel resourcePropertiesPanel = buildResourcePropertiesPanel();

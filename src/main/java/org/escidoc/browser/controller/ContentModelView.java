@@ -28,8 +28,12 @@
  */
 package org.escidoc.browser.controller;
 
-import com.google.common.base.Preconditions;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.maincontent.View;
+import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.ui.AbstractComponentContainer;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -38,15 +42,12 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
 
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.View;
-import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
-
 @SuppressWarnings("serial")
 public class ContentModelView extends View {
 
     private final ResourceProxy resourceProxy;
+
+    private Panel breadCrump;
 
     public ContentModelView(ResourceProxy rp) {
         Preconditions.checkNotNull(rp, "rp is null: %s", rp);
@@ -69,8 +70,11 @@ public class ContentModelView extends View {
         vlContentPanel.setImmediate(false);
         vlContentPanel.setWidth("100.0%");
         vlContentPanel.setHeight("100.0%");
-        vlContentPanel.setMargin(true, true, false, true);
+        vlContentPanel.setMargin(false, true, false, true);
 
+        // breadCrumpPanel
+        breadCrump = buildBreadCrumpPanel();
+        vlContentPanel.addComponent(breadCrump);
         // resourcePropertiesPanel
         Panel resourcePropertiesPanel = buildResourcePropertiesPanel();
         vlContentPanel.addComponent(resourcePropertiesPanel);
@@ -225,7 +229,7 @@ public class ContentModelView extends View {
         breadCrumpPanel.setContent(vlBreadCrump);
 
         // BreadCreumb
-        new BreadCrumbMenu(breadCrumpPanel, resourceProxy);
+        new BreadCrumbMenu(breadCrumpPanel, resourceProxy.getName().toString());
 
         return breadCrumpPanel;
     }

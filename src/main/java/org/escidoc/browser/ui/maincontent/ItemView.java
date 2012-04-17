@@ -28,16 +28,7 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Runo;
-
 import org.escidoc.browser.controller.ItemController;
-import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.TreeDataSource;
@@ -46,6 +37,13 @@ import org.escidoc.browser.model.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.view.helpers.ItemPropertiesVH;
+
+import com.google.common.base.Preconditions;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.om.item.Item;
@@ -58,8 +56,6 @@ public final class ItemView extends View {
     private final ItemProxyImpl resourceProxy;
 
     private final Window mainWindow;
-
-    private final EscidocServiceLocation serviceLocation;
 
     private final Repositories repositories;
 
@@ -80,7 +76,6 @@ public final class ItemView extends View {
         this.setViewName(resourceProxy.getName());
         this.mainWindow = router.getMainWindow();
         this.router = router;
-        this.serviceLocation = router.getServiceLocation();
         this.controller = itemController;
         panelView = buildContentPanel();
     }
@@ -104,7 +99,7 @@ public final class ItemView extends View {
         vlContentPanel.setImmediate(false);
         vlContentPanel.setWidth("100.0%");
         vlContentPanel.setHeight("100.0%");
-        vlContentPanel.setMargin(true, true, false, true);
+        vlContentPanel.setMargin(false, true, false, true);
 
         // resourcePropertiesPanel
         Panel resourcePropertiesPanel = buildResourcePropertiesPanel();
@@ -318,4 +313,8 @@ public final class ItemView extends View {
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
         }
     }
+<<<<<<< HEAD
+=======
+
+>>>>>>> f27ae0939437676bab5c71167857de57f5f5388d
 }

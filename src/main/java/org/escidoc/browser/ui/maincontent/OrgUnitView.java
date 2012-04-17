@@ -28,8 +28,14 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import com.google.common.base.Preconditions;
+import org.escidoc.browser.controller.OrgUnitController;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.repository.internal.OrgUnitProxy;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.ui.AbstractComponentContainer;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -37,13 +43,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
-
-import org.escidoc.browser.controller.OrgUnitController;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.repository.internal.OrgUnitProxy;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
 
 @SuppressWarnings("serial")
 public class OrgUnitView extends View {
@@ -53,6 +52,8 @@ public class OrgUnitView extends View {
     private final Router router;
 
     private OrgUnitController orgUnitController;
+
+    private Panel breadCrump;
 
     public OrgUnitView(final Router router, final ResourceProxy resourceProxy, OrgUnitController orgUnitController) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
@@ -76,8 +77,10 @@ public class OrgUnitView extends View {
         contentPanel.setImmediate(false);
         contentPanel.setWidth("100.0%");
         contentPanel.setHeight("100.0%");
-        contentPanel.setMargin(true, true, false, true);
-
+        contentPanel.setMargin(false, true, false, true);
+        // breadCrumpPanel
+        breadCrump = buildBreadCrumpPanel();
+        contentPanel.addComponent(breadCrump);
         // resourcePropertiesPanel
         Panel resourcePropertiesPanel = buildResourcePropertiesPanel();
         contentPanel.addComponent(resourcePropertiesPanel);
@@ -239,7 +242,7 @@ public class OrgUnitView extends View {
         breadCrumpPanel.setContent(vlBreadCrump);
 
         // BreadCreumb
-        new BreadCrumbMenu(breadCrumpPanel, resourceProxy);
+        new BreadCrumbMenu(breadCrumpPanel, resourceProxy.getName().toString());
 
         return breadCrumpPanel;
     }
@@ -259,6 +262,7 @@ public class OrgUnitView extends View {
 
     private void createProperties(VerticalLayout vlResourceProperties) {
         // Create Property fields. Probably not the best place for them to be
+        buildBreadCrumpPanel();
         vlResourceProperties.addComponent(bindNameToHeader());
         addHorizontalRuler(vlResourceProperties);
         vlResourceProperties.addComponent(bindProperties());

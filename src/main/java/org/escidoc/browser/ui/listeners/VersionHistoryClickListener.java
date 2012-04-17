@@ -28,22 +28,22 @@
  */
 package org.escidoc.browser.ui.listeners;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Window;
+import java.util.Collection;
 
 import org.escidoc.browser.model.ContainerProxy;
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.ItemProxy;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
+import com.google.common.base.Preconditions;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.versionhistory.Event;
@@ -55,7 +55,7 @@ public class VersionHistoryClickListener implements ClickListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(VersionHistoryClickListener.class);
 
-    private ItemProxy itemProxy;
+    private ResourceProxy itemProxy;
 
     private final Window mainWindow;
 
@@ -65,40 +65,40 @@ public class VersionHistoryClickListener implements ClickListener {
 
     final private Repository repository;
 
+    String id = "";
+
+    private ContextProxyImpl contextProxy;
+
     /**
      * Container for the ItemProxy case
      * 
      * @param resourceProxy
      * @param mainWindow
      * @param repositories
-     * @param escidocServiceLocation2
      */
-    public VersionHistoryClickListener(final ItemProxy resourceProxy, final Window mainWindow,
+    public VersionHistoryClickListener(final ResourceProxy resourceProxy, final Window mainWindow,
         final Repositories repositories) {
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
-        itemProxy = resourceProxy;
-        this.mainWindow = mainWindow;
-        repository = repositories.item();
-    }
+        if (resourceProxy.getType().equals(ResourceType.ITEM)) {
+            itemProxy = resourceProxy;
+            repository = repositories.item();
 
-    /**
-     * Constructor for the ContainerProxy
-     * 
-     * @param resourceProxy
-     * @param mainWindow
-     * @param escidocServiceLocation
-     * @param repositories
-     */
-    public VersionHistoryClickListener(final ContainerProxy resourceProxy, final Window mainWindow,
-        final EscidocServiceLocation escidocServiceLocation, final Repositories repositories) {
-        Preconditions.checkNotNull(resourceProxy, "resource is null.");
-        Preconditions.checkNotNull(mainWindow, "mainWindow is null.");
-        Preconditions.checkNotNull(repositories, "repositories is null.");
-        containerProxy = resourceProxy;
+        }
+        else if (resourceProxy.getType().equals(ResourceType.CONTAINER)) {
+            containerProxy = (ContainerProxy) resourceProxy;
+            repository = repositories.container();
+        }
+        else if (resourceProxy.getType().equals(ResourceType.CONTEXT)) {
+            contextProxy = (ContextProxyImpl) resourceProxy;
+            repository = repositories.context();
+        }
+        else {
+            throw new RuntimeException("Bug: unexpected ResourceType: " + resourceProxy.getType());
+        }
         this.mainWindow = mainWindow;
-        repository = repositories.container();
+        id = resourceProxy.getId();
     }
 
     public String getVersionHistory(final Repository cr, final String id) throws EscidocClientException {
@@ -145,21 +145,20 @@ public class VersionHistoryClickListener implements ClickListener {
         final Window subwindow = new Window("Version History");
         subwindow.setWidth("600px");
         subwindow.setModal(true);
-        String id = "";
-        if (event.getButton().getCaption().equals("Container Version History")
-            || event.getButton().getCaption().equals(" Has previous version")) {
-            id = containerProxy.getId();
-        }
-        else if (event.getButton().getCaption().equals("Item Version History")
-            || event.getButton().getCaption().equals(" Has previous versions")) {
-            id = itemProxy.getId();
-        }
-        else {
-            throw new RuntimeException("Bug: unexpected event button: " + event.getButton());
-        }
+
+        // if (event.getButton().getCaption().equals("Container Version History")
+        // || event.getButton().getCaption().equals(" Has previous version")) {
+        // id = containerProxy.getId();
+        // }
+        // else if (event.getButton().getCaption().equals("Item Version History")
+        // || event.getButton().getCaption().equals(" Has previous versions")) {
+        // id = itemProxy.getId();
+        // }
+        // else {
+        // throw new RuntimeException("Bug: unexpected event button: " + event.getButton());
+        // }
 
         try {
-
             wndContent = getVersionHistory(repository, id);
         }
         catch (final EscidocClientException e) {
