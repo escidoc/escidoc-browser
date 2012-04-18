@@ -28,9 +28,12 @@
  */
 package org.escidoc.browser.controller;
 
-import com.google.common.base.Preconditions;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import com.vaadin.ui.Window;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.ContextProxyImpl;
@@ -41,10 +44,8 @@ import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.ContextView;
 import org.xml.sax.SAXException;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
-import javax.xml.parsers.ParserConfigurationException;
+import com.google.common.base.Preconditions;
+import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.om.context.AdminDescriptor;
@@ -153,8 +154,15 @@ public class ContextController extends Controller {
     }
 
     public void removeAdminDescriptor(String name) {
+        String title = name;
+        final String SEARCH_STRING_FOR_MATCHER = "name=(.*),";
+        final Pattern namePattern = Pattern.compile(SEARCH_STRING_FOR_MATCHER);
+        final Matcher controllerMatcher = namePattern.matcher(name);
+        if (controllerMatcher.find()) {
+            title = controllerMatcher.group(1);
+        }
         try {
-            getRepositories().context().removeAdminDescriptor(resourceProxy.getId(), name);
+            getRepositories().context().removeAdminDescriptor(resourceProxy.getId(), title);
             this.showTrayMessage(ViewConstants.ADMINDESCRIPTION_REMOVE, ViewConstants.ADMINDESCRIPTION_REMOVED);
 
         }

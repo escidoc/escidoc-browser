@@ -28,7 +28,13 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import com.google.common.base.Preconditions;
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
@@ -40,11 +46,7 @@ import org.escidoc.browser.ui.helper.Util;
 import org.escidoc.browser.util.Utils;
 import org.xml.sax.SAXException;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.parsers.ParserConfigurationException;
+import com.google.common.base.Preconditions;
 
 import de.escidoc.core.client.ContextHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -61,7 +63,6 @@ import de.escidoc.core.resources.om.context.AdminDescriptors;
 import de.escidoc.core.resources.om.context.Context;
 import de.escidoc.core.resources.om.context.ContextProperties;
 import de.escidoc.core.resources.om.context.OrganizationalUnitRefs;
-import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 public class ContextRepository implements Repository {
 
@@ -182,7 +183,6 @@ public class ContextRepository implements Repository {
     }
 
     public Context removeAdminDescriptor(String contextId, String name) throws EscidocClientException {
-
         Context context = client.retrieve(contextId);
         AdminDescriptors adminDescriptors = context.getAdminDescriptors();
         adminDescriptors.del(name);
