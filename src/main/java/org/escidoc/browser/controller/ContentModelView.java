@@ -259,7 +259,7 @@ public class ContentModelView extends View {
         VerticalLayout l = new VerticalLayout();
         l.setMargin(false);
         l.setWidth("100%");
-        l.addComponent(new Label(resourceProxy.getDescription()));
+        l.addComponent(new Label(ViewConstants.DESCRIPTION_LBL + resourceProxy.getDescription()));
         return l;
     }
 

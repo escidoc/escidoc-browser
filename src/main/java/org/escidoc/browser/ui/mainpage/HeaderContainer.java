@@ -28,8 +28,24 @@
  */
 package org.escidoc.browser.ui.mainpage;
 
-import com.google.common.base.Preconditions;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.escidoc.browser.BrowserApplication;
+import org.escidoc.browser.controller.UserAccountController;
+import org.escidoc.browser.layout.LayoutDesign;
+import org.escidoc.browser.model.CurrentUser;
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.listeners.LogoutListener;
+import org.escidoc.browser.ui.maincontent.SearchResultsView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Preconditions;
 import com.vaadin.Application.UserChangeEvent;
 import com.vaadin.Application.UserChangeListener;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -48,23 +64,6 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
-
-import org.escidoc.browser.BrowserApplication;
-import org.escidoc.browser.controller.UserAccountController;
-import org.escidoc.browser.layout.LayoutDesign;
-import org.escidoc.browser.model.CurrentUser;
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.listeners.LogoutListener;
-import org.escidoc.browser.ui.maincontent.SearchResultsView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -136,7 +135,8 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
             name.setStyleName(BaseTheme.BUTTON_LINK);
             ((Button) name).addListener(new Button.ClickListener() {
                 @Override
-                public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
+                public void buttonClick(@SuppressWarnings("unused")
+                ClickEvent event) {
                     ResourceProxy userProxy;
                     try {
                         userProxy = repositories.user().findById(user.getUserId());
@@ -219,7 +219,8 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
      * 
      * @param event
      */
-    public void onClick(@SuppressWarnings("unused") final Button.ClickEvent event) {
+    public void onClick(@SuppressWarnings("unused")
+    final Button.ClickEvent event) {
         redirectToLoginView();
     }
 

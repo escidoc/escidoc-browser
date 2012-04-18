@@ -64,10 +64,16 @@ public class ResourcePropertiesVH {
     public void buildViews() {
         createLayout();
         createBreadcrump();
-        // createPermanentLink();
         bindNametoHeader();
+        bindDescription();
         bindHrRuler();
         bindProperties();
+    }
+
+    private void bindDescription() {
+        Label descLabel = new Label(ViewConstants.DESCRIPTION_LBL + resourceProxy.getDescription());
+        descLabel.setDescription("header");
+        cssLayout.addComponent(descLabel);
     }
 
     public CssLayout getContentLayout() {
@@ -139,7 +145,7 @@ public class ResourcePropertiesVH {
     }
 
     private void bindNametoHeader() {
-        nameLabel = new Label(ViewConstants.ITEM_LABEL + resourceProxy.getName());
+        nameLabel = new Label(resourceProxy.getName());
         nameLabel.setDescription("header");
         nameLabel.setStyleName("h1 fullwidth");
         cssLayout.addComponent(nameLabel);

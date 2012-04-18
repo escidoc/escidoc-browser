@@ -95,7 +95,7 @@ public class ItemPropertiesVH {
 
     private EscidocServiceLocation serviceLocation;
 
-    private Label nameLabel;
+    private Label descLabel;
 
     private ItemController controller;
 
@@ -117,8 +117,15 @@ public class ItemPropertiesVH {
         createBreadcrump();
         createPermanentLink();
         bindNametoHeader();
+        bindDescription();
         bindHrRuler();
         bindProperties();
+    }
+
+    private void bindDescription() {
+        descLabel = new Label(ViewConstants.DESCRIPTION_LBL + resourceProxy.getDescription());
+        descLabel.setDescription("header");
+        cssLayout.addComponent(descLabel);
     }
 
     public CssLayout getContentLayout() {
@@ -209,10 +216,10 @@ public class ItemPropertiesVH {
     }
 
     private void bindNametoHeader() {
-        nameLabel = new Label(ViewConstants.ITEM_LABEL + resourceProxy.getName());
-        nameLabel.setDescription("header");
-        nameLabel.setStyleName("h2 fullwidth");
-        cssLayout.addComponent(nameLabel);
+        descLabel = new Label(ViewConstants.ITEM_LABEL + resourceProxy.getName());
+        descLabel.setDescription("header");
+        descLabel.setStyleName("h1 fullwidth");
+        cssLayout.addComponent(descLabel);
     }
 
     private void createBreadcrump() {

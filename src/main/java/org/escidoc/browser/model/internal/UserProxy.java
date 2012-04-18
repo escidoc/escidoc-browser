@@ -68,7 +68,7 @@ public class UserProxy implements ResourceProxy {
 
     @Override
     public String getDescription() {
-        throw new UnsupportedOperationException("not-yet-implemented.");
+        return "";
     }
 
     @Override

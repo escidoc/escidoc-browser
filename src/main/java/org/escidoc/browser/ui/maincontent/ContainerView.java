@@ -405,7 +405,7 @@ public class ContainerView extends View {
     }
 
     private void bindDescription(CssLayout cssLayout) {
-        final Label description = new Label(resourceProxy.getDescription());
+        final Label description = new Label(ViewConstants.DESCRIPTION_LBL + resourceProxy.getDescription());
         description.setStyleName(ViewConstants.FULLWIDHT_STYLE_NAME);
         cssLayout.addComponent(description);
     }
@@ -419,7 +419,7 @@ public class ContainerView extends View {
      */
     private void bindNameToHeader(CssLayout cssLayout) {
         final Label headerContext = new Label(ViewConstants.RESOURCE_NAME_CONTAINER + resourceProxy.getName());
-        headerContext.setStyleName("h2 fullwidth floatleft");
+        headerContext.setStyleName("h1 fullwidth floatleft");
         headerContext.setWidth("80%");
         headerContext.setDescription(ViewConstants.DESC_HEADER);
         cssLayout.addComponent(headerContext);

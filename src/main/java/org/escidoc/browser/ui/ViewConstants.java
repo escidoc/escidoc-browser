@@ -28,7 +28,6 @@
  */
 package org.escidoc.browser.ui;
 
-
 public class ViewConstants {
 
     // Footer
@@ -451,5 +450,7 @@ public class ViewConstants {
     public static final String FLOAT_LEFT = "floatleft";
 
     public static final String DESC_STATUS2 = "status";
+
+    public static final String DESCRIPTION_LBL = "Description: ";
 
 }

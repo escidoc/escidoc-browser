@@ -172,6 +172,17 @@ public class ContextView extends View {
         return headerLayout;
     }
 
+    private VerticalLayout bindDescription() {
+        VerticalLayout descLayout = new VerticalLayout();
+        descLayout.setMargin(false);
+        descLayout.setWidth("100%");
+        final Label headerContext = new Label(ViewConstants.DESCRIPTION_LBL + resourceProxy.getDescription());
+        headerContext.setStyleName("fullwidth");
+
+        descLayout.addComponent(headerContext);
+        return descLayout;
+    }
+
     private Panel buildMetaViewsPanel() throws EscidocClientException {
         // common part: create layout
         Panel metaViewsPanel = new Panel();
@@ -323,6 +334,7 @@ public class ContextView extends View {
     private void createProperties(VerticalLayout vlResourceProperties) {
         // Create Property fields. Probably not the best place for them to be
         vlResourceProperties.addComponent(bindNameToHeader());
+        vlResourceProperties.addComponent(bindDescription());
         addHorizontalRuler(vlResourceProperties);
         vlResourceProperties.addComponent(bindProperties());
     }

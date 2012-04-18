@@ -264,6 +264,7 @@ public class OrgUnitView extends View {
         // Create Property fields. Probably not the best place for them to be
         buildBreadCrumpPanel();
         vlResourceProperties.addComponent(bindNameToHeader());
+        vlResourceProperties.addComponent(bindDescription());
         addHorizontalRuler(vlResourceProperties);
         vlResourceProperties.addComponent(bindProperties());
     }
@@ -277,6 +278,17 @@ public class OrgUnitView extends View {
         headerContext.setDescription("Organizational Unit");
         headerLayout.addComponent(headerContext);
         return headerLayout;
+    }
+
+    private VerticalLayout bindDescription() {
+        VerticalLayout descLayout = new VerticalLayout();
+        descLayout.setMargin(false);
+        descLayout.setWidth("100%");
+        final Label headerContext = new Label(ViewConstants.DESCRIPTION_LBL + resourceProxy.getDescription());
+        headerContext.setStyleName("fullwidth");
+
+        descLayout.addComponent(headerContext);
+        return descLayout;
     }
 
     private HorizontalLayout bindProperties() {
