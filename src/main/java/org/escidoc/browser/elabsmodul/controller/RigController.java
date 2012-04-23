@@ -116,7 +116,7 @@ public final class RigController extends Controller implements IRigAction {
      * @return controlled bean exception
      */
     private RigBean loadBeanData(final ItemProxy itemProxy) {
-        final NodeList nodeList = itemProxy.getMedataRecords().get(ESCIDOC).getContent().getChildNodes();
+        final NodeList nodeList = itemProxy.getMetadataRecords().get(ESCIDOC).getContent().getChildNodes();
         final RigBean rigBean = new RigBean();
         rigBean.setObjectId(itemProxy.getId());
         for (int i = 0; i < nodeList.getLength(); i++) {
@@ -153,7 +153,7 @@ public final class RigController extends Controller implements IRigAction {
     private static InstrumentBean loadRelatedInstrumentBeanData(final ItemProxy instrumentItem) {
         Preconditions.checkNotNull(instrumentItem, "Resource is null");
         final InstrumentBean instrumentBean = new InstrumentBean();
-        final NodeList nodeList = instrumentItem.getMedataRecords().get(ESCIDOC).getContent().getChildNodes();
+        final NodeList nodeList = instrumentItem.getMetadataRecords().get(ESCIDOC).getContent().getChildNodes();
 
         for (int i = 0; i < nodeList.getLength(); i++) {
             final Node node = nodeList.item(i);

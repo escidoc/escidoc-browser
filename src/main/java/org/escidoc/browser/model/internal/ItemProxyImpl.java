@@ -132,7 +132,7 @@ public class ItemProxyImpl implements ItemProxy {
     }
 
     @Override
-    public MetadataRecords getMedataRecords() {
+    public MetadataRecords getMetadataRecords() {
         return itemFromCore.getMetadataRecords();
     }
 

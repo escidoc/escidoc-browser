@@ -451,7 +451,7 @@ public class ELabsService implements ILabsService {
             throw new NullPointerException("Container Proxy is null.");
         }
         final InvestigationBean investigationBean = new InvestigationBean();
-        final Element e = containerProxy.getMedataRecords().get("escidoc").getContent();
+        final Element e = containerProxy.getMetadataRecords().get("escidoc").getContent();
         investigationBean.setObjid(containerProxy.getId());
 
         if (!(("Investigation".equals(e.getLocalName()) && URI_EL.equals(e.getNamespaceURI())) || "el:Investigation"
@@ -518,7 +518,7 @@ public class ELabsService implements ILabsService {
         final String URI_EL = "http://escidoc.org/ontologies/bw-elabs/re#";
         final String URI_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
-        final NodeList nodeList = itemProxy.getMedataRecords().get("escidoc").getContent().getChildNodes();
+        final NodeList nodeList = itemProxy.getMetadataRecords().get("escidoc").getContent().getChildNodes();
 
         rigBean.setObjectId(itemProxy.getId());
         for (int i = 0; i < nodeList.getLength(); i++) {
@@ -559,7 +559,7 @@ public class ELabsService implements ILabsService {
         final ItemProxy itemProxy = (ItemProxy) resourceProxy;
         final InstrumentBean instrumentBean = new InstrumentBean();
         instrumentBean.setObjectId(itemProxy.getId());
-        final Element e = itemProxy.getMedataRecords().get("escidoc").getContent();
+        final Element e = itemProxy.getMetadataRecords().get("escidoc").getContent();
         final NodeList nodeList = e.getChildNodes();
         final String URI_DC = "http://purl.org/dc/elements/1.1/";
         final String URI_EL = "http://escidoc.org/ontologies/bw-elabs/re#";

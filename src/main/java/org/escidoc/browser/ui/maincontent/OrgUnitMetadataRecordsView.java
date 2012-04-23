@@ -118,7 +118,7 @@ public class OrgUnitMetadataRecordsView {
             cssLayout.addComponent(addNewOrgUnitBtn);
         }
         vl.addComponent(cssLayout);
-        OrgUnitMetadataTable metadataTable = new OrgUnitMetadataTable(orgUnit.getMedataRecords(), controller, router);
+        OrgUnitMetadataTable metadataTable = new OrgUnitMetadataTable(orgUnit.getMetadataRecords(), controller, router);
         vl.addComponent(metadataTable);
         vl.setExpandRatio(metadataTable, 9);
         innerPanel.setContent(vl);

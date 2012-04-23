@@ -218,16 +218,6 @@ public class ContainerRepository implements Repository {
         client.delete(container.getObjid());
     }
 
-    public void updateMetaData(final MetadataRecord metadata, final Container container) throws EscidocClientException {
-        final MetadataRecords containerMetadataList = container.getMetadataRecords();
-
-        containerMetadataList.del(metadata.getName());
-        containerMetadataList.add(metadata);
-        container.setMetadataRecords(containerMetadataList);
-
-        client.update(container);
-    }
-
     public void addMetaData(final MetadataRecord metadata, final Container container) throws EscidocClientException {
         final TaskParam taskParam = new TaskParam();
         taskParam.setLastModificationDate(container.getLastModificationDate());
@@ -290,10 +280,23 @@ public class ContainerRepository implements Repository {
                     return true;
                 }
             }
-            else {
-
-            }
         }
         return false;
+    }
+
+    public MetadataRecord getMetadataRecord(String id, String name) throws EscidocClientException {
+        return client.retrieve(id).getMetadataRecords().get(name);
+    }
+
+    public void updateMetaData(ResourceProxy resourceProxy, MetadataRecord metadata) throws EscidocClientException {
+
+        Container container = client.retrieve(resourceProxy.getId());
+
+        final MetadataRecords list = container.getMetadataRecords();
+        list.del(metadata.getName());
+        list.add(metadata);
+        container.setMetadataRecords(list);
+
+        client.update(container);
     }
 }

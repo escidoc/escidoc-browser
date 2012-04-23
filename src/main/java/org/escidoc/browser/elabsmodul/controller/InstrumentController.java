@@ -131,7 +131,7 @@ public final class InstrumentController extends Controller implements ISaveActio
         final ItemProxy itemProxy = (ItemProxy) resourceProxy;
         final InstrumentBean instrumentBean = new InstrumentBean();
         instrumentBean.setObjectId(itemProxy.getId());
-        final Element e = itemProxy.getMedataRecords().get(ESCIDOC).getContent();
+        final Element e = itemProxy.getMetadataRecords().get(ESCIDOC).getContent();
         final NodeList nodeList = e.getChildNodes();
 
         for (int i = 0; i < nodeList.getLength(); i++) {

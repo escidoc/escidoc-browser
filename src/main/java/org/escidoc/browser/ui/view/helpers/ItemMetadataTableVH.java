@@ -73,7 +73,7 @@ public class ItemMetadataTableVH extends TableContainerVH {
         this.router = router;
         this.resourceProxy = resourceProxy;
         this.repositories = repositories;
-        this.mdRecords = resourceProxy.getMedataRecords();
+        this.mdRecords = resourceProxy.getMetadataRecords();
         table.setContainerDataSource(populateContainerTable());
     }
 
@@ -97,7 +97,7 @@ public class ItemMetadataTableVH extends TableContainerVH {
                     controller.refreshView();
                 }
                 else if (ACTION_EDIT == action) {
-                    MetadataRecord md = resourceProxy.getMedataRecords().get((String) target);
+                    MetadataRecord md = resourceProxy.getMetadataRecords().get((String) target);
                     new EditMetaDataFileItemBehaviour(md, router.getMainWindow(), repositories, resourceProxy)
                         .showWindow();
                     controller.refreshView();
