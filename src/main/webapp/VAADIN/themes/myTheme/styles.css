@@ -30,6 +30,9 @@
 .paddingright10{
 	padding-right: 10.0px;
 }
+.paddingleft10{
+	padding-right: 10.0px;
+}
 
 .paddingtop30 {
 	padding-top: 60.0px;
@@ -324,7 +327,7 @@ ul.horizontal_list li {
 	z-index: 10;
 	position: absolute;
 	margin-right: 18px;
-	top: 27px;
+	top: 29px;
 	right: 0;
 }
 .permanentLinkItem {

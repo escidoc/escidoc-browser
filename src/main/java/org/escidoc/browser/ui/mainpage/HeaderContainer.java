@@ -50,12 +50,17 @@ import com.vaadin.Application.UserChangeEvent;
 import com.vaadin.Application.UserChangeListener;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.terminal.ExternalResource;
+import com.vaadin.terminal.Resource;
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.terminal.UserError;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Form;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.PopupView;
 import com.vaadin.ui.PopupView.PopupVisibilityEvent;
@@ -64,6 +69,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
+import com.vaadin.ui.themes.Reindeer;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -99,6 +105,10 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
 
     private final Router router;
 
+    private HorizontalLayout headerContainer;
+
+    private HorizontalLayout hl;
+
     public HeaderContainer(final Router router, final LayoutDesign layout, final BrowserApplication app,
         final EscidocServiceLocation serviceLocation, final Repositories repositories) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
@@ -118,11 +128,36 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
 
     public void init() {
         app.addListener(this);
-        addCustomLayout();
+        addNormalLayout();
+        // addCustomLayout();
         createLoginComponent();
         createLogoutComponent();
         createSearchForm();
         setUser(user);
+    }
+
+    private void addNormalLayout() {
+        headerContainer = new HorizontalLayout();
+        headerContainer.setStyleName(Reindeer.LAYOUT_WHITE);
+        headerContainer.setWidth("100%");
+        headerContainer.setHeight("55px");
+        headerContainer.addStyleName("header");
+        HorizontalLayout hlLogo = new HorizontalLayout();
+
+        Resource res = new ThemeResource("images/escidoc-logo-klein.jpg");
+        Embedded e = new Embedded(null, res);
+        e.setHeight(50 + "px");
+        hlLogo.addComponent(e);
+
+        headerContainer.addComponent(hlLogo);
+        headerContainer.setExpandRatio(hlLogo, 0.2f);
+
+        hl = new HorizontalLayout();
+        headerContainer.addComponent(hl);
+        headerContainer.setExpandRatio(hl, 0.8f);
+        this.addComponent(headerContainer);
+        headerContainer.setComponentAlignment(hl, Alignment.MIDDLE_RIGHT);
+
     }
 
     public void setUser(final CurrentUser user) {
@@ -133,6 +168,7 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
         else {
             name = new Button(user.getLoginName());
             name.setStyleName(BaseTheme.BUTTON_LINK);
+            name.addStyleName("paddingright10");
             ((Button) name).addListener(new Button.ClickListener() {
                 @Override
                 public void buttonClick(@SuppressWarnings("unused")
@@ -153,14 +189,30 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
         }
 
         custom.addComponent(new Label("<b>" + ViewConstants.CURRENT_USER + "</b>", Label.CONTENT_XHTML), "login-name");
+        Label lblCurrentUser = new Label("<b>" + ViewConstants.CURRENT_USER + "</b>", Label.CONTENT_XHTML);
+        lblCurrentUser.addStyleName("paddingright10");
+        hl.addComponent(lblCurrentUser);
+        hl.setComponentAlignment(lblCurrentUser, Alignment.MIDDLE_RIGHT);
 
+        name.addStyleName("paddingright10");
         custom.addComponent(name, "username");
+        hl.addComponent(name);
+        hl.setComponentAlignment(name, Alignment.MIDDLE_RIGHT);
+
         if (user.isGuest()) {
             custom.removeComponent(logout);
+            hl.removeComponent(logout);
             custom.addComponent(login, "login");
+            hl.addComponent(login);
+            hl.setComponentAlignment(login, Alignment.MIDDLE_RIGHT);
+
         }
         else {
             custom.addComponent(logout, "logout");
+            logout.addStyleName("paddingright10");
+            hl.addComponent(logout);
+            hl.setComponentAlignment(logout, Alignment.MIDDLE_RIGHT);
+
         }
     }
 
@@ -178,24 +230,32 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
         button.setWidth("60px");
         button.setHeight("15px");
         button.setImmediate(true);
+        button.addStyleName("paddingright10");
     }
 
     private void createLogoutComponent() {
         logout = new Button(ViewConstants.LOGOUT, new LogoutListener(app));
         configureButton(logout);
+        logout.addStyleName("paddingleft10");
     }
 
     private void createSearchForm() {
         final Form form = new Form();
         searchField.setImmediate(true);
         form.getLayout().addComponent(searchField);
+        form.addStyleName("paddingright10");
         custom.addComponent(form, "form");
+        hl.addComponent(form);
+        hl.setComponentAlignment(form, Alignment.MIDDLE_RIGHT);
 
         final Button btnSearch = new Button("Go", this, "onClickSearch");
         btnSearch.setClickShortcut(KeyCode.ENTER);
         btnSearch.addStyleName("primary");
         btnSearch.removeStyleName("v-button");
         custom.addComponent(btnSearch, "btnSearch");
+        btnSearch.addStyleName("paddingright10");
+        hl.addComponent(btnSearch);
+        hl.setComponentAlignment(btnSearch, Alignment.MIDDLE_RIGHT);
 
         // Create the content for the popup
         final Label content =
@@ -211,6 +271,9 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
         popup.setHideOnMouseOut(true);
         popup.addListener(this);
         custom.addComponent(popup, "searchTip");
+        popup.addStyleName("paddingright10");
+        hl.addComponent(popup);
+        hl.setComponentAlignment(popup, Alignment.MIDDLE_RIGHT);
     }
 
     /**
