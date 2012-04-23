@@ -28,11 +28,15 @@
  */
 package org.escidoc.browser.ui.view.helpers;
 
+import com.google.common.base.Preconditions;
+
 import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.event.Action;
-import com.vaadin.ui.Label;
+import com.vaadin.terminal.ExternalResource;
+import com.vaadin.ui.Link;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.themes.BaseTheme;
 
 import org.escidoc.browser.controller.ItemController;
 import org.escidoc.browser.model.ItemProxy;
@@ -40,12 +44,12 @@ import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.AddMetaDataFileItemBehaviour;
-import org.escidoc.browser.ui.listeners.EditMetaDataFileItemBehaviour;
+import org.escidoc.browser.ui.listeners.OnEditItemMetadata;
+import org.escidoc.browser.ui.view.helpers.OrgUnitMetadataTable.Metadata;
 
 import de.escidoc.core.resources.common.MetadataRecord;
-import de.escidoc.core.resources.common.MetadataRecords;
 
-public class ItemMetadataTableVH extends TableContainerVH {
+public class ItemMetadataTable extends TableContainerVH {
 
     protected ItemController controller;
 
@@ -61,25 +65,30 @@ public class ItemMetadataTableVH extends TableContainerVH {
 
     private Router router;
 
-    private MetadataRecords mdRecords;
-
     private final Repositories repositories;
 
     private final ItemProxy resourceProxy;
 
-    public ItemMetadataTableVH(ItemController itemController, Router router, ItemProxy resourceProxy,
+    private HierarchicalContainer dataSource;
+
+    public ItemMetadataTable(ItemController itemController, Router router, ItemProxy resourceProxy,
         Repositories repositories) {
+        Preconditions.checkNotNull(itemController, "itemController is null: %s", itemController);
+        Preconditions.checkNotNull(router, "router is null: %s", router);
+        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+
         this.controller = itemController;
         this.router = router;
         this.resourceProxy = resourceProxy;
         this.repositories = repositories;
-        this.mdRecords = resourceProxy.getMetadataRecords();
+
         table.setContainerDataSource(populateContainerTable());
     }
 
+    @SuppressWarnings("serial")
     @Override
     protected void addActionLists() {
-        // if (contextController.canUpdateContext()) {
         table.addActionHandler(new Action.Handler() {
             @Override
             public Action[] getActions(Object target, Object sender) {
@@ -97,16 +106,13 @@ public class ItemMetadataTableVH extends TableContainerVH {
                     controller.refreshView();
                 }
                 else if (ACTION_EDIT == action) {
-                    MetadataRecord md = resourceProxy.getMetadataRecords().get((String) target);
-                    new EditMetaDataFileItemBehaviour(md, router.getMainWindow(), repositories, resourceProxy)
-                        .showWindow();
+                    new OnEditItemMetadata(router, controller, (Metadata) target).showEditWindow();
                     controller.refreshView();
 
                 }
 
             }
         });
-        // }
     }
 
     @Override
@@ -123,30 +129,45 @@ public class ItemMetadataTableVH extends TableContainerVH {
 
     @Override
     protected HierarchicalContainer populateContainerTable() {
-        tableContainer = new HierarchicalContainer();
-        // Create container property for name
-        tableContainer.addContainerProperty(ViewConstants.PROPERTY_NAME, String.class, null);
-        tableContainer.addContainerProperty(ViewConstants.PROPERTY_LINK, Label.class, null);
+        dataSource = new HierarchicalContainer();
 
-        for (final MetadataRecord metadataRecord : mdRecords) {
-            Item item = tableContainer.addItem(metadataRecord.getXLinkTitle());
+        dataSource.addContainerProperty(ViewConstants.PROPERTY_NAME, String.class, null);
+        dataSource.addContainerProperty(ViewConstants.PROPERTY_LINK, Link.class, null);
+
+        for (final MetadataRecord metadataRecord : resourceProxy.getMetadataRecords()) {
+            Metadata md = Metadata.newInstance(metadataRecord);
+            Item item = dataSource.addItem(md);
             if (item != null) {
-                item.getItemProperty(ViewConstants.PROPERTY_NAME).setValue(metadataRecord.getXLinkTitle());
-                item.getItemProperty(ViewConstants.PROPERTY_LINK).setValue(
-                    new Label("<a href=\"" + router.getServiceLocation().getEscidocUri()
-                        + metadataRecord.getXLinkHref() + "\" target=\"_blank\">View</a>", Label.CONTENT_RAW));
+                item.getItemProperty(ViewConstants.PROPERTY_NAME).setValue(metadataRecord.getName());
+                item.getItemProperty(ViewConstants.PROPERTY_LINK).setValue(buildLink(metadataRecord));
             }
         }
-        table.setColumnWidth(ViewConstants.PROPERTY_LINK, 40);
-        return tableContainer;
+
+        return dataSource;
     }
 
+    private Link buildLink(final MetadataRecord metadataRecord) {
+        Link mdLink = new Link("View", new ExternalResource(buildUri(metadataRecord)));
+        mdLink.setTargetName("_blank");
+        mdLink.setStyleName(BaseTheme.BUTTON_LINK);
+        mdLink.setDescription("Show metadata information in a separate window");
+        return mdLink;
+    }
+
+    private String buildUri(final MetadataRecord metadataRecord) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(router.getServiceLocation().getEscidocUri());
+        builder.append(metadataRecord.getXLinkHref());
+        return builder.toString();
+    }
+
+    @Override
     protected void initializeTable() {
         table.setWidth("100%");
-
-        // selectable
         table.setSelectable(true);
+        table.setImmediate(true);
         table.setColumnHeaderMode(Table.COLUMN_HEADER_MODE_HIDDEN);
+        table.setColumnWidth(ViewConstants.PROPERTY_LINK, 40);
     }
 
 }

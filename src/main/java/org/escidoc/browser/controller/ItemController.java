@@ -28,7 +28,9 @@
  */
 package org.escidoc.browser.controller;
 
-import java.net.URISyntaxException;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.ui.Window;
 
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.ItemProxyImpl;
@@ -40,7 +42,7 @@ import org.escidoc.browser.ui.view.helpers.ItemComponentsView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.ui.Window;
+import java.net.URISyntaxException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
@@ -48,14 +50,10 @@ import de.escidoc.core.resources.om.item.component.Component;
 
 public class ItemController extends Controller {
 
-    @SuppressWarnings("unused")
-    private ItemProxyImpl itemProxy;
-
     private static final Logger LOG = LoggerFactory.getLogger(ItemController.class);
 
     public ItemController(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
-        this.itemProxy = (ItemProxyImpl) resourceProxy;
         createView();
     }
 
@@ -161,6 +159,17 @@ public class ItemController extends Controller {
             showError("Unable to update metadata " + e.getLocalizedMessage());
         }
 
+    }
+
+    public MetadataRecord getMetadata(String name) throws EscidocClientException {
+        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
+        Preconditions.checkNotNull(name, "name is null: %s", name);
+        return repositories.item().getMetadataRecord(resourceProxy.getId(), name);
+    }
+
+    public void updateMetadata(MetadataRecord metadata) throws EscidocClientException {
+        Preconditions.checkNotNull(metadata, "metadata is null: %s", metadata);
+        repositories.item().updateMetaData(resourceProxy, metadata);
     }
 
 }

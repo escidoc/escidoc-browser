@@ -304,4 +304,22 @@ public class ItemRepository implements Repository {
         item.setComponents(components);
         client.update(item);
     }
+
+    public MetadataRecord getMetadataRecord(String id, String name) throws EscidocClientException {
+        return client.retrieveMdRecord(id, name);
+    }
+
+    public void updateMetaData(ResourceProxy resourceProxy, MetadataRecord metadataRecord)
+        throws EscidocClientException {
+        Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
+        Preconditions.checkNotNull(metadataRecord, "metadataRecord is null: %s", metadataRecord);
+
+        Item item = client.retrieve(resourceProxy.getId());
+
+        final MetadataRecords itemMetadataList = item.getMetadataRecords();
+        itemMetadataList.del(metadataRecord.getName());
+        itemMetadataList.add(metadataRecord);
+        item.setMetadataRecords(itemMetadataList);
+        client.update(item);
+    }
 }

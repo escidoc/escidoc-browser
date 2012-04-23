@@ -46,7 +46,7 @@ import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 
-import org.escidoc.browser.controller.ContainerController;
+import org.escidoc.browser.controller.ItemController;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.view.helpers.OrgUnitMetadataTable.Metadata;
@@ -69,42 +69,75 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
 
 @SuppressWarnings("serial")
-public class OnEditContainerMetadata {
+public class OnEditItemMetadata {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OnEditContainerMetadata.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OnEditItemMetadata.class);
 
     private MetadataFileReceiver receiver;
 
     private final HorizontalLayout progressLayout = new HorizontalLayout();
 
-    private Upload upload;
-
     private final ProgressIndicator pi = new ProgressIndicator();
 
-    private final Window mainWindow;
+    private final Router router;
+
+    private final ItemController controller;
 
     private final Metadata md;
 
-    private Element metadataContent;
+    private Window mainWindow;
 
-    private ContainerController controller;
+    private Upload upload;
+
+    private Element metadataContent;
 
     private Label message;
 
     private HorizontalLayout buttonLayout;
 
-    private Router router;
-
-    public OnEditContainerMetadata(final Router router, ContainerController containerController, Metadata md) {
+    public OnEditItemMetadata(Router router, ItemController controller, Metadata md) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
-        Preconditions.checkNotNull(containerController, "containerController is null: %s", containerController);
-        Preconditions.checkNotNull(md, "target is null: %s", md);
-
+        Preconditions.checkNotNull(controller, "controller is null: %s", controller);
+        Preconditions.checkNotNull(md, "md is null: %s", md);
         this.router = router;
-        this.controller = containerController;
+        this.controller = controller;
         this.md = md;
 
-        this.mainWindow = router.getMainWindow();
+        mainWindow = router.getMainWindow();
+    }
+
+    /**
+     * checking if the uploaded file contains a valid XML string
+     * 
+     * @param xml
+     * @return boolean
+     */
+    private boolean isWellFormed(final String xml) {
+        final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+
+        try {
+            builder = factory.newDocumentBuilder();
+            final InputSource is = new InputSource(new StringReader(xml));
+            Document d;
+            try {
+                d = builder.parse(is);
+                metadataContent = d.getDocumentElement();
+                return true;
+            }
+            catch (final SAXException e) {
+                metadataContent = null;
+                return false;
+            }
+            catch (final IOException e) {
+                metadataContent = null;
+                return false;
+            }
+        }
+        catch (final ParserConfigurationException e) {
+            metadataContent = null;
+            return false;
+        }
     }
 
     public void showEditWindow() {
@@ -124,52 +157,17 @@ public class OnEditContainerMetadata {
         mainWindow.addWindow(modalWindow);
     }
 
-    private Component buildMdUpdateLink(final Window modalWindow) {
-        Button mdUpdateLink = new Button(ViewConstants.OPEN_METADATA_IN_EDITOR, new Button.ClickListener() {
-
-            @Override
-            public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
-                closeModalWindow(modalWindow);
-                openMetadataEditor();
-            }
-
-            private void openMetadataEditor() {
-                mainWindow.open(new ExternalResource(buildMdUpdateUri(getAppBaseUri()), "_blank"));
-            }
-
-            private String getAppBaseUri() {
-                StringBuilder builder = new StringBuilder();
-                // @formatter:off
-                builder
-                  .append(getAppUrl().getProtocol())
-                  .append("://")
-                  .append(getAppUrl().getAuthority());
-               // @formatter:on
-                return builder.toString();
-            }
-
-            private URL getAppUrl() {
-                return mainWindow.getApplication().getURL();
-            }
-
-            private void closeModalWindow(final Window modalWindow) {
-                mainWindow.removeWindow(modalWindow);
-            }
-        });
-        mdUpdateLink.setStyleName(BaseTheme.BUTTON_LINK);
-        return mdUpdateLink;
+    private static Window buildModalWindow() {
+        final Window subwindow = new Window(ViewConstants.EDIT_METADATA);
+        subwindow.setWidth("600px");
+        subwindow.setModal(true);
+        return subwindow;
     }
 
-    private String buildMdUpdateUri(String baseUri) {
-        StringBuilder builder = new StringBuilder();
-        builder.append(baseUri).append("/rest/v0.9/").append("containers/");
-        builder.append(Metadata.getId(md));
-        builder.append("/metadata/");
-        builder.append(md.name);
-        builder.append("?escidocurl=");
-        builder.append(router.getServiceLocation().getEscidocUri());
-        String mdUpdateUri = builder.toString();
-        return mdUpdateUri;
+    private void buildUploadComponent() {
+        buildMetadataReceiver();
+        buildUpload();
+        buildProgressLayout();
     }
 
     private void buildSaveAndCancelButtons(Window modalWindow) {
@@ -219,10 +217,57 @@ public class OnEditContainerMetadata {
         return cancelBtn;
     }
 
-    private void buildUploadComponent() {
-        buildMetadataReceiver();
-        buildUpload();
-        buildProgressLayout();
+    private Component buildMdUpdateLink(final Window modalWindow) {
+        Button mdUpdateLink = new Button(ViewConstants.OPEN_METADATA_IN_EDITOR, new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
+                closeModalWindow(modalWindow);
+                openMetadataEditor();
+            }
+
+            private void openMetadataEditor() {
+                mainWindow.open(new ExternalResource(buildMdUpdateUri(getAppBaseUri()), "_blank"));
+            }
+
+            private String getAppBaseUri() {
+                StringBuilder builder = new StringBuilder();
+                // @formatter:off
+                builder
+                  .append(getAppUrl().getProtocol())
+                  .append("://")
+                  .append(getAppUrl().getAuthority());
+               // @formatter:on
+                return builder.toString();
+            }
+
+            private URL getAppUrl() {
+                return mainWindow.getApplication().getURL();
+            }
+
+            private void closeModalWindow(final Window modalWindow) {
+                mainWindow.removeWindow(modalWindow);
+            }
+        });
+        mdUpdateLink.setStyleName(BaseTheme.BUTTON_LINK);
+        return mdUpdateLink;
+    }
+
+    private String buildMdUpdateUri(String baseUri) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(baseUri).append("/rest/v0.9/").append("items/");
+        builder.append(Metadata.getId(md));
+        builder.append("/metadata/");
+        builder.append(md.name);
+        builder.append("?escidocurl=");
+        builder.append(router.getServiceLocation().getEscidocUri());
+        String mdUpdateUri = builder.toString();
+        return mdUpdateUri;
+    }
+
+    private void buildMetadataReceiver() {
+        receiver = new MetadataFileReceiver();
+        receiver.clearBuffer();
     }
 
     private void buildUpload() {
@@ -283,48 +328,4 @@ public class OnEditContainerMetadata {
         progressLayout.addComponent(pi);
         progressLayout.setComponentAlignment(pi, Alignment.MIDDLE_LEFT);
     }
-
-    private void buildMetadataReceiver() {
-        receiver = new MetadataFileReceiver();
-        receiver.clearBuffer();
-    }
-
-    private static Window buildModalWindow() {
-        final Window subwindow = new Window(ViewConstants.EDIT_METADATA);
-        subwindow.setWidth("600px");
-        subwindow.setModal(true);
-        return subwindow;
-    }
-
-    /**
-     * checking if the uploaded file contains a valid XML string
-     * 
-     * @param xml
-     * @return boolean
-     */
-    private boolean isWellFormed(final String xml) {
-        final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder;
-
-        try {
-            builder = factory.newDocumentBuilder();
-            final InputSource is = new InputSource(new StringReader(xml));
-            Document d;
-            try {
-                d = builder.parse(is);
-                metadataContent = d.getDocumentElement();
-                return true;
-            }
-            catch (final SAXException e) {
-                return false;
-            }
-            catch (final IOException e) {
-                return false;
-            }
-        }
-        catch (final ParserConfigurationException e) {
-            return false;
-        }
-    }
-
 }

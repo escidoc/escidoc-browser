@@ -50,10 +50,10 @@ import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.AddMetaDataFileItemBehaviour;
-import org.escidoc.browser.ui.listeners.EditMetaDataFileItemBehaviour;
+import org.escidoc.browser.ui.listeners.OnEditItemMetadata;
 import org.escidoc.browser.ui.listeners.RelationsClickListener;
 import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
-import org.escidoc.browser.ui.view.helpers.ItemMetadataTableVH;
+import org.escidoc.browser.ui.view.helpers.ItemMetadataTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,13 +83,16 @@ public class MetadataRecsItem {
         ItemController controller) {
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null.");
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        Preconditions.checkNotNull(router, "router is null: %s", router);
+        Preconditions.checkNotNull(controller, "controller is null: %s", controller);
+
         this.router = router;
         this.resourceProxy = resourceProxy;
-        this.mainWindow = router.getMainWindow();
         this.repositories = repositories;
         this.itemController = controller;
-        this.escidocServiceLocation = router.getServiceLocation();
 
+        this.mainWindow = router.getMainWindow();
+        this.escidocServiceLocation = router.getServiceLocation();
     }
 
     protected Accordion asAccord() {
@@ -101,7 +104,6 @@ public class MetadataRecsItem {
 
         // Add the components as tabs in the Accordion.
         metadataRecs.addTab(pnlMetadataRecs, "Metadata", null);
-        // metadataRecs.addTab(l2, "Relations", null);
         metadataRecs.addTab(pnlAdditionalResources, "Additional Resources", null);
         return metadataRecs;
     }
@@ -148,7 +150,7 @@ public class MetadataRecsItem {
         buildPanelHeader(cssLayout, ViewConstants.METADATA);
         ThemeResource ICON = new ThemeResource("images/assets/plus.png");
 
-        ItemMetadataTableVH metadataItem = new ItemMetadataTableVH(itemController, router, resourceProxy, repositories);
+        ItemMetadataTable metadataItem = new ItemMetadataTable(itemController, router, resourceProxy, repositories);
         if (itemController.hasAccess()) {
             final Button btnAddNew = new Button();
             btnAddNew.addListener(new AddMetaDataFileItemBehaviour(mainWindow, repositories, resourceProxy));
@@ -197,15 +199,12 @@ public class MetadataRecsItem {
         hl.addComponent(new Label("&nbsp; | &nbsp;", Label.CONTENT_RAW));
         if (itemController.hasAccess()) {
             final Button btnEditActualMetaData =
-                new Button("edit", new EditMetaDataFileItemBehaviour(metadataRecord, mainWindow, repositories,
+                new Button("edit", new OnEditItemMetadata(metadataRecord, mainWindow, repositories,
                     resourceProxy));
             btnEditActualMetaData.setStyleName(BaseTheme.BUTTON_LINK);
             btnEditActualMetaData.setDescription("Replace the metadata with a new content file");
-            // btnEditActualMetaData.setIcon(new
-            // ThemeResource("../myTheme/runo/icons/16/reload.png"));
             hl.addComponent(btnEditActualMetaData);
         }
-
         btnaddContainer.addComponent(hl);
     }
 
@@ -217,5 +216,4 @@ public class MetadataRecsItem {
     public void addButtons(final MetadataRecord metadataRecord) {
         buildMDButtons(btnaddContainer, metadataRecord);
     }
-
 }
