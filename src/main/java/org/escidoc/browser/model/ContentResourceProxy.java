@@ -43,7 +43,7 @@ interface ContentResourceProxy extends ResourceProxy {
 
     Boolean hasPreviousVersion();
 
-    MetadataRecords getMedataRecords();
+    MetadataRecords getMetadataRecords();
 
     Boolean hasVersionHistory();
 

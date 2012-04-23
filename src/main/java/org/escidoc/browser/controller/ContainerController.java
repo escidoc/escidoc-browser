@@ -28,7 +28,9 @@
  */
 package org.escidoc.browser.controller;
 
-import java.net.URISyntaxException;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.ui.Window;
 
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
@@ -38,9 +40,10 @@ import org.escidoc.browser.ui.maincontent.ContainerView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.ui.Window;
+import java.net.URISyntaxException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.resources.common.MetadataRecord;
 
 public class ContainerController extends Controller {
     private static final Logger LOG = LoggerFactory.getLogger(ContainerController.class);
@@ -86,5 +89,22 @@ public class ContainerController extends Controller {
             LOG.debug("Wrong URI " + e.getLocalizedMessage());
             return false;
         }
+    }
+
+    public MetadataRecord getMetadata(String name) {
+        Preconditions.checkNotNull(name, "name is null: %s", name);
+        try {
+            return repositories.container().getMetadataRecord(resourceProxy.getId(), name);
+        }
+        catch (EscidocClientException e) {
+            getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        }
+        return null;
+
+    }
+
+    public void updateMetadata(MetadataRecord metadataRecord) throws EscidocClientException {
+        Preconditions.checkNotNull(metadataRecord, "metadataRecord is null: %s", metadataRecord);
+        repositories.container().updateMetaData(resourceProxy, metadataRecord);
     }
 }

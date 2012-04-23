@@ -189,7 +189,7 @@ public class InvestigationSeriesController extends Controller implements ISaveAc
     }
 
     private void resourceToBean() {
-        final NodeList nodeList = containerProxy.getMedataRecords().get(ESCIDOC).getContent().getChildNodes();
+        final NodeList nodeList = containerProxy.getMetadataRecords().get(ESCIDOC).getContent().getChildNodes();
 
         this.investigationSeriesBean = new InvestigationSeriesBean();
         for (int i = 0; i < nodeList.getLength(); i++) {

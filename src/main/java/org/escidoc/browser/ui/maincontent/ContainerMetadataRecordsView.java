@@ -28,20 +28,8 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import org.escidoc.browser.controller.ContainerController;
-import org.escidoc.browser.model.ContainerProxy;
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.listeners.OnAddContainerMetadata;
-import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
-import org.escidoc.browser.ui.view.helpers.ContainerMetadataTableVH;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Alignment;
@@ -55,6 +43,20 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 
+import org.escidoc.browser.controller.ContainerController;
+import org.escidoc.browser.model.ContainerProxy;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.listeners.OnAddContainerMetadata;
+import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
+import org.escidoc.browser.ui.view.helpers.ContainerMetadataTable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.escidoc.core.resources.common.MetadataRecords;
+
 public class ContainerMetadataRecordsView {
 
     private static final Logger LOG = LoggerFactory.getLogger(ContainerMetadataRecordsView.class);
@@ -65,38 +67,30 @@ public class ContainerMetadataRecordsView {
 
     private final Window mainWindow;
 
-    private final EscidocServiceLocation escidocServiceLocation;
-
     private final Repositories repositories;
 
     private final Router router;
-
-    private VerticalLayout btnaddContainer = new VerticalLayout();
 
     private Accordion metadataRecs;
 
     private Panel pnlmdRec;
 
-    private ContainerView containerView;
-
     private final ContainerController containerController;
 
     public ContainerMetadataRecordsView(final ResourceProxy resourceProxy, final Repositories repositories,
-        final Router router, ContainerView containerView, ContainerController containerController) {
+        final Router router, ContainerController containerController) {
 
-        this.containerController = containerController;
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(router, "mainSite is null: %s", router);
-        Preconditions.checkNotNull(containerView, "containerView is null: %s", containerView);
+        Preconditions.checkNotNull(containerController, "containerController is null: %s", containerController);
 
-        this.router = router;
         this.resourceProxy = (ContainerProxy) resourceProxy;
-        this.mainWindow = router.getMainWindow();
-        this.escidocServiceLocation = router.getServiceLocation();
         this.repositories = repositories;
-        this.containerView = containerView;
+        this.router = router;
+        this.containerController = containerController;
 
+        this.mainWindow = router.getMainWindow();
     }
 
     @Deprecated
@@ -132,6 +126,7 @@ public class ContainerMetadataRecordsView {
         return pnlmetadataRecs;
     }
 
+    @SuppressWarnings("serial")
     private Panel lblAddtionalResources() {
         final Panel pnl = new Panel();
         pnl.setSizeFull();
@@ -166,7 +161,7 @@ public class ContainerMetadataRecordsView {
                 subwindow.addComponent(new Label("Not yet implemented"));
                 Button close = new Button("Close", new Button.ClickListener() {
                     @Override
-                    public void buttonClick(ClickEvent event) {
+                    public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
                         (subwindow.getParent()).removeWindow(subwindow);
                     }
                 });
@@ -186,7 +181,7 @@ public class ContainerMetadataRecordsView {
         return pnl;
     }
 
-    private void buildPanelHeader(CssLayout cssLayout, String name) {
+    private static void buildPanelHeader(CssLayout cssLayout, String name) {
         cssLayout.addStyleName("v-accordion-item-caption v-caption v-captiontext");
         cssLayout.setWidth("100%");
         cssLayout.setMargin(false);
@@ -216,8 +211,8 @@ public class ContainerMetadataRecordsView {
             cssLayout.addComponent(btnAddNew);
         }
         vl.addComponent(cssLayout);
-        ContainerMetadataTableVH metadataTable =
-            new ContainerMetadataTableVH(containerController, router, resourceProxy, repositories);
+        ContainerMetadataTable metadataTable =
+            new ContainerMetadataTable(resourceProxy.getMetadataRecords(), containerController, router, resourceProxy, repositories);
 
         vl.addComponent(metadataTable);
         vl.setComponentAlignment(metadataTable, Alignment.TOP_LEFT);

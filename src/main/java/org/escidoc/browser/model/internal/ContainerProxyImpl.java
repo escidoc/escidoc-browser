@@ -80,7 +80,7 @@ public class ContainerProxyImpl implements ContainerProxy {
 
     @Override
     public void setName(final String name) {
-        final MetadataRecords mdRecs = getMedataRecords();
+        final MetadataRecords mdRecs = getMetadataRecords();
         Document doc;
         try {
             doc = createNewDocument();
@@ -200,7 +200,7 @@ public class ContainerProxyImpl implements ContainerProxy {
     }
 
     @Override
-    public MetadataRecords getMedataRecords() {
+    public MetadataRecords getMetadataRecords() {
         return containerFromCore.getMetadataRecords();
     }
 
