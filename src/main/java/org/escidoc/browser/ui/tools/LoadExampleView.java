@@ -96,9 +96,8 @@ public class LoadExampleView extends CustomComponent {
         loadExampleButton.addListener(new ClickListener() {
 
             @Override
-            public void buttonClick(ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
                 try {
-
                     List<Entry> loadedExamples = adminRepository.loadCommonExamples();
 
                     for (Entry entry : loadedExamples) {
@@ -116,4 +115,36 @@ public class LoadExampleView extends CustomComponent {
         hLayout.addComponent(loadExampleButton);
         cssLayout.addComponent(hLayout);
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((router == null) ? 0 : router.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        LoadExampleView other = (LoadExampleView) obj;
+        if (router == null) {
+            if (other.router != null) {
+                return false;
+            }
+        }
+        else if (!router.equals(other.router)) {
+            return false;
+        }
+        return true;
+    }
+
 }

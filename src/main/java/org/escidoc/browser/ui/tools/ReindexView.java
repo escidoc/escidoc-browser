@@ -136,4 +136,36 @@ public class ReindexView extends VerticalLayout {
         progressIndicator.setVisible(false);
         addComponent(progressIndicator);
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((router == null) ? 0 : router.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        ReindexView other = (ReindexView) obj;
+        if (router == null) {
+            if (other.router != null) {
+                return false;
+            }
+        }
+        else if (!router.equals(other.router)) {
+            return false;
+        }
+        return true;
+    }
+
 }
