@@ -453,4 +453,6 @@ public class ViewConstants {
 
     public static final String DESCRIPTION_LBL = "Description: ";
 
+    public static final String ERROR_DIRECTMEMBERS = "Cannot create the DirectMembers for this resource: Error: ";
+
 }

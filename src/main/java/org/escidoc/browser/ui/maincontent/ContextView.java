@@ -282,7 +282,7 @@ public class ContextView extends View {
         return vlLeftPanel;
     }
 
-    private Panel buildDirectMembersPanel() throws EscidocClientException {
+    private Panel buildDirectMembersPanel() {
         // common part: create layout
         Panel directMembersPanel = new Panel();
         directMembersPanel.setImmediate(false);
@@ -297,8 +297,15 @@ public class ContextView extends View {
         vlDirectMember.setHeight("100.0%");
         vlDirectMember.setMargin(false);
         directMembersPanel.setContent(vlDirectMember);
-        new DirectMember(serviceLocation, router, resourceProxy.getId(), mainWindow, repositories, directMembersPanel,
-            ResourceType.CONTEXT.toString()).contextAsTree();
+        try {
+            new DirectMember(serviceLocation, router, resourceProxy.getId(), mainWindow, repositories,
+                directMembersPanel, ResourceType.CONTEXT.toString()).contextAsTree();
+        }
+        catch (EscidocClientException e) {
+            router.getMainWindow().showNotification(ViewConstants.ERROR_DIRECTMEMBERS + e.getLocalizedMessage(),
+                Notification.TYPE_ERROR_MESSAGE);
+
+        }
 
         return directMembersPanel;
     }

@@ -54,6 +54,7 @@ import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.client.interfaces.ContextHandlerClientInterface;
 import de.escidoc.core.client.rest.RestContextHandlerClient;
 import de.escidoc.core.resources.Resource;
+import de.escidoc.core.resources.VersionableResource;
 import de.escidoc.core.resources.common.Relations;
 import de.escidoc.core.resources.common.TaskParam;
 import de.escidoc.core.resources.common.reference.OrganizationalUnitRef;
@@ -92,8 +93,9 @@ public class ContextRepository implements Repository {
     }
 
     private List<ResourceModel> findTopLevelMemberList(final String id) throws EscidocClientException {
-        return ModelConverter.genericResourcetoModel(client.retrieveMembersAsList(id,
-            Util.createQueryForTopLevelContainersAndItems(id)));
+        List<VersionableResource> membersList =
+            client.retrieveMembersAsList(id, Util.createQueryForTopLevelContainersAndItems(id));
+        return ModelConverter.genericResourcetoModel(membersList);
     }
 
     @Override
