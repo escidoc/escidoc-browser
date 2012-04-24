@@ -28,6 +28,8 @@
  */
 package org.escidoc.browser.ui.tools;
 
+import com.google.common.base.Preconditions;
+
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
@@ -50,6 +52,7 @@ public class RepositoryInfoView extends VerticalLayout {
     private final AdminRepository adminRepository;
 
     public RepositoryInfoView(final AdminRepository adminRepository) {
+        Preconditions.checkNotNull(adminRepository, "adminRepository is null: %s", adminRepository);
         this.adminRepository = adminRepository;
     }
 
@@ -74,12 +77,43 @@ public class RepositoryInfoView extends VerticalLayout {
         addComponent(text);
     }
 
-    private TextField createReadOnlyField(final Entry<String, String> entry) {
+    private static TextField createReadOnlyField(final Entry<String, String> entry) {
         final TextField textField = new TextField();
         textField.setCaption(entry.getKey());
         textField.setValue(entry.getValue());
         textField.setWidth(400, UNITS_PIXELS);
         textField.setReadOnly(true);
         return textField;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((adminRepository == null) ? 0 : adminRepository.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        RepositoryInfoView other = (RepositoryInfoView) obj;
+        if (adminRepository == null) {
+            if (other.adminRepository != null) {
+                return false;
+            }
+        }
+        else if (!adminRepository.equals(other.adminRepository)) {
+            return false;
+        }
+        return true;
     }
 }

@@ -181,4 +181,45 @@ public class BulkTasksView extends VerticalLayout {
         }
         return ResourceType.ITEM;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((repositories == null) ? 0 : repositories.hashCode());
+        result = prime * result + ((router == null) ? 0 : router.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        BulkTasksView other = (BulkTasksView) obj;
+        if (repositories == null) {
+            if (other.repositories != null) {
+                return false;
+            }
+        }
+        else if (!repositories.equals(other.repositories)) {
+            return false;
+        }
+        if (router == null) {
+            if (other.router != null) {
+                return false;
+            }
+        }
+        else if (!router.equals(other.router)) {
+            return false;
+        }
+        return true;
+    }
+
 }

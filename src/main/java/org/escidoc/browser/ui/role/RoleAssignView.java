@@ -28,22 +28,8 @@
  */
 package org.escidoc.browser.ui.role;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
-import org.escidoc.browser.model.GroupModel;
-import org.escidoc.browser.model.PropertyId;
-import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.model.UserModel;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.repository.RoleRepository.RoleModel;
-import org.escidoc.browser.ui.ViewConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.data.Container;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -66,6 +52,21 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 import com.vaadin.ui.themes.Runo;
+
+import org.escidoc.browser.model.GroupModel;
+import org.escidoc.browser.model.PropertyId;
+import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.UserModel;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.RoleRepository.RoleModel;
+import org.escidoc.browser.ui.ViewConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.aa.useraccount.Grant;
@@ -90,9 +91,6 @@ public class RoleAssignView extends CustomComponent {
     private final VerticalLayout resourceContainer = new VerticalLayout();
 
     private final TextField searchBox = new TextField(ViewConstants.RESOURCE_NAME);
-
-    // private final Button searchButton = new
-    // Button(ViewConstants.SEARCH_LABEL);
 
     private final Window mainWindow;
 
@@ -347,14 +345,6 @@ public class RoleAssignView extends CustomComponent {
 
     }
 
-    // private void addResourceSearchBox() {
-    // searchBox.setWidth(Integer.toString(3 / 2 * 300) + "px");
-    // searchBox.setEnabled(false);
-    // searchButton.setEnabled(false);
-    // searchBox.setReadOnly(true);
-    // mainLayout.addComponent(searchBox);
-    // }
-
     private void addFooter() {
         footer.addComponent(saveBtn);
         footerLayout.addComponent(footer);
@@ -442,8 +432,7 @@ public class RoleAssignView extends CustomComponent {
     private class SaveBtnListener implements Button.ClickListener {
 
         @Override
-        public void buttonClick(@SuppressWarnings("unused")
-        final ClickEvent event) {
+        public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
             onSaveClick();
         }
 
@@ -501,8 +490,7 @@ public class RoleAssignView extends CustomComponent {
     private class SaveGroupBtnListener implements Button.ClickListener {
 
         @Override
-        public void buttonClick(@SuppressWarnings("unused")
-        final ClickEvent event) {
+        public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
             onSaveClick();
         }
 
@@ -556,4 +544,5 @@ public class RoleAssignView extends CustomComponent {
             return Collections.emptySet();
         }
     }
+
 }
