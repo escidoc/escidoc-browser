@@ -28,20 +28,19 @@
  */
 package org.escidoc.browser.ui.view.helpers;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.data.Item;
-import com.vaadin.data.util.HierarchicalContainer;
-import com.vaadin.event.Action;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
-
 import org.escidoc.browser.controller.ItemController;
 import org.escidoc.browser.model.internal.ItemProxyImpl;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.AddMetaDataFileItemComponentBehaviour;
 import org.escidoc.browser.ui.listeners.EditMetaDataFileItemComponentBehaviour;
+
+import com.google.common.base.Preconditions;
+import com.vaadin.data.Item;
+import com.vaadin.data.util.HierarchicalContainer;
+import com.vaadin.event.Action;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
 
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.MetadataRecords;
@@ -73,7 +72,6 @@ public class ItemComponentMetadataVH extends TableContainerVH {
     public ItemComponentMetadataVH(MetadataRecords mdList, ItemController controller, Router router,
         ItemProxyImpl itemProxy, Component component) {
 
-        Preconditions.checkNotNull(mdList, "MetadataRecords is null: %s", mdList);
         Preconditions.checkNotNull(router, "router is null.");
         Preconditions.checkNotNull(controller, "ItemController is null.");
         Preconditions.checkNotNull(itemProxy, "itemProxy is null: %s", itemProxy);
@@ -127,6 +125,7 @@ public class ItemComponentMetadataVH extends TableContainerVH {
 
     @Override
     protected void removeAction(Object target) {
+
         controller.removeComponentMetadata(target.toString(), itemProxy.getId(), component.getObjid());
         tableContainer.removeItem(target);
     }
@@ -137,14 +136,15 @@ public class ItemComponentMetadataVH extends TableContainerVH {
         // Create container property for name
         tableContainer.addContainerProperty(ViewConstants.PROPERTY_NAME, String.class, null);
         tableContainer.addContainerProperty(ViewConstants.PROPERTY_LINK, Label.class, null);
-
-        for (final MetadataRecord metadataRecord : mdList) {
-            Item item = tableContainer.addItem(metadataRecord.getName());
-            if (item != null) {
-                item.getItemProperty(ViewConstants.PROPERTY_NAME).setValue(metadataRecord.getName());
-                item.getItemProperty(ViewConstants.PROPERTY_LINK).setValue(
-                    new Label("<a href=\"" + router.getServiceLocation().getEscidocUri()
-                        + metadataRecord.getXLinkHref() + "\" target=\"_blank\">View</a>", Label.CONTENT_RAW));
+        if (mdList != null) {
+            for (final MetadataRecord metadataRecord : mdList) {
+                Item item = tableContainer.addItem(metadataRecord.getName());
+                if (item != null) {
+                    item.getItemProperty(ViewConstants.PROPERTY_NAME).setValue(metadataRecord.getName());
+                    item.getItemProperty(ViewConstants.PROPERTY_LINK).setValue(
+                        new Label("<a href=\"" + router.getServiceLocation().getEscidocUri()
+                            + metadataRecord.getXLinkHref() + "\" target=\"_blank\">View</a>", Label.CONTENT_RAW));
+                }
             }
         }
         table.setColumnWidth(ViewConstants.PROPERTY_LINK, 40);
