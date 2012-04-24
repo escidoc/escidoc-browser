@@ -57,7 +57,6 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.HorizontalLayout;
@@ -83,9 +82,6 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 public class HeaderContainer extends VerticalLayout implements UserChangeListener, PopupVisibilityListener {
 
     private final static Logger LOG = LoggerFactory.getLogger(HeaderContainer.class);
-
-    // The HTML file can be found at myTheme/layouts/header.html
-    private final CustomLayout custom = new CustomLayout(ViewConstants.HEADER);
 
     private final TextField searchField = new TextField(ViewConstants.SEARCH);
 
@@ -129,7 +125,6 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
     public void init() {
         app.addListener(this);
         addNormalLayout();
-        // addCustomLayout();
         createLoginComponent();
         createLogoutComponent();
         createSearchForm();
@@ -169,6 +164,7 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
             name = new Button(user.getLoginName());
             name.setStyleName(BaseTheme.BUTTON_LINK);
             name.addStyleName("paddingright10");
+
             ((Button) name).addListener(new Button.ClickListener() {
                 @Override
                 public void buttonClick(@SuppressWarnings("unused")
@@ -188,36 +184,28 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
             });
         }
 
-        custom.addComponent(new Label("<b>" + ViewConstants.CURRENT_USER + "</b>", Label.CONTENT_XHTML), "login-name");
         Label lblCurrentUser = new Label("<b>" + ViewConstants.CURRENT_USER + "</b>", Label.CONTENT_XHTML);
         lblCurrentUser.addStyleName("paddingright10");
         hl.addComponent(lblCurrentUser);
         hl.setComponentAlignment(lblCurrentUser, Alignment.MIDDLE_RIGHT);
 
         name.addStyleName("paddingright10");
-        custom.addComponent(name, "username");
         hl.addComponent(name);
+        hl.addComponent(new Label(" &nbsp;", Label.CONTENT_RAW));
         hl.setComponentAlignment(name, Alignment.MIDDLE_RIGHT);
 
         if (user.isGuest()) {
-            custom.removeComponent(logout);
             hl.removeComponent(logout);
-            custom.addComponent(login, "login");
             hl.addComponent(login);
             hl.setComponentAlignment(login, Alignment.MIDDLE_RIGHT);
 
         }
         else {
-            custom.addComponent(logout, "logout");
             logout.addStyleName("paddingright10");
             hl.addComponent(logout);
             hl.setComponentAlignment(logout, Alignment.MIDDLE_RIGHT);
 
         }
-    }
-
-    private void addCustomLayout() {
-        addComponent(custom);
     }
 
     private void createLoginComponent() {
@@ -244,7 +232,6 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
         searchField.setImmediate(true);
         form.getLayout().addComponent(searchField);
         form.addStyleName("paddingright10");
-        custom.addComponent(form, "form");
         hl.addComponent(form);
         hl.setComponentAlignment(form, Alignment.MIDDLE_RIGHT);
 
@@ -252,7 +239,7 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
         btnSearch.setClickShortcut(KeyCode.ENTER);
         btnSearch.addStyleName("primary");
         btnSearch.removeStyleName("v-button");
-        custom.addComponent(btnSearch, "btnSearch");
+
         btnSearch.addStyleName("paddingright10");
         hl.addComponent(btnSearch);
         hl.setComponentAlignment(btnSearch, Alignment.MIDDLE_RIGHT);
@@ -270,7 +257,7 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
         final PopupView popup = new PopupView("?", content);
         popup.setHideOnMouseOut(true);
         popup.addListener(this);
-        custom.addComponent(popup, "searchTip");
+
         popup.addStyleName("paddingright10");
         hl.addComponent(popup);
         hl.setComponentAlignment(popup, Alignment.MIDDLE_RIGHT);
@@ -317,19 +304,19 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
 
     @Override
     public void applicationUserChanged(final UserChangeEvent event) {
-        final Object object = event.getNewUser();
-        if (!(object instanceof CurrentUser)) {
-            return;
-        }
-        custom.removeAllComponents();
-        custom.addComponent(new Label("<b>" + ViewConstants.CURRENT_USER + user.getLoginName() + "</b>",
-            Label.CONTENT_XHTML), "login-name");
-        if (((CurrentUser) object).isGuest()) {
-            custom.addComponent(login, "login");
-        }
-        else {
-            custom.addComponent(logout, "logout");
-        }
+        // final Object object = event.getNewUser();
+        // if (!(object instanceof CurrentUser)) {
+        // return;
+        // }
+        // custom.removeAllComponents();
+        // custom.addComponent(new Label("<b>" + ViewConstants.CURRENT_USER + user.getLoginName() + "</b>",
+        // Label.CONTENT_XHTML), "login-name");
+        // if (((CurrentUser) object).isGuest()) {
+        // custom.addComponent(login, "login");
+        // }
+        // else {
+        // custom.addComponent(logout, "logout");
+        // }
     }
 
     @Override
