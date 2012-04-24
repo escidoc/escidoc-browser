@@ -28,35 +28,29 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import org.escidoc.browser.controller.ItemController;
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.ItemProxy;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.listeners.AddMetaDataFileItemBehaviour;
-import org.escidoc.browser.ui.listeners.OnEditItemMetadata;
-import org.escidoc.browser.ui.listeners.RelationsClickListener;
-import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
-import org.escidoc.browser.ui.view.helpers.ItemMetadataTable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Preconditions;
-import com.vaadin.terminal.ExternalResource;
+
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Link;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 
-import de.escidoc.core.resources.common.MetadataRecord;
+import org.escidoc.browser.controller.ItemController;
+import org.escidoc.browser.model.ItemProxy;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.listeners.AddMetaDataFileItemBehaviour;
+import org.escidoc.browser.ui.listeners.RelationsClickListener;
+import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
+import org.escidoc.browser.ui.view.helpers.ItemMetadataTable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MetadataRecsItem {
 
@@ -66,13 +60,9 @@ public class MetadataRecsItem {
 
     private final Window mainWindow;
 
-    private final EscidocServiceLocation escidocServiceLocation;
-
     private final Repositories repositories;
 
     private final Panel pnl = new Panel();
-
-    private VerticalLayout btnaddContainer = new VerticalLayout();
 
     private final Router router;
 
@@ -91,7 +81,6 @@ public class MetadataRecsItem {
         this.itemController = controller;
 
         this.mainWindow = router.getMainWindow();
-        this.escidocServiceLocation = router.getServiceLocation();
     }
 
     protected Accordion asAccord() {
@@ -166,7 +155,7 @@ public class MetadataRecsItem {
         return pnl;
     }
 
-    private void buildPanelHeader(CssLayout cssLayout, String name) {
+    private static void buildPanelHeader(CssLayout cssLayout, String name) {
         cssLayout.addStyleName("v-accordion-item-caption v-caption v-captiontext");
         cssLayout.setWidth("100%");
         cssLayout.setMargin(false);
@@ -175,43 +164,5 @@ public class MetadataRecsItem {
         nameofPanel.setStyleName("accordion v-captiontext");
         nameofPanel.setWidth("70%");
         cssLayout.addComponent(nameofPanel);
-    }
-
-    /**
-     * Create the buttons to be shown on the MetaDataRecords Accordion
-     * 
-     * @param pnl
-     * @param metadataRecord
-     */
-    private void buildMDButtons(final VerticalLayout btnaddContainer, final MetadataRecord metadataRecord) {
-        final HorizontalLayout hl = new HorizontalLayout();
-        hl.setStyleName("metadata");
-
-        Link btnmdRec =
-            new Link(metadataRecord.getName(), new ExternalResource(escidocServiceLocation.getEscidocUri()
-                + metadataRecord.getXLinkHref()));
-        btnmdRec.setTargetName("_blank");
-
-        btnmdRec.setStyleName(BaseTheme.BUTTON_LINK);
-        btnmdRec.setDescription("Show metadata information in a separate window");
-        hl.addComponent(btnmdRec);
-        hl.addComponent(new Label("&nbsp; | &nbsp;", Label.CONTENT_RAW));
-        if (itemController.hasAccess()) {
-            final Button btnEditActualMetaData =
-                new Button("edit", new OnEditItemMetadata(metadataRecord, mainWindow, repositories, resourceProxy));
-            btnEditActualMetaData.setStyleName(BaseTheme.BUTTON_LINK);
-            btnEditActualMetaData.setDescription("Replace the metadata with a new content file");
-            hl.addComponent(btnEditActualMetaData);
-        }
-        btnaddContainer.addComponent(hl);
-    }
-
-    /**
-     * Used to bind new buttons on the view Usually when adding a new record
-     * 
-     * @param metadataRecord
-     */
-    public void addButtons(final MetadataRecord metadataRecord) {
-        buildMDButtons(btnaddContainer, metadataRecord);
     }
 }

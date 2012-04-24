@@ -112,8 +112,7 @@ public class ContainerMetadataTable extends TableContainerVH {
                     controller.refreshView();
                 }
                 else if (ACTION_EDIT == action) {
-                    new OnEditContainerMetadata(router, repositories, resourceProxy, controller, (Metadata) target)
-                        .showEditWindow();
+                    new OnEditContainerMetadata(router, controller, (Metadata) target).showEditWindow();
                     controller.refreshView();
                 }
             }
