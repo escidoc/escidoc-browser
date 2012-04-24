@@ -38,55 +38,59 @@ import com.vaadin.ui.Link;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.BaseTheme;
 
-import org.escidoc.browser.controller.OrgUnitController;
+import org.escidoc.browser.controller.ContainerController;
+import org.escidoc.browser.model.ContainerProxy;
+import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.OnAddOrgUnitMetadata;
-import org.escidoc.browser.ui.maincontent.OnEditOrgUnitMetadata;
+import org.escidoc.browser.ui.listeners.OnAddContainerMetadata;
+import org.escidoc.browser.ui.listeners.OnEditContainerMetadata;
+import org.escidoc.browser.ui.view.helpers.OrgUnitMetadataTable.Metadata;
 
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.MetadataRecords;
-import de.escidoc.core.resources.om.context.AdminDescriptor;
 
 @SuppressWarnings("serial")
-public class OrgUnitMetadataTable extends TableContainerVH {
+public class ContainerMetadataTable extends TableContainerVH {
+    // FIXME a lot of duplicate code with other ${Resource}MetadataTable
 
-    private Router router;
+    protected final ContainerController controller;
 
-    private Action ACTION_DELETE = new Action("Delete ");
+    private final Action ACTION_DELETE = new Action("Delete Metadata");
 
-    private Action ACTION_ADD = new Action("Add ");
+    private final Action ACTION_ADD = new Action("Add Metadata");
 
-    private Action ACTION_EDIT = new Action("Edit");
+    private final Action ACTION_EDIT = new Action("Edit Metadata");
 
-    private Action[] ACTIONS_LIST = new Action[] { ACTION_ADD, ACTION_EDIT, ACTION_DELETE };
+    private final Action[] ACTIONS_LIST = new Action[] { ACTION_ADD, ACTION_EDIT, ACTION_DELETE };
+
+    private final Router router;
+
+    private final MetadataRecords mdList;
+
+    private final Repositories repositories;
+
+    private final ContainerProxy resourceProxy;
 
     private HierarchicalContainer dataSource;
 
-    private MetadataRecords mdList;
+    private HierarchicalContainer tableContainer;
 
-    private OrgUnitController controller;
+    public ContainerMetadataTable(MetadataRecords metadataRecords, ContainerController controller, Router router,
+        ContainerProxy resourceProxy, Repositories repositories) {
+        Preconditions.checkNotNull(metadataRecords, "metadataRecords is null: %s", metadataRecords);
+        Preconditions.checkNotNull(controller, "containerController is null: %s", controller);
+        Preconditions.checkNotNull(router, "router is null: %s", router);
+        Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
 
-    public OrgUnitMetadataTable(MetadataRecords mdList, OrgUnitController controller, Router router) {
-        Preconditions.checkNotNull(mdList, "mdList is null: %s", mdList);
-        Preconditions.checkNotNull(controller, "controller is null: %s", controller);
-
-        this.mdList = mdList;
+        this.mdList = metadataRecords;
         this.controller = controller;
         this.router = router;
 
+        this.resourceProxy = resourceProxy;
+        this.repositories = repositories;
+
         table.setContainerDataSource(populateContainerTable());
-    }
-
-    @Override
-    protected boolean hasRightstoContextMenu() {
-        return true;
-    }
-
-    @Override
-    protected void removeAction(Object target) {
-        controller.removeMetadata(target.toString());
-        dataSource.removeItem(target);
     }
 
     @Override
@@ -100,51 +104,32 @@ public class OrgUnitMetadataTable extends TableContainerVH {
 
             @Override
             public void handleAction(Action action, @SuppressWarnings("unused") Object sender, Object target) {
-                Preconditions.checkNotNull(action, "action is null: %s", action);
-
                 if (ACTION_DELETE == action) {
                     confirmActionWindow(target);
                 }
-                else if (ACTION_EDIT == action) {
-                    new OnEditOrgUnitMetadata(router, controller, router.getMainWindow(), (Metadata) target)
-                        .showEditWindow();
+                else if (ACTION_ADD == action) {
+                    new OnAddContainerMetadata(router.getMainWindow(), repositories, resourceProxy).showAddWindow();
                     controller.refreshView();
                 }
-                else if (ACTION_ADD == action) {
-                    new OnAddOrgUnitMetadata(controller, router.getMainWindow()).showAddWindow();
+                else if (ACTION_EDIT == action) {
+                    new OnEditContainerMetadata(router, repositories, resourceProxy, controller, (Metadata) target)
+                        .showEditWindow();
+                    controller.refreshView();
                 }
             }
         });
     }
 
-    public static class Metadata {
+    @Override
+    protected boolean hasRightstoContextMenu() {
+        return true;
+    }
 
-        public String name;
+    @Override
+    protected void removeAction(Object target) {
+        controller.removeMetadata(target.toString());
+        tableContainer.removeItem(target);
 
-        public String uri;
-
-        public static Metadata newInstance(MetadataRecord metadataRecord) {
-            Metadata m = new Metadata();
-            m.name = metadataRecord.getName();
-            m.uri = metadataRecord.getXLinkHref();
-            return m;
-        }
-
-        public static String getId(Metadata md) {
-            return md.uri.split("/")[3];
-        }
-
-        @Override
-        public String toString() {
-            return "Metadata [name=" + name + ", uri=" + uri + "]";
-        }
-
-        public static Metadata newInstance(AdminDescriptor metadataRecord) {
-            Metadata m = new Metadata();
-            m.name = metadataRecord.getName();
-            m.uri = metadataRecord.getXLinkHref();
-            return m;
-        }
     }
 
     @Override
@@ -185,7 +170,7 @@ public class OrgUnitMetadataTable extends TableContainerVH {
     protected void initializeTable() {
         table.setWidth("100%");
         table.setSelectable(true);
-        table.setImmediate(true);
+        table.setImmediate(true); // react at once when something is selected
         table.setColumnReorderingAllowed(true);
         table.setColumnCollapsingAllowed(true);
         table.setColumnHeaderMode(Table.COLUMN_HEADER_MODE_HIDDEN);

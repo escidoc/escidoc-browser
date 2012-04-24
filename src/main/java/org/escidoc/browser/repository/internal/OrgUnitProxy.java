@@ -119,7 +119,7 @@ public class OrgUnitProxy implements ResourceProxy {
         throw new UnsupportedOperationException("not-yet-implemented.");
     }
 
-    public MetadataRecords getMedataRecords() {
+    public MetadataRecords getMetadataRecords() {
         return ou.getMetadataRecords();
     }
 

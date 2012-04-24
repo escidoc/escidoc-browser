@@ -210,7 +210,7 @@ public class InvestigationController extends Controller implements IInvestigatio
     private InvestigationBean loadBeanData(final ContainerProxy containerProxy) {
         InvestigationBean investigationBean = new InvestigationBean();
         investigationBean.setObjid(containerProxy.getId());
-        final Element e = containerProxy.getMedataRecords().get(ESCIDOC).getContent();
+        final Element e = containerProxy.getMetadataRecords().get(ESCIDOC).getContent();
         final NodeList nodeList = e.getChildNodes();
 
         for (int i = 0; i < nodeList.getLength(); i++) {
@@ -253,7 +253,7 @@ public class InvestigationController extends Controller implements IInvestigatio
                     try {
                         final Element rigElement =
                             ((ItemProxy) getRepositories().item().findById(rigId))
-                                .getMedataRecords().get(ESCIDOC).getContent();
+                                .getMetadataRecords().get(ESCIDOC).getContent();
 
                         if (!(("Rig".equals(rigElement.getLocalName()) && URI_EL.equals(rigElement.getNamespaceURI())) || "el:Rig"
                             .equals(rigElement.getTagName()))) {
@@ -306,7 +306,7 @@ public class InvestigationController extends Controller implements IInvestigatio
         final RigBean rigBean = new RigBean();
         rigBean.setObjectId(rigItem.getId());
 
-        final NodeList nodeList = rigItem.getMedataRecords().get(ESCIDOC).getContent().getChildNodes();
+        final NodeList nodeList = rigItem.getMetadataRecords().get(ESCIDOC).getContent().getChildNodes();
 
         for (int i = 0; i < nodeList.getLength(); i++) {
             final Node node = nodeList.item(i);
@@ -339,7 +339,7 @@ public class InvestigationController extends Controller implements IInvestigatio
     private static InstrumentBean loadRelatedInstrumentBeanData(final ItemProxy instrumentItem) {
         Preconditions.checkNotNull(instrumentItem, "Resource is null");
         final InstrumentBean instrumentBean = new InstrumentBean();
-        final NodeList nodeList = instrumentItem.getMedataRecords().get(ESCIDOC).getContent().getChildNodes();
+        final NodeList nodeList = instrumentItem.getMetadataRecords().get(ESCIDOC).getContent().getChildNodes();
 
         for (int i = 0; i < nodeList.getLength(); i++) {
             final Node node = nodeList.item(i);

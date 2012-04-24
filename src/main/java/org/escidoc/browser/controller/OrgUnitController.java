@@ -78,7 +78,6 @@ public class OrgUnitController extends Controller {
     public void updateMetadata(MetadataRecord metadataRecord) throws EscidocClientException {
         Preconditions.checkNotNull(metadataRecord, "metadataRecord is null: %s", metadataRecord);
         repositories.organization().updateMetaData((OrgUnitProxy) resourceProxy, metadataRecord);
-
     }
 
     public MetadataRecord getMetadata(String metadataRecordName) {

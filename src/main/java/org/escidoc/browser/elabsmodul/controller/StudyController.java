@@ -209,7 +209,7 @@ public class StudyController extends Controller implements ISaveAction {
         final StudyBean studyBean = new StudyBean();
         studyBean.setObjectId(containerProxy1.getId());
 
-        final Element e = containerProxy1.getMedataRecords().get(ESCIDOC).getContent();
+        final Element e = containerProxy1.getMetadataRecords().get(ESCIDOC).getContent();
         if (e != null && e.getChildNodes() != null) {
             final NodeList nodeList = e.getChildNodes();
 

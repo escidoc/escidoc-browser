@@ -47,9 +47,10 @@ import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.MetadataRecords;
 import de.escidoc.core.resources.om.item.component.Component;
 
+@SuppressWarnings("serial")
 public class ItemComponentMetadataVH extends TableContainerVH {
 
-    private MetadataRecords md;
+    private MetadataRecords mdList;
 
     private Router router;
 
@@ -69,17 +70,21 @@ public class ItemComponentMetadataVH extends TableContainerVH {
 
     private final Component component;
 
-    public ItemComponentMetadataVH(MetadataRecords md, ItemController controller, Router router,
+    public ItemComponentMetadataVH(MetadataRecords mdList, ItemController controller, Router router,
         ItemProxyImpl itemProxy, Component component) {
 
-        this.component = component;
-        Preconditions.checkNotNull(md, "MetadataRecords is null: %s", md);
+        Preconditions.checkNotNull(mdList, "MetadataRecords is null: %s", mdList);
         Preconditions.checkNotNull(router, "router is null.");
         Preconditions.checkNotNull(controller, "ItemController is null.");
-        this.md = md;
+        Preconditions.checkNotNull(itemProxy, "itemProxy is null: %s", itemProxy);
+        Preconditions.checkNotNull(component, "component is null: %s", component);
+
+        this.mdList = mdList;
         this.controller = controller;
         this.router = router;
         this.itemProxy = itemProxy;
+        this.component = component;
+
         table.setContainerDataSource(populateContainerTable());
     }
 
@@ -133,7 +138,7 @@ public class ItemComponentMetadataVH extends TableContainerVH {
         tableContainer.addContainerProperty(ViewConstants.PROPERTY_NAME, String.class, null);
         tableContainer.addContainerProperty(ViewConstants.PROPERTY_LINK, Label.class, null);
 
-        for (final MetadataRecord metadataRecord : md) {
+        for (final MetadataRecord metadataRecord : mdList) {
             Item item = tableContainer.addItem(metadataRecord.getName());
             if (item != null) {
                 item.getItemProperty(ViewConstants.PROPERTY_NAME).setValue(metadataRecord.getName());
@@ -146,6 +151,7 @@ public class ItemComponentMetadataVH extends TableContainerVH {
         return tableContainer;
     }
 
+    @Override
     protected void initializeTable() {
         // size
         table.setWidth("100%");
