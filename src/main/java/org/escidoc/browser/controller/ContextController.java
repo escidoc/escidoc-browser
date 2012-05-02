@@ -64,7 +64,7 @@ public class ContextController extends Controller {
             view = new ContextView(getRouter(), getResourceProxy(), getRepositories(), this);
         }
         catch (EscidocClientException e) {
-            getRouter().getMainWindow().showNotification("Error", e.getMessage(),
+            getRouter().getMainWindow().showNotification("Error cannot createview ", e.getMessage(),
                 Window.Notification.TYPE_ERROR_MESSAGE);
         }
     }

@@ -189,7 +189,7 @@ public class UserGroupView extends View {
                                 + " is removed from the group.", Window.Notification.TYPE_TRAY_NOTIFICATION);
                         }
                         catch (EscidocClientException e) {
-                            mainWindow.showNotification("Error ", e.getMessage(),
+                            mainWindow.showNotification("Error removing organizationunit: ", e.getMessage(),
                                 Window.Notification.TYPE_ERROR_MESSAGE);
 
                         }

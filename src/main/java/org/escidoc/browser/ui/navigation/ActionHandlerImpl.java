@@ -510,6 +510,9 @@ public final class ActionHandlerImpl implements Action.Handler {
         try {
             findAllChildren(resource);
             Collections.reverse(results);
+            for (ResourceModel result : results) {
+                System.out.println(result.getName());
+            }
             if (!results.isEmpty()) {
                 for (ResourceModel resourceModel : results) {
                     if (resourceModel.getType().equals(ResourceType.CONTAINER)) {
@@ -690,7 +693,8 @@ public final class ActionHandlerImpl implements Action.Handler {
                         Notification.TYPE_TRAY_NOTIFICATION));
                 }
                 catch (final EscidocClientException e) {
-                    mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getLocalizedMessage(),
+                    mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR
+                        + "Could not delete resource " + model.getName() + model.getName(), e.getLocalizedMessage(),
                         Notification.TYPE_ERROR_MESSAGE));
                 }
             }

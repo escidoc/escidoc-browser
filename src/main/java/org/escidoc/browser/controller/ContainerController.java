@@ -28,9 +28,7 @@
  */
 package org.escidoc.browser.controller;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.ui.Window;
+import java.net.URISyntaxException;
 
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
@@ -40,7 +38,8 @@ import org.escidoc.browser.ui.maincontent.ContainerView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URISyntaxException;
+import com.google.common.base.Preconditions;
+import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
@@ -59,7 +58,7 @@ public class ContainerController extends Controller {
             view = new ContainerView(getRouter(), getResourceProxy(), getRepositories(), this);
         }
         catch (EscidocClientException e) {
-            getRouter().getMainWindow().showNotification("Error", e.getMessage(),
+            getRouter().getMainWindow().showNotification("Error cannot create view: ", e.getMessage(),
                 Window.Notification.TYPE_ERROR_MESSAGE);
         }
     }

@@ -28,9 +28,15 @@
  */
 package org.escidoc.browser.elabsmodul.service;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.ui.Window.Notification;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.UUID;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -58,15 +64,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.UUID;
+import com.google.common.base.Preconditions;
+import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -309,8 +308,7 @@ public class ELabsService implements ILabsService {
     private static String createInstrumentNameAndId(final InstrumentBean instrumentBean) {
         // @formatter:off
         return new StringBuilder(instrumentBean.getName())
-            .append(' ').append("(").append(instrumentBean.getObjectId())
-            .append(")").toString();
+            .append(' ').append("(").append(instrumentBean.getObjectId()).append(")").toString();
         // @formatter:on
     }
 
@@ -631,7 +629,9 @@ public class ELabsService implements ILabsService {
 
     private void showError(final String errorMessage) {
         Preconditions.checkNotNull(errorMessage, "ErrorMessage is null");
-        this.router.getApp().getMainWindow().showNotification("Error", errorMessage, Notification.TYPE_ERROR_MESSAGE);
+        this.router
+            .getApp().getMainWindow()
+            .showNotification("Error ELabsService ", errorMessage, Notification.TYPE_ERROR_MESSAGE);
     }
 
     private void showWarning(final String warningMessage) {

@@ -28,7 +28,12 @@
  */
 package org.escidoc.browser.model.internal;
 
-import com.google.common.base.Preconditions;
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
+
+import java.util.List;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ContainerProxy;
@@ -36,10 +41,7 @@ import org.escidoc.browser.model.ResourceType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import java.util.List;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import com.google.common.base.Preconditions;
 
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.common.MetadataRecord;
@@ -48,7 +50,6 @@ import de.escidoc.core.resources.common.structmap.ContainerMemberRef;
 import de.escidoc.core.resources.common.structmap.MemberRef;
 import de.escidoc.core.resources.common.structmap.StructMap;
 import de.escidoc.core.resources.om.container.Container;
-import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 public class ContainerProxyImpl implements ContainerProxy {
     private final Container containerFromCore;
@@ -162,7 +163,7 @@ public class ContainerProxyImpl implements ContainerProxy {
      */
     @Override
     public String getModifier() {
-        return containerFromCore.getProperties().getCreatedBy().getXLinkTitle();
+        return containerFromCore.getProperties().getVersion().getModifiedBy().getXLinkTitle().toString();
     }
 
     /*

@@ -177,8 +177,8 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
                     }
                     catch (EscidocClientException e) {
                         LOG.error("Can not find user " + e.getMessage());
-                        router.getMainWindow().showNotification(ViewConstants.ERROR, e.getMessage(),
-                            Window.Notification.TYPE_ERROR_MESSAGE);
+                        router.getMainWindow().showNotification(ViewConstants.ERROR + "Can not find user ",
+                            e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
                     }
                 }
             });

@@ -165,7 +165,8 @@ public class AddOrgUnitstoGroup extends DragnDropHelper {
                 Window.Notification.TYPE_TRAY_NOTIFICATION);
         }
         catch (EscidocClientException e) {
-            router.getMainWindow().showNotification("Error ", e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            router.getMainWindow().showNotification("Error removing Organizational unit: ", e.getMessage(),
+                Window.Notification.TYPE_ERROR_MESSAGE);
 
         }
     }

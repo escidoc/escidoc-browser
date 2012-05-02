@@ -28,9 +28,7 @@
  */
 package org.escidoc.browser.controller;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.ui.Window;
+import java.net.URISyntaxException;
 
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.ItemProxyImpl;
@@ -42,7 +40,8 @@ import org.escidoc.browser.ui.view.helpers.ItemComponentsView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URISyntaxException;
+import com.google.common.base.Preconditions;
+import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
@@ -74,11 +73,13 @@ public class ItemController extends Controller {
                 .permitted();
         }
         catch (final EscidocClientException e) {
-            router.getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            router.getMainWindow().showNotification("EscidocClientException " + e.getMessage(),
+                Window.Notification.TYPE_ERROR_MESSAGE);
             return false;
         }
         catch (final URISyntaxException e) {
-            router.getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            router.getMainWindow().showNotification("URISyntaxException " + e.getMessage(),
+                Window.Notification.TYPE_ERROR_MESSAGE);
             return false;
         }
     }
@@ -91,7 +92,8 @@ public class ItemController extends Controller {
             table.removeItemFromTable(target.toString());
         }
         catch (EscidocClientException e) {
-            router.getMainWindow().showNotification("Error", e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            router.getMainWindow().showNotification("Error cannot remove component! ", e.getMessage(),
+                Window.Notification.TYPE_ERROR_MESSAGE);
         }
 
     }

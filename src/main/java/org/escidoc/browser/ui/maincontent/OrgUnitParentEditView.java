@@ -28,10 +28,8 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.data.Item;
-import com.vaadin.data.util.HierarchicalContainer;
+import java.util.Collection;
+import java.util.List;
 
 import org.escidoc.browser.controller.OrgUnitController;
 import org.escidoc.browser.model.ResourceModel;
@@ -40,10 +38,14 @@ import org.escidoc.browser.repository.internal.OrgUnitService;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.view.helpers.DragnDropHelper;
 
-import java.util.Collection;
-import java.util.List;
+import com.google.common.base.Preconditions;
+import com.vaadin.data.Item;
+import com.vaadin.data.util.HierarchicalContainer;
+import com.vaadin.ui.Tree.ExpandEvent;
+import com.vaadin.ui.Tree.ExpandListener;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.client.exceptions.InternalClientException;
 import de.escidoc.core.resources.oum.OrganizationalUnit;
 
 @SuppressWarnings("serial")
@@ -52,6 +54,10 @@ public class OrgUnitParentEditView extends DragnDropHelper {
     private List<ResourceModel> parentList;
 
     private OrgUnitController controller;
+
+    private HierarchicalContainer orgUnitContainer;
+
+    private OrgUnitService orgUnitService;
 
     public OrgUnitParentEditView(ResourceProxy resourceProxy, List<ResourceModel> parentList, Router router,
         OrgUnitController controller) throws EscidocClientException {
@@ -63,6 +69,8 @@ public class OrgUnitParentEditView extends DragnDropHelper {
         this.parentList = parentList;
         this.router = router;
         this.controller = controller;
+        orgUnitService =
+            new OrgUnitService(router.getServiceLocation().getEscidocUri(), router.getApp().getCurrentUser().getToken());
         createDragComponents();
     }
 
@@ -89,31 +97,52 @@ public class OrgUnitParentEditView extends DragnDropHelper {
     @Override
     protected HierarchicalContainer populateContainerTree() throws EscidocClientException {
         // Create new container
-        HierarchicalContainer orgUnitContainer = new HierarchicalContainer();
+        orgUnitContainer = new HierarchicalContainer();
         // Create containerproperty for name
         orgUnitContainer.addContainerProperty(PROPERTY_NAME, String.class, null);
         orgUnitContainer.addContainerProperty(PROPERTY_HREF, String.class, null);
-
-        OrgUnitService orgUnitService =
-            new OrgUnitService(router.getServiceLocation().getEscidocUri(), router.getApp().getCurrentUser().getToken());
 
         Collection<OrganizationalUnit> allOrgs = orgUnitService.retrieveTopLevelOrgUnits();
         for (OrganizationalUnit organizationalUnit : allOrgs) {
             Item item = orgUnitContainer.addItem(organizationalUnit.getObjid());
             item.getItemProperty(PROPERTY_NAME).setValue(organizationalUnit.getProperties().getName());
             item.getItemProperty(PROPERTY_HREF).setValue(organizationalUnit.getXLinkHref());
-            Collection<OrganizationalUnit> children = orgUnitService.retrieveChildren(organizationalUnit.getObjid());
-            for (OrganizationalUnit childrenOrgUnits : children) {
-                item = orgUnitContainer.addItem(childrenOrgUnits.getObjid());
-                if (item != null) {
-                    item.getItemProperty(PROPERTY_NAME).setValue(childrenOrgUnits.getProperties().getName());
-                    item.getItemProperty(PROPERTY_HREF).setValue(childrenOrgUnits.getXLinkHref());
-                    orgUnitContainer.setParent(childrenOrgUnits.getObjid(), organizationalUnit.getObjid());
-                    orgUnitContainer.setChildrenAllowed(childrenOrgUnits.getObjid(), false);
-                }
-            }
         }
         return orgUnitContainer;
+    }
+
+    protected void addActionListener() throws InternalClientException, EscidocClientException {
+        tree.addListener(new ExpandListener() {
+
+            @Override
+            public void nodeExpand(ExpandEvent event) {
+                router.getMainWindow().showNotification(event.getItemId().toString());
+                try {
+                    Collection<OrganizationalUnit> children =
+                        orgUnitService.retrieveChildren(event.getItemId().toString());
+                    for (OrganizationalUnit childrenOrgUnits : children) {
+                        Item item = orgUnitContainer.addItem(childrenOrgUnits.getObjid());
+                        if (item != null) {
+                            System.out.println(childrenOrgUnits.getProperties().getName());
+                            item.getItemProperty(PROPERTY_NAME).setValue(childrenOrgUnits.getProperties().getName());
+                            item.getItemProperty(PROPERTY_HREF).setValue(
+                                childrenOrgUnits.getProperties().getXLinkHref());
+                            boolean bole =
+                                orgUnitContainer.setParent(childrenOrgUnits.getObjid(), event.getItemId().toString());
+                            System.out.println(childrenOrgUnits.getProperties().getName() + " "
+                                + childrenOrgUnits.getProperties().getXLinkHref() + " " + bole + " "
+                                + childrenOrgUnits.getObjid() + " " + event.getItemId().toString());
+                        }
+
+                    }
+
+                }
+                catch (EscidocClientException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
     }
 
     @Override

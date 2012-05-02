@@ -28,10 +28,7 @@
  */
 package org.escidoc.browser.ui.listeners;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.util.HierarchicalContainer;
-import com.vaadin.ui.Tree.ExpandEvent;
-import com.vaadin.ui.Tree.ExpandListener;
+import java.util.Collection;
 
 import org.escidoc.browser.controller.ContextController;
 import org.escidoc.browser.controller.Controller;
@@ -41,7 +38,10 @@ import org.escidoc.browser.repository.internal.OrgUnitService;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.view.helpers.DragnDropHelper;
 
-import java.util.Collection;
+import com.vaadin.data.Item;
+import com.vaadin.data.util.HierarchicalContainer;
+import com.vaadin.ui.Tree.ExpandEvent;
+import com.vaadin.ui.Tree.ExpandListener;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.InternalClientException;

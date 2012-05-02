@@ -118,12 +118,15 @@ public abstract class Controller {
      */
     public void showError(final String errorMessage) {
         Preconditions.checkNotNull(errorMessage, "Errormessage is null");
-        this.router.getApp().getMainWindow().showNotification("Error", errorMessage, Notification.TYPE_ERROR_MESSAGE);
+        this.router
+            .getApp().getMainWindow().showNotification("Error occurred", errorMessage, Notification.TYPE_ERROR_MESSAGE);
     }
 
     public void showError(final Exception e) {
         Preconditions.checkNotNull(e, "e is null: %s", e);
-        this.router.getApp().getMainWindow().showNotification("Error", e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+        this.router
+            .getApp().getMainWindow()
+            .showNotification("Error occurred", e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
     }
 
     /**
