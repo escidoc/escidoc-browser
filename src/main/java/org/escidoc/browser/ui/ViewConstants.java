@@ -455,4 +455,14 @@ public class ViewConstants {
 
     public static final String ERROR_DIRECTMEMBERS = "Cannot create the DirectMembers for this resource: Error: ";
 
+    public static final String PROPERTY_EDIT = "edit";
+
+    public static final String PROPERTY_DELETE = "delete";
+
+    public static final String PROPERTY_SHARE = "share";
+
+    public static final String PROPERTY_DOWNLOAD = "download";
+
+    public static final String PROPERTY_ICON = "icon";
+
 }

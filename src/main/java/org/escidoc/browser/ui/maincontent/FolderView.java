@@ -6,10 +6,16 @@ import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.ContainerProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.helper.ViewHelper;
 import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
 import org.escidoc.browser.ui.view.helpers.CreateResourceLinksVH;
+import org.escidoc.browser.ui.view.helpers.FolderChildrenVH;
 
 import com.google.common.base.Preconditions;
+import com.vaadin.ui.AbstractComponentContainer;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
@@ -72,16 +78,122 @@ public class FolderView extends View {
         new CreateResourceLinksVH(router.getMainWindow().getURL().toString(), resourceProxy, vlContentPanel, router);
 
         // resourcePropertiesPanel
-        // Panel resourcePropertiesPanel = buildResourcePropertiesPanel();
-        // vlContentPanel.addComponent(resourcePropertiesPanel);
-        // vlContentPanel.setExpandRatio(resourcePropertiesPanel, 1.5f);
+        Panel resourcePropertiesPanel = buildResourcePropertiesPanel();
+        vlContentPanel.addComponent(resourcePropertiesPanel);
+        vlContentPanel.setExpandRatio(resourcePropertiesPanel, 1.5f);
         //
         // // metaViewsPanel contains Panel for the DirectMembers & for the Metas
-        // Panel metaViewsPanel = buildMetaViewsPanel();
-        // vlContentPanel.addComponent(metaViewsPanel);
-        // vlContentPanel.setExpandRatio(metaViewsPanel, 8.0f);
+        Panel membersPanel = buildMembersPanel();
+        vlContentPanel.addComponent(membersPanel);
+        vlContentPanel.setExpandRatio(membersPanel, 8.5f);
 
         return vlContentPanel;
+    }
+
+    private Panel buildMembersPanel() {
+        // common part: create layout
+        Panel metaViewsPanel = new Panel();
+        metaViewsPanel.setImmediate(false);
+        metaViewsPanel.setWidth("100.0%");
+        metaViewsPanel.setHeight("100.0%");
+        metaViewsPanel.setStyleName(Runo.PANEL_LIGHT);
+
+        FolderChildrenVH folderChildrenView = new FolderChildrenVH(folderController, resourceProxy, repositories);
+        metaViewsPanel.setContent(folderChildrenView);
+
+        return metaViewsPanel;
+    }
+
+    private Panel buildResourcePropertiesPanel() {
+        // common part: create layout
+        Panel resourcePropertiesPanel = new Panel();
+        resourcePropertiesPanel.setImmediate(false);
+        resourcePropertiesPanel.setWidth("100.0%");
+        resourcePropertiesPanel.setHeight("100.0%");
+        resourcePropertiesPanel.setStyleName(Runo.PANEL_LIGHT);
+
+        // vlResourceProperties
+        VerticalLayout vlResourceProperties = buildVlResourceProperties();
+        resourcePropertiesPanel.setContent(vlResourceProperties);
+
+        return resourcePropertiesPanel;
+    }
+
+    private VerticalLayout buildVlResourceProperties() {
+        // common part: create layout
+        VerticalLayout vlResourceProperties = new VerticalLayout();
+        vlResourceProperties.setImmediate(false);
+        vlResourceProperties.setWidth("100.0%");
+        vlResourceProperties.setHeight("100.0%");
+        vlResourceProperties.setMargin(false);
+
+        // creating the properties / without the breadcrump
+        createProperties(vlResourceProperties);
+        return vlResourceProperties;
+    }
+
+    private void createProperties(VerticalLayout vlResourceProperties) {
+        // Create Property fields. Probably not the best place for them to be
+        vlResourceProperties.addComponent(bindNameToHeader());
+        vlResourceProperties.addComponent(bindDescription());
+        addHorizontalRuler(vlResourceProperties);
+        vlResourceProperties.addComponent(bindProperties());
+
+    }
+
+    private VerticalLayout bindNameToHeader() {
+        VerticalLayout headerLayout = new VerticalLayout();
+        headerLayout.setMargin(false);
+        headerLayout.setWidth("100%");
+        final Label headerContext = new Label(ViewConstants.RESOURCE_NAME_CONTEXT + resourceProxy.getName());
+        headerContext.setStyleName("h1 fullwidth");
+        headerContext.setDescription(ViewConstants.RESOURCE_NAME_CONTEXT);
+        headerLayout.addComponent(headerContext);
+        return headerLayout;
+    }
+
+    private VerticalLayout bindDescription() {
+        VerticalLayout descLayout = new VerticalLayout();
+        descLayout.setMargin(false);
+        descLayout.setWidth("100%");
+        final Label headerContext = new Label(ViewConstants.DESCRIPTION_LBL + resourceProxy.getDescription());
+        headerContext.setStyleName("fullwidth");
+
+        descLayout.addComponent(headerContext);
+        return descLayout;
+    }
+
+    private static void addHorizontalRuler(AbstractComponentContainer contentLayout) {
+        final Label descRuler = new Label("<hr />", Label.CONTENT_RAW);
+        descRuler.setStyleName("hr");
+        contentLayout.addComponent(descRuler);
+    }
+
+    /**
+     * Binding Context Properties 2 sets of labels in 2 rows
+     * 
+     * @return
+     */
+    private HorizontalLayout bindProperties() {
+        HorizontalLayout hlProperties = new HorizontalLayout();
+        hlProperties.setWidth("100%");
+        VerticalLayout vlLeft = new VerticalLayout();
+        VerticalLayout vlRight = new VerticalLayout();
+        final Label descMetadata1 = new Label("ID: " + resourceProxy.getId());
+        Label lblStatus =
+            new Label(resourceProxy.getType().getLabel() + " is " + resourceProxy.getStatus(), Label.CONTENT_RAW);
+        lblStatus.setDescription(ViewConstants.DESC_STATUS);
+        vlLeft.addComponent(descMetadata1);
+        vlLeft.addComponent(lblStatus);
+
+        // RIGHT SIDE
+        vlRight.addComponent(ViewHelper.buildCreateAndModifyLabel(resourceProxy));
+
+        hlProperties.addComponent(vlLeft);
+        hlProperties.setExpandRatio(vlLeft, 0.4f);
+        hlProperties.addComponent(vlRight);
+        hlProperties.setExpandRatio(vlRight, 0.6f);
+        return hlProperties;
     }
 
     private Panel buildBreadCrumpPanel() {

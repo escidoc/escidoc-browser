@@ -69,7 +69,7 @@ public abstract class Controller {
         return repositories;
     }
 
-    protected Router getRouter() {
+    public Router getRouter() {
         return router;
     }
 
