@@ -503,16 +503,14 @@ public final class ActionHandlerImpl implements Action.Handler {
 
     }
 
-    private void deleteAllChildrenOfContainer(ResourceModel resource) {
+    private void deleteAllChildrenOfContainer(ResourceModel resource, Object sender) {
         HashMap<String, String> listDeleted = new HashMap<String, String>();
         HashMap<String, String> listNotDeleted = new HashMap<String, String>();
         results = new ArrayList<ResourceModel>();
         try {
             findAllChildren(resource);
             Collections.reverse(results);
-            for (ResourceModel result : results) {
-                System.out.println(result.getName());
-            }
+
             if (!results.isEmpty()) {
                 for (ResourceModel resourceModel : results) {
                     if (resourceModel.getType().equals(ResourceType.CONTAINER)) {
@@ -541,6 +539,19 @@ public final class ActionHandlerImpl implements Action.Handler {
                     }
                 }
                 new DeleteContainerShowLogsHelper(listDeleted, listNotDeleted, router).showWindow();
+            }
+            else {
+                try {
+                    repositories.container().finalDelete(resource);
+                    router.getLayout().closeView(resource, treeDataSource.getParent(resource), sender);
+                    mainWindow.showNotification(new Window.Notification(ViewConstants.DELETED,
+                        Notification.TYPE_TRAY_NOTIFICATION));
+                }
+                catch (final EscidocClientException e) {
+                    mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR
+                        + " Could not delete resource " + resource.getName(), e.getLocalizedMessage(),
+                        Notification.TYPE_ERROR_MESSAGE));
+                }
             }
         }
         catch (EscidocClientException e1) {
@@ -685,18 +696,18 @@ public final class ActionHandlerImpl implements Action.Handler {
             public void buttonClick(@SuppressWarnings("unused")
             final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
-                deleteAllChildrenOfContainer(model);
-                try {
-                    repositories.container().finalDelete(model);
-                    router.getLayout().closeView(model, treeDataSource.getParent(model), sender);
-                    mainWindow.showNotification(new Window.Notification(ViewConstants.DELETED,
-                        Notification.TYPE_TRAY_NOTIFICATION));
-                }
-                catch (final EscidocClientException e) {
-                    mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR
-                        + "Could not delete resource " + model.getName() + model.getName(), e.getLocalizedMessage(),
-                        Notification.TYPE_ERROR_MESSAGE));
-                }
+                deleteAllChildrenOfContainer(model, sender);
+                // try {
+                // repositories.container().finalDelete(model);
+                // router.getLayout().closeView(model, treeDataSource.getParent(model), sender);
+                // mainWindow.showNotification(new Window.Notification(ViewConstants.DELETED,
+                // Notification.TYPE_TRAY_NOTIFICATION));
+                // }
+                // catch (final EscidocClientException e) {
+                // mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR
+                // + " Could not delete resource " + model.getName(), e.getLocalizedMessage(),
+                // Notification.TYPE_ERROR_MESSAGE));
+                // }
             }
 
         });
