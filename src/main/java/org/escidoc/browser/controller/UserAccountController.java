@@ -78,4 +78,9 @@ public class UserAccountController extends Controller {
     private static boolean hasSysAdminRole(Grant grant) {
         return grant.getProperties().getRole().getObjid().equals(AppConstants.ESCIDOC_SYSADMIN_ROLE);
     }
+
+    // TODO Fix this method with PDP
+    public boolean hasAccessOnPreferences(String id) {
+        return true;
+    }
 }

@@ -114,7 +114,8 @@ public class UserAccountAttributes extends TableContainerVH {
 
     @Override
     protected boolean hasRightstoContextMenu() {
-        return uac.hasAccessOnAttributes(userProxy.getId());
+        return true;
+        // return uac.hasAccessOnAttributes(userProxy.getId());
     }
 
 }
