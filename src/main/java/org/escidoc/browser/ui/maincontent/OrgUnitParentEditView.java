@@ -123,15 +123,12 @@ public class OrgUnitParentEditView extends DragnDropHelper {
                     for (OrganizationalUnit childrenOrgUnits : children) {
                         Item item = orgUnitContainer.addItem(childrenOrgUnits.getObjid());
                         if (item != null) {
-                            System.out.println(childrenOrgUnits.getProperties().getName());
+
                             item.getItemProperty(PROPERTY_NAME).setValue(childrenOrgUnits.getProperties().getName());
                             item.getItemProperty(PROPERTY_HREF).setValue(
                                 childrenOrgUnits.getProperties().getXLinkHref());
                             boolean bole =
                                 orgUnitContainer.setParent(childrenOrgUnits.getObjid(), event.getItemId().toString());
-                            System.out.println(childrenOrgUnits.getProperties().getName() + " "
-                                + childrenOrgUnits.getProperties().getXLinkHref() + " " + bole + " "
-                                + childrenOrgUnits.getObjid() + " " + event.getItemId().toString());
                         }
 
                     }

@@ -161,7 +161,7 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
             name = new Label(ViewConstants.GUEST);
         }
         else {
-            name = new Button(user.getLoginName());
+            name = new Button(user.getRealName());
             name.setStyleName(BaseTheme.BUTTON_LINK);
             name.addStyleName("paddingright10");
 
