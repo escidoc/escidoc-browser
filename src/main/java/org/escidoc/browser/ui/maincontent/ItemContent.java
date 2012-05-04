@@ -134,7 +134,7 @@ public class ItemContent extends VerticalLayout {
         }
     }
 
-    private void buildPanelHeader(CssLayout cssLayout, String name) {
+    private static void buildPanelHeader(CssLayout cssLayout, String name) {
         cssLayout.addStyleName("v-accordion-item-caption v-caption v-captiontext");
         cssLayout.setWidth("100%");
         cssLayout.setMargin(false);
@@ -143,19 +143,15 @@ public class ItemContent extends VerticalLayout {
         nameofPanel.setStyleName("accordion v-captiontext");
         nameofPanel.setWidth("70%");
         cssLayout.addComponent(nameofPanel);
-
     }
 
     private void wrap(final VerticalLayout verticalLayout) {
         try {
             if (userIsPermittedToUpdate()) {
-
                 verticalLayout.setHeight("99%");
-
                 final DragAndDropFileUpload dragAndDropFileUpload =
                     new DragAndDropFileUpload(repositories, itemProxy, this, verticalLayout);
                 dragAndDropFileUpload.setSizeFull();
-
                 addComponent(dragAndDropFileUpload);
                 verticalLayout.getParent().setWidth("99%");
                 verticalLayout.getParent().setHeight("99%");

@@ -62,9 +62,6 @@ public final class ItemView extends View {
 
     private ItemPropertiesVH itemPropertiesView;
 
-    @SuppressWarnings("unused")
-    private Panel panelView;
-
     private ItemController controller;
 
     public ItemView(final Router router, final ResourceProxy resourceProxy, final ItemController itemController) {
@@ -78,7 +75,7 @@ public final class ItemView extends View {
         this.mainWindow = router.getMainWindow();
         this.router = router;
         this.controller = itemController;
-        panelView = buildContentPanel();
+        buildContentPanel();
     }
 
     public Panel buildContentPanel() {
