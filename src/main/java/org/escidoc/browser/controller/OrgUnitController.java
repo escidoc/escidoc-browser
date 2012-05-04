@@ -28,16 +28,18 @@
  */
 package org.escidoc.browser.controller;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.ui.Window;
+import java.net.URISyntaxException;
 
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.repository.internal.OrgUnitProxy;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.OrgUnitView;
+
+import com.google.common.base.Preconditions;
+import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
@@ -111,6 +113,22 @@ public class OrgUnitController extends Controller {
         }
         catch (EscidocClientException e) {
             getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        }
+    }
+
+    public boolean hasAccess() {
+        try {
+            return getRepositories()
+                .pdp().forCurrentUser().isAction(ActionIdConstants.OPEN_ORG_UNIT)
+                .forResource(getResourceProxy().getId()).permitted();
+        }
+        catch (EscidocClientException e) {
+            getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            return false;
+        }
+        catch (URISyntaxException e) {
+            getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            return false;
         }
     }
 }

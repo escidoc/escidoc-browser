@@ -90,8 +90,15 @@ public class FolderChildrenVH extends TableContainerVH {
         this.containerRepository = repository.container();
         this.repository = repository;
         this.setHeight("100%");
-        table.setContainerDataSource(populateContainerTable());
 
+    }
+
+    public void buildTable() {
+        table.setContainerDataSource(populateContainerTable());
+        addClickListener();
+        if (hasRightstoContextMenu()) {
+            this.addActionLists();
+        }
     }
 
     @Override
@@ -125,6 +132,10 @@ public class FolderChildrenVH extends TableContainerVH {
         // }
         // });
         // }
+
+    }
+
+    private void addClickListener() {
         table.addListener(new Table.ValueChangeListener() {
             @Override
             public void valueChange(ValueChangeEvent event) {
@@ -170,7 +181,7 @@ public class FolderChildrenVH extends TableContainerVH {
 
     @Override
     protected boolean hasRightstoContextMenu() {
-        return true;
+        return folderController.hasAccess();
     }
 
     @Override

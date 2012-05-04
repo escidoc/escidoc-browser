@@ -28,18 +28,6 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.Accordion;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.BaseTheme;
-
 import org.escidoc.browser.controller.ItemController;
 import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.repository.Repositories;
@@ -51,6 +39,17 @@ import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
 import org.escidoc.browser.ui.view.helpers.ItemMetadataTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Preconditions;
+import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.BaseTheme;
 
 public class MetadataRecsItem {
 
@@ -139,6 +138,7 @@ public class MetadataRecsItem {
         ThemeResource ICON = new ThemeResource("images/assets/plus.png");
 
         ItemMetadataTable metadataItem = new ItemMetadataTable(itemController, router, resourceProxy, repositories);
+        metadataItem.buildTable();
         if (itemController.hasAccess()) {
             final Button btnAddNew = new Button();
             btnAddNew.addListener(new AddMetaDataFileItemBehaviour(mainWindow, repositories, resourceProxy));

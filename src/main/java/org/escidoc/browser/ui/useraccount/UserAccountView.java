@@ -381,7 +381,10 @@ public class UserAccountView extends View {
     }
 
     private UserAccountAttributes buildAttributeTable() throws EscidocClientException {
-        return new UserAccountAttributes(userProxy, ur.getAttributes(userProxy), ur, uac);
+        UserAccountAttributes userAccountAttributes =
+            new UserAccountAttributes(userProxy, ur.getAttributes(userProxy), ur, uac);
+        userAccountAttributes.buildTable();
+        return userAccountAttributes;
     }
 
     private Button buildAddAttributeButton(final UserAccountAttributes attributeTable) {
@@ -420,6 +423,7 @@ public class UserAccountView extends View {
     private UserAccountPreferences buildPreferenceTable() throws EscidocClientException {
         final UserAccountPreferences userPrefTable =
             new UserAccountPreferences(userProxy, ur.getPreferences(userProxy), ur, uac);
+        userPrefTable.buildTable();
         return userPrefTable;
     }
 

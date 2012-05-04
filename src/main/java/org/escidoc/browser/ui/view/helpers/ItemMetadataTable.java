@@ -28,16 +28,6 @@
  */
 package org.escidoc.browser.ui.view.helpers;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.data.Item;
-import com.vaadin.data.util.HierarchicalContainer;
-import com.vaadin.event.Action;
-import com.vaadin.terminal.ExternalResource;
-import com.vaadin.ui.Link;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.themes.BaseTheme;
-
 import org.escidoc.browser.controller.ItemController;
 import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.repository.Repositories;
@@ -46,6 +36,15 @@ import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.AddMetaDataFileItemBehaviour;
 import org.escidoc.browser.ui.listeners.OnEditItemMetadata;
 import org.escidoc.browser.ui.view.helpers.OrgUnitMetadataTable.Metadata;
+
+import com.google.common.base.Preconditions;
+import com.vaadin.data.Item;
+import com.vaadin.data.util.HierarchicalContainer;
+import com.vaadin.event.Action;
+import com.vaadin.terminal.ExternalResource;
+import com.vaadin.ui.Link;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.themes.BaseTheme;
 
 import de.escidoc.core.resources.common.MetadataRecord;
 
@@ -82,8 +81,13 @@ public class ItemMetadataTable extends TableContainerVH {
         this.router = router;
         this.resourceProxy = resourceProxy;
         this.repositories = repositories;
+    }
 
+    public void buildTable() {
         table.setContainerDataSource(populateContainerTable());
+        if (hasRightstoContextMenu()) {
+            this.addActionLists();
+        }
     }
 
     @SuppressWarnings("serial")
@@ -117,7 +121,7 @@ public class ItemMetadataTable extends TableContainerVH {
 
     @Override
     protected boolean hasRightstoContextMenu() {
-        return true;
+        return controller.hasAccess();
     }
 
     @Override

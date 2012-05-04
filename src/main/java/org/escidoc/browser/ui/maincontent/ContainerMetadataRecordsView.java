@@ -28,21 +28,6 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.Accordion;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.BaseTheme;
-
 import org.escidoc.browser.controller.ContainerController;
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.ResourceProxy;
@@ -55,7 +40,19 @@ import org.escidoc.browser.ui.view.helpers.ContainerMetadataTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.escidoc.core.resources.common.MetadataRecords;
+import com.google.common.base.Preconditions;
+import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.BaseTheme;
 
 public class ContainerMetadataRecordsView {
 
@@ -161,7 +158,8 @@ public class ContainerMetadataRecordsView {
                 subwindow.addComponent(new Label("Not yet implemented"));
                 Button close = new Button("Close", new Button.ClickListener() {
                     @Override
-                    public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
+                    public void buttonClick(@SuppressWarnings("unused")
+                    ClickEvent event) {
                         (subwindow.getParent()).removeWindow(subwindow);
                     }
                 });
@@ -212,8 +210,9 @@ public class ContainerMetadataRecordsView {
         }
         vl.addComponent(cssLayout);
         ContainerMetadataTable metadataTable =
-            new ContainerMetadataTable(resourceProxy.getMetadataRecords(), containerController, router, resourceProxy, repositories);
-
+            new ContainerMetadataTable(resourceProxy.getMetadataRecords(), containerController, router, resourceProxy,
+                repositories);
+        metadataTable.buildTable();
         vl.addComponent(metadataTable);
         vl.setComponentAlignment(metadataTable, Alignment.TOP_LEFT);
         vl.setExpandRatio(metadataTable, 0.9f);

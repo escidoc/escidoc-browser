@@ -79,8 +79,13 @@ public class OrganizationalUnitsTableVH extends TableContainerVH {
         this.organizationalUnits = organizationalUnits;
         this.router = router;
         this.resourceProxy = resourceProxy;
-        table.setContainerDataSource(populateContainerTable());
+    }
 
+    public void buildTable() {
+        table.setContainerDataSource(populateContainerTable());
+        if (hasRightstoContextMenu()) {
+            this.addActionLists();
+        }
     }
 
     @Override
@@ -136,7 +141,7 @@ public class OrganizationalUnitsTableVH extends TableContainerVH {
 
     @Override
     protected boolean hasRightstoContextMenu() {
-        return true;
+        return controller.canAddOUs();
     }
 
     @Override

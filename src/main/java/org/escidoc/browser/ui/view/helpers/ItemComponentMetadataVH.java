@@ -83,7 +83,13 @@ public class ItemComponentMetadataVH extends TableContainerVH {
         this.itemProxy = itemProxy;
         this.component = component;
 
+    }
+
+    public void buildTable() {
         table.setContainerDataSource(populateContainerTable());
+        if (hasRightstoContextMenu()) {
+            this.addActionLists();
+        }
     }
 
     @Override
@@ -120,7 +126,7 @@ public class ItemComponentMetadataVH extends TableContainerVH {
 
     @Override
     protected boolean hasRightstoContextMenu() {
-        return true;
+        return controller.canUpdateItem();
     }
 
     @Override

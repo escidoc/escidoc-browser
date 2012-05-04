@@ -28,16 +28,6 @@
  */
 package org.escidoc.browser.ui.view.helpers;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.data.Item;
-import com.vaadin.data.util.HierarchicalContainer;
-import com.vaadin.event.Action;
-import com.vaadin.terminal.ExternalResource;
-import com.vaadin.ui.Link;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.themes.BaseTheme;
-
 import org.escidoc.browser.controller.ContainerController;
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.repository.Repositories;
@@ -46,6 +36,15 @@ import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.OnAddContainerMetadata;
 import org.escidoc.browser.ui.listeners.OnEditContainerMetadata;
 import org.escidoc.browser.ui.view.helpers.OrgUnitMetadataTable.Metadata;
+
+import com.google.common.base.Preconditions;
+import com.vaadin.data.Item;
+import com.vaadin.data.util.HierarchicalContainer;
+import com.vaadin.event.Action;
+import com.vaadin.terminal.ExternalResource;
+import com.vaadin.ui.Link;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.themes.BaseTheme;
 
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.MetadataRecords;
@@ -90,20 +89,28 @@ public class ContainerMetadataTable extends TableContainerVH {
         this.resourceProxy = resourceProxy;
         this.repositories = repositories;
 
+    }
+
+    public void buildTable() {
         table.setContainerDataSource(populateContainerTable());
+        if (hasRightstoContextMenu()) {
+            this.addActionLists();
+        }
     }
 
     @Override
     protected void addActionLists() {
         table.addActionHandler(new Action.Handler() {
             @Override
-            public Action[] getActions(
-                @SuppressWarnings("unused") Object target, @SuppressWarnings("unused") Object sender) {
+            public Action[] getActions(@SuppressWarnings("unused")
+            Object target, @SuppressWarnings("unused")
+            Object sender) {
                 return ACTIONS_LIST;
             }
 
             @Override
-            public void handleAction(Action action, @SuppressWarnings("unused") Object sender, Object target) {
+            public void handleAction(Action action, @SuppressWarnings("unused")
+            Object sender, Object target) {
                 if (ACTION_DELETE == action) {
                     confirmActionWindow(target);
                 }
@@ -121,7 +128,7 @@ public class ContainerMetadataTable extends TableContainerVH {
 
     @Override
     protected boolean hasRightstoContextMenu() {
-        return true;
+        return controller.hasAccess();
     }
 
     @Override

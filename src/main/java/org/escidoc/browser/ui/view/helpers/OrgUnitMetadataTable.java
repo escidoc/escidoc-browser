@@ -28,8 +28,13 @@
  */
 package org.escidoc.browser.ui.view.helpers;
 
-import com.google.common.base.Preconditions;
+import org.escidoc.browser.controller.OrgUnitController;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.maincontent.OnAddOrgUnitMetadata;
+import org.escidoc.browser.ui.maincontent.OnEditOrgUnitMetadata;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.event.Action;
@@ -37,12 +42,6 @@ import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.BaseTheme;
-
-import org.escidoc.browser.controller.OrgUnitController;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.OnAddOrgUnitMetadata;
-import org.escidoc.browser.ui.maincontent.OnEditOrgUnitMetadata;
 
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.MetadataRecords;
@@ -74,13 +73,18 @@ public class OrgUnitMetadataTable extends TableContainerVH {
         this.mdList = mdList;
         this.controller = controller;
         this.router = router;
+    }
 
+    public void buildTable() {
         table.setContainerDataSource(populateContainerTable());
+        if (hasRightstoContextMenu()) {
+            this.addActionLists();
+        }
     }
 
     @Override
     protected boolean hasRightstoContextMenu() {
-        return true;
+        return controller.hasAccess();
     }
 
     @Override
@@ -93,13 +97,15 @@ public class OrgUnitMetadataTable extends TableContainerVH {
     protected void addActionLists() {
         table.addActionHandler(new Action.Handler() {
             @Override
-            public Action[] getActions(
-                @SuppressWarnings("unused") Object target, @SuppressWarnings("unused") Object sender) {
+            public Action[] getActions(@SuppressWarnings("unused")
+            Object target, @SuppressWarnings("unused")
+            Object sender) {
                 return ACTIONS_LIST;
             }
 
             @Override
-            public void handleAction(Action action, @SuppressWarnings("unused") Object sender, Object target) {
+            public void handleAction(Action action, @SuppressWarnings("unused")
+            Object sender, Object target) {
                 Preconditions.checkNotNull(action, "action is null: %s", action);
 
                 if (ACTION_DELETE == action) {

@@ -28,6 +28,15 @@
  */
 package org.escidoc.browser.ui.view.helpers;
 
+import java.util.List;
+
+import org.escidoc.browser.controller.OrgUnitController;
+import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.repository.internal.OrgUnitProxy;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.maincontent.OrgUnitParentEditView;
+
 import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.event.Action;
@@ -38,15 +47,6 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
-
-import org.escidoc.browser.controller.OrgUnitController;
-import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.repository.internal.OrgUnitProxy;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.OrgUnitParentEditView;
-
-import java.util.List;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.om.context.OrganizationalUnitRefs;
@@ -74,7 +74,13 @@ public class OUParentTableVH extends TableContainerVH {
         this.orgUnitProxy = orgUnitProxy;
         this.router = router;
         this.controller = controller;
+    }
+
+    public void buildTable() {
         table.setContainerDataSource(populateContainerTable());
+        if (hasRightstoContextMenu()) {
+            this.addActionLists();
+        }
     }
 
     @Override
@@ -113,7 +119,8 @@ public class OUParentTableVH extends TableContainerVH {
                 }
                 Button close = new Button(ViewConstants.CLOSE, new Button.ClickListener() {
                     @Override
-                    public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
+                    public void buttonClick(@SuppressWarnings("unused")
+                    ClickEvent event) {
                         subwindow.getParent().removeWindow(subwindow);
                     }
                 });
@@ -128,7 +135,7 @@ public class OUParentTableVH extends TableContainerVH {
 
     @Override
     protected boolean hasRightstoContextMenu() {
-        return true;
+        return controller.hasAccess();
     }
 
     @Override
@@ -152,7 +159,8 @@ public class OUParentTableVH extends TableContainerVH {
             parentOrgUnitLink.setStyleName(BaseTheme.BUTTON_LINK);
             parentOrgUnitLink.addListener(new ClickListener() {
                 @Override
-                public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
+                public void buttonClick(@SuppressWarnings("unused")
+                ClickEvent event) {
                     try {
                         router.show(rm, true);
                     }

@@ -28,6 +28,16 @@
  */
 package org.escidoc.browser.ui.view.helpers;
 
+import java.io.File;
+
+import org.escidoc.browser.AppConstants;
+import org.escidoc.browser.controller.ItemController;
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ItemProxy;
+import org.escidoc.browser.model.internal.ItemProxyImpl;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+
 import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.event.Action;
@@ -40,16 +50,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
-
-import org.escidoc.browser.AppConstants;
-import org.escidoc.browser.controller.ItemController;
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.ItemProxy;
-import org.escidoc.browser.model.internal.ItemProxyImpl;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-
-import java.io.File;
 
 import de.escidoc.core.resources.om.item.component.Component;
 import de.escidoc.core.resources.om.item.component.Components;
@@ -93,12 +93,16 @@ public class ItemComponentsView extends TableContainerVH {
         this.itemProxy = (ItemProxyImpl) itemProxy;
         this.serviceLocation = router.getServiceLocation();
         this.mainWindow = router.getMainWindow();
-        table.setContainerDataSource(populateContainerTable());
-
         table.setWidth("100%");
         table.setHeight("100%");
-
         table.setStyleName(Reindeer.TABLE_BORDERLESS);
+    }
+
+    public void buildTable() {
+        table.setContainerDataSource(populateContainerTable());
+        if (hasRightstoContextMenu()) {
+            this.addActionLists();
+        }
     }
 
     @Override
@@ -165,10 +169,11 @@ public class ItemComponentsView extends TableContainerVH {
                 item.getItemProperty(COMPONENT_MIMETYPE).setValue(component.getProperties().getMimeType());
                 item.getItemProperty(COMPONENT_CREATEDDATE).setValue(
                     component.getProperties().getCreationDate().toString("d.M.y, H:mm"));
-
-                item.getItemProperty(COMPONENT_METADATA).setValue(
+                ItemComponentMetadataVH itemComponentMD =
                     new ItemComponentMetadataVH(component.getMetadataRecords(), controller, router, itemProxy,
-                        component));
+                        component);
+                itemComponentMD.buildTable();
+                item.getItemProperty(COMPONENT_METADATA).setValue(itemComponentMD);
             }
         }
         boolean[] ascending = { true, false };
@@ -213,7 +218,8 @@ public class ItemComponentsView extends TableContainerVH {
             private static final long serialVersionUID = 651483473875504715L;
 
             @Override
-            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused")
+            final ClickEvent event) {
                 mainWindow.open(new ExternalResource(
                     serviceLocation.getEscidocUri() + comp.getContent().getXLinkHref(), comp
                         .getProperties().getMimeType()), "_new");
@@ -224,7 +230,6 @@ public class ItemComponentsView extends TableContainerVH {
 
     @Override
     protected boolean hasRightstoContextMenu() {
-        return true;
-        // return controller.canUpdateItem();
+        return controller.canUpdateItem();
     }
 }

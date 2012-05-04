@@ -99,6 +99,7 @@ public class FolderView extends View {
         metaViewsPanel.setStyleName(Runo.PANEL_LIGHT);
 
         FolderChildrenVH folderChildrenView = new FolderChildrenVH(folderController, resourceProxy, repositories);
+        folderChildrenView.buildTable();
         metaViewsPanel.setContent(folderChildrenView);
 
         return metaViewsPanel;

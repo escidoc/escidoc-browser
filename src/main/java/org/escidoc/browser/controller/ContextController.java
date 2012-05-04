@@ -231,7 +231,7 @@ public class ContextController extends Controller {
     public boolean canUpdateContext() {
         try {
             return getRepositories()
-                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER)
+                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTEXT)
                 .forResource(getResourceProxy().getId()).permitted();
         }
         catch (EscidocClientException e) {

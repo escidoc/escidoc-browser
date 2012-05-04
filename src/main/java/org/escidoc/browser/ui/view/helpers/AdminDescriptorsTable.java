@@ -28,8 +28,13 @@
  */
 package org.escidoc.browser.ui.view.helpers;
 
-import com.google.common.base.Preconditions;
+import org.escidoc.browser.controller.ContextController;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.listeners.OnContextAdminDescriptor;
+import org.escidoc.browser.ui.view.helpers.OrgUnitMetadataTable.Metadata;
 
+import com.google.common.base.Preconditions;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.event.Action;
@@ -37,12 +42,6 @@ import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.BaseTheme;
-
-import org.escidoc.browser.controller.ContextController;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.listeners.OnContextAdminDescriptor;
-import org.escidoc.browser.ui.view.helpers.OrgUnitMetadataTable.Metadata;
 
 import de.escidoc.core.resources.om.context.AdminDescriptor;
 import de.escidoc.core.resources.om.context.AdminDescriptors;
@@ -75,21 +74,28 @@ public class AdminDescriptorsTable extends TableContainerVH {
         this.adList = adList;
         this.router = router;
 
+    }
+
+    public void buildTable() {
         table.setContainerDataSource(populateContainerTable());
+        if (hasRightstoContextMenu()) {
+            this.addActionLists();
+        }
     }
 
     @Override
     protected void addActionLists() {
         table.addActionHandler(new Action.Handler() {
             @Override
-            public Action[] getActions(
-                @SuppressWarnings("unused") final Object target, @SuppressWarnings("unused") final Object sender) {
+            public Action[] getActions(@SuppressWarnings("unused")
+            final Object target, @SuppressWarnings("unused")
+            final Object sender) {
                 return ACTIONS_LIST;
             }
 
             @Override
-            public void handleAction(
-                final Action action, @SuppressWarnings("unused") final Object sender, final Object target) {
+            public void handleAction(final Action action, @SuppressWarnings("unused")
+            final Object sender, final Object target) {
                 Preconditions.checkNotNull(action, "action is null: %s", action);
                 Preconditions.checkNotNull(target, "target is null: %s", target);
 
@@ -152,7 +158,7 @@ public class AdminDescriptorsTable extends TableContainerVH {
 
     @Override
     protected boolean hasRightstoContextMenu() {
-        return true;
+        return controller.canUpdateContext();
     }
 
     @Override
