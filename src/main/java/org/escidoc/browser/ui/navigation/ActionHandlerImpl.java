@@ -697,17 +697,6 @@ public final class ActionHandlerImpl implements Action.Handler {
             final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
                 deleteAllChildrenOfContainer(model, sender);
-                // try {
-                // repositories.container().finalDelete(model);
-                // router.getLayout().closeView(model, treeDataSource.getParent(model), sender);
-                // mainWindow.showNotification(new Window.Notification(ViewConstants.DELETED,
-                // Notification.TYPE_TRAY_NOTIFICATION));
-                // }
-                // catch (final EscidocClientException e) {
-                // mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR
-                // + " Could not delete resource " + model.getName(), e.getLocalizedMessage(),
-                // Notification.TYPE_ERROR_MESSAGE));
-                // }
             }
 
         });
