@@ -103,7 +103,7 @@ public class ItemComponentMetadataVH extends TableContainerVH {
 
             @Override
             public void handleAction(Action action, Object sender, Object target) {
-                if (ACTION_DELETE == action) {
+                if ((ACTION_DELETE == action) && (target != null)) {
                     confirmActionWindow(target);
                 }
                 else if (ACTION_ADD == action) {
@@ -111,7 +111,7 @@ public class ItemComponentMetadataVH extends TableContainerVH {
                         ItemComponentMetadataVH.this).showAddWindow();
                     controller.refreshView();
                 }
-                else if (ACTION_EDIT == action) {
+                else if ((ACTION_EDIT == action) && (target != null)) {
                     MetadataRecord md = component.getMetadataRecords().get((String) target);
                     new EditMetaDataFileItemComponentBehaviour(md, router.getMainWindow(), component, controller,
                         itemProxy, ItemComponentMetadataVH.this).showWindow();

@@ -99,7 +99,7 @@ public class OrganizationalUnitsTableVH extends TableContainerVH {
 
             @Override
             public void handleAction(Action action, Object sender, Object target) {
-                if (ACTION_DELETE == action) {
+                if ((ACTION_DELETE == action) && (target != null)) {
                     confirmActionWindow(target);
                 }
                 else {

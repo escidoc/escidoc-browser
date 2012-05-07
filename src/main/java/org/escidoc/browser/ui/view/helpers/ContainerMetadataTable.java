@@ -111,14 +111,14 @@ public class ContainerMetadataTable extends TableContainerVH {
             @Override
             public void handleAction(Action action, @SuppressWarnings("unused")
             Object sender, Object target) {
-                if (ACTION_DELETE == action) {
+                if ((ACTION_DELETE == action) && (target != null)) {
                     confirmActionWindow(target);
                 }
                 else if (ACTION_ADD == action) {
                     new OnAddContainerMetadata(router.getMainWindow(), repositories, resourceProxy).showAddWindow();
                     controller.refreshView();
                 }
-                else if (ACTION_EDIT == action) {
+                else if ((ACTION_EDIT == action) && (target != null)) {
                     new OnEditContainerMetadata(router, controller, (Metadata) target).showEditWindow();
                     controller.refreshView();
                 }

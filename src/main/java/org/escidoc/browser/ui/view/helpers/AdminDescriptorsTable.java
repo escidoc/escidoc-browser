@@ -97,9 +97,8 @@ public class AdminDescriptorsTable extends TableContainerVH {
             public void handleAction(final Action action, @SuppressWarnings("unused")
             final Object sender, final Object target) {
                 Preconditions.checkNotNull(action, "action is null: %s", action);
-                Preconditions.checkNotNull(target, "target is null: %s", target);
 
-                if (ACTION_DELETE == action) {
+                if ((ACTION_DELETE == action) && (target != null)) {
                     confirmActionWindow(target);
                 }
                 else if (ACTION_ADD == action) {
@@ -110,11 +109,11 @@ public class AdminDescriptorsTable extends TableContainerVH {
                     if (target != null) {
                         Metadata md = (Metadata) target;
                         new OnEditContextMetadata(router, controller, router.getMainWindow(), md).showEditWindow();
-                        // TODO what is this method doing?
                         controller.refreshView();
                     }
                 }
             }
+
         });
     }
 

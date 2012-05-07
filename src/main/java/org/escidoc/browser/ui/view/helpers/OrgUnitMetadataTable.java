@@ -108,10 +108,10 @@ public class OrgUnitMetadataTable extends TableContainerVH {
             Object sender, Object target) {
                 Preconditions.checkNotNull(action, "action is null: %s", action);
 
-                if (ACTION_DELETE == action) {
+                if ((ACTION_DELETE == action) && (target != null)) {
                     confirmActionWindow(target);
                 }
-                else if (ACTION_EDIT == action) {
+                else if ((ACTION_EDIT == action) && (target != null)) {
                     new OnEditOrgUnitMetadata(router, controller, router.getMainWindow(), (Metadata) target)
                         .showEditWindow();
                     controller.refreshView();

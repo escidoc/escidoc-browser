@@ -101,7 +101,7 @@ public class ItemMetadataTable extends TableContainerVH {
 
             @Override
             public void handleAction(Action action, Object sender, Object target) {
-                if (ACTION_DELETE == action) {
+                if ((ACTION_DELETE == action) && (target != null)) {
                     confirmActionWindow(target);
                 }
                 else if (ACTION_ADD == action) {
@@ -109,7 +109,7 @@ public class ItemMetadataTable extends TableContainerVH {
                         .showAddWindow();
                     controller.refreshView();
                 }
-                else if (ACTION_EDIT == action) {
+                else if ((ACTION_EDIT == action) && (target != null)) {
                     new OnEditItemMetadata(router, controller, (Metadata) target).showEditWindow();
                     controller.refreshView();
 
