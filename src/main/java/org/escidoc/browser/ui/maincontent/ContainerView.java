@@ -51,7 +51,6 @@ import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.ContainerModel;
 import org.escidoc.browser.repository.Repositories;
@@ -59,9 +58,11 @@ import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.ResourceDeleteConfirmation;
+import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
+import org.escidoc.browser.ui.navigation.NavigationTreeView;
 import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
 import org.escidoc.browser.ui.view.helpers.CreateResourceLinksVH;
-import org.escidoc.browser.ui.view.helpers.DirectMember;
+import org.escidoc.browser.ui.view.helpers.DropableBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -257,28 +258,40 @@ public class ContainerView extends View {
         directMembersPanel.setStyleName("directmembers");
         vlLeftPanel.addComponent(directMembersPanel);
 
+        // Vertical Layout >> Panel
         return vlLeftPanel;
     }
 
     private Panel buildDirectMembersPanel() throws EscidocClientException {
-        // common part: create layout
-        Panel directMembersPanel = new Panel();
-        directMembersPanel.setImmediate(true);
+        // new DirectMember(serviceLocation, router, resourceProxy.getId(), mainWindow, repositories,
+        // directMembersPanel,
+        // ResourceType.CONTAINER.toString()).containerAsTree();
+
+        // FIXME refactor to a class
+        final NavigationTreeView tree = createContainerDirectMembers();
+        tree.setSizeFull();
+
+        CssLayout dropPane = new CssLayout();
+        dropPane.setSizeFull();
+        dropPane.addStyleName("image-drop-pane");
+        dropPane.addComponent(tree);
+
+        // is instance of DragAndDropWrapper implements DropHandler
+        DropableBox dropBox = new DropableBox(dropPane, repositories);
+        dropBox.setSizeUndefined();
+
+        Panel directMembersPanel = new Panel(dropBox);
         directMembersPanel.setSizeFull();
         directMembersPanel.setScrollable(true);
-        directMembersPanel.setStyleName(Runo.PANEL_LIGHT);
-
-        // vlDirectMember
-        VerticalLayout vlDirectMember = new VerticalLayout();
-        vlDirectMember.setImmediate(true);
-        vlDirectMember.setWidth("100.0%");
-        vlDirectMember.setHeight("100.0%");
-        vlDirectMember.setMargin(false);
-        directMembersPanel.setContent(vlDirectMember);
-        new DirectMember(serviceLocation, router, resourceProxy.getId(), mainWindow, repositories, directMembersPanel,
-            ResourceType.CONTAINER.toString()).containerAsTree();
+        directMembersPanel.addStyleName("no-vertical-drag-hints");
+        directMembersPanel.addStyleName("no-horizontal-drag-hints");
 
         return directMembersPanel;
+    }
+
+    private NavigationTreeView createContainerDirectMembers() throws EscidocClientException {
+        NavigationTreeBuilder navigationTreeBuilder = new NavigationTreeBuilder(mainWindow, router, repositories);
+        return navigationTreeBuilder.buildContainerDirectMemberTree(resourceProxy.getId());
     }
 
     private Panel buildResourcePropertiesPanel() {

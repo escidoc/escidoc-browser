@@ -51,7 +51,6 @@ import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.dnd.MultipleFilesDropbox;
 import org.escidoc.browser.ui.maincontent.ResourceAddViewImpl;
 import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
 import org.escidoc.browser.ui.navigation.NavigationTreeView;
@@ -129,7 +128,6 @@ public class DirectMember {
         final NavigationTreeView tree = createContextDirectMembers();
         tree.setSizeFull();
         bindDirectMembersInTheContainer(tree);
-
     }
 
     private NavigationTreeView createContextDirectMembers() throws EscidocClientException {
@@ -209,10 +207,6 @@ public class DirectMember {
         panelLayout.addComponent(comptoBind);
         panelLayout.setExpandRatio(comptoBind, 1.0f);
         panelLayout.setStyleName(Runo.PANEL_LIGHT);
-        // TODO make it dropable
-
-        MultipleFilesDropbox dropbox = new MultipleFilesDropbox(panelLayout);
-        panel.setContent(dropbox);
     }
 
     private boolean hasAccessAddResources() {
