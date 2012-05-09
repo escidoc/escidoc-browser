@@ -32,24 +32,41 @@ import com.google.common.base.Preconditions;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
+import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.DragAndDropWrapper;
+import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Html5File;
+import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.OptionGroup;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.internal.ResourceDisplay;
 import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.ViewConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
+import de.escidoc.core.client.exceptions.EscidocException;
+import de.escidoc.core.client.exceptions.InternalClientException;
+import de.escidoc.core.client.exceptions.TransportException;
+import de.escidoc.core.resources.Resource;
 
 public class DropableBox extends DragAndDropWrapper implements DropHandler {
 
@@ -86,7 +103,21 @@ public class DropableBox extends DragAndDropWrapper implements DropHandler {
             onTextDrop(dropEvent);
         }
         else {
-            onFilesDrop(files);
+            try {
+                onFilesDrop(files);
+            }
+            catch (EscidocException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            catch (InternalClientException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            catch (TransportException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
     }
 
@@ -107,33 +138,90 @@ public class DropableBox extends DragAndDropWrapper implements DropHandler {
         return text;
     }
 
-    private void onFilesDrop(Html5File[] files) {
+    private void onFilesDrop(Html5File[] files) throws EscidocException, InternalClientException, TransportException {
         LOG.debug("#files: " + files.length);
-        pane.removeAllComponents();
 
-        Window modalWindow = new Window("Creating item(s");
-        modalWindow.setModal(true);
-        mainWindow.addWindow(modalWindow);
+        Window modalWindow = buildModalWindow();
+        showModalWindow(modalWindow);
 
-        int numberOfFiles = 0;
+        // TODO refactor to a method
+        VerticalLayout layout = (VerticalLayout) modalWindow.getContent();
+        FormLayout formLayout = new FormLayout();
+        layout.addComponent(formLayout);
+
+        addNameField(formLayout);
+        addContentModelSelect(formLayout);
+
         for (final Html5File dropFile : files) {
             if (dropFile.getFileSize() > FILE_SIZE_LIMIT) {
                 getWindow().showNotification("File rejected. Max 200Mb files are accepted by Sampler",
                     Window.Notification.TYPE_WARNING_MESSAGE);
             }
             else {
-                numberOfFiles++;
                 // TODO make upload async
                 dropFile.setStreamVariable(new StreamHandlerImpl(new ByteArrayOutputStream(), dropFile,
-                    getApplication(), getWindow(), pane, repositories));
+                    getApplication(), getWindow(), layout, repositories));
             }
         }
 
-        if (numberOfFiles > 1) {
-            OptionGroup og = buildOptionGroup(numberOfFiles);
-            pane.addComponent(og);
-            pane.addComponent(buildCreateButton(og));
+        // TODO refactor to a method
+        // if (numberOfFiles > 1) {
+        // OptionGroup og = buildOptionGroup(numberOfFiles);
+        // layout.addComponent(og);
+        // layout.addComponent(buildCreateButton(og));
+        // }
+    }
+
+    private static void addNameField(FormLayout formLayout) {
+        TextField nameField = new TextField(ViewConstants.ITEM_NAME);
+        nameField.setRequired(true);
+        nameField.setWidth("400px");
+        nameField.setRequiredError(ViewConstants.PLEASE_ENTER_AN_ITEM_NAME);
+        nameField
+            .addValidator(new StringLengthValidator(ViewConstants.ITEM_NAME_MUST_BE_3_25_CHARACTERS, 3, 25, false));
+        nameField.setImmediate(true);
+        formLayout.addComponent(nameField);
+    }
+
+    private void addContentModelSelect(FormLayout formLayout) throws EscidocException, InternalClientException,
+        TransportException {
+        NativeSelect contentModelSelect = new NativeSelect(ViewConstants.PLEASE_SELECT_CONTENT_MODEL);
+        contentModelSelect.setRequired(true);
+        bindData(contentModelSelect);
+        formLayout.addComponent(contentModelSelect);
+    }
+
+    private void bindData(AbstractSelect contentModelSelect) throws EscidocException, InternalClientException,
+        TransportException {
+        final Collection<? extends Resource> contentModelList =
+            repositories.contentModel().findPublicOrReleasedResources();
+        final List<ResourceDisplay> resourceDisplayList = new ArrayList<ResourceDisplay>(contentModelList.size());
+        for (final Resource resource : contentModelList) {
+            resourceDisplayList.add(new ResourceDisplay(resource.getObjid(), resource.getXLinkTitle() + " ("
+                + resource.getObjid() + ")"));
         }
+        final BeanItemContainer<ResourceDisplay> resourceDisplayContainer =
+            new BeanItemContainer<ResourceDisplay>(ResourceDisplay.class, resourceDisplayList);
+        resourceDisplayContainer.addNestedContainerProperty("objectId");
+        resourceDisplayContainer.addNestedContainerProperty("title");
+        contentModelSelect.setContainerDataSource(resourceDisplayContainer);
+        contentModelSelect.setItemCaptionPropertyId("title");
+    }
+
+    private void showModalWindow(Window modalWindow) {
+        mainWindow.addWindow(modalWindow);
+    }
+
+    private static Window buildModalWindow() {
+        Window modalWindow = new Window("Creating item(s");
+        modalWindow.setModal(true);
+
+        VerticalLayout layout = (VerticalLayout) modalWindow.getContent();
+        layout.setMargin(true);
+        layout.setSpacing(true);
+        layout.setWidth("600px");
+
+        return modalWindow;
     }
 
     private Button buildCreateButton(final OptionGroup og) {

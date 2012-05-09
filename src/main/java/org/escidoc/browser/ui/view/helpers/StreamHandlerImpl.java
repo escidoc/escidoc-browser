@@ -34,7 +34,6 @@ import com.vaadin.Application;
 import com.vaadin.terminal.StreamResource.StreamSource;
 import com.vaadin.terminal.StreamVariable;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Html5File;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.ProgressIndicator;
@@ -78,7 +77,7 @@ public class StreamHandlerImpl implements StreamVariable {
 
     private final Window window;
 
-    private final CssLayout pane;
+    private final VerticalLayout pane;
 
     private ProgressIndicator progresBar;
 
@@ -87,11 +86,11 @@ public class StreamHandlerImpl implements StreamVariable {
     private Repositories repositories;
 
     protected StreamHandlerImpl(ByteArrayOutputStream baos, Html5File dropFile, Application app, Window window,
-        CssLayout pane, Repositories repositories) {
+        VerticalLayout layout, Repositories repositories) {
         Preconditions.checkNotNull(baos, "baos is null: %s", baos);
         Preconditions.checkNotNull(dropFile, "html5File is null: %s", dropFile);
         Preconditions.checkNotNull(app, "app is null: %s", app);
-        Preconditions.checkNotNull(pane, "pane is null: %s", pane);
+        Preconditions.checkNotNull(layout, "pane is null: %s", layout);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         this.baos = baos;
         this.dropFile = dropFile;
@@ -99,7 +98,7 @@ public class StreamHandlerImpl implements StreamVariable {
         // TODO refactor this to one component
         this.app = app;
         this.window = window;
-        this.pane = pane;
+        this.pane = layout;
 
         this.repositories = repositories;
 
