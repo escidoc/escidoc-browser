@@ -31,7 +31,6 @@ package org.escidoc.browser.ui.view.helpers;
 import com.google.common.base.Preconditions;
 
 import com.vaadin.ui.Button;
-import com.vaadin.ui.OptionGroup;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ResourceModel;
@@ -52,8 +51,6 @@ public final class OnCreateItemWithComponents implements Button.ClickListener {
 
     private final static Logger LOG = LoggerFactory.getLogger(OnCreateItemWithComponents.class);
 
-    private final OptionGroup og;
-
     private final Repositories repositories;
 
     private ResourceModel parent;
@@ -64,11 +61,9 @@ public final class OnCreateItemWithComponents implements Button.ClickListener {
 
     private String contextId;
 
-    OnCreateItemWithComponents(OptionGroup og, Repositories repositories, ItemBuilderHelper helper) {
-        Preconditions.checkNotNull(og, "og is null: %s", og);
+    OnCreateItemWithComponents(Repositories repositories, ItemBuilderHelper helper) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(helper, "helper is null: %s", helper);
-        this.og = og;
         this.repositories = repositories;
 
         this.itemName = helper.getName();
@@ -79,20 +74,13 @@ public final class OnCreateItemWithComponents implements Button.ClickListener {
 
     @Override
     public void buttonClick(@SuppressWarnings("unused") com.vaadin.ui.Button.ClickEvent event) {
-        LOG.debug("Creating... " + og.getValue());
         // TODO depends on the selection
         // TODO if creating one item with several components.
         // TODO itemRepository.withComponents(urls);
         // TODO else creating several items with one component each.
         // TODO .foreach( url in urlList)
         // ////create item with component(url)
-        String selected = (String) og.getValue();
-        if (selected.equals(DropableBox.ONE_ITEM)) {
-            createItem();
-        }
-        else if (selected.equals(DropableBox.SEVERAL_ITEMS)) {
-            LOG.debug(selected + " is not yet supported.");
-        }
+        createItem();
     }
 
     private void createItem() {

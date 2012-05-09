@@ -40,6 +40,7 @@ import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.DragAndDropWrapper;
 import com.vaadin.ui.FormLayout;
@@ -50,7 +51,6 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
-import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.internal.ResourceDisplay;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.ViewConstants;
@@ -151,6 +151,7 @@ public class DropableBox extends DragAndDropWrapper implements DropHandler {
 
         addNameField(formLayout);
         addContentModelSelect(formLayout);
+        addButtons(formLayout);
 
         for (final Html5File dropFile : files) {
             if (dropFile.getFileSize() > FILE_SIZE_LIMIT) {
@@ -170,6 +171,10 @@ public class DropableBox extends DragAndDropWrapper implements DropHandler {
         // layout.addComponent(og);
         // layout.addComponent(buildCreateButton(og));
         // }
+    }
+
+    private void addButtons(FormLayout formLayout) {
+        formLayout.addComponent(buildCreateButton());
     }
 
     private static void addNameField(FormLayout formLayout) {
@@ -224,16 +229,25 @@ public class DropableBox extends DragAndDropWrapper implements DropHandler {
         return modalWindow;
     }
 
-    private Button buildCreateButton(final OptionGroup og) {
+    private Button buildCreateButton() {
         Button createButton = new Button("OK");
         createButton.setStyleName("small");
 
-        String name = null;
-        String contextId = null;
-        String contentModelId = null;
-        ResourceModel parent = null;
-        ItemBuilderHelper itemHelper = new ItemBuilderHelper(name, contextId, contentModelId, parent);
-        createButton.addListener(new OnCreateItemWithComponents(og, repositories, itemHelper));
+        // String name = null;
+        // String contextId = null;
+        // String contentModelId = null;
+        // ResourceModel parent = null;
+        //
+        // ItemBuilderHelper itemHelper = new ItemBuilderHelper(name, contextId, contentModelId, parent);
+        // createButton.addListener(new OnCreateItemWithComponents(repositories, itemHelper));
+
+        createButton.addListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(ClickEvent event) {
+                LOG.debug("Creating...");
+            }
+        });
         return createButton;
     }
 
