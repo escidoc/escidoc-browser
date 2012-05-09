@@ -28,18 +28,8 @@
  */
 package org.escidoc.browser.ui.useraccount;
 
-import java.net.URISyntaxException;
-
-import org.escidoc.browser.controller.UserAccountController;
-import org.escidoc.browser.model.internal.UserProxy;
-import org.escidoc.browser.repository.internal.ActionIdConstants;
-import org.escidoc.browser.repository.internal.UserAccountRepository;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.View;
-import org.escidoc.browser.ui.view.helpers.ResourcePropertiesVH;
-
 import com.google.common.base.Preconditions;
+
 import com.vaadin.data.Validator.EmptyValueException;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Alignment;
@@ -54,6 +44,17 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
+
+import org.escidoc.browser.controller.UserAccountController;
+import org.escidoc.browser.model.internal.UserProxy;
+import org.escidoc.browser.repository.internal.ActionIdConstants;
+import org.escidoc.browser.repository.internal.UserAccountRepository;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.maincontent.View;
+import org.escidoc.browser.ui.view.helpers.ResourcePropertiesVH;
+
+import java.net.URISyntaxException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.aa.useraccount.Attribute;
@@ -109,8 +110,7 @@ public class UserAccountView extends View {
         }
 
         @Override
-        public void buttonClick(@SuppressWarnings("unused")
-        final com.vaadin.ui.Button.ClickEvent event) {
+        public void buttonClick(@SuppressWarnings("unused") final com.vaadin.ui.Button.ClickEvent event) {
             addAttributeButton.setEnabled(false);
             final HorizontalLayout hl = new HorizontalLayout();
             final TextField key = new TextField();
@@ -133,8 +133,7 @@ public class UserAccountView extends View {
             btnadd.setIcon(new ThemeResource("images/assets/plus.png"));
             btnadd.addListener(new Button.ClickListener() {
                 @Override
-                public void buttonClick(@SuppressWarnings("unused")
-                final com.vaadin.ui.Button.ClickEvent event) {
+                public void buttonClick(@SuppressWarnings("unused") final com.vaadin.ui.Button.ClickEvent event) {
                     if (isNotValid(key, value)) {
                         showMessage();
                     }
@@ -184,8 +183,7 @@ public class UserAccountView extends View {
         }
 
         @Override
-        public void buttonClick(@SuppressWarnings("unused")
-        com.vaadin.ui.Button.ClickEvent event) {
+        public void buttonClick(@SuppressWarnings("unused") com.vaadin.ui.Button.ClickEvent event) {
             try {
                 form.commit();
                 if (!passwordField.getValue().equals(verifyPasswordField.getValue())) {
@@ -396,7 +394,7 @@ public class UserAccountView extends View {
     }
 
     static boolean isNotValid(final TextField key, final TextField value) {
-        return lessThanTwoChars(key) || lessThanTwoChars(value);
+        return key.getValue().toString().length() < 1 || lessThanTwoChars(value);
     }
 
     private static boolean lessThanTwoChars(final TextField key) {
