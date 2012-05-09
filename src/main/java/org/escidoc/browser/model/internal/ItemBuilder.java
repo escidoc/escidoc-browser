@@ -70,14 +70,15 @@ public class ItemBuilder {
 
     private final ContentModelRef contentModelRef;
 
-    private final String strMedataData;
+    private final String metadata;
 
-    public ItemBuilder(final ContextRef contextRef, final ContentModelRef contentModelRef, final String strMetaData) {
+    public ItemBuilder(final ContextRef contextRef, final ContentModelRef contentModelRef, final String metadata) {
         Preconditions.checkNotNull(contextRef, "contextRef is null: %s", contextRef);
         Preconditions.checkNotNull(contentModelRef, "contentModelRef is null: %s", contentModelRef);
+        Preconditions.checkNotNull(metadata, "metadata is null: %s", metadata);
         this.contextRef = contextRef;
         this.contentModelRef = contentModelRef;
-        this.strMedataData = strMetaData;
+        this.metadata = metadata;
     }
 
     public ItemBuilder withContent(final URL contentUrl) {
@@ -102,7 +103,6 @@ public class ItemBuilder {
         try {
             setItemName(itemName);
             setItemProperties();
-            // setComponent();
             return item;
         }
         catch (final ParserConfigurationException e) {
@@ -135,13 +135,12 @@ public class ItemBuilder {
 
     private void buildDefaultMetadata(final Document doc, final String itemName) {
         itemMetadata.setName(AppConstants.ESCIDOC);
-        if (strMedataData.isEmpty()) {
+        if (metadata.isEmpty()) {
             itemMetadata.setContent(buildContentForItemMetadata(doc, itemName));
         }
         else {
             itemMetadata.setContent(buildContentForItemMetadataFromUploadedFile());
         }
-
     }
 
     private static Element buildContentForItemMetadata(final Document doc, final String itemName) {
@@ -156,10 +155,9 @@ public class ItemBuilder {
     private Element buildContentForItemMetadataFromUploadedFile() {
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
-
         try {
             builder = factory.newDocumentBuilder();
-            final InputSource is = new InputSource(new StringReader(strMedataData));
+            final InputSource is = new InputSource(new StringReader(metadata));
             Document d;
             try {
                 d = builder.parse(is);

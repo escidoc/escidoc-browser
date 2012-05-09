@@ -33,6 +33,7 @@ import com.google.common.base.Preconditions;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.OptionGroup;
 
+import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.internal.ItemBuilder;
 import org.escidoc.browser.repository.Repositories;
@@ -43,6 +44,8 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.reference.ContentModelRef;
 import de.escidoc.core.resources.common.reference.ContextRef;
 import de.escidoc.core.resources.om.item.Item;
+import de.escidoc.core.resources.om.item.component.Component;
+import de.escidoc.core.resources.om.item.component.Components;
 
 @SuppressWarnings("serial")
 public final class OnCreateItemWithComponents implements Button.ClickListener {
@@ -53,15 +56,29 @@ public final class OnCreateItemWithComponents implements Button.ClickListener {
 
     private final Repositories repositories;
 
-    OnCreateItemWithComponents(OptionGroup og, Repositories repositories) {
+    private ResourceModel parent;
+
+    private String contentModelId;
+
+    private String itemName;
+
+    private String contextId;
+
+    OnCreateItemWithComponents(OptionGroup og, Repositories repositories, ItemBuilderHelper helper) {
         Preconditions.checkNotNull(og, "og is null: %s", og);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
+        Preconditions.checkNotNull(helper, "helper is null: %s", helper);
         this.og = og;
         this.repositories = repositories;
+
+        this.itemName = helper.getName();
+        this.contentModelId = helper.getContentModelId();
+        this.contextId = helper.getContextId();
+        this.parent = helper.getParent();
     }
 
     @Override
-    public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+    public void buttonClick(@SuppressWarnings("unused") com.vaadin.ui.Button.ClickEvent event) {
         LOG.debug("Creating... " + og.getValue());
         // TODO depends on the selection
         // TODO if creating one item with several components.
@@ -80,10 +97,15 @@ public final class OnCreateItemWithComponents implements Button.ClickListener {
 
     private void createItem() {
         try {
-            Item newItem =
-                repositories.item().createWithParent(
-                    new ItemBuilder(new ContextRef(getContextId()), new ContentModelRef(getContentModelId()),
-                        getMetadata()).build(getResourceName()), getParentId());
+            Item build =
+                new ItemBuilder(new ContextRef(getContextId()), new ContentModelRef(getContentModelId()), getMetadata())
+                    .build(getResourceName());
+            // TODO pass the staged file.
+            Components componentList = new Components();
+            Component component = new Component();
+            componentList.add(component);
+            build.setComponents(componentList);
+            Item newItem = repositories.item().createWithParent(build, getParentId());
         }
         catch (EscidocClientException e) {
             LOG.error(e.getMessage(), e);
@@ -91,22 +113,23 @@ public final class OnCreateItemWithComponents implements Button.ClickListener {
     }
 
     private ResourceModel getParentId() {
-        throw new UnsupportedOperationException("not-yet-implemented.");
+        return parent;
     }
 
     private String getContentModelId() {
-        throw new UnsupportedOperationException("not-yet-implemented.");
+        return contentModelId;
     }
 
     private String getResourceName() {
-        throw new UnsupportedOperationException("not-yet-implemented.");
+        return itemName;
     }
 
+    // FIXME metadata other than escidoc default metadata is _not_ required.
     private String getMetadata() {
-        throw new UnsupportedOperationException("not-yet-implemented.");
+        return AppConstants.EMPTY_STRING;
     }
 
     private String getContextId() {
-        throw new UnsupportedOperationException("not-yet-implemented.");
+        return contextId;
     }
 }

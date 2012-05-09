@@ -277,7 +277,7 @@ public class ContainerView extends View {
         dropPane.addComponent(tree);
 
         // is instance of DragAndDropWrapper implements DropHandler
-        DropableBox dropBox = new DropableBox(dropPane, repositories);
+        DropableBox dropBox = new DropableBox(mainWindow, dropPane, repositories);
         dropBox.setSizeUndefined();
 
         Panel directMembersPanel = new Panel(dropBox);

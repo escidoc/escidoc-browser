@@ -43,6 +43,7 @@ import com.vaadin.ui.Html5File;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.Window;
 
+import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.repository.Repositories;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,11 +65,15 @@ public class DropableBox extends DragAndDropWrapper implements DropHandler {
 
     private final Repositories repositories;
 
-    public DropableBox(CssLayout dropPane, Repositories repositories) {
+    private Window mainWindow;
+
+    public DropableBox(Window mainWindow, CssLayout dropPane, Repositories repositories) {
         super(dropPane);
+        Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(dropPane, "dropPane is null: %s", dropPane);
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
 
+        this.mainWindow = mainWindow;
         this.pane = dropPane;
         this.repositories = repositories;
         setDropHandler(this);
@@ -104,8 +109,12 @@ public class DropableBox extends DragAndDropWrapper implements DropHandler {
 
     private void onFilesDrop(Html5File[] files) {
         LOG.debug("#files: " + files.length);
+        pane.removeAllComponents();
 
-        // pane.removeAllComponents();
+        Window modalWindow = new Window("Creating item(s");
+        modalWindow.setModal(true);
+        mainWindow.addWindow(modalWindow);
+
         int numberOfFiles = 0;
         for (final Html5File dropFile : files) {
             if (dropFile.getFileSize() > FILE_SIZE_LIMIT) {
@@ -131,7 +140,12 @@ public class DropableBox extends DragAndDropWrapper implements DropHandler {
         Button createButton = new Button("OK");
         createButton.setStyleName("small");
 
-        createButton.addListener(new OnCreateItemWithComponents(og, repositories));
+        String name = null;
+        String contextId = null;
+        String contentModelId = null;
+        ResourceModel parent = null;
+        ItemBuilderHelper itemHelper = new ItemBuilderHelper(name, contextId, contentModelId, parent);
+        createButton.addListener(new OnCreateItemWithComponents(og, repositories, itemHelper));
         return createButton;
     }
 
