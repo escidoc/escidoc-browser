@@ -168,9 +168,8 @@ public class RoleAssignView extends CustomComponent {
     }
 
     private void bindGroupAccountData() throws EscidocClientException {
-        Container groupContainer =
-            new BeanItemContainer<ResourceModel>(ResourceModel.class, repositories.group().findAll());
-        groupSelection.setContainerDataSource(groupContainer);
+        groupSelection.setContainerDataSource(new BeanItemContainer<ResourceModel>(ResourceModel.class, repositories
+            .group().findAll()));
         groupSelection.setItemCaptionPropertyId(PropertyId.NAME);
     }
 
@@ -537,7 +536,7 @@ public class RoleAssignView extends CustomComponent {
         }
 
         private Set<ResourceModel> getSelectedResources() {
-            final Object value = resourceSelection.getValue();
+            final Object value = groupResourceSelection.getValue();
             if (value instanceof ResourceModel) {
                 return Collections.singleton((ResourceModel) value);
             }
