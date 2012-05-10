@@ -40,7 +40,6 @@ import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.DragAndDropWrapper;
 import com.vaadin.ui.FormLayout;
@@ -51,6 +50,8 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
+import org.escidoc.browser.AppConstants;
+import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.internal.ResourceDisplay;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.ViewConstants;
@@ -78,13 +79,19 @@ public class DropableBox extends DragAndDropWrapper implements DropHandler {
 
     private static final long FILE_SIZE_LIMIT = 200 * 1024 * 1024; // 200MB
 
+    private static TextField nameField;
+
     private final CssLayout pane;
 
     private final Repositories repositories;
 
     private Window mainWindow;
 
-    public DropableBox(Window mainWindow, CssLayout dropPane, Repositories repositories) {
+    private NativeSelect contentModelSelect;
+
+    private ContainerProxy parent;
+
+    public DropableBox(Window mainWindow, CssLayout dropPane, Repositories repositories, ContainerProxy parent) {
         super(dropPane);
         Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
         Preconditions.checkNotNull(dropPane, "dropPane is null: %s", dropPane);
@@ -93,6 +100,7 @@ public class DropableBox extends DragAndDropWrapper implements DropHandler {
         this.mainWindow = mainWindow;
         this.pane = dropPane;
         this.repositories = repositories;
+        this.parent = parent;
         setDropHandler(this);
     }
 
@@ -164,21 +172,28 @@ public class DropableBox extends DragAndDropWrapper implements DropHandler {
                     getApplication(), getWindow(), layout, repositories));
             }
         }
-
-        // TODO refactor to a method
-        // if (numberOfFiles > 1) {
-        // OptionGroup og = buildOptionGroup(numberOfFiles);
-        // layout.addComponent(og);
-        // layout.addComponent(buildCreateButton(og));
-        // }
     }
 
     private void addButtons(FormLayout formLayout) {
-        formLayout.addComponent(buildCreateButton());
+        final Button createButton = buildCreateButton();
+        formLayout.addComponent(createButton);
+
+        createButton
+            .addListener(new OnCreateItemWithComponents(repositories, new ItemBuilderHelper((String) nameField
+                .getValue(), DropableBox.this.parent.getContext().getObjid(), getContentModelId(),
+                DropableBox.this.parent)));
     }
 
-    private static void addNameField(FormLayout formLayout) {
-        TextField nameField = new TextField(ViewConstants.ITEM_NAME);
+    public String getContentModelId() {
+        final Object value = contentModelSelect.getValue();
+        if (value instanceof ResourceDisplay) {
+            return ((ResourceDisplay) value).getObjectId();
+        }
+        return AppConstants.EMPTY_STRING;
+    }
+
+    private void addNameField(FormLayout formLayout) {
+        nameField = new TextField(ViewConstants.ITEM_NAME);
         nameField.setRequired(true);
         nameField.setWidth("400px");
         nameField.setRequiredError(ViewConstants.PLEASE_ENTER_AN_ITEM_NAME);
@@ -190,7 +205,7 @@ public class DropableBox extends DragAndDropWrapper implements DropHandler {
 
     private void addContentModelSelect(FormLayout formLayout) throws EscidocException, InternalClientException,
         TransportException {
-        NativeSelect contentModelSelect = new NativeSelect(ViewConstants.PLEASE_SELECT_CONTENT_MODEL);
+        contentModelSelect = new NativeSelect(ViewConstants.PLEASE_SELECT_CONTENT_MODEL);
         contentModelSelect.setRequired(true);
         bindData(contentModelSelect);
         formLayout.addComponent(contentModelSelect);
@@ -233,21 +248,6 @@ public class DropableBox extends DragAndDropWrapper implements DropHandler {
         Button createButton = new Button("OK");
         createButton.setStyleName("small");
 
-        // String name = null;
-        // String contextId = null;
-        // String contentModelId = null;
-        // ResourceModel parent = null;
-        //
-        // ItemBuilderHelper itemHelper = new ItemBuilderHelper(name, contextId, contentModelId, parent);
-        // createButton.addListener(new OnCreateItemWithComponents(repositories, itemHelper));
-
-        createButton.addListener(new Button.ClickListener() {
-
-            @Override
-            public void buttonClick(ClickEvent event) {
-                LOG.debug("Creating...");
-            }
-        });
         return createButton;
     }
 
