@@ -41,6 +41,7 @@ import org.escidoc.browser.util.Utils;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -52,6 +53,7 @@ import de.escidoc.core.client.exceptions.TransportException;
 import de.escidoc.core.client.interfaces.ContentModelHandlerClientInterface;
 import de.escidoc.core.client.rest.RestContentModelHandlerClient;
 import de.escidoc.core.resources.Resource;
+import de.escidoc.core.resources.cmm.ContentModel;
 import de.escidoc.core.resources.common.Relations;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import gov.loc.www.zing.srw.SearchRetrieveRequestType;
@@ -112,8 +114,14 @@ public class ContentModelRepository implements Repository {
 
     @Override
     public List<ResourceModel> filterUsingInput(final String query) throws EscidocClientException {
-        throw new UnsupportedOperationException("Not yet implemented");
-
+        final SearchRetrieveRequestType filter = Utils.createEmptyFilter();
+        filter.setQuery(query);
+        final List<ContentModel> list = client.retrieveContentModelsAsList(filter);
+        final List<ResourceModel> ret = new ArrayList<ResourceModel>(list.size());
+        for (final ContentModel item : list) {
+            ret.add(new ContentModelProxyImpl(item));
+        }
+        return ret;
     }
 
     @Override

@@ -41,8 +41,6 @@ import org.escidoc.browser.model.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.helper.Util;
 import org.escidoc.browser.util.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +67,6 @@ import de.escidoc.core.resources.om.item.component.Components;
 import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 public class ItemRepository implements Repository {
-    private static final Logger LOG = LoggerFactory.getLogger(ItemRepository.class);
 
     private final ItemHandlerClientInterface client;
 

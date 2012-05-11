@@ -80,14 +80,14 @@ public class BulkTasksView extends VerticalLayout {
         addRuler();
         addDescription();
         addRuler();
-        addContent();
+        addFilterView();
     }
 
     private void addImportView() {
         addComponent(new ImportView(router, repositories.ingest()));
     }
 
-    private void addContent() {
+    private void addFilterView() {
         final HorizontalLayout filterLayout = new HorizontalLayout();
         filterLayout.setMargin(true);
         filterLayout.setSpacing(true);
@@ -141,6 +141,7 @@ public class BulkTasksView extends VerticalLayout {
         list.add(ResourceType.CONTENT_MODEL);
         list.add(ResourceType.ORG_UNIT);
         list.add(ResourceType.USER_ACCOUNT);
+        list.add(ResourceType.USER_GROUP);
         return list;
     }
 

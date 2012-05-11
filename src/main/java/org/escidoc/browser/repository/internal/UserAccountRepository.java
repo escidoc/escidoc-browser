@@ -28,9 +28,7 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import java.net.MalformedURLException;
-import java.util.List;
-import java.util.Set;
+import com.google.common.base.Preconditions;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
@@ -42,10 +40,14 @@ import org.escidoc.browser.model.internal.UserProxy;
 import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.repository.RoleRepository.RoleModel;
 import org.escidoc.browser.ui.helper.Util;
+import org.escidoc.browser.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import de.escidoc.core.client.UserAccountHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -70,6 +72,7 @@ import de.escidoc.core.resources.common.reference.Reference;
 import de.escidoc.core.resources.common.reference.RoleRef;
 import de.escidoc.core.resources.common.reference.UserAccountRef;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 public class UserAccountRepository implements Repository {
 
@@ -120,7 +123,14 @@ public class UserAccountRepository implements Repository {
 
     @Override
     public List<ResourceModel> filterUsingInput(final String query) throws EscidocClientException {
-        throw new UnsupportedOperationException("not-yet-implemented.");
+        final SearchRetrieveRequestType filter = Utils.createEmptyFilter();
+        filter.setQuery(query);
+        final List<UserAccount> list = client.retrieveUserAccountsAsList(filter);
+        final List<ResourceModel> ret = new ArrayList<ResourceModel>(list.size());
+        for (final UserAccount resource : list) {
+            ret.add(new UserModel(resource));
+        }
+        return ret;
     }
 
     @Override

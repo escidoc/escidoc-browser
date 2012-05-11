@@ -28,10 +28,7 @@
  */
 package org.escidoc.browser.repository;
 
-import java.net.MalformedURLException;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import com.google.common.base.Preconditions;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.GroupModel;
@@ -41,10 +38,15 @@ import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.repository.RoleRepository.RoleModel;
 import org.escidoc.browser.ui.helper.Util;
+import org.escidoc.browser.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import de.escidoc.core.client.UserGroupHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -68,6 +70,7 @@ import de.escidoc.core.resources.common.reference.Reference;
 import de.escidoc.core.resources.common.reference.RoleRef;
 import de.escidoc.core.resources.common.reference.UserAccountRef;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 public class GroupRepository implements Repository {
 
@@ -75,7 +78,7 @@ public class GroupRepository implements Repository {
 
     private final static Logger LOG = LoggerFactory.getLogger(GroupRepository.class);
 
-    private UserGroupHandlerClientInterface c;
+    private UserGroupHandlerClientInterface client;
 
     private GroupModel group;
 
@@ -83,17 +86,17 @@ public class GroupRepository implements Repository {
 
     public GroupRepository(EscidocServiceLocation esl) throws MalformedURLException {
         Preconditions.checkNotNull(esl, "esl is null: %s", esl);
-        c = new UserGroupHandlerClient(esl.getEscidocUrl());
+        client = new UserGroupHandlerClient(esl.getEscidocUrl());
     }
 
     @Override
     public void loginWith(String handle) throws InternalClientException {
-        c.setHandle(handle);
+        client.setHandle(handle);
     }
 
     @Override
     public List<ResourceModel> findAll() throws EscidocClientException {
-        return ModelConverter.groupToList(c.retrieveUserGroupsAsList(Util.createEmptyFilter()));
+        return ModelConverter.groupToList(client.retrieveUserGroupsAsList(Util.createEmptyFilter()));
     }
 
     @Override
@@ -103,12 +106,12 @@ public class GroupRepository implements Repository {
 
     @Override
     public ResourceProxy findById(String id) throws EscidocClientException {
-        UserGroup userGroup = c.retrieve(id);
+        UserGroup userGroup = client.retrieve(id);
         return new UserGroupModel(userGroup);
     }
 
     public GroupModel find(String id) throws EscidocClientException {
-        return new GroupModel(c.retrieve(id));
+        return new GroupModel(client.retrieve(id));
     }
 
     @Override
@@ -123,12 +126,19 @@ public class GroupRepository implements Repository {
 
     @Override
     public List<ResourceModel> filterUsingInput(String query) throws EscidocClientException {
-        throw new UnsupportedOperationException("not-yet-implemented.");
+        final SearchRetrieveRequestType filter = Utils.createEmptyFilter();
+        filter.setQuery(query);
+        final List<UserGroup> list = client.retrieveUserGroupsAsList(filter);
+        final List<ResourceModel> ret = new ArrayList<ResourceModel>(list.size());
+        for (final UserGroup resource : list) {
+            ret.add(new UserGroupModel(resource));
+        }
+        return ret;
     }
 
     @Override
     public void delete(String id) throws EscidocClientException {
-        c.delete(id);
+        client.delete(id);
     }
 
     @Override
@@ -140,7 +150,7 @@ public class GroupRepository implements Repository {
         UserGroup ug = new UserGroup();
         addProperties(name, ug);
 
-        UserGroup created = c.create(ug);
+        UserGroup created = client.create(ug);
 
         LOG.debug("A user group is created with an id: " + created.getObjid());
         return created;
@@ -174,7 +184,7 @@ public class GroupRepository implements Repository {
         }
         tp.setSelectors(s);
 
-        c.addSelectors(updated, tp);
+        client.addSelectors(updated, tp);
 
         LOG.debug("A user group is with an id: " + updated.getObjid() + " is updated.");
         return updated;
@@ -196,15 +206,15 @@ public class GroupRepository implements Repository {
 
     private UserGroup updateName(String id, String newName) throws EscidocException, InternalClientException,
         TransportException {
-        UserGroup original = c.retrieve(id);
+        UserGroup original = client.retrieve(id);
         original.getProperties().setName(newName);
-        UserGroup updated = c.update(id, original);
+        UserGroup updated = client.update(id, original);
         return updated;
     }
 
     public void removeOrganization(String groupId, String id) throws EscidocClientException {
         TaskParam tp = new TaskParam();
-        UserGroup updated = c.retrieve(groupId);
+        UserGroup updated = client.retrieve(groupId);
 
         tp.setLastModificationDate(updated.getLastModificationDate());
 
@@ -213,7 +223,7 @@ public class GroupRepository implements Repository {
                 tp.addResourceRef(selector.getObjid());
             }
         }
-        c.removeSelectors(groupId, tp);
+        client.removeSelectors(groupId, tp);
     }
 
     public UserGroup updateGroup(String id, String newName) throws EscidocClientException {
@@ -273,7 +283,7 @@ public class GroupRepository implements Repository {
     public Grant execute() throws EscidocClientException {
         final Grant grant = new Grant();
         grant.setProperties(grantProps);
-        Grant createdGrant = c.createGrant(group.getId(), grant);
+        Grant createdGrant = client.createGrant(group.getId(), grant);
         LOG.debug("Grant created: " + createdGrant.getObjid());
         return createdGrant;
     }
@@ -287,7 +297,7 @@ public class GroupRepository implements Repository {
      * @throws EscidocClientException
      */
     public UserGroup addOrgUnit(String uGroupId, String orgUnitId) throws EscidocClientException {
-        UserGroup userGroup = c.retrieve(uGroupId);
+        UserGroup userGroup = client.retrieve(uGroupId);
 
         TaskParam tp = new TaskParam();
         tp.setLastModificationDate(userGroup.getLastModificationDate());
@@ -295,6 +305,6 @@ public class GroupRepository implements Repository {
         List<Selector> selectors = tp.getSelectors();
         selectors.add(selector);
         tp.setSelectors(selectors);
-        return c.addSelectors(uGroupId, tp);
+        return client.addSelectors(uGroupId, tp);
     }
 }

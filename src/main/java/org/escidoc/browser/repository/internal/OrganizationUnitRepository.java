@@ -122,7 +122,14 @@ public class OrganizationUnitRepository implements Repository {
 
     @Override
     public List<ResourceModel> filterUsingInput(final String query) throws EscidocClientException {
-        throw new UnsupportedOperationException("not-yet-implemented.");
+        final SearchRetrieveRequestType filter = Utils.createEmptyFilter();
+        filter.setQuery(query);
+        final List<OrganizationalUnit> list = client.retrieveOrganizationalUnitsAsList(filter);
+        final List<ResourceModel> ret = new ArrayList<ResourceModel>(list.size());
+        for (final OrganizationalUnit resource : list) {
+            ret.add(new OrgUnitModel(resource));
+        }
+        return ret;
     }
 
     @Override
