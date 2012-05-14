@@ -97,13 +97,13 @@ public class UserAccountAttributes extends TableContainerVH {
         tableContainer.addContainerProperty(ViewConstants.PROPERTY_VALUE, String.class, null);
 
         for (Attribute a : attributes) {
-            if (a.isInternal()) {
-                Item item = tableContainer.addItem(a.getName());
-                if (item != null) {
-                    item.getItemProperty(ViewConstants.PROPERTY_NAME).setValue(a.getName());
-                    item.getItemProperty(ViewConstants.PROPERTY_VALUE).setValue(a.getValue());
-                }
+            // if (a.isInternal()) {
+            Item item = tableContainer.addItem(a.getName());
+            if (item != null) {
+                item.getItemProperty(ViewConstants.PROPERTY_NAME).setValue(a.getName());
+                item.getItemProperty(ViewConstants.PROPERTY_VALUE).setValue(a.getValue());
             }
+            // }
         }
         return tableContainer;
     }
