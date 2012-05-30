@@ -2,10 +2,10 @@
 
 The eSciDoc Browser is a Rich Internet Application that allows browsing of digital assets which are stored in an eSciDoc Core infrastructure. 
 It also provides means to create and manipulate content resources.
+
 Step by step all functionality needed to administer eSciDoc Infrastructure will be included.
   
 ## Installation 
-
 * Copy the file browser.war into a Java web container, such as, Apache Tomcat.
 * Configure the web container and JAVA_OPTS to use your local proxy settings. Please refer to your web container documentation how to configure the proxy settings. For example: <pre>JAVA_OPTS=-Dhttp.proxyHost=proxy.fiz-karlsruhe.de -Dhttp.proxyPort=8888 -Dhttp.nonProxyHosts=escidev6|escidev4|localhost|127.0.0.1|141.66.11.*|*.fiz-karlsruhe.de|www.escidoc.org|www.escidoc.de|escidev6.fiz-karlsruhe.de -Xmx1500m -XX:MaxPermSize=750m</pre>
 * Start the web container.
