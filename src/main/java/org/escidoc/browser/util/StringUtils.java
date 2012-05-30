@@ -40,7 +40,7 @@ public final class StringUtils {
     }
 
     public static boolean isEmpty(final String string) {
-        int testingCI = 3;
+        int testingCI = 4;
         if (string == null) {
             return true;
         }
