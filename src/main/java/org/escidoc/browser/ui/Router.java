@@ -28,11 +28,14 @@
  */
 package org.escidoc.browser.ui;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.BrowserApplication;
@@ -59,467 +62,528 @@ import org.escidoc.browser.ui.maincontent.SearchAdvancedView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.google.common.base.Preconditions;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
 public class Router {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Router.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Router.class);
 
-    private static final String FAIL_RETRIEVING_RESOURCE =
-        "Cannot retrieve resource, or you don't have access to see this resource";
+	private static final String FAIL_RETRIEVING_RESOURCE = "Cannot retrieve resource, or you don't have access to see this resource";
 
-    private final BrowserApplication app;
+	private final BrowserApplication app;
 
-    private final Window mainWindow;
+	private final Window mainWindow;
 
-    private final Repositories repositories;
+	private final Repositories repositories;
 
-    private EscidocServiceLocation serviceLocation;
+	private EscidocServiceLocation serviceLocation;
 
-    private LayoutDesign layout;
+	private LayoutDesign layout;
 
-    private Properties browserProperties;
+	private Properties browserProperties;
 
-    private TreeDataSource ds;
+	private TreeDataSource ds;
 
-    /**
-     * The mainWindow should be revised whether we need it or not the appHeight is the Height of the Application and I
-     * need it for calculations in the inner elements
-     * 
-     * @param mainWindow
-     * @param repositories
-     * @throws EscidocClientException
-     */
-    public Router(final Window mainWindow, final EscidocServiceLocation serviceLocation, final BrowserApplication app,
-        final Repositories repositories) throws EscidocClientException {
+	/**
+	 * The mainWindow should be revised whether we need it or not the appHeight
+	 * is the Height of the Application and I need it for calculations in the
+	 * inner elements
+	 * 
+	 * @param mainWindow
+	 * @param repositories
+	 * @throws EscidocClientException
+	 */
+	public Router(final Window mainWindow,
+			final EscidocServiceLocation serviceLocation,
+			final BrowserApplication app, final Repositories repositories)
+			throws EscidocClientException {
 
-        this.serviceLocation = serviceLocation;
-        this.app = app;
-        this.mainWindow = mainWindow;
-        this.serviceLocation = serviceLocation;
-        this.repositories = repositories;
-        init();
-    }
+		this.serviceLocation = serviceLocation;
+		this.app = app;
+		this.mainWindow = mainWindow;
+		this.serviceLocation = serviceLocation;
+		this.repositories = repositories;
+		init();
+	}
 
-    private void init() {
-        initiatePlugins();
-        createLayout();
-        permanentURLelement();
-        cachePredefinedContentModels();
-    }
+	private void init() {
+		initiatePlugins();
+		createLayout();
+		permanentURLelement();
+		cachePredefinedContentModels();
+	}
 
-    /**
-     * Read the Plugins from a directory
-     */
-    private void initiatePlugins() {
-        // Determine here the Layout and additional Controllers that have to be
-        // used
-        try {
-            browserProperties = new Properties();
-            browserProperties.load(this.getClass().getClassLoader().getResourceAsStream("browser.properties"));
-            final String pluginString = browserProperties.getProperty("plugin");
-            final String[] plugins = pluginString.split(",");
+	/**
+	 * Read the Plugins from a directory
+	 */
+	private void initiatePlugins() {
+		// Determine here the Layout and additional Controllers that have to be
+		// used
+		try {
+			browserProperties = new Properties();
+			browserProperties.load(this.getClass().getClassLoader()
+					.getResourceAsStream("browser.properties"));
+			final String pluginString = browserProperties.getProperty("plugin");
+			final String[] plugins = pluginString.split(",");
 
-            for (final String plugin : plugins) {
-                browserProperties.load(this.getClass().getClassLoader().getResourceAsStream(plugin));
-            }
-        }
-        catch (final IOException e) {
-            mainWindow.showNotification(ViewConstants.LAYOUT_ERR_CANNOT_FIND_CLASS, Notification.TYPE_ERROR_MESSAGE);
-        }
+			for (final String plugin : plugins) {
+				browserProperties.load(this.getClass().getClassLoader()
+						.getResourceAsStream(plugin));
+			}
+		} catch (final IOException e) {
+			mainWindow.showNotification(
+					ViewConstants.LAYOUT_ERR_CANNOT_FIND_CLASS,
+					Notification.TYPE_ERROR_MESSAGE);
+		}
 
-    }
+	}
 
-    /**
-     * Initiate Layout / Default or another one
-     * 
-     */
-    private void createLayout() {
-        final String layoutClassName = browserProperties.getProperty("design");
-        if (layoutClassName == null) {
-            this.getMainWindow().showNotification(ViewConstants.LAYOUT_ERR_CANNOT_LOAD_CLASS,
-                Notification.TYPE_ERROR_MESSAGE);
-        }
-        else {
-            Class<?> layoutClass;
-            try {
-                layoutClass = Class.forName(layoutClassName);
-                final LayoutDesign layoutInstance = (LayoutDesign) layoutClass.newInstance();
-                layoutInstance.init(mainWindow, serviceLocation, app, repositories, this);
-                layout = layoutInstance;
+	/**
+	 * Initiate Layout / Default or another one
+	 * 
+	 */
+	private void createLayout() {
+		final String layoutClassName = browserProperties.getProperty("design");
+		if (layoutClassName == null) {
+			this.getMainWindow().showNotification(
+					ViewConstants.LAYOUT_ERR_CANNOT_LOAD_CLASS,
+					Notification.TYPE_ERROR_MESSAGE);
+		} else {
+			Class<?> layoutClass;
+			try {
+				layoutClass = Class.forName(layoutClassName);
+				final LayoutDesign layoutInstance = (LayoutDesign) layoutClass
+						.newInstance();
+				layoutInstance.init(mainWindow, serviceLocation, app,
+						repositories, this);
+				layout = layoutInstance;
 
-            }
-            catch (final ClassNotFoundException e) {
-                this.getMainWindow().showNotification(ViewConstants.LAYOUT_ERR_CANNOT_FIND_CLASS,
-                    Notification.TYPE_ERROR_MESSAGE);
-                LOG.error(ViewConstants.LAYOUT_ERR_CANNOT_FIND_CLASS + e.getLocalizedMessage());
-            }
-            catch (final InstantiationException e) {
-                this.getMainWindow().showNotification(ViewConstants.LAYOUT_ERR_INSTANTIATE_CLASS,
-                    Notification.TYPE_ERROR_MESSAGE);
-                LOG.error(ViewConstants.LAYOUT_ERR_INSTANTIATE_CLASS + e.getLocalizedMessage());
-            }
-            catch (final IllegalAccessException e) {
-                this.getMainWindow().showNotification(ViewConstants.LAYOUT_ERR_ILLEG_EXEP,
-                    Notification.TYPE_ERROR_MESSAGE);
-                LOG.error(ViewConstants.LAYOUT_ERR_ILLEG_EXEP + e.getLocalizedMessage());
-            }
-            catch (final EscidocClientException e) {
-                this.getMainWindow().showNotification(e.getLocalizedMessage(), Notification.TYPE_ERROR_MESSAGE);
-                LOG.error(e.getLocalizedMessage());
-            }
-            catch (final UnsupportedOperationException e) {
-                this.getMainWindow().showNotification(e.getLocalizedMessage(), Notification.TYPE_ERROR_MESSAGE);
-                LOG.error(e.getLocalizedMessage());
-            }
-            catch (final URISyntaxException e) {
-                this.getMainWindow().showNotification(e.getLocalizedMessage(), Notification.TYPE_ERROR_MESSAGE);
-                LOG.error(e.getLocalizedMessage());
-            }
-        }
+			} catch (final ClassNotFoundException e) {
+				this.getMainWindow().showNotification(
+						ViewConstants.LAYOUT_ERR_CANNOT_FIND_CLASS,
+						Notification.TYPE_ERROR_MESSAGE);
+				LOG.error(ViewConstants.LAYOUT_ERR_CANNOT_FIND_CLASS
+						+ e.getLocalizedMessage());
+			} catch (final InstantiationException e) {
+				this.getMainWindow().showNotification(
+						ViewConstants.LAYOUT_ERR_INSTANTIATE_CLASS,
+						Notification.TYPE_ERROR_MESSAGE);
+				LOG.error(ViewConstants.LAYOUT_ERR_INSTANTIATE_CLASS
+						+ e.getLocalizedMessage());
+			} catch (final IllegalAccessException e) {
+				this.getMainWindow().showNotification(
+						ViewConstants.LAYOUT_ERR_ILLEG_EXEP,
+						Notification.TYPE_ERROR_MESSAGE);
+				LOG.error(ViewConstants.LAYOUT_ERR_ILLEG_EXEP
+						+ e.getLocalizedMessage());
+			} catch (final EscidocClientException e) {
+				this.getMainWindow().showNotification(e.getLocalizedMessage(),
+						Notification.TYPE_ERROR_MESSAGE);
+				LOG.error(e.getLocalizedMessage());
+			} catch (final UnsupportedOperationException e) {
+				this.getMainWindow().showNotification(e.getLocalizedMessage(),
+						Notification.TYPE_ERROR_MESSAGE);
+				LOG.error(e.getLocalizedMessage());
+			} catch (final URISyntaxException e) {
+				this.getMainWindow().showNotification(e.getLocalizedMessage(),
+						Notification.TYPE_ERROR_MESSAGE);
+				LOG.error(e.getLocalizedMessage());
+			}
+		}
 
-    }
+	}
 
-    /**
-     * 
-     * @return Layout to the MainWindow normally
-     */
-    public LayoutDesign getLayout() {
-        return layout;
-    }
+	/**
+	 * 
+	 * @return Layout to the MainWindow normally
+	 */
+	public LayoutDesign getLayout() {
+		return layout;
+	}
 
-    /**
-     * The router should be passed a controller and the controller should open its personal view Should be the default
-     * method for binding ControllerViews to the Layout. + Should be the default call
-     * 
-     * @param controller
-     */
-    public void openControllerView(final Controller controller, final Boolean doReloadView) {
-        if (doReloadView.booleanValue()) {
-            controller.showViewByReloading();
-        }
-        else {
-            controller.showView();
-        }
-    }
+	/**
+	 * The router should be passed a controller and the controller should open
+	 * its personal view Should be the default method for binding
+	 * ControllerViews to the Layout. + Should be the default call
+	 * 
+	 * @param controller
+	 */
+	public void openControllerView(final Controller controller,
+			final Boolean doReloadView) {
+		if (doReloadView.booleanValue()) {
+			controller.showViewByReloading();
+		} else {
+			controller.showView();
+		}
+	}
 
-    /**
-     * public void openControllerView(final Controller cnt, final Boolean doReloadView) { // cnt.init(repositories,
-     * this, resourceProxy); if (!doReloadView) { cnt.showView(layout); } else { cnt.showViewByReloading(layout); } }
-     * 
-     * /** This method handles the open of a new tab on the right section of the mainWindow <br />
-     * If you have a controller for the view, please use the method @openControllerView which is the perfect place to
-     * inject Views that represent objects <br />
-     * The desired method for opening a View is by passing a controller as a reference to the Router. The Controller
-     * will be responsible for its view
-     * 
-     * @param cmp
-     * @param tabname
-     */
-    public void openTab(final Component cmp, final String tabname) {
-        layout.openView(cmp, tabname);
-    }
+	/**
+	 * public void openControllerView(final Controller cnt, final Boolean
+	 * doReloadView) { // cnt.init(repositories, this, resourceProxy); if
+	 * (!doReloadView) { cnt.showView(layout); } else {
+	 * cnt.showViewByReloading(layout); } }
+	 * 
+	 * /** This method handles the open of a new tab on the right section of the
+	 * mainWindow <br />
+	 * If you have a controller for the view, please use the method @openControllerView
+	 * which is the perfect place to inject Views that represent objects <br />
+	 * The desired method for opening a View is by passing a controller as a
+	 * reference to the Router. The Controller will be responsible for its view
+	 * 
+	 * @param cmp
+	 * @param tabname
+	 */
+	public void openTab(final Component cmp, final String tabname) {
+		layout.openView(cmp, tabname);
+	}
 
-    /**
-     * This is the Permanent Link entry point Check if there is a tab variable set in the GET Method of the page and
-     * open a tab containing the object with that ID URL Example
-     * http://escidev4:8084/browser/mainWindow?id=escidoc:16037
-     * &type=Item&escidocurl=http://escidev4.fiz-karlsruhe.de:8080
-     */
-    private void permanentURLelement() {
-        final Map<String, String[]> parameters = app.getParameters();
-        if (Util.hasTabArg(parameters) && Util.hasObjectType(parameters)) {
-            final String escidocID = parameters.get(AppConstants.ARG_TAB)[0];
+	/**
+	 * This is the Permanent Link entry point Check if there is a tab variable
+	 * set in the GET Method of the page and open a tab containing the object
+	 * with that ID URL Example
+	 * http://escidev4:8084/browser/mainWindow?id=escidoc:16037
+	 * &type=Item&escidocurl=http://escidev4.fiz-karlsruhe.de:8080
+	 */
+	private void permanentURLelement() {
+		final Map<String, String[]> parameters = app.getParameters();
+		if (Util.hasTabArg(parameters) && Util.hasObjectType(parameters)) {
+			final String escidocID = parameters.get(AppConstants.ARG_TAB)[0];
 
-            final ResourceModelFactory resourceFactory = new ResourceModelFactory(repositories);
+			final ResourceModelFactory resourceFactory = new ResourceModelFactory(
+					repositories);
 
-            if (parameters.get(AppConstants.ARG_TYPE)[0].equals("CONTEXT")) {
-                try {
-                    final ContextProxyImpl context =
-                        (ContextProxyImpl) resourceFactory.find(escidocID, ResourceType.CONTEXT);
-                    openControllerView(new ContextController(repositories, this, context), Boolean.TRUE);
-                }
-                catch (final EscidocClientException e) {
-                    showError(FAIL_RETRIEVING_RESOURCE);
-                }
-            }
-            else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("CONTAINER")) {
-                try {
-                    final ContainerProxy container =
-                        (ContainerProxy) resourceFactory.find(escidocID, ResourceType.CONTAINER);
-                    openControllerView(new ContainerController(repositories, this, container), Boolean.TRUE);
-                }
-                catch (final EscidocClientException e) {
-                    showError(FAIL_RETRIEVING_RESOURCE);
-                }
-            }
-            else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("ITEM")) {
-                try {
-                    final ItemProxy item = (ItemProxy) resourceFactory.find(escidocID, ResourceType.ITEM);
-                    openControllerView(new ItemController(repositories, this, item), Boolean.TRUE);
-                }
-                catch (final EscidocClientException e) {
-                    showError(FAIL_RETRIEVING_RESOURCE);
-                }
-            }
-            else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("sa")) {
-                final SearchAdvancedView srch = new SearchAdvancedView(this, serviceLocation);
-                layout.openView(srch, "Advanced Search");
-            }
-            else {
-                throw new UnsupportedOperationException("Unknown parameter: "
-                    + parameters.get(AppConstants.ARG_TYPE)[0]);
-            }
-        }
-    }
+			if (parameters.get(AppConstants.ARG_TYPE)[0].equals("CONTEXT")) {
+				try {
+					final ContextProxyImpl context = (ContextProxyImpl) resourceFactory
+							.find(escidocID, ResourceType.CONTEXT);
+					openControllerView(new ContextController(repositories,
+							this, context), Boolean.TRUE);
+				} catch (final EscidocClientException e) {
+					showError(FAIL_RETRIEVING_RESOURCE);
+				}
+			} else if (parameters.get(AppConstants.ARG_TYPE)[0]
+					.equals("CONTAINER")) {
+				try {
+					final ContainerProxy container = (ContainerProxy) resourceFactory
+							.find(escidocID, ResourceType.CONTAINER);
+					openControllerView(new ContainerController(repositories,
+							this, container), Boolean.TRUE);
+				} catch (final EscidocClientException e) {
+					showError(FAIL_RETRIEVING_RESOURCE);
+				}
+			} else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("ITEM")) {
+				try {
+					final ItemProxy item = (ItemProxy) resourceFactory.find(
+							escidocID, ResourceType.ITEM);
+					openControllerView(new ItemController(repositories, this,
+							item), Boolean.TRUE);
+				} catch (final EscidocClientException e) {
+					showError(FAIL_RETRIEVING_RESOURCE);
+				}
+			} else if (parameters.get(AppConstants.ARG_TYPE)[0].equals("sa")) {
+				final SearchAdvancedView srch = new SearchAdvancedView(this,
+						serviceLocation);
+				layout.openView(srch, "Advanced Search");
+			} else {
+				throw new UnsupportedOperationException("Unknown parameter: "
+						+ parameters.get(AppConstants.ARG_TYPE)[0]);
+			}
+		}
+	}
 
-    private void showError(final String msg) {
-        mainWindow.showNotification(msg, Notification.TYPE_ERROR_MESSAGE);
-    }
+	private void showError(final String msg) {
+		mainWindow.showNotification(msg, Notification.TYPE_ERROR_MESSAGE);
+	}
 
-    public void show(final ResourceModel clickedResource, final boolean shouldReloadView) throws EscidocClientException {
-        Preconditions.checkNotNull(clickedResource, "clickedResource is null: %s", clickedResource);
+	public void show(final ResourceModel clickedResource,
+			final boolean shouldReloadView) throws EscidocClientException {
+		Preconditions.checkNotNull(clickedResource,
+				"clickedResource is null: %s", clickedResource);
 
-        final Controller controller = buildController(clickedResource);
-        Preconditions.checkNotNull(controller, "controller is null: %s", controller);
-        if (shouldReloadView) {
-            controller.showViewByReloading();
-        }
-        else {
-            controller.showView();
-        }
-    }
+		final Controller controller = buildController(clickedResource);
+		Preconditions.checkNotNull(controller, "controller is null: %s",
+				controller);
+		if (shouldReloadView) {
+			controller.showViewByReloading();
+		} else {
+			controller.showView();
+		}
+	}
 
-    // FIXME we should only use the reflection iff ResourceModel.type is either
-    // container or item, otherwise use a
-    // normal constructor.
-    // FIXME this is so wrong, we can not inject another object into a
-    // controller to create a view. It is impossible?
-    // to inject, for example, the organization data source into another view.
+	// FIXME we should only use the reflection iff ResourceModel.type is either
+	// container or item, otherwise use a
+	// normal constructor.
+	// FIXME this is so wrong, we can not inject another object into a
+	// controller to create a view. It is impossible?
+	// to inject, for example, the organization data source into another view.
 
-    private Controller buildController(final ResourceModel clickedResource) throws EscidocClientException {
-        final Controller controller = null;
-        try {
+	private Controller buildController(final ResourceModel clickedResource)
+			throws EscidocClientException {
+		final Controller controller = null;
+		try {
 
-            final String controllerId = getControllerId(clickedResource);
-            final String controllerClassName = browserProperties.getProperty(controllerId);
+			final String controllerId = getControllerId(clickedResource);
+			String controllerClassName = browserProperties
+					.getProperty(controllerId);
 
-            // TODO find a better solution for "controller ID not configured"
-            if (controllerClassName == null) {
-                final String msg = "Could not resolve controller ID. ";
-                LOG.error(msg + controllerId);
-                throw new IllegalArgumentException(msg);
-            }
+			// TODO find a better solution for "controller ID not configured"
+			if (controllerClassName == null) {
+				final String msg = "Could not resolve controller ID. ";
+				LOG.error(msg + controllerId);
+				LOG.info("Trying to fallback ...");
+				switch (clickedResource.getType()) {
+				case CONTAINER:
+					LOG.info("Fallback to Container Controller.");
+					controllerClassName = browserProperties
+							.getProperty(ControllerIdList.CONTAINER_CONTROLLER_ID);
+					break;
+				case ITEM:
+					LOG.info("Fallback to Item Controller.");
+					controllerClassName = browserProperties
+							.getProperty(ControllerIdList.ITEM_CONTROLLER_ID);
+					break;
+				}
+				if (controllerClassName == null) {
+					throw new IllegalArgumentException(msg);
+				} else {
+					LOG.info("Fallback succeeded.");
+				}
+			}
 
-            return (Controller) Class
-                .forName(controllerClassName).getConstructor(Repositories.class, Router.class, ResourceProxy.class)
-                .newInstance(repositories, this, fetchResource(clickedResource));
-        }
-        catch (final ClassNotFoundException e) {
-            this.getMainWindow().showNotification(ViewConstants.CONTROLLER_ERR_CANNOT_FIND_CLASS,
-                Notification.TYPE_ERROR_MESSAGE);
-            LOG.error(ViewConstants.CONTROLLER_ERR_CANNOT_FIND_CLASS + e.getMessage());
-        }
-        catch (final InstantiationException e) {
-            this.getMainWindow().showNotification(ViewConstants.CONTROLLER_ERR_INSTANTIATE_CLASS,
-                Notification.TYPE_ERROR_MESSAGE);
-            LOG.error(ViewConstants.CONTROLLER_ERR_INSTANTIATE_CLASS + e.getLocalizedMessage());
-        }
-        catch (final IllegalAccessException e) {
-            this.getMainWindow().showNotification(ViewConstants.CONTROLLER_ERR_ILLEG_EXEP,
-                Notification.TYPE_ERROR_MESSAGE);
-            LOG.error(ViewConstants.CONTROLLER_ERR_ILLEG_EXEP + e.getLocalizedMessage());
-        }
-        catch (final SecurityException e) {
-            LOG.error(ViewConstants.CONTROLLER_ERR_SECU_EXEP + e.getLocalizedMessage());
-        }
-        catch (final InvocationTargetException e) {
-            LOG.error(ViewConstants.CONTROLLER_ERR_INVOKE_EXEP + e.getTargetException().getMessage());
-        }
-        catch (final NoSuchMethodException e) {
-            LOG.error(ViewConstants.CONTROLLER_ERR_NOSUCHMETH_EXEP + e.getLocalizedMessage());
-        }
-        return controller;
-    }
+			return (Controller) Class
+					.forName(controllerClassName)
+					.getConstructor(Repositories.class, Router.class,
+							ResourceProxy.class)
+					.newInstance(repositories, this,
+							fetchResource(clickedResource));
+		} catch (final ClassNotFoundException e) {
+			this.getMainWindow().showNotification(
+					ViewConstants.CONTROLLER_ERR_CANNOT_FIND_CLASS,
+					Notification.TYPE_ERROR_MESSAGE);
+			LOG.error(ViewConstants.CONTROLLER_ERR_CANNOT_FIND_CLASS
+					+ e.getMessage());
+		} catch (final InstantiationException e) {
+			this.getMainWindow().showNotification(
+					ViewConstants.CONTROLLER_ERR_INSTANTIATE_CLASS,
+					Notification.TYPE_ERROR_MESSAGE);
+			LOG.error(ViewConstants.CONTROLLER_ERR_INSTANTIATE_CLASS
+					+ e.getLocalizedMessage());
+		} catch (final IllegalAccessException e) {
+			this.getMainWindow().showNotification(
+					ViewConstants.CONTROLLER_ERR_ILLEG_EXEP,
+					Notification.TYPE_ERROR_MESSAGE);
+			LOG.error(ViewConstants.CONTROLLER_ERR_ILLEG_EXEP
+					+ e.getLocalizedMessage());
+		} catch (final SecurityException e) {
+			LOG.error(ViewConstants.CONTROLLER_ERR_SECU_EXEP
+					+ e.getLocalizedMessage());
+		} catch (final InvocationTargetException e) {
+			LOG.error(ViewConstants.CONTROLLER_ERR_INVOKE_EXEP
+					+ e.getTargetException().getMessage());
+		} catch (final NoSuchMethodException e) {
+			LOG.error(ViewConstants.CONTROLLER_ERR_NOSUCHMETH_EXEP
+					+ e.getLocalizedMessage());
+		}
+		return controller;
+	}
 
-    private String getControllerId(final ResourceModel clickedResource) throws EscidocClientException {
-        ResourceType type = clickedResource.getType();
+	private String getControllerId(final ResourceModel clickedResource)
+			throws EscidocClientException {
+		ResourceType type = clickedResource.getType();
 
-        String controllerId = null;
-        switch (type) {
-            case CONTEXT:
-                controllerId = ControllerIdList.CONTEXT_CONTROLLER_ID;
-                break;
-            case CONTAINER:
-                controllerId = findIdForContainer(clickedResource);
-                break;
-            case ITEM:
-                controllerId = findIdForItem(clickedResource);
-                break;
-            case ORG_UNIT:
-                controllerId = ControllerIdList.ORG_UNIT_CONTROLLER_ID;
-                break;
-            case USER_ACCOUNT:
-                controllerId = ControllerIdList.USER_ACCOUNT_CONTROLLER_ID;
-                break;
-            case CONTENT_MODEL:
-                controllerId = ControllerIdList.CONTENT_MODEL_CONTROLLER_ID;
-                break;
-            case USER_GROUP:
-                controllerId = ControllerIdList.USER_GROUP_CONTROLLER_ID;
-                break;
-            default:
-                throw new UnsupportedOperationException("Unknown resource type: "
-                    + clickedResource.getType().getLabel() + "can not be shown.");
+		String controllerId = null;
+		switch (type) {
+		case CONTEXT:
+			controllerId = ControllerIdList.CONTEXT_CONTROLLER_ID;
+			break;
+		case CONTAINER:
+			controllerId = findIdForContainer(clickedResource);
+			break;
+		case ITEM:
+			controllerId = findIdForItem(clickedResource);
+			break;
+		case ORG_UNIT:
+			controllerId = ControllerIdList.ORG_UNIT_CONTROLLER_ID;
+			break;
+		case USER_ACCOUNT:
+			controllerId = ControllerIdList.USER_ACCOUNT_CONTROLLER_ID;
+			break;
+		case CONTENT_MODEL:
+			controllerId = ControllerIdList.CONTENT_MODEL_CONTROLLER_ID;
+			break;
+		case USER_GROUP:
+			controllerId = ControllerIdList.USER_GROUP_CONTROLLER_ID;
+			break;
+		default:
+			throw new UnsupportedOperationException("Unknown resource type: "
+					+ clickedResource.getType().getLabel()
+					+ "can not be shown.");
 
-        }
-        LOG.debug("ControllerID[" + controllerId + "]");
-        return controllerId;
-    }
+		}
+		LOG.debug("ControllerID[" + controllerId + "]");
+		return controllerId;
+	}
 
-    private String findIdForContainer(final ResourceModel clickedResource) throws EscidocClientException {
-        String controllerId;
-        controllerId = ControllerIdList.CONTAINER_CONTROLLER_ID;
-        controllerId = findContollerId(clickedResource, controllerId);
-        return controllerId;
-    }
+	private String findIdForContainer(final ResourceModel clickedResource)
+			throws EscidocClientException {
+		String controllerId;
+		controllerId = ControllerIdList.CONTAINER_CONTROLLER_ID;
+		controllerId = findContollerId(clickedResource, controllerId);
+		return controllerId;
+	}
 
-    private String findIdForItem(final ResourceModel clickedResource) throws EscidocClientException {
-        String controllerId;
-        controllerId = ControllerIdList.ITEM_CONTROLLER_ID;
-        controllerId = findContollerId(clickedResource, controllerId);
-        return controllerId;
-    }
+	private String findIdForItem(final ResourceModel clickedResource)
+			throws EscidocClientException {
+		String controllerId;
+		controllerId = ControllerIdList.ITEM_CONTROLLER_ID;
+		controllerId = findContollerId(clickedResource, controllerId);
+		return controllerId;
+	}
 
-    private String findContollerId(final ResourceModel clickedResource, final String oldId)
-        throws EscidocClientException {
+	private String findContollerId(final ResourceModel clickedResource,
+			final String oldId) throws EscidocClientException {
 
-        final String contentModelDescription = getContentModelDescription(clickedResource);
-        if (contentModelDescription == null) {
-            return oldId;
-        }
+		final String contentModelDescription = getContentModelDescription(clickedResource);
+		if (contentModelDescription == null) {
+			return oldId;
+		}
 
-        final Matcher controllerIdMatcher =
-            Pattern.compile("org.escidoc.browser.Controller=([^;]*);").matcher(contentModelDescription);
-        if (controllerIdMatcher.find()) {
-            String id = controllerIdMatcher.group(1);
-            if (id.equals(ControllerIdList.INVESTIGATION_CONTROLLER_ID)
-                && !clickedResource.getType().equals(ResourceType.CONTAINER)) {
-                return oldId;
-            }
-            return id;
-        }
+		final Matcher controllerIdMatcher = Pattern.compile(
+				"org.escidoc.browser.Controller=([^;]*);").matcher(
+				contentModelDescription);
+		if (controllerIdMatcher.find()) {
+			String id = controllerIdMatcher.group(1);
+			if (id.equals(ControllerIdList.INVESTIGATION_CONTROLLER_ID)
+					&& !clickedResource.getType()
+							.equals(ResourceType.CONTAINER)) {
+				return oldId;
+			}
+			return id;
+		}
 
-        return oldId;
-    }
+		return oldId;
+	}
 
-    private String getContentModelDescription(final ResourceModel clickedResource) throws EscidocClientException {
-        return repositories
-            .contentModel().findById(fetchResource(clickedResource).getContentModel().getObjid()).getDescription();
-    }
+	private String getContentModelDescription(
+			final ResourceModel clickedResource) throws EscidocClientException {
+		return repositories
+				.contentModel()
+				.findById(
+						fetchResource(clickedResource).getContentModel()
+								.getObjid()).getDescription();
+	}
 
-    private ResourceProxy fetchResource(final ResourceModel clickedResource) throws EscidocClientException {
-        switch (clickedResource.getType()) {
-            case CONTEXT:
-                return repositories.context().findById(clickedResource.getId());
-            case CONTAINER:
-                return repositories.container().findById(clickedResource.getId());
-            case ITEM:
-                return repositories.item().findById(clickedResource.getId());
-            case ORG_UNIT:
-                return repositories.organization().findById(clickedResource.getId());
-            case USER_ACCOUNT:
-                return repositories.user().findById(clickedResource.getId());
-            case CONTENT_MODEL:
-                return repositories.contentModel().findById(clickedResource.getId());
-            case USER_GROUP:
-                return repositories.group().findById(clickedResource.getId());
-            default:
-                throw new UnsupportedOperationException(clickedResource.getType() + " is unsupported");
-        }
-    }
+	private ResourceProxy fetchResource(final ResourceModel clickedResource)
+			throws EscidocClientException {
+		switch (clickedResource.getType()) {
+		case CONTEXT:
+			return repositories.context().findById(clickedResource.getId());
+		case CONTAINER:
+			return repositories.container().findById(clickedResource.getId());
+		case ITEM:
+			return repositories.item().findById(clickedResource.getId());
+		case ORG_UNIT:
+			return repositories.organization()
+					.findById(clickedResource.getId());
+		case USER_ACCOUNT:
+			return repositories.user().findById(clickedResource.getId());
+		case CONTENT_MODEL:
+			return repositories.contentModel()
+					.findById(clickedResource.getId());
+		case USER_GROUP:
+			return repositories.group().findById(clickedResource.getId());
+		default:
+			throw new UnsupportedOperationException(clickedResource.getType()
+					+ " is unsupported");
+		}
+	}
 
-    private void cachePredefinedContentModels() {
-        List<ResourceModel> contentModels = null;
-        try {
-            final String SEARCH_STRING_FOR_MATCHER = AppConstants.CMM_DESCRIPTION_MATCHER;
-            final Pattern controllerPattern = Pattern.compile(SEARCH_STRING_FOR_MATCHER);
-            contentModels = repositories.contentModel().findAll();
+	private void cachePredefinedContentModels() {
+		List<ResourceModel> contentModels = null;
+		try {
+			final String SEARCH_STRING_FOR_MATCHER = AppConstants.CMM_DESCRIPTION_MATCHER;
+			final Pattern controllerPattern = Pattern
+					.compile(SEARCH_STRING_FOR_MATCHER);
+			contentModels = repositories.contentModel().findAll();
 
-            if (contentModels == null) {
-                return;
-            }
+			if (contentModels == null) {
+				return;
+			}
 
-            synchronized (ELabsCache.getContentModels()) {
+			synchronized (ELabsCache.getContentModels()) {
 
-                for (final ResourceModel resourceModel : contentModels) {
-                    if (resourceModel instanceof ContentModelProxyImpl) {
-                        final ContentModelProxyImpl contentModelProxy = (ContentModelProxyImpl) resourceModel;
-                        final String description = contentModelProxy.getDescription();
-                        if (description == null || description.isEmpty()) {
-                            continue;
-                        }
-                        final Matcher controllerMatcher = controllerPattern.matcher(description);
-                        String controllerName = null;
-                        if (controllerMatcher.find()) {
-                            controllerName = controllerMatcher.group(1);
-                        }
-                        if (controllerName == null || controllerName.isEmpty()) {
-                            continue;
-                        }
-                        final String cmmId = contentModelProxy.getId();
+				for (final ResourceModel resourceModel : contentModels) {
+					if (resourceModel instanceof ContentModelProxyImpl) {
+						final ContentModelProxyImpl contentModelProxy = (ContentModelProxyImpl) resourceModel;
+						final String description = contentModelProxy
+								.getDescription();
+						if (description == null || description.isEmpty()) {
+							continue;
+						}
+						final Matcher controllerMatcher = controllerPattern
+								.matcher(description);
+						String controllerName = null;
+						if (controllerMatcher.find()) {
+							controllerName = controllerMatcher.group(1);
+						}
+						if (controllerName == null || controllerName.isEmpty()) {
+							continue;
+						}
+						final String cmmId = contentModelProxy.getId();
 
-                        if (!ELabsCache.getContentModels().containsKey(cmmId)) {
-                            if (controllerName.equals(AppConstants.CMM_DESCRIPTION_INSTRUMENT)) {
-                                ELabsCache.getContentModels().put(cmmId, ContentModelTypeEnum.INSTRUMENT);
-                            }
-                            else if (controllerName.equals(AppConstants.CMM_DESCRIPTION_RIG)) {
-                                ELabsCache.getContentModels().put(cmmId, ContentModelTypeEnum.RIG);
-                            }
-                            else if (controllerName.equals(AppConstants.CMM_DESCRIPTION_INVESTIGATION)) {
-                                ELabsCache.getContentModels().put(cmmId, ContentModelTypeEnum.INVESTIGATION);
-                            }
-                            else if (controllerName.equals(AppConstants.CMM_DESCRIPTION_STUDY)) {
-                                ELabsCache.getContentModels().put(cmmId, ContentModelTypeEnum.STUDY);
-                            }
-                            else if (controllerName.equals(AppConstants.CMM_DESCRIPTION_INVESTIGATION_RESULTS)) {
-                                ELabsCache.getContentModels().put(cmmId, ContentModelTypeEnum.INVESTIGATION_RESULT);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        catch (final ClassCastException e) {
-            LOG.error(e.getMessage());
-        }
-        catch (final EscidocClientException e) {
-            LOG.error(e.getMessage());
-        }
-    }
+						if (!ELabsCache.getContentModels().containsKey(cmmId)) {
+							if (controllerName
+									.equals(AppConstants.CMM_DESCRIPTION_INSTRUMENT)) {
+								ELabsCache.getContentModels().put(cmmId,
+										ContentModelTypeEnum.INSTRUMENT);
+							} else if (controllerName
+									.equals(AppConstants.CMM_DESCRIPTION_RIG)) {
+								ELabsCache.getContentModels().put(cmmId,
+										ContentModelTypeEnum.RIG);
+							} else if (controllerName
+									.equals(AppConstants.CMM_DESCRIPTION_INVESTIGATION)) {
+								ELabsCache.getContentModels().put(cmmId,
+										ContentModelTypeEnum.INVESTIGATION);
+							} else if (controllerName
+									.equals(AppConstants.CMM_DESCRIPTION_STUDY)) {
+								ELabsCache.getContentModels().put(cmmId,
+										ContentModelTypeEnum.STUDY);
+							} else if (controllerName
+									.equals(AppConstants.CMM_DESCRIPTION_INVESTIGATION_RESULTS)) {
+								ELabsCache
+										.getContentModels()
+										.put(cmmId,
+												ContentModelTypeEnum.INVESTIGATION_RESULT);
+							}
+						}
+					}
+				}
+			}
+		} catch (final ClassCastException e) {
+			LOG.error(e.getMessage());
+		} catch (final EscidocClientException e) {
+			LOG.error(e.getMessage());
+		}
+	}
 
-    public Window getMainWindow() {
-        return mainWindow;
-    }
+	public Window getMainWindow() {
+		return mainWindow;
+	}
 
-    public EscidocServiceLocation getServiceLocation() {
-        return serviceLocation;
-    }
+	public EscidocServiceLocation getServiceLocation() {
+		return serviceLocation;
+	}
 
-    public Repositories getRepositories() {
-        return repositories;
-    }
+	public Repositories getRepositories() {
+		return repositories;
+	}
 
-    public BrowserApplication getApp() {
-        return this.app;
-    }
+	public BrowserApplication getApp() {
+		return this.app;
+	}
 }
