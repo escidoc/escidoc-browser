@@ -38,6 +38,7 @@ import org.escidoc.browser.ui.useraccount.UserAccountView;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.aa.useraccount.Grant;
+import de.escidoc.core.resources.aa.useraccount.Grants;
 
 public class UserAccountController extends Controller {
 
@@ -82,5 +83,15 @@ public class UserAccountController extends Controller {
     // TODO Fix this method with PDP
     public boolean hasAccessOnPreferences(String id) {
         return true;
+    }
+
+    public Grants getGrantsForUser(String id) {
+        try {
+            return repositories.user().getGrants(id);
+        }
+        catch (EscidocClientException e) {
+            showError(e);
+        }
+        return null;
     }
 }
