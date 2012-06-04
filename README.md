@@ -1,7 +1,6 @@
 # eSciDoc Browser 
 
 The eSciDoc Browser is a Rich Internet Application that allows browsing of digital assets which are stored in an eSciDoc Core infrastructure. It also provides means to create and manipulate content resources.
-
 Step by step all functionality needed to administer eSciDoc Infrastructure will be included.
   
 ## Installation 
