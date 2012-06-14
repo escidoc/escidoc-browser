@@ -434,6 +434,8 @@ public class ViewConstants {
 
     public static final String PREFERENCES = "Preferences";
 
+    public static final String USER_ROLES = "User Roles";
+
     public static final String ATTRIBUTES = "Attributes";
 
     public static final String NO_INDEXES_DEFINED =

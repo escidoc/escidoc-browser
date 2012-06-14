@@ -1,6 +1,8 @@
 # eSciDoc Browser 
 
-The eSciDoc Browser is a Rich Internet Application that allows browsing of digital assets which are stored in an eSciDoc Core infrastructure. It also provides means to create and manipulate content resources.
+The eSciDoc Browser is a Rich Internet Application that allows browsing of 
+digital assets which are stored in an eSciDoc Core infrastructure. It also 
+provides means to create and manipulate content resources.
 Step by step all functionality needed to administer eSciDoc Infrastructure will be included.
   
 ## Installation 
@@ -10,12 +12,24 @@ Step by step all functionality needed to administer eSciDoc Infrastructure will 
 * Start the web container.
 
 ## Configuration
-There is no configuration file for the eSciDoc Browser. All configuration is done via eSciDoc Resources.
-Any functionality of the eSciDoc Browser is based on the eSciDoc Infrastructure. So, it must be connected to an eSciDoc Infrastructure for usage. 
+There is no configuration file for the eSciDoc Browser. All configuration is 
+done via eSciDoc Resources. Any functionality of the eSciDoc Browser is based 
+on the eSciDoc Infrastructure. So, it must be connected to an eSciDoc 
+Infrastructure for usage. 
 
-The eSciDoc Browser can be installed independently from an eSciDoc Infrastructure but an eSciDoc Infrastructure must be accessible via HTTP. Opening the eSciDoc Browser in a web-browser a text field will appear where the URL of an eSciDoc Infrastructure must be entered. Confirming the URL the eSciDoc Browser connects to the specified eSciDoc Infrastructure using the base-url that is configured for that eSciDoc Infrastructure. The URL can be given as URL parameter ''escidocurl'' when accessing the eSciDoc Browser. If so, the text field will not appear.
+The eSciDoc Browser can be installed independently from an eSciDoc 
+Infrastructure but an eSciDoc Infrastructure must be accessible via HTTP. 
+Opening the eSciDoc Browser in a web-browser a text field will appear where 
+the URL of an eSciDoc Infrastructure must be entered. Confirming the URL the 
+eSciDoc Browser connects to the specified eSciDoc Infrastructure using the 
+base-url that is configured for that eSciDoc Infrastructure. The URL can be 
+given as URL parameter ''escidocurl'' when accessing the eSciDoc Browser. If 
+so, the text field will not appear.
 
-Behavior and appearance of the eSciDoc Browser may be configured via Context and Content Model resources inside the eSciDoc Infrastructure. See [[#eSciDoc Content Models in eSciDoc Browser]] and [[#eSciDoc Contexts in eSciDoc Browser]].
+Behavior and appearance of the eSciDoc Browser may be configured via Context 
+and Content Model resources inside the eSciDoc Infrastructure. See 
+[[#eSciDoc Content Models in eSciDoc Browser]] and 
+[[#eSciDoc Contexts in eSciDoc Browser]].
 
 ## Official Wiki 
 More information can be found in the eSciDoc Browser Wiki:  https://www.escidoc.org/wiki/ESciDoc_Browser

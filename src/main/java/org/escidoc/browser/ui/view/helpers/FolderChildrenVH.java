@@ -31,9 +31,8 @@ package org.escidoc.browser.ui.view.helpers;
 import java.util.List;
 import java.util.Set;
 
-import org.escidoc.browser.controller.ContainerController;
+import org.escidoc.browser.controller.Controller;
 import org.escidoc.browser.controller.FolderController;
-import org.escidoc.browser.controller.ItemController;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceModelFactory;
 import org.escidoc.browser.model.ResourceType;
@@ -51,6 +50,7 @@ import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 
@@ -145,35 +145,35 @@ public class FolderChildrenVH extends TableContainerVH {
                 }
                 else {
                     String[] splitResult = table.getValue().toString().split("#");
-                    String resourceType = splitResult[1].substring(0, splitResult[1].length() - 1);
-                    System.out.println(resourceType + "=" + ResourceType.CONTAINER);
-                    String resourceId = splitResult[0].substring(1, splitResult[0].length());
-                    LOG.debug(splitResult[0] + resourceId);
+                    final String resourceType = splitResult[1].substring(0, splitResult[1].length() - 1);
+                    final String resourceId = splitResult[0].substring(1, splitResult[0].length());
 
-                    if (resourceType.equals(ResourceType.CONTAINER.toString())) {
-                        try {
-                            ContainerController newCont =
-                                new ContainerController(repository, folderController.getRouter(), repository
-                                    .container().findById(resourceId));
-                            folderController.getRouter().openControllerView(newCont, true);
-                        }
-                        catch (EscidocClientException e) {
-                            LOG.debug(ViewConstants.ERROR + e.getLocalizedMessage());
-                            e.printStackTrace();
-                        }
+                    try {
+                        final Controller controller = folderController.getRouter().buildController(new ResourceModel() {
+                            @Override
+                            public ResourceType getType() {
+                                return ResourceType.valueOf(resourceType);
+                            }
+
+                            @Override
+                            public String getName() {
+                                return resourceId.toString();
+                            }
+
+                            @Override
+                            public String getId() {
+                                return resourceId.toString();
+                            }
+                        });
+                        controller.showViewByReloading();
+
                     }
-                    else {
-                        try {
-                            ItemController newCont =
-                                new ItemController(repository, folderController.getRouter(), repository
-                                    .item().findById(resourceId));
-                            folderController.getRouter().openControllerView(newCont, true);
-                        }
-                        catch (EscidocClientException e) {
-                            LOG.debug(ViewConstants.ERROR + e.getLocalizedMessage());
-                            e.printStackTrace();
-                        }
+                    catch (EscidocClientException e1) {
+                        folderController
+                            .getRouter().getMainWindow()
+                            .showNotification(e1.getLocalizedMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
                     }
+
                 }
             }
         });

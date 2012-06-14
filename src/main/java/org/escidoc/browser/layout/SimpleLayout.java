@@ -28,20 +28,26 @@
  */
 package org.escidoc.browser.layout;
 
-import com.google.common.base.Preconditions;
+import java.net.URISyntaxException;
 
-import com.vaadin.data.Container.Filterable;
-import com.vaadin.data.util.filter.SimpleStringFilter;
-import com.vaadin.event.FieldEvents.TextChangeEvent;
-import com.vaadin.event.FieldEvents.TextChangeListener;
-import com.vaadin.terminal.Resource;
+import org.escidoc.browser.BrowserApplication;
+import org.escidoc.browser.model.EscidocServiceLocation;
+import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.TreeDataSource;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.mainpage.Footer;
+import org.escidoc.browser.ui.mainpage.HeaderContainer;
+import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
+import org.escidoc.browser.ui.navigation.NavigationTreeView;
+import org.escidoc.browser.ui.view.helpers.CloseTabsViewHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Preconditions;
 import com.vaadin.terminal.Sizeable;
-import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Accordion;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -49,34 +55,10 @@ import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Runo;
-
-import org.escidoc.browser.BrowserApplication;
-import org.escidoc.browser.model.EscidocServiceLocation;
-import org.escidoc.browser.model.PropertyId;
-import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.model.TreeDataSource;
-import org.escidoc.browser.model.internal.TreeDataSourceImpl;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.mainpage.Footer;
-import org.escidoc.browser.ui.mainpage.HeaderContainer;
-import org.escidoc.browser.ui.navigation.BaseNavigationTreeView;
-import org.escidoc.browser.ui.navigation.BaseTreeDataSource;
-import org.escidoc.browser.ui.navigation.NavigationTreeBuilder;
-import org.escidoc.browser.ui.navigation.NavigationTreeView;
-import org.escidoc.browser.ui.tools.ToolsTreeView;
-import org.escidoc.browser.ui.view.helpers.CloseTabsViewHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.net.URISyntaxException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -84,8 +66,6 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 public class SimpleLayout extends LayoutDesign {
 
     private final static Logger LOG = LoggerFactory.getLogger(SimpleLayout.class);
-
-    private Resource NO_ICON;
 
     private AbsoluteLayout mainLayout;
 
@@ -299,7 +279,8 @@ public class SimpleLayout extends LayoutDesign {
         container.setLocked(false);
 
         // navigationPanel
-        navigationPanel = buildNavigationPanel();
+        NavigationSimpleLayout navigationLayout = new NavigationSimpleLayout(this, navigationPanel, vlNavigationPanel);
+        navigationPanel = navigationLayout.buildNavigationPanel();
         container.addComponent(navigationPanel);
 
         // TabContainer
@@ -311,188 +292,6 @@ public class SimpleLayout extends LayoutDesign {
         container.addComponent(cssContent);
 
         return container;
-    }
-
-    private Panel buildNavigationPanel() throws EscidocClientException, UnsupportedOperationException,
-        URISyntaxException {
-        // common part: create layout
-        navigationPanel = new Panel();
-        navigationPanel.setImmediate(false);
-        navigationPanel.setWidth("100.0%");
-        navigationPanel.setHeight("100.0%");
-
-        // vlNavigationPanel
-        vlNavigationPanel = new VerticalLayout();
-        vlNavigationPanel.setImmediate(false);
-        vlNavigationPanel.setWidth("100.0%");
-        vlNavigationPanel.setHeight("100.0%");
-        vlNavigationPanel.setMargin(false);
-
-        // Binding the tree to the NavigationPanel
-        mainNavigationTree = addNavigationTree();
-        addAccordion();
-        navigationPanel.setContent(vlNavigationPanel);
-        return navigationPanel;
-    }
-
-    private void addAccordion() throws EscidocClientException, URISyntaxException {
-        final Accordion accordion = buildAccordion();
-
-        vlNavigationPanel.addComponent(accordion);
-        vlNavigationPanel.setExpandRatio(accordion, 1.0f);
-    }
-
-    private Accordion buildAccordion() throws EscidocClientException, URISyntaxException {
-        final Accordion accordion = new Accordion();
-        accordion.setSizeFull();
-        accordion.addListener(new OnNavigationTabChange());
-
-        addResourcesTab(accordion);
-        addOrgUnitTab(accordion);
-        addUserAccountsTab(accordion);
-        addGroupsTab(accordion);
-        addContentModelsTab(accordion);
-        addToolsTab(accordion);
-
-        return accordion;
-    }
-
-    private void addGroupsTab(Accordion accordion) throws EscidocClientException {
-        if (app.getCurrentUser().isGuest()) {
-            return;
-        }
-        BaseTreeDataSource groupDataSource = new BaseTreeDataSource(repositories.group());
-        groupDataSource.init();
-        accordion.addTab(buildGroupListWithFilter(treeBuilder.buildGroupTree(groupDataSource), groupDataSource),
-            ViewConstants.User_Groups, NO_ICON);
-    }
-
-    private Component buildGroupListWithFilter(final BaseNavigationTreeView list, final TreeDataSource ds) {
-        // TODO this is a temporary create button, it is to redesign.
-
-        VerticalLayout vl = new VerticalLayout();
-
-        CssLayout headerButton = newHeaderButton(ds);
-
-        VerticalLayout layout = new VerticalLayout();
-        layout.setMargin(true, false, false, true);
-        layout.setSpacing(true);
-
-        TextField filterField = new TextField();
-        filterField.setInputPrompt("Type something to filter the list");
-        filterField.setWidth("250px");
-        filterField.addListener(new TextChangeListener() {
-
-            private SimpleStringFilter filter;
-
-            @Override
-            public void textChange(TextChangeEvent event) {
-                // TODO refactor this, the list should not return the data
-                // source
-                Filterable ds = (Filterable) list.getDataSource();
-                ds.removeAllContainerFilters();
-                filter = new SimpleStringFilter(PropertyId.NAME, event.getText(), true, false);
-                ds.addContainerFilter(filter);
-            }
-        });
-
-        layout.addComponent(filterField);
-        layout.addComponent(list);
-
-        vl.addComponent(headerButton);
-        vl.addComponent(layout);
-        return vl;
-    }
-
-    private CssLayout newHeaderButton(final TreeDataSource ds) {
-        CssLayout cssLayout = new CssLayout();
-        cssLayout.setWidth("97%");
-        cssLayout.setMargin(false);
-
-        ThemeResource plusIcon = new ThemeResource("images/assets/plus.png");
-
-        final Button createGroupButton = new Button();
-        createGroupButton.setStyleName(BaseTheme.BUTTON_LINK);
-        createGroupButton.addStyleName("floatright paddingtop3");
-        createGroupButton.setWidth("20px");
-        createGroupButton.setIcon(plusIcon);
-        createGroupButton.addListener(new ClickListener() {
-
-            @Override
-            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
-                showCreateGroupView();
-            }
-
-            private void showCreateGroupView() {
-                mainWindow.addWindow(new CreateGroupView(repositories.group(), mainWindow, ds).modalWindow());
-            }
-
-        });
-        cssLayout.addComponent(createGroupButton);
-        return cssLayout;
-    }
-
-    private void addUserAccountsTab(Accordion accordion) {
-        if (app.getCurrentUser().isGuest()) {
-            return;
-        }
-
-        accordion.addTab(buildListWithFilter(treeBuilder.buildUserAccountTree()), ViewConstants.USER_ACCOUNTS, NO_ICON);
-    }
-
-    private void addContentModelsTab(Accordion accordion) {
-        accordion.addTab(buildListWithFilter(treeBuilder.buildContentModelTree()), ViewConstants.CONTENT_MODELS,
-            NO_ICON);
-    }
-
-    private VerticalLayout buildListWithFilter(final BaseNavigationTreeView list) {
-        VerticalLayout layout = new VerticalLayout();
-        layout.setMargin(true, false, false, true);
-
-        TextField filterField = new TextField();
-        filterField.setInputPrompt("Type something to filter the list");
-        filterField.setWidth("250px");
-        filterField.addListener(new TextChangeListener() {
-
-            private SimpleStringFilter filter;
-
-            @Override
-            public void textChange(TextChangeEvent event) {
-                // TODO refactor this, the list should not return the data
-                // source
-                Filterable ds = (Filterable) list.getDataSource();
-                ds.removeAllContainerFilters();
-                filter = new SimpleStringFilter(PropertyId.NAME, event.getText(), true, false);
-                ds.addContainerFilter(filter);
-            }
-        });
-
-        layout.addComponent(filterField);
-        layout.addComponent(list);
-        return layout;
-    }
-
-    private void addOrgUnitTab(final Accordion accordion) {
-        accordion.addTab(treeBuilder.buildOrgUnitTree(), ViewConstants.ORG_UNITS, NO_ICON);
-    }
-
-    private void addResourcesTab(final Accordion accordion) {
-        accordion.addTab(mainNavigationTree, ViewConstants.RESOURCES, NO_ICON);
-    }
-
-    private void addToolsTab(final Accordion accordion) throws EscidocClientException, URISyntaxException {
-        final ToolsTreeView toolsTreeView = new ToolsTreeView(router, repositories);
-        toolsTreeView.init();
-        Tab tab = accordion.addTab(toolsTreeView, ViewConstants.TOOLS, NO_ICON);
-        tab.setClosable(true);
-    }
-
-    private NavigationTreeView addNavigationTree() throws EscidocClientException {
-        treeDataSource = new TreeDataSourceImpl(repositories.context().findAllWithChildrenInfo());
-        treeDataSource.init();
-        setTreeDataSource(treeDataSource);
-        mainNavigationTree = treeBuilder.buildNavigationTree(treeDataSource);
-        return mainNavigationTree;
     }
 
     @SuppressWarnings("unused")
@@ -510,12 +309,24 @@ public class SimpleLayout extends LayoutDesign {
         return treeDataSource;
     }
 
-    void setTreeDataSource(final TreeDataSource treeDataSource) {
-        this.treeDataSource = treeDataSource;
-    }
-
     @Override
     public Component getViewContainer() {
         return mainContentTabs;
+    }
+
+    public BrowserApplication getApp() {
+        return app;
+    }
+
+    public Router getRouter() {
+        return router;
+    }
+
+    public NavigationTreeBuilder getTreeBuilder() {
+        return treeBuilder;
+    }
+
+    public NavigationTreeView getMainNavigationTree() {
+        return mainNavigationTree;
     }
 }

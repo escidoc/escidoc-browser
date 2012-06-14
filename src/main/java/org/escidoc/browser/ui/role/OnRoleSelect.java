@@ -28,21 +28,20 @@
  */
 package org.escidoc.browser.ui.role;
 
-import com.google.common.base.Preconditions;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.escidoc.browser.model.PropertyId;
+import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.repository.RoleRepository.RoleModel;
+
+import com.google.common.base.Preconditions;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.NativeSelect;
-
-import org.escidoc.browser.model.PropertyId;
-import org.escidoc.browser.model.ResourceType;
-import org.escidoc.browser.repository.RoleRepository.RoleModel;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import de.escidoc.core.resources.aa.role.ScopeDef;
 
