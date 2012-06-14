@@ -34,6 +34,7 @@ import com.vaadin.ui.Button;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.internal.ComponentBuilder;
 import org.escidoc.browser.model.internal.ItemBuilder;
 import org.escidoc.browser.repository.Repositories;
 import org.slf4j.Logger;
@@ -43,6 +44,7 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.reference.ContentModelRef;
 import de.escidoc.core.resources.common.reference.ContextRef;
 import de.escidoc.core.resources.om.item.Item;
+import de.escidoc.core.resources.om.item.StorageType;
 import de.escidoc.core.resources.om.item.component.Component;
 import de.escidoc.core.resources.om.item.component.Components;
 
@@ -61,15 +63,19 @@ public final class OnCreateItemWithComponents implements Button.ClickListener {
 
     private String contextId;
 
-    OnCreateItemWithComponents(Repositories repositories, ItemBuilderHelper helper) {
+    private ComponentListBuilderHelper clbh;
+
+    OnCreateItemWithComponents(Repositories repositories, ItemBuilderHelper helper, ComponentListBuilderHelper clbh) {
         Preconditions.checkNotNull(repositories, "repositories is null: %s", repositories);
         Preconditions.checkNotNull(helper, "helper is null: %s", helper);
+        Preconditions.checkNotNull(clbh, "clbh is null: %s", clbh);
         this.repositories = repositories;
 
         this.itemName = helper.getName();
         this.contentModelId = helper.getContentModelId();
         this.contextId = helper.getContextId();
         this.parent = helper.getParent();
+        this.clbh = clbh;
     }
 
     @Override
@@ -88,10 +94,17 @@ public final class OnCreateItemWithComponents implements Button.ClickListener {
             Item build =
                 new ItemBuilder(new ContextRef(getContextId()), new ContentModelRef(getContentModelId()), getMetadata())
                     .build(getResourceName());
-            // TODO pass the staged file.
+
             Components componentList = new Components();
+            // TODO set component properties.
             Component component = new Component();
             componentList.add(component);
+
+            // TODO for each uploaded files do
+            // TODO filename, type, url ==> hash
+            new ComponentBuilder(html5File.getFileName(), StorageType.INTERNAL_MANAGED)
+                .withMimeType(html5File.getType()).withContentUrl(contentUrl).build();
+
             build.setComponents(componentList);
             Item newItem = repositories.item().createWithParent(build, getParentId());
         }

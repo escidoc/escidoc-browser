@@ -178,10 +178,8 @@ public class DropableBox extends DragAndDropWrapper implements DropHandler {
         final Button createButton = buildCreateButton();
         formLayout.addComponent(createButton);
 
-        createButton
-            .addListener(new OnCreateItemWithComponents(repositories, new ItemBuilderHelper((String) nameField
-                .getValue(), DropableBox.this.parent.getContext().getObjid(), getContentModelId(),
-                DropableBox.this.parent)));
+        createButton.addListener(new OnCreateItemWithComponents(repositories, new ItemBuilderHelper((String) nameField
+            .getValue(), parent.getContext().getObjid(), getContentModelId(), parent)));
     }
 
     public String getContentModelId() {

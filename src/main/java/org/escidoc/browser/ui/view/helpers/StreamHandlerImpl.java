@@ -101,7 +101,6 @@ public class StreamHandlerImpl implements StreamVariable {
         this.pane = layout;
 
         this.repositories = repositories;
-
     }
 
     @Override

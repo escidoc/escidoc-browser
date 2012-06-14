@@ -400,6 +400,7 @@
     <developerConnection>scm:git://github.com/escidoc/escidoc-browser.git</developerConnection>
   </scm>
 
+  <!--
   <repositories>
     <repository>
       <id>org.escidoc.core</id>
@@ -417,6 +418,7 @@
       <url>http://maven.indexdata.com</url>
     </repository>
   </repositories>
+  -->
 
   <pluginRepositories>
     <pluginRepository>

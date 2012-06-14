@@ -3,7 +3,7 @@
  *
  * The contents of this file are subject to the terms of the
  * Common Development and Distribution License, Version 1.0 only
- * (the "License").  You may not use this file except in compliance
+ * (the "License"). You may not use this file except in compliance
  * with the License.
  *
  * You can obtain a copy of the license at license/ESCIDOC.LICENSE
@@ -21,46 +21,21 @@
  *
  *
  *
- * Copyright 2011 Fachinformationszentrum Karlsruhe Gesellschaft
+ * Copyright 2012 Fachinformationszentrum Karlsruhe Gesellschaft
  * fuer wissenschaftlich-technische Information mbH and Max-Planck-
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
- * All rights reserved.  Use is subject to license terms.
+ * All rights reserved. Use is subject to license terms.
  */
 package org.escidoc.browser.ui.view.helpers;
 
-import org.escidoc.browser.model.ResourceModel;
+import java.net.URL;
 
-public class ItemBuilderHelper {
+public class ComponentBuilderHelper {
 
-    private String name;
+    public String filename;
 
-    private String contextId;
+    public String type;
 
-    private String contentModelId;
-
-    private ResourceModel parent;
-
-    public ItemBuilderHelper(String name, String contextId, String contentModelId, ResourceModel parent) {
-        this.name = name;
-        this.contextId = contextId;
-        this.contentModelId = contentModelId;
-        this.parent = parent;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getContextId() {
-        return contextId;
-    }
-
-    public String getContentModelId() {
-        return contentModelId;
-    }
-
-    public ResourceModel getParent() {
-        return parent;
-    }
+    public URL contentUrl;
 
 }
