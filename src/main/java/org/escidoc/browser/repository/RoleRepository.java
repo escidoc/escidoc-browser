@@ -91,7 +91,7 @@ public class RoleRepository {
         }
 
         public List<ScopeDef> getScopeDefinitions() {
-            return role.getScope().getScopeDefinitions();
+            return ((Role) getResource()).getScope().getScopeDefinitions();
         }
 
         @Override

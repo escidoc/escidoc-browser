@@ -30,7 +30,6 @@ package org.escidoc.browser.ui.useraccount;
 
 import com.google.common.base.Preconditions;
 
-import com.vaadin.data.Container;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator.EmptyValueException;
@@ -64,6 +63,7 @@ import org.escidoc.browser.repository.internal.UserAccountRepository;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.View;
+import org.escidoc.browser.ui.role.OnRoleSelect;
 import org.escidoc.browser.ui.view.helpers.ResourcePropertiesVH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,6 +71,8 @@ import org.slf4j.LoggerFactory;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -537,35 +539,12 @@ public class UserAccountView extends View {
 
     private void bind(HorizontalLayout grantRow, Grant grant) throws EscidocClientException {
         bindRoleName(grantRow, grant);
-        bindResourceType(grantRow, grant);
-        bindAssignedResource(grantRow, grant);
-    }
-
-    private void bindAssignedResource(HorizontalLayout grantRow, Grant grant) {
-        // TODO
-    }
-
-    private void bindResourceType(HorizontalLayout grantRow, Grant grant) {
-        NativeSelect resourceType = (NativeSelect) grantRow.getComponent(1);
-        resourceType.setImmediate(true);
-
-        resourceType.setMultiSelect(false);
-        resourceType.setContainerDataSource(buildResourceTypeDataSource());
-        resourceType.setItemCaptionPropertyId(PropertyId.NAME);
-
-        // TODO set setSeleted
-        ResourceModel roleName = new RoleModel(grant);
-        resourceType.setValue(roleName);
-    }
-
-    private Container buildResourceTypeDataSource() {
-        // TODO get selected role Name, base on it generate possible resource type
-        BeanItemContainer dataSource = new BeanItemContainer<ResourceModel>(ResourceModel.class);
-        return dataSource;
+        // TODO refactor existing methods to here.
+        // bindResourceType(grantRow, grant);
+        // bindAssignedResource(grantRow, grant);
     }
 
     private void bindRoleName(HorizontalLayout grantRow, final Grant grant) throws EscidocClientException {
-        // TODO bind role name selection
         NativeSelect roleNameSelect = (NativeSelect) grantRow.getComponent(0);
 
         roleNameSelect.setContainerDataSource(buildRoleNameDataSource());
@@ -573,8 +552,7 @@ public class UserAccountView extends View {
 
         LOG.debug("grant: " + grant.getXLinkTitle());
 
-        // TODO set setSeleted
-
+        // FIXME this causes a bad performance
         Collection<?> collection = roleNameSelect.getContainerDataSource().getItemIds();
         for (Object object : collection) {
             ResourceModel rm = (ResourceModel) object;
@@ -583,6 +561,78 @@ public class UserAccountView extends View {
             }
         }
 
+        bindResourceType(grantRow, (RoleModel) roleNameSelect.getValue(), grant);
+    }
+
+    private void bindResourceType(HorizontalLayout grantRow, RoleModel value, Grant grant)
+        throws EscidocClientException {
+        List<ScopeDef> scopeDefinitions = OnRoleSelect.getScopeDefinitions(value);
+        final List<ResourceType> resourceTypeList = new ArrayList<ResourceType>();
+        for (ScopeDef scopeDef : scopeDefinitions) {
+            final ResourceType resourceType = ResourceType.convert(scopeDef.getRelationAttributeObjectType());
+            if (resourceType != null && !resourceType.equals(ResourceType.COMPONENT)) {
+                LOG.debug("foo: " + resourceType);
+                resourceTypeList.add(resourceType);
+            }
+        }
+
+        NativeSelect type = (NativeSelect) grantRow.getComponent(1);
+        final BeanItemContainer<ResourceType> dataSource =
+            new BeanItemContainer<ResourceType>(ResourceType.class, resourceTypeList);
+        type.setContainerDataSource(dataSource);
+        type.setItemCaptionPropertyId(PropertyId.NAME);
+
+        if (dataSource.size() > 0) {
+            ResourceType rt = dataSource.getIdByIndex(0);
+            type.setValue(rt);
+
+            NativeSelect assignOnSelect = (NativeSelect) grantRow.getComponent(2);
+            if (assignOnSelect != null) {
+                loadData(assignOnSelect, rt);
+                Collection<?> list = assignOnSelect.getContainerDataSource().getItemIds();
+                for (Object object : list) {
+                    ResourceModel rm = (ResourceModel) object;
+
+                    if (rm.getName().equalsIgnoreCase(grant.getProperties().getAssignedOn().getXLinkTitle())) {
+                        assignOnSelect.select(rm);
+                    }
+                }
+            }
+        }
+    }
+
+    private void loadData(NativeSelect assignedOn, ResourceType type) throws UnsupportedOperationException,
+        EscidocClientException {
+        final BeanItemContainer<ResourceModel> dataSource = newContainer();
+        for (final ResourceModel rm : findAll(type)) {
+            dataSource.addItem(rm);
+        }
+        configureList(assignedOn, dataSource);
+    }
+
+    private static void configureList(NativeSelect assignedOn, final BeanItemContainer<ResourceModel> container) {
+        assignedOn.setContainerDataSource(container);
+        assignedOn.setItemCaptionPropertyId(PropertyId.NAME);
+    }
+
+    private static BeanItemContainer<ResourceModel> newContainer() {
+        return new BeanItemContainer<ResourceModel>(ResourceModel.class);
+    }
+
+    private List<ResourceModel> findAll(ResourceType type) throws EscidocClientException {
+        List<ResourceModel> list = repositories.findByType(type).findAll();
+        Collections.sort(list, new Comparator<ResourceModel>() {
+
+            @Override
+            public int compare(ResourceModel o1, ResourceModel o2) {
+                ResourceModel p1 = o1;
+                ResourceModel p2 = o2;
+                return p1.getName().compareToIgnoreCase(p2.getName());
+            }
+
+        });
+
+        return list;
     }
 
     private BeanItemContainer<ResourceModel> roleNameDataSource;
@@ -604,8 +654,8 @@ public class UserAccountView extends View {
     private static HorizontalLayout buildGrantRowView() {
         HorizontalLayout grantLayout = new HorizontalLayout();
         grantLayout.setSpacing(true);
-        grantLayout.setSizeFull();
-        grantLayout.setMargin(true);
+        // grantLayout.setSizeFull();
+        // grantLayout.setMargin(true);
 
         NativeSelect roleNameSelect = new NativeSelect();
         roleNameSelect.setMultiSelect(false);
