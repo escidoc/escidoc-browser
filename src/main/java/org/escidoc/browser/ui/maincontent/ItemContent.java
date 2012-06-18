@@ -120,7 +120,7 @@ public class ItemContent extends VerticalLayout {
 
         verticalLayout.addComponent(cssLayout);
         wrap(verticalLayout);
-        if (hasComponents()) {
+        if (controller.hasComponents()) {
             verticalLayout.addComponent(buildTable());
         }
         else {
@@ -179,10 +179,6 @@ public class ItemContent extends VerticalLayout {
         mainWindow.showNotification(new Window.Notification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE));
     }
 
-    private boolean hasComponents() {
-        return itemProxy.hasComponents().booleanValue();
-    }
-
     private ItemComponentsView buildTable() {
         table = new ItemComponentsView(itemProxy.getElements(), controller, router, itemProxy);
         table.buildTable();
@@ -191,7 +187,7 @@ public class ItemContent extends VerticalLayout {
 
     public void updateView(final ItemProxyImpl itemProxy) {
         this.itemProxy = itemProxy;
-        if (hasComponents()) {
+        if (controller.hasComponents()) {
             rebuildFilesTable();
         }
     }

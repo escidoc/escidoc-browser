@@ -5,7 +5,7 @@ import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.listeners.ExampleUtil;
+import org.escidoc.browser.ui.listeners.SaveWikiItemContent;
 import org.escidoc.browser.ui.maincontent.View;
 
 import com.google.common.base.Preconditions;
@@ -19,9 +19,12 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
+
+import de.escidoc.core.resources.common.MetadataRecord;
 
 public class WikiPageView extends View {
 
@@ -30,6 +33,18 @@ public class WikiPageView extends View {
     private ResourceProxy resourceProxy;
 
     private WikiPageController controller;
+
+    private Label wikiContent;
+
+    private TextArea txtWikiContent;
+
+    private Button saveContent;
+
+    private VerticalLayout vlContentPanel;
+
+    private Button edit;
+
+    private MetadataRecord md;
 
     public WikiPageView(Router router, ResourceProxy resourceProxy, WikiPageController wikiPageController) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
@@ -47,7 +62,6 @@ public class WikiPageView extends View {
         this.setImmediate(false);
         this.setWidth("100.0%");
         this.setHeight("100.0%");
-        // this.setStyleName(Runo.PANEL_LIGHT);
         this.setCaption("Wiki Page View");
 
         // vlContentPanel assign a layout to this panel
@@ -57,7 +71,7 @@ public class WikiPageView extends View {
 
     private VerticalLayout buildVlContentPanel() {
         // common part: create layout
-        VerticalLayout vlContentPanel = new VerticalLayout();
+        vlContentPanel = new VerticalLayout();
         vlContentPanel.setImmediate(false);
         vlContentPanel.setWidth("100.0%");
         vlContentPanel.setHeight("100.0%");
@@ -107,9 +121,26 @@ public class WikiPageView extends View {
     }
 
     private void buildContentSection(VerticalLayout vlContentPanel) {
-        Label text = new Label(ExampleUtil.lorem, Label.CONTENT_XHTML);
-        text.setWidth("100%");
-        vlContentPanel.addComponent(text);
+        String content;
+        // controller.getWikiPageContent();
+
+        String[] arrayContent = controller.getWikiPageContent();
+        String title = arrayContent[0];
+        content = arrayContent[1];
+        // Document doc = Creole.parse("** Some wiki markup **");
+        wikiContent = new Label("<h1>" + title + "</h1><br />" + content, Label.CONTENT_XHTML);
+
+        wikiContent.setWidth("100%");
+        wikiContent.setHeight("400px");
+        // Invisible resources
+        txtWikiContent = new TextArea("Wiki Content", "=" + title + "=\n\r" + content);
+        txtWikiContent.setWidth("100%");
+        txtWikiContent.setHeight("400px");
+        saveContent = new Button("Save", new SaveWikiItemContent(resourceProxy, controller, txtWikiContent));
+
+        vlContentPanel.addComponent(wikiContent);
+        vlContentPanel.addComponent(saveContent);
+        saveContent.setVisible(false);
 
     }
 
@@ -125,14 +156,16 @@ public class WikiPageView extends View {
         Label lblGeneralInfo =
             new Label("ID: " + resourceProxy.getId() + " " + "Modified on " + resourceProxy.getModifiedOn());
         hl.addComponent(lblGeneralInfo);
-        hl.setExpandRatio(lblGeneralInfo, 0.7f);
+
         HorizontalLayout mainOperationIcons = buildMainOperationIconsLayout();
         hl.addComponent(mainOperationIcons);
-        hl.setExpandRatio(mainOperationIcons, 0.3f);
-        hl.setComponentAlignment(mainOperationIcons, Alignment.MIDDLE_RIGHT);
+
+        hl.setComponentAlignment(mainOperationIcons, Alignment.TOP_RIGHT);
+        hl.setHeight("20px");
 
         HorizontalLayout horizontalRuler = new HorizontalLayout();
         horizontalRuler.setWidth("100%");
+        horizontalRuler.setHeight("9px");
         horizontalRuler.addComponent(new Label("<hr>", Label.CONTENT_RAW));
 
         vlContentPanel.addComponent(hl);
@@ -155,17 +188,17 @@ public class WikiPageView extends View {
     }
 
     private Button showEdit(final ResourceModel child) {
-        Button edit = new Button();
+        edit = new Button();
         edit.setStyleName(BaseTheme.BUTTON_LINK);
         edit.setDescription("Edit");
         edit.setIcon(new ThemeResource("images/wpzoom/pencil.png"));
         edit.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                controller
-                    .getRouter().getMainWindow()
-                    .showNotification("Not yet Implemented " + child.getId(), Notification.TYPE_HUMANIZED_MESSAGE);
-
+                // Reswap Label Header + Label Content + Disable Edit Button
+                vlContentPanel.replaceComponent(wikiContent, txtWikiContent);
+                saveContent.setVisible(true);
+                edit.setEnabled(false);
             }
         });
         return edit;
