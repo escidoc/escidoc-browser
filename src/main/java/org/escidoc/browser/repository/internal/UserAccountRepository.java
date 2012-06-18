@@ -226,6 +226,12 @@ public class UserAccountRepository implements Repository {
         return this;
     }
 
+    public UserAccountRepository assign(String userID) throws EscidocClientException {
+        UserAccount userAccount = client.retrieve(userID);
+        this.user = new UserModel(userAccount);
+        return this;
+    }
+
     public UserAccountRepository withRole(RoleModel role) {
         Preconditions.checkNotNull(role, "role is null: %s", role);
         Preconditions.checkNotNull(user, "user is null: %s", user);
@@ -271,5 +277,15 @@ public class UserAccountRepository implements Repository {
 
     public Grants getGrants(String userId) throws EscidocClientException {
         return client.retrieveCurrentGrants(userId);
+    }
+
+    public void revokeGrant(String userId, Grant grant) throws EscidocClientException {
+        final TaskParam tp = new TaskParam();
+        tp.setLastModificationDate(grant.getLastModificationDate());
+        client.revokeGrant(userId, grant.getObjid(), tp);
+    }
+
+    void updateGrant() {
+        throw new UnsupportedOperationException("not-yet-implemented.");
     }
 }
