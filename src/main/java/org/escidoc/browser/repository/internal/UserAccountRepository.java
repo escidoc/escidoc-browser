@@ -272,4 +272,10 @@ public class UserAccountRepository implements Repository {
     public Grants getGrants(String userId) throws EscidocClientException {
         return client.retrieveCurrentGrants(userId);
     }
+
+    public void revokeGrant(String userId, Grant grant) throws EscidocClientException {
+        final TaskParam tp = new TaskParam();
+        tp.setLastModificationDate(grant.getLastModificationDate());
+        client.revokeGrant(userId, grant.getObjid(), tp);
+    }
 }

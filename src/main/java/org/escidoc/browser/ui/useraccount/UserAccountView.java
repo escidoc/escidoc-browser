@@ -38,6 +38,7 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
@@ -49,6 +50,7 @@ import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Runo;
 
 import org.escidoc.browser.controller.UserAccountController;
@@ -84,6 +86,7 @@ import de.escidoc.core.resources.common.reference.Reference;
 
 @SuppressWarnings("serial")
 public class UserAccountView extends View {
+
     Router router;
 
     UserProxy userProxy;
@@ -122,6 +125,62 @@ public class UserAccountView extends View {
         Panel contentPanel = createContentPanel();
         contentPanel.setContent(buildVlContentPanel());
         setContent(contentPanel);
+    }
+
+    private static final class OnRemoveGrant implements Button.ClickListener {
+
+        private Grant grant;
+
+        private UserProxy userProxy;
+
+        private Repositories repos;
+
+        private Window mainWindow;
+
+        public OnRemoveGrant(Grant grant, UserProxy userProxy, Repositories repos, Window mainWindow) {
+            Preconditions.checkNotNull(grant, "grant is null: %s", grant);
+            Preconditions.checkNotNull(userProxy, "userProxy is null: %s", userProxy);
+            Preconditions.checkNotNull(repos, "repo is null: %s", repos);
+            Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
+
+            this.grant = grant;
+            this.repos = repos;
+            this.userProxy = userProxy;
+            this.mainWindow = mainWindow;
+        }
+
+        @Override
+        public void buttonClick(final ClickEvent event) {
+            try {
+                revokeGrantInServer();
+                updateView(event);
+                showSuccessMessage();
+            }
+            catch (EscidocClientException e) {
+                showErrorMessage(e);
+            }
+        }
+
+        private void showErrorMessage(EscidocClientException e) {
+            mainWindow.showNotification("Error Message", "Something wrong happens. Cause: " + e.getMessage(),
+                Notification.TYPE_ERROR_MESSAGE);
+        }
+
+        private void showSuccessMessage() {
+            mainWindow.showNotification("",
+                "Sucessfully revoke " + grant.getXLinkTitle() + " from " + userProxy.getName(),
+                Notification.TYPE_TRAY_NOTIFICATION);
+        }
+
+        private void revokeGrantInServer() throws EscidocClientException {
+            repos.user().revokeGrant(userProxy.getId(), grant);
+        }
+
+        private static void updateView(final ClickEvent event) {
+            LOG.debug("clicked: " + event.getButton().getData());
+            VerticalLayout component = (VerticalLayout) event.getButton().getParent().getParent();
+            component.removeComponent(event.getButton().getParent());
+        }
     }
 
     private final class OnAddAttribute implements ClickListener {
@@ -479,6 +538,7 @@ public class UserAccountView extends View {
      * 
      * @throws EscidocClientException
      * */
+    // TODO refactor this to another class
     private Panel buildRolesView() throws EscidocClientException {
         // TODO CRUD View for User's Roles.
         // TODO Retrieve: Show all user's role
@@ -493,6 +553,7 @@ public class UserAccountView extends View {
         // TODO Update: Edit existing role for the selected user. Change Role, Scope, Resource, etc
         // TODO Remove: Remove existing role from the selected user.
 
+        // TODO pdp request???
         final Panel rolesPanel = new Panel(ViewConstants.USER_ROLES);
         rolesPanel.setCaption("Roles Panel");
 
@@ -503,12 +564,13 @@ public class UserAccountView extends View {
         return rolesPanel;
     }
 
-    private void listRolesForUser(ComponentContainer gML) throws EscidocClientException {
+    private void listRolesForUser(ComponentContainer grantListLayout) throws EscidocClientException {
         Grants currentGrants = uac.getGrantsForUser(userProxy.getId());
 
         int grantsSize = currentGrants.size();
         LOG.debug("The user has currently #" + grantsSize + " grants");
 
+        int rowNumber = 0;
         for (Grant grant : currentGrants) {
 
             String roleName = grant.getProperties().getRole().getXLinkTitle();
@@ -531,9 +593,13 @@ public class UserAccountView extends View {
             }
             LOG.debug(builder.toString());
 
-            HorizontalLayout grantRow = buildGrantRowView();
+            HorizontalLayout grantRow = buildGrantRowView(rowNumber, grant);
+            grantRow.setData(Integer.valueOf(rowNumber));
+            rowNumber++;
+
             bind(grantRow, grant);
-            gML.addComponent(grantRow);
+            grantListLayout.addComponent(grantRow);
+            grantListLayout.getComponentIterator();
         }
     }
 
@@ -651,7 +717,7 @@ public class UserAccountView extends View {
         return roleNameDataSource;
     }
 
-    private static HorizontalLayout buildGrantRowView() {
+    private HorizontalLayout buildGrantRowView(int rowNumber, Grant grant) {
         HorizontalLayout grantLayout = new HorizontalLayout();
         grantLayout.setSpacing(true);
         // grantLayout.setSizeFull();
@@ -669,14 +735,21 @@ public class UserAccountView extends View {
         NativeSelect assignedOnResourceNameAndId = new NativeSelect();
         assignedOnResourceNameAndId.setNullSelectionAllowed(false);
 
-        Button removeButton = new Button("-");
-        removeButton.setStyleName("small");
+        Button removeButton = buildRemoveButton(rowNumber, grant);
 
         grantLayout.addComponent(assignedOnResourceType);
         grantLayout.addComponent(assignedOnResourceNameAndId);
         grantLayout.addComponent(removeButton);
 
         return grantLayout;
+    }
+
+    private Button buildRemoveButton(int rowNumber, Grant grant) {
+        Button removeButton = new Button("-");
+        removeButton.setStyleName("small");
+        removeButton.setData(Integer.valueOf(rowNumber));
+        removeButton.addListener(new OnRemoveGrant(grant, userProxy, repositories, router.getMainWindow()));
+        return removeButton;
     }
 
     private void populateRolesSelect(HorizontalLayout hl, NativeSelect grantsSelect, final NativeSelect scopeSelect) {
