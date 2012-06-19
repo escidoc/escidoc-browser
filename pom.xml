@@ -83,11 +83,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.admc</groupId>
-			<artifactId>jcreole</artifactId>
-			<version>1.1.2</version>
-		</dependency>
-		<dependency>
 			<groupId>cylon</groupId>
 			<artifactId>cylon</artifactId>
 			<version>0.10</version>
