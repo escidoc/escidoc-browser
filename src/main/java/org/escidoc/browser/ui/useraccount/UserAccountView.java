@@ -44,6 +44,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.PasswordField;
@@ -81,7 +82,6 @@ import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.aa.role.ScopeDef;
 import de.escidoc.core.resources.aa.useraccount.Attribute;
 import de.escidoc.core.resources.aa.useraccount.Grant;
-import de.escidoc.core.resources.aa.useraccount.Grants;
 import de.escidoc.core.resources.common.reference.Reference;
 
 @SuppressWarnings("serial")
@@ -177,7 +177,6 @@ public class UserAccountView extends View {
         }
 
         private static void updateView(final ClickEvent event) {
-            LOG.debug("clicked: " + event.getButton().getData());
             VerticalLayout component = (VerticalLayout) event.getButton().getParent().getParent();
             component.removeComponent(event.getButton().getParent());
         }
@@ -565,13 +564,14 @@ public class UserAccountView extends View {
     }
 
     private void listRolesForUser(ComponentContainer grantListLayout) throws EscidocClientException {
-        Grants currentGrants = uac.getGrantsForUser(userProxy.getId());
+        grantListLayout.removeAllComponents();
 
-        int grantsSize = currentGrants.size();
-        LOG.debug("The user has currently #" + grantsSize + " grants");
+        if (uac.getGrantsForUser(userProxy.getId()).size() == 0) {
+            grantListLayout.addComponent(new Label("The user has no assigned roles."));
+        }
 
         int rowNumber = 0;
-        for (Grant grant : currentGrants) {
+        for (Grant grant : uac.getGrantsForUser(userProxy.getId())) {
 
             String roleName = grant.getProperties().getRole().getXLinkTitle();
 
@@ -591,7 +591,6 @@ public class UserAccountView extends View {
                 builder.append(id);
                 builder.append(") ");
             }
-            LOG.debug(builder.toString());
 
             HorizontalLayout grantRow = buildGrantRowView(rowNumber, grant);
             grantRow.setData(Integer.valueOf(rowNumber));
@@ -599,7 +598,6 @@ public class UserAccountView extends View {
 
             bind(grantRow, grant);
             grantListLayout.addComponent(grantRow);
-            grantListLayout.getComponentIterator();
         }
     }
 
@@ -612,16 +610,17 @@ public class UserAccountView extends View {
 
     private void bindRoleName(HorizontalLayout grantRow, final Grant grant) throws EscidocClientException {
         NativeSelect roleNameSelect = (NativeSelect) grantRow.getComponent(0);
-
         roleNameSelect.setContainerDataSource(buildRoleNameDataSource());
         roleNameSelect.setItemCaptionPropertyId(PropertyId.NAME);
 
-        LOG.debug("grant: " + grant.getXLinkTitle());
-
-        // FIXME this causes a bad performance
+        // // FIXME this causes a bad performance
         Collection<?> collection = roleNameSelect.getContainerDataSource().getItemIds();
         for (Object object : collection) {
             ResourceModel rm = (ResourceModel) object;
+            if (grant.getProperties() == null || grant.getProperties().getRole() == null
+                || grant.getProperties().getRole().getXLinkTitle() == null) {
+                return;
+            }
             if (rm.getName().equalsIgnoreCase(grant.getProperties().getRole().getXLinkTitle())) {
                 roleNameSelect.setValue(rm);
             }
@@ -632,39 +631,43 @@ public class UserAccountView extends View {
 
     private void bindResourceType(HorizontalLayout grantRow, RoleModel value, Grant grant)
         throws EscidocClientException {
-        List<ScopeDef> scopeDefinitions = OnRoleSelect.getScopeDefinitions(value);
-        final List<ResourceType> resourceTypeList = new ArrayList<ResourceType>();
-        for (ScopeDef scopeDef : scopeDefinitions) {
-            final ResourceType resourceType = ResourceType.convert(scopeDef.getRelationAttributeObjectType());
-            if (resourceType != null && !resourceType.equals(ResourceType.COMPONENT)) {
-                LOG.debug("foo: " + resourceType);
-                resourceTypeList.add(resourceType);
-            }
-        }
 
-        NativeSelect type = (NativeSelect) grantRow.getComponent(1);
+        final List<ResourceType> resourceTypeList = buildScopeDefinitions(value);
+
+        NativeSelect resourceTypeSelect = (NativeSelect) grantRow.getComponent(1);
         final BeanItemContainer<ResourceType> dataSource =
             new BeanItemContainer<ResourceType>(ResourceType.class, resourceTypeList);
-        type.setContainerDataSource(dataSource);
-        type.setItemCaptionPropertyId(PropertyId.NAME);
+        resourceTypeSelect.setContainerDataSource(dataSource);
+        resourceTypeSelect.setItemCaptionPropertyId(PropertyId.NAME);
 
-        if (dataSource.size() > 0) {
-            ResourceType rt = dataSource.getIdByIndex(0);
-            type.setValue(rt);
+        // TODO refactor this
+        if (dataSource.size() > 0 && (NativeSelect) grantRow.getComponent(2) != null) {
+            resourceTypeSelect.setValue(dataSource.getIdByIndex(0));
 
-            NativeSelect assignOnSelect = (NativeSelect) grantRow.getComponent(2);
-            if (assignOnSelect != null) {
-                loadData(assignOnSelect, rt);
-                Collection<?> list = assignOnSelect.getContainerDataSource().getItemIds();
-                for (Object object : list) {
-                    ResourceModel rm = (ResourceModel) object;
+            loadData((NativeSelect) grantRow.getComponent(2), dataSource.getIdByIndex(0));
 
-                    if (rm.getName().equalsIgnoreCase(grant.getProperties().getAssignedOn().getXLinkTitle())) {
-                        assignOnSelect.select(rm);
-                    }
+            for (Object object : ((NativeSelect) grantRow.getComponent(2)).getContainerDataSource().getItemIds()) {
+                Reference assignedOn = grant.getProperties().getAssignedOn();
+                if (assignedOn != null && getRoleName(object).equalsIgnoreCase(assignedOn.getXLinkTitle())) {
+                    ((NativeSelect) grantRow.getComponent(2)).select(object);
                 }
             }
         }
+    }
+
+    private static String getRoleName(Object object) {
+        return ((ResourceModel) object).getName();
+    }
+
+    private static List<ResourceType> buildScopeDefinitions(RoleModel value) {
+        final List<ResourceType> resourceTypeList = new ArrayList<ResourceType>();
+        for (ScopeDef scopeDef : OnRoleSelect.getScopeDefinitions(value)) {
+            final ResourceType resourceType = ResourceType.convert(scopeDef.getRelationAttributeObjectType());
+            if (resourceType != null && !resourceType.equals(ResourceType.COMPONENT)) {
+                resourceTypeList.add(resourceType);
+            }
+        }
+        return resourceTypeList;
     }
 
     private void loadData(NativeSelect assignedOn, ResourceType type) throws UnsupportedOperationException,
