@@ -7,6 +7,8 @@ import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.SaveWikiItemContent;
 import org.escidoc.browser.ui.maincontent.View;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.data.Item;
@@ -29,6 +31,8 @@ import de.escidoc.core.resources.common.MetadataRecord;
 public class WikiPageView extends View {
 
     private Router router;
+
+    private static final Logger LOG = LoggerFactory.getLogger(WikiPageView.class);
 
     private ResourceProxy resourceProxy;
 
@@ -127,7 +131,9 @@ public class WikiPageView extends View {
         String[] arrayContent = controller.getWikiPageContent();
         String title = arrayContent[0];
         content = arrayContent[1];
-        // Document doc = Creole.parse("** Some wiki markup **");
+
+        content = controller.parseCreole(content);
+
         wikiContent = new Label("<h1>" + title + "</h1><br />" + content, Label.CONTENT_XHTML);
 
         wikiContent.setWidth("100%");

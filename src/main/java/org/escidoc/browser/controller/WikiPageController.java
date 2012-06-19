@@ -18,6 +18,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import cylon.creole.CreoleParser;
+import cylon.creole.DefaultCreoleParser;
+import cylon.html.HtmlRenderer;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.om.item.Item;
@@ -64,7 +67,7 @@ public class WikiPageController extends ItemController {
      */
     public String[] getWikiPageContent() {
         if (hasWikiContent()) {
-            String[] wikiContent = {};
+            String[] wikiContent = new String[2];
             getWikiElements(wikiContent);
             return wikiContent;
         }
@@ -95,7 +98,7 @@ public class WikiPageController extends ItemController {
                 if ("title".equals(nodeName) && URI_DC.equals(nsUri)) {
                     wikiContent[0] = node.getTextContent();
                 }
-                else if ("description".equals(nodeName) && URI_DC.equals(nsUri)) {
+                if ("description".equals(nodeName) && URI_DC.equals(nsUri)) {
                     wikiContent[1] = node.getTextContent();
                 }
             }
@@ -167,7 +170,33 @@ public class WikiPageController extends ItemController {
         return null;
     }
 
-    public void getWikiElements() {
+    public String parseCreole(String content) {
+        // Parsing with JCreole
+        // try {
+        // CreoleParser parser = new CreoleParser();
+        // parser.setPrivileges(EnumSet
+        // .of(JCreolePrivilege.ENUMFORMAT, JCreolePrivilege.TOC, JCreolePrivilege.RAWHTML));
+        // /*
+        // * Replace the statement above with something like this to test privileges: parser.setPrivileges(EnumSet.of(
+        // * JCreolePrivilege.ENUMFORMATS, JCreolePrivilege.TOC, JCreolePrivilege.RAWHTML,
+        // * JCreolePrivilege.STYLESHEET, JCreolePrivilege.JCXBLOCK, JCreolePrivilege.JCXSPAN, JCreolePrivilege.STYLER
+        // * ));
+        // */
+        //
+        // Object retVal = parser.parse(CreoleScanner.newCreoleScanner(new StringBuilder(content), false, null));
+        // content = retVal.toString();
+        // }
+        // catch (Exception e) {
+        // LOG.debug("Error Parsing " + e.getLocalizedMessage());
+        // }
+        // return content;
+
+        CreoleParser parser = new DefaultCreoleParser();
+        cylon.dom.Document document = parser.document(content);
+        HtmlRenderer renderer = new HtmlRenderer(true);
+        document.accept(renderer);
+        System.out.println(renderer.getResult());
+        return renderer.getResult();
 
     }
 
