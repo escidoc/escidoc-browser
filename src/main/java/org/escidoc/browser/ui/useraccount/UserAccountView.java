@@ -28,17 +28,28 @@
  */
 package org.escidoc.browser.ui.useraccount;
 
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.data.Validator.EmptyValueException;
+import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Form;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.PasswordField;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.themes.Runo;
 
 import org.escidoc.browser.controller.UserAccountController;
-import org.escidoc.browser.model.PropertyId;
-import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.internal.UserProxy;
 import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.repository.RoleRepository.RoleModel;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.repository.internal.UserAccountRepository;
 import org.escidoc.browser.ui.Router;
@@ -48,36 +59,15 @@ import org.escidoc.browser.ui.view.helpers.ResourcePropertiesVH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.data.Validator.EmptyValueException;
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Form;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.NativeSelect;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.PasswordField;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Runo;
+import java.net.URISyntaxException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
-import de.escidoc.core.resources.aa.role.ScopeDef;
 import de.escidoc.core.resources.aa.useraccount.Attribute;
 import de.escidoc.core.resources.aa.useraccount.Grant;
-import de.escidoc.core.resources.aa.useraccount.Grants;
 
 @SuppressWarnings("serial")
 public class UserAccountView extends View {
+
     Router router;
 
     UserProxy userProxy;
@@ -118,6 +108,61 @@ public class UserAccountView extends View {
         setContent(contentPanel);
     }
 
+    private static final class OnRemoveGrant implements Button.ClickListener {
+
+        private Grant grant;
+
+        private UserProxy userProxy;
+
+        private Repositories repos;
+
+        private Window mainWindow;
+
+        public OnRemoveGrant(Grant grant, UserProxy userProxy, Repositories repos, Window mainWindow) {
+            Preconditions.checkNotNull(grant, "grant is null: %s", grant);
+            Preconditions.checkNotNull(userProxy, "userProxy is null: %s", userProxy);
+            Preconditions.checkNotNull(repos, "repo is null: %s", repos);
+            Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
+
+            this.grant = grant;
+            this.repos = repos;
+            this.userProxy = userProxy;
+            this.mainWindow = mainWindow;
+        }
+
+        @Override
+        public void buttonClick(final ClickEvent event) {
+            try {
+                revokeGrantInServer();
+                updateView(event);
+                showSuccessMessage();
+            }
+            catch (EscidocClientException e) {
+                showErrorMessage(e);
+            }
+        }
+
+        private void showErrorMessage(EscidocClientException e) {
+            mainWindow.showNotification("Error Message", "Something wrong happens. Cause: " + e.getMessage(),
+                Notification.TYPE_ERROR_MESSAGE);
+        }
+
+        private void showSuccessMessage() {
+            mainWindow.showNotification("",
+                "Sucessfully revoke " + grant.getXLinkTitle() + " from " + userProxy.getName(),
+                Notification.TYPE_TRAY_NOTIFICATION);
+        }
+
+        private void revokeGrantInServer() throws EscidocClientException {
+            repos.user().revokeGrant(userProxy.getId(), grant);
+        }
+
+        private static void updateView(final ClickEvent event) {
+            VerticalLayout component = (VerticalLayout) event.getButton().getParent().getParent();
+            component.removeComponent(event.getButton().getParent());
+        }
+    }
+
     private final class OnAddAttribute implements ClickListener {
 
         private final Button addAttributeButton;
@@ -130,8 +175,7 @@ public class UserAccountView extends View {
         }
 
         @Override
-        public void buttonClick(@SuppressWarnings("unused")
-        final com.vaadin.ui.Button.ClickEvent event) {
+        public void buttonClick(@SuppressWarnings("unused") final com.vaadin.ui.Button.ClickEvent event) {
             addAttributeButton.setEnabled(false);
             final HorizontalLayout hl = new HorizontalLayout();
             final TextField key = new TextField();
@@ -154,8 +198,7 @@ public class UserAccountView extends View {
             btnadd.setIcon(new ThemeResource("images/assets/plus.png"));
             btnadd.addListener(new Button.ClickListener() {
                 @Override
-                public void buttonClick(@SuppressWarnings("unused")
-                final com.vaadin.ui.Button.ClickEvent event) {
+                public void buttonClick(@SuppressWarnings("unused") final com.vaadin.ui.Button.ClickEvent event) {
                     if (isNotValid(key, value)) {
                         showMessage();
                     }
@@ -205,8 +248,7 @@ public class UserAccountView extends View {
         }
 
         @Override
-        public void buttonClick(@SuppressWarnings("unused")
-        com.vaadin.ui.Button.ClickEvent event) {
+        public void buttonClick(@SuppressWarnings("unused") com.vaadin.ui.Button.ClickEvent event) {
             try {
                 form.commit();
                 if (!passwordField.getValue().equals(verifyPasswordField.getValue())) {
@@ -471,107 +513,9 @@ public class UserAccountView extends View {
         return vlResourceProperties;
     }
 
-    /**
-     * User Roles Below
-     * */
     private Panel buildRolesView() throws EscidocClientException {
-        final Panel rolesPanel = new Panel(ViewConstants.USER_ROLES);
-        rolesPanel.setCaption("Roles Panel");
-
-        HorizontalLayout hl = new HorizontalLayout();
-        hl.setSizeFull();
-
-        listRolesForUser(hl);
-
-        NativeSelect grantsSelect = new NativeSelect();
-        grantsSelect.setNullSelectionAllowed(false);
-        NativeSelect scopeSelect = new NativeSelect();
-        scopeSelect.setNullSelectionAllowed(false);
-        populateRolesSelect(hl, grantsSelect, scopeSelect);
-
-        hl.addComponent(grantsSelect);
-        hl.addComponent(scopeSelect);
-        rolesPanel.setContent(hl);
-
-        // addPreferenceButton = buildAddPreferenceButton(rolesPanel, userPreferenceTable);
-        // rolesPanel.addComponent(addPreferenceButton);
-        return rolesPanel;
+        return new UserRolesView(userProxy, uac, repositories, router);
     }
-
-    private void listRolesForUser(HorizontalLayout hl) {
-        Grants grants = uac.getGrantsForUser(userProxy.getId());
-        for (Grant grant : grants) {
-            if ((grant.getProperties().getRole() != null) && (grant.getProperties().getAssignedOn() != null)) {
-                HorizontalLayout hlGrants = new HorizontalLayout();
-                LOG.debug("GRANT HERE:  Role " + grant.getProperties().getRole().getXLinkTitle()
-                    + " AssignedOnXlinkTitle " + grant.getProperties().getAssignedOn().getXLinkTitle());
-                hlGrants.addComponent(new Label(grant.getProperties().getRole().getXLinkTitle()));
-                hlGrants.addComponent(new Label(grant.getProperties().getAssignedOn().getResourceType().name()));
-                hlGrants.addComponent(new Label(grant.getProperties().getAssignedOn().getXLinkTitle()));
-                hl.addComponent(hlGrants);
-            }
-        }
-
-    }
-
-    private void populateRolesSelect(HorizontalLayout hl, NativeSelect grantsSelect, final NativeSelect scopeSelect) {
-
-        grantsSelect.setInvalidAllowed(false);
-        grantsSelect.setImmediate(true);
-        final List<ResourceType> resourceTypeList = new ArrayList<ResourceType>();
-        grantsSelect.addListener(new ValueChangeListener() {
-            @Override
-            public void valueChange(ValueChangeEvent event) {
-                LOG.debug("-----------------");
-                resourceTypeList.clear();
-                if (event.getProperty().getValue() instanceof RoleModel) {
-                    for (final ScopeDef scopeDef : getScopeDefinitions((RoleModel) event.getProperty().getValue())) {
-                        final ResourceType resourceType =
-                            ResourceType.convert(scopeDef.getRelationAttributeObjectType());
-                        if (resourceType != null && !resourceType.equals(ResourceType.COMPONENT)) {
-                            resourceTypeList.add(resourceType);
-                            LOG.debug(scopeDef.getRelationAttributeObjectType().toString());
-                        }
-
-                    }
-                }
-                bindView(resourceTypeList, scopeSelect);
-            }
-        });
-        try {
-            BeanItemContainer<ResourceModel> container = new BeanItemContainer<ResourceModel>(ResourceModel.class);
-            for (ResourceModel resourceModel : repositories.role().findAll()) {
-                if (RoleModel.isValid(resourceModel)) {
-                    BeanItem<ResourceModel> item = container.addItem(resourceModel);
-                    Preconditions.checkNotNull(item, "item is null: %s", item);
-                }
-                container.addItem(resourceModel.getName());
-            }
-            grantsSelect.setContainerDataSource(container);
-            grantsSelect.setItemCaptionPropertyId(PropertyId.NAME);
-
-        }
-        catch (EscidocClientException e) {
-            LOG.debug("Error updating the Roles NativeSelect " + e.getLocalizedMessage());
-        }
-    }
-
-    private static List<ScopeDef> getScopeDefinitions(final RoleModel roleModel) {
-        return roleModel.getScopeDefinitions();
-    }
-
-    private void bindView(List<ResourceType> resourceTypeList, NativeSelect scopeSelect) {
-        final BeanItemContainer<ResourceType> dataSource =
-            new BeanItemContainer<ResourceType>(ResourceType.class, resourceTypeList);
-        scopeSelect.setContainerDataSource(dataSource);
-        scopeSelect.setItemCaptionPropertyId(PropertyId.NAME);
-        if (dataSource.size() > 0) {
-            scopeSelect.setValue(dataSource.getIdByIndex(0));
-        }
-        scopeSelect.setEnabled(true);
-    }
-
-    /* End User Roles */
 
     @Override
     public int hashCode() {
