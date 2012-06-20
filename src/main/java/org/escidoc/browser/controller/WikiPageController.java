@@ -1,5 +1,8 @@
 package org.escidoc.browser.controller;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -52,7 +55,7 @@ public class WikiPageController extends ItemController {
 
     public boolean hasWikiContent() {
         try {
-            Element element = ((ItemProxyImpl) resourceProxy).getMetadataRecords().get(WIKIPAGEMD).getContent();
+            ((ItemProxyImpl) resourceProxy).getMetadataRecords().get(WIKIPAGEMD).getContent();
             return true;
         }
         catch (Exception e) {
@@ -86,7 +89,6 @@ public class WikiPageController extends ItemController {
         Element element = ((ItemProxyImpl) resourceProxy).getMetadataRecords().get(WIKIPAGEMD).getContent();
         if (element != null && element.getChildNodes() != null) {
             final NodeList nodeList = element.getChildNodes();
-            LOG.debug(element.getTextContent() + nodeList.getLength());
             for (int i = 0; i < nodeList.getLength(); i++) {
                 final Node node = nodeList.item(i);
                 final String nodeName = node.getLocalName();
@@ -106,7 +108,6 @@ public class WikiPageController extends ItemController {
     }
 
     public void createWikiContent(String title, String content) {
-        System.err.println("Hell-o");
         if (hasWikiContent()) {
             try {
                 MetadataRecord metadataRecord = ((ItemProxyImpl) resourceProxy).getMetadataRecords().get(WIKIPAGEMD);
@@ -171,33 +172,28 @@ public class WikiPageController extends ItemController {
     }
 
     public String parseCreole(String content) {
-        // Parsing with JCreole
-        // try {
-        // CreoleParser parser = new CreoleParser();
-        // parser.setPrivileges(EnumSet
-        // .of(JCreolePrivilege.ENUMFORMAT, JCreolePrivilege.TOC, JCreolePrivilege.RAWHTML));
-        // /*
-        // * Replace the statement above with something like this to test privileges: parser.setPrivileges(EnumSet.of(
-        // * JCreolePrivilege.ENUMFORMATS, JCreolePrivilege.TOC, JCreolePrivilege.RAWHTML,
-        // * JCreolePrivilege.STYLESHEET, JCreolePrivilege.JCXBLOCK, JCreolePrivilege.JCXSPAN, JCreolePrivilege.STYLER
-        // * ));
-        // */
-        //
-        // Object retVal = parser.parse(CreoleScanner.newCreoleScanner(new StringBuilder(content), false, null));
-        // content = retVal.toString();
-        // }
-        // catch (Exception e) {
-        // LOG.debug("Error Parsing " + e.getLocalizedMessage());
-        // }
-        // return content;
-
         CreoleParser parser = new DefaultCreoleParser();
         cylon.dom.Document document = parser.document(content);
         HtmlRenderer renderer = new HtmlRenderer(true);
         document.accept(renderer);
-        System.out.println(renderer.getResult());
         return renderer.getResult();
 
     }
 
+    public String getWikiTitle(String creoleContent) {
+        LOG.debug("*************" + creoleContent);
+        // final Pattern HEADING_PATTERN = Pattern.compile("^\\s*(={1,6})\\s*(.+?)\\s*(=+)?\\s*");
+        final Pattern HEADING_PATTERN = Pattern.compile("=.*=");
+
+        Matcher matcher = HEADING_PATTERN.matcher(creoleContent);
+
+        if (matcher.matches()) {
+            LOG.debug("MATCH PLAKO MATCH " + matcher.group(1).length() + matcher.group(2));
+        }
+        else {
+            LOG.debug("No match");
+        }
+        return null;
+
+    }
 }
