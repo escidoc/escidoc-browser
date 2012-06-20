@@ -30,22 +30,15 @@ package org.escidoc.browser.ui.useraccount;
 
 import com.google.common.base.Preconditions;
 
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator.EmptyValueException;
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
@@ -55,34 +48,22 @@ import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Runo;
 
 import org.escidoc.browser.controller.UserAccountController;
-import org.escidoc.browser.model.PropertyId;
-import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.internal.UserProxy;
 import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.repository.RoleRepository.RoleModel;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.repository.internal.UserAccountRepository;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.View;
-import org.escidoc.browser.ui.role.OnRoleSelect;
 import org.escidoc.browser.ui.view.helpers.ResourcePropertiesVH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
-import de.escidoc.core.resources.aa.role.ScopeDef;
 import de.escidoc.core.resources.aa.useraccount.Attribute;
 import de.escidoc.core.resources.aa.useraccount.Grant;
-import de.escidoc.core.resources.common.reference.Reference;
 
 @SuppressWarnings("serial")
 public class UserAccountView extends View {
@@ -532,279 +513,9 @@ public class UserAccountView extends View {
         return vlResourceProperties;
     }
 
-    /**
-     * User Roles Below
-     * 
-     * @throws EscidocClientException
-     * */
-    // TODO refactor this to another class
     private Panel buildRolesView() throws EscidocClientException {
-        // TODO CRUD View for User's Roles.
-        // TODO Retrieve: Show all user's role
-        // List<Grant> currectGrants= findAllCurrentGrants(userId)
-        // for each grant
-        // for(Grant grant : currentGrants) {
-        // }
-        // TODO View Layout:
-        // roleName | scopedOnResourceType | resourceName (resourceId) | removeBtn
-
-        // TODO Create: Add new role for the selected user
-        // TODO Update: Edit existing role for the selected user. Change Role, Scope, Resource, etc
-        // TODO Remove: Remove existing role from the selected user.
-
-        // TODO pdp request???
-        final Panel rolesPanel = new Panel(ViewConstants.USER_ROLES);
-        rolesPanel.setCaption("Roles Panel");
-
-        ComponentContainer rolesLayout = new VerticalLayout();
-        listRolesForUser(rolesLayout);
-        rolesPanel.setContent(rolesLayout);
-
-        return rolesPanel;
+        return new UserRolesView(userProxy, uac, repositories, router);
     }
-
-    private void listRolesForUser(ComponentContainer grantListLayout) throws EscidocClientException {
-        grantListLayout.removeAllComponents();
-
-        if (uac.getGrantsForUser(userProxy.getId()).size() == 0) {
-            grantListLayout.addComponent(new Label("The user has no assigned roles."));
-        }
-
-        int rowNumber = 0;
-        for (Grant grant : uac.getGrantsForUser(userProxy.getId())) {
-
-            String roleName = grant.getProperties().getRole().getXLinkTitle();
-
-            StringBuilder builder = new StringBuilder();
-            builder.append(roleName);
-
-            Reference assignedOn = grant.getProperties().getAssignedOn();
-            if (assignedOn != null) {
-                de.escidoc.core.resources.ResourceType resourceType = assignedOn.getResourceType();
-                String resourceName = assignedOn.getXLinkTitle();
-                String id = assignedOn.getObjid();
-                builder.append(" | ");
-                builder.append(resourceType.toString());
-                builder.append(" | ");
-                builder.append(resourceName);
-                builder.append(" (");
-                builder.append(id);
-                builder.append(") ");
-            }
-
-            HorizontalLayout grantRow = buildGrantRowView(rowNumber, grant);
-            grantRow.setData(Integer.valueOf(rowNumber));
-            rowNumber++;
-
-            bind(grantRow, grant);
-            grantListLayout.addComponent(grantRow);
-        }
-    }
-
-    private void bind(HorizontalLayout grantRow, Grant grant) throws EscidocClientException {
-        bindRoleName(grantRow, grant);
-        // TODO refactor existing methods to here.
-        // bindResourceType(grantRow, grant);
-        // bindAssignedResource(grantRow, grant);
-    }
-
-    private void bindRoleName(HorizontalLayout grantRow, final Grant grant) throws EscidocClientException {
-        NativeSelect roleNameSelect = (NativeSelect) grantRow.getComponent(0);
-        roleNameSelect.setContainerDataSource(buildRoleNameDataSource());
-        roleNameSelect.setItemCaptionPropertyId(PropertyId.NAME);
-
-        // // FIXME this causes a bad performance
-        Collection<?> collection = roleNameSelect.getContainerDataSource().getItemIds();
-        for (Object object : collection) {
-            ResourceModel rm = (ResourceModel) object;
-            if (grant.getProperties() == null || grant.getProperties().getRole() == null
-                || grant.getProperties().getRole().getXLinkTitle() == null) {
-                return;
-            }
-            if (rm.getName().equalsIgnoreCase(grant.getProperties().getRole().getXLinkTitle())) {
-                roleNameSelect.setValue(rm);
-            }
-        }
-
-        bindResourceType(grantRow, (RoleModel) roleNameSelect.getValue(), grant);
-    }
-
-    private void bindResourceType(HorizontalLayout grantRow, RoleModel value, Grant grant)
-        throws EscidocClientException {
-
-        final List<ResourceType> resourceTypeList = buildScopeDefinitions(value);
-
-        NativeSelect resourceTypeSelect = (NativeSelect) grantRow.getComponent(1);
-        final BeanItemContainer<ResourceType> dataSource =
-            new BeanItemContainer<ResourceType>(ResourceType.class, resourceTypeList);
-        resourceTypeSelect.setContainerDataSource(dataSource);
-        resourceTypeSelect.setItemCaptionPropertyId(PropertyId.NAME);
-
-        // TODO refactor this
-        if (dataSource.size() > 0 && (NativeSelect) grantRow.getComponent(2) != null) {
-            resourceTypeSelect.setValue(dataSource.getIdByIndex(0));
-
-            loadData((NativeSelect) grantRow.getComponent(2), dataSource.getIdByIndex(0));
-
-            for (Object object : ((NativeSelect) grantRow.getComponent(2)).getContainerDataSource().getItemIds()) {
-                Reference assignedOn = grant.getProperties().getAssignedOn();
-                if (assignedOn != null && getRoleName(object).equalsIgnoreCase(assignedOn.getXLinkTitle())) {
-                    ((NativeSelect) grantRow.getComponent(2)).select(object);
-                }
-            }
-        }
-    }
-
-    private static String getRoleName(Object object) {
-        return ((ResourceModel) object).getName();
-    }
-
-    private static List<ResourceType> buildScopeDefinitions(RoleModel value) {
-        final List<ResourceType> resourceTypeList = new ArrayList<ResourceType>();
-        for (ScopeDef scopeDef : OnRoleSelect.getScopeDefinitions(value)) {
-            final ResourceType resourceType = ResourceType.convert(scopeDef.getRelationAttributeObjectType());
-            if (resourceType != null && !resourceType.equals(ResourceType.COMPONENT)) {
-                resourceTypeList.add(resourceType);
-            }
-        }
-        return resourceTypeList;
-    }
-
-    private void loadData(NativeSelect assignedOn, ResourceType type) throws UnsupportedOperationException,
-        EscidocClientException {
-        final BeanItemContainer<ResourceModel> dataSource = newContainer();
-        for (final ResourceModel rm : findAll(type)) {
-            dataSource.addItem(rm);
-        }
-        configureList(assignedOn, dataSource);
-    }
-
-    private static void configureList(NativeSelect assignedOn, final BeanItemContainer<ResourceModel> container) {
-        assignedOn.setContainerDataSource(container);
-        assignedOn.setItemCaptionPropertyId(PropertyId.NAME);
-    }
-
-    private static BeanItemContainer<ResourceModel> newContainer() {
-        return new BeanItemContainer<ResourceModel>(ResourceModel.class);
-    }
-
-    private List<ResourceModel> findAll(ResourceType type) throws EscidocClientException {
-        List<ResourceModel> list = repositories.findByType(type).findAll();
-        Collections.sort(list, new Comparator<ResourceModel>() {
-
-            @Override
-            public int compare(ResourceModel o1, ResourceModel o2) {
-                ResourceModel p1 = o1;
-                ResourceModel p2 = o2;
-                return p1.getName().compareToIgnoreCase(p2.getName());
-            }
-
-        });
-
-        return list;
-    }
-
-    private BeanItemContainer<ResourceModel> roleNameDataSource;
-
-    private BeanItemContainer<ResourceModel> buildRoleNameDataSource() throws EscidocClientException {
-        if (roleNameDataSource == null) {
-            roleNameDataSource = new BeanItemContainer<ResourceModel>(ResourceModel.class);
-            for (ResourceModel resourceModel : repositories.role().findAll()) {
-                if (RoleModel.isValid(resourceModel)) {
-                    BeanItem<ResourceModel> item = roleNameDataSource.addItem(resourceModel);
-                    Preconditions.checkNotNull(item, "item is null: %s", item);
-                }
-                roleNameDataSource.addItem(resourceModel.getName());
-            }
-        }
-        return roleNameDataSource;
-    }
-
-    private HorizontalLayout buildGrantRowView(int rowNumber, Grant grant) {
-        HorizontalLayout grantLayout = new HorizontalLayout();
-        grantLayout.setSpacing(true);
-        // grantLayout.setSizeFull();
-        // grantLayout.setMargin(true);
-
-        NativeSelect roleNameSelect = new NativeSelect();
-        roleNameSelect.setMultiSelect(false);
-        roleNameSelect.setNewItemsAllowed(false);
-        roleNameSelect.setNullSelectionAllowed(false);
-        grantLayout.addComponent(roleNameSelect);
-
-        NativeSelect assignedOnResourceType = new NativeSelect();
-        assignedOnResourceType.setNullSelectionAllowed(false);
-
-        NativeSelect assignedOnResourceNameAndId = new NativeSelect();
-        assignedOnResourceNameAndId.setNullSelectionAllowed(false);
-
-        Button removeButton = buildRemoveButton(rowNumber, grant);
-
-        grantLayout.addComponent(assignedOnResourceType);
-        grantLayout.addComponent(assignedOnResourceNameAndId);
-        grantLayout.addComponent(removeButton);
-
-        return grantLayout;
-    }
-
-    private Button buildRemoveButton(int rowNumber, Grant grant) {
-        Button removeButton = new Button("-");
-        removeButton.setStyleName("small");
-        removeButton.setData(Integer.valueOf(rowNumber));
-        removeButton.addListener(new OnRemoveGrant(grant, userProxy, repositories, router.getMainWindow()));
-        return removeButton;
-    }
-
-    private void populateRolesSelect(HorizontalLayout hl, NativeSelect grantsSelect, final NativeSelect scopeSelect) {
-        grantsSelect.setInvalidAllowed(false);
-        grantsSelect.setImmediate(true);
-        final List<ResourceType> resourceTypeList = new ArrayList<ResourceType>();
-        grantsSelect.addListener(new ValueChangeListener() {
-            @Override
-            public void valueChange(ValueChangeEvent event) {
-                LOG.debug("-----------------");
-                resourceTypeList.clear();
-                if (event.getProperty().getValue() instanceof RoleModel) {
-                    for (final ScopeDef scopeDef : getScopeDefinitions((RoleModel) event.getProperty().getValue())) {
-                        final ResourceType resourceType =
-                            ResourceType.convert(scopeDef.getRelationAttributeObjectType());
-                        if (resourceType != null && !resourceType.equals(ResourceType.COMPONENT)) {
-                            resourceTypeList.add(resourceType);
-                            LOG.debug(scopeDef.getRelationAttributeObjectType().toString());
-                        }
-
-                    }
-                }
-                bindView(resourceTypeList, scopeSelect);
-            }
-        });
-        try {
-            BeanItemContainer<ResourceModel> container = buildRoleNameDataSource();
-            grantsSelect.setContainerDataSource(container);
-            grantsSelect.setItemCaptionPropertyId(PropertyId.NAME);
-
-        }
-        catch (EscidocClientException e) {
-            LOG.debug("Error updating the Roles NativeSelect " + e.getLocalizedMessage());
-        }
-    }
-
-    private static List<ScopeDef> getScopeDefinitions(final RoleModel roleModel) {
-        return roleModel.getScopeDefinitions();
-    }
-
-    private void bindView(List<ResourceType> resourceTypeList, NativeSelect scopeSelect) {
-        final BeanItemContainer<ResourceType> dataSource =
-            new BeanItemContainer<ResourceType>(ResourceType.class, resourceTypeList);
-        scopeSelect.setContainerDataSource(dataSource);
-        scopeSelect.setItemCaptionPropertyId(PropertyId.NAME);
-        if (dataSource.size() > 0) {
-            scopeSelect.setValue(dataSource.getIdByIndex(0));
-        }
-        scopeSelect.setEnabled(true);
-    }
-
-    /* End User Roles */
 
     @Override
     public int hashCode() {
