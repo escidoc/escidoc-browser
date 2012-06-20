@@ -28,7 +28,10 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import com.google.common.base.Preconditions;
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
@@ -42,8 +45,7 @@ import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.helper.Util;
 import org.escidoc.browser.util.Utils;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.base.Preconditions;
 
 import de.escidoc.core.client.ContainerHandlerClient;
 import de.escidoc.core.client.ItemHandlerClient;
@@ -64,7 +66,6 @@ import de.escidoc.core.resources.om.item.Item;
 import de.escidoc.core.resources.om.item.component.Component;
 import de.escidoc.core.resources.om.item.component.ComponentProperties;
 import de.escidoc.core.resources.om.item.component.Components;
-import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 public class ItemRepository implements Repository {
 
@@ -318,5 +319,48 @@ public class ItemRepository implements Repository {
         itemMetadataList.add(metadataRecord);
         item.setMetadataRecords(itemMetadataList);
         client.update(item);
+    }
+
+    // TODO Progress stopped based on Issue: CLIB-118
+    public void createComponent(String id, String componentName) throws EscidocClientException {
+        Item item = client.retrieve(id);
+        // // Component c = new Component();
+        // // c.setContent(new C)
+        // // ComponentContent cc = new ComponentContent();
+        // // // cc.setXLinkHref(componentName);
+        // // cc.setContent(content)
+        // // c.setContent(cc);
+        // // cc.setStorageType(StorageType.INTERNAL_MANAGED);
+        // //
+        // // // set some Component properties
+        // // ComponentProperties cp = new ComponentProperties();
+        // // cp.setVisibility("public");
+        // // cp.setContentCategory("blafasel");
+        // // cp.setMimeType("text/plain");
+        // // c.setLastModificationDate(new DateTime().now());
+        // // c.setProperties(cp);
+        // // Components components = new Components();
+        // // components.add(c);
+        //
+        // // Components
+        // final Component component = new Component();
+        // final ComponentProperties componentProperties = new ComponentProperties();
+        // componentProperties.setContentCategory("content-category");
+        // componentProperties.setMimeType("text/xml");
+        // componentProperties.setValidStatus("valid");
+        // componentProperties.setVisibility("institutional");
+        // component.setProperties(componentProperties);
+        // final Components components = new Components();
+        // components.add(component);
+        // item.setComponents(components);
+        // final ComponentContent content = new ComponentContent();
+        // content.setStorageType(StorageType.INTERNAL_MANAGED);
+        // DOMDocument doc = new DOMDocument();
+        //
+        // content.setContent(doc.createTextNode("foo"));
+        // component.setContent(content);
+        //
+        // item.setComponents(components);
+        // client.update(item);
     }
 }

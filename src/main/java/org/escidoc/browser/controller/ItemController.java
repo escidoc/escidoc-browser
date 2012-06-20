@@ -30,6 +30,7 @@ package org.escidoc.browser.controller;
 
 import java.net.URISyntaxException;
 
+import org.escidoc.browser.model.ItemProxy;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.Repositories;
@@ -174,4 +175,7 @@ public class ItemController extends Controller {
         repositories.item().updateMetaData(resourceProxy, metadata);
     }
 
+    public boolean hasComponents() {
+        return ((ItemProxy) resourceProxy).hasComponents().booleanValue();
+    }
 }
