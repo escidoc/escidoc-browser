@@ -87,10 +87,9 @@ public class OnTypeSelect implements ValueChangeListener {
 
     private void onSelectedResourceType(final ValueChangeEvent event) throws UnsupportedOperationException,
         EscidocClientException {
-        final Object value = event.getProperty().getValue();
-        if (value instanceof ResourceType) {
+        if (event.getProperty().getValue() instanceof ResourceType) {
             Component newComponent = assignComponent();
-            loadData((ResourceType) value);
+            loadData((ResourceType) event.getProperty().getValue());
             final Iterator<Component> it = layout.getComponentIterator();
             if (it.hasNext()) {
                 layout.replaceComponent(it.next(), newComponent);
@@ -120,9 +119,7 @@ public class OnTypeSelect implements ValueChangeListener {
 
             @Override
             public int compare(ResourceModel o1, ResourceModel o2) {
-                ResourceModel p1 = (ResourceModel) o1;
-                ResourceModel p2 = (ResourceModel) o2;
-                return p1.getName().compareToIgnoreCase(p2.getName());
+                return o1.getName().compareToIgnoreCase(o2.getName());
             }
 
         });
