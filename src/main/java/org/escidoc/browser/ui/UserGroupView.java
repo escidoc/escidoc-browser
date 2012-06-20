@@ -28,8 +28,20 @@
  */
 package org.escidoc.browser.ui;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.event.Action;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.Runo;
 
 import org.escidoc.browser.controller.UserGroupController;
 import org.escidoc.browser.model.PropertyId;
@@ -44,19 +56,8 @@ import org.escidoc.browser.ui.view.helpers.ResourcePropertiesVH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.event.Action;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.ComponentContainer;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Runo;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.aa.usergroup.Selector;
@@ -104,7 +105,7 @@ public class UserGroupView extends View {
         this.mainWindow = router.getMainWindow();
     }
 
-    public Panel buildContentPanel() {
+    public Panel buildContentPanel() throws EscidocClientException {
         setImmediate(false);
         setStyleName(Runo.PANEL_LIGHT);
         setSizeFull();
@@ -127,12 +128,14 @@ public class UserGroupView extends View {
         return contentPanel;
     }
 
-    private ComponentContainer buildVlContentPanel() {
+    private ComponentContainer buildVlContentPanel() throws EscidocClientException {
         VerticalLayout layout = createMainLayout();
         layout.addComponent(buildVlResourceProperties());
         addNameField(layout);
         addOrgUnitTable(layout);
         addSaveButton(layout);
+
+        layout.addComponent(new GroupRolesView(resourceProxy.getId(), repositories, router));
         return layout;
     }
 
@@ -166,15 +169,13 @@ public class UserGroupView extends View {
             selectorTable.addActionHandler(new Action.Handler() {
 
                 @Override
-                public Action[] getActions(@SuppressWarnings("unused")
-                Object target, @SuppressWarnings("unused")
-                Object sender) {
+                public Action[] getActions(
+                    @SuppressWarnings("unused") Object target, @SuppressWarnings("unused") Object sender) {
                     return ACTIONS_LIST;
                 }
 
                 @Override
-                public void handleAction(Action action, @SuppressWarnings("unused")
-                Object sender, Object target) {
+                public void handleAction(Action action, @SuppressWarnings("unused") Object sender, Object target) {
                     if (action.equals(ACTION_ADD)) {
                         // mainWindow.addWindow(new OrganizationSelectionView(repositories, resourceProxy, nameField,
                         // mainWindow, dataSource).modalWindow());
@@ -212,8 +213,7 @@ public class UserGroupView extends View {
                     }
                     Button close = new Button(ViewConstants.CLOSE, new Button.ClickListener() {
                         @Override
-                        public void buttonClick(@SuppressWarnings("unused")
-                        ClickEvent event) {
+                        public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
                             subwindow.getParent().removeWindow(subwindow);
                         }
                     });
@@ -266,8 +266,7 @@ public class UserGroupView extends View {
         Button saveButton = new Button(ViewConstants.SAVE, new Button.ClickListener() {
 
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
                 try {
                     if (!nameField.isValid()) {
                         mainWindow.showNotification("A group name is required",

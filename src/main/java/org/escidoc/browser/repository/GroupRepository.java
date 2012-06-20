@@ -56,6 +56,7 @@ import de.escidoc.core.client.exceptions.TransportException;
 import de.escidoc.core.client.interfaces.UserGroupHandlerClientInterface;
 import de.escidoc.core.resources.aa.useraccount.Grant;
 import de.escidoc.core.resources.aa.useraccount.GrantProperties;
+import de.escidoc.core.resources.aa.useraccount.Grants;
 import de.escidoc.core.resources.aa.usergroup.Selector;
 import de.escidoc.core.resources.aa.usergroup.SelectorType;
 import de.escidoc.core.resources.aa.usergroup.Selectors;
@@ -306,5 +307,9 @@ public class GroupRepository implements Repository {
         selectors.add(selector);
         tp.setSelectors(selectors);
         return client.addSelectors(uGroupId, tp);
+    }
+
+    public Grants getGrantsForGroup(String groupId) throws EscidocClientException {
+        return client.retrieveCurrentGrants(groupId);
     }
 }
