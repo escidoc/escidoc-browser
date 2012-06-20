@@ -5,7 +5,6 @@ import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.listeners.SaveWikiItemContent;
 import org.escidoc.browser.ui.maincontent.View;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,7 +123,7 @@ public class WikiPageView extends View {
         container.sort(new Object[] { "Version" }, new boolean[] { true });
     }
 
-    private void buildContentSection(VerticalLayout vlContentPanel) {
+    private void buildContentSection(final VerticalLayout vlContentPanel) {
         String content;
         // controller.getWikiPageContent();
 
@@ -132,9 +131,8 @@ public class WikiPageView extends View {
         String title = arrayContent[0];
         content = arrayContent[1];
 
-        content = controller.parseCreole(content);
-
-        wikiContent = new Label("<h1>" + title + "</h1><br />" + content, Label.CONTENT_XHTML);
+        wikiContent = new Label(controller.parseCreole(content), Label.CONTENT_XHTML);
+        controller.getWikiTitle(content);
 
         wikiContent.setWidth("100%");
         wikiContent.setHeight("400px");
@@ -142,7 +140,22 @@ public class WikiPageView extends View {
         txtWikiContent = new TextArea("Wiki Content", "=" + title + "=\n\r" + content);
         txtWikiContent.setWidth("100%");
         txtWikiContent.setHeight("400px");
-        saveContent = new Button("Save", new SaveWikiItemContent(resourceProxy, controller, txtWikiContent));
+        saveContent = new Button("Save");
+        saveContent.addListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                if (txtWikiContent.getValue().toString() != "") {
+                    controller.getWikiTitle(txtWikiContent.getValue().toString());
+                    controller.createWikiContent("Title", txtWikiContent.getValue().toString());
+                    // set Label Content
+                    wikiContent.setValue(controller.parseCreole(txtWikiContent.getValue().toString()));
+                    // Swap to Label
+                    vlContentPanel.replaceComponent(txtWikiContent, wikiContent);
+                    // Enable Edit Button
+                    edit.setEnabled(true);
+                }
+            }
+        });
 
         vlContentPanel.addComponent(wikiContent);
         vlContentPanel.addComponent(saveContent);
