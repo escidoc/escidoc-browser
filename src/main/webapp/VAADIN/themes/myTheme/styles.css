@@ -400,3 +400,4 @@ ul.horizontal_list li {
 	vertical-align: top;
 	float: right;
 }
+.wikiarticle .v.label ul li  {list-style-type: square;}

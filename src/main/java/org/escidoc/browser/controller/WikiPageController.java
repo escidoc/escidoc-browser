@@ -181,19 +181,12 @@ public class WikiPageController extends ItemController {
     }
 
     public String getWikiTitle(String creoleContent) {
-        LOG.debug("*************" + creoleContent);
-        // final Pattern HEADING_PATTERN = Pattern.compile("^\\s*(={1,6})\\s*(.+?)\\s*(=+)?\\s*");
-        final Pattern HEADING_PATTERN = Pattern.compile("=.*=");
-
+        final Pattern HEADING_PATTERN = Pattern.compile("^\\s*(={1,6})\\s*([^=]*)\\s*\\1\\s*");
         Matcher matcher = HEADING_PATTERN.matcher(creoleContent);
-
-        if (matcher.matches()) {
-            LOG.debug("MATCH PLAKO MATCH " + matcher.group(1).length() + matcher.group(2));
+        if (matcher.find()) {
+            return matcher.group(2);
         }
-        else {
-            LOG.debug("No match");
-        }
-        return null;
+        return "Default Title";
 
     }
 }

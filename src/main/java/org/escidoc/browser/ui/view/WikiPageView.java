@@ -136,8 +136,9 @@ public class WikiPageView extends View {
 
         wikiContent.setWidth("100%");
         wikiContent.setHeight("400px");
+        wikiContent.addStyleName("wikiarticle");
         // Invisible resources
-        txtWikiContent = new TextArea("Wiki Content", "=" + title + "=\n\r" + content);
+        txtWikiContent = new TextArea("Wiki Content", content);
         txtWikiContent.setWidth("100%");
         txtWikiContent.setHeight("400px");
         saveContent = new Button("Save");
@@ -146,7 +147,9 @@ public class WikiPageView extends View {
             public void buttonClick(ClickEvent event) {
                 if (txtWikiContent.getValue().toString() != "") {
                     controller.getWikiTitle(txtWikiContent.getValue().toString());
-                    controller.createWikiContent("Title", txtWikiContent.getValue().toString());
+                    // Create content
+                    controller.createWikiContent(controller.getWikiTitle(txtWikiContent.getValue().toString()),
+                        txtWikiContent.getValue().toString());
                     // set Label Content
                     wikiContent.setValue(controller.parseCreole(txtWikiContent.getValue().toString()));
                     // Swap to Label
