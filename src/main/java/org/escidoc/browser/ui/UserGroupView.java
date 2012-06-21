@@ -239,9 +239,6 @@ public class UserGroupView extends View {
     }
 
     protected BeanItemContainer<ResourceModel> populateContainerTable() throws EscidocClientException {
-        // BeanItemContainer<Selector> dataSource = new
-        // BeanItemContainer<Selector>(Selector.class, selectorList);
-
         List<ResourceModel> orgList = new ArrayList<ResourceModel>();
         for (final Selector s : resourceProxy.getSelector()) {
             ResourceProxy findById = repositories.organization().findById(s.getContent());

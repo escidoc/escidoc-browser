@@ -68,6 +68,7 @@ import de.escidoc.core.resources.aa.role.ScopeDef;
 import de.escidoc.core.resources.aa.useraccount.Grant;
 import de.escidoc.core.resources.common.reference.Reference;
 
+@SuppressWarnings("serial")
 public class GroupRolesView extends Panel {
 
     private final static Logger LOG = LoggerFactory.getLogger(UserRolesView.class);
@@ -117,7 +118,7 @@ public class GroupRolesView extends Panel {
         }
 
         private void revokeGrantInServer() throws EscidocClientException {
-            repos.user().revokeGrant(groupId, grant);
+            repos.group().revokeGrant(groupId, grant.getObjid());
         }
 
         private void updateView(final ClickEvent event) {
@@ -162,7 +163,7 @@ public class GroupRolesView extends Panel {
         grantListLayout.removeAllComponents();
 
         if (repositories.group().getGrantsForGroup(groupId).size() == 0) {
-            grantListLayout.addComponent(new Label("<h2>The user has no roles.</h2>", Label.CONTENT_XHTML));
+            grantListLayout.addComponent(new Label("<h2>The group has no roles.</h2>", Label.CONTENT_XHTML));
         }
         else {
             showExistingGrants(grantListLayout);
@@ -302,7 +303,7 @@ public class GroupRolesView extends Panel {
 
             private Grant assignGrantInServer() throws EscidocClientException {
                 return repositories
-                    .user().assign(groupId).withRole(getSelectedRole()).onResources(getSelectedResources()).execute();
+                    .group().assign(groupId).withRole(getSelectedRole()).onResources(getSelectedResources()).execute();
             }
 
             private RoleModel getSelectedRole() {
@@ -505,15 +506,6 @@ public class GroupRolesView extends Panel {
             }
         }
         return roleNameDataSource;
-    }
-
-    private static NativeSelect buildRoleNameSelect() {
-        NativeSelect roleNameSelect = new NativeSelect();
-        roleNameSelect.setMultiSelect(false);
-        roleNameSelect.setNewItemsAllowed(false);
-        roleNameSelect.setNullSelectionAllowed(false);
-        roleNameSelect.setImmediate(true);
-        return roleNameSelect;
     }
 
     private Button buildRemoveButton(int rowNumber, Grant grant) {

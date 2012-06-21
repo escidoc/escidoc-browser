@@ -240,9 +240,17 @@ public class GroupRepository implements Repository {
 
     public GroupRepository assign(GroupModel group) {
         if (group == null) {
-            throw new IllegalArgumentException("UserAccount can not be null.");
+            throw new IllegalArgumentException("Group can not be null.");
         }
         this.group = group;
+        return this;
+    }
+
+    public GroupRepository assign(String groupId) throws EscidocClientException {
+        if (groupId == null) {
+            throw new IllegalArgumentException("GroupId can not be null");
+        }
+        this.group = new GroupModel(client.retrieve(groupId));
         return this;
     }
 
@@ -311,5 +319,9 @@ public class GroupRepository implements Repository {
 
     public Grants getGrantsForGroup(String groupId) throws EscidocClientException {
         return client.retrieveCurrentGrants(groupId);
+    }
+
+    public void revokeGrant(String groupId, String grantId) throws EscidocClientException {
+        client.revokeGrant(groupId, groupId, null);
     }
 }
