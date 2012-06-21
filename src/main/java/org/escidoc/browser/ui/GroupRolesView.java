@@ -286,6 +286,11 @@ public class GroupRolesView extends Panel {
             @Override
             public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
                 try {
+                    if (getSelectedRole() == null) {
+                        router.getMainWindow().showNotification("Role can not be empty", "",
+                            Window.Notification.TYPE_WARNING_MESSAGE);
+                        return;
+                    }
                     Grant grant = assignGrantInServer();
                     updateView();
                     showSuccessMessage(grant);
@@ -298,7 +303,7 @@ public class GroupRolesView extends Panel {
 
             private void showSuccessMessage(Grant grant) {
                 router.getMainWindow().showNotification("",
-                    "Sucessfully revoke " + grant.getXLinkTitle() + " from " + groupId,
+                    "Sucessfully assign" + grant.getXLinkTitle() + " to " + groupId,
                     Notification.TYPE_TRAY_NOTIFICATION);
 
             }
@@ -361,6 +366,8 @@ public class GroupRolesView extends Panel {
         roleNameSelect.setNewItemsAllowed(false);
         roleNameSelect.setNullSelectionAllowed(false);
         roleNameSelect.setImmediate(true);
+        roleNameSelect.setRequired(true);
+        roleNameSelect.setRequiredError("Role can not be empty.");
 
         roleNameSelect.addListener(new ValueChangeListener() {
 
@@ -438,7 +445,10 @@ public class GroupRolesView extends Panel {
 
             for (Object object : ((NativeSelect) grantRow.getComponent(2)).getContainerDataSource().getItemIds()) {
                 Reference assignedOn = grant.getProperties().getAssignedOn();
-                if (assignedOn != null && getRoleName(object).equalsIgnoreCase(assignedOn.getXLinkTitle())) {
+                if (assignedOn == null) {
+                    LOG.debug("no resource: " + assignedOn);
+                }
+                else if (assignedOn != null && getRoleName(object).equalsIgnoreCase(assignedOn.getXLinkTitle())) {
                     ((NativeSelect) grantRow.getComponent(2)).select(object);
                 }
             }

@@ -293,6 +293,11 @@ public class UserRolesView extends Panel {
             @Override
             public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
                 try {
+                    if (getSelectedRole() == null) {
+                        router.getMainWindow().showNotification("Role can not be empty", "",
+                            Window.Notification.TYPE_WARNING_MESSAGE);
+                        return;
+                    }
                     Grant grant = assignGrantInServer();
                     updateView();
                     showSuccessMessage(grant);
@@ -305,7 +310,7 @@ public class UserRolesView extends Panel {
 
             private void showSuccessMessage(Grant grant) {
                 router.getMainWindow().showNotification("",
-                    "Sucessfully revoke " + grant.getXLinkTitle() + " from " + userProxy.getName(),
+                    "Sucessfully assign grant " + grant.getXLinkTitle() + " to " + userProxy.getName(),
                     Notification.TYPE_TRAY_NOTIFICATION);
 
             }
@@ -369,6 +374,8 @@ public class UserRolesView extends Panel {
         roleNameSelect.setNewItemsAllowed(false);
         roleNameSelect.setNullSelectionAllowed(false);
         roleNameSelect.setImmediate(true);
+        roleNameSelect.setRequired(true);
+        roleNameSelect.setRequiredError("Role can not be empty.");
 
         roleNameSelect.addListener(new ValueChangeListener() {
 
