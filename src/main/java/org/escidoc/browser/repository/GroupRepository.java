@@ -321,7 +321,11 @@ public class GroupRepository implements Repository {
         return client.retrieveCurrentGrants(groupId);
     }
 
-    public void revokeGrant(String groupId, String grantId) throws EscidocClientException {
-        client.revokeGrant(groupId, groupId, null);
+    public void revokeGrant(String groupId, Grant grant) throws EscidocClientException {
+        Preconditions.checkNotNull(groupId, "groupId is null: %s", groupId);
+        Preconditions.checkNotNull(grant, "grant is null: %s", grant);
+        final TaskParam tp = new TaskParam();
+        tp.setLastModificationDate(grant.getLastModificationDate());
+        client.revokeGrant(groupId, grant.getObjid(), tp);
     }
 }

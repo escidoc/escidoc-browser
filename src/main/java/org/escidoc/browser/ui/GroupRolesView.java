@@ -34,6 +34,7 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
@@ -118,7 +119,7 @@ public class GroupRolesView extends Panel {
         }
 
         private void revokeGrantInServer() throws EscidocClientException {
-            repos.group().revokeGrant(groupId, grant.getObjid());
+            repos.group().revokeGrant(groupId, grant);
         }
 
         private void updateView(final ClickEvent event) {
@@ -277,9 +278,10 @@ public class GroupRolesView extends Panel {
     }
 
     private Button buildAddGrantButton(final NativeSelect resourceSelect, final NativeSelect roleNameSelect) {
-        Button saveButton = new Button("+");
-        saveButton.setStyleName("small");
-        saveButton.addListener(new Button.ClickListener() {
+        Button assignGrantButton = new Button();
+        assignGrantButton.setIcon(new ThemeResource("images/assets/plus.png"));
+
+        assignGrantButton.addListener(new Button.ClickListener() {
 
             @Override
             public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
@@ -326,7 +328,7 @@ public class GroupRolesView extends Panel {
                 listRolesForUser(rolesLayout);
             }
         });
-        return saveButton;
+        return assignGrantButton;
     }
 
     private void bindRoleName(NativeSelect roleNameSelect) throws EscidocClientException {
@@ -509,8 +511,8 @@ public class GroupRolesView extends Panel {
     }
 
     private Button buildRemoveButton(int rowNumber, Grant grant) {
-        Button removeButton = new Button("-");
-        removeButton.setStyleName("small");
+        Button removeButton = new Button();
+        removeButton.setIcon(new ThemeResource("images/assets/minus.png"));
         removeButton.setData(Integer.valueOf(rowNumber));
         removeButton.addListener(new OnRemoveGrant(grant, groupId, repositories, router.getMainWindow()));
         return removeButton;
