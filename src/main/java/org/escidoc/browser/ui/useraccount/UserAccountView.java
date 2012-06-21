@@ -56,8 +56,6 @@ import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.maincontent.View;
 import org.escidoc.browser.ui.view.helpers.ResourcePropertiesVH;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.URISyntaxException;
 
@@ -83,8 +81,6 @@ public class UserAccountView extends View {
     private ResourcePropertiesVH resoucePropertiesView;
 
     private Repositories repositories;
-
-    private final static Logger LOG = LoggerFactory.getLogger(UserAccountView.class);
 
     public UserAccountView(Router router, UserProxy userProxy, UserAccountRepository ur, UserAccountController uac) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
@@ -308,23 +304,15 @@ public class UserAccountView extends View {
 
     private Panel buildPanel() {
         // common part: create layout
-        Panel accCreateContext = new Panel();
-        // accCreateContext.setStyleName(Runo.PANEL_LIGHT);
-        accCreateContext.setImmediate(false);
-        accCreateContext.setWidth("100.0%");
-        accCreateContext.setHeight("100.0%");
-
-        // vlPnlCreateContext
-        VerticalLayout vlAccCreateContext = new VerticalLayout();
-        vlAccCreateContext.setImmediate(false);
-        vlAccCreateContext.setWidth("100.0%");
-        vlAccCreateContext.setHeight("100.0%");
-        vlAccCreateContext.setMargin(false);
-        vlAccCreateContext.setSpacing(false);
+        Panel panel = new Panel();
+        panel.setImmediate(false);
+        panel.setWidth("100.0%");
+        panel.setHeight("100.0%");
 
         try {
-            buildEditUserForm(vlAccCreateContext);
-            vlAccCreateContext.addComponent(buildRolesView());
+            VerticalLayout verticalLayout = buildVerticalLayout();
+            buildEditUserForm(verticalLayout);
+            panel.addComponent(verticalLayout);
         }
         catch (EscidocClientException e) {
             router.getMainWindow().showNotification(ViewConstants.ERROR_CREATING_RESOURCE + e.getMessage(),
@@ -334,9 +322,18 @@ public class UserAccountView extends View {
             router.getMainWindow().showNotification(ViewConstants.ERROR_CREATING_RESOURCE + e.getMessage(),
                 Window.Notification.TYPE_ERROR_MESSAGE);
         }
-        accCreateContext.addComponent(vlAccCreateContext);
 
-        return accCreateContext;
+        return panel;
+    }
+
+    private static VerticalLayout buildVerticalLayout() {
+        VerticalLayout verticalLayout = new VerticalLayout();
+        verticalLayout.setImmediate(false);
+        verticalLayout.setWidth("100.0%");
+        verticalLayout.setHeight("100.0%");
+        verticalLayout.setMargin(false);
+        verticalLayout.setSpacing(false);
+        return verticalLayout;
     }
 
     private void buildEditUserForm(VerticalLayout vlAccCreateContext) throws EscidocClientException, URISyntaxException {
@@ -357,12 +354,16 @@ public class UserAccountView extends View {
 
         form.getField("txtNameContext").setRequired(true);
         form.getField("txtNameContext").setRequiredError("Name is missing");
-        Panel formPnl = new Panel(ViewConstants.USER_PASS_FORM);
+
+        Panel formPanel = new Panel(ViewConstants.USER_PASS_FORM);
         VerticalLayout vl = new VerticalLayout();
         vl.setMargin(false, true, false, true);
         vl.addComponent(form);
-        formPnl.setContent(vl);
-        vlAccCreateContext.addComponent(formPnl);
+        formPanel.setContent(vl);
+
+        vlAccCreateContext.addComponent(formPanel);
+        vlAccCreateContext.addComponent(buildRolesView());
+
         vlAccCreateContext.addComponent(buildPreferencesView());
         if (uac.hasAccessOnAttributes(router.getApp().getCurrentUser().getUserId())) {
             vlAccCreateContext.addComponent(buildAttributesView());
