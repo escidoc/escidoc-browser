@@ -26,7 +26,7 @@
  * Gesellschaft zur Foerderung der Wissenschaft e.V.
  * All rights reserved.  Use is subject to license terms.
  */
-package org.escidoc.browser.ui.useraccount;
+package org.escidoc.browser.ui;
 
 import com.google.common.base.Preconditions;
 
@@ -46,16 +46,13 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
-import org.escidoc.browser.controller.UserAccountController;
 import org.escidoc.browser.model.PropertyId;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceType;
-import org.escidoc.browser.model.internal.UserProxy;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.RoleRepository.RoleModel;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.role.OnRoleSelect;
+import org.escidoc.browser.ui.useraccount.UserRolesView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +69,7 @@ import de.escidoc.core.resources.aa.useraccount.Grant;
 import de.escidoc.core.resources.common.reference.Reference;
 
 @SuppressWarnings("serial")
-public class UserRolesView extends Panel {
+public class GroupRolesView extends Panel {
 
     private final static Logger LOG = LoggerFactory.getLogger(UserRolesView.class);
 
@@ -80,21 +77,21 @@ public class UserRolesView extends Panel {
 
         private Grant grant;
 
-        private UserProxy userProxy;
-
         private Repositories repos;
 
         private Window mainWindow;
 
-        public OnRemoveGrant(Grant grant, UserProxy userProxy, Repositories repos, Window mainWindow) {
+        private String groupId;
+
+        public OnRemoveGrant(Grant grant, String groupId, Repositories repos, Window mainWindow) {
             Preconditions.checkNotNull(grant, "grant is null: %s", grant);
-            Preconditions.checkNotNull(userProxy, "userProxy is null: %s", userProxy);
+            Preconditions.checkNotNull(groupId, "groupId is null: %s", groupId);
             Preconditions.checkNotNull(repos, "repo is null: %s", repos);
             Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
 
             this.grant = grant;
             this.repos = repos;
-            this.userProxy = userProxy;
+            this.groupId = groupId;
             this.mainWindow = mainWindow;
         }
 
@@ -116,13 +113,12 @@ public class UserRolesView extends Panel {
         }
 
         private void showSuccessMessage() {
-            mainWindow.showNotification("",
-                "Sucessfully revoke " + grant.getXLinkTitle() + " from " + userProxy.getName(),
+            mainWindow.showNotification("", "Sucessfully revoke " + grant.getXLinkTitle() + " from " + groupId,
                 Notification.TYPE_TRAY_NOTIFICATION);
         }
 
         private void revokeGrantInServer() throws EscidocClientException {
-            repos.user().revokeGrant(userProxy.getId(), grant);
+            repos.group().revokeGrant(groupId, grant.getObjid());
         }
 
         private void updateView(final ClickEvent event) {
@@ -134,9 +130,7 @@ public class UserRolesView extends Panel {
 
     private final ComponentContainer rolesLayout = new VerticalLayout();
 
-    private final UserProxy userProxy;
-
-    private final UserAccountController controller;
+    private final String groupId;
 
     private final Repositories repositories;
 
@@ -147,11 +141,9 @@ public class UserRolesView extends Panel {
     // TODO duplicate code for assigning grant and updating/showing grant
     // TODO Update: Edit existing role for the selected user. Change Role, Scope, Resource, etc
     // TODO PDP request???
-    public UserRolesView(UserProxy userProxy, UserAccountController controller, Repositories repositories, Router router)
-        throws EscidocClientException {
+    public GroupRolesView(String groupId, Repositories repositories, Router router) throws EscidocClientException {
 
-        this.userProxy = userProxy;
-        this.controller = controller;
+        this.groupId = groupId;
         this.repositories = repositories;
         this.router = router;
 
@@ -170,8 +162,8 @@ public class UserRolesView extends Panel {
     private void listRolesForUser(ComponentContainer grantListLayout) throws EscidocClientException {
         grantListLayout.removeAllComponents();
 
-        if (controller.getGrantsForUser(userProxy.getId()).size() == 0) {
-            grantListLayout.addComponent(new Label("<h2>The user has no roles.</h2>", Label.CONTENT_XHTML));
+        if (repositories.group().getGrantsForGroup(groupId).size() == 0) {
+            grantListLayout.addComponent(new Label("<h2>The group has no roles.</h2>", Label.CONTENT_XHTML));
         }
         else {
             showExistingGrants(grantListLayout);
@@ -182,7 +174,7 @@ public class UserRolesView extends Panel {
 
     private void showExistingGrants(ComponentContainer grantListLayout) throws EscidocClientException {
         int rowNumber = 0;
-        for (Grant grant : controller.getGrantsForUser(userProxy.getId())) {
+        for (Grant grant : repositories.group().getGrantsForGroup(groupId)) {
             HorizontalLayout existingGrantRowLayout = buildEditGrantRowView(rowNumber, grant);
             existingGrantRowLayout.setData(Integer.valueOf(rowNumber));
             rowNumber++;
@@ -304,15 +296,14 @@ public class UserRolesView extends Panel {
 
             private void showSuccessMessage(Grant grant) {
                 router.getMainWindow().showNotification("",
-                    "Sucessfully revoke " + grant.getXLinkTitle() + " from " + userProxy.getName(),
+                    "Sucessfully revoke " + grant.getXLinkTitle() + " from " + groupId,
                     Notification.TYPE_TRAY_NOTIFICATION);
 
             }
 
             private Grant assignGrantInServer() throws EscidocClientException {
                 return repositories
-                    .user().assign(userProxy.getId()).withRole(getSelectedRole()).onResources(getSelectedResources())
-                    .execute();
+                    .group().assign(groupId).withRole(getSelectedRole()).onResources(getSelectedResources()).execute();
             }
 
             private RoleModel getSelectedRole() {
@@ -517,20 +508,11 @@ public class UserRolesView extends Panel {
         return roleNameDataSource;
     }
 
-    private static NativeSelect buildRoleNameSelect() {
-        NativeSelect roleNameSelect = new NativeSelect();
-        roleNameSelect.setMultiSelect(false);
-        roleNameSelect.setNewItemsAllowed(false);
-        roleNameSelect.setNullSelectionAllowed(false);
-        roleNameSelect.setImmediate(true);
-        return roleNameSelect;
-    }
-
     private Button buildRemoveButton(int rowNumber, Grant grant) {
         Button removeButton = new Button("-");
         removeButton.setStyleName("small");
         removeButton.setData(Integer.valueOf(rowNumber));
-        removeButton.addListener(new OnRemoveGrant(grant, userProxy, repositories, router.getMainWindow()));
+        removeButton.addListener(new OnRemoveGrant(grant, groupId, repositories, router.getMainWindow()));
         return removeButton;
     }
 

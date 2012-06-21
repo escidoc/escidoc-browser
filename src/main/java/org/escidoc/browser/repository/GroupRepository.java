@@ -56,6 +56,7 @@ import de.escidoc.core.client.exceptions.TransportException;
 import de.escidoc.core.client.interfaces.UserGroupHandlerClientInterface;
 import de.escidoc.core.resources.aa.useraccount.Grant;
 import de.escidoc.core.resources.aa.useraccount.GrantProperties;
+import de.escidoc.core.resources.aa.useraccount.Grants;
 import de.escidoc.core.resources.aa.usergroup.Selector;
 import de.escidoc.core.resources.aa.usergroup.SelectorType;
 import de.escidoc.core.resources.aa.usergroup.Selectors;
@@ -239,9 +240,17 @@ public class GroupRepository implements Repository {
 
     public GroupRepository assign(GroupModel group) {
         if (group == null) {
-            throw new IllegalArgumentException("UserAccount can not be null.");
+            throw new IllegalArgumentException("Group can not be null.");
         }
         this.group = group;
+        return this;
+    }
+
+    public GroupRepository assign(String groupId) throws EscidocClientException {
+        if (groupId == null) {
+            throw new IllegalArgumentException("GroupId can not be null");
+        }
+        this.group = new GroupModel(client.retrieve(groupId));
         return this;
     }
 
@@ -306,5 +315,13 @@ public class GroupRepository implements Repository {
         selectors.add(selector);
         tp.setSelectors(selectors);
         return client.addSelectors(uGroupId, tp);
+    }
+
+    public Grants getGrantsForGroup(String groupId) throws EscidocClientException {
+        return client.retrieveCurrentGrants(groupId);
+    }
+
+    public void revokeGrant(String groupId, String grantId) throws EscidocClientException {
+        client.revokeGrant(groupId, groupId, null);
     }
 }
