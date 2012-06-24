@@ -49,11 +49,14 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.vaadin.ui.Window;
+
 import cylon.creole.CreoleParser;
 import cylon.creole.DefaultCreoleParser;
 import cylon.html.HtmlRenderer;
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
+import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.om.item.Item;
 
 /**
@@ -215,6 +218,16 @@ public class WikiPageController extends ItemController {
             return matcher.group(2);
         }
         return "Default Title";
+    }
 
+    public VersionHistory getVersionHistory() {
+        try {
+            return router.getRepositories().item().getVersionHistory(resourceProxy.getId());
+        }
+        catch (EscidocClientException e) {
+            getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+        return null;
     }
 }

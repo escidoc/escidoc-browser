@@ -28,6 +28,8 @@
  */
 package org.escidoc.browser.ui.view;
 
+import java.util.Collection;
+
 import org.escidoc.browser.controller.WikiPageController;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
@@ -54,6 +56,7 @@ import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 
 import de.escidoc.core.resources.common.MetadataRecord;
+import de.escidoc.core.resources.common.versionhistory.Version;
 
 public class WikiPageView extends View {
 
@@ -92,7 +95,7 @@ public class WikiPageView extends View {
     public Panel buildContentPanel() {
         this.setImmediate(false);
         this.setWidth("100.0%");
-        this.setHeight("100.0%");
+        // this.setHeight("100.0%");
         this.setCaption("Wiki Page View");
 
         // vlContentPanel assign a layout to this panel
@@ -124,29 +127,24 @@ public class WikiPageView extends View {
         vlContentPanel.addComponent(tbl);
     }
 
-    public static IndexedContainer getVersionHistory() {
+    public IndexedContainer getVersionHistory() {
         IndexedContainer c = new IndexedContainer();
         VersionHistoryContainer(c);
         return c;
     }
 
-    private static void VersionHistoryContainer(IndexedContainer container) {
+    private void VersionHistoryContainer(IndexedContainer container) {
         container.addContainerProperty("Version", String.class, null);
         container.addContainerProperty("Modified Date", String.class, null);
-        container.addContainerProperty("Icon", String.class, null);
+        container.addContainerProperty("Icon", HorizontalLayout.class, null);
 
-        Item item = container.addItem(1);
-        item.getItemProperty("Version").setValue("Version 1");
-        item.getItemProperty("Modified Date").setValue("12.4.2012 at 18:08");
-        item.getItemProperty("Icon").setValue("Some Icons");
-        Item item2 = container.addItem(2);
-        item2.getItemProperty("Version").setValue("Version 2");
-        item2.getItemProperty("Modified Date").setValue("12.4.2012 at 18:08");
-        item2.getItemProperty("Icon").setValue("Some Icons");
-        Item item3 = container.addItem(3);
-        item3.getItemProperty("Version").setValue("Version 3");
-        item3.getItemProperty("Modified Date").setValue("12.4.2012 at 18:08");
-        item3.getItemProperty("Icon").setValue("Some Icons");
+        Collection<Version> vh = controller.getVersionHistory().getVersions();
+        for (Version version : vh) {
+            Item item = container.addItem(version.getObjid());
+            item.getItemProperty("Version").setValue("Version " + version.getVersionNumber());
+            item.getItemProperty("Modified Date").setValue(version.getTimestamp().toString());
+            item.getItemProperty("Icon").setValue(buildVersionIconsLayout());
+        }
 
         container.sort(new Object[] { "Version" }, new boolean[] { true });
     }
@@ -230,6 +228,16 @@ public class WikiPageView extends View {
         mainOperationIcons.addComponent(edit);
         Button delete = showDelete(resourceProxy);
         mainOperationIcons.addComponent(delete);
+        Button share = showShare(resourceProxy);
+        mainOperationIcons.addComponent(share);
+        Button download = downloadShow(resourceProxy);
+        mainOperationIcons.addComponent(download);
+        return mainOperationIcons;
+    }
+
+    private HorizontalLayout buildVersionIconsLayout() {
+        HorizontalLayout mainOperationIcons = new HorizontalLayout();
+
         Button share = showShare(resourceProxy);
         mainOperationIcons.addComponent(share);
         Button download = downloadShow(resourceProxy);
