@@ -28,7 +28,10 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import com.google.common.base.Preconditions;
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
@@ -39,8 +42,7 @@ import org.escidoc.browser.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.base.Preconditions;
 
 import de.escidoc.core.client.OrganizationalUnitHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -55,7 +57,6 @@ import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.oum.OrganizationalUnit;
 import de.escidoc.core.resources.oum.Parent;
 import de.escidoc.core.resources.oum.Parents;
-import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 public class OrganizationUnitRepository implements Repository {
 
@@ -108,6 +109,10 @@ public class OrganizationUnitRepository implements Repository {
     @Override
     public ResourceProxy findById(final String id) throws EscidocClientException {
         return new OrgUnitProxy(client.retrieve(id));
+    }
+
+    public OrganizationalUnit findOU(final String id) throws EscidocClientException {
+        return client.retrieve(id);
     }
 
     @Override
@@ -211,5 +216,16 @@ public class OrganizationUnitRepository implements Repository {
         taskParam.setLastModificationDate(oU.getLastModificationDate());
         taskParam.setComment("Initially Open");
         client.open(oU, taskParam);
+    }
+
+    public void close(OrganizationalUnit oU) throws EscidocClientException {
+        final TaskParam taskParam = new TaskParam();
+        taskParam.setLastModificationDate(oU.getLastModificationDate());
+        taskParam.setComment("Initially Open");
+        client.close(oU, taskParam);
+    }
+
+    public void withdraw(OrganizationalUnit oU) {
+        // Withdrawn does not exist for client OU
     }
 }

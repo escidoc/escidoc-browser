@@ -34,15 +34,24 @@ import org.escidoc.browser.repository.internal.OrgUnitProxy;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
+import com.vaadin.event.LayoutEvents.LayoutClickEvent;
+import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.AbstractComponentContainer;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Runo;
+
+import de.escidoc.core.resources.common.properties.PublicStatus;
 
 @SuppressWarnings("serial")
 public class OrgUnitView extends View {
@@ -54,6 +63,18 @@ public class OrgUnitView extends View {
     private OrgUnitController orgUnitController;
 
     private Panel breadCrump;
+
+    private VerticalLayout vlLeft;
+
+    private Label lblStatus;
+
+    private String status;
+
+    private Component oldComponent;
+
+    private Component swapComponent;
+
+    private static final Logger LOG = LoggerFactory.getLogger(OrgUnitView.class);
 
     public OrgUnitView(final Router router, final ResourceProxy resourceProxy, OrgUnitController orgUnitController) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
@@ -70,13 +91,14 @@ public class OrgUnitView extends View {
         this.setHeight("100.0%");
         this.setStyleName(Runo.PANEL_LIGHT);
         this.setContent(buildVlContentPanel());
+        handleLayoutListeners();
     }
 
     private VerticalLayout buildVlContentPanel() {
         VerticalLayout contentPanel = new VerticalLayout();
         contentPanel.setImmediate(false);
         contentPanel.setWidth("100.0%");
-        contentPanel.setHeight("100.0%");
+
         contentPanel.setMargin(false, true, false, true);
         // breadCrumpPanel
         breadCrump = buildBreadCrumpPanel();
@@ -84,12 +106,12 @@ public class OrgUnitView extends View {
         // resourcePropertiesPanel
         Panel resourcePropertiesPanel = buildResourcePropertiesPanel();
         contentPanel.addComponent(resourcePropertiesPanel);
-        contentPanel.setExpandRatio(resourcePropertiesPanel, 1.5f);
+        contentPanel.setComponentAlignment(resourcePropertiesPanel, Alignment.TOP_LEFT);
 
         // metaViewsPanel contains Panel for the DirectMembers & for the Metas
         Panel metaViewsPanel = buildMetaViewsPanel();
         contentPanel.addComponent(metaViewsPanel);
-        contentPanel.setExpandRatio(metaViewsPanel, 8.0f);
+        contentPanel.setComponentAlignment(metaViewsPanel, Alignment.TOP_LEFT);
 
         return contentPanel;
     }
@@ -98,7 +120,7 @@ public class OrgUnitView extends View {
         Panel mdView = new Panel();
         mdView.setImmediate(false);
         mdView.setWidth("100.0%");
-        mdView.setHeight("100.0%");
+        // mdView.setHeight("300px");
         mdView.setStyleName(Runo.PANEL_LIGHT);
 
         mdView.setContent(buildHlMetaViews());
@@ -252,7 +274,7 @@ public class OrgUnitView extends View {
         VerticalLayout vlResourceProperties = new VerticalLayout();
         vlResourceProperties.setImmediate(false);
         vlResourceProperties.setWidth("100.0%");
-        vlResourceProperties.setHeight("100.0%");
+        vlResourceProperties.setHeight("100px");
         vlResourceProperties.setMargin(false);
 
         // creating the properties / without the breadcrump
@@ -291,14 +313,26 @@ public class OrgUnitView extends View {
         return descLayout;
     }
 
+    private static void addHorizontalRuler(AbstractComponentContainer contentLayout) {
+        final Label descRuler = new Label("<hr />", Label.CONTENT_RAW);
+        descRuler.setStyleName("hr");
+        contentLayout.addComponent(descRuler);
+    }
+
     private HorizontalLayout bindProperties() {
         HorizontalLayout hlProperties = new HorizontalLayout();
         hlProperties.setWidth("100%");
-        VerticalLayout vlLeft = new VerticalLayout();
+        vlLeft = new VerticalLayout();
         VerticalLayout vlRight = new VerticalLayout();
         final Label descMetadata1 = new Label("ID: " + resourceProxy.getId());
-        Label lblStatus =
-            new Label(resourceProxy.getType().getLabel() + " is " + resourceProxy.getStatus(), Label.CONTENT_RAW);
+        status = resourceProxy.getType().getLabel() + " is ";
+        lblStatus = new Label(status + resourceProxy.getStatus(), Label.CONTENT_RAW);
+
+        if (orgUnitController.hasAccess()) {
+            lblStatus.setDescription(ViewConstants.DESC_STATUS);
+            lblStatus.setStyleName("inset");
+        }
+
         lblStatus.setDescription(ViewConstants.DESC_STATUS);
 
         vlLeft.addComponent(descMetadata1);
@@ -321,10 +355,94 @@ public class OrgUnitView extends View {
         return hlProperties;
     }
 
-    private static void addHorizontalRuler(AbstractComponentContainer contentLayout) {
-        final Label descRuler = new Label("<hr />", Label.CONTENT_RAW);
-        descRuler.setStyleName("hr");
-        contentLayout.addComponent(descRuler);
+    private void handleLayoutListeners() {
+        if (orgUnitController.hasAccess()) {
+
+            vlLeft.addListener(new LayoutClickListener() {
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                public void layoutClick(final LayoutClickEvent event) {
+                    // Get the child component which was clicked
+                    if (event.getChildComponent() != null) {
+                        // Is Label?
+                        if (event.getChildComponent().getClass().getCanonicalName() == "com.vaadin.ui.Label") {
+                            final Label child = (Label) event.getChildComponent();
+                            if ((child.getDescription() == ViewConstants.DESC_STATUS)) {
+                                reSwapComponents();
+                                oldComponent = event.getClickedComponent();
+                                swapComponent = editStatus(child.getValue().toString().replace(status, ""));
+                                vlLeft.replaceComponent(oldComponent, swapComponent);
+                            }
+                        }
+                        else {
+                            getWindow().showNotification(
+                                "The click was over a " + event.getChildComponent().getClass().getCanonicalName()
+                                    + event.getChildComponent().getStyleName());
+                        }
+                    }
+                    else {
+                        reSwapComponents();
+                    }
+                }
+
+                private Component editStatus(final String publicStatus) {
+                    final ComboBox cmbStatus = new ComboBox();
+                    cmbStatus.setInvalidAllowed(false);
+                    cmbStatus.setNullSelectionAllowed(false);
+                    final String pubStatus = publicStatus.toUpperCase();
+                    if (publicStatus.equals(PublicStatus.CREATED.toString())) {
+                        cmbStatus.setNullSelectionItemId(PublicStatus.CREATED.toString().toUpperCase());
+                        cmbStatus.addItem(PublicStatus.OPENED.toString().toUpperCase());
+                        cmbStatus.addItem(PublicStatus.CLOSED.toString().toLowerCase());
+                    }
+                    else if (publicStatus.equals(PublicStatus.OPENED.toString())) {
+                        cmbStatus.setNullSelectionItemId(PublicStatus.OPENED.toString().toUpperCase());
+                        cmbStatus.addItem(PublicStatus.CLOSED.toString().toUpperCase());
+                    }
+                    else if (publicStatus.equals(PublicStatus.CLOSED.toString())) {
+                        cmbStatus.setNullSelectionItemId(PublicStatus.WITHDRAWN.toString().toUpperCase());
+                    }
+                    else {
+                        cmbStatus.addItem(PublicStatus.valueOf(pubStatus));
+                    }
+                    cmbStatus.select(1);
+
+                    return cmbStatus;
+                }
+
+                /**
+                 * Switch the component back to the original component (Label) after inline editing
+                 */
+                private void reSwapComponents() {
+                    if (swapComponent != null) {
+                        if (swapComponent instanceof Label) {
+                            ((Label) oldComponent).setValue(((TextArea) swapComponent).getValue());
+                        }
+                        else if ((swapComponent instanceof ComboBox) && ((ComboBox) swapComponent).getValue() != null) {
+                            ((Label) oldComponent).setValue(status
+                                + ((ComboBox) swapComponent).getValue().toString().toUpperCase());
+                            if (((ComboBox) swapComponent)
+                                .getValue().toString().toUpperCase().equals(PublicStatus.OPENED.toString())) {
+                                orgUnitController.openOU();
+                            }
+                            if (((ComboBox) swapComponent)
+                                .getValue().toString().toUpperCase().equals(PublicStatus.WITHDRAWN.toString())) {
+                                orgUnitController.withdrawOU();
+                            }
+                            else if (((ComboBox) swapComponent)
+                                .getValue().toString().toUpperCase().equals(PublicStatus.CLOSED.toString())) {
+                                orgUnitController.closeOU();
+                            }
+                        }
+                        vlLeft.replaceComponent(swapComponent, oldComponent);
+                        swapComponent = null;
+                    }
+                }
+
+            });
+        }
+
     }
 
     /*

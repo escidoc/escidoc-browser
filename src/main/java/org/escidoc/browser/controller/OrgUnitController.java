@@ -43,6 +43,7 @@ import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
+import de.escidoc.core.resources.oum.OrganizationalUnit;
 
 public class OrgUnitController extends Controller {
 
@@ -130,5 +131,51 @@ public class OrgUnitController extends Controller {
             getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
             return false;
         }
+    }
+
+    public OrganizationalUnit openOU() {
+        OrganizationalUnit oU;
+        try {
+            oU = router.getRepositories().organization().findOU(resourceProxy.getId());
+            router.getRepositories().organization().open(oU);
+            showTrayMessage("Opened!", "Organizational Unit was opened successfully!");
+            return oU;
+        }
+        catch (EscidocClientException e) {
+            getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+        return null;
+
+    }
+
+    public OrganizationalUnit closeOU() {
+        OrganizationalUnit oU;
+        try {
+            oU = router.getRepositories().organization().findOU(resourceProxy.getId());
+            router.getRepositories().organization().close(oU);
+            showTrayMessage("Closed!", "Organizational Unit was closed successfully!");
+            return oU;
+        }
+        catch (EscidocClientException e) {
+            getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public OrganizationalUnit withdrawOU() {
+        OrganizationalUnit oU;
+        try {
+            oU = router.getRepositories().organization().findOU(resourceProxy.getId());
+            router.getRepositories().organization().withdraw(oU);
+            showTrayMessage("Closed!", "Organizational Unit was closed successfully!");
+            return oU;
+        }
+        catch (EscidocClientException e) {
+            getRouter().getMainWindow().showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+        return null;
     }
 }
