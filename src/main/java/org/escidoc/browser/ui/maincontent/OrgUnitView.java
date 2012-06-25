@@ -375,11 +375,11 @@ public class OrgUnitView extends View {
                                 vlLeft.replaceComponent(oldComponent, swapComponent);
                             }
                         }
-                        else {
-                            getWindow().showNotification(
-                                "The click was over a " + event.getChildComponent().getClass().getCanonicalName()
-                                    + event.getChildComponent().getStyleName());
-                        }
+                        // else {
+                        // getWindow().showNotification(
+                        // "The click was over a " + event.getChildComponent().getClass().getCanonicalName()
+                        // + event.getChildComponent().getStyleName());
+                        // }
                     }
                     else {
                         reSwapComponents();
@@ -394,7 +394,6 @@ public class OrgUnitView extends View {
                     if (publicStatus.equals(PublicStatus.CREATED.toString())) {
                         cmbStatus.setNullSelectionItemId(PublicStatus.CREATED.toString().toUpperCase());
                         cmbStatus.addItem(PublicStatus.OPENED.toString().toUpperCase());
-                        cmbStatus.addItem(PublicStatus.CLOSED.toString().toLowerCase());
                     }
                     else if (publicStatus.equals(PublicStatus.OPENED.toString())) {
                         cmbStatus.setNullSelectionItemId(PublicStatus.OPENED.toString().toUpperCase());
