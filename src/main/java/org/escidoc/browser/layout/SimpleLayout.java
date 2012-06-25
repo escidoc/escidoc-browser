@@ -213,7 +213,9 @@ public class SimpleLayout extends LayoutDesign {
                 }
             }
             else {
-                ((Tree) sender).removeItem(model);
+                if (sender != null) {
+                    ((Tree) sender).removeItem(model);
+                }
             }
         }
         treeDataSource.remove(model);
@@ -282,6 +284,7 @@ public class SimpleLayout extends LayoutDesign {
         NavigationSimpleLayout navigationLayout = new NavigationSimpleLayout(this, navigationPanel, vlNavigationPanel);
         navigationPanel = navigationLayout.buildNavigationPanel();
         container.addComponent(navigationPanel);
+        this.treeDataSource = navigationLayout.getTreeDataSource();
 
         // TabContainer
         cssContent = new CssLayout();

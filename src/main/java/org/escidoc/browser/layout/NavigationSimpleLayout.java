@@ -178,12 +178,17 @@ public class NavigationSimpleLayout {
         treeDataSource = new TreeDataSourceImpl(repositories.context().findAllWithChildrenInfo());
         treeDataSource.init();
         setTreeDataSource(treeDataSource);
+
         mainNavigationTree = treeBuilder.buildNavigationTree(treeDataSource);
         return mainNavigationTree;
     }
 
     void setTreeDataSource(final TreeDataSource treeDataSource) {
         this.treeDataSource = treeDataSource;
+    }
+
+    public TreeDataSource getTreeDataSource() {
+        return treeDataSource;
     }
 
     private VerticalLayout buildListWithFilter(final BaseNavigationTreeView list) {
