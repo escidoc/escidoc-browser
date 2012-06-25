@@ -30,6 +30,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.vaadin.addons</groupId>
+			<artifactId>messagebox</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.vaadin.addons</groupId>
 			<artifactId>pojo-container</artifactId>
 			<version>0.1.0</version>
 		</dependency>
@@ -93,7 +98,7 @@
 		<compiler.level>1.6</compiler.level>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jetty.port>8084</jetty.port>
-    <jetty.scan.sec>5</jetty.scan.sec>
+		<jetty.scan.sec>5</jetty.scan.sec>
 		<vaadin-widgets-dir>src/main/webapp/VAADIN/widgetsets </vaadin-widgets-dir>
 	</properties>
 	<build>

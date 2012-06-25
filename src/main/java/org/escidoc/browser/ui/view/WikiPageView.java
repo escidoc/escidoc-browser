@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Preconditions;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -55,8 +56,11 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 
+import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
 import de.escidoc.core.resources.common.versionhistory.Version;
+import de.steinwedel.vaadin.MessageBox;
+import de.steinwedel.vaadin.MessageBox.ButtonType;
 
 public class WikiPageView extends View {
 
@@ -123,7 +127,7 @@ public class WikiPageView extends View {
         tbl.setWidth("100%");
         tbl.setContainerDataSource(getVersionHistory());
         tbl.setSortDisabled(true);
-        tbl.setPageLength(7);
+        // tbl.setPageLength(7);
         vlContentPanel.addComponent(tbl);
     }
 
@@ -182,6 +186,7 @@ public class WikiPageView extends View {
                     vlContentPanel.replaceComponent(txtWikiContent, wikiContent);
                     // Enable Edit Button
                     edit.setEnabled(true);
+                    saveContent.setVisible(false);
                 }
             }
         });
@@ -270,9 +275,22 @@ public class WikiPageView extends View {
         edit.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                controller
-                    .getRouter().getMainWindow()
-                    .showNotification("Not yet Implemented " + child.getId(), Notification.TYPE_HUMANIZED_MESSAGE);
+
+                MessageBox mb =
+                    new MessageBox(router.getMainWindow().getWindow(), "Are you sure?", MessageBox.Icon.QUESTION,
+                        "Do you really want to continue?",
+                        new MessageBox.ButtonConfig(MessageBox.ButtonType.YES, "Yes"), new MessageBox.ButtonConfig(
+                            MessageBox.ButtonType.NO, "No"));
+                mb.show(new MessageBox.EventListener() {
+                    private static final long serialVersionUID = 1L;
+
+                    @Override
+                    public void buttonClicked(ButtonType buttonType) {
+                        if (buttonType.equals(MessageBox.ButtonType.YES)) {
+                            controller.deleteItem();
+                        }
+                    }
+                });
 
             }
         });
@@ -304,13 +322,26 @@ public class WikiPageView extends View {
         edit.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                controller
-                    .getRouter().getMainWindow()
-                    .showNotification("Not yet Implemented " + child.getId(), Notification.TYPE_HUMANIZED_MESSAGE);
+
+                try {
+                    router.getMainWindow().open(
+                        new ExternalResource(buildUri(controller.getMetadata(ViewConstants.WIKIPAGEMD))), "_blank");
+                }
+                catch (EscidocClientException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
 
             }
         });
         return edit;
+    }
+
+    private String buildUri(final MetadataRecord metadataRecord) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(router.getServiceLocation().getEscidocUri());
+        builder.append(metadataRecord.getXLinkHref());
+        return builder.toString();
     }
     /* End Header Assets */
 }

@@ -48,7 +48,6 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Preconditions;
 import com.vaadin.Application.UserChangeEvent;
 import com.vaadin.Application.UserChangeListener;
-import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.Resource;
 import com.vaadin.terminal.ThemeResource;
@@ -236,7 +235,8 @@ public class HeaderContainer extends VerticalLayout implements UserChangeListene
         hl.setComponentAlignment(form, Alignment.MIDDLE_RIGHT);
 
         final Button btnSearch = new Button("Go", this, "onClickSearch");
-        btnSearch.setClickShortcut(KeyCode.ENTER);
+
+        // btnSearch.setClickShortcut(KeyCode.ENTER);
         btnSearch.addStyleName("primary");
         btnSearch.removeStyleName("v-button");
 

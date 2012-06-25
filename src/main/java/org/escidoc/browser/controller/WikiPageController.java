@@ -36,10 +36,12 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.escidoc.browser.model.ItemProxy;
+import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.view.WikiPageView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +52,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import cylon.creole.CreoleParser;
 import cylon.creole.DefaultCreoleParser;
@@ -70,8 +73,6 @@ public class WikiPageController extends ItemController {
 
     public ItemProxy itemProxy;
 
-    private String WIKIPAGEMD = "wikiArticle";
-
     private static String URI_DC = "http://purl.org/dc/elements/1.1/";
 
     public WikiPageController(Repositories repositories, Router router, ResourceProxy resourceProxy) {
@@ -86,7 +87,7 @@ public class WikiPageController extends ItemController {
 
     public boolean hasWikiContent() {
         try {
-            ((ItemProxyImpl) resourceProxy).getMetadataRecords().get(WIKIPAGEMD).getContent();
+            ((ItemProxyImpl) resourceProxy).getMetadataRecords().get(ViewConstants.WIKIPAGEMD).getContent();
             return true;
         }
         catch (Exception e) {
@@ -117,7 +118,8 @@ public class WikiPageController extends ItemController {
      * @param wikiContent
      */
     private void getWikiElements(String[] wikiContent) {
-        Element element = ((ItemProxyImpl) resourceProxy).getMetadataRecords().get(WIKIPAGEMD).getContent();
+        Element element =
+            ((ItemProxyImpl) resourceProxy).getMetadataRecords().get(ViewConstants.WIKIPAGEMD).getContent();
         if (element != null && element.getChildNodes() != null) {
             final NodeList nodeList = element.getChildNodes();
             for (int i = 0; i < nodeList.getLength(); i++) {
@@ -141,7 +143,8 @@ public class WikiPageController extends ItemController {
     public void createWikiContent(String title, String content) {
         if (hasWikiContent()) {
             try {
-                MetadataRecord metadataRecord = ((ItemProxyImpl) resourceProxy).getMetadataRecords().get(WIKIPAGEMD);
+                MetadataRecord metadataRecord =
+                    ((ItemProxyImpl) resourceProxy).getMetadataRecords().get(ViewConstants.WIKIPAGEMD);
                 final Element metaDataContent = createWikiDOMElement(title, content);
                 metadataRecord.setContent(metaDataContent);
                 updateMetadata(metadataRecord);
@@ -154,7 +157,7 @@ public class WikiPageController extends ItemController {
             }
         }
         else {
-            MetadataRecord md = new MetadataRecord(WIKIPAGEMD);
+            MetadataRecord md = new MetadataRecord(ViewConstants.WIKIPAGEMD);
             md.setContent(createWikiDOMElement(title, content));
             Item item;
             try {
@@ -229,5 +232,21 @@ public class WikiPageController extends ItemController {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public void deleteItem() {
+        ResourceModel rm = resourceProxy;
+        try {
+            router
+                .getRepositories().item()
+                .finalDelete(router.getRepositories().item().findItemById(resourceProxy.getId()));
+            router.getLayout().closeView(rm, router.getLayout().getTreeDataSource().getParent(rm), null);
+            router.getMainWindow().showNotification(
+                new Window.Notification(ViewConstants.DELETED, Notification.TYPE_TRAY_NOTIFICATION));
+        }
+        catch (EscidocClientException e) {
+            router.getMainWindow().showNotification(
+                new Window.Notification(ViewConstants.ERROR, e.getMessage(), Notification.TYPE_ERROR_MESSAGE));
+        }
     }
 }

@@ -467,4 +467,6 @@ public class ViewConstants {
 
     public static final String PROPERTY_ICON = "icon";
 
+    public static final String WIKIPAGEMD = "wikiArticle";;
+
 }

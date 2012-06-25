@@ -28,25 +28,11 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.validator.StringLengthValidator;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.NativeSelect;
-import com.vaadin.ui.ProgressIndicator;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.Upload;
-import com.vaadin.ui.Upload.FailedEvent;
-import com.vaadin.ui.Upload.FinishedEvent;
-import com.vaadin.ui.Upload.StartedEvent;
-import com.vaadin.ui.Upload.SucceededEvent;
-import com.vaadin.ui.Window;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ContainerProxy;
@@ -67,11 +53,24 @@ import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.AddResourceListener;
 import org.escidoc.browser.ui.listeners.MetadataFileReceiver;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.google.common.base.Preconditions;
+import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.validator.StringLengthValidator;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.NativeSelect;
+import com.vaadin.ui.ProgressIndicator;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.Upload;
+import com.vaadin.ui.Upload.FailedEvent;
+import com.vaadin.ui.Upload.FinishedEvent;
+import com.vaadin.ui.Upload.StartedEvent;
+import com.vaadin.ui.Upload.SucceededEvent;
+import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.EscidocException;
@@ -460,7 +459,7 @@ public class ResourceAddViewImpl implements ResourceAddView {
     private void updateDataSource(final VersionableResource createdResource, String resourceType) {
         Preconditions.checkNotNull(createdResource, "createdResource is null");
         Preconditions.checkNotNull(resourceType, "resourceType is null");
-        Preconditions.checkNotNull(treeDataSource, "treeDataSource is null");
+        // Preconditions.checkNotNull(treeDataSource, "treeDataSource is null");
         if (resourceType.equals(ResourceType.CONTAINER.toString())) {
             treeDataSource.addChild(parent, new ContainerModel(createdResource));
         }

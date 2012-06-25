@@ -345,9 +345,6 @@ ul.horizontal_list li {
 	padding-left:10px;
 }
 
-
-
-
 .v-menubar {
 	height: 28px;
 	background: #efefef repeat-x;
@@ -400,4 +397,9 @@ ul.horizontal_list li {
 	vertical-align: top;
 	float: right;
 }
-.wikiarticle .v.label ul li  {list-style-type: square;}
+.wikiarticle ul li {
+      list-style-type: square;
+      padding-left:0px;
+      margin:5px;
+    }
+    
