@@ -84,6 +84,8 @@ public class WikiPageView extends View {
 
     private MetadataRecord md;
 
+    private Table tbl;
+
     public WikiPageView(Router router, ResourceProxy resourceProxy, WikiPageController wikiPageController) {
         Preconditions.checkNotNull(router, "router is null: %s", router);
         Preconditions.checkNotNull(resourceProxy, "resourceProxy is null: %s", resourceProxy);
@@ -112,7 +114,7 @@ public class WikiPageView extends View {
         vlContentPanel = new VerticalLayout();
         vlContentPanel.setImmediate(false);
         vlContentPanel.setWidth("100.0%");
-        vlContentPanel.setHeight("100.0%");
+        // vlContentPanel.setHeight("100.0%");
         vlContentPanel.setMargin(true, true, false, true);
 
         buildHeaderLayout(vlContentPanel);
@@ -123,7 +125,7 @@ public class WikiPageView extends View {
     }
 
     private void buildTableVersions(VerticalLayout vlContentPanel) {
-        Table tbl = new Table();
+        tbl = new Table();
         tbl.setWidth("100%");
         tbl.setContainerDataSource(getVersionHistory());
         tbl.setSortDisabled(true);
@@ -147,9 +149,9 @@ public class WikiPageView extends View {
             Item item = container.addItem(version.getObjid());
             item.getItemProperty("Version").setValue("Version " + version.getVersionNumber());
             item.getItemProperty("Modified Date").setValue(version.getTimestamp().toString());
-            item.getItemProperty("Icon").setValue(buildVersionIconsLayout());
+            item.getItemProperty("Icon").setValue(buildVersionIconsLayout(version));
         }
-
+        tbl.setColumnWidth("Icon", 40);
         container.sort(new Object[] { "Version" }, new boolean[] { true });
     }
 
@@ -165,7 +167,7 @@ public class WikiPageView extends View {
         controller.getWikiTitle(content);
 
         wikiContent.setWidth("100%");
-        wikiContent.setHeight("400px");
+        // wikiContent.setHeight("400px");
         wikiContent.addStyleName("wikiarticle");
         // Invisible resources
         txtWikiContent = new TextArea("Wiki Content", content);
@@ -240,12 +242,12 @@ public class WikiPageView extends View {
         return mainOperationIcons;
     }
 
-    private HorizontalLayout buildVersionIconsLayout() {
+    private HorizontalLayout buildVersionIconsLayout(Version version) {
         HorizontalLayout mainOperationIcons = new HorizontalLayout();
 
-        Button share = showShare(resourceProxy);
+        Button share = showShare(version);
         mainOperationIcons.addComponent(share);
-        Button download = downloadShow(resourceProxy);
+        Button download = downloadShowVersion(version);
         mainOperationIcons.addComponent(download);
         return mainOperationIcons;
     }
@@ -275,7 +277,6 @@ public class WikiPageView extends View {
         edit.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-
                 MessageBox mb =
                     new MessageBox(router.getMainWindow().getWindow(), "Are you sure?", MessageBox.Icon.QUESTION,
                         "Do you really want to continue?",
@@ -314,6 +315,23 @@ public class WikiPageView extends View {
         return edit;
     }
 
+    private Button showShare(Version version) {
+        Button edit = new Button();
+        edit.setStyleName(BaseTheme.BUTTON_LINK);
+        edit.setDescription(ViewConstants.PROPERTY_SHARE);
+        edit.setIcon(new ThemeResource("images/wpzoom/share.png"));
+        edit.addListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                controller
+                    .getRouter().getMainWindow()
+                    .showNotification("Not yet Implemented ", Notification.TYPE_HUMANIZED_MESSAGE);
+
+            }
+        });
+        return edit;
+    }
+
     private Button downloadShow(final ResourceModel child) {
         Button edit = new Button();
         edit.setStyleName(BaseTheme.BUTTON_LINK);
@@ -322,19 +340,58 @@ public class WikiPageView extends View {
         edit.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-
                 try {
                     router.getMainWindow().open(
                         new ExternalResource(buildUri(controller.getMetadata(ViewConstants.WIKIPAGEMD))), "_blank");
                 }
                 catch (EscidocClientException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    controller
+                        .getRouter()
+                        .getMainWindow()
+                        .showNotification("No content to download! Could it be that this Wiki is empty!?",
+                            Notification.TYPE_HUMANIZED_MESSAGE);
                 }
 
             }
         });
         return edit;
+    }
+
+    private Button downloadShowVersion(final Version version) {
+        Button edit = new Button();
+        edit.setStyleName(BaseTheme.BUTTON_LINK);
+        edit.setDescription(ViewConstants.PROPERTY_DOWNLOAD);
+        edit.setIcon(new ThemeResource("images/wpzoom/eye.png"));
+        edit.addListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                // version.getObjid()
+                // version.get
+                LOG.debug(version.getXLinkHref());
+                try {
+                    controller.getMetadata(ViewConstants.WIKIPAGEMD);
+                    router.getMainWindow().open(new ExternalResource(buildUri(version.getXLinkHref()), "_blank"));
+
+                }
+                catch (EscidocClientException e) {
+                    controller
+                        .getRouter()
+                        .getMainWindow()
+                        .showNotification("No content to download! Could it be that this Wiki is empty!?",
+                            Notification.TYPE_HUMANIZED_MESSAGE);
+                }
+
+            }
+        });
+        return edit;
+    }
+
+    private String buildUri(String xLinkVersion) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(router.getServiceLocation().getEscidocUri());
+        LOG.debug(router.getServiceLocation().getEscidocUri());
+        builder.append(xLinkVersion + "/md-records/md-record/" + ViewConstants.WIKIPAGEMD);
+        return builder.toString();
     }
 
     private String buildUri(final MetadataRecord metadataRecord) {
