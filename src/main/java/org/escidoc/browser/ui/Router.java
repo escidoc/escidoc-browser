@@ -397,7 +397,6 @@ public class Router {
                     + clickedResource.getType().getLabel() + "can not be shown.");
 
         }
-        LOG.debug("ControllerID[" + controllerId + "]");
         return controllerId;
     }
 

@@ -28,8 +28,24 @@
  */
 package org.escidoc.browser.ui;
 
-import com.google.common.base.Preconditions;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 
+import org.escidoc.browser.model.PropertyId;
+import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.RoleRepository.RoleModel;
+import org.escidoc.browser.ui.role.OnRoleSelect;
+import org.escidoc.browser.ui.useraccount.UserRolesView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Preconditions;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanItem;
@@ -46,23 +62,6 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
-
-import org.escidoc.browser.model.PropertyId;
-import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.model.ResourceType;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.repository.RoleRepository.RoleModel;
-import org.escidoc.browser.ui.role.OnRoleSelect;
-import org.escidoc.browser.ui.useraccount.UserRolesView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.aa.role.ScopeDef;
@@ -230,8 +229,8 @@ public class GroupRolesView extends Panel {
                         bind(resourceSelect, loadData((ResourceType) event.getProperty().getValue()));
                     }
                     catch (UnsupportedOperationException e) {
-                        router.getMainWindow().showNotification(ViewConstants.ERROR, e.getMessage(),
-                            Window.Notification.TYPE_ERROR_MESSAGE);
+                        router.getMainWindow().showNotification(ViewConstants.ERROR + "Unsupported Operation",
+                            e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
                     }
                     catch (EscidocClientException e) {
                         router.getMainWindow().showNotification(ViewConstants.ERROR, e.getMessage(),
@@ -284,7 +283,8 @@ public class GroupRolesView extends Panel {
         assignGrantButton.addListener(new Button.ClickListener() {
 
             @Override
-            public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused")
+            ClickEvent event) {
                 try {
                     if (getSelectedRole() == null) {
                         router.getMainWindow().showNotification("Role can not be empty", "",
@@ -414,6 +414,7 @@ public class GroupRolesView extends Panel {
         Collection<?> collection = roleNameSelect.getContainerDataSource().getItemIds();
         for (Object object : collection) {
             ResourceModel rm = (ResourceModel) object;
+            LOG.debug("    Inside " + rm.getName());
             if (grant.getProperties() == null || grant.getProperties().getRole() == null
                 || grant.getProperties().getRole().getXLinkTitle() == null) {
                 return;
@@ -422,34 +423,38 @@ public class GroupRolesView extends Panel {
                 roleNameSelect.setValue(rm);
             }
         }
-
         bindResourceType(grantRow, (RoleModel) roleNameSelect.getValue(), grant);
     }
 
     private void bindResourceType(HorizontalLayout grantRow, RoleModel value, Grant grant)
         throws EscidocClientException {
+        if (value == null) {
+            router.getMainWindow().showNotification("Inconsistency Detected",
+                "There was a grant which does no longer exist as a role: " + grant.getXLinkTitle());
+        }
+        else {
+            final List<ResourceType> resourceTypeList = buildScopeDefinitions(value);
 
-        final List<ResourceType> resourceTypeList = buildScopeDefinitions(value);
+            NativeSelect resourceTypeSelect = (NativeSelect) grantRow.getComponent(1);
+            final BeanItemContainer<ResourceType> dataSource =
+                new BeanItemContainer<ResourceType>(ResourceType.class, resourceTypeList);
+            resourceTypeSelect.setContainerDataSource(dataSource);
+            resourceTypeSelect.setItemCaptionPropertyId(PropertyId.NAME);
 
-        NativeSelect resourceTypeSelect = (NativeSelect) grantRow.getComponent(1);
-        final BeanItemContainer<ResourceType> dataSource =
-            new BeanItemContainer<ResourceType>(ResourceType.class, resourceTypeList);
-        resourceTypeSelect.setContainerDataSource(dataSource);
-        resourceTypeSelect.setItemCaptionPropertyId(PropertyId.NAME);
+            // TODO refactor this
+            if (dataSource.size() > 0 && (NativeSelect) grantRow.getComponent(2) != null) {
+                resourceTypeSelect.setValue(dataSource.getIdByIndex(0));
 
-        // TODO refactor this
-        if (dataSource.size() > 0 && (NativeSelect) grantRow.getComponent(2) != null) {
-            resourceTypeSelect.setValue(dataSource.getIdByIndex(0));
+                loadData((NativeSelect) grantRow.getComponent(2), dataSource.getIdByIndex(0));
 
-            loadData((NativeSelect) grantRow.getComponent(2), dataSource.getIdByIndex(0));
-
-            for (Object object : ((NativeSelect) grantRow.getComponent(2)).getContainerDataSource().getItemIds()) {
-                Reference assignedOn = grant.getProperties().getAssignedOn();
-                if (assignedOn == null) {
-                    LOG.debug("no resource: " + assignedOn);
-                }
-                else if (assignedOn != null && getRoleName(object).equalsIgnoreCase(assignedOn.getXLinkTitle())) {
-                    ((NativeSelect) grantRow.getComponent(2)).select(object);
+                for (Object object : ((NativeSelect) grantRow.getComponent(2)).getContainerDataSource().getItemIds()) {
+                    Reference assignedOn = grant.getProperties().getAssignedOn();
+                    if (assignedOn == null) {
+                        LOG.debug("no resource: " + assignedOn);
+                    }
+                    else if (assignedOn != null && getRoleName(object).equalsIgnoreCase(assignedOn.getXLinkTitle())) {
+                        ((NativeSelect) grantRow.getComponent(2)).select(object);
+                    }
                 }
             }
         }
