@@ -28,11 +28,9 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import gov.loc.www.zing.srw.SearchRetrieveRequestType;
+import com.google.common.base.Preconditions;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.apache.axis.types.NonNegativeInteger;
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
@@ -42,7 +40,8 @@ import org.escidoc.browser.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.escidoc.core.client.OrganizationalUnitHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -57,6 +56,7 @@ import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.oum.OrganizationalUnit;
 import de.escidoc.core.resources.oum.Parent;
 import de.escidoc.core.resources.oum.Parents;
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 public class OrganizationUnitRepository implements Repository {
 
@@ -98,7 +98,10 @@ public class OrganizationUnitRepository implements Repository {
 
     @Override
     public List<ResourceModel> findTopLevelMembersById(final String parentId) throws EscidocClientException {
-        final List<OrganizationalUnit> children = client.retrieveChildObjectsAsList(parentId);
+        SearchRetrieveRequestType filter = new SearchRetrieveRequestType();
+        filter.setMaximumRecords(new NonNegativeInteger("1000000"));
+        filter.setQuery(" \"/parents/parent/id\" =\"" + parentId + "\"");
+        final List<OrganizationalUnit> children = client.retrieveOrganizationalUnitsAsList(filter);// client.retrieveChildObjectsAsList(parentId);
         final List<ResourceModel> list = new ArrayList<ResourceModel>(children.size());
         for (final OrganizationalUnit ou : children) {
             list.add(new OrgUnitModel(ou));
