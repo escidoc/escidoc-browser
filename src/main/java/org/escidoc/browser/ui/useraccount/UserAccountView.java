@@ -28,8 +28,20 @@
  */
 package org.escidoc.browser.ui.useraccount;
 
-import com.google.common.base.Preconditions;
+import java.net.URISyntaxException;
 
+import org.escidoc.browser.controller.UserAccountController;
+import org.escidoc.browser.model.internal.UserProxy;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.internal.ActionIdConstants;
+import org.escidoc.browser.repository.internal.UserAccountRepository;
+import org.escidoc.browser.ui.Router;
+import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.maincontent.View;
+import org.escidoc.browser.ui.view.helpers.ResourceProperties;
+import org.escidoc.browser.ui.view.helpers.ResourcePropertiesUserAccountView;
+
+import com.google.common.base.Preconditions;
 import com.vaadin.data.Validator.EmptyValueException;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Alignment;
@@ -46,18 +58,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Runo;
-
-import org.escidoc.browser.controller.UserAccountController;
-import org.escidoc.browser.model.internal.UserProxy;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.repository.internal.ActionIdConstants;
-import org.escidoc.browser.repository.internal.UserAccountRepository;
-import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.maincontent.View;
-import org.escidoc.browser.ui.view.helpers.ResourcePropertiesVH;
-
-import java.net.URISyntaxException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.aa.useraccount.Attribute;
@@ -78,7 +78,7 @@ public class UserAccountView extends View {
 
     private Button addPreferenceButton;
 
-    private ResourcePropertiesVH resoucePropertiesView;
+    private ResourceProperties resoucePropertiesView;
 
     private Repositories repositories;
 
@@ -171,7 +171,8 @@ public class UserAccountView extends View {
         }
 
         @Override
-        public void buttonClick(@SuppressWarnings("unused") final com.vaadin.ui.Button.ClickEvent event) {
+        public void buttonClick(@SuppressWarnings("unused")
+        final com.vaadin.ui.Button.ClickEvent event) {
             addAttributeButton.setEnabled(false);
             final HorizontalLayout hl = new HorizontalLayout();
             final TextField key = new TextField();
@@ -194,7 +195,8 @@ public class UserAccountView extends View {
             btnadd.setIcon(new ThemeResource("images/assets/plus.png"));
             btnadd.addListener(new Button.ClickListener() {
                 @Override
-                public void buttonClick(@SuppressWarnings("unused") final com.vaadin.ui.Button.ClickEvent event) {
+                public void buttonClick(@SuppressWarnings("unused")
+                final com.vaadin.ui.Button.ClickEvent event) {
                     if (isNotValid(key, value)) {
                         showMessage();
                     }
@@ -244,7 +246,8 @@ public class UserAccountView extends View {
         }
 
         @Override
-        public void buttonClick(@SuppressWarnings("unused") com.vaadin.ui.Button.ClickEvent event) {
+        public void buttonClick(@SuppressWarnings("unused")
+        com.vaadin.ui.Button.ClickEvent event) {
             try {
                 form.commit();
                 if (!passwordField.getValue().equals(verifyPasswordField.getValue())) {
@@ -340,28 +343,6 @@ public class UserAccountView extends View {
         final Form form = new Form();
         form.setImmediate(true);
 
-        buildLoginNameField(form);
-        final TextField realNameField = buildRealNameField(form);
-        final PasswordField passwordField = buildPasswordField(form);
-        final PasswordField verifyPasswordField = buildVerifyPasswordField(form);
-
-        Button saveButton =
-            new Button(ViewConstants.SAVE, new OnSaveClick(realNameField, passwordField, form, verifyPasswordField));
-
-        saveButton.setWidth("-1px");
-        saveButton.setHeight("-1px");
-        form.getLayout().addComponent(saveButton);
-
-        form.getField("txtNameContext").setRequired(true);
-        form.getField("txtNameContext").setRequiredError("Name is missing");
-
-        Panel formPanel = new Panel(ViewConstants.USER_PASS_FORM);
-        VerticalLayout vl = new VerticalLayout();
-        vl.setMargin(false, true, false, true);
-        vl.addComponent(form);
-        formPanel.setContent(vl);
-
-        vlAccCreateContext.addComponent(formPanel);
         vlAccCreateContext.addComponent(buildRolesView());
 
         vlAccCreateContext.addComponent(buildPreferencesView());
@@ -369,63 +350,6 @@ public class UserAccountView extends View {
             vlAccCreateContext.addComponent(buildAttributesView());
         }
 
-        setEnability(realNameField, passwordField, verifyPasswordField);
-    }
-
-    private void setEnability(
-        final TextField realNameField, final PasswordField passwordField, final PasswordField verifyPasswordField)
-        throws EscidocClientException, URISyntaxException {
-
-        boolean allowedToUpdate = isAllowedToUpdate();
-        realNameField.setEnabled(allowedToUpdate);
-        passwordField.setEnabled(allowedToUpdate);
-        verifyPasswordField.setEnabled(allowedToUpdate);
-        addPreferenceButton.setEnabled(allowedToUpdate);
-    }
-
-    private static PasswordField buildVerifyPasswordField(final Form form) {
-        final PasswordField verifyPasswordField = new PasswordField("Verify Password");
-        verifyPasswordField.setImmediate(false);
-        verifyPasswordField.setWidth("-1px");
-        verifyPasswordField.setHeight("-1px");
-        form.addField("txtPassword2", verifyPasswordField);
-        return verifyPasswordField;
-    }
-
-    private static PasswordField buildPasswordField(final Form form) {
-        final PasswordField passwordField = new PasswordField("Password");
-        passwordField.setImmediate(false);
-        passwordField.setNullSettingAllowed(false);
-        passwordField.setWidth("-1px");
-        passwordField.setHeight("-1px");
-        form.addField("txtPassword", passwordField);
-        return passwordField;
-    }
-
-    private TextField buildRealNameField(final Form form) {
-        final TextField realNameField = new TextField();
-        realNameField.setCaption("Real Name");
-        realNameField.setValue(userProxy.getName());
-        realNameField.setImmediate(false);
-        realNameField.setWidth("-1px");
-        realNameField.setHeight("-1px");
-        realNameField.setInvalidAllowed(false);
-        realNameField.setRequired(true);
-        form.addField("txtNameContext", realNameField);
-        return realNameField;
-    }
-
-    private void buildLoginNameField(final Form form) {
-        final TextField loginNameField = new TextField();
-        loginNameField.setCaption("Login Name");
-        loginNameField.setValue(userProxy.getLoginName());
-        loginNameField.setEnabled(false);
-        loginNameField.setImmediate(false);
-        loginNameField.setWidth("-1px");
-        loginNameField.setHeight("-1px");
-        loginNameField.setInvalidAllowed(false);
-        loginNameField.setRequired(true);
-        form.addField("txtLoginName", loginNameField);
     }
 
     private boolean isAllowedToUpdate() throws EscidocClientException, URISyntaxException {
@@ -509,7 +433,8 @@ public class UserAccountView extends View {
         vlResourceProperties.setMargin(false);
 
         // creating the properties / without the breadcrump
-        resoucePropertiesView = new ResourcePropertiesVH(userProxy, router);
+        resoucePropertiesView = new ResourcePropertiesUserAccountView(userProxy, router, uac);
+        resoucePropertiesView.buildViews();
         vlResourceProperties.addComponent(resoucePropertiesView.getContentLayout());
         return vlResourceProperties;
     }

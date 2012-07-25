@@ -30,10 +30,13 @@ package org.escidoc.browser.ui.view.helpers;
 
 import java.net.MalformedURLException;
 
+import org.escidoc.browser.controller.UserAccountController;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.ResourceType;
+import org.escidoc.browser.model.internal.UserProxy;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
+import org.escidoc.browser.ui.listeners.ChangeUserPassword;
 import org.escidoc.browser.ui.listeners.VersionHistoryClickListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,19 +55,24 @@ public class CreateResourceLinksVH {
 
     private static final ThemeResource ICON_HISTORY = new ThemeResource("images/wpzoom/clock.png");
 
+    private static final ThemeResource ICON_KEY = new ThemeResource("images/wpzoom/key.png");
+
+    private Link l;
+
+    private HorizontalLayout hl;
+
     public CreateResourceLinksVH(String url, ResourceProxy resourceProxy,
         AbstractComponentContainer componentContainer, Router router) {
-        HorizontalLayout vl = new HorizontalLayout();
+        HorizontalLayout vl = buildInitialElements();
+
         if (resourceProxy.getType().equals(ResourceType.ITEM)) {
             vl.setStyleName("permanentLinkItem");
         }
         else {
             vl.setStyleName("permanentLink");
         }
-
-        vl.setMargin(false);
-        Link l;
         if (!resourceProxy.getType().equals(ResourceType.CONTEXT)) {
+
             final Button btnVersionHistory =
                 new Button(" ", new VersionHistoryClickListener(resourceProxy, router.getMainWindow(),
                     router.getRepositories()));
@@ -83,11 +91,33 @@ public class CreateResourceLinksVH {
             l.setDescription(ViewConstants.PERMANENT_LINK);
             l.setIcon(new ThemeResource("images/wpzoom/globe-1.png"));
             vl.addComponent(l);
-            componentContainer.addComponent(vl);
+
         }
         catch (MalformedURLException e) {
             componentContainer.getWindow().showNotification(ViewConstants.COULD_NOT_RETRIEVE_APPLICATION_URL);
             LOG.error(ViewConstants.COULD_NOT_RETRIEVE_APPLICATION_URL + e.getLocalizedMessage());
         }
+        componentContainer.addComponent(hl);
+    }
+
+    private HorizontalLayout buildInitialElements() {
+        hl = new HorizontalLayout();
+        hl.setMargin(false);
+        return hl;
+    }
+
+    public CreateResourceLinksVH(String url, UserProxy userProxy, AbstractComponentContainer componentContainer,
+        Router router, UserAccountController controller) {
+        buildInitialElements();
+        // Checking if has access on changing password here as well
+        HorizontalLayout hl = buildInitialElements();
+        hl.setStyleName("permanentLink");
+        final Button btnVersionHistory = new Button(" ", new ChangeUserPassword(userProxy, router, controller));
+        btnVersionHistory.setStyleName(BaseTheme.BUTTON_LINK);
+        btnVersionHistory.setDescription("Change user password");
+        btnVersionHistory.addStyleName("paddingright10");
+        btnVersionHistory.setIcon(ICON_KEY);
+        hl.addComponent(btnVersionHistory);
+        componentContainer.addComponent(hl);
     }
 }
