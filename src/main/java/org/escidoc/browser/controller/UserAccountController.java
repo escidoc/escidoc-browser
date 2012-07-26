@@ -28,13 +28,17 @@
  */
 package org.escidoc.browser.controller;
 
+import java.net.URISyntaxException;
+
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.UserProxy;
 import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.useraccount.UserAccountView;
+import org.jfree.util.Log;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.aa.useraccount.Grant;
@@ -80,9 +84,34 @@ public class UserAccountController extends Controller {
         return grant.getProperties().getRole().getObjid().equals(AppConstants.ESCIDOC_SYSADMIN_ROLE);
     }
 
-    // TODO Fix this method with PDP
     public boolean hasAccessOnPreferences(String id) {
-        return true;
+        try {
+            return router
+                .getRepositories().pdp().isAction(ActionIdConstants.UPDATE_USER_ACCOUNT).forCurrentUser()
+                .forResource(resourceProxy.getId()).permitted();
+        }
+        catch (EscidocClientException e) {
+            Log.debug(ViewConstants.ERROR + e.getLocalizedMessage());
+        }
+        catch (URISyntaxException e) {
+            Log.debug(ViewConstants.ERROR + e.getLocalizedMessage());
+        }
+        return false;
+    }
+
+    public boolean isAllowedToUpdate() {
+        try {
+            return router
+                .getRepositories().pdp().isAction(ActionIdConstants.UPDATE_USER_ACCOUNT).forCurrentUser()
+                .forResource(resourceProxy.getId()).permitted();
+        }
+        catch (EscidocClientException e) {
+            Log.debug(ViewConstants.ERROR + e.getLocalizedMessage());
+        }
+        catch (URISyntaxException e) {
+            Log.debug(ViewConstants.ERROR + e.getLocalizedMessage());
+        }
+        return false;
     }
 
     public Grants getGrantsForUser(String id) {

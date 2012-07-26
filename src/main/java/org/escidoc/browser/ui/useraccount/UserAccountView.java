@@ -33,7 +33,6 @@ import java.net.URISyntaxException;
 import org.escidoc.browser.controller.UserAccountController;
 import org.escidoc.browser.model.internal.UserProxy;
 import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.repository.internal.UserAccountRepository;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
@@ -42,7 +41,6 @@ import org.escidoc.browser.ui.view.helpers.ResourceProperties;
 import org.escidoc.browser.ui.view.helpers.ResourcePropertiesUserAccountView;
 
 import com.google.common.base.Preconditions;
-import com.vaadin.data.Validator.EmptyValueException;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -52,7 +50,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -227,57 +224,6 @@ public class UserAccountView extends View {
         }
     }
 
-    private final class OnSaveClick implements Button.ClickListener {
-
-        private final TextField realNameField;
-
-        private final PasswordField passwordField;
-
-        private final Form form;
-
-        private final PasswordField verifyPasswordField;
-
-        private OnSaveClick(TextField realNameField, PasswordField passwordField, Form form,
-            PasswordField verifyPasswordField) {
-            this.realNameField = realNameField;
-            this.passwordField = passwordField;
-            this.form = form;
-            this.verifyPasswordField = verifyPasswordField;
-        }
-
-        @Override
-        public void buttonClick(@SuppressWarnings("unused")
-        com.vaadin.ui.Button.ClickEvent event) {
-            try {
-                form.commit();
-                if (!passwordField.getValue().equals(verifyPasswordField.getValue())) {
-                    router
-                        .getMainWindow()
-                        .showNotification(
-                            "Password verification failed, please try again and make sure you are typing the same password twice ",
-                            Window.Notification.TYPE_TRAY_NOTIFICATION);
-                    return;
-                }
-                if (passwordField.getValue().toString() != "") {
-                    ur.updatePassword(userProxy, passwordField.getValue().toString());
-                }
-                else {
-                    ur.updateName(userProxy, realNameField.getValue().toString());
-                }
-                router.getMainWindow().showNotification("User updateds successfully ",
-                    Window.Notification.TYPE_TRAY_NOTIFICATION);
-            }
-            catch (EmptyValueException e) {
-                router.getMainWindow().showNotification("Please fill in all the required elements in the form",
-                    Window.Notification.TYPE_TRAY_NOTIFICATION);
-            }
-            catch (EscidocClientException e) {
-                router.getMainWindow().showNotification(ViewConstants.ERROR_UPDATING_USER + e.getLocalizedMessage(),
-                    Window.Notification.TYPE_ERROR_MESSAGE);
-            }
-        }
-    }
-
     private static Panel createContentPanel() {
         Panel contentPanel = new Panel();
         contentPanel.setStyleName(Runo.PANEL_LIGHT);
@@ -350,12 +296,6 @@ public class UserAccountView extends View {
             vlAccCreateContext.addComponent(buildAttributesView());
         }
 
-    }
-
-    private boolean isAllowedToUpdate() throws EscidocClientException, URISyntaxException {
-        return router
-            .getRepositories().pdp().isAction(ActionIdConstants.UPDATE_USER_ACCOUNT).forCurrentUser()
-            .forResource(userProxy.getId()).permitted();
     }
 
     private Component buildAttributesView() throws EscidocClientException {
