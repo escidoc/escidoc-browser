@@ -168,7 +168,7 @@ public class ResourcePropertiesUserAccountView extends ResourceProperties {
                     else {
                         try {
                             router.getRepositories().user().updateName(userProxy, nameTextField.getValue().toString());
-                            router.getMainWindow().showNotification("User updateds successfully ",
+                            router.getMainWindow().showNotification("User updated successfully ",
                                 Window.Notification.TYPE_TRAY_NOTIFICATION);
                             nameLabel.setValue(nameTextField.getValue().toString());
                             vl.replaceComponent(nameTextField, nameLabel);
