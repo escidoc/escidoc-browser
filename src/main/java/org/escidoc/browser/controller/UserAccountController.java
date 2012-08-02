@@ -109,10 +109,19 @@ public class UserAccountController extends Controller {
                 .forResource(resourceProxy.getId()).permitted();
         }
         catch (EscidocClientException e) {
+            showError(ViewConstants.ERROR + e.getLocalizedMessage());
             Log.debug(ViewConstants.ERROR + e.getLocalizedMessage());
         }
         catch (URISyntaxException e) {
+            showError(ViewConstants.ERROR + e.getLocalizedMessage());
             Log.debug(ViewConstants.ERROR + e.getLocalizedMessage());
+        }
+        return false;
+    }
+
+    public boolean isSelftUser() {
+        if (router.getApp().getCurrentUser().getUserId().equals(resourceProxy.getId())) {
+            return true;
         }
         return false;
     }
@@ -152,4 +161,5 @@ public class UserAccountController extends Controller {
                 new Window.Notification(ViewConstants.ERROR, e.getMessage(), Notification.TYPE_ERROR_MESSAGE));
         }
     }
+
 }

@@ -64,13 +64,15 @@ public class ResourcePropertiesUserAccountView extends ResourceProperties {
 
         pnlPropertiesRight.addComponent(descMetadata2);
         cssLayout.addComponent(pnlPropertiesRight);
-        handleClicksOnResourceLayout();
 
+        // Should not activate/deactivate user if same user. Against laws of nature!
+        if (!controller.isSelftUser()) {
+            handleClicksOnResourceLayout();
+        }
     }
 
     private void handleClicksOnResourceLayout() {
         vlPropertiesLeft.addListener(new LayoutClickListener() {
-
             private static final long serialVersionUID = 1L;
 
             @Override
