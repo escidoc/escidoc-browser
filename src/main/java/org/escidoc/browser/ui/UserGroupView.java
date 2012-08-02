@@ -41,7 +41,7 @@ import org.escidoc.browser.ui.listeners.AddOrgUnitstoGroup;
 import org.escidoc.browser.ui.maincontent.View;
 import org.escidoc.browser.ui.orgunit.OrgUnitTreeView;
 import org.escidoc.browser.ui.view.helpers.ResourceProperties;
-import org.escidoc.browser.ui.view.helpers.ResourcePropertiesVH;
+import org.escidoc.browser.ui.view.helpers.ResourcePropertiesUserGroupView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -148,7 +148,7 @@ public class UserGroupView extends View {
         vlResourceProperties.setMargin(false);
 
         // creating the properties / without the breadcrump
-        resoucePropertiesView = new ResourcePropertiesVH(resourceProxy, router);
+        resoucePropertiesView = new ResourcePropertiesUserGroupView(resourceProxy, router, controller);
         resoucePropertiesView.buildViews();
         vlResourceProperties.addComponent(resoucePropertiesView.getContentLayout());
         return vlResourceProperties;

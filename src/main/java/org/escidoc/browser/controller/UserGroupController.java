@@ -33,6 +33,10 @@ import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.UserGroupModel;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.UserGroupView;
+import org.escidoc.browser.ui.ViewConstants;
+
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -62,5 +66,32 @@ public class UserGroupController extends Controller {
 
     public void addOrgUnitToGroup(UserGroupModel resourceProxy, String id) throws EscidocClientException {
         repositories.group().addOrgUnit(resourceProxy.getId(), id);
+    }
+
+    public void deactivateUser() {
+        try {
+            repositories.group().deactivateUserGroup(resourceProxy.getId());
+            router.getMainWindow().showNotification(
+                new Window.Notification(ViewConstants.LOCKED, Notification.TYPE_TRAY_NOTIFICATION));
+
+        }
+        catch (EscidocClientException e) {
+            router.getMainWindow().showNotification(
+                new Window.Notification(ViewConstants.ERROR, e.getMessage(), Notification.TYPE_ERROR_MESSAGE));
+        }
+    }
+
+    public void activateUser() {
+        try {
+            repositories.group().activateUserGroup(resourceProxy.getId());
+            router.getMainWindow().showNotification(
+                new Window.Notification(ViewConstants.UNLOCKED, Notification.TYPE_TRAY_NOTIFICATION));
+
+        }
+        catch (EscidocClientException e) {
+            router.getMainWindow().showNotification(
+                new Window.Notification(ViewConstants.ERROR, e.getMessage(), Notification.TYPE_ERROR_MESSAGE));
+        }
+
     }
 }
