@@ -137,6 +137,8 @@ public class ViewConstants {
 
     public static final String DELETE_CONTEXT = "Delete Context";
 
+    public static final String DELETE_ORG = "Delete Organization";
+
     public static final String CREATED_BY = "Created by";
 
     public static final String LAST_MODIFIED_BY = "Last modification by";

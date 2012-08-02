@@ -194,8 +194,8 @@ public class OrgUnitDataSource implements TreeDataSource {
         Preconditions.checkNotNull(resourceModel, "resourceModel is null: %s", resourceModel);
         switch (resourceModel.getType()) {
             case ITEM:
-                return dataSource.removeItem(resourceModel);
             case CONTAINER:
+            case ORG_UNIT:
                 return dataSource.removeItem(resourceModel);
             default:
                 throw new UnsupportedOperationException("Cannot remove resource with the type: "

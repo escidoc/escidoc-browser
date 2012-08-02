@@ -43,7 +43,7 @@ class ActionList {
 
     static final Action ACTION_ADD_ITEM = new Action(ViewConstants.ADD_ITEM);
 
-    static final Action ACTION_DELETE_ITEM = new Action(ViewConstants.DELETE_RESOURCE);
+    static final Action ACTION_DELETE_RESOURCE = new Action(ViewConstants.DELETE_RESOURCE);
 
     static final Action ACTION_DELETE_CONTAINER = new Action(ViewConstants.DELETE_CONTAINER);
 
@@ -91,5 +91,7 @@ class ActionList {
     public static final Action ACTION_DELETE_USER_ACCOUNT = new Action(ViewConstants.DELETE_USER_ACCOUNT);
 
     public static final Action ACTION_DELETE_USER_GROUP = new Action(ViewConstants.DELETE_USER_GROUP);
+
+    public static final Action ACTION_DELETE_ORG = new Action(ViewConstants.DELETE_ORG);
 
 }
