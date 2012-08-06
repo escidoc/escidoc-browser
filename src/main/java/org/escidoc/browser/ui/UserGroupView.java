@@ -28,8 +28,24 @@
  */
 package org.escidoc.browser.ui;
 
-import com.google.common.base.Preconditions;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.escidoc.browser.controller.UserGroupController;
+import org.escidoc.browser.model.PropertyId;
+import org.escidoc.browser.model.ResourceModel;
+import org.escidoc.browser.model.ResourceProxy;
+import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.UserGroupModel;
+import org.escidoc.browser.ui.listeners.AddOrgUnitstoGroup;
+import org.escidoc.browser.ui.maincontent.View;
+import org.escidoc.browser.ui.orgunit.OrgUnitTreeView;
+import org.escidoc.browser.ui.view.helpers.ResourceProperties;
+import org.escidoc.browser.ui.view.helpers.ResourcePropertiesUserGroupView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Preconditions;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.Action;
 import com.vaadin.ui.Alignment;
@@ -42,22 +58,6 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Runo;
-
-import org.escidoc.browser.controller.UserGroupController;
-import org.escidoc.browser.model.PropertyId;
-import org.escidoc.browser.model.ResourceModel;
-import org.escidoc.browser.model.ResourceProxy;
-import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.repository.UserGroupModel;
-import org.escidoc.browser.ui.listeners.AddOrgUnitstoGroup;
-import org.escidoc.browser.ui.maincontent.View;
-import org.escidoc.browser.ui.orgunit.OrgUnitTreeView;
-import org.escidoc.browser.ui.view.helpers.ResourcePropertiesVH;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.aa.usergroup.Selector;
@@ -90,7 +90,7 @@ public class UserGroupView extends View {
 
     private Table selectorTable;
 
-    private ResourcePropertiesVH resoucePropertiesView;
+    private ResourceProperties resoucePropertiesView;
 
     public UserGroupView(Router router, ResourceProxy resourceProxy, Repositories repositories,
         UserGroupController controller) {
@@ -148,7 +148,8 @@ public class UserGroupView extends View {
         vlResourceProperties.setMargin(false);
 
         // creating the properties / without the breadcrump
-        resoucePropertiesView = new ResourcePropertiesVH(resourceProxy, router);
+        resoucePropertiesView = new ResourcePropertiesUserGroupView(resourceProxy, router, controller);
+        resoucePropertiesView.buildViews();
         vlResourceProperties.addComponent(resoucePropertiesView.getContentLayout());
         return vlResourceProperties;
     }
@@ -169,13 +170,15 @@ public class UserGroupView extends View {
             selectorTable.addActionHandler(new Action.Handler() {
 
                 @Override
-                public Action[] getActions(
-                    @SuppressWarnings("unused") Object target, @SuppressWarnings("unused") Object sender) {
+                public Action[] getActions(@SuppressWarnings("unused")
+                Object target, @SuppressWarnings("unused")
+                Object sender) {
                     return ACTIONS_LIST;
                 }
 
                 @Override
-                public void handleAction(Action action, @SuppressWarnings("unused") Object sender, Object target) {
+                public void handleAction(Action action, @SuppressWarnings("unused")
+                Object sender, Object target) {
                     if (action.equals(ACTION_ADD)) {
                         // mainWindow.addWindow(new OrganizationSelectionView(repositories, resourceProxy, nameField,
                         // mainWindow, dataSource).modalWindow());
@@ -213,7 +216,8 @@ public class UserGroupView extends View {
                     }
                     Button close = new Button(ViewConstants.CLOSE, new Button.ClickListener() {
                         @Override
-                        public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
+                        public void buttonClick(@SuppressWarnings("unused")
+                        ClickEvent event) {
                             subwindow.getParent().removeWindow(subwindow);
                         }
                     });
@@ -263,7 +267,8 @@ public class UserGroupView extends View {
         Button saveButton = new Button(ViewConstants.SAVE, new Button.ClickListener() {
 
             @Override
-            public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused")
+            ClickEvent event) {
                 try {
                     if (!nameField.isValid()) {
                         mainWindow.showNotification("A group name is required",

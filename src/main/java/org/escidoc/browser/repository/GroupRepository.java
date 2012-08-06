@@ -335,4 +335,20 @@ public class GroupRepository implements Repository {
         tp.setLastModificationDate(grant.getLastModificationDate());
         client.revokeGrant(groupId, grant.getObjid(), tp);
     }
+
+    public void activateUserGroup(String id) throws EscidocClientException {
+        UserGroup usr = client.retrieve(id);
+        final TaskParam tp = new TaskParam();
+        tp.setLastModificationDate(usr.getLastModificationDate());
+        client.activate(id, tp);
+
+    }
+
+    public void deactivateUserGroup(String id) throws EscidocClientException {
+        UserGroup usr = client.retrieve(id);
+        final TaskParam tp = new TaskParam();
+        tp.setLastModificationDate(usr.getLastModificationDate());
+        client.deactivate(id, tp);
+
+    }
 }

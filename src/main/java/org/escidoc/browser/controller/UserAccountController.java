@@ -28,13 +28,20 @@
  */
 package org.escidoc.browser.controller;
 
+import java.net.URISyntaxException;
+
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.UserProxy;
 import org.escidoc.browser.repository.Repositories;
+import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.useraccount.UserAccountView;
+import org.jfree.util.Log;
+
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.aa.useraccount.Grant;
@@ -80,9 +87,43 @@ public class UserAccountController extends Controller {
         return grant.getProperties().getRole().getObjid().equals(AppConstants.ESCIDOC_SYSADMIN_ROLE);
     }
 
-    // TODO Fix this method with PDP
     public boolean hasAccessOnPreferences(String id) {
-        return true;
+        try {
+            return router
+                .getRepositories().pdp().isAction(ActionIdConstants.UPDATE_USER_ACCOUNT).forCurrentUser()
+                .forResource(resourceProxy.getId()).permitted();
+        }
+        catch (EscidocClientException e) {
+            Log.debug(ViewConstants.ERROR + e.getLocalizedMessage());
+        }
+        catch (URISyntaxException e) {
+            Log.debug(ViewConstants.ERROR + e.getLocalizedMessage());
+        }
+        return false;
+    }
+
+    public boolean isAllowedToUpdate() {
+        try {
+            return router
+                .getRepositories().pdp().isAction(ActionIdConstants.UPDATE_USER_ACCOUNT).forCurrentUser()
+                .forResource(resourceProxy.getId()).permitted();
+        }
+        catch (EscidocClientException e) {
+            showError(ViewConstants.ERROR + e.getLocalizedMessage());
+            Log.debug(ViewConstants.ERROR + e.getLocalizedMessage());
+        }
+        catch (URISyntaxException e) {
+            showError(ViewConstants.ERROR + e.getLocalizedMessage());
+            Log.debug(ViewConstants.ERROR + e.getLocalizedMessage());
+        }
+        return false;
+    }
+
+    public boolean isSelftUser() {
+        if (router.getApp().getCurrentUser().getUserId().equals(resourceProxy.getId())) {
+            return true;
+        }
+        return false;
     }
 
     public Grants getGrantsForUser(String id) {
@@ -94,4 +135,31 @@ public class UserAccountController extends Controller {
         }
         return null;
     }
+
+    public void activateUser() {
+        try {
+            repositories.user().activateUser(resourceProxy.getId());
+            router.getMainWindow().showNotification(
+                new Window.Notification(ViewConstants.UNLOCKED, Notification.TYPE_TRAY_NOTIFICATION));
+
+        }
+        catch (EscidocClientException e) {
+            router.getMainWindow().showNotification(
+                new Window.Notification(ViewConstants.ERROR, e.getMessage(), Notification.TYPE_ERROR_MESSAGE));
+        }
+    }
+
+    public void deactivateUser() {
+        try {
+            repositories.user().deactivateUser(resourceProxy.getId());
+            router.getMainWindow().showNotification(
+                new Window.Notification(ViewConstants.LOCKED, Notification.TYPE_TRAY_NOTIFICATION));
+
+        }
+        catch (EscidocClientException e) {
+            router.getMainWindow().showNotification(
+                new Window.Notification(ViewConstants.ERROR, e.getMessage(), Notification.TYPE_ERROR_MESSAGE));
+        }
+    }
+
 }
