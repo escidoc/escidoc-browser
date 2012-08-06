@@ -119,7 +119,7 @@ public class UserAccountController extends Controller {
         return false;
     }
 
-    public boolean isSelftUser() {
+    public boolean isSelfUser() {
         if (router.getApp().getCurrentUser().getUserId().equals(resourceProxy.getId())) {
             return true;
         }

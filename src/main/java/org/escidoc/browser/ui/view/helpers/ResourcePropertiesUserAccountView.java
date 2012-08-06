@@ -66,7 +66,7 @@ public class ResourcePropertiesUserAccountView extends ResourceProperties {
         cssLayout.addComponent(pnlPropertiesRight);
 
         // Should not activate/deactivate user if same user. Against laws of nature!
-        if (!controller.isSelftUser()) {
+        if (!controller.isSelfUser()) {
             handleClicksOnResourceLayout();
         }
     }
