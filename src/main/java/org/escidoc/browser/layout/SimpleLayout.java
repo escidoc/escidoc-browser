@@ -227,12 +227,12 @@ public class SimpleLayout extends LayoutDesign {
         mainLayout = new AbsoluteLayout();
         mainLayout.setImmediate(false);
         mainLayout.setWidth("100%");
-        mainLayout.setHeight("100%");
+        // mainLayout.setHeight("100%");
         mainLayout.setMargin(false, true, false, true);
 
         // top-level component properties
         setWidth("100.0%");
-        setHeight("100.0%");
+        // setHeight("100.0%");
 
         buildHeader();
         mainLayout.addComponent(headerContainer, "top:0.0px;right:0.0px;left:0.0px;");
@@ -302,7 +302,7 @@ public class SimpleLayout extends LayoutDesign {
         mainContentTabs = new TabSheet();
         mainContentTabs.setImmediate(true);
         mainContentTabs.setWidth("100.0%");
-        mainContentTabs.setHeight("100.0%");
+        // mainContentTabs.setHeight("100.0%");
         new CloseTabsViewHelper(cssContent, mainContentTabs);
         return mainContentTabs;
     }

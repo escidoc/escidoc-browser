@@ -28,7 +28,13 @@
  */
 package org.escidoc.browser.repository;
 
-import com.google.common.base.Preconditions;
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
+
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.GroupModel;
@@ -42,11 +48,7 @@ import org.escidoc.browser.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import com.google.common.base.Preconditions;
 
 import de.escidoc.core.client.UserGroupHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -71,7 +73,6 @@ import de.escidoc.core.resources.common.reference.Reference;
 import de.escidoc.core.resources.common.reference.RoleRef;
 import de.escidoc.core.resources.common.reference.UserAccountRef;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
-import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 public class GroupRepository implements Repository {
 
@@ -318,7 +319,13 @@ public class GroupRepository implements Repository {
     }
 
     public Grants getGrantsForGroup(String groupId) throws EscidocClientException {
-        return client.retrieveCurrentGrants(groupId);
+        try {
+            return client.retrieveCurrentGrants(groupId);
+        }
+        catch (RuntimeException e) {
+            String foo = "";
+        }
+        return null;
     }
 
     public void revokeGrant(String groupId, Grant grant) throws EscidocClientException {
