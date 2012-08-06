@@ -319,13 +319,7 @@ public class GroupRepository implements Repository {
     }
 
     public Grants getGrantsForGroup(String groupId) throws EscidocClientException {
-        try {
-            return client.retrieveCurrentGrants(groupId);
-        }
-        catch (RuntimeException e) {
-            String foo = "";
-        }
-        return null;
+        return client.retrieveCurrentGrants(groupId);
     }
 
     public void revokeGrant(String groupId, Grant grant) throws EscidocClientException {

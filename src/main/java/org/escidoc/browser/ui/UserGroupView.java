@@ -103,6 +103,7 @@ public class UserGroupView extends View {
         this.repositories = repositories;
         this.controller = controller;
         this.mainWindow = router.getMainWindow();
+        LOG.debug("ID : " + resourceProxy.getId());
     }
 
     public Panel buildContentPanel() throws EscidocClientException {
@@ -162,91 +163,87 @@ public class UserGroupView extends View {
         selectorTable.setColumnReorderingAllowed(true);
 
         final BeanItemContainer<ResourceModel> dataSource;
-        try {
-            dataSource = populateContainerTable();
+        dataSource = populateContainerTable();
 
-            selectorTable.setContainerDataSource(dataSource);
-            selectorTable.setVisibleColumns(new String[] { PropertyId.NAME, (String) PropertyId.ID });
-            selectorTable.addActionHandler(new Action.Handler() {
+        selectorTable.setContainerDataSource(dataSource);
+        selectorTable.setVisibleColumns(new String[] { PropertyId.NAME, (String) PropertyId.ID });
+        selectorTable.addActionHandler(new Action.Handler() {
 
-                @Override
-                public Action[] getActions(@SuppressWarnings("unused")
-                Object target, @SuppressWarnings("unused")
-                Object sender) {
-                    return ACTIONS_LIST;
+            @Override
+            public Action[] getActions(@SuppressWarnings("unused")
+            Object target, @SuppressWarnings("unused")
+            Object sender) {
+                return ACTIONS_LIST;
+            }
+
+            @Override
+            public void handleAction(Action action, @SuppressWarnings("unused")
+            Object sender, Object target) {
+                if (action.equals(ACTION_ADD)) {
+                    // mainWindow.addWindow(new OrganizationSelectionView(repositories, resourceProxy, nameField,
+                    // mainWindow, dataSource).modalWindow());
+                    openViewAddRemoveOUs();
                 }
-
-                @Override
-                public void handleAction(Action action, @SuppressWarnings("unused")
-                Object sender, Object target) {
-                    if (action.equals(ACTION_ADD)) {
-                        // mainWindow.addWindow(new OrganizationSelectionView(repositories, resourceProxy, nameField,
-                        // mainWindow, dataSource).modalWindow());
-                        openViewAddRemoveOUs();
-                    }
-                    else {
-                        try {
-                            repositories.group().removeOrganization(resourceProxy.getId(),
-                                ((ResourceModel) target).getId());
-                            selectorTable.removeItem(target);
-                            mainWindow.showNotification("Organization with the id " + resourceProxy.getId()
-                                + " is removed from the group.", Window.Notification.TYPE_TRAY_NOTIFICATION);
-                        }
-                        catch (EscidocClientException e) {
-                            mainWindow.showNotification("Error removing organizationunit: ", e.getMessage(),
-                                Window.Notification.TYPE_ERROR_MESSAGE);
-
-                        }
-                    }
-                }
-
-                private void openViewAddRemoveOUs() {
-                    final Window subwindow = new Window("A modal subwindow");
-                    subwindow.setModal(true);
-                    subwindow.setWidth("650px");
-                    VerticalLayout layout = (VerticalLayout) subwindow.getContent();
-                    layout.setMargin(true);
-                    layout.setSpacing(true);
-
+                else {
                     try {
-                        subwindow.addComponent(new AddOrgUnitstoGroup(router, resourceProxy, controller));
+                        repositories
+                            .group().removeOrganization(resourceProxy.getId(), ((ResourceModel) target).getId());
+                        selectorTable.removeItem(target);
+                        mainWindow.showNotification("Organization with the id " + resourceProxy.getId()
+                            + " is removed from the group.", Window.Notification.TYPE_TRAY_NOTIFICATION);
                     }
                     catch (EscidocClientException e) {
-                        controller.showError(e);
+                        mainWindow.showNotification("Error removing organizationunit: ", e.getMessage(),
+                            Window.Notification.TYPE_ERROR_MESSAGE);
+
                     }
-                    Button close = new Button(ViewConstants.CLOSE, new Button.ClickListener() {
-                        @Override
-                        public void buttonClick(@SuppressWarnings("unused")
-                        ClickEvent event) {
-                            subwindow.getParent().removeWindow(subwindow);
-                        }
-                    });
-                    layout.addComponent(close);
-                    layout.setComponentAlignment(close, Alignment.TOP_RIGHT);
-
-                    router.getMainWindow().addWindow(subwindow);
-
                 }
-            });
-            layout.addComponent(selectorTable);
+            }
 
-        }
-        catch (EscidocClientException e1) {
-            StringBuilder errorMessage = new StringBuilder();
-            errorMessage.append("Something wrong happens with the app, reason: ");
-            errorMessage.append(e1.getMessage());
-            LOG.warn(errorMessage.toString());
-            mainWindow.showNotification(ViewConstants.ERROR, errorMessage.toString(),
-                Window.Notification.TYPE_ERROR_MESSAGE);
-        }
+            private void openViewAddRemoveOUs() {
+                final Window subwindow = new Window("A modal subwindow");
+                subwindow.setModal(true);
+                subwindow.setWidth("650px");
+                VerticalLayout layout = (VerticalLayout) subwindow.getContent();
+                layout.setMargin(true);
+                layout.setSpacing(true);
+
+                try {
+                    subwindow.addComponent(new AddOrgUnitstoGroup(router, resourceProxy, controller));
+                }
+                catch (EscidocClientException e) {
+                    controller.showError(e);
+                }
+                Button close = new Button(ViewConstants.CLOSE, new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(@SuppressWarnings("unused")
+                    ClickEvent event) {
+                        subwindow.getParent().removeWindow(subwindow);
+                    }
+                });
+                layout.addComponent(close);
+                layout.setComponentAlignment(close, Alignment.TOP_RIGHT);
+
+                router.getMainWindow().addWindow(subwindow);
+
+            }
+        });
+        layout.addComponent(selectorTable);
 
     }
 
-    protected BeanItemContainer<ResourceModel> populateContainerTable() throws EscidocClientException {
+    protected BeanItemContainer<ResourceModel> populateContainerTable() {
         List<ResourceModel> orgList = new ArrayList<ResourceModel>();
         for (final Selector s : resourceProxy.getSelector()) {
-            ResourceProxy findById = repositories.organization().findById(s.getContent());
-            orgList.add(findById);
+            ResourceProxy findById;
+            try {
+                findById = repositories.organization().findById(s.getContent());
+                orgList.add(findById);
+            }
+            catch (EscidocClientException e) {
+                LOG.error("Could not retrieve OU with ID : " + s.getContent());
+                // e.printStackTrace();
+            }
         }
 
         BeanItemContainer<ResourceModel> dataSource =

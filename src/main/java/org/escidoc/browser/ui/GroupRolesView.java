@@ -159,14 +159,29 @@ public class GroupRolesView extends Panel {
         listRolesForUser(rolesLayout);
     }
 
-    private void listRolesForUser(ComponentContainer grantListLayout) throws EscidocClientException {
+    private void listRolesForUser(ComponentContainer grantListLayout) {
         grantListLayout.removeAllComponents();
 
-        if (repositories.group().getGrantsForGroup(groupId).size() == 0) {
-            grantListLayout.addComponent(new Label("<h2>The group has no roles.</h2>", Label.CONTENT_XHTML));
+        try {
+            if (repositories.group().getGrantsForGroup(groupId).size() == 0) {
+                grantListLayout.addComponent(new Label("<h2>The group has no roles.</h2>", Label.CONTENT_XHTML));
+            }
+            else {
+                showExistingGrants(grantListLayout);
+            }
         }
-        else {
-            showExistingGrants(grantListLayout);
+        catch (EscidocClientException e) {
+            LOG.error("Cannot get grants for Group " + groupId + e.getLocalizedMessage());
+
+        }
+        catch (Exception finalexception) {
+            router
+                .getMainWindow()
+                .showNotification(
+                    "Fatal error!",
+                    "There has been a problem with this view. The Grants could not be retrieved saving them would attempt to overwrite the old ones. Please proceed with care <br />"
+                        + finalexception.getMessage(), Notification.TYPE_TRAY_NOTIFICATION);
+            LOG.error("Final Exception" + finalexception.getLocalizedMessage());
         }
 
         grantListLayout.addComponent(buildGrantRowAddView());
@@ -183,7 +198,7 @@ public class GroupRolesView extends Panel {
         }
     }
 
-    private Component buildGrantRowAddView() throws EscidocClientException {
+    private Component buildGrantRowAddView() {
         HorizontalLayout addGrantRow = newRowGrantLayout();
         final NativeSelect resourceTypeSelect = buildResourceTypeSelect();
         final NativeSelect resourceSelect = buildResourceSelect(resourceTypeSelect);
@@ -196,7 +211,14 @@ public class GroupRolesView extends Panel {
         final Button saveButton = buildAddGrantButton(resourceSelect, roleNameSelect);
         addGrantRow.addComponent(saveButton);
 
-        bindRoleName(roleNameSelect);
+        try {
+            bindRoleName(roleNameSelect);
+        }
+        catch (EscidocClientException e) {
+            router.getMainWindow().showNotification("Could not bind role-names");
+            LOG.error("Could not bind role-names" + e.getLocalizedMessage());
+            e.printStackTrace();
+        }
         return addGrantRow;
     }
 
@@ -410,7 +432,6 @@ public class GroupRolesView extends Panel {
         roleNameSelect.setContainerDataSource(buildRoleNameDataSource());
         roleNameSelect.setItemCaptionPropertyId(PropertyId.NAME);
 
-        // // FIXME this causes a bad performance
         Collection<?> collection = roleNameSelect.getContainerDataSource().getItemIds();
         for (Object object : collection) {
             ResourceModel rm = (ResourceModel) object;
