@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.escidoc.browser.model.PropertyId;
 import org.escidoc.browser.model.ResourceModel;
@@ -189,6 +190,7 @@ public class GroupRolesView extends Panel {
 
     private void showExistingGrants(ComponentContainer grantListLayout) throws EscidocClientException {
         int rowNumber = 0;
+
         for (Grant grant : repositories.group().getGrantsForGroup(groupId)) {
             HorizontalLayout existingGrantRowLayout = buildEditGrantRowView(rowNumber, grant);
             existingGrantRowLayout.setData(Integer.valueOf(rowNumber));
@@ -196,6 +198,27 @@ public class GroupRolesView extends Panel {
             bind(existingGrantRowLayout, grant);
             grantListLayout.addComponent(existingGrantRowLayout);
         }
+
+    }
+
+    public String millisToShortDHMS(long duration) {
+        String res = "";
+        long days = TimeUnit.MILLISECONDS.toDays(duration);
+        long hours =
+            TimeUnit.MILLISECONDS.toHours(duration) - TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS.toDays(duration));
+        long minutes =
+            TimeUnit.MILLISECONDS.toMinutes(duration)
+                - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(duration));
+        long seconds =
+            TimeUnit.MILLISECONDS.toSeconds(duration)
+                - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration));
+        if (days == 0) {
+            res = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        }
+        else {
+            res = String.format("%dd%02d:%02d:%02d", days, hours, minutes, seconds);
+        }
+        return res;
     }
 
     private Component buildGrantRowAddView() {
@@ -440,9 +463,14 @@ public class GroupRolesView extends Panel {
                 || grant.getProperties().getRole().getXLinkTitle() == null) {
                 return;
             }
+
             if (rm.getName().equalsIgnoreCase(grant.getProperties().getRole().getXLinkTitle())) {
+                System.out.println(grant.getProperties().getRole().getXLinkTitle());
+                // THIS ONE TAKES TOO LONG FOR SOME REASON
                 roleNameSelect.setValue(rm);
+                System.out.println(grant.getProperties().getRole().getXLinkTitle());
             }
+
         }
         bindResourceType(grantRow, (RoleModel) roleNameSelect.getValue(), grant);
     }
