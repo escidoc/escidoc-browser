@@ -74,6 +74,28 @@ public class GroupRolesView extends Panel {
 
     private final static Logger LOG = LoggerFactory.getLogger(UserRolesView.class);
 
+    private final ComponentContainer rolesLayout = new VerticalLayout();
+
+    private final String groupId;
+
+    private final Repositories repositories;
+
+    private final Router router;
+
+    // TODO CRUD View for User's Roles.
+    // TODO View Layout: roleName | scopedOnResourceType | resourceName (resourceId) | removeBtn <-- row layout
+    // TODO duplicate code for assigning grant and updating/showing grant
+    // TODO Update: Edit existing role for the selected user. Change Role, Scope, Resource, etc
+    // TODO PDP request???
+    public GroupRolesView(String groupId, Repositories repositories, Router router) throws EscidocClientException {
+
+        this.groupId = groupId;
+        this.repositories = repositories;
+        this.router = router;
+
+        init();
+    }
+
     private final class OnRemoveGrant implements Button.ClickListener {
 
         private Grant grant;
@@ -129,34 +151,11 @@ public class GroupRolesView extends Panel {
 
     }
 
-    private final ComponentContainer rolesLayout = new VerticalLayout();
-
-    private final String groupId;
-
-    private final Repositories repositories;
-
-    private final Router router;
-
-    // TODO CRUD View for User's Roles.
-    // TODO View Layout: roleName | scopedOnResourceType | resourceName (resourceId) | removeBtn <-- row layout
-    // TODO duplicate code for assigning grant and updating/showing grant
-    // TODO Update: Edit existing role for the selected user. Change Role, Scope, Resource, etc
-    // TODO PDP request???
-    public GroupRolesView(String groupId, Repositories repositories, Router router) throws EscidocClientException {
-
-        this.groupId = groupId;
-        this.repositories = repositories;
-        this.router = router;
-
-        init();
-    }
-
     private void init() throws EscidocClientException {
         setCaption(ViewConstants.USER_ROLES);
         setCaption("Roles Panel");
         ((VerticalLayout) rolesLayout).setMargin(true);
         setContent(rolesLayout);
-
         listRolesForUser(rolesLayout);
     }
 

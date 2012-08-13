@@ -107,13 +107,10 @@ public class UserGroupView extends View {
     }
 
     public Panel buildContentPanel() throws EscidocClientException {
-        setImmediate(false);
-        setStyleName(Runo.PANEL_LIGHT);
-        setSizeFull();
-        Panel contentPanel = createContentPanel();
-        contentPanel.setContent(buildVlContentPanel());
-        setContent(contentPanel);
-        bindModelToView();
+        this.setImmediate(false);
+        this.setStyleName(Runo.PANEL_LIGHT);
+        this.setWidth("100%");
+        this.setContent(buildVlContentPanel());
         return this;
     }
 
@@ -121,21 +118,14 @@ public class UserGroupView extends View {
         nameField.setValue(resourceProxy.getName());
     }
 
-    private static Panel createContentPanel() {
-        Panel contentPanel = new Panel();
-        contentPanel.setImmediate(false);
-        contentPanel.setSizeFull();
-
-        return contentPanel;
-    }
-
     private ComponentContainer buildVlContentPanel() throws EscidocClientException {
         VerticalLayout layout = createMainLayout();
+        layout.setSizeFull();
         layout.addComponent(buildVlResourceProperties());
+
         addNameField(layout);
         addOrgUnitTable(layout);
         addSaveButton(layout);
-
         layout.addComponent(new GroupRolesView(resourceProxy.getId(), repositories, router));
         return layout;
     }
@@ -145,7 +135,7 @@ public class UserGroupView extends View {
         VerticalLayout vlResourceProperties = new VerticalLayout();
         vlResourceProperties.setImmediate(false);
         vlResourceProperties.setWidth("100.0%");
-        vlResourceProperties.setHeight("100.0%");
+        vlResourceProperties.setHeight("130px");
         vlResourceProperties.setMargin(false);
 
         // creating the properties / without the breadcrump
@@ -158,6 +148,7 @@ public class UserGroupView extends View {
     private void addOrgUnitTable(VerticalLayout layout) {
         selectorTable = new Table();
         selectorTable.setWidth("60%");
+        selectorTable.setPageLength(7);
         selectorTable.setSelectable(true);
         selectorTable.setImmediate(true);
         selectorTable.setColumnReorderingAllowed(true);
@@ -291,12 +282,13 @@ public class UserGroupView extends View {
         layout.addComponent(saveButton);
     }
 
-    private static void addNameField(VerticalLayout layout) {
+    private void addNameField(VerticalLayout layout) {
         nameField = new TextField(ViewConstants.NAME);
         nameField.setWidth("300px");
         nameField.setRequired(true);
         nameField.setRequiredError("A group name is required.");
         layout.addComponent(nameField);
+        bindModelToView();
     }
 
     @Override

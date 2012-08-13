@@ -302,7 +302,7 @@ public class SimpleLayout extends LayoutDesign {
         mainContentTabs = new TabSheet();
         mainContentTabs.setImmediate(true);
         mainContentTabs.setWidth("100.0%");
-        // mainContentTabs.setHeight("100.0%");
+        mainContentTabs.setHeight("100.0%");
         new CloseTabsViewHelper(cssContent, mainContentTabs);
         return mainContentTabs;
     }
