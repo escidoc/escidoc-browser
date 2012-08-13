@@ -28,6 +28,10 @@
  */
 package org.escidoc.browser.ui;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class ViewConstants {
 
     // Footer
@@ -467,6 +471,10 @@ public class ViewConstants {
 
     public static final String PROPERTY_ICON = "icon";
 
-    public static final String WIKIPAGEMD = "wikiArticle";;
+    public static final String WIKIPAGEMD = "wikiArticle";
+
+    public static final List<String> roleExcludeList = new ArrayList<String>(Arrays.asList("Collaborator-Modifier",
+        "Collaborator-Modifier-Container-Add-Remove-any-Members", "Collaborator-Modifier-Container-Add-Remove-Members",
+        "Collaborator-Modifier-Container-update-direct-members", "Collaborator-Modifier-Container-Update-any-Members"));
 
 }

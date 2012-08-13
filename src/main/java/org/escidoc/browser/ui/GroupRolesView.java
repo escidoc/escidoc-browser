@@ -52,6 +52,7 @@ import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
@@ -60,6 +61,9 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.PopupView;
+import com.vaadin.ui.PopupView.PopupVisibilityEvent;
+import com.vaadin.ui.PopupView.PopupVisibilityListener;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
@@ -88,75 +92,43 @@ public class GroupRolesView extends Panel {
     // TODO Update: Edit existing role for the selected user. Change Role, Scope, Resource, etc
     // TODO PDP request???
     public GroupRolesView(String groupId, Repositories repositories, Router router) throws EscidocClientException {
-
         this.groupId = groupId;
         this.repositories = repositories;
         this.router = router;
-
         init();
     }
 
-    private final class OnRemoveGrant implements Button.ClickListener {
+    private void init() throws EscidocClientException {
+        setCaption("Roles Panel");
 
-        private Grant grant;
-
-        private Repositories repos;
-
-        private Window mainWindow;
-
-        private String groupId;
-
-        public OnRemoveGrant(Grant grant, String groupId, Repositories repos, Window mainWindow) {
-            Preconditions.checkNotNull(grant, "grant is null: %s", grant);
-            Preconditions.checkNotNull(groupId, "groupId is null: %s", groupId);
-            Preconditions.checkNotNull(repos, "repo is null: %s", repos);
-            Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
-
-            this.grant = grant;
-            this.repos = repos;
-            this.groupId = groupId;
-            this.mainWindow = mainWindow;
-        }
-
-        @Override
-        public void buttonClick(final ClickEvent event) {
-            try {
-                revokeGrantInServer();
-                updateView(event);
-                showSuccessMessage();
-            }
-            catch (EscidocClientException e) {
-                showErrorMessage(e);
-            }
-        }
-
-        private void showErrorMessage(EscidocClientException e) {
-            mainWindow.showNotification("Error Message", "Something wrong happens. Cause: " + e.getMessage(),
-                Notification.TYPE_ERROR_MESSAGE);
-        }
-
-        private void showSuccessMessage() {
-            mainWindow.showNotification("", "Sucessfully revoke " + grant.getXLinkTitle() + " from " + groupId,
-                Notification.TYPE_TRAY_NOTIFICATION);
-        }
-
-        private void revokeGrantInServer() throws EscidocClientException {
-            repos.group().revokeGrant(groupId, grant);
-        }
-
-        private void updateView(final ClickEvent event) {
-            VerticalLayout component = (VerticalLayout) event.getButton().getParent().getParent();
-            component.removeComponent(event.getButton().getParent());
-        }
-
+        VerticalLayout vl = new VerticalLayout();
+        VerticalLayout excludeRoles = addRoleExcludeInformation();
+        vl.addComponent(excludeRoles);
+        vl.addComponent(rolesLayout);
+        setContent(vl);
+        listRolesForUser(rolesLayout);
     }
 
-    private void init() throws EscidocClientException {
-        setCaption(ViewConstants.USER_ROLES);
-        setCaption("Roles Panel");
-        ((VerticalLayout) rolesLayout).setMargin(true);
-        setContent(rolesLayout);
-        listRolesForUser(rolesLayout);
+    private VerticalLayout addRoleExcludeInformation() {
+        VerticalLayout rlexclude = new VerticalLayout();
+        final Label content =
+            new Label("<ul><li>The following Roles have been excluded from this view: <br />"
+                + ViewConstants.roleExcludeList.toString() + "</li></ul>", Label.CONTENT_RAW);
+        content.setWidth("300px");
+
+        final PopupView popup = new PopupView("?", content);
+        popup.setHideOnMouseOut(true);
+        popup.addListener(new PopupVisibilityListener() {
+            @Override
+            public void popupVisibilityChange(PopupVisibilityEvent event) {
+            }
+        });
+
+        popup.addStyleName("paddingright10");
+        rlexclude.addComponent(popup);
+        rlexclude.setComponentAlignment(popup, Alignment.MIDDLE_RIGHT);
+        rlexclude.setMargin(true);
+        return rlexclude;
     }
 
     private void listRolesForUser(ComponentContainer grantListLayout) {
@@ -191,11 +163,18 @@ public class GroupRolesView extends Panel {
         int rowNumber = 0;
 
         for (Grant grant : repositories.group().getGrantsForGroup(groupId)) {
-            HorizontalLayout existingGrantRowLayout = buildEditGrantRowView(rowNumber, grant);
-            existingGrantRowLayout.setData(Integer.valueOf(rowNumber));
-            rowNumber++;
-            bind(existingGrantRowLayout, grant);
-            grantListLayout.addComponent(existingGrantRowLayout);
+            /**
+             * Some grants have been excluded from output because of performance issues. The list is found at:
+             * ViewConstants.roleExcludeList
+             */
+            if (!ViewConstants.roleExcludeList.contains(grant
+                .getXLinkTitle().toString().substring(0, grant.getXLinkTitle().toString().lastIndexOf(" of")).trim())) {
+                HorizontalLayout existingGrantRowLayout = buildEditGrantRowView(rowNumber, grant);
+                existingGrantRowLayout.setData(Integer.valueOf(rowNumber));
+                rowNumber++;
+                bind(existingGrantRowLayout, grant);
+                grantListLayout.addComponent(existingGrantRowLayout);
+            }
         }
 
     }
@@ -455,21 +434,20 @@ public class GroupRolesView extends Panel {
         roleNameSelect.setItemCaptionPropertyId(PropertyId.NAME);
 
         Collection<?> collection = roleNameSelect.getContainerDataSource().getItemIds();
+
         for (Object object : collection) {
             ResourceModel rm = (ResourceModel) object;
-            LOG.debug("    Inside " + rm.getName());
+
             if (grant.getProperties() == null || grant.getProperties().getRole() == null
                 || grant.getProperties().getRole().getXLinkTitle() == null) {
                 return;
             }
-
+            // LOG.debug("    Inside " + rm.getName());
             if (rm.getName().equalsIgnoreCase(grant.getProperties().getRole().getXLinkTitle())) {
-                System.out.println(grant.getProperties().getRole().getXLinkTitle());
                 // THIS ONE TAKES TOO LONG FOR SOME REASON
                 roleNameSelect.setValue(rm);
-                System.out.println(grant.getProperties().getRole().getXLinkTitle());
-            }
 
+            }
         }
         bindResourceType(grantRow, (RoleModel) roleNameSelect.getValue(), grant);
     }
@@ -581,4 +559,58 @@ public class GroupRolesView extends Panel {
         return removeButton;
     }
 
+    private final class OnRemoveGrant implements Button.ClickListener {
+
+        private Grant grant;
+
+        private Repositories repos;
+
+        private Window mainWindow;
+
+        private String groupId;
+
+        public OnRemoveGrant(Grant grant, String groupId, Repositories repos, Window mainWindow) {
+            Preconditions.checkNotNull(grant, "grant is null: %s", grant);
+            Preconditions.checkNotNull(groupId, "groupId is null: %s", groupId);
+            Preconditions.checkNotNull(repos, "repo is null: %s", repos);
+            Preconditions.checkNotNull(mainWindow, "mainWindow is null: %s", mainWindow);
+
+            this.grant = grant;
+            this.repos = repos;
+            this.groupId = groupId;
+            this.mainWindow = mainWindow;
+        }
+
+        @Override
+        public void buttonClick(final ClickEvent event) {
+            try {
+                revokeGrantInServer();
+                updateView(event);
+                showSuccessMessage();
+            }
+            catch (EscidocClientException e) {
+                showErrorMessage(e);
+            }
+        }
+
+        private void showErrorMessage(EscidocClientException e) {
+            mainWindow.showNotification("Error Message", "Something wrong happens. Cause: " + e.getMessage(),
+                Notification.TYPE_ERROR_MESSAGE);
+        }
+
+        private void showSuccessMessage() {
+            mainWindow.showNotification("", "Sucessfully revoke " + grant.getXLinkTitle() + " from " + groupId,
+                Notification.TYPE_TRAY_NOTIFICATION);
+        }
+
+        private void revokeGrantInServer() throws EscidocClientException {
+            repos.group().revokeGrant(groupId, grant);
+        }
+
+        private void updateView(final ClickEvent event) {
+            VerticalLayout component = (VerticalLayout) event.getButton().getParent().getParent();
+            component.removeComponent(event.getButton().getParent());
+        }
+
+    }
 }
