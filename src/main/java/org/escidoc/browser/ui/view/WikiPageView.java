@@ -28,7 +28,10 @@
  */
 package org.escidoc.browser.ui.view;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 
 import org.escidoc.browser.controller.WikiPageController;
 import org.escidoc.browser.model.ResourceModel;
@@ -53,11 +56,13 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
+import de.escidoc.core.resources.common.properties.PublicStatus;
 import de.escidoc.core.resources.common.versionhistory.Version;
 import de.steinwedel.vaadin.MessageBox;
 import de.steinwedel.vaadin.MessageBox.ButtonType;
@@ -80,7 +85,7 @@ public class WikiPageView extends View {
 
     private VerticalLayout vlContentPanel;
 
-    private Button edit;
+    private Button lockPublicStatusbtn;
 
     private MetadataRecord md;
 
@@ -187,7 +192,7 @@ public class WikiPageView extends View {
                     // Swap to Label
                     vlContentPanel.replaceComponent(txtWikiContent, wikiContent);
                     // Enable Edit Button
-                    edit.setEnabled(true);
+                    lockPublicStatusbtn.setEnabled(true);
                     saveContent.setVisible(false);
                 }
             }
@@ -233,6 +238,10 @@ public class WikiPageView extends View {
 
         Button edit = showEdit(resourceProxy);
         mainOperationIcons.addComponent(edit);
+
+        Button lock = showLock(resourceProxy);
+        mainOperationIcons.addComponent(lock);
+
         Button delete = showDelete(resourceProxy);
         mainOperationIcons.addComponent(delete);
         Button share = showShare(resourceProxy);
@@ -252,21 +261,76 @@ public class WikiPageView extends View {
         return mainOperationIcons;
     }
 
+    private Button showLock(final ResourceModel child) {
+        lockPublicStatusbtn = new Button();
+        lockPublicStatusbtn.setImmediate(true);
+        lockPublicStatusbtn.setStyleName(BaseTheme.BUTTON_LINK);
+        lockPublicStatusbtn.setDescription("Lock/Unlock");
+        LOG.debug(resourceProxy.getStatus().toString());
+
+        final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        final Date date = new Date();
+
+        if (resourceProxy.getStatus().toString().toUpperCase().equals(PublicStatus.PENDING.toString())) {
+            lockPublicStatusbtn.setIcon(new ThemeResource("images/wpzoom/closed-lock.png"));
+            lockPublicStatusbtn.addListener(new Button.ClickListener() {
+                @Override
+                public void buttonClick(ClickEvent event) {
+                    try {
+                        controller.publicStatusActive(router.getApp().getCurrentUser().getRealName() + " activated on "
+                            + dateFormat.format(date));
+                        lockPublicStatusbtn.setIcon(new ThemeResource("images/wpzoom/opened-lock.png"));
+                        router.getMainWindow().showNotification(
+                            new Window.Notification("Wiki is public", Notification.TYPE_TRAY_NOTIFICATION));
+                    }
+                    catch (EscidocClientException e) {
+                        router.getMainWindow().showNotification(
+                            new Window.Notification("Error " + e.getLocalizedMessage(),
+                                Notification.TYPE_TRAY_NOTIFICATION));
+                    }
+                }
+
+            });
+        }
+        else {
+            lockPublicStatusbtn.setIcon(new ThemeResource("images/wpzoom/opened-lock.png"));
+            lockPublicStatusbtn.addListener(new Button.ClickListener() {
+                @Override
+                public void buttonClick(ClickEvent event) {
+                    try {
+                        controller.publicStatusRevision(router.getApp().getCurrentUser().getRealName()
+                            + " placed on revision on " + dateFormat.format(date));
+                        lockPublicStatusbtn.setIcon(new ThemeResource("images/wpzoom/closed-lock.png"));
+                        router.getMainWindow().showNotification(
+                            new Window.Notification("Wiki is in-revision", Notification.TYPE_TRAY_NOTIFICATION));
+                    }
+                    catch (EscidocClientException e) {
+
+                        router.getMainWindow().showNotification(
+                            new Window.Notification("Error " + e.getLocalizedMessage(),
+                                Notification.TYPE_TRAY_NOTIFICATION));
+                    }
+                }
+            });
+        }
+        return lockPublicStatusbtn;
+    }
+
     private Button showEdit(final ResourceModel child) {
-        edit = new Button();
-        edit.setStyleName(BaseTheme.BUTTON_LINK);
-        edit.setDescription("Edit");
-        edit.setIcon(new ThemeResource("images/wpzoom/pencil.png"));
-        edit.addListener(new Button.ClickListener() {
+        lockPublicStatusbtn = new Button();
+        lockPublicStatusbtn.setStyleName(BaseTheme.BUTTON_LINK);
+        lockPublicStatusbtn.setDescription("Edit");
+        lockPublicStatusbtn.setIcon(new ThemeResource("images/wpzoom/pencil.png"));
+        lockPublicStatusbtn.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
                 // Reswap Label Header + Label Content + Disable Edit Button
                 vlContentPanel.replaceComponent(wikiContent, txtWikiContent);
                 saveContent.setVisible(true);
-                edit.setEnabled(false);
+                lockPublicStatusbtn.setEnabled(false);
             }
         });
-        return edit;
+        return lockPublicStatusbtn;
     }
 
     private Button showDelete(final ResourceModel child) {

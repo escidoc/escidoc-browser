@@ -249,4 +249,16 @@ public class WikiPageController extends ItemController {
                 new Window.Notification(ViewConstants.ERROR, e.getMessage(), Notification.TYPE_ERROR_MESSAGE));
         }
     }
+
+    public void publicStatusActive(String comment) throws EscidocClientException {
+        repositories.item().changePublicStatus(repositories.item().findItemById(resourceProxy.getId()), "SUBMITTED",
+            comment);
+        repositories.item().changePublicStatus(repositories.item().findItemById(resourceProxy.getId()), "RELEASED",
+            comment);
+    }
+
+    public void publicStatusRevision(String comment) throws EscidocClientException {
+        repositories.item().changePublicStatus(repositories.item().findItemById(resourceProxy.getId()), "SUBMITTED",
+            comment);
+    }
 }
