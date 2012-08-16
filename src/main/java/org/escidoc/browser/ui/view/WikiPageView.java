@@ -107,7 +107,6 @@ public class WikiPageView extends View {
         this.setImmediate(false);
         this.setWidth("100.0%");
         // this.setHeight("100.0%");
-        this.setCaption("Wiki Page View");
 
         // vlContentPanel assign a layout to this panel
         this.setContent(buildVlContentPanel());
@@ -265,14 +264,13 @@ public class WikiPageView extends View {
         lockPublicStatusbtn = new Button();
         lockPublicStatusbtn.setImmediate(true);
         lockPublicStatusbtn.setStyleName(BaseTheme.BUTTON_LINK);
-        lockPublicStatusbtn.setDescription("Lock/Unlock");
-        LOG.debug(resourceProxy.getStatus().toString());
 
         final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         final Date date = new Date();
 
-        if (resourceProxy.getStatus().toString().toUpperCase().equals(PublicStatus.PENDING.toString())) {
+        if (resourceProxy.getVersionStatus().toString().toUpperCase().equals(PublicStatus.PENDING.toString())) {
             lockPublicStatusbtn.setIcon(new ThemeResource("images/wpzoom/closed-lock.png"));
+            lockPublicStatusbtn.setDescription("Release");
             lockPublicStatusbtn.addListener(new Button.ClickListener() {
                 @Override
                 public void buttonClick(ClickEvent event) {
@@ -282,6 +280,7 @@ public class WikiPageView extends View {
                         lockPublicStatusbtn.setIcon(new ThemeResource("images/wpzoom/opened-lock.png"));
                         router.getMainWindow().showNotification(
                             new Window.Notification("Wiki is public", Notification.TYPE_TRAY_NOTIFICATION));
+                        lockPublicStatusbtn.setDescription("Unrelease");
                     }
                     catch (EscidocClientException e) {
                         router.getMainWindow().showNotification(
@@ -294,6 +293,7 @@ public class WikiPageView extends View {
         }
         else {
             lockPublicStatusbtn.setIcon(new ThemeResource("images/wpzoom/opened-lock.png"));
+            lockPublicStatusbtn.setDescription("Unrelease");
             lockPublicStatusbtn.addListener(new Button.ClickListener() {
                 @Override
                 public void buttonClick(ClickEvent event) {
@@ -303,6 +303,8 @@ public class WikiPageView extends View {
                         lockPublicStatusbtn.setIcon(new ThemeResource("images/wpzoom/closed-lock.png"));
                         router.getMainWindow().showNotification(
                             new Window.Notification("Wiki is in-revision", Notification.TYPE_TRAY_NOTIFICATION));
+                        lockPublicStatusbtn.setDescription("Release");
+
                     }
                     catch (EscidocClientException e) {
 
@@ -429,9 +431,7 @@ public class WikiPageView extends View {
         edit.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                // version.getObjid()
-                // version.get
-                LOG.debug(version.getXLinkHref());
+
                 try {
                     controller.getMetadata(ViewConstants.WIKIPAGEMD);
                     router.getMainWindow().open(new ExternalResource(buildUri(version.getXLinkHref()), "_blank"));
@@ -453,7 +453,6 @@ public class WikiPageView extends View {
     private String buildUri(String xLinkVersion) {
         StringBuilder builder = new StringBuilder();
         builder.append(router.getServiceLocation().getEscidocUri());
-        LOG.debug(router.getServiceLocation().getEscidocUri());
         builder.append(xLinkVersion + "/md-records/md-record/" + ViewConstants.WIKIPAGEMD);
         return builder.toString();
     }
