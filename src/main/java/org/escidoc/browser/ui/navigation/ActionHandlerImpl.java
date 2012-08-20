@@ -28,11 +28,15 @@
  */
 package org.escidoc.browser.ui.navigation;
 
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import com.google.common.base.Preconditions;
+
+import com.vaadin.event.Action;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ResourceModel;
@@ -41,6 +45,7 @@ import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.ContainerModel;
 import org.escidoc.browser.model.internal.ContextModel;
 import org.escidoc.browser.model.internal.ItemModel;
+import org.escidoc.browser.model.internal.OrgUnitModel;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
@@ -51,14 +56,11 @@ import org.escidoc.browser.ui.view.helpers.DeleteContainerShowLogsHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.event.Action;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
@@ -82,8 +84,7 @@ public final class ActionHandlerImpl implements Action.Handler {
         }
 
         @Override
-        public void buttonClick(@SuppressWarnings("unused")
-        final ClickEvent event) {
+        public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
             try {
                 deleteUserOrGroup();
                 subwindow.getParent().removeWindow(subwindow);
@@ -138,8 +139,7 @@ public final class ActionHandlerImpl implements Action.Handler {
     }
 
     @Override
-    public Action[] getActions(final Object target, @SuppressWarnings("unused")
-    final Object sender) {
+    public Action[] getActions(final Object target, @SuppressWarnings("unused") final Object sender) {
         if (target instanceof ResourceModel) {
             ResourceModel rm = (ResourceModel) target;
             ResourceType type = rm.getType();
@@ -149,9 +149,9 @@ public final class ActionHandlerImpl implements Action.Handler {
                 case CONTAINER:
                     return new Action[] { ActionList.ACTION_ADD_RESOURCE, ActionList.ACTION_DELETE_CONTAINER };
                 case ITEM:
-                    return new Action[] { ActionList.ACTION_DELETE_ITEM };
+                    return new Action[] { ActionList.ACTION_DELETE_RESOURCE };
                 case ORG_UNIT:
-                    return new Action[] { ActionList.ACTION_ADD_CHILD };
+                    return buildActionsForOrgUnit(rm);
                 case CONTENT_MODEL:
                     return new Action[] { ActionList.ACTION_DELETE_CONTENT_MODEL };
                 case USER_ACCOUNT:
@@ -164,6 +164,33 @@ public final class ActionHandlerImpl implements Action.Handler {
         }
         return new Action[] {};
 
+    }
+
+    private Action[] buildActionsForOrgUnit(ResourceModel rm) {
+        try {
+            List<Action> orgUnitActionList = new ArrayList<Action>();
+
+            if (allowedToDeleteOrgUnit(rm.getId())) {
+                orgUnitActionList.add(ActionList.ACTION_DELETE_ORG);
+            }
+
+            // TODO check if the user can add an org unit. Currently there is not possible for asking PDP, if the
+            // loggein use can add a org unit child.
+            orgUnitActionList.add(ActionList.ACTION_ADD_CHILD);
+
+            return orgUnitActionList.toArray(new Action[orgUnitActionList.size()]);
+        }
+        catch (EscidocClientException e) {
+            LOG.error(e.getMessage(), e);
+            mainWindow.showNotification(new Window.Notification("Application Error", e.getMessage(),
+                Window.Notification.TYPE_ERROR_MESSAGE));
+        }
+        catch (URISyntaxException e) {
+            LOG.error(e.getMessage(), e);
+            mainWindow.showNotification(new Window.Notification("Application Error", e.getMessage(),
+                Window.Notification.TYPE_ERROR_MESSAGE));
+        }
+        return new Action[] {};
     }
 
     private boolean allowedToDeleteItem(final String resourceId) throws EscidocClientException, URISyntaxException {
@@ -213,7 +240,7 @@ public final class ActionHandlerImpl implements Action.Handler {
         else if (action.equals(ActionList.ACTION_DELETE_CONTAINER)) {
             tryDeleteContainer(selectedResource, sender);
         }
-        else if (action.equals(ActionList.ACTION_DELETE_ITEM)) {
+        else if (action.equals(ActionList.ACTION_DELETE_RESOURCE)) {
             tryDeleteItem(selectedResource, sender);
         }
         else if (action.equals(ActionList.ACTION_ADD_CHILD)) {
@@ -238,6 +265,9 @@ public final class ActionHandlerImpl implements Action.Handler {
         }
         else if (action.equals(ActionList.ACTION_DELETE_USER_GROUP)) {
             tryDeleteUserGroup(selectedResource, sender);
+        }
+        else if (action.equals(ActionList.ACTION_DELETE_ORG)) {
+            tryDeleteOrg(selectedResource, sender);
         }
         else {
             mainWindow.showNotification("Unknown Action: " + action.getCaption(),
@@ -284,8 +314,7 @@ public final class ActionHandlerImpl implements Action.Handler {
         final Button okConfirmed = new Button(ViewConstants.YES, new Button.ClickListener() {
 
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
                 try {
                     repositories.user().delete(id);
@@ -303,8 +332,7 @@ public final class ActionHandlerImpl implements Action.Handler {
         final Button cancel = new Button(ViewConstants.CANCEL, new Button.ClickListener() {
 
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
             }
         });
@@ -334,8 +362,7 @@ public final class ActionHandlerImpl implements Action.Handler {
         final Button okConfirmed = new Button(ViewConstants.YES, new Button.ClickListener() {
 
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
                 try {
                     repositories.contentModel().delete(cmId);
@@ -353,8 +380,7 @@ public final class ActionHandlerImpl implements Action.Handler {
         final Button cancel = new Button(ViewConstants.CANCEL, new Button.ClickListener() {
 
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
             }
         });
@@ -384,14 +410,83 @@ public final class ActionHandlerImpl implements Action.Handler {
         }
     }
 
+    public void tryDeleteOrg(Object selectedResource, Object sender) throws EscidocClientException, URISyntaxException {
+        final String orgId = ((OrgUnitModel) selectedResource).getId();
+        if (allowedToDeleteOrgUnit(orgId)) {
+            deleteOrgUnit((OrgUnitModel) selectedResource, sender);
+        }
+        else {
+            mainWindow.showNotification(new Window.Notification(ViewConstants.NOT_AUTHORIZED,
+                "You do not have the right to delete a Organization: " + orgId,
+                Window.Notification.TYPE_WARNING_MESSAGE));
+        }
+    }
+
+    private void deleteOrgUnit(final OrgUnitModel model, final Object sender) {
+        final Window subwindow = buildSubWindow();
+
+        final Button okConfirmed = new Button(ViewConstants.YES, new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
+                (subwindow.getParent()).removeWindow(subwindow);
+                try {
+                    deleteFromRepository(model);
+                    closeView(model, sender);
+                    removeFromTree(model);
+                    showSuccesfulMessage();
+                }
+                catch (final EscidocClientException e) {
+                    mainWindow.showNotification(new Window.Notification("Error deleting Organization. "
+                        + ViewConstants.ERROR, e.getMessage(), Notification.TYPE_ERROR_MESSAGE));
+                }
+            }
+
+            private void showSuccesfulMessage() {
+                mainWindow.showNotification(new Window.Notification(ViewConstants.DELETED,
+                    Notification.TYPE_TRAY_NOTIFICATION));
+            }
+
+            private void removeFromTree(final OrgUnitModel model) {
+                treeDataSource.remove(model);
+            }
+
+            private void deleteFromRepository(final OrgUnitModel model) throws EscidocClientException {
+                repositories.organization().delete(model.getId());
+            }
+
+            private void closeView(final OrgUnitModel model, final Object sender) {
+                router.getLayout().closeView(model, treeDataSource.getParent(model), sender);
+            }
+
+        });
+        final Button cancel = new Button("Cancel", new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
+                (subwindow.getParent()).removeWindow(subwindow);
+            }
+        });
+        final HorizontalLayout hl = new HorizontalLayout();
+        hl.addComponent(okConfirmed);
+        hl.addComponent(cancel);
+        subwindow.addComponent(hl);
+        mainWindow.addWindow(subwindow);
+    }
+
+    private boolean allowedToDeleteOrgUnit(String orgId) throws EscidocClientException, URISyntaxException {
+        return (repositories
+            .pdp().forCurrentUser().isAction(ActionIdConstants.DELETE_ORGANIZATIONAL_UNIT_ACTION).forResource(orgId)
+            .permitted());
+    }
+
     private void deleteContext(final ContextModel model, final Object sender) {
         final Window subwindow = buildSubWindow();
 
         final Button okConfirmed = new Button(ViewConstants.YES, new Button.ClickListener() {
 
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
                 try {
                     repositories.context().delete(model.getId());
@@ -409,8 +504,7 @@ public final class ActionHandlerImpl implements Action.Handler {
         final Button cancel = new Button("Cancel", new Button.ClickListener() {
 
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
             }
         });
@@ -654,8 +748,7 @@ public final class ActionHandlerImpl implements Action.Handler {
 
         Button okConfirmed = new Button(ViewConstants.YES, new Button.ClickListener() {
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
                 try {
                     repositories.item().finalDelete(selectedItem);
@@ -673,8 +766,7 @@ public final class ActionHandlerImpl implements Action.Handler {
 
         Button cancel = new Button("Cancel", new Button.ClickListener() {
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
             }
         });
@@ -693,8 +785,7 @@ public final class ActionHandlerImpl implements Action.Handler {
 
         final Button okConfirmed = new Button(ViewConstants.YES, new Button.ClickListener() {
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
                 deleteAllChildrenOfContainer(model, sender);
             }
@@ -702,8 +793,7 @@ public final class ActionHandlerImpl implements Action.Handler {
         });
         final Button cancel = new Button("Cancel", new Button.ClickListener() {
             @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
                 (subwindow.getParent()).removeWindow(subwindow);
             }
         });
