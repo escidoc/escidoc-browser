@@ -143,7 +143,8 @@ public class GroupRolesView extends Panel {
             }
         }
         catch (EscidocClientException e) {
-            LOG.error("Cannot get grants for Group " + groupId + e.getLocalizedMessage());
+            LOG.error("Cannot get grants for Group " + groupId + e.getLocalizedMessage() + "while showing Group "
+                + groupId);
 
         }
         catch (Exception finalexception) {
