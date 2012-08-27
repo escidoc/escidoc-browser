@@ -28,14 +28,6 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import com.google.common.base.Preconditions;
-
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.Runo;
-
 import org.escidoc.browser.controller.ItemController;
 import org.escidoc.browser.model.ResourceModel;
 import org.escidoc.browser.model.ResourceProxy;
@@ -44,7 +36,15 @@ import org.escidoc.browser.model.internal.ItemModel;
 import org.escidoc.browser.model.internal.ItemProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.view.helpers.ItemPropertiesVH;
+import org.escidoc.browser.ui.view.helpers.ResourcePropertiesItemView;
+
+import com.google.common.base.Preconditions;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.om.item.Item;
@@ -60,7 +60,7 @@ public final class ItemView extends View {
 
     private final Repositories repositories;
 
-    private ItemPropertiesVH itemPropertiesView;
+    private ResourcePropertiesItemView itemPropertiesView;
 
     @SuppressWarnings("unused")
     private Panel panelView;
@@ -105,12 +105,12 @@ public final class ItemView extends View {
         // resourcePropertiesPanel
         Panel resourcePropertiesPanel = buildResourcePropertiesPanel();
         vlContentPanel.addComponent(resourcePropertiesPanel);
-        vlContentPanel.setExpandRatio(resourcePropertiesPanel, 1.5f);
+        vlContentPanel.setComponentAlignment(resourcePropertiesPanel, Alignment.TOP_CENTER);
 
         // metaViewsPanel contains Panel for the DirectMembers & for the Metas
         Panel metaViewsPanel = buildMetaViewsPanel();
         vlContentPanel.addComponent(metaViewsPanel);
-        vlContentPanel.setExpandRatio(metaViewsPanel, 8.0f);
+        vlContentPanel.setComponentAlignment(metaViewsPanel, Alignment.TOP_CENTER);
 
         return vlContentPanel;
     }
@@ -120,7 +120,7 @@ public final class ItemView extends View {
         Panel metaViewsPanel = new Panel();
         metaViewsPanel.setImmediate(false);
         metaViewsPanel.setWidth("100.0%");
-        metaViewsPanel.setHeight("100.0%");
+        metaViewsPanel.setHeight("500px");
         metaViewsPanel.setStyleName(Runo.PANEL_LIGHT);
 
         // hlMetaViews
@@ -232,7 +232,7 @@ public final class ItemView extends View {
         Panel resourcePropertiesPanel = new Panel();
         resourcePropertiesPanel.setImmediate(false);
         resourcePropertiesPanel.setWidth("100.0%");
-        resourcePropertiesPanel.setHeight("100.0%");
+        resourcePropertiesPanel.setHeight("130px");
         resourcePropertiesPanel.setStyleName(Runo.PANEL_LIGHT);
 
         // vlResourceProperties
@@ -247,16 +247,16 @@ public final class ItemView extends View {
         VerticalLayout vlResourceProperties = new VerticalLayout();
         vlResourceProperties.setImmediate(false);
         vlResourceProperties.setWidth("100.0%");
-        vlResourceProperties.setHeight("100.0%");
+        vlResourceProperties.setHeight("130px");
         vlResourceProperties.setMargin(false);
 
         // creating the properties / without the breadcrump
-        itemPropertiesView = new ItemPropertiesVH(resourceProxy, router, controller);
+        itemPropertiesView = new ResourcePropertiesItemView(resourceProxy, router, controller);
         vlResourceProperties.addComponent(itemPropertiesView.getContentLayout());
         return vlResourceProperties;
     }
 
-    public ItemPropertiesVH getItemPropertiesVH() {
+    public ResourcePropertiesItemView getItemPropertiesVH() {
         return itemPropertiesView;
     }
 

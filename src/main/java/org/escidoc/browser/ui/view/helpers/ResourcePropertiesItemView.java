@@ -63,9 +63,9 @@ import de.escidoc.core.resources.common.properties.LockStatus;
 import de.escidoc.core.resources.common.properties.PublicStatus;
 import de.escidoc.core.resources.om.item.Item;
 
-public class ItemPropertiesVH {
+public class ResourcePropertiesItemView {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ItemPropertiesVH.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ResourcePropertiesItemView.class);
 
     private String status;
 
@@ -101,7 +101,7 @@ public class ItemPropertiesVH {
 
     private Router router;
 
-    public ItemPropertiesVH(ItemProxyImpl resourceProxy, Router router, ItemController controller) {
+    public ResourcePropertiesItemView(ItemProxyImpl resourceProxy, Router router, ItemController controller) {
         this.resourceProxy = resourceProxy;
         this.repositories = router.getRepositories();
         this.mainWindow = router.getMainWindow();
