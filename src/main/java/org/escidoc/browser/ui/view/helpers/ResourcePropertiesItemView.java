@@ -53,6 +53,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextArea;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
@@ -63,7 +64,7 @@ import de.escidoc.core.resources.common.properties.LockStatus;
 import de.escidoc.core.resources.common.properties.PublicStatus;
 import de.escidoc.core.resources.om.item.Item;
 
-public class ResourcePropertiesItemView {
+public class ResourcePropertiesItemView extends ResourceProperties {
 
     private static final Logger LOG = LoggerFactory.getLogger(ResourcePropertiesItemView.class);
 
@@ -111,7 +112,7 @@ public class ResourcePropertiesItemView {
         buildViews();
     }
 
-    public void buildViews() {
+    protected void buildViews() {
         createLayout();
         handleLayoutListeners();
         createBreadcrump();
@@ -122,7 +123,7 @@ public class ResourcePropertiesItemView {
         bindProperties();
     }
 
-    private void bindDescription() {
+    protected void bindDescription() {
         descLabel = new Label(ViewConstants.DESCRIPTION_LBL + resourceProxy.getDescription());
         descLabel.setDescription("header");
         cssLayout.addComponent(descLabel);
@@ -139,11 +140,11 @@ public class ResourcePropertiesItemView {
         cssLayout.setMargin(false);
     }
 
-    private void createPermanentLink() {
-        new CreateResourceLinksVH(mainWindow.getURL().toString(), resourceProxy, cssLayout, router);
+    protected void createPermanentLink() {
+        new CreateResourceLinksVH(mainWindow.getURL().toString(), resourceProxy, this, router);
     }
 
-    private void bindProperties() {
+    protected void bindProperties() {
 
         final Panel pnlPropertiesLeft = buildLeftPropertiesPnl();
         final Panel pnlPropertiesRight = buildRightPnlProperties();
@@ -189,7 +190,7 @@ public class ResourcePropertiesItemView {
 
     }
 
-    private Panel buildLeftPropertiesPnl() {
+    protected Panel buildLeftPropertiesPnl() {
         final Panel pnlPropertiesLeft = new Panel();
         pnlPropertiesLeft.setWidth("40%");
         pnlPropertiesLeft.setHeight("60px");
@@ -199,7 +200,7 @@ public class ResourcePropertiesItemView {
         return pnlPropertiesLeft;
     }
 
-    private Panel buildRightPnlProperties() {
+    protected Panel buildRightPnlProperties() {
         final Panel pnlPropertiesRight = new Panel();
         pnlPropertiesRight.setWidth("60%");
         pnlPropertiesRight.setHeight("60px");
@@ -209,20 +210,20 @@ public class ResourcePropertiesItemView {
         return pnlPropertiesRight;
     }
 
-    private void bindHrRuler() {
+    protected void bindHrRuler() {
         final Label descRuler = new Label("<hr/>", Label.CONTENT_RAW);
         descRuler.setStyleName("hr");
         cssLayout.addComponent(descRuler);
     }
 
-    private void bindNametoHeader() {
+    protected void bindNametoHeader() {
         descLabel = new Label(ViewConstants.ITEM_LABEL + resourceProxy.getName());
         descLabel.setDescription("header");
         descLabel.setStyleName("h1 fullwidth");
         cssLayout.addComponent(descLabel);
     }
 
-    private void createBreadcrump() {
+    protected void createBreadcrump() {
         new BreadCrumbMenu(cssLayout, resourceProxy, mainWindow, serviceLocation, repositories);
     }
 
@@ -495,6 +496,15 @@ public class ResourcePropertiesItemView {
 
             });
         }
+
+    }
+
+    public void showEditableFields() {
+        // descLabel = new Label(ViewConstants.DESCRIPTION_LBL + resourceProxy.getDescription());
+        TextField txtFieldTitle = new TextField();
+        txtFieldTitle.setValue(resourceProxy.getName());
+        vlPropertiesLeft.replaceComponent(descLabel, txtFieldTitle);
+        // lblStatus.getValue().equals(status + "withdrawn")
 
     }
 }

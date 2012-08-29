@@ -31,7 +31,7 @@ public class ResourceProperties {
         super();
     }
 
-    public void buildViews() {
+    protected void buildViews() {
         createLayout();
         createBreadcrump();
         createResourceLinks();
@@ -127,4 +127,10 @@ public class ResourceProperties {
         new BreadCrumbMenu(cssLayout, resourceProxy.getName().toString());
     }
 
+    protected void showEditableFields() {
+    }
+
+    protected VerticalLayout getPropertiesLayout() {
+        return vlPropertiesLeft;
+    }
 }

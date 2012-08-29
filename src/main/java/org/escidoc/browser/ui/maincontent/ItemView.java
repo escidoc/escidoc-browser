@@ -260,6 +260,34 @@ public final class ItemView extends View {
         return itemPropertiesView;
     }
 
+    public void reloadView() {
+        try {
+            router.show(resourceProxy, true);
+            // refresh tree
+            TreeDataSource treeDS = router.getLayout().getTreeDataSource();
+            ItemModel im = new ItemModel(resourceProxy.getResource());
+            ResourceModel parentModel = treeDS.getParent(im);
+
+            boolean isSuccesful = treeDS.remove(im);
+            if (isSuccesful) {
+                // Need to reload again the item
+                Item itemP = repositories.item().findItemById(resourceProxy.getId());
+                treeDS.addChild(parentModel, new ItemModel(itemP));
+
+                // Reload Parent
+                // reloadParent(parentModel);
+            }
+
+        }
+        catch (EscidocClientException e) {
+            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        }
+    }
+
+    public void showEditableFields() {
+        itemPropertiesView.showEditableFields();
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -289,29 +317,5 @@ public final class ItemView extends View {
             return false;
         }
         return true;
-    }
-
-    public void reloadView() {
-        try {
-            router.show(resourceProxy, true);
-            // refresh tree
-            TreeDataSource treeDS = router.getLayout().getTreeDataSource();
-            ItemModel im = new ItemModel(resourceProxy.getResource());
-            ResourceModel parentModel = treeDS.getParent(im);
-
-            boolean isSuccesful = treeDS.remove(im);
-            if (isSuccesful) {
-                // Need to reload again the item
-                Item itemP = repositories.item().findItemById(resourceProxy.getId());
-                treeDS.addChild(parentModel, new ItemModel(itemP));
-
-                // Reload Parent
-                // reloadParent(parentModel);
-            }
-
-        }
-        catch (EscidocClientException e) {
-            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-        }
     }
 }

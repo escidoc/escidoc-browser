@@ -45,8 +45,10 @@ import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbstractComponentContainer;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Link;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 
 public class CreateResourceLinksVH {
@@ -61,10 +63,23 @@ public class CreateResourceLinksVH {
 
     private HorizontalLayout hl;
 
-    public CreateResourceLinksVH(String url, ResourceProxy resourceProxy,
-        AbstractComponentContainer componentContainer, Router router) {
-        HorizontalLayout vl = buildInitialElements();
+    private Button editsaveBtn;
 
+    private HorizontalLayout vl;
+
+    private ResourceProperties componentContainer;
+
+    private Window mainWindow;
+
+    public CreateResourceLinksVH(String url, ResourceProxy resourceProxy, ResourceProperties componentContainer,
+        Router router) {
+        this.componentContainer = componentContainer;
+        this.mainWindow = router.getMainWindow();
+
+        vl = buildInitialElements();
+        Button edit = showEdit(resourceProxy);
+
+        vl.addComponent(edit);
         if (resourceProxy.getType().equals(ResourceType.ITEM)) {
             vl.setStyleName("permanentLinkItem");
         }
@@ -94,18 +109,56 @@ public class CreateResourceLinksVH {
 
         }
         catch (MalformedURLException e) {
-            componentContainer.getWindow().showNotification(ViewConstants.COULD_NOT_RETRIEVE_APPLICATION_URL);
+            mainWindow.showNotification(ViewConstants.COULD_NOT_RETRIEVE_APPLICATION_URL);
             LOG.error(ViewConstants.COULD_NOT_RETRIEVE_APPLICATION_URL + e.getLocalizedMessage());
         }
-        componentContainer.addComponent(hl);
+        LOG.debug("Here is the call" + componentContainer.getPropertiesLayout().getClass().getName());
+        componentContainer.getPropertiesLayout().addComponent(hl);
     }
 
     private HorizontalLayout buildInitialElements() {
         hl = new HorizontalLayout();
         hl.setMargin(false);
+
         return hl;
     }
 
+    private Button showEdit(final ResourceProxy resourceProxy) {
+        editsaveBtn = new Button();
+        editsaveBtn.setStyleName(BaseTheme.BUTTON_LINK);
+        editsaveBtn.setDescription("Edit");
+        editsaveBtn.setIcon(new ThemeResource("images/wpzoom/pencil.png"));
+        editsaveBtn.addListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                if (editsaveBtn.getDescription().equals("Edit")) {
+                    editsaveBtn.setDescription("Save");
+                    editsaveBtn.setIcon(new ThemeResource("images/wpzoom/save.png"));
+                    // Call viewComponent and show the views
+                    componentContainer.showEditableFields();
+                }
+                else {
+                    editsaveBtn.setDescription("Edit");
+                    editsaveBtn.setIcon(new ThemeResource("images/wpzoom/pencil.png"));
+                    // call viewComponent-controller to do the saves
+
+                    // Messages for successfull operation?
+                }
+
+            }
+        });
+        return editsaveBtn;
+    }
+
+    /**
+     * Constructor called for the UserAccount only
+     * 
+     * @param url
+     * @param userProxy
+     * @param componentContainer
+     * @param router
+     * @param controller
+     */
     public CreateResourceLinksVH(String url, UserProxy userProxy, AbstractComponentContainer componentContainer,
         Router router, UserAccountController controller) {
         buildInitialElements();
