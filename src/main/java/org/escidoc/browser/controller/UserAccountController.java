@@ -28,8 +28,10 @@
  */
 package org.escidoc.browser.controller;
 
-import java.net.URISyntaxException;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
+import org.apache.commons.logging.Log;
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.UserProxy;
@@ -38,10 +40,8 @@ import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.useraccount.UserAccountView;
-import org.jfree.util.Log;
 
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
+import java.net.URISyntaxException;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.aa.useraccount.Grant;
