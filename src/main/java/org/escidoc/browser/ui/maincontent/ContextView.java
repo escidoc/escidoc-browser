@@ -140,7 +140,7 @@ public class ContextView extends View {
         breadCrump = buildBreadCrumpPanel();
         vlContentPanel.addComponent(breadCrump);
         // Permanent Link
-        new CreateResourceLinksVH(mainWindow.getURL().toString(), resourceProxy, vlContentPanel, router);
+        new CreateResourceLinksVH(mainWindow.getURL().toString(), resourceProxy, null, vlContentPanel, router);
 
         // resourcePropertiesPanel
         Panel resourcePropertiesPanel = buildResourcePropertiesPanel();

@@ -403,3 +403,18 @@ ul.horizontal_list li {
       margin:5px;
     }
     
+    
+.v-caption .v-caption-optiontext {
+    display: inline-block;
+}
+
+/* Avoid wrapping if the layout is too tight */
+.v-v-caption-clearelem {
+    white-space: nowrap;
+}
+
+/* Some extra spacing is needed */
+.v-caption{
+    padding-right: 10px;
+}  
+   

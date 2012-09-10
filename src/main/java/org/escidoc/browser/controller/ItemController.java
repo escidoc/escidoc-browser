@@ -40,17 +40,24 @@ import org.escidoc.browser.ui.maincontent.ItemView;
 import org.escidoc.browser.ui.view.helpers.ItemComponentsView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.common.MetadataRecord;
+import de.escidoc.core.resources.om.item.Item;
 import de.escidoc.core.resources.om.item.component.Component;
 
 public class ItemController extends Controller {
 
     private static final Logger LOG = LoggerFactory.getLogger(ItemController.class);
+
+    private static final String URI_DC = "http://purl.org/dc/elements/1.1/";
 
     public ItemController(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
@@ -177,5 +184,84 @@ public class ItemController extends Controller {
 
     public boolean hasComponents() {
         return ((ItemProxy) resourceProxy).hasComponents().booleanValue();
+    }
+
+    public boolean hasAccessDelResource() {
+        try {
+            return repositories
+                .pdp().forCurrentUser().isAction(ActionIdConstants.DELETE_ITEM).forResource(resourceProxy.getId())
+                .permitted();
+        }
+        catch (final UnsupportedOperationException e) {
+            showTrayMessage("Error", e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+        catch (final EscidocClientException e) {
+            showTrayMessage("Error", e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+        catch (final URISyntaxException e) {
+            showTrayMessage("Error", e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public void updateItem(
+        Boolean isChangedTitle, Boolean isChangedPublicStatus, Boolean isChangedLockStatus, String title,
+        String publicStatus, String locStatus, String comment) throws EscidocClientException {
+        Item item = repositories.item().findItemById(resourceProxy.getId());
+
+        if ((locStatus.equals("locked")) && (!isChangedLockStatus)) {
+            router.getMainWindow().showNotification(
+                new Window.Notification("Cannot update since the item is in status locked",
+                    Notification.TYPE_TRAY_NOTIFICATION));
+        }
+        else {
+            if (isChangedTitle) {
+                Element e = item.getMetadataRecords().get("escidoc").getContent();
+
+                if (e != null && e.getChildNodes() != null) {
+                    final NodeList nodeList = e.getChildNodes();
+
+                    for (int i = 0; i < nodeList.getLength(); i++) {
+                        final Node node = nodeList.item(i);
+                        final String nodeName = node.getLocalName();
+                        final String nsUri = node.getNamespaceURI();
+
+                        if (nodeName == null || nodeName.equals("")) {
+                            continue;
+                        }
+                        if (nodeName.equals("title") && URI_DC.equals(nsUri)) {
+                            node.getFirstChild().setNodeValue(title);
+                        }
+                    }
+                }
+                repositories.item().updateMetaData(item.getMetadataRecords().get("escidoc"), item);
+            }
+            if (isChangedPublicStatus) {
+                repositories.item().changePublicStatus(item, publicStatus, comment);
+                LOG.debug("Ndryshem u ndryshua Public Status");
+            }
+            if (isChangedLockStatus) {
+                updateLockStatus(item, comment, locStatus);
+                LOG.debug("Ndryshem u ndryshua LOCK Status");
+            }
+        }
+
+    }
+
+    private void updateLockStatus(final Item item, final String comment, String lockStatusTxt)
+        throws EscidocClientException {
+        if (lockStatusTxt.contains("LOCKED")) {
+            repositories.item().lockResource(item, comment);
+        }
+        else {
+            repositories.item().unlockResource(item, comment);
+
+        }
+
     }
 }

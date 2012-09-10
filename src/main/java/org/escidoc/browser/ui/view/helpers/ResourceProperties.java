@@ -31,14 +31,19 @@ public class ResourceProperties {
         super();
     }
 
-    protected void buildViews() {
+    public void buildViews() {
         createLayout();
         createBreadcrump();
+        createPermanentLink();
         createResourceLinks();
         bindNametoHeader();
         bindDescription();
         bindHrRuler();
         bindProperties();
+    }
+
+    protected void createPermanentLink() {
+
     }
 
     protected void createResourceLinks() {
@@ -130,7 +135,7 @@ public class ResourceProperties {
     protected void showEditableFields() {
     }
 
-    protected VerticalLayout getPropertiesLayout() {
-        return vlPropertiesLeft;
+    protected CssLayout getPropertiesLayout() {
+        return cssLayout;
     }
 }

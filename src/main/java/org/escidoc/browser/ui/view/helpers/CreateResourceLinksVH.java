@@ -67,13 +67,14 @@ public class CreateResourceLinksVH {
 
     private HorizontalLayout vl;
 
-    private ResourceProperties componentContainer;
+    private ResourcePropertiesItemView resourceProperties;
 
     private Window mainWindow;
 
-    public CreateResourceLinksVH(String url, ResourceProxy resourceProxy, ResourceProperties componentContainer,
-        Router router) {
-        this.componentContainer = componentContainer;
+    public CreateResourceLinksVH(String url, ResourceProxy resourceProxy, ResourceProperties resourceProperties,
+        AbstractComponentContainer componentContainer, Router router) {
+        this.resourceProperties = (ResourcePropertiesItemView) resourceProperties;
+
         this.mainWindow = router.getMainWindow();
 
         vl = buildInitialElements();
@@ -112,8 +113,7 @@ public class CreateResourceLinksVH {
             mainWindow.showNotification(ViewConstants.COULD_NOT_RETRIEVE_APPLICATION_URL);
             LOG.error(ViewConstants.COULD_NOT_RETRIEVE_APPLICATION_URL + e.getLocalizedMessage());
         }
-        LOG.debug("Here is the call" + componentContainer.getPropertiesLayout().getClass().getName());
-        componentContainer.getPropertiesLayout().addComponent(hl);
+        componentContainer.addComponent(vl);
     }
 
     private HorizontalLayout buildInitialElements() {
@@ -135,13 +135,13 @@ public class CreateResourceLinksVH {
                     editsaveBtn.setDescription("Save");
                     editsaveBtn.setIcon(new ThemeResource("images/wpzoom/save.png"));
                     // Call viewComponent and show the views
-                    componentContainer.showEditableFields();
+                    resourceProperties.showEditableFields();
                 }
                 else {
                     editsaveBtn.setDescription("Edit");
                     editsaveBtn.setIcon(new ThemeResource("images/wpzoom/pencil.png"));
                     // call viewComponent-controller to do the saves
-
+                    resourceProperties.saveActionWindow();
                     // Messages for successfull operation?
                 }
 

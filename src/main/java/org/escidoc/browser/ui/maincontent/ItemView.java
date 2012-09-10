@@ -232,7 +232,7 @@ public final class ItemView extends View {
         Panel resourcePropertiesPanel = new Panel();
         resourcePropertiesPanel.setImmediate(false);
         resourcePropertiesPanel.setWidth("100.0%");
-        resourcePropertiesPanel.setHeight("130px");
+        resourcePropertiesPanel.setHeight("160px");
         resourcePropertiesPanel.setStyleName(Runo.PANEL_LIGHT);
 
         // vlResourceProperties
@@ -247,7 +247,7 @@ public final class ItemView extends View {
         VerticalLayout vlResourceProperties = new VerticalLayout();
         vlResourceProperties.setImmediate(false);
         vlResourceProperties.setWidth("100.0%");
-        vlResourceProperties.setHeight("130px");
+        vlResourceProperties.setHeight("160px");
         vlResourceProperties.setMargin(false);
 
         // creating the properties / without the breadcrump
@@ -273,7 +273,6 @@ public final class ItemView extends View {
                 // Need to reload again the item
                 Item itemP = repositories.item().findItemById(resourceProxy.getId());
                 treeDS.addChild(parentModel, new ItemModel(itemP));
-
                 // Reload Parent
                 // reloadParent(parentModel);
             }
