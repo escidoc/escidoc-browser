@@ -35,7 +35,7 @@ import java.util.List;
 public class ViewConstants {
 
     // Footer
-    public static final String VERSION = "0.4.8-SNAPSHOT";
+    public static final String VERSION = "0.4.9-SNAPSHOT";
 
     public static final String PRODUCT_NAME = " eSciDoc Browser ";
 
