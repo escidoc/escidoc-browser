@@ -143,7 +143,8 @@ public class FolderView extends View {
         vlContentPanel.addComponent(breadCrumb);
         vlContentPanel.setComponentAlignment(breadCrumb, Alignment.TOP_RIGHT);
         // Permanent Link
-        new CreateResourceLinksVH(router.getMainWindow().getURL().toString(), resourceProxy, vlContentPanel, router);
+        new CreateResourceLinksVH(router.getMainWindow().getURL().toString(), resourceProxy, null, vlContentPanel,
+            router);
 
         // resourcePropertiesPanel
         Panel resourcePropertiesPanel = buildResourcePropertiesPanel();
