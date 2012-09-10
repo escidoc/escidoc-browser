@@ -35,10 +35,14 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,5 +70,37 @@ public class HierarchyContentModelParserSpec {
         System.out.println("Got " + o);
         // then:
         assertEquals("It's not equal, Jim.", "bar", o.get("foo"));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldParseComplexJsonString() throws JsonParseException, JsonMappingException, IOException {
+        // given:
+        InputStream is = getClass().getClassLoader().getResourceAsStream("complex.json");
+        assertTrue("It's null, ", is != null);
+
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(is, writer, "UTF-8");
+        String theString = writer.toString();
+        System.out.println(theString);
+
+        // when:
+        // TODO why do we need to convert to string?
+        Map<String, Object> o =
+            new ObjectMapper(new JsonFactory()).readValue(theString, new TypeReference<HashMap<String, Object>>() {
+                // empty
+            });
+        System.out.println("Got " + o);
+        // then:
+        assertEquals("It's not equal, Jim.", Integer.valueOf(1), o.get("id"));
+        assertEquals("It's not equal, Jim.", "Foo", o.get("name"));
+
+        System.out.println("res: " + ((Map<String, Integer>) o.get("stock")).get("warehouse").intValue());
+        assertTrue("It's not equal", ((Map<String, Integer>) o.get("stock")).get("warehouse").intValue() == 300);
+
+        Object object = o.get("tags");
+        System.out.println("res: " + object);
+
+        assertEquals("It's not equal, Jim.", new String[] { "Bar", "Eek" }, o.get("tags"));
     }
 }
