@@ -99,16 +99,6 @@ public class HierarchyContentModelParserSpec {
         }, o.get("tags"));
     }
 
-    @Test
-    public void shouldParseInvalidJson() throws Exception {
-        // Given X0 && ...n
-        String theString = fileToString("invalid.js");
-        Map<String, Object> o = jsonToMap(theString);
-        LOG.debug("Got " + o);
-        // When
-        // Then ensure that
-    }
-
     private String fileToString(String fileName) throws IOException {
         InputStream is = getClass().getClassLoader().getResourceAsStream(fileName);
         assertTrue("It's null, ", is != null);
@@ -120,81 +110,68 @@ public class HierarchyContentModelParserSpec {
         return theString;
     }
 
-    // prompt the user to enter the resource name
-    // set resource_name
-    // prompt the user to select the content model(CM)
-    // find the selected CM by its id
-    // IF NOT found
-    // display the error message
-    // OTHERWISE
-    // look up the CM description
-    // find '{ "ekinematik"'
-    // IF NOT found
-    // handle cases
-    // OTHERWISE
-    // find 'type'
-    // create resource of type 'type' with the resource_name
-    // IF NOT succesful
-    // display the error message
-    // OTHERWISE
-    // set parent_resource
-    // look up 'children'
-    // IF NOT found
-    // display the error message
-    // OTHERWISE
-    // set children to value of 'children'
-    // FOR each child of the children
-    // set child_resource_name to value of name
-    // set child_cm_id to value of content-model.id
-    // find content model by it child_cm_id
-    // IF NOT found
-    // display the error message
-    // OTHERWISE
-    // look up the CM description
-    // find controller value
-    // IF NOT found
-    // display the error message
-    // OTHERWISE
-    // create resource(item/container) with the child_resource_name using the controller
-    // IF NOT succesful
-    // display the error message
-    // OTHERWISE
-    // set child_resource
-    // set parent-child relationship, parent_resource is parent
-    // of child_resource
-
     @Test
     public void shouldParseEkinematikCmDescription() throws Exception {
         // Given X0 && ...Xn
-        // When
         Map<String, Object> o = jsonToMap(fileToString("ekinematik.js"));
         LOG.debug("Got " + o);
-
-        // Then ensure that
-
+        // ensure that
         Map<?, ?> map = assertEkinematik(o);
         assertResourcetype(map);
 
-        // Then ensure that
+        // ensure that
         List<?> children = assertChildren(map);
+        List<String> childId = new ArrayList<String>(children.size());
         for (Object childObject : children) {
-            if (!(childObject instanceof Map)) {
-                return;
-            }
-            Map<?, ?> child = (Map<?, ?>) childObject;
-            String childName = (String) child.get("name");
-            LOG.debug("Should create a resource with the name " + childName);
-            Object childContentModelObject = child.get("content-model");
-            if (!(childContentModelObject instanceof Map<?, ?>)) {
-                return;
-            }
-            Map<?, ?> childContentModel = (Map<?, ?>) childContentModelObject;
-            Object idObject = childContentModel.get("id");
-            LOG.debug("using content model with id " + idObject);
-            Object linkObject = childContentModel.get("link");
+            Map<?, ?> child = logChildName(childObject);
+            Map<?, ?> childContentModel = getChildContentModel(child);
+            logChildType(child);
+            Object idObject = logChildContentModelId(childContentModel);
+            logChildContentModelUri(childContentModel);
 
-            LOG.debug("located in " + linkObject);
+            if (idObject instanceof String) {
+                childId.add((String) idObject);
+            }
         }
+
+        // ensure that
+        assertEquals("It's not same, Jim ", 3, childId.size());
+    }
+
+    private static void logChildType(Map<?, ?> child) {
+        String childType = (String) child.get("type");
+        LOG.debug("with the type " + childType);
+    }
+
+    private static void logChildContentModelUri(Map<?, ?> childContentModel) {
+        Object linkObject = childContentModel.get("link");
+        LOG.debug("located in " + linkObject);
+    }
+
+    private static Object logChildContentModelId(Map<?, ?> childContentModel) {
+        Object idObject = childContentModel.get("id");
+        LOG.debug("using content model with id " + idObject);
+        return idObject;
+    }
+
+    private static Map<?, ?> getChildContentModel(Map<?, ?> child) {
+        Object childContentModelObject = child.get("content-model");
+        if (!(childContentModelObject instanceof Map<?, ?>)) {
+            Collections.emptyMap();
+        }
+        Map<?, ?> childContentModel = (Map<?, ?>) childContentModelObject;
+        return childContentModel;
+    }
+
+    private static Map<?, ?> logChildName(Object childObject) {
+        if (!(childObject instanceof Map)) {
+            Collections.emptyMap();
+        }
+        Map<?, ?> child = (Map<?, ?>) childObject;
+
+        String childName = (String) child.get("name");
+        LOG.debug("Should create a resource with the name " + childName);
+        return child;
     }
 
     private static Map<?, ?> assertEkinematik(Map<String, Object> o) {
@@ -239,5 +216,15 @@ public class HierarchyContentModelParserSpec {
                 // empty
             });
         return o;
+    }
+
+    @Test(expected = JsonParseException.class)
+    public void shouldThrowParseExceptionIfNotEkinematikContentModel() throws Exception {
+        // Given X0 && ...Xn
+        String s = fileToString("invalid.js");
+        // When
+        jsonToMap(s);
+        // Then ensure that
+
     }
 }

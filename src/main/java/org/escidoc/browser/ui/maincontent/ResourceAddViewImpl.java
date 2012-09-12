@@ -28,11 +28,30 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.google.common.base.Preconditions;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.validator.StringLengthValidator;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.NativeSelect;
+import com.vaadin.ui.ProgressIndicator;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.Upload;
+import com.vaadin.ui.Upload.FailedEvent;
+import com.vaadin.ui.Upload.FinishedEvent;
+import com.vaadin.ui.Upload.StartedEvent;
+import com.vaadin.ui.Upload.SucceededEvent;
+import com.vaadin.ui.Window;
 
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ContainerProxy;
@@ -52,30 +71,20 @@ import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.AddResourceListener;
 import org.escidoc.browser.ui.listeners.MetadataFileReceiver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.validator.StringLengthValidator;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.NativeSelect;
-import com.vaadin.ui.ProgressIndicator;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.Upload;
-import com.vaadin.ui.Upload.FailedEvent;
-import com.vaadin.ui.Upload.FinishedEvent;
-import com.vaadin.ui.Upload.StartedEvent;
-import com.vaadin.ui.Upload.SucceededEvent;
-import com.vaadin.ui.Window;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
-import de.escidoc.core.client.exceptions.EscidocException;
-import de.escidoc.core.client.exceptions.InternalClientException;
-import de.escidoc.core.client.exceptions.TransportException;
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.VersionableResource;
 import de.escidoc.core.resources.common.reference.ContentModelRef;
@@ -84,6 +93,8 @@ import de.escidoc.core.resources.om.container.Container;
 import de.escidoc.core.resources.om.item.Item;
 
 public class ResourceAddViewImpl implements ResourceAddView {
+
+    private final static Logger LOG = LoggerFactory.getLogger(ResourceAddViewImpl.class);
 
     private final FormLayout addResourceForm = new FormLayout();
 
@@ -182,7 +193,7 @@ public class ResourceAddViewImpl implements ResourceAddView {
         addResourceForm.addComponent(nameField);
     }
 
-    private void addContentModelSelect() throws EscidocException, InternalClientException, TransportException {
+    private void addContentModelSelect() throws EscidocClientException {
         Preconditions.checkNotNull(repositories.contentModel(), "ContentModelRepository is null: %s",
             repositories.contentModel());
         contentModelSelect.setRequired(true);
@@ -201,20 +212,104 @@ public class ResourceAddViewImpl implements ResourceAddView {
 
     }
 
-    private void bindData() throws EscidocException, InternalClientException, TransportException {
-        final Collection<? extends Resource> contentModelList =
-            repositories.contentModel().findPublicOrReleasedResources();
-        final List<ResourceDisplay> resourceDisplayList = new ArrayList<ResourceDisplay>(contentModelList.size());
-        for (final Resource resource : contentModelList) {
-            resourceDisplayList.add(new ResourceDisplay(resource.getObjid(), resource.getXLinkTitle() + " ("
-                + resource.getObjid() + ")"));
+    // TODO refactor this method, make it shorter and the intent clearer.
+    private void bindData() throws EscidocClientException {
+        /*
+         * find parent's content model
+         * 
+         * lookup parent_content_model's description
+         * 
+         * find in description JSON string
+         * 
+         * get value of ekinematik
+         */
+        String parentId = parent.getId();
+        String parentContentModelId =
+            repositories.findByType(parent.getType()).findById(parentId).getContentModel().getObjid();
+        ResourceProxy parentContentModel =
+            repositories.findByType(ResourceType.CONTENT_MODEL).findById(parentContentModelId);
+        String parentContentModelDescription = parentContentModel.getDescription();
+
+        // try to parse JSON
+        Map<String, Object> map = jsonToMap(parentContentModelDescription);
+        List<ResourceDisplay> resourceDisplayList;
+        if (map.isEmpty()) {
+            final Collection<? extends Resource> contentModelList =
+                repositories.contentModel().findPublicOrReleasedResources();
+            resourceDisplayList = new ArrayList<ResourceDisplay>(contentModelList.size());
+            for (final Resource resource : contentModelList) {
+                resourceDisplayList.add(new ResourceDisplay(resource.getObjid(), resource.getXLinkTitle() + " ("
+                    + resource.getObjid() + ")"));
+            }
         }
+        else {
+            Object val = map.get("ekinematik");
+            if (!(val instanceof HashMap<?, ?>)) {
+                return;
+            }
+
+            Map<?, ?> ekinematik = (Map<?, ?>) val;
+
+            // get children
+            Object childrenValue = ekinematik.get("children");
+            if (!(childrenValue instanceof List)) {
+                return;
+            }
+
+            List<?> children = (List<?>) childrenValue;
+            resourceDisplayList = new ArrayList<ResourceDisplay>(children.size());
+            for (Object childObject : children) {
+                if (childObject instanceof Map) {
+                    Map<?, ?> childContentModelMap = getChildContentModel((Map<?, ?>) childObject);
+                    Object idObject = childContentModelMap.get("id");
+                    LOG.debug("using content model with id " + idObject);
+
+                    if (idObject instanceof String) {
+                        ResourceProxy childContentModel =
+                            repositories.findByType(ResourceType.CONTENT_MODEL).findById((String) idObject);
+                        resourceDisplayList.add(new ResourceDisplay(childContentModel.getId(), childContentModel
+                            .getName()));
+                    }
+                }
+            }
+        }
+
         final BeanItemContainer<ResourceDisplay> resourceDisplayContainer =
             new BeanItemContainer<ResourceDisplay>(ResourceDisplay.class, resourceDisplayList);
         resourceDisplayContainer.addNestedContainerProperty("objectId");
         resourceDisplayContainer.addNestedContainerProperty("title");
         contentModelSelect.setContainerDataSource(resourceDisplayContainer);
         contentModelSelect.setItemCaptionPropertyId("title");
+    }
+
+    // TODO move me to an util class
+    private static Map<?, ?> getChildContentModel(Map<?, ?> child) {
+        Object childContentModelObject = child.get("content-model");
+        if (!(childContentModelObject instanceof Map<?, ?>)) {
+            Collections.emptyMap();
+        }
+        Map<?, ?> childContentModel = (Map<?, ?>) childContentModelObject;
+        return childContentModel;
+    }
+
+    // TODO move me to an util class
+    private static Map<String, Object> jsonToMap(String contentModelDescription) {
+        try {
+            return new ObjectMapper(new JsonFactory()).readValue(contentModelDescription,
+                new TypeReference<HashMap<String, Object>>() {
+                    // empty
+                });
+        }
+        catch (JsonParseException e) {
+            LOG.debug("Content Model description is not a valid JSON, " + e.getMessage());
+        }
+        catch (JsonMappingException e) {
+            LOG.error("Jackson exception: " + e.getMessage());
+        }
+        catch (IOException e) {
+            LOG.error("Jackson exception: " + e.getMessage());
+        }
+        return Collections.emptyMap();
     }
 
     @SuppressWarnings("serial")
@@ -334,25 +429,15 @@ public class ResourceAddViewImpl implements ResourceAddView {
         return AppConstants.EMPTY_STRING;
     }
 
-    public String getContentModelType(String id) {
-        try {
-            ResourceProxy contentModel = repositories.contentModel().findById(id);
-            String objectType = contentModel.getDescription();
-            if ((objectType != null) && (objectType.contains("http://www.w3.org/1999/02/22-rdf-syntax-ns#type="))) {
-                final Pattern controllerIdPattern =
-                    Pattern.compile("http://www.w3.org/1999/02/22-rdf-syntax-ns#type=org.escidoc.resources.([^;]*);");
-                final Matcher controllerIdMatcher = controllerIdPattern.matcher(contentModel.getDescription());
-                if (controllerIdMatcher.find()) {
-                    objectType = controllerIdMatcher.group(1);
-                }
-
-                return objectType;
+    public String getContentModelType(String cmDescription) {
+        if ((cmDescription != null) && (cmDescription.contains("http://www.w3.org/1999/02/22-rdf-syntax-ns#type="))) {
+            final Pattern controllerIdPattern =
+                Pattern.compile("http://www.w3.org/1999/02/22-rdf-syntax-ns#type=org.escidoc.resources.([^;]*);");
+            final Matcher controllerIdMatcher = controllerIdPattern.matcher(cmDescription);
+            if (controllerIdMatcher.find()) {
+                return controllerIdMatcher.group(1);
             }
-        }
-        catch (EscidocClientException e) {
-            mainWindow.showNotification(ViewConstants.ERROR_RETRIEVING_CONTENTMODEL + e.getLocalizedMessage(),
-                Window.Notification.TYPE_ERROR_MESSAGE);
-            e.printStackTrace();
+
         }
         return null;
     }
@@ -381,21 +466,11 @@ public class ResourceAddViewImpl implements ResourceAddView {
      */
     @Override
     public void createResource() {
-        String resourceType = getContentModelType(getContentModelId());
-
         try {
+            String resourceType = getContentModelType(getContentModelDescription(getContentModelId()));
+
             if (resourceType == null) {
-                if (resourceTypeSelect.getValue() == null) {
-                    mainWindow.showNotification(ViewConstants.ERROR_NO_RESOURCETYPE_IN_CONTENTMODEL
-                        + contentModelSelect.getValue() + "\"", Window.Notification.TYPE_HUMANIZED_MESSAGE);
-                    addResouceTypeSelect();
-                }
-                else if (resourceTypeSelect.getValue() == "Container") {
-                    createNewResource(ResourceType.CONTAINER.toString());
-                }
-                else {
-                    createNewResource(ResourceType.ITEM.toString());
-                }
+                handleNoResourceType();
             }
             else if (resourceType.toUpperCase().equals(ResourceType.CONTAINER.toString())) {
                 createNewResource(ResourceType.CONTAINER.toString());
@@ -412,6 +487,25 @@ public class ResourceAddViewImpl implements ResourceAddView {
         catch (EscidocClientException e) {
             mainWindow.showNotification(e.getLocalizedMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
         }
+    }
+
+    private void handleNoResourceType() throws EscidocClientException {
+        if (resourceTypeSelect.getValue() == null) {
+            mainWindow.showNotification(
+                ViewConstants.ERROR_NO_RESOURCETYPE_IN_CONTENTMODEL + contentModelSelect.getValue() + "\"",
+                Window.Notification.TYPE_HUMANIZED_MESSAGE);
+            addResouceTypeSelect();
+        }
+        else if (resourceTypeSelect.getValue() == "Container") {
+            createNewResource(ResourceType.CONTAINER.toString());
+        }
+        else {
+            createNewResource(ResourceType.ITEM.toString());
+        }
+    }
+
+    private String getContentModelDescription(String id) throws EscidocClientException {
+        return repositories.contentModel().findById(id).getDescription();
     }
 
     private void createNewResource(String resourceType) throws EscidocClientException {

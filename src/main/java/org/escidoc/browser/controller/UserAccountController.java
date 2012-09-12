@@ -31,7 +31,6 @@ package org.escidoc.browser.controller;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 
-import org.apache.commons.logging.Log;
 import org.escidoc.browser.AppConstants;
 import org.escidoc.browser.model.ResourceProxy;
 import org.escidoc.browser.model.internal.UserProxy;
@@ -40,6 +39,8 @@ import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.useraccount.UserAccountView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URISyntaxException;
 
@@ -48,6 +49,8 @@ import de.escidoc.core.resources.aa.useraccount.Grant;
 import de.escidoc.core.resources.aa.useraccount.Grants;
 
 public class UserAccountController extends Controller {
+
+    private final static Logger LOG = LoggerFactory.getLogger(UserAccountController.class);
 
     public UserAccountController(final Repositories repositories, final Router router, final ResourceProxy resourceProxy) {
         super(repositories, router, resourceProxy);
@@ -94,10 +97,10 @@ public class UserAccountController extends Controller {
                 .forResource(resourceProxy.getId()).permitted();
         }
         catch (EscidocClientException e) {
-            Log.debug(ViewConstants.ERROR + e.getLocalizedMessage());
+            LOG.debug(ViewConstants.ERROR + e.getLocalizedMessage());
         }
         catch (URISyntaxException e) {
-            Log.debug(ViewConstants.ERROR + e.getLocalizedMessage());
+            LOG.debug(ViewConstants.ERROR + e.getLocalizedMessage());
         }
         return false;
     }
@@ -110,11 +113,11 @@ public class UserAccountController extends Controller {
         }
         catch (EscidocClientException e) {
             showError(ViewConstants.ERROR + e.getLocalizedMessage());
-            Log.debug(ViewConstants.ERROR + e.getLocalizedMessage());
+            LOG.debug(ViewConstants.ERROR + e.getLocalizedMessage());
         }
         catch (URISyntaxException e) {
             showError(ViewConstants.ERROR + e.getLocalizedMessage());
-            Log.debug(ViewConstants.ERROR + e.getLocalizedMessage());
+            LOG.debug(ViewConstants.ERROR + e.getLocalizedMessage());
         }
         return false;
     }
