@@ -28,7 +28,10 @@
  */
 package org.escidoc.browser.repository.internal;
 
-import com.google.common.base.Preconditions;
+import gov.loc.www.zing.srw.SearchRetrieveRequestType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.escidoc.browser.model.EscidocServiceLocation;
 import org.escidoc.browser.model.ModelConverter;
@@ -42,8 +45,7 @@ import org.escidoc.browser.repository.Repository;
 import org.escidoc.browser.ui.helper.Util;
 import org.escidoc.browser.util.Utils;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.base.Preconditions;
 
 import de.escidoc.core.client.ContainerHandlerClient;
 import de.escidoc.core.client.exceptions.EscidocClientException;
@@ -59,8 +61,8 @@ import de.escidoc.core.resources.common.Relations;
 import de.escidoc.core.resources.common.TaskParam;
 import de.escidoc.core.resources.common.versionhistory.VersionHistory;
 import de.escidoc.core.resources.om.container.Container;
+import de.escidoc.core.resources.om.container.ContainerProperties;
 import de.escidoc.core.resources.sb.search.SearchResultRecord;
-import gov.loc.www.zing.srw.SearchRetrieveRequestType;
 
 public class ContainerRepository implements Repository {
 
@@ -288,15 +290,30 @@ public class ContainerRepository implements Repository {
         return client.retrieve(id).getMetadataRecords().get(name);
     }
 
-    public void updateMetaData(ResourceProxy resourceProxy, MetadataRecord metadata) throws EscidocClientException {
+    public void updateDescrition(String newDescription, String containerId) throws EscidocClientException {
+        Container container = client.retrieve(containerId);
+        ContainerProperties properties = container.getProperties();
+        properties.setDescription(newDescription);
+        container.setProperties(properties);
+        client.update(container);
+    }
 
+    public void updateMetaData(ResourceProxy resourceProxy, MetadataRecord metadata) throws EscidocClientException {
         Container container = client.retrieve(resourceProxy.getId());
 
         final MetadataRecords list = container.getMetadataRecords();
         list.del(metadata.getName());
         list.add(metadata);
         container.setMetadataRecords(list);
+        client.update(container);
+    }
 
+    public void updateMetaData(final MetadataRecord metadataRecord, final Container container)
+        throws EscidocClientException {
+        final MetadataRecords containerMetadataList = container.getMetadataRecords();
+        containerMetadataList.del(metadataRecord.getName());
+        containerMetadataList.add(metadataRecord);
+        container.setMetadataRecords(containerMetadataList);
         client.update(container);
     }
 }

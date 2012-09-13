@@ -67,14 +67,18 @@ public class CreateResourceLinksVH {
 
     private HorizontalLayout vl;
 
-    private ResourcePropertiesItemView resourceProperties;
+    private ResourceProperties resourceProperties;
 
     private Window mainWindow;
 
     public CreateResourceLinksVH(String url, ResourceProxy resourceProxy, ResourceProperties resourceProperties,
         AbstractComponentContainer componentContainer, Router router) {
-        this.resourceProperties = (ResourcePropertiesItemView) resourceProperties;
-
+        if (resourceProperties.getClass().toString().contains("ResourcePropertiesContainerView")) {
+            this.resourceProperties = (ResourcePropertiesContainerView) resourceProperties;
+        }
+        else {
+            this.resourceProperties = (ResourcePropertiesItemView) resourceProperties;
+        }
         this.mainWindow = router.getMainWindow();
 
         vl = buildInitialElements();

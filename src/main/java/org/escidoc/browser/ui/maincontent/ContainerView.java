@@ -44,14 +44,15 @@ import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.listeners.ResourceDeleteConfirmation;
 import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
-import org.escidoc.browser.ui.view.helpers.CreateResourceLinksVH;
 import org.escidoc.browser.ui.view.helpers.DirectMember;
+import org.escidoc.browser.ui.view.helpers.ResourcePropertiesContainerView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComboBox;
@@ -110,6 +111,8 @@ public class ContainerView extends View {
 
     private final ContainerController containerController;
 
+    private ResourcePropertiesContainerView containerPropertiesView;
+
     public ContainerView(final Router router, final ResourceProxy resourceProxy, final Repositories repositories,
         ContainerController containerController) throws EscidocClientException {
         this.containerController = containerController;
@@ -149,17 +152,15 @@ public class ContainerView extends View {
         vlContentPanel.setHeight("100.0%");
         vlContentPanel.setMargin(false, true, false, true);
 
-        new CreateResourceLinksVH(mainWindow.getURL().toString(), resourceProxy, null, vlContentPanel, router);
-
         // resourcePropertiesPanel
         Panel resourcePropertiesPanel = buildResourcePropertiesPanel();
         vlContentPanel.addComponent(resourcePropertiesPanel);
-        vlContentPanel.setExpandRatio(resourcePropertiesPanel, 1.5f);
+        vlContentPanel.setComponentAlignment(resourcePropertiesPanel, Alignment.TOP_CENTER);
 
         // metaViewsPanel contains Panel for the DirectMembers & for the Metas
         Panel metaViewsPanel = buildMetaViewsPanel();
         vlContentPanel.addComponent(metaViewsPanel);
-        vlContentPanel.setExpandRatio(metaViewsPanel, 8.0f);
+        vlContentPanel.setComponentAlignment(metaViewsPanel, Alignment.TOP_CENTER);
 
         return vlContentPanel;
     }
@@ -169,7 +170,7 @@ public class ContainerView extends View {
         Panel metaViewsPanel = new Panel();
         metaViewsPanel.setImmediate(false);
         metaViewsPanel.setWidth("100.0%");
-        metaViewsPanel.setHeight("100.0%");
+        metaViewsPanel.setHeight("500px");
         metaViewsPanel.setStyleName(Runo.PANEL_LIGHT);
 
         // hlMetaViews
@@ -285,7 +286,7 @@ public class ContainerView extends View {
         Panel resourcePropertiesPanel = new Panel();
         resourcePropertiesPanel.setImmediate(false);
         resourcePropertiesPanel.setWidth("100.0%");
-        resourcePropertiesPanel.setHeight("100.0%");
+        resourcePropertiesPanel.setHeight("160px");
         resourcePropertiesPanel.setStyleName(Runo.PANEL_LIGHT);
 
         // vlResourceProperties
@@ -300,16 +301,12 @@ public class ContainerView extends View {
         VerticalLayout vlResourceProperties = new VerticalLayout();
         vlResourceProperties.setImmediate(false);
         vlResourceProperties.setWidth("100.0%");
-        vlResourceProperties.setHeight("100.0%");
+        vlResourceProperties.setHeight("160px");
         vlResourceProperties.setMargin(false);
 
-        CssLayout cssLayout = new CssLayout();
-        cssLayout.setWidth("100%");
-        cssLayout.setHeight("100%");
+        containerPropertiesView = new ResourcePropertiesContainerView(resourceProxy, router, containerController);
+        vlResourceProperties.addComponent(containerPropertiesView.getContentLayout());
 
-        // creating the properties / without the breadcrump
-        createProperties(cssLayout);
-        vlResourceProperties.addComponent(cssLayout);
         return vlResourceProperties;
     }
 

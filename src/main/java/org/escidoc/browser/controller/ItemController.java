@@ -243,11 +243,9 @@ public class ItemController extends Controller {
             }
             if (isChangedPublicStatus) {
                 repositories.item().changePublicStatus(item, publicStatus, comment);
-                LOG.debug("Ndryshem u ndryshua Public Status");
             }
             if (isChangedLockStatus) {
                 updateLockStatus(item, comment, locStatus);
-                LOG.debug("Ndryshem u ndryshua LOCK Status");
             }
         }
 

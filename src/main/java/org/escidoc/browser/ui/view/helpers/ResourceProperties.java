@@ -138,4 +138,9 @@ public class ResourceProperties {
     protected CssLayout getPropertiesLayout() {
         return cssLayout;
     }
+
+    protected void saveActionWindow() {
+        // TODO Auto-generated method stub
+
+    }
 }
