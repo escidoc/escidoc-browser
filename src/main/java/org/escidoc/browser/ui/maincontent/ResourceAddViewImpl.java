@@ -221,7 +221,7 @@ public class ResourceAddViewImpl implements ResourceAddView {
          * 
          * find in description JSON string
          * 
-         * get value of ekinematik
+         * get value of children
          */
         String parentId = parent.getId();
         String parentContentModelId =
@@ -243,20 +243,14 @@ public class ResourceAddViewImpl implements ResourceAddView {
             }
         }
         else {
-            Object val = map.get("ekinematik");
-            if (!(val instanceof HashMap<?, ?>)) {
+            Object val = map.get("children");
+            if (!(val instanceof List<?>)) {
                 return;
             }
-
-            Map<?, ?> ekinematik = (Map<?, ?>) val;
 
             // get children
-            Object childrenValue = ekinematik.get("children");
-            if (!(childrenValue instanceof List)) {
-                return;
-            }
 
-            List<?> children = (List<?>) childrenValue;
+            List<?> children = (List<?>) val;
             resourceDisplayList = new ArrayList<ResourceDisplay>(children.size());
             for (Object childObject : children) {
                 if (childObject instanceof Map) {
