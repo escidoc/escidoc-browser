@@ -126,27 +126,13 @@ public class ContainerController extends Controller {
         }
         else {
             if (isChangedTitle) {
-                Element e = container.getMetadataRecords().get("escidoc").getContent();
-
-                if (e != null && e.getChildNodes() != null) {
-                    final NodeList nodeList = e.getChildNodes();
-                    for (int i = 0; i < nodeList.getLength(); i++) {
-                        final Node node = nodeList.item(i);
-                        final String nodeName = node.getLocalName();
-                        final String nsUri = node.getNamespaceURI();
-
-                        if (nodeName == null || nodeName.equals("")) {
-                            continue;
-                        }
-                        if (nodeName.equals("title") && URI_DC.equals(nsUri)) {
-                            node.getFirstChild().setNodeValue(title);
-                        }
-                    }
-                }
+                changeTitle(title, container);
                 repositories.container().updateMetaData(container.getMetadataRecords().get("escidoc"), container);
             }
             if (isChangedDescription) {
-                repositories.container().updateDescrition(description, resourceProxy.getId());
+                changeDescription(description, container);
+                repositories.container().updateMetaData(container.getMetadataRecords().get("escidoc"), container);
+                // repositories.container().updateDescrition(description, resourceProxy.getId());
             }
             if (isChangedPublicStatus) {
                 repositories.container().changePublicStatus(container, publicStatus, comment);
@@ -156,6 +142,54 @@ public class ContainerController extends Controller {
             }
         }
 
+    }
+
+    private void changeTitle(String title, Container container) {
+        Element e = container.getMetadataRecords().get("escidoc").getContent();
+        if (e != null && e.getChildNodes() != null) {
+            final NodeList nodeList = e.getChildNodes();
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                final Node node = nodeList.item(i);
+                final String nodeName = node.getLocalName();
+                final String nsUri = node.getNamespaceURI();
+
+                if (nodeName == null || nodeName.equals("")) {
+                    continue;
+                }
+
+                if (nodeName.equals("title") && URI_DC.equals(nsUri)) {
+                    node.getFirstChild().setNodeValue(title);
+                }
+            }
+        }
+    }
+
+    private void changeDescription(String description, Container container) {
+        Element e = container.getMetadataRecords().get("escidoc").getContent();
+        if (e != null && e.getChildNodes() != null) {
+            boolean found = false;
+            final NodeList nodeList = e.getChildNodes();
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                final Node node = nodeList.item(i);
+                final String nodeName = node.getLocalName();
+                final String nsUri = node.getNamespaceURI();
+
+                if (nodeName == null || nodeName.equals("")) {
+                    continue;
+                }
+                if (nodeName.equals("description") && URI_DC.equals(nsUri)) {
+                    node.getFirstChild().setNodeValue(description);
+                    found = true;
+                }
+
+            }
+            if (!found) {
+                final Element descriptionEl = e.getOwnerDocument().createElementNS(URI_DC, "description");
+                descriptionEl.setPrefix("dc");
+                descriptionEl.setTextContent(description);
+                e.appendChild(descriptionEl);
+            }
+        }
     }
 
     private void updateLockStatus(Container container, String comment, String lockStatus) throws EscidocClientException {
