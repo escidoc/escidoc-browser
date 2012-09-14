@@ -409,12 +409,15 @@ ul.horizontal_list li {
 }
 
 /* Avoid wrapping if the layout is too tight */
-.v-v-caption-clearelem {
+.v-caption-clearelem {
     white-space: nowrap;
 }
 
 /* Some extra spacing is needed */
 .v-caption{
     padding-right: 10px;
-}  
-   
+}
+
+.inlineblock {
+	display:block !important;
+}

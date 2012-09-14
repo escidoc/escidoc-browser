@@ -74,10 +74,6 @@ public class ResourcePropertiesContainerView extends ResourceProperties {
 
     private Window subwindow;
 
-    private String lockStatus;
-
-    private Label lblCurrentVersionStatus;
-
     private ContainerProxyImpl resourceProxy;
 
     private Repositories repositories;
@@ -167,7 +163,7 @@ public class ResourcePropertiesContainerView extends ResourceProperties {
         final Label descMetadata1 = new Label("ID: " + resourceProxy.getId());
 
         status = resourceProxy.getType().getLabel() + " is ";
-        lockStatus = status;
+
         lblStatus = new Label(status + resourceProxy.getStatus(), Label.CONTENT_RAW);
         lblStatus.setDescription(ViewConstants.DESC_STATUS2);
 
@@ -184,18 +180,7 @@ public class ResourcePropertiesContainerView extends ResourceProperties {
                 Label.CONTENT_XHTML);
 
         vlPropertiesLeft.addComponent(descMetadata1);
-        if (controller.canUpdateContainer()) {
-            status = "Latest status is ";
-            lblCurrentVersionStatus = new Label(status + resourceProxy.getVersionStatus());
-            lblCurrentVersionStatus.setDescription(ViewConstants.DESC_STATUS2);
-            lblCurrentVersionStatus.setStyleName("inset");
-            vlPropertiesLeft.addComponent(lblCurrentVersionStatus);
-
-        }
-        else {
-            vlPropertiesLeft.addComponent(lblStatus);
-        }
-
+        vlPropertiesLeft.addComponent(lblStatus);
         vlPropertiesLeft.addComponent(lblLockstatus);
         pnlPropertiesLeft.addComponent(vlPropertiesLeft);
         cssLayout.addComponent(pnlPropertiesLeft);
@@ -384,6 +369,7 @@ public class ResourcePropertiesContainerView extends ResourceProperties {
         // Showing editable title
         txtFieldTitle = new TextField();
         txtFieldTitle.setValue(resourceProxy.getName());
+        txtFieldTitle.addStyleName("inlineblock");
         cssLayout.replaceComponent(descTitle, txtFieldTitle);
 
         txtFieldDescription = new TextField();
@@ -406,20 +392,20 @@ public class ResourcePropertiesContainerView extends ResourceProperties {
         descLabel.setValue(ViewConstants.DESCRIPTION_LBL + txtFieldDescription.getValue());
         cssLayout.replaceComponent(txtFieldTitle, descTitle);
         cssLayout.replaceComponent(txtFieldDescription, descLabel);
-        Boolean isChangedTitle = false;
-        Boolean isChangedDescription = false;
-        Boolean isChangedPublicStatus = false;
-        Boolean isChangedLockStatus = false;
 
         // Store operation logic here!
         cmbStatus = this.getCmbStatus();
-        lblCurrentVersionStatus.setValue(resourceProxy.getType().getLabel() + " is " + cmbStatus.getValue().toString());
-        vlPropertiesLeft.replaceComponent(this.getHlPublicStatus(), lblCurrentVersionStatus);
+        lblStatus.setValue(resourceProxy.getType().getLabel() + " is " + cmbStatus.getValue().toString());
+        vlPropertiesLeft.replaceComponent(this.getHlPublicStatus(), lblStatus);
         // Store operation?
         cmbLockStatus = this.getCmbLockStatus();
         lblLockstatus.setValue(status + cmbLockStatus.getValue().toString());
         vlPropertiesLeft.replaceComponent(this.getHlLockStatus(), lblLockstatus);
 
+        Boolean isChangedTitle = false;
+        Boolean isChangedDescription = false;
+        Boolean isChangedPublicStatus = false;
+        Boolean isChangedLockStatus = false;
         isChangedTitle = areEqual(resourceProxy.getName(), txtFieldTitle.getValue().toString());
         isChangedDescription = areEqual(resourceProxy.getDescription(), txtFieldDescription.getValue().toString());
         isChangedPublicStatus = areEqual(resourceProxy.getStatus(), cmbStatus.getValue().toString());
@@ -446,7 +432,6 @@ public class ResourcePropertiesContainerView extends ResourceProperties {
         if ((oldValue != null) && oldValue.equals(newValue)) {
             return false;
         }
-        LOG.debug("VALUES " + oldValue + newValue);
         return true;
     }
 }
