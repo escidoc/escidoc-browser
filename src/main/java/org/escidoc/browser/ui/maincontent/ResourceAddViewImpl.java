@@ -85,6 +85,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
+import de.escidoc.core.client.exceptions.EscidocException;
+import de.escidoc.core.client.exceptions.InternalClientException;
+import de.escidoc.core.client.exceptions.TransportException;
 import de.escidoc.core.resources.Resource;
 import de.escidoc.core.resources.VersionableResource;
 import de.escidoc.core.resources.common.reference.ContentModelRef;
@@ -214,72 +217,87 @@ public class ResourceAddViewImpl implements ResourceAddView {
 
     // TODO refactor this method, make it shorter and the intent clearer.
     private void bindData() throws EscidocClientException {
-        /*
-         * find parent's content model
-         * 
-         * lookup parent_content_model's description
-         * 
-         * find in description JSON string
-         * 
-         * get value of children
-         */
-        String parentId = parent.getId();
-
-        ResourceProxy findById = repositories.findByType(parent.getType()).findById(parentId);
+        ResourceProxy parentProxy = findParent();
         Map<String, Object> map = new HashMap<String, Object>();
-        if (findById.getType() == ResourceType.CONTAINER) {
-            String parentContentModelId = findById.getContentModel().getObjid();
-
-            ResourceProxy parentContentModel =
-                repositories.findByType(ResourceType.CONTENT_MODEL).findById(parentContentModelId);
-            String parentContentModelDescription = parentContentModel.getDescription();
-
-            // try to parse JSON
-            map = jsonToMap(parentContentModelDescription);
+        if (isContainer(parentProxy)) {
+            map = jsonToMap(getContentModelDescription(parentProxy));
         }
 
         List<ResourceDisplay> resourceDisplayList;
         if (map.isEmpty()) {
-            final Collection<? extends Resource> contentModelList =
-                repositories.contentModel().findPublicOrReleasedResources();
-            resourceDisplayList = new ArrayList<ResourceDisplay>(contentModelList.size());
-            for (final Resource resource : contentModelList) {
-                resourceDisplayList.add(new ResourceDisplay(resource.getObjid(), resource.getXLinkTitle() + " ("
-                    + resource.getObjid() + ")"));
-            }
+            resourceDisplayList = addAllContentModels();
         }
         else {
-            Object val = map.get("children");
-            if (!(val instanceof List<?>)) {
-                return;
-            }
+            resourceDisplayList = filterContentModel(map);
+        }
+        bind(resourceDisplayList);
+    }
 
-            // get children
+    private List<ResourceDisplay> filterContentModel(Map<String, Object> map) throws EscidocClientException {
+        List<ResourceDisplay> resourceDisplayList;
+        Object val = map.get("children");
+        if (!(val instanceof List<?>)) {
+            return Collections.emptyList();
+        }
+        // get children
+        List<?> children = (List<?>) val;
+        resourceDisplayList = new ArrayList<ResourceDisplay>(children.size());
+        for (Object childObject : children) {
+            if (childObject instanceof Map) {
+                Map<?, ?> childContentModelMap = getChildContentModel((Map<?, ?>) childObject);
+                Object idObject = childContentModelMap.get("id");
+                LOG.debug("using content model with id " + idObject);
 
-            List<?> children = (List<?>) val;
-            resourceDisplayList = new ArrayList<ResourceDisplay>(children.size());
-            for (Object childObject : children) {
-                if (childObject instanceof Map) {
-                    Map<?, ?> childContentModelMap = getChildContentModel((Map<?, ?>) childObject);
-                    Object idObject = childContentModelMap.get("id");
-                    LOG.debug("using content model with id " + idObject);
-
-                    if (idObject instanceof String) {
-                        ResourceProxy childContentModel =
-                            repositories.findByType(ResourceType.CONTENT_MODEL).findById((String) idObject);
-                        resourceDisplayList.add(new ResourceDisplay(childContentModel.getId(), childContentModel
-                            .getName()));
-                    }
+                if (idObject instanceof String) {
+                    ResourceProxy childContentModel =
+                        repositories.findByType(ResourceType.CONTENT_MODEL).findById((String) idObject);
+                    resourceDisplayList
+                        .add(new ResourceDisplay(childContentModel.getId(), childContentModel.getName()));
                 }
             }
         }
+        return resourceDisplayList;
+    }
 
+    private List<ResourceDisplay> addAllContentModels() throws EscidocException, InternalClientException,
+        TransportException {
+        List<ResourceDisplay> resourceDisplayList;
+        final Collection<? extends Resource> contentModelList =
+            repositories.contentModel().findPublicOrReleasedResources();
+        resourceDisplayList = new ArrayList<ResourceDisplay>(contentModelList.size());
+        for (final Resource resource : contentModelList) {
+            resourceDisplayList.add(new ResourceDisplay(resource.getObjid(), resource.getXLinkTitle() + " ("
+                + resource.getObjid() + ")"));
+        }
+        return resourceDisplayList;
+    }
+
+    private ResourceProxy findParent() throws EscidocClientException {
+        ResourceProxy parentProxy = repositories.findByType(parent.getType()).findById(parent.getId());
+        return parentProxy;
+    }
+
+    private void bind(List<ResourceDisplay> resourceDisplayList) {
         final BeanItemContainer<ResourceDisplay> resourceDisplayContainer =
             new BeanItemContainer<ResourceDisplay>(ResourceDisplay.class, resourceDisplayList);
         resourceDisplayContainer.addNestedContainerProperty("objectId");
         resourceDisplayContainer.addNestedContainerProperty("title");
         contentModelSelect.setContainerDataSource(resourceDisplayContainer);
         contentModelSelect.setItemCaptionPropertyId("title");
+    }
+
+    private String getContentModelDescription(ResourceProxy parentProxy) throws EscidocClientException {
+        return findContentModel(parentProxy).getDescription();
+    }
+
+    private ResourceProxy findContentModel(ResourceProxy parentProxy) throws EscidocClientException {
+        ResourceProxy parentContentModel =
+            repositories.findByType(ResourceType.CONTENT_MODEL).findById(parentProxy.getContentModel().getObjid());
+        return parentContentModel;
+    }
+
+    private static boolean isContainer(ResourceProxy parentProxy) {
+        return parentProxy.getType() == ResourceType.CONTAINER;
     }
 
     // TODO move me to an util class
@@ -469,7 +487,6 @@ public class ResourceAddViewImpl implements ResourceAddView {
         try {
             String contentModelDescription = getContentModelDescription(getContentModelId());
             Map<String, Object> map = jsonToMap(contentModelDescription);
-
             if (map.isEmpty()) {
                 String resourceType = getContentModelType(contentModelDescription);
                 if (resourceType == null) {
@@ -487,53 +504,68 @@ public class ResourceAddViewImpl implements ResourceAddView {
                 }
             }
             else {
-                // Parsing JSON is successful
-                String resourceType = (String) map.get("type");
-
-                VersionableResource parent = null;
-                if (resourceType.toUpperCase().equals(ResourceType.CONTAINER.toString())) {
-                    parent = createNewResource(ResourceType.CONTAINER.toString());
-                }
-                else if (resourceType.toUpperCase().equals(ResourceType.ITEM.toString())) {
-                    parent = createNewResource(ResourceType.ITEM.toString());
-                }
-
-                Object val = map.get("children");
-                if (!(val instanceof List<?>)) {
-                    return;
-                }
-
-                // get children
-                List<?> children = (List<?>) val;
-                for (Object childObject : children) {
-                    if (childObject instanceof Map) {
-                        Map<?, ?> childContentModelMap = getChildContentModel((Map<?, ?>) childObject);
-                        Object idObject = childContentModelMap.get("id");
-                        LOG.debug("using content model with id " + idObject);
-
-                        if (idObject instanceof String) {
-                            String childName = (String) ((Map<?, ?>) childObject).get("name");
-                            String childType = (String) ((Map<?, ?>) childObject).get("type");
-                            ResourceProxy childContentModel =
-                                repositories.findByType(ResourceType.CONTENT_MODEL).findById((String) idObject);
-                            if (childType.equals("container")) {
-
-                                Container container =
-                                    new ContainerBuilder(new ContextRef(getContextId()), new ContentModelRef(
-                                        childContentModel.getId()), AppConstants.EMPTY_STRING).build(childName);
-
-                                if (parent != null) {
-                                    ResourceProxy parentProxy = repositories.container().findById(parent.getObjid());
-                                    repositories.container().createWithParent(container, parentProxy);
-                                }
-                            }
-                        }
-                    }
-                }
+                createWithChildren(map);
             }
         }
         catch (EscidocClientException e) {
             mainWindow.showNotification(e.getLocalizedMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
+        }
+    }
+
+    private void createWithChildren(Map<String, Object> map) throws EscidocClientException {
+        String resourceType = (String) map.get("type");
+
+        VersionableResource parent = null;
+
+        if (resourceType.toUpperCase().equals(ResourceType.CONTAINER.toString())) {
+            parent = createNewResource(ResourceType.CONTAINER.toString());
+        }
+        else if (resourceType.toUpperCase().equals(ResourceType.ITEM.toString())) {
+            parent = createNewResource(ResourceType.ITEM.toString());
+        }
+
+        Object val = map.get("children");
+        if (!(val instanceof List<?>)) {
+            return;
+        }
+
+        // get children
+        List<?> children = (List<?>) val;
+        for (Object childObject : children) {
+            if (childObject instanceof Map) {
+                Map<?, ?> childContentModelMap = getChildContentModel((Map<?, ?>) childObject);
+                Object idObject = childContentModelMap.get("id");
+                LOG.debug("using content model with id " + idObject);
+
+                if (idObject instanceof String) {
+                    String childName = (String) ((Map<?, ?>) childObject).get("name");
+                    String childType = (String) ((Map<?, ?>) childObject).get("type");
+                    Boolean isRequired = (Boolean) ((Map<?, ?>) childObject).get("required");
+
+                    if (isRequired.booleanValue()) {
+                        createChild(parent, idObject, childName, childType);
+                    }
+                }
+            }
+        }
+    }
+
+    private void createChild(VersionableResource parent, Object idObject, String childName, String childType)
+        throws EscidocClientException {
+        ResourceProxy childContentModel =
+            repositories.findByType(ResourceType.CONTENT_MODEL).findById((String) idObject);
+        ResourceProxy parentProxy = repositories.container().findById(parent.getObjid());
+        if (childType.equals("container")) {
+            Container container =
+                new ContainerBuilder(new ContextRef(getContextId()), new ContentModelRef(childContentModel.getId()),
+                    AppConstants.EMPTY_STRING).build(childName);
+            repositories.container().createWithParent(container, parentProxy);
+        }
+        else if (childType.equals("item")) {
+            Item item =
+                new ItemBuilder(new ContextRef(getContextId()), new ContentModelRef(childContentModel.getId()),
+                    AppConstants.EMPTY_STRING).build(childName);
+            repositories.item().createWithParent(item, parentProxy);
         }
     }
 
