@@ -224,14 +224,20 @@ public class ResourceAddViewImpl implements ResourceAddView {
          * get value of children
          */
         String parentId = parent.getId();
-        String parentContentModelId =
-            repositories.findByType(parent.getType()).findById(parentId).getContentModel().getObjid();
-        ResourceProxy parentContentModel =
-            repositories.findByType(ResourceType.CONTENT_MODEL).findById(parentContentModelId);
-        String parentContentModelDescription = parentContentModel.getDescription();
 
-        // try to parse JSON
-        Map<String, Object> map = jsonToMap(parentContentModelDescription);
+        ResourceProxy findById = repositories.findByType(parent.getType()).findById(parentId);
+        Map<String, Object> map = new HashMap<String, Object>();
+        if (findById.getType() == ResourceType.CONTAINER) {
+            String parentContentModelId = findById.getContentModel().getObjid();
+
+            ResourceProxy parentContentModel =
+                repositories.findByType(ResourceType.CONTENT_MODEL).findById(parentContentModelId);
+            String parentContentModelDescription = parentContentModel.getDescription();
+
+            // try to parse JSON
+            map = jsonToMap(parentContentModelDescription);
+        }
+
         List<ResourceDisplay> resourceDisplayList;
         if (map.isEmpty()) {
             final Collection<? extends Resource> contentModelList =
@@ -461,21 +467,69 @@ public class ResourceAddViewImpl implements ResourceAddView {
     @Override
     public void createResource() {
         try {
-            String resourceType = getContentModelType(getContentModelDescription(getContentModelId()));
+            String contentModelDescription = getContentModelDescription(getContentModelId());
+            Map<String, Object> map = jsonToMap(contentModelDescription);
 
-            if (resourceType == null) {
-                handleNoResourceType();
-            }
-            else if (resourceType.toUpperCase().equals(ResourceType.CONTAINER.toString())) {
-                createNewResource(ResourceType.CONTAINER.toString());
-            }
-            else if (resourceType.toUpperCase().equals(ResourceType.ITEM.toString())) {
-                createNewResource(ResourceType.ITEM.toString());
+            if (map.isEmpty()) {
+                String resourceType = getContentModelType(contentModelDescription);
+                if (resourceType == null) {
+                    handleNoResourceType();
+                }
+                else if (resourceType.toUpperCase().equals(ResourceType.CONTAINER.toString())) {
+                    createNewResource(ResourceType.CONTAINER.toString());
+                }
+                else if (resourceType.toUpperCase().equals(ResourceType.ITEM.toString())) {
+                    createNewResource(ResourceType.ITEM.toString());
+                }
+                else {
+                    mainWindow.showNotification(ViewConstants.ERROR_NO_RESOURCETYPE_IN_CONTENTMODEL
+                        + contentModelSelect.getValue() + "\"", Window.Notification.TYPE_ERROR_MESSAGE);
+                }
             }
             else {
-                mainWindow.showNotification(
-                    ViewConstants.ERROR_NO_RESOURCETYPE_IN_CONTENTMODEL + contentModelSelect.getValue() + "\"",
-                    Window.Notification.TYPE_ERROR_MESSAGE);
+                // Parsing JSON is successful
+                String resourceType = (String) map.get("type");
+
+                VersionableResource parent = null;
+                if (resourceType.toUpperCase().equals(ResourceType.CONTAINER.toString())) {
+                    parent = createNewResource(ResourceType.CONTAINER.toString());
+                }
+                else if (resourceType.toUpperCase().equals(ResourceType.ITEM.toString())) {
+                    parent = createNewResource(ResourceType.ITEM.toString());
+                }
+
+                Object val = map.get("children");
+                if (!(val instanceof List<?>)) {
+                    return;
+                }
+
+                // get children
+                List<?> children = (List<?>) val;
+                for (Object childObject : children) {
+                    if (childObject instanceof Map) {
+                        Map<?, ?> childContentModelMap = getChildContentModel((Map<?, ?>) childObject);
+                        Object idObject = childContentModelMap.get("id");
+                        LOG.debug("using content model with id " + idObject);
+
+                        if (idObject instanceof String) {
+                            String childName = (String) ((Map<?, ?>) childObject).get("name");
+                            String childType = (String) ((Map<?, ?>) childObject).get("type");
+                            ResourceProxy childContentModel =
+                                repositories.findByType(ResourceType.CONTENT_MODEL).findById((String) idObject);
+                            if (childType.equals("container")) {
+
+                                Container container =
+                                    new ContainerBuilder(new ContextRef(getContextId()), new ContentModelRef(
+                                        childContentModel.getId()), AppConstants.EMPTY_STRING).build(childName);
+
+                                if (parent != null) {
+                                    ResourceProxy parentProxy = repositories.container().findById(parent.getObjid());
+                                    repositories.container().createWithParent(container, parentProxy);
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
         catch (EscidocClientException e) {
@@ -502,7 +556,7 @@ public class ResourceAddViewImpl implements ResourceAddView {
         return repositories.contentModel().findById(id).getDescription();
     }
 
-    private void createNewResource(String resourceType) throws EscidocClientException {
+    private VersionableResource createNewResource(String resourceType) throws EscidocClientException {
         VersionableResource createdResource = createResourceBasedOnType(resourceType);
 
         if (treeDataSource != null) {
@@ -517,6 +571,7 @@ public class ResourceAddViewImpl implements ResourceAddView {
         }
 
         closeSubWindow();
+        return createdResource;
     }
 
     private VersionableResource createResourceBasedOnType(String resourceType) throws EscidocClientException {
