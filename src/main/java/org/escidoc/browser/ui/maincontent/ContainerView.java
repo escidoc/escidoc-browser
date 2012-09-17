@@ -310,15 +310,6 @@ public class ContainerView extends View {
         return vlResourceProperties;
     }
 
-    private void createProperties(CssLayout cssLayout) {
-        createBreadCrumb(cssLayout);
-
-        bindNameToHeader(cssLayout);
-        bindDescription(cssLayout);
-        addHorizontalRuler(cssLayout);
-        bindProperties(cssLayout);
-    }
-
     /**
      * Binding Context Properties 2 sets of labels in 2 rows
      * 

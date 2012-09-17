@@ -37,14 +37,14 @@ import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
 import org.escidoc.browser.ui.helper.ViewHelper;
-import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
-import org.escidoc.browser.ui.view.helpers.CreateResourceLinksVH;
 import org.escidoc.browser.ui.view.helpers.DirectMember;
+import org.escidoc.browser.ui.view.helpers.ResourcePropertiesContextView;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.AbstractComponentContainer;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
@@ -96,6 +96,8 @@ public class ContextView extends View {
 
     private Panel breadCrump;
 
+    private ResourcePropertiesContextView containerPropertiesView;
+
     public ContextView(final Router router, final ResourceProxy resourceProxy, final Repositories repositories,
         ContextController contextController) throws EscidocClientException {
 
@@ -112,7 +114,7 @@ public class ContextView extends View {
         this.repositories = repositories;
         this.contextController = contextController;
         buildContentPanel();
-        handleLayoutListeners();
+        // handleLayoutListeners();
     }
 
     public Panel buildContentPanel() throws EscidocClientException {
@@ -133,24 +135,17 @@ public class ContextView extends View {
         vlContentPanel = new VerticalLayout();
         vlContentPanel.setImmediate(false);
         vlContentPanel.setWidth("100.0%");
-        vlContentPanel.setHeight("100.0%");
         vlContentPanel.setMargin(false, true, false, true);
-
-        // breadCrumpPanel
-        breadCrump = buildBreadCrumpPanel();
-        vlContentPanel.addComponent(breadCrump);
-        // Permanent Link
-        new CreateResourceLinksVH(mainWindow.getURL().toString(), resourceProxy, null, vlContentPanel, router);
 
         // resourcePropertiesPanel
         Panel resourcePropertiesPanel = buildResourcePropertiesPanel();
         vlContentPanel.addComponent(resourcePropertiesPanel);
-        vlContentPanel.setExpandRatio(resourcePropertiesPanel, 1.5f);
+        vlContentPanel.setComponentAlignment(resourcePropertiesPanel, Alignment.TOP_CENTER);
 
         // metaViewsPanel contains Panel for the DirectMembers & for the Metas
         Panel metaViewsPanel = buildMetaViewsPanel();
         vlContentPanel.addComponent(metaViewsPanel);
-        vlContentPanel.setExpandRatio(metaViewsPanel, 8.0f);
+        vlContentPanel.setComponentAlignment(metaViewsPanel, Alignment.TOP_CENTER);
 
         return vlContentPanel;
     }
@@ -188,7 +183,7 @@ public class ContextView extends View {
         Panel metaViewsPanel = new Panel();
         metaViewsPanel.setImmediate(false);
         metaViewsPanel.setWidth("100.0%");
-        metaViewsPanel.setHeight("100.0%");
+        metaViewsPanel.setHeight("500px");
         metaViewsPanel.setStyleName(Runo.PANEL_LIGHT);
 
         // hlMetaViews
@@ -315,7 +310,7 @@ public class ContextView extends View {
         Panel resourcePropertiesPanel = new Panel();
         resourcePropertiesPanel.setImmediate(false);
         resourcePropertiesPanel.setWidth("100.0%");
-        resourcePropertiesPanel.setHeight("100%");
+        resourcePropertiesPanel.setHeight("160px");
         resourcePropertiesPanel.setStyleName(Runo.PANEL_LIGHT);
 
         // vlResourceProperties
@@ -330,11 +325,13 @@ public class ContextView extends View {
         vlResourceProperties = new VerticalLayout();
         vlResourceProperties.setImmediate(false);
         vlResourceProperties.setWidth("100.0%");
-        vlResourceProperties.setHeight("100.0%");
+        vlResourceProperties.setHeight("160px");
         vlResourceProperties.setMargin(false);
 
         // creating the properties / without the breadcrump
-        createProperties(vlResourceProperties);
+        // createProperties(vlResourceProperties);
+        containerPropertiesView = new ResourcePropertiesContextView(resourceProxy, router, contextController);
+        vlResourceProperties.addComponent(containerPropertiesView.getContentLayout());
         return vlResourceProperties;
     }
 
@@ -344,28 +341,6 @@ public class ContextView extends View {
         vlResourceProperties.addComponent(bindDescription());
         addHorizontalRuler(vlResourceProperties);
         vlResourceProperties.addComponent(bindProperties());
-    }
-
-    private Panel buildBreadCrumpPanel() {
-        // common part: create layout
-        Panel breadCrumpPanel = new Panel();
-        breadCrumpPanel.setImmediate(false);
-        breadCrumpPanel.setWidth("100.0%");
-        breadCrumpPanel.setHeight("30px");
-        breadCrumpPanel.setStyleName(Runo.PANEL_LIGHT);
-
-        // vlBreadCrump
-        VerticalLayout vlBreadCrump = new VerticalLayout();
-        vlBreadCrump.setImmediate(false);
-        vlBreadCrump.setWidth("100.0%");
-        vlBreadCrump.setHeight("100.0%");
-        vlBreadCrump.setMargin(false);
-        breadCrumpPanel.setContent(vlBreadCrump);
-
-        // BreadCreumb
-        new BreadCrumbMenu(breadCrumpPanel, resourceProxy);
-
-        return breadCrumpPanel;
     }
 
     /**

@@ -253,4 +253,17 @@ public class ContextController extends Controller {
         Preconditions.checkNotNull(metadataName, "metadataName is null: %s", metadataName);
         return repositories.context().getAdminDescriptor(resourceProxy.getId(), metadataName);
     }
+
+    public boolean hasAccessDelResource() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public void updateContext(
+        Boolean isChangedTitle, Boolean isChangedDescription, Boolean isChangedPublicStatus,
+        Boolean isChangedLockStatus, String string, String string2, String string3, String string4, String comment)
+        throws EscidocClientException {
+        // TODO Auto-generated method stub
+
+    }
 }

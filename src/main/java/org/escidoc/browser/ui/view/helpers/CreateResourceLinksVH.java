@@ -76,6 +76,9 @@ public class CreateResourceLinksVH {
         if (resourceProperties.getClass().toString().contains("ResourcePropertiesContainerView")) {
             this.resourceProperties = (ResourcePropertiesContainerView) resourceProperties;
         }
+        else if (resourceProperties.getClass().toString().contains("ResourcePropertiesContextView")) {
+            this.resourceProperties = (ResourcePropertiesContextView) resourceProperties;
+        }
         else {
             this.resourceProperties = (ResourcePropertiesItemView) resourceProperties;
         }
