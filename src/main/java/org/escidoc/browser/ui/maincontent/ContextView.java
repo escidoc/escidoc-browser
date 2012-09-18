@@ -36,30 +36,22 @@ import org.escidoc.browser.model.internal.ContextProxyImpl;
 import org.escidoc.browser.repository.Repositories;
 import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.helper.ViewHelper;
 import org.escidoc.browser.ui.view.helpers.DirectMember;
 import org.escidoc.browser.ui.view.helpers.ResourcePropertiesContextView;
 
 import com.google.common.base.Preconditions;
-import com.vaadin.event.LayoutEvents.LayoutClickEvent;
-import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.AbstractComponentContainer;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
-import de.escidoc.core.resources.common.properties.PublicStatus;
 
 @SuppressWarnings("serial")
 public class ContextView extends View {
@@ -93,8 +85,6 @@ public class ContextView extends View {
     private VerticalLayout headerLayout;
 
     private VerticalLayout vlContentPanel;
-
-    private Panel breadCrump;
 
     private ResourcePropertiesContextView containerPropertiesView;
 
@@ -333,256 +323,6 @@ public class ContextView extends View {
         containerPropertiesView = new ResourcePropertiesContextView(resourceProxy, router, contextController);
         vlResourceProperties.addComponent(containerPropertiesView.getContentLayout());
         return vlResourceProperties;
-    }
-
-    private void createProperties(VerticalLayout vlResourceProperties) {
-        // Create Property fields. Probably not the best place for them to be
-        vlResourceProperties.addComponent(bindNameToHeader());
-        vlResourceProperties.addComponent(bindDescription());
-        addHorizontalRuler(vlResourceProperties);
-        vlResourceProperties.addComponent(bindProperties());
-    }
-
-    /**
-     * Binding Context Properties 2 sets of labels in 2 rows
-     * 
-     * @return
-     */
-    private HorizontalLayout bindProperties() {
-        HorizontalLayout hlProperties = new HorizontalLayout();
-        hlProperties.setWidth("100%");
-        vlLeft = new VerticalLayout();
-        VerticalLayout vlRight = new VerticalLayout();
-        final Label descMetadata1 = new Label("ID: " + resourceProxy.getId());
-        lblType = new Label(ViewConstants.CONTEXT_TYPE + resourceProxy.getPropertiesType(), Label.CONTENT_RAW);
-        lblType.setDescription(ViewConstants.CONTEXT_TYPE);
-        lblStatus =
-            new Label(resourceProxy.getType().getLabel() + " is " + resourceProxy.getStatus(), Label.CONTENT_RAW);
-        lblStatus.setDescription(ViewConstants.DESC_STATUS);
-
-        vlLeft.addComponent(descMetadata1);
-        vlLeft.addComponent(lblType);
-        vlLeft.addComponent(lblStatus);
-
-        // RIGHT SIDE
-        vlRight.addComponent(ViewHelper.buildCreateAndModifyLabel(resourceProxy));
-
-        hlProperties.addComponent(vlLeft);
-        hlProperties.setExpandRatio(vlLeft, 0.4f);
-        hlProperties.addComponent(vlRight);
-        hlProperties.setExpandRatio(vlRight, 0.6f);
-        return hlProperties;
-    }
-
-    private void handleLayoutListeners() {
-        if (contextController.canUpdateContext()) {
-            headerLayout.addListener(new LayoutClickListener() {
-
-                @Override
-                public void layoutClick(final LayoutClickEvent event) {
-                    if (event.getChildComponent() != null) {
-                        // Is Label?
-                        if (event.getChildComponent().getClass().getCanonicalName() == "com.vaadin.ui.Label") {
-                            final Label child = (Label) event.getChildComponent();
-                            if ((child.getDescription() == ViewConstants.RESOURCE_NAME_CONTEXT)) {
-                                reSwapComponents();
-                                oldComponent = event.getClickedComponent();
-                                swapComponent =
-                                    editName(
-                                        child.getValue().toString().replace(ViewConstants.RESOURCE_NAME_CONTEXT, ""),
-                                        ViewConstants.RESOURCE_NAME_CONTEXT);
-                                headerLayout.replaceComponent(oldComponent, swapComponent);
-                            }
-                        }
-                    }
-                    else {
-                        reSwapComponents();
-                    }
-                }
-
-                private Component editName(String name, String description) {
-                    final TextField txtType = new TextField();
-                    txtType.setInvalidAllowed(false);
-                    txtType.setValue(name);
-                    txtType.setDescription(description);
-
-                    return txtType;
-                }
-            });
-
-            vlLeft.addListener(new LayoutClickListener() {
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                public void layoutClick(final LayoutClickEvent event) {
-                    if (event.getChildComponent() != null) {
-                        // Is Label?
-                        if (event.getChildComponent().getClass().getCanonicalName() == "com.vaadin.ui.Label") {
-                            final Label child = (Label) event.getChildComponent();
-
-                            if ((child.getDescription() == ViewConstants.CONTEXT_TYPE)) {
-                                reSwapComponents();
-                                oldComponent = event.getClickedComponent();
-                                swapComponent =
-                                    editType(child.getValue().toString().replace(ViewConstants.CONTEXT_TYPE, ""),
-                                        ViewConstants.CONTEXT_TYPE);
-                                vlLeft.replaceComponent(oldComponent, swapComponent);
-                            }
-                            else if ((child.getDescription() == ViewConstants.DESC_STATUS)
-                                && (!child.getValue().equals(resourceProxy.getType().getLabel() + " is closed"))) {
-                                reSwapComponents();
-                                oldComponent = event.getClickedComponent();
-                                swapComponent =
-                                    editStatus(child
-                                        .getValue().toString().replace(resourceProxy.getType().getLabel() + " is ", ""));
-                                vlLeft.replaceComponent(oldComponent, swapComponent);
-                            }
-                        }
-                    }
-                    else {
-                        reSwapComponents();
-                    }
-                }
-
-                private ComboBox cmbStatus;
-
-                private Component editStatus(final String lockStatus) {
-                    cmbStatus = new ComboBox();
-                    cmbStatus.setNullSelectionAllowed(false);
-                    if (lockStatus.contains(CREATED)) {
-                        cmbStatus.addItem(PublicStatus.OPENED.toString().toLowerCase());
-                    }
-                    else {
-                        cmbStatus.addItem(PublicStatus.CLOSED.toString().toLowerCase());
-                    }
-                    cmbStatus.select(Integer.valueOf(1));
-                    return cmbStatus;
-                }
-
-            });
-        }
-
-    }
-
-    /**
-     * Switch the component back to the original component (Label) after inline editing<br />
-     * Used to swap the header and the properties
-     * 
-     * @throws EscidocClientException
-     */
-    private void reSwapComponents() {
-
-        if (swapComponent != null) {
-            if ((swapComponent instanceof TextField)
-                && (((TextField) swapComponent).getDescription().equals(ViewConstants.CONTEXT_TYPE))) {
-                ((Label) oldComponent).setValue(ViewConstants.CONTEXT_TYPE + ((TextField) swapComponent).getValue());
-                try {
-                    contextController.updateContextType(((TextField) swapComponent).getValue().toString(),
-                        resourceProxy.getId());
-                    mainWindow.showNotification("Context Type updated successfully",
-                        Notification.TYPE_TRAY_NOTIFICATION);
-                }
-                catch (EscidocClientException e) {
-                    mainWindow.showNotification(
-                        "Could not update Context Type, an error occurred" + e.getLocalizedMessage(),
-                        Notification.TYPE_ERROR_MESSAGE);
-                }
-                vlLeft.replaceComponent(swapComponent, oldComponent);
-            }
-            else if ((swapComponent instanceof ComboBox) && ((ComboBox) swapComponent).getValue() != null) {
-                ((Label) oldComponent).setValue(resourceProxy.getType().getLabel() + " is "
-                    + ((ComboBox) swapComponent).getValue());
-                addCommentWindow(((ComboBox) swapComponent).getValue().toString());
-                vlLeft.replaceComponent(swapComponent, oldComponent);
-            }
-            else if ((swapComponent instanceof TextField)
-                && (((TextField) swapComponent).getDescription().equals(ViewConstants.RESOURCE_NAME_CONTEXT))) {
-                ((Label) oldComponent).setValue(ViewConstants.RESOURCE_NAME_CONTEXT
-                    + ((TextField) swapComponent).getValue());
-                try {
-                    contextController.updateContextName(((TextField) swapComponent).getValue().toString(),
-                        resourceProxy.getId());
-                    mainWindow.showNotification("Context Name updated successfully",
-                        Notification.TYPE_TRAY_NOTIFICATION);
-                    contextController.refreshView();
-                }
-                catch (EscidocClientException e) {
-                    mainWindow.showNotification(
-                        "Could not update Context Name, an error occurred" + e.getLocalizedMessage(),
-                        Notification.TYPE_ERROR_MESSAGE);
-                }
-                headerLayout.replaceComponent(swapComponent, oldComponent);
-            }
-
-            swapComponent = null;
-        }
-    }
-
-    /**
-     * Called in the reSwapComponents()
-     * 
-     * @return String
-     */
-    public void addCommentWindow(final String status) {
-        final Window subwindow = new Window(ViewConstants.SUBWINDOW_EDIT);
-        subwindow.setModal(true);
-        // Configure the windws layout; by default a VerticalLayout
-        VerticalLayout layout = (VerticalLayout) subwindow.getContent();
-        layout.setMargin(true);
-        layout.setSpacing(true);
-        layout.setSizeUndefined();
-
-        final TextArea editor = new TextArea("Your Comment");
-        editor.setRequired(true);
-        editor.setRequiredError("The Field may not be empty.");
-
-        HorizontalLayout hl = new HorizontalLayout();
-
-        Button close = new Button("Update", new Button.ClickListener() {
-
-            @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            com.vaadin.ui.Button.ClickEvent event) {
-                // close the window by removing it from the parent window
-                String comment = editor.getValue().toString();
-                try {
-                    contextController.updatePublicStatus(status, resourceProxy.getId(), comment);
-                    mainWindow.showNotification("Context Status updated successfully",
-                        Notification.TYPE_TRAY_NOTIFICATION);
-                }
-                catch (EscidocClientException e) {
-                    mainWindow.showNotification(
-                        "Could not update Context Type, an error occurred" + e.getLocalizedMessage(),
-                        Notification.TYPE_ERROR_MESSAGE);
-                }
-                (subwindow.getParent()).removeWindow(subwindow);
-
-            }
-        });
-        Button cancel = new Button("Cancel", new Button.ClickListener() {
-            @Override
-            public void buttonClick(@SuppressWarnings("unused")
-            com.vaadin.ui.Button.ClickEvent event) {
-                (subwindow.getParent()).removeWindow(subwindow);
-
-            }
-        });
-
-        hl.addComponent(close);
-        hl.addComponent(cancel);
-
-        subwindow.addComponent(editor);
-        subwindow.addComponent(hl);
-        mainWindow.addWindow(subwindow);
-    }
-
-    private static TextField editType(final String contextType, String description) {
-        final TextField txtType = new TextField();
-        txtType.setInvalidAllowed(false);
-        txtType.setValue(contextType);
-        txtType.setDescription(description);
-
-        return txtType;
     }
 
     @Override

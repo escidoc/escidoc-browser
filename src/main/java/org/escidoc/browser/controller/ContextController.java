@@ -46,10 +46,12 @@ import org.xml.sax.SAXException;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.resources.om.context.AdminDescriptor;
 import de.escidoc.core.resources.om.context.AdminDescriptors;
+import de.escidoc.core.resources.om.context.Context;
 
 public class ContextController extends Controller {
 
@@ -260,10 +262,33 @@ public class ContextController extends Controller {
     }
 
     public void updateContext(
-        Boolean isChangedTitle, Boolean isChangedDescription, Boolean isChangedPublicStatus,
-        Boolean isChangedLockStatus, String string, String string2, String string3, String string4, String comment)
-        throws EscidocClientException {
-        // TODO Auto-generated method stub
+        Boolean isChangedTitle, Boolean isChangedDescription, Boolean isChangedPublicStatus, Boolean isChangedType,
+        String title, String publicStatus, String txtType, String comment) throws EscidocClientException {
+
+        Context context = repositories.context().findContextById(resourceProxy.getId());
+        boolean updated = false;
+        if (publicStatus.equals("closed")) {
+            router.getMainWindow().showNotification(
+                new Window.Notification("Cannot update since the resource is closed",
+                    Notification.TYPE_TRAY_NOTIFICATION));
+        }
+        else {
+            if (isChangedTitle) {
+                repositories.context().updateName(title, context);
+            }
+            if (isChangedType) {
+                repositories.context().updateType(txtType, context);
+            }
+            if (isChangedPublicStatus) {
+                updatePublicStatus(publicStatus, resourceProxy.getId(), comment);
+                updated = true;
+            }
+
+            if (!updated) {
+                repositories.context().updatecontext(context);
+            }
+
+        }
 
     }
 }

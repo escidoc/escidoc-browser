@@ -310,18 +310,15 @@ public class ResourcePropertiesContainerView extends ResourceProperties {
             }
         }
         else if (publicStatus.equals("submitted")) {
-            cmbStatus.setNullSelectionItemId(PublicStatus.SUBMITTED.toString().toLowerCase());
             cmbStatus.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
             cmbStatus.addItem(PublicStatus.IN_REVISION.toString().toLowerCase());
             cmbStatus.addItem(PublicStatus.RELEASED.toString().toLowerCase());
         }
         else if (publicStatus.equals("in_revision")) {
-            cmbStatus.setNullSelectionItemId(PublicStatus.IN_REVISION.toString().toLowerCase());
             cmbStatus.addItem(PublicStatus.IN_REVISION.toString().toLowerCase());
             cmbStatus.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
         }
         else if (publicStatus.equals("released")) {
-            cmbStatus.setNullSelectionItemId(PublicStatus.RELEASED.toString().toLowerCase());
             cmbStatus.addItem(PublicStatus.RELEASED.toString().toLowerCase());
             cmbStatus.addItem(PublicStatus.WITHDRAWN.toString().toLowerCase());
         }

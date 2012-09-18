@@ -212,11 +212,23 @@ public class ContextRepository implements Repository {
         return client.update(context);
     }
 
+    public Context updateType(String newContextType, Context context) throws EscidocClientException {
+        ContextProperties properties = context.getProperties();
+        properties.setType(newContextType);
+        return context;
+    }
+
     public Context updateName(String newName, String contextId) throws EscidocClientException {
         Context context = client.retrieve(contextId);
         ContextProperties properties = context.getProperties();
         properties.setName(newName);
         return client.update(context);
+    }
+
+    public Context updateName(String newName, Context context) throws EscidocClientException {
+        ContextProperties properties = context.getProperties();
+        properties.setName(newName);
+        return context;
     }
 
     public void updatePublicStatusOpen(String comment, String contextId) throws EscidocClientException {
@@ -246,6 +258,10 @@ public class ContextRepository implements Repository {
     public void updateAdminDescriptor(String id, AdminDescriptor metadata) throws EscidocClientException {
         Context context = client.retrieve(id);
         context.getAdminDescriptors().get(metadata.getName()).setContent(metadata.getContent());
+        client.update(context);
+    }
+
+    public void updatecontext(Context context) throws EscidocClientException {
         client.update(context);
     }
 }

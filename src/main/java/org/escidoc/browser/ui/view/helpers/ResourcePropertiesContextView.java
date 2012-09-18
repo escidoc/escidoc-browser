@@ -58,6 +58,8 @@ public class ResourcePropertiesContextView extends ResourceProperties {
 
     private static final Logger LOG = LoggerFactory.getLogger(ResourcePropertiesContextView.class);
 
+    private static final String CREATED = "created";
+
     private String status;
 
     private Label lblLockstatus;
@@ -141,39 +143,6 @@ public class ResourcePropertiesContextView extends ResourceProperties {
         new CreateResourceLinksVH(mainWindow.getURL().toString(), resourceProxy, this, cssLayout, router);
     }
 
-    protected void bindProperties() {
-
-        final Panel pnlPropertiesLeft = buildLeftPropertiesPnl();
-        final Panel pnlPropertiesRight = buildRightPnlProperties();
-
-        final Label descMetadata1 = new Label("ID: " + resourceProxy.getId());
-
-        status = resourceProxy.getType().getLabel() + " is ";
-
-        lblStatus = new Label(status + resourceProxy.getStatus(), Label.CONTENT_RAW);
-        lblStatus.setDescription(ViewConstants.DESC_STATUS2);
-
-        lblLockstatus = new Label(status + resourceProxy.getType(), Label.CONTENT_RAW);
-        lblLockstatus.setDescription(ViewConstants.DESC_LOCKSTATUS);
-        if (controller.canUpdateContext()) {
-            lblLockstatus.setStyleName("inset");
-        }
-        final Label descMetadata2 =
-            new Label(ViewConstants.CREATED_BY + " " + resourceProxy.getCreator() + " on "
-                + resourceProxy.getCreatedOn() + "<br/>" + ViewConstants.LAST_MODIFIED_BY + " "
-                + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(), Label.CONTENT_XHTML);
-
-        vlPropertiesLeft.addComponent(descMetadata1);
-        vlPropertiesLeft.addComponent(lblStatus);
-        vlPropertiesLeft.addComponent(lblLockstatus);
-        pnlPropertiesLeft.addComponent(vlPropertiesLeft);
-        cssLayout.addComponent(pnlPropertiesLeft);
-
-        pnlPropertiesRight.addComponent(descMetadata2);
-        cssLayout.addComponent(pnlPropertiesRight);
-
-    }
-
     protected Panel buildLeftPropertiesPnl() {
         final Panel pnlPropertiesLeft = new Panel();
         pnlPropertiesLeft.setWidth("40%");
@@ -205,46 +174,80 @@ public class ResourcePropertiesContextView extends ResourceProperties {
     }
 
     public void saveActionWindow() {
-        subwindow = new Window(ViewConstants.SUBWINDOW_EDIT);
-        subwindow.setModal(true);
-        // Configure the windws layout; by default a VerticalLayout
-        final VerticalLayout layout = (VerticalLayout) subwindow.getContent();
-        layout.setMargin(true);
-        layout.setSpacing(true);
-        layout.setSizeUndefined();
+        if (controller.canUpdateContext()) {
+            subwindow = new Window(ViewConstants.SUBWINDOW_EDIT);
+            subwindow.setModal(true);
+            // Configure the windws layout; by default a VerticalLayout
+            final VerticalLayout layout = (VerticalLayout) subwindow.getContent();
+            layout.setMargin(true);
+            layout.setSpacing(true);
+            layout.setSizeUndefined();
 
-        final TextArea editor = new TextArea("Your Comment");
-        editor.setRequired(true);
-        editor.setRequiredError("The Field may not be empty.");
+            final TextArea editor = new TextArea("Your Comment");
+            editor.setRequired(true);
+            editor.setRequiredError("The Field may not be empty.");
 
-        final HorizontalLayout hl = new HorizontalLayout();
+            final HorizontalLayout hl = new HorizontalLayout();
 
-        final Button close = new Button("Update", new Button.ClickListener() {
+            final Button close = new Button("Update", new Button.ClickListener() {
 
-            private static final long serialVersionUID = 1424933077274899865L;
+                private static final long serialVersionUID = 1424933077274899865L;
 
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                saveEditableFields(editor.getValue().toString());
-                (subwindow.getParent()).removeWindow(subwindow);
-            }
-        });
-        final Button cancel = new Button("Cancel", new Button.ClickListener() {
+                @Override
+                public void buttonClick(final ClickEvent event) {
+                    saveEditableFields(editor.getValue().toString());
+                    (subwindow.getParent()).removeWindow(subwindow);
+                }
+            });
+            final Button cancel = new Button("Cancel", new Button.ClickListener() {
 
-            private static final long serialVersionUID = 1L;
+                private static final long serialVersionUID = 1L;
 
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                (subwindow.getParent()).removeWindow(subwindow);
-            }
-        });
+                @Override
+                public void buttonClick(final ClickEvent event) {
+                    (subwindow.getParent()).removeWindow(subwindow);
+                }
+            });
 
-        hl.addComponent(close);
-        hl.addComponent(cancel);
+            hl.addComponent(close);
+            hl.addComponent(cancel);
 
-        subwindow.addComponent(editor);
-        subwindow.addComponent(hl);
-        mainWindow.addWindow(subwindow);
+            subwindow.addComponent(editor);
+            subwindow.addComponent(hl);
+            mainWindow.addWindow(subwindow);
+        }
+    }
+
+    protected void bindProperties() {
+
+        final Panel pnlPropertiesLeft = buildLeftPropertiesPnl();
+        final Panel pnlPropertiesRight = buildRightPnlProperties();
+
+        final Label descMetadata1 = new Label("ID: " + resourceProxy.getId());
+
+        status = resourceProxy.getType().getLabel() + " is ";
+
+        lblStatus = new Label(status + resourceProxy.getStatus(), Label.CONTENT_RAW);
+        lblStatus.setDescription(ViewConstants.DESC_STATUS2);
+
+        lblLockstatus = new Label(status + resourceProxy.getType(), Label.CONTENT_RAW);
+        lblLockstatus.setDescription(ViewConstants.DESC_LOCKSTATUS);
+        if (controller.canUpdateContext()) {
+            lblLockstatus.setStyleName("inset");
+        }
+        final Label descMetadata2 =
+            new Label(ViewConstants.CREATED_BY + " " + resourceProxy.getCreator() + " on "
+                + resourceProxy.getCreatedOn() + "<br/>" + ViewConstants.LAST_MODIFIED_BY + " "
+                + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn(), Label.CONTENT_XHTML);
+
+        vlPropertiesLeft.addComponent(descMetadata1);
+        vlPropertiesLeft.addComponent(lblStatus);
+        vlPropertiesLeft.addComponent(lblLockstatus);
+        pnlPropertiesLeft.addComponent(vlPropertiesLeft);
+        cssLayout.addComponent(pnlPropertiesLeft);
+
+        pnlPropertiesRight.addComponent(descMetadata2);
+        cssLayout.addComponent(pnlPropertiesRight);
     }
 
     private Component editStatus(final String publicStatus) {
@@ -252,39 +255,19 @@ public class ResourcePropertiesContextView extends ResourceProperties {
         cmbStatus.setInvalidAllowed(false);
         cmbStatus.setNullSelectionAllowed(false);
         cmbStatus.addStyleName(Reindeer.LABEL_SMALL);
-        final String pubStatus = publicStatus.toUpperCase();
-        if (publicStatus.equals("pending")) {
-            cmbStatus.addItem(PublicStatus.PENDING.toString().toLowerCase());
-            cmbStatus.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
-            // cmbStatus.setNullSelectionItemId(PublicStatus.PENDING.toString().toLowerCase());
-            cmbStatus.select(publicStatus);
-            if (controller.hasAccessDelResource()) {
-                cmbStatus.addItem("delete");
-            }
+        LOG.debug("PublicStatus is " + publicStatus);
+        if (publicStatus.contains(CREATED.toLowerCase())) {
+            cmbStatus.addItem(PublicStatus.CREATED.toString().toLowerCase());
+            cmbStatus.addItem(PublicStatus.OPENED.toString().toLowerCase());
         }
-        else if (publicStatus.equals("submitted")) {
-            cmbStatus.setNullSelectionItemId(PublicStatus.SUBMITTED.toString().toLowerCase());
-            cmbStatus.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
-            cmbStatus.addItem(PublicStatus.IN_REVISION.toString().toLowerCase());
-            cmbStatus.addItem(PublicStatus.RELEASED.toString().toLowerCase());
-        }
-        else if (publicStatus.equals("in_revision")) {
-            cmbStatus.setNullSelectionItemId(PublicStatus.IN_REVISION.toString().toLowerCase());
-            cmbStatus.addItem(PublicStatus.IN_REVISION.toString().toLowerCase());
-            cmbStatus.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
-        }
-        else if (publicStatus.equals("released")) {
-            cmbStatus.setNullSelectionItemId(PublicStatus.RELEASED.toString().toLowerCase());
-            cmbStatus.addItem(PublicStatus.RELEASED.toString().toLowerCase());
-            cmbStatus.addItem(PublicStatus.WITHDRAWN.toString().toLowerCase());
-        }
-        else if (publicStatus.equals("withdrawn")) {
-            lblStatus.setValue("withdrawn");
+        else if (publicStatus.contains(PublicStatus.OPENED.toString().toLowerCase())) {
+            cmbStatus.addItem(PublicStatus.OPENED.toString().toLowerCase());
+            cmbStatus.addItem(PublicStatus.CLOSED.toString().toLowerCase());
         }
         else {
-            cmbStatus.addItem(PublicStatus.valueOf(pubStatus));
+            cmbStatus.setNullSelectionItemId(PublicStatus.CLOSED.toString().toLowerCase());
+            cmbStatus.addItem(PublicStatus.CLOSED.toString().toLowerCase());
         }
-        // cmbStatus.select(Integer.valueOf(1));
 
         hlPublicStatus = new HorizontalLayout();
         hlPublicStatus.addComponent(new Label("Public Status is: "));
@@ -294,40 +277,31 @@ public class ResourcePropertiesContextView extends ResourceProperties {
         return hlPublicStatus;
     }
 
-    public HorizontalLayout getHlPublicStatus() {
-        return hlPublicStatus;
-    }
-
-    public void setHlPublicStatus(HorizontalLayout hlPublicStatus) {
-        this.hlPublicStatus = hlPublicStatus;
-    }
-
-    public NativeSelect getCmbStatus() {
-        return cmbStatus;
-    }
-
-    public void setCmbStatus(NativeSelect cmbStatus) {
-        this.cmbStatus = cmbStatus;
-    }
-
     public void showEditableFields() {
-        // Showing editable title
-        txtFieldTitle = new TextField();
-        txtFieldTitle.setValue(resourceProxy.getName());
-        txtFieldTitle.addStyleName("inlineblock");
-        cssLayout.replaceComponent(descTitle, txtFieldTitle);
+        if (controller.canUpdateContext()) {
+            // Showing editable title
+            txtFieldTitle = new TextField();
+            txtFieldTitle.setValue(resourceProxy.getName());
+            txtFieldTitle.addStyleName("inlineblock");
+            cssLayout.replaceComponent(descTitle, txtFieldTitle);
 
-        txtType = new TextField();
-        txtType.setValue(resourceProxy.getType());
-        cssLayout.replaceComponent(lblLockstatus, txtType);
+            txtFieldDescription = new TextField();
+            txtFieldDescription.setValue(resourceProxy.getDescription());
+            cssLayout.replaceComponent(descLabel, txtFieldDescription);
 
-        txtFieldDescription = new TextField();
-        txtFieldDescription.setValue(resourceProxy.getDescription());
-        cssLayout.replaceComponent(descLabel, txtFieldDescription);
+            swapComponent =
+                editStatus(lblStatus.getValue().toString().replace(resourceProxy.getType().getLabel() + " is ", ""));
+            vlPropertiesLeft.replaceComponent(lblStatus, swapComponent);
 
-        swapComponent =
-            editStatus(lblStatus.getValue().toString().replace(resourceProxy.getType().getLabel() + " is ", ""));
-        vlPropertiesLeft.replaceComponent(lblStatus, swapComponent);
+            txtType = new TextField();
+            txtType.setValue(resourceProxy.getType());
+            vlPropertiesLeft.replaceComponent(lblLockstatus, txtType);
+        }
+        else {
+            router.getMainWindow().showNotification(
+                "Unfortunately you have no access to run this operation on this resource",
+                Notification.TYPE_TRAY_NOTIFICATION);
+        }
     }
 
     public void saveEditableFields(String comment) {
@@ -337,26 +311,32 @@ public class ResourcePropertiesContextView extends ResourceProperties {
         lblLockstatus.setValue(status + txtType.getValue());
         cssLayout.replaceComponent(txtFieldTitle, descTitle);
         cssLayout.replaceComponent(txtFieldDescription, descLabel);
-        cssLayout.replaceComponent(txtType, lblLockstatus);
-
-        // Store operation logic here!
-        cmbStatus = this.getCmbStatus();
-        lblStatus.setValue(resourceProxy.getType().getLabel() + " is " + cmbStatus.getValue().toString());
-        vlPropertiesLeft.replaceComponent(this.getHlPublicStatus(), lblStatus);
+        vlPropertiesLeft.replaceComponent(txtType, lblLockstatus);
 
         Boolean isChangedTitle = false;
         Boolean isChangedDescription = false;
         Boolean isChangedPublicStatus = false;
         Boolean isChangedType = false;
+        // Store operation logic here!
+        cmbStatus = this.getCmbStatus();
+        if (cmbStatus.getValue() != null) {
+            lblStatus.setValue(resourceProxy.getType().getLabel() + " is " + cmbStatus.getValue().toString());
+            isChangedPublicStatus = areEqual(resourceProxy.getStatus(), cmbStatus.getValue().toString());
+        }
+        else {
+            lblStatus.setValue(resourceProxy.getType().getLabel() + " is " + resourceProxy.getStatus().toString());
+            cmbStatus.setValue(resourceProxy.getStatus().toString());
+        }
+        vlPropertiesLeft.replaceComponent(this.getHlPublicStatus(), lblStatus);
+
         isChangedTitle = areEqual(resourceProxy.getName(), txtFieldTitle.getValue().toString());
         isChangedDescription = areEqual(resourceProxy.getDescription(), txtFieldDescription.getValue().toString());
-        isChangedPublicStatus = areEqual(resourceProxy.getStatus(), cmbStatus.getValue().toString());
         isChangedType = areEqual(resourceProxy.getType().toString(), txtType.getValue().toString());
 
         try {
             controller.updateContext(isChangedTitle, isChangedDescription, isChangedPublicStatus, isChangedType,
-                txtFieldTitle.getValue().toString(), txtFieldDescription.getValue().toString(), cmbStatus
-                    .getValue().toString(), txtType.getValue().toString(), comment);
+                txtFieldTitle.getValue().toString(), cmbStatus.getValue().toString(), txtType.getValue().toString(),
+                comment);
             router.getMainWindow().showNotification(
                 new Window.Notification("Resource Updated successfully", Notification.TYPE_TRAY_NOTIFICATION));
         }
@@ -375,5 +355,21 @@ public class ResourcePropertiesContextView extends ResourceProperties {
             return false;
         }
         return true;
+    }
+
+    public HorizontalLayout getHlPublicStatus() {
+        return hlPublicStatus;
+    }
+
+    public void setHlPublicStatus(HorizontalLayout hlPublicStatus) {
+        this.hlPublicStatus = hlPublicStatus;
+    }
+
+    public NativeSelect getCmbStatus() {
+        return cmbStatus;
+    }
+
+    public void setCmbStatus(NativeSelect cmbStatus) {
+        this.cmbStatus = cmbStatus;
     }
 }
