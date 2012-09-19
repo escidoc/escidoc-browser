@@ -162,7 +162,6 @@ public class ResourceAddViewImpl implements ResourceAddView {
         this.mainWindow = router.getMainWindow();
         parent = createParentModel(resourceProxy);
         this.contextId = contextId;
-        treeDataSource = null;
     }
 
     private static ResourceModel createParentModel(final ResourceProxy resourceProxy) {
@@ -217,45 +216,46 @@ public class ResourceAddViewImpl implements ResourceAddView {
 
     // TODO refactor this method, make it shorter and the intent clearer.
     private void bindData() throws EscidocClientException {
+
         final ResourceProxy parentProxy = findParent();
         Map<String, Object> map = new HashMap<String, Object>();
         if (isContainer(parentProxy)) {
             map = jsonToMap(getContentModelDescription(parentProxy));
         }
 
-        List<ResourceDisplay> resourceDisplayList;
+        List<ResourceDisplay> displayList;
         if (map.isEmpty()) {
-            resourceDisplayList = addAllContentModels();
+            displayList = addAllContentModels();
         }
         else {
-            resourceDisplayList = filterContentModel(map);
+            displayList = filterContentModel(map);
         }
-        bind(resourceDisplayList);
+
+        bind(displayList);
+
     }
 
     private List<ResourceDisplay> filterContentModel(final Map<String, Object> map) throws EscidocClientException {
-        List<ResourceDisplay> resourceDisplayList;
+        List<ResourceDisplay> displayList;
         final Object val = map.get("children");
         if (!(val instanceof List<?>)) {
             return Collections.emptyList();
         }
         final List<?> children = (List<?>) val;
-        resourceDisplayList = new ArrayList<ResourceDisplay>(children.size());
+        displayList = new ArrayList<ResourceDisplay>(children.size());
         for (final Object childObject : children) {
             if (childObject instanceof Map) {
-                final Map<?, ?> childContentModelMap = getChildContentModel((Map<?, ?>) childObject);
-                final Object idObject = childContentModelMap.get("id");
-                LOG.debug("using content model with id " + idObject);
+                final Map<?, ?> childCm = getChildContentModel((Map<?, ?>) childObject);
+                LOG.debug("using content model with id " + childCm.get("id"));
 
-                if (idObject instanceof String) {
+                if (childCm.get("id") instanceof String) {
                     final ResourceProxy childContentModel =
-                        repositories.findByType(ResourceType.CONTENT_MODEL).findById((String) idObject);
-                    resourceDisplayList
-                        .add(new ResourceDisplay(childContentModel.getId(), childContentModel.getName()));
+                        repositories.findByType(ResourceType.CONTENT_MODEL).findById((String) childCm.get("id"));
+                    displayList.add(new ResourceDisplay(childContentModel.getId(), childContentModel.getName()));
                 }
             }
         }
-        return resourceDisplayList;
+        return displayList;
     }
 
     private List<ResourceDisplay> addAllContentModels() throws EscidocException, InternalClientException,
@@ -272,8 +272,7 @@ public class ResourceAddViewImpl implements ResourceAddView {
     }
 
     private ResourceProxy findParent() throws EscidocClientException {
-        final ResourceProxy parentProxy = repositories.findByType(parent.getType()).findById(parent.getId());
-        return parentProxy;
+        return repositories.findByType(parent.getType()).findById(parent.getId());
     }
 
     private void bind(final List<ResourceDisplay> resourceDisplayList) {
@@ -301,12 +300,11 @@ public class ResourceAddViewImpl implements ResourceAddView {
 
     // TODO move me to an util class
     private static Map<?, ?> getChildContentModel(final Map<?, ?> child) {
-        final Object childContentModelObject = child.get("content-model");
-        if (!(childContentModelObject instanceof Map<?, ?>)) {
+        final Object childCmObject = child.get("content-model");
+        if (!(childCmObject instanceof Map<?, ?>)) {
             Collections.emptyMap();
         }
-        final Map<?, ?> childContentModel = (Map<?, ?>) childContentModelObject;
-        return childContentModel;
+        return (Map<?, ?>) childCmObject;
     }
 
     // TODO move me to an util class
@@ -347,7 +345,7 @@ public class ResourceAddViewImpl implements ResourceAddView {
         final Button cancelProcessing = new Button("Cancel");
         cancelProcessing.addListener(new Button.ClickListener() {
             @Override
-            public void buttonClick(final ClickEvent event) {
+            public void buttonClick(@SuppressWarnings("unused") final ClickEvent event) {
                 upload.interruptUpload();
             }
         });
