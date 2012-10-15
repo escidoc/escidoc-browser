@@ -203,7 +203,6 @@ public class FolderView extends View {
     }
 
     private void createProperties(VerticalLayout vlResourceProperties) {
-        // Create Property fields. Probably not the best place for them to be
         vlResourceProperties.addComponent(bindNameToHeader());
         vlResourceProperties.addComponent(bindDescription());
         addHorizontalRuler(vlResourceProperties);

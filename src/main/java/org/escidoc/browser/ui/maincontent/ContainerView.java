@@ -45,9 +45,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -63,33 +61,15 @@ import de.escidoc.core.resources.om.container.Container;
 @SuppressWarnings("serial")
 public class ContainerView extends View {
 
-    private final VerticalLayout vlPropertiesLeft = new VerticalLayout();
-
     private final Router router;
 
     private final ContainerProxy resourceProxy;
-
-    private String status;
 
     private final EscidocServiceLocation serviceLocation;
 
     private final Window mainWindow;
 
     private final Repositories repositories;
-
-    private Component oldComponent;
-
-    private Component swapComponent;
-
-    private Label lblStatus;
-
-    private Label lblLockstatus;
-
-    private Window subwindow;
-
-    private Label lblCurrentVersionStatus;
-
-    private String lockStatus;
 
     private static final Logger LOG = LoggerFactory.getLogger(ContainerView.class);
 
