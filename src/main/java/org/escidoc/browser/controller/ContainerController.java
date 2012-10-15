@@ -119,6 +119,7 @@ public class ContainerController extends Controller {
         Boolean isChangedTitle, Boolean isChangedDescription, Boolean isChangedPublicStatus,
         Boolean isChangedLockStatus, String title, String description, String publicStatus, String lockStatus,
         String comment) throws EscidocClientException {
+        boolean updateneccessary = false;
         Container container = repositories.container().findContainerById(resourceProxy.getId());
         if ((lockStatus.equals("locked")) && (!isChangedLockStatus)) {
             router.getMainWindow().showNotification(
@@ -128,10 +129,14 @@ public class ContainerController extends Controller {
         else {
             if (isChangedTitle) {
                 changeTitle(title, container);
-                repositories.container().updateMetaData(container.getMetadataRecords().get("escidoc"), container);
+                updateneccessary = true;
             }
             if (isChangedDescription) {
                 changeDescription(description, container);
+                updateneccessary = true;
+
+            }
+            if (updateneccessary) {
                 repositories.container().updateMetaData(container.getMetadataRecords().get("escidoc"), container);
             }
             if (isChangedPublicStatus) {
