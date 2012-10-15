@@ -28,8 +28,6 @@
  */
 package org.escidoc.browser.ui.maincontent;
 
-import java.net.URISyntaxException;
-
 import org.escidoc.browser.controller.ContainerController;
 import org.escidoc.browser.model.ContainerProxy;
 import org.escidoc.browser.model.EscidocServiceLocation;
@@ -39,37 +37,23 @@ import org.escidoc.browser.model.ResourceType;
 import org.escidoc.browser.model.TreeDataSource;
 import org.escidoc.browser.model.internal.ContainerModel;
 import org.escidoc.browser.repository.Repositories;
-import org.escidoc.browser.repository.internal.ActionIdConstants;
 import org.escidoc.browser.ui.Router;
-import org.escidoc.browser.ui.ViewConstants;
-import org.escidoc.browser.ui.listeners.ResourceDeleteConfirmation;
-import org.escidoc.browser.ui.view.helpers.BreadCrumbMenu;
 import org.escidoc.browser.ui.view.helpers.DirectMember;
 import org.escidoc.browser.ui.view.helpers.ResourcePropertiesContainerView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
-import com.vaadin.event.LayoutEvents.LayoutClickEvent;
-import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.Runo;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
-import de.escidoc.core.resources.common.properties.LockStatus;
-import de.escidoc.core.resources.common.properties.PublicStatus;
 import de.escidoc.core.resources.om.container.Container;
 
 /**
@@ -127,7 +111,6 @@ public class ContainerView extends View {
         this.setViewName(resourceProxy.getName());
         this.mainWindow = router.getMainWindow();
         this.repositories = repositories;
-        handleLayoutListeners();
         buildContentPanel();
     }
 
@@ -310,385 +293,6 @@ public class ContainerView extends View {
         return vlResourceProperties;
     }
 
-    /**
-     * Binding Context Properties 2 sets of labels in 2 rows
-     * 
-     * @param cssLayout
-     */
-    private void bindProperties(CssLayout cssLayout) {
-        Panel pnlPropertiesLeft = buildLeftPropertiesPnl();
-        Panel pnlPropertiesRight = buildRightPnlProperties();
-
-        final Label descMetadata1 = new Label("ID: " + resourceProxy.getId());
-
-        status = resourceProxy.getType().getLabel() + " is ";
-        lockStatus = status;
-        lblStatus = new Label(status + resourceProxy.getStatus(), Label.CONTENT_RAW);
-        lblStatus.setDescription(ViewConstants.DESC_STATUS);
-
-        lblLockstatus = new Label(status + resourceProxy.getLockStatus(), Label.CONTENT_RAW);
-        lblLockstatus.setDescription(ViewConstants.DESC_LOCKSTATUS);
-        if (hasAccess()) {
-            lblLockstatus.setStyleName("inset");
-        }
-        final Label descMetadata2 =
-            new Label(ViewConstants.CREATED_BY + " " + resourceProxy.getCreator() + " on "
-                + resourceProxy.getCreatedOn() + "<br/>" + ViewConstants.LAST_MODIFIED_BY + " "
-                + resourceProxy.getModifier() + " on " + resourceProxy.getModifiedOn() + "<br />" + "Released by "
-                + resourceProxy.getReleasedBy() + " on " + resourceProxy.getLatestVersionModifiedOn(),
-                Label.CONTENT_XHTML);
-
-        vlPropertiesLeft.addComponent(descMetadata1);
-        if (hasAccess()) {
-            status = "Latest status is ";
-            lblCurrentVersionStatus = new Label(status + resourceProxy.getVersionStatus());
-            lblCurrentVersionStatus.setDescription(ViewConstants.DESC_STATUS);
-            lblCurrentVersionStatus.setStyleName("inset");
-            vlPropertiesLeft.addComponent(lblCurrentVersionStatus);
-
-        }
-        else {
-            vlPropertiesLeft.addComponent(lblStatus);
-        }
-
-        vlPropertiesLeft.addComponent(lblLockstatus);
-        pnlPropertiesLeft.addComponent(vlPropertiesLeft);
-        cssLayout.addComponent(pnlPropertiesLeft);
-
-        pnlPropertiesRight.addComponent(descMetadata2);
-
-        cssLayout.addComponent(pnlPropertiesRight);
-
-    }
-
-    private static Panel buildLeftPropertiesPnl() {
-        Panel pnlPropertiesLeft = new Panel();
-        pnlPropertiesLeft.setWidth("40%");
-        pnlPropertiesLeft.setHeight("60px");
-        pnlPropertiesLeft.setStyleName("floatleft");
-        pnlPropertiesLeft.addStyleName(Runo.PANEL_LIGHT);
-
-        VerticalLayout vl = new VerticalLayout();
-        vl.setMargin(false);
-        pnlPropertiesLeft.setContent(vl);
-        return pnlPropertiesLeft;
-    }
-
-    private static Panel buildRightPnlProperties() {
-        Panel pnlPropertiesRight = new Panel();
-        pnlPropertiesRight.setWidth("60%");
-        pnlPropertiesRight.setHeight("60px");
-        pnlPropertiesRight.setStyleName("floatright");
-        pnlPropertiesRight.addStyleName(Runo.PANEL_LIGHT);
-        VerticalLayout vl = new VerticalLayout();
-        vl.setMargin(false);
-        pnlPropertiesRight.setContent(vl);
-        return pnlPropertiesRight;
-    }
-
-    private static void addHorizontalRuler(CssLayout cssLayout) {
-        final Label descRuler = new Label("<hr />", Label.CONTENT_RAW);
-        descRuler.setStyleName("hr");
-        cssLayout.addComponent(descRuler);
-    }
-
-    private void bindDescription(CssLayout cssLayout) {
-        final Label description = new Label(ViewConstants.DESCRIPTION_LBL + resourceProxy.getDescription());
-        description.setStyleName(ViewConstants.FULLWIDHT_STYLE_NAME);
-        cssLayout.addComponent(description);
-    }
-
-    private void createBreadCrumb(CssLayout cssLayout) {
-        new BreadCrumbMenu(cssLayout, resourceProxy, mainWindow, serviceLocation, repositories);
-    }
-
-    /**
-     * Building the Header Element that shows the title of the Container
-     */
-    private void bindNameToHeader(CssLayout cssLayout) {
-        final Label headerContext = new Label(ViewConstants.RESOURCE_NAME_CONTAINER + resourceProxy.getName());
-        headerContext.setStyleName("h1 fullwidth floatleft");
-        headerContext.setWidth("80%");
-        headerContext.setDescription(ViewConstants.DESC_HEADER);
-        cssLayout.addComponent(headerContext);
-    }
-
-    private void handleLayoutListeners() {
-        if (hasAccess()) {
-
-            vlPropertiesLeft.addListener(new LayoutClickListener() {
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                public void layoutClick(final LayoutClickEvent event) {
-                    // Get the child component which was clicked
-
-                    if (event.getChildComponent() != null) {
-                        // Is Label?
-                        if (event.getChildComponent().getClass().getCanonicalName() == "com.vaadin.ui.Label") {
-                            final Label child = (Label) event.getChildComponent();
-                            if ((child.getDescription() == ViewConstants.DESC_STATUS)
-                                && (!lblStatus.getValue().equals(status + "withdrawn"))) {
-                                reSwapComponents();
-                                oldComponent = event.getClickedComponent();
-                                swapComponent = editStatus(child.getValue().toString().replace(status, ""));
-                                vlPropertiesLeft.replaceComponent(oldComponent, swapComponent);
-                            }
-                            else if (child.getDescription() == ViewConstants.DESC_LOCKSTATUS) {
-                                reSwapComponents();
-                                oldComponent = event.getClickedComponent();
-                                swapComponent = editLockStatus(child.getValue().toString().replace(status, ""));
-                                vlPropertiesLeft.replaceComponent(oldComponent, swapComponent);
-                            }
-                        }
-                        // else {
-                        // // getWindow().showNotification(
-                        // // "The click was over a " +
-                        // event.getChildComponent().getClass().getCanonicalName()
-                        // // + event.getChildComponent().getStyleName());
-                        // }
-                    }
-                    else {
-                        reSwapComponents();
-                    }
-                }
-
-                /**
-                 * Switch the component back to the original component (Label) after inline editing
-                 */
-                private void reSwapComponents() {
-
-                    if (swapComponent != null) {
-                        if (swapComponent instanceof Label) {
-                            ((Label) oldComponent).setValue(((TextArea) swapComponent).getValue());
-                        }
-                        else if ((swapComponent instanceof ComboBox) && ((ComboBox) swapComponent).getValue() != null) {
-                            ((Label) oldComponent).setValue(status + ((ComboBox) swapComponent).getValue());
-                            // Because there should be no comment-window on
-                            // Delete Operation
-                            if (!(((ComboBox) swapComponent).getValue().equals("delete"))) {
-                                addCommentWindow();
-                            }
-                            else {
-                                updateContainer("");
-                            }
-                        }
-                        vlPropertiesLeft.replaceComponent(swapComponent, oldComponent);
-                        swapComponent = null;
-                    }
-                }
-
-                private Component editLockStatus(final String lockStatus) {
-                    final ComboBox cmbLockStatus = new ComboBox();
-                    cmbLockStatus.setNullSelectionAllowed(false);
-                    if (lockStatus.contains("unlocked")) {
-                        cmbLockStatus.addItem(LockStatus.LOCKED.toString().toLowerCase());
-                    }
-                    else {
-                        cmbLockStatus.addItem(LockStatus.UNLOCKED.toString().toLowerCase());
-                    }
-                    cmbLockStatus.select(1);
-                    return cmbLockStatus;
-
-                }
-
-                private Component editStatus(final String publicStatus) {
-                    final ComboBox cmbStatus = new ComboBox();
-                    cmbStatus.setInvalidAllowed(false);
-                    cmbStatus.setNullSelectionAllowed(false);
-                    final String pubStatus = publicStatus.toUpperCase();
-                    if (publicStatus.equals("pending")) {
-                        cmbStatus.addItem(PublicStatus.PENDING.toString().toLowerCase());
-                        cmbStatus.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
-                        cmbStatus.setNullSelectionItemId(PublicStatus.PENDING.toString().toLowerCase());
-                        if (hasAccessDelResource()) {
-                            cmbStatus.addItem("delete");
-                        }
-
-                    }
-                    else if (publicStatus.equals("submitted")) {
-                        cmbStatus.setNullSelectionItemId(PublicStatus.SUBMITTED.toString().toLowerCase());
-                        cmbStatus.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
-                        cmbStatus.addItem(PublicStatus.IN_REVISION.toString().toLowerCase());
-                        cmbStatus.addItem(PublicStatus.RELEASED.toString().toLowerCase());
-                    }
-                    else if (publicStatus.equals("in_revision")) {
-                        cmbStatus.setNullSelectionItemId(PublicStatus.IN_REVISION.toString().toLowerCase());
-                        cmbStatus.addItem(PublicStatus.IN_REVISION.toString().toLowerCase());
-                        cmbStatus.addItem(PublicStatus.SUBMITTED.toString().toLowerCase());
-                    }
-                    else if (publicStatus.equals("released")) {
-                        cmbStatus.setNullSelectionItemId(PublicStatus.RELEASED.toString().toLowerCase());
-                        cmbStatus.addItem(PublicStatus.RELEASED.toString().toLowerCase());
-                        cmbStatus.addItem(PublicStatus.WITHDRAWN.toString().toLowerCase());
-                    }
-                    else if (publicStatus.equals("withdrawn")) {
-                        // do nothing
-                    }
-                    else {
-                        cmbStatus.addItem(PublicStatus.valueOf(pubStatus));
-                    }
-                    cmbStatus.select(1);
-
-                    return cmbStatus;
-                }
-
-                private boolean hasAccessDelResource() {
-                    try {
-                        return repositories
-                            .pdp().forCurrentUser().isAction(ActionIdConstants.DELETE_CONTAINER)
-                            .forResource(resourceProxy.getId()).permitted();
-                    }
-                    catch (UnsupportedOperationException e) {
-                        mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-                        e.printStackTrace();
-                        return false;
-                    }
-                    catch (EscidocClientException e) {
-                        mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-                        e.printStackTrace();
-                        return false;
-                    }
-                    catch (URISyntaxException e) {
-                        mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-                        e.printStackTrace();
-                        return false;
-                    }
-                }
-
-                public void addCommentWindow() {
-                    subwindow = new Window(ViewConstants.SUBWINDOW_EDIT);
-                    subwindow.setModal(true);
-                    // Configure the windws layout; by default a VerticalLayout
-                    VerticalLayout layout = (VerticalLayout) subwindow.getContent();
-                    layout.setMargin(true);
-                    layout.setSpacing(true);
-                    layout.setSizeUndefined();
-
-                    final TextArea editor = new TextArea("Your Comment");
-                    editor.setRequired(true);
-                    editor.setRequiredError("The Field may not be empty.");
-
-                    HorizontalLayout hl = new HorizontalLayout();
-
-                    Button close = new Button("Update", new Button.ClickListener() {
-                        // inline click-listener
-                        @Override
-                        public void buttonClick(ClickEvent event) {
-                            // close the window by removing it from the
-                            // parent window
-                            updateContainer(editor.getValue().toString());
-                            (subwindow.getParent()).removeWindow(subwindow);
-                        }
-                    });
-                    Button cancel = new Button("Cancel", new Button.ClickListener() {
-                        @Override
-                        public void buttonClick(ClickEvent event) {
-                            (subwindow.getParent()).removeWindow(subwindow);
-                        }
-                    });
-
-                    hl.addComponent(close);
-                    hl.addComponent(cancel);
-
-                    subwindow.addComponent(editor);
-                    subwindow.addComponent(hl);
-                    mainWindow.addWindow(subwindow);
-                }
-
-                private void updatePublicStatus(Container container, String comment) {
-                    // Update PublicStatus if there is a change
-                    if (!resourceProxy.getVersionStatus().equals(
-                        lblCurrentVersionStatus.getValue().toString().replace(status, ""))) {
-
-                        String publicStatusTxt =
-                            lblCurrentVersionStatus.getValue().toString().replace(status, "").toUpperCase();
-                        if (publicStatusTxt.equals("DELETE")) {
-                            new ResourceDeleteConfirmation(container, repositories.container(), mainWindow);
-
-                        }
-                        try {
-                            repositories.container().changePublicStatus(container,
-                                lblCurrentVersionStatus.getValue().toString().replace(status, "").toUpperCase(),
-                                comment);
-                            if (publicStatusTxt.equals("SUBMITTED")) {
-                                mainWindow.showNotification(new Window.Notification(ViewConstants.SUBMITTED,
-                                    Notification.TYPE_TRAY_NOTIFICATION));
-                            }
-                            else if (publicStatusTxt.equals("IN_REVISION")) {
-                                mainWindow.showNotification(new Window.Notification(ViewConstants.IN_REVISION,
-                                    Notification.TYPE_TRAY_NOTIFICATION));
-                            }
-                            else if (publicStatusTxt.equals("RELEASED")) {
-                                mainWindow.showNotification(new Window.Notification(ViewConstants.RELEASED,
-                                    Notification.TYPE_TRAY_NOTIFICATION));
-
-                            }
-                            else if (publicStatusTxt.equals("WITHDRAWN")) {
-                                mainWindow.showNotification(new Window.Notification(ViewConstants.WITHDRAWN,
-                                    Notification.TYPE_TRAY_NOTIFICATION));
-                            }
-                        }
-                        catch (EscidocClientException e) {
-                            mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
-                                Notification.TYPE_ERROR_MESSAGE));
-                        }
-                    }
-                }
-
-                private void updateLockStatus(Container container, String comment) {
-                    // Update LockStatus if there is a change
-                    if (!resourceProxy.getLockStatus().equals(
-                        lblLockstatus.getValue().toString().replace(lockStatus, ""))) {
-                        String lockStatusTxt =
-                            lblLockstatus.getValue().toString().replace(lockStatus, "").toUpperCase();
-                        try {
-                            if (lockStatusTxt.contains("LOCKED")) {
-                                repositories.container().unlockResource(container, comment);
-                                mainWindow.showNotification(new Window.Notification(ViewConstants.LOCKED,
-                                    Notification.TYPE_TRAY_NOTIFICATION));
-                            }
-                            else {
-                                repositories.container().lockResource(container, comment);
-                                mainWindow.showNotification(new Window.Notification(ViewConstants.UNLOCKED,
-                                    Notification.TYPE_TRAY_NOTIFICATION));
-                            }
-
-                        }
-                        catch (EscidocClientException e) {
-                            mainWindow.showNotification(new Window.Notification(ViewConstants.ERROR, e.getMessage(),
-                                Notification.TYPE_ERROR_MESSAGE));
-                        }
-                    }
-                }
-
-                private void updateContainer(String comment) {
-                    LOG.debug("Called the updateContainer");
-                    Container container;
-                    try {
-                        container = repositories.container().findContainerById(resourceProxy.getId());
-                        if (resourceProxy.getLockStatus().contains("unlocked")) {
-                            updatePublicStatus(container, comment);
-                            // retrive the container to get the last
-                            // modifiaction date.
-                            container = repositories.container().findContainerById(resourceProxy.getId());
-                            updateLockStatus(container, comment);
-                        }
-                        else {
-                            updateLockStatus(container, comment);
-                            updatePublicStatus(container, comment);
-                        }
-                    }
-                    catch (final EscidocClientException e) {
-                        LOG.debug("Infrastructure Exception " + e.getLocalizedMessage());
-                    }
-                }
-
-            });
-        }
-
-    }
-
     // TODO Move to Controller
     public void refreshView() {
         try {
@@ -707,23 +311,6 @@ public class ContainerView extends View {
         }
         catch (EscidocClientException e) {
             mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-        }
-    }
-
-    // TODO Move to Controller
-    private boolean hasAccess() {
-        try {
-            return repositories
-                .pdp().forCurrentUser().isAction(ActionIdConstants.UPDATE_CONTAINER).forResource(resourceProxy.getId())
-                .permitted();
-        }
-        catch (EscidocClientException e) {
-            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-            return false;
-        }
-        catch (URISyntaxException e) {
-            mainWindow.showNotification(e.getMessage(), Window.Notification.TYPE_ERROR_MESSAGE);
-            return false;
         }
     }
 

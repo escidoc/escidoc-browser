@@ -68,8 +68,6 @@ public class ResourcePropertiesItemView extends ResourceProperties {
 
     private Label lblLockstatus;
 
-    private Component oldComponent;
-
     private Component swapComponent;
 
     private Label lblStatus;

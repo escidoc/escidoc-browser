@@ -37,6 +37,7 @@ import org.escidoc.browser.ui.Router;
 import org.escidoc.browser.ui.maincontent.ContainerView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -132,7 +133,6 @@ public class ContainerController extends Controller {
             if (isChangedDescription) {
                 changeDescription(description, container);
                 repositories.container().updateMetaData(container.getMetadataRecords().get("escidoc"), container);
-                // repositories.container().updateDescrition(description, resourceProxy.getId());
             }
             if (isChangedPublicStatus) {
                 repositories.container().changePublicStatus(container, publicStatus, comment);
@@ -178,7 +178,15 @@ public class ContainerController extends Controller {
                     continue;
                 }
                 if (nodeName.equals("description") && URI_DC.equals(nsUri)) {
-                    node.getFirstChild().setNodeValue(description);
+                    try {
+                        node.getFirstChild().setNodeValue(description);
+                    }
+                    catch (DOMException domexception) {
+                        LOG.debug(domexception.getLocalizedMessage());
+                    }
+                    catch (Exception e2) {
+                        LOG.debug(e2.getLocalizedMessage());
+                    }
                     found = true;
                 }
 
@@ -186,7 +194,7 @@ public class ContainerController extends Controller {
             if (!found) {
                 final Element descriptionEl = e.getOwnerDocument().createElementNS(URI_DC, "description");
                 descriptionEl.setPrefix("dc");
-                descriptionEl.setTextContent(description);
+                descriptionEl.appendChild(e.getOwnerDocument().createTextNode(description));
                 e.appendChild(descriptionEl);
             }
         }

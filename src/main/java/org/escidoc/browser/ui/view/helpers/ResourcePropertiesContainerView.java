@@ -370,7 +370,12 @@ public class ResourcePropertiesContainerView extends ResourceProperties {
         cssLayout.replaceComponent(descTitle, txtFieldTitle);
 
         txtFieldDescription = new TextField();
-        txtFieldDescription.setValue(resourceProxy.getDescription());
+        if (resourceProxy.getDescription() == null) {
+            txtFieldDescription.setValue("");
+        }
+        else {
+            txtFieldDescription.setValue(resourceProxy.getDescription());
+        }
         cssLayout.replaceComponent(descLabel, txtFieldDescription);
 
         swapComponent =
