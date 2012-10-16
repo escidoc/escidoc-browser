@@ -264,4 +264,11 @@ public class ContextRepository implements Repository {
     public void updatecontext(Context context) throws EscidocClientException {
         client.update(context);
     }
+
+    public Context updateDescription(String txtDescription, Context context) {
+        ContextProperties properties = context.getProperties();
+        properties.setDescription(txtDescription);
+        return context;
+
+    }
 }

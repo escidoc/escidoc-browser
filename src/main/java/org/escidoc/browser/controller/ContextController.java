@@ -263,7 +263,8 @@ public class ContextController extends Controller {
 
     public void updateContext(
         Boolean isChangedTitle, Boolean isChangedDescription, Boolean isChangedPublicStatus, Boolean isChangedType,
-        String title, String publicStatus, String txtType, String comment) throws EscidocClientException {
+        String title, String txtDescription, String publicStatus, String txtType, String comment)
+        throws EscidocClientException {
 
         Context context = repositories.context().findContextById(resourceProxy.getId());
         boolean updated = false;
@@ -278,6 +279,9 @@ public class ContextController extends Controller {
             }
             if (isChangedType) {
                 repositories.context().updateType(txtType, context);
+            }
+            if (isChangedDescription) {
+                repositories.context().updateDescription(txtDescription, context);
             }
             if (isChangedPublicStatus) {
                 updatePublicStatus(publicStatus, resourceProxy.getId(), comment);

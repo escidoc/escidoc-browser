@@ -96,6 +96,14 @@ public class ResourcePropertiesContextView extends ResourceProperties {
 
     private TextField txtType;
 
+    private boolean isChangedTitle;
+
+    private boolean isChangedDescription;
+
+    private boolean isChangedPublicStatus;
+
+    private boolean isChangedType;
+
     public ResourcePropertiesContextView(ContextProxyImpl resourceProxy, Router router, ContextController controller) {
         this.resourceProxy = (ContextProxyImpl) resourceProxy;
         this.mainWindow = router.getMainWindow();
@@ -175,47 +183,84 @@ public class ResourcePropertiesContextView extends ResourceProperties {
 
     public void handleSaveAction() {
         if (controller.canUpdateContext()) {
-            subwindow = new Window(ViewConstants.SUBWINDOW_EDIT);
-            subwindow.setModal(true);
-            // Configure the windws layout; by default a VerticalLayout
-            final VerticalLayout layout = (VerticalLayout) subwindow.getContent();
-            layout.setMargin(true);
-            layout.setSpacing(true);
-            layout.setSizeUndefined();
+            isChangedTitle = areEqual(resourceProxy.getName(), txtFieldTitle.getValue().toString());
+            isChangedDescription = areEqual(resourceProxy.getDescription(), txtFieldDescription.getValue().toString());
+            isChangedType = areEqual(resourceProxy.getType().toString(), txtType.getValue().toString());
+            if (txtFieldDescription.getValue().toString() == "") {
+                isChangedDescription = false;
+            }
 
-            final TextArea editor = new TextArea("Your Comment");
-            editor.setRequired(true);
-            editor.setRequiredError("The Field may not be empty.");
+            if (isChangedTitle == false && isChangedDescription == false && isChangedPublicStatus == false) {
+                closeEditablefields();
+            }
+            else {
+                saveActionModalWindow();
+            }
 
-            final HorizontalLayout hl = new HorizontalLayout();
-
-            final Button close = new Button("Update", new Button.ClickListener() {
-
-                private static final long serialVersionUID = 1424933077274899865L;
-
-                @Override
-                public void buttonClick(final ClickEvent event) {
-                    saveEditableFields(editor.getValue().toString());
-                    (subwindow.getParent()).removeWindow(subwindow);
-                }
-            });
-            final Button cancel = new Button("Cancel", new Button.ClickListener() {
-
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                public void buttonClick(final ClickEvent event) {
-                    (subwindow.getParent()).removeWindow(subwindow);
-                }
-            });
-
-            hl.addComponent(close);
-            hl.addComponent(cancel);
-
-            subwindow.addComponent(editor);
-            subwindow.addComponent(hl);
-            mainWindow.addWindow(subwindow);
         }
+    }
+
+    private void closeEditablefields() {
+        // Showing editable title
+        descTitle.setValue(ViewConstants.RESOURCE_NAME_CONTEXT + txtFieldTitle.getValue());
+        descLabel.setValue(ViewConstants.DESCRIPTION_LBL + txtFieldDescription.getValue());
+        lblLockstatus.setValue(status + txtType.getValue());
+        cssLayout.replaceComponent(txtFieldTitle, descTitle);
+        cssLayout.replaceComponent(txtFieldDescription, descLabel);
+        vlPropertiesLeft.replaceComponent(txtType, lblLockstatus);
+
+        // Store operation logic here!
+        cmbStatus = this.getCmbStatus();
+        if (cmbStatus.getValue() != null) {
+            lblStatus.setValue(resourceProxy.getType().getLabel() + " is " + cmbStatus.getValue().toString());
+        }
+        else {
+            lblStatus.setValue(resourceProxy.getType().getLabel() + " is " + resourceProxy.getStatus().toString());
+        }
+        vlPropertiesLeft.replaceComponent(this.getHlPublicStatus(), lblStatus);
+    }
+
+    public void saveActionModalWindow() {
+        subwindow = new Window(ViewConstants.SUBWINDOW_EDIT);
+        subwindow.setModal(true);
+        // Configure the windws layout; by default a VerticalLayout
+        final VerticalLayout layout = (VerticalLayout) subwindow.getContent();
+        layout.setMargin(true);
+        layout.setSpacing(true);
+        layout.setSizeUndefined();
+
+        final TextArea editor = new TextArea("Your Comment");
+        editor.setRequired(true);
+        editor.setRequiredError("The Field may not be empty.");
+
+        final HorizontalLayout hl = new HorizontalLayout();
+
+        final Button close = new Button("Update", new Button.ClickListener() {
+
+            private static final long serialVersionUID = 1424933077274899865L;
+
+            @Override
+            public void buttonClick(final ClickEvent event) {
+                saveEditableFields(editor.getValue().toString());
+                (subwindow.getParent()).removeWindow(subwindow);
+            }
+        });
+        final Button cancel = new Button("Cancel", new Button.ClickListener() {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void buttonClick(final ClickEvent event) {
+                (subwindow.getParent()).removeWindow(subwindow);
+            }
+        });
+
+        hl.addComponent(close);
+        hl.addComponent(cancel);
+
+        subwindow.addComponent(editor);
+        subwindow.addComponent(hl);
+        mainWindow.addWindow(subwindow);
     }
 
     protected void bindProperties() {
@@ -296,6 +341,10 @@ public class ResourcePropertiesContextView extends ResourceProperties {
             txtType = new TextField();
             txtType.setValue(resourceProxy.getType());
             vlPropertiesLeft.replaceComponent(lblLockstatus, txtType);
+            isChangedTitle = false;
+            isChangedDescription = false;
+            isChangedPublicStatus = false;
+            isChangedType = false;
         }
         else {
             router.getMainWindow().showNotification(
@@ -313,10 +362,6 @@ public class ResourcePropertiesContextView extends ResourceProperties {
         cssLayout.replaceComponent(txtFieldDescription, descLabel);
         vlPropertiesLeft.replaceComponent(txtType, lblLockstatus);
 
-        Boolean isChangedTitle = false;
-        Boolean isChangedDescription = false;
-        Boolean isChangedPublicStatus = false;
-        Boolean isChangedType = false;
         // Store operation logic here!
         cmbStatus = this.getCmbStatus();
         if (cmbStatus.getValue() != null) {
@@ -329,14 +374,10 @@ public class ResourcePropertiesContextView extends ResourceProperties {
         }
         vlPropertiesLeft.replaceComponent(this.getHlPublicStatus(), lblStatus);
 
-        isChangedTitle = areEqual(resourceProxy.getName(), txtFieldTitle.getValue().toString());
-        isChangedDescription = areEqual(resourceProxy.getDescription(), txtFieldDescription.getValue().toString());
-        isChangedType = areEqual(resourceProxy.getType().toString(), txtType.getValue().toString());
-
         try {
             controller.updateContext(isChangedTitle, isChangedDescription, isChangedPublicStatus, isChangedType,
-                txtFieldTitle.getValue().toString(), cmbStatus.getValue().toString(), txtType.getValue().toString(),
-                comment);
+                txtFieldTitle.getValue().toString(), txtFieldDescription.getValue().toString(), cmbStatus
+                    .getValue().toString(), txtType.getValue().toString(), comment);
             router.getMainWindow().showNotification(
                 new Window.Notification("Resource Updated successfully", Notification.TYPE_TRAY_NOTIFICATION));
         }
