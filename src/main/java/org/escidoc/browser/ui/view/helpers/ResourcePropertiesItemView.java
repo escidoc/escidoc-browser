@@ -108,6 +108,12 @@ public class ResourcePropertiesItemView extends ResourceProperties {
 
     private HorizontalLayout hlLockStatus;
 
+    private boolean isChangedTitle;
+
+    private boolean isChangedPublicStatus;
+
+    private boolean isChangedLockStatus;
+
     public ResourcePropertiesItemView(ItemProxyImpl resourceProxy, Router router, ItemController controller) {
         this.resourceProxy = resourceProxy;
         this.repositories = router.getRepositories();
@@ -233,7 +239,29 @@ public class ResourcePropertiesItemView extends ResourceProperties {
         new BreadCrumbMenu(cssLayout, resourceProxy, mainWindow, serviceLocation, repositories);
     }
 
-    public void saveActionWindow() {
+    public void handleSaveAction() {
+        isChangedTitle = areEqual(resourceProxy.getName(), txtFieldTitle.getValue().toString());
+        isChangedPublicStatus = areEqual(resourceProxy.getStatus(), cmbStatus.getValue().toString());
+        isChangedLockStatus = areEqual(resourceProxy.getLockStatus(), cmbLockStatus.getValue().toString());
+
+        if (isChangedTitle == false && isChangedPublicStatus == false && isChangedLockStatus == false) {
+            closeEditablefields();
+        }
+        else {
+            saveActionModalWindow();
+        }
+
+    }
+
+    private void closeEditablefields() {
+        // Showing editable title
+        descTitle.setValue(ViewConstants.ITEM_LABEL + txtFieldTitle.getValue());
+        cssLayout.replaceComponent(txtFieldTitle, descTitle);
+        vlPropertiesLeft.replaceComponent(this.getHlPublicStatus(), lblCurrentVersionStatus);
+        vlPropertiesLeft.replaceComponent(this.getHlLockStatus(), lblLockstatus);
+    }
+
+    public void saveActionModalWindow() {
         subwindow = new Window(ViewConstants.SUBWINDOW_EDIT);
         subwindow.setModal(true);
         // Configure the windws layout; by default a VerticalLayout
@@ -358,30 +386,6 @@ public class ResourcePropertiesItemView extends ResourceProperties {
         return hlPublicStatus;
     }
 
-    public HorizontalLayout getHlPublicStatus() {
-        return hlPublicStatus;
-    }
-
-    public void setHlPublicStatus(HorizontalLayout hlPublicStatus) {
-        this.hlPublicStatus = hlPublicStatus;
-    }
-
-    public NativeSelect getCmbStatus() {
-        return cmbStatus;
-    }
-
-    public void setCmbStatus(NativeSelect cmbStatus) {
-        this.cmbStatus = cmbStatus;
-    }
-
-    public NativeSelect getCmbLockStatus() {
-        return cmbLockStatus;
-    }
-
-    public void setCmbLockStatus(NativeSelect cmbLockStatus) {
-        this.cmbLockStatus = cmbLockStatus;
-    }
-
     private void updatePublicStatus(final Item item, final String comment) {
         Preconditions.checkNotNull(item, "Item is null");
         Preconditions.checkNotNull(comment, "Comment is null");
@@ -456,6 +460,9 @@ public class ResourcePropertiesItemView extends ResourceProperties {
         // Showing editable LockStatus
         swapComponent = editLockStatus(lblLockstatus.getValue().toString().replace(status, ""));
         vlPropertiesLeft.replaceComponent(lblLockstatus, swapComponent);
+        isChangedTitle = false;
+        isChangedPublicStatus = false;
+        isChangedLockStatus = false;
 
     }
 
@@ -463,9 +470,6 @@ public class ResourcePropertiesItemView extends ResourceProperties {
         // Showing editable title
         descTitle.setValue(ViewConstants.ITEM_LABEL + txtFieldTitle.getValue());
         cssLayout.replaceComponent(txtFieldTitle, descTitle);
-        Boolean isChangedTitle = false;
-        Boolean isChangedPublicStatus = false;
-        Boolean isChangedLockStatus = false;
 
         // Store operation logic here!
         cmbStatus = this.getCmbStatus();
@@ -476,9 +480,6 @@ public class ResourcePropertiesItemView extends ResourceProperties {
         lblLockstatus.setValue(status + cmbLockStatus.getValue().toString());
         vlPropertiesLeft.replaceComponent(this.getHlLockStatus(), lblLockstatus);
 
-        isChangedTitle = areEqual(resourceProxy.getName(), txtFieldTitle.getValue().toString());
-        isChangedPublicStatus = areEqual(resourceProxy.getStatus(), cmbStatus.getValue().toString());
-        isChangedLockStatus = areEqual(resourceProxy.getLockStatus(), cmbLockStatus.getValue().toString());
         try {
             controller.updateItem(isChangedTitle, isChangedPublicStatus, isChangedLockStatus, txtFieldTitle
                 .getValue().toString(), cmbStatus.getValue().toString(), cmbLockStatus.getValue().toString(), comment);
@@ -500,5 +501,29 @@ public class ResourcePropertiesItemView extends ResourceProperties {
             return false;
         }
         return true;
+    }
+
+    public HorizontalLayout getHlPublicStatus() {
+        return hlPublicStatus;
+    }
+
+    public void setHlPublicStatus(HorizontalLayout hlPublicStatus) {
+        this.hlPublicStatus = hlPublicStatus;
+    }
+
+    public NativeSelect getCmbStatus() {
+        return cmbStatus;
+    }
+
+    public void setCmbStatus(NativeSelect cmbStatus) {
+        this.cmbStatus = cmbStatus;
+    }
+
+    public NativeSelect getCmbLockStatus() {
+        return cmbLockStatus;
+    }
+
+    public void setCmbLockStatus(NativeSelect cmbLockStatus) {
+        this.cmbLockStatus = cmbLockStatus;
     }
 }

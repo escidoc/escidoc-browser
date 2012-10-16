@@ -76,6 +76,9 @@ public class CreateResourceLinksVH {
         if (resourceProperties.getClass().toString().contains("ResourcePropertiesContainerView")) {
             this.resourceProperties = (ResourcePropertiesContainerView) resourceProperties;
         }
+        else if (resourceProperties.getClass().toString().contains("ResourcePropertiesFolderView")) {
+            this.resourceProperties = (ResourcePropertiesFolderView) resourceProperties;
+        }
         else if (resourceProperties.getClass().toString().contains("ResourcePropertiesContextView")) {
             this.resourceProperties = (ResourcePropertiesContextView) resourceProperties;
         }
@@ -148,8 +151,7 @@ public class CreateResourceLinksVH {
                     editsaveBtn.setDescription("Edit");
                     editsaveBtn.setIcon(new ThemeResource("images/wpzoom/pencil.png"));
                     // call viewComponent-controller to do the saves
-                    resourceProperties.saveActionWindow();
-                    // Messages for successfull operation?
+                    resourceProperties.handleSaveAction();
                 }
 
             }

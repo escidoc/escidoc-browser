@@ -139,7 +139,7 @@ public class ResourceProperties {
         return cssLayout;
     }
 
-    protected void saveActionWindow() {
+    protected void handleSaveAction() {
         // TODO Auto-generated method stub
 
     }

@@ -124,6 +124,7 @@ public class ContainerProxyImpl implements ContainerProxy {
     @Override
     public String getDescription() {
         return containerFromCore.getProperties().getDescription();
+
     }
 
     /*

@@ -43,7 +43,7 @@ import com.vaadin.ui.Window;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 
-public class FolderController extends Controller {
+public class FolderController extends ContainerController {
     private static final Logger LOG = LoggerFactory.getLogger(FolderChildrenVH.class);
 
     public FolderController(Repositories repositories, Router router, ResourceProxy resourceProxy) {

@@ -106,6 +106,14 @@ public class ResourcePropertiesContainerView extends ResourceProperties {
 
     private TextField txtFieldDescription;
 
+    private boolean isChangedTitle;
+
+    private boolean isChangedDescription;
+
+    private boolean isChangedPublicStatus;
+
+    private boolean isChangedLockStatus;
+
     public ResourcePropertiesContainerView(ContainerProxy resourceProxy, Router router, ContainerController controller) {
         this.resourceProxy = (ContainerProxyImpl) resourceProxy;
         this.repositories = router.getRepositories();
@@ -220,7 +228,34 @@ public class ResourcePropertiesContainerView extends ResourceProperties {
         new BreadCrumbMenu(cssLayout, resourceProxy, mainWindow, serviceLocation, repositories);
     }
 
-    public void saveActionWindow() {
+    public void handleSaveAction() {
+        isChangedTitle = areEqual(resourceProxy.getName(), txtFieldTitle.getValue().toString());
+        isChangedDescription = areEqual(resourceProxy.getDescription(), txtFieldDescription.getValue().toString());
+        isChangedPublicStatus = areEqual(resourceProxy.getStatus(), cmbStatus.getValue().toString());
+        isChangedLockStatus = areEqual(resourceProxy.getLockStatus().toString(), cmbLockStatus.getValue().toString());
+        if (txtFieldDescription.getValue().toString() == "") {
+            isChangedDescription = false;
+        }
+
+        if (isChangedTitle == false && isChangedDescription == false && isChangedPublicStatus == false
+            && isChangedLockStatus == false) {
+            closeEditablefields();
+        }
+        else {
+            saveActionModalWindow();
+        }
+    }
+
+    private void closeEditablefields() {
+        descTitle.setValue(ViewConstants.RESOURCE_NAME_CONTAINER + txtFieldTitle.getValue());
+        descLabel.setValue(ViewConstants.DESCRIPTION_LBL + txtFieldDescription.getValue());
+        cssLayout.replaceComponent(txtFieldTitle, descTitle);
+        cssLayout.replaceComponent(txtFieldDescription, descLabel);
+        vlPropertiesLeft.replaceComponent(this.getHlPublicStatus(), lblStatus);
+        vlPropertiesLeft.replaceComponent(this.getHlLockStatus(), lblLockstatus);
+    }
+
+    public void saveActionModalWindow() {
         subwindow = new Window(ViewConstants.SUBWINDOW_EDIT);
         subwindow.setModal(true);
         // Configure the windws layout; by default a VerticalLayout
@@ -385,6 +420,10 @@ public class ResourcePropertiesContainerView extends ResourceProperties {
         // Showing editable LockStatus
         swapComponent = editLockStatus(lblLockstatus.getValue().toString().replace(status, ""));
         vlPropertiesLeft.replaceComponent(lblLockstatus, swapComponent);
+        isChangedTitle = false;
+        isChangedDescription = false;
+        isChangedPublicStatus = false;
+        isChangedLockStatus = false;
 
     }
 
@@ -403,15 +442,6 @@ public class ResourcePropertiesContainerView extends ResourceProperties {
         cmbLockStatus = this.getCmbLockStatus();
         lblLockstatus.setValue(status + cmbLockStatus.getValue().toString());
         vlPropertiesLeft.replaceComponent(this.getHlLockStatus(), lblLockstatus);
-
-        Boolean isChangedTitle = false;
-        Boolean isChangedDescription = false;
-        Boolean isChangedPublicStatus = false;
-        Boolean isChangedLockStatus = false;
-        isChangedTitle = areEqual(resourceProxy.getName(), txtFieldTitle.getValue().toString());
-        isChangedDescription = areEqual(resourceProxy.getDescription(), txtFieldDescription.getValue().toString());
-        isChangedPublicStatus = areEqual(resourceProxy.getStatus(), cmbStatus.getValue().toString());
-        isChangedLockStatus = areEqual(resourceProxy.getLockStatus().toString(), cmbLockStatus.getValue().toString());
 
         try {
             controller.updateContainer(isChangedTitle, isChangedDescription, isChangedPublicStatus,

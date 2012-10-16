@@ -173,7 +173,7 @@ public class ResourcePropertiesContextView extends ResourceProperties {
         new BreadCrumbMenu(cssLayout, resourceProxy);
     }
 
-    public void saveActionWindow() {
+    public void handleSaveAction() {
         if (controller.canUpdateContext()) {
             subwindow = new Window(ViewConstants.SUBWINDOW_EDIT);
             subwindow.setModal(true);
