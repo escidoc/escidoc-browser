@@ -28,10 +28,15 @@
  */
 package org.escidoc.browser.elabsmodul.controller;
 
-import com.google.common.base.Preconditions;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.escidoc.browser.controller.Controller;
 import org.escidoc.browser.elabsmodul.cache.ELabsCache;
@@ -66,15 +71,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import com.google.common.base.Preconditions;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.Notification;
 
 import de.escidoc.core.client.exceptions.EscidocClientException;
 import de.escidoc.core.client.exceptions.EscidocException;
@@ -266,6 +265,7 @@ public final class InstrumentController extends Controller implements ISaveActio
      */
     private void loadAdminDescriptorInfo() {
         ContextProxyImpl context;
+        Element content = null;
         try {
             context =
                 (ContextProxyImpl) getRepositories().context().findById(getResourceProxy().getContext().getObjid());
@@ -275,11 +275,12 @@ public final class InstrumentController extends Controller implements ISaveActio
                 return;
             }
 
-            final Element content = context.getAdminDescription().get("elabs").getContent();
-            if (content == null) {
+            try {
+                content = context.getAdminDescription().get("elabs").getContent();
+            }
+            catch (Exception e) {
                 LOG.error("Context's admin descriptor is null");
-                showError("Internal error");
-                return;
+                showError("Internal error" + e.getLocalizedMessage());
             }
 
             final List<String> eSychEndpoints = new ArrayList<String>();
