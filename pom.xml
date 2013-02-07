@@ -417,7 +417,7 @@
 		<snapshotRepository>
 			<id>escidoc.org</id>
 			<name>escidoc.org-snapshots</name>
-			<url>https://www.escidoc.org/artifactory/libs-snapshots-local</url>
+			<url>https://www.escidoc.org/artifactory/libs-snapshot-local</url>
 		</snapshotRepository>
 	</distributionManagement>
 </project>
